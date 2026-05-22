@@ -19,24 +19,35 @@ import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 import Button from '@atlaskit/button/new';
 import { KanbanToolbar } from '@/components/kanban/toolbar/KanbanToolbar';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import CreateBoardModal from '@/components/boards/CreateBoardModal';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useProjectMemberRole } from '@/modules/project-work-hub/hooks/useProjectMemberRole';
 import { useTheme } from '@/hooks/useTheme';
 import { usePriToast } from '@/modules/priorities/hooks/usePriToast';
 import { PriToastContainer } from '@/modules/priorities/components/PriToastContainer';
-import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragStartEvent,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCorners,
+} from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
 
 // Kanban modules
 import { KANBAN_TOKENS, DENSITY_CONFIG, KANBAN_COLUMNS as DEFAULT_KANBAN_COLUMNS, COL_PRIMARY_STATUS as DEFAULT_COL_PRIMARY_STATUS, STATUS_TO_COL_ID as DEFAULT_STATUS_TO_COL_ID, COLUMN_ID_SET as DEFAULT_COLUMN_ID_SET } from '@/components/kanban/kanban-tokens';
 import type { KanbanDensity, KanbanColumnDef } from '@/components/kanban/kanban-tokens';
 import type { BoardIssue, GroupByMode, ColMap } from '@/components/kanban/kanban-types';
-import { BOARD_SUBTASK_TYPES } from '@/components/kanban/kanban-types';
+import { BOARD_SUBTASK_TYPES, KANBAN_BOARD_TYPES, KANBAN_STORY_TYPES } from '@/components/kanban/kanban-types';
 import { groupIssues, findCol } from '@/components/kanban/kanban-utils';
 import { DroppableColumn } from '@/components/kanban/KanbanColumn';
+import { OverlayCard } from '@/components/kanban/SortableCard';
 import { SwimlaneRow } from '@/components/kanban/KanbanSwimlane';
 import { PragmaticBoard } from '@/components/kanban/PragmaticBoard';
 import { StandupModal } from '@/components/kanban/StandupModal';
@@ -101,8 +112,8 @@ export default function KanbanBoardPage() {
   const [activeBoardId, setActiveBoardId] = useState<string | null>(null);
   const [showBoardSwitcher, setShowBoardSwitcher] = useState(false);
   const [showCreateBoard, setShowCreateBoard] = useState(false);
+  const [newBoardName, setNewBoardName] = useState('');
   const boardSwitcherRef = React.useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
   // F3 (Archive) — Archived filter chip. When true, the kanban-issues query
   // inverts archived_at IS NULL → archived_at IS NOT NULL. Admin/owner only;
   // FE gate is cosmetic, RLS enforces server-side.
@@ -117,6 +128,7 @@ export default function KanbanBoardPage() {
   const boardScrollContainerRef = useRef<HTMLDivElement>(null);
 
   const d = DENSITY_CONFIG[density];
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
 
   // Current user ID for realtime suppression
@@ -135,16 +147,8 @@ export default function KanbanBoardPage() {
   const cardColorMode = viewSettings.cardColorMode;
   const enabledQuickFilters = viewSettings.enabledQuickFilters;
 
-  // Swimlane expand/collapse all handlers
+  // Swimlane expand handler — collapse handler is defined after `groups` (line ~655)
   const handleExpandAll = useCallback(() => setCollapsedSwimlanes(new Set()), []);
-  const handleCollapseAll = useCallback(() => {
-    // Will be populated with group keys when groups are available
-    setCollapsedSwimlanes(prev => {
-      const next = new Set(prev);
-      groups?.forEach((g: any) => next.add(g.groupKey));
-      return next;
-    });
-  }, []);
 
   /* Board switcher outside-click */
   useEffect(() => {
@@ -501,6 +505,7 @@ export default function KanbanBoardPage() {
     { key: 'queries' as GroupByMode, label: 'Queries' },
     { key: 'assignee' as GroupByMode, label: 'Assignee', icon: 'assignee' },
     { key: 'epic' as GroupByMode, label: 'Epic', icon: 'parent' },
+    { key: 'feature' as GroupByMode, label: 'Feature', icon: 'parent' },
     { key: 'priority' as GroupByMode, label: 'Priority', icon: 'priority' },
     { key: 'fixVersion' as GroupByMode, label: 'Fix Version' },
   ], []);
@@ -520,11 +525,14 @@ export default function KanbanBoardPage() {
   /* ═══ FILTERING ═══ */
 
   const filtered = useMemo(() => {
-    // Jira parity: board hides Epics (swimlane metadata) and subtasks by default.
-    // When advanced filter specifies issue types, honour exactly those types instead.
-    let issues = advancedFilters.issueTypes.length > 0
-      ? rawIssues
-      : rawIssues.filter(i => i.issueType !== 'Epic' && !BOARD_SUBTASK_TYPES.has(i.issueType));
+    // Board type restriction: only Epic, Story, Feature are shown.
+    // In group-by-none (flat) mode only Stories are cards — Epics and Features
+    // are swimlane metadata and should not appear as standalone cards.
+    // When the advanced filter specifies types explicitly, honour those exactly.
+    const allowedTypes: Set<string> = advancedFilters.issueTypes.length > 0
+      ? new Set(advancedFilters.issueTypes)
+      : groupBy === 'none' ? KANBAN_STORY_TYPES : KANBAN_BOARD_TYPES;
+    let issues = rawIssues.filter(i => allowedTypes.has(i.issueType));
     if (debSearch.trim()) {
       const q = debSearch.trim().toLowerCase();
       issues = issues.filter(i =>
@@ -614,7 +622,7 @@ export default function KanbanBoardPage() {
     }
 
     return issues;
-  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, selPriorities, quickFilters, currentUserName, advancedFilters, standupAssignee]);
+  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, selPriorities, quickFilters, currentUserName, advancedFilters, standupAssignee, groupBy]);
 
   /* ═══ COLUMN MAPPING ═══ */
 
@@ -635,27 +643,17 @@ export default function KanbanBoardPage() {
   }, [filtered, dragId, groupBy, KANBAN_COLUMNS, STATUS_TO_COL_ID]);
 
   const groups = useMemo(() => groupBy === 'none' ? [] : groupIssues(filtered, groupBy), [filtered, groupBy]);
+
+  // Declared after `groups` to avoid temporal dead zone (groups dep)
+  const handleCollapseAll = useCallback(() => {
+    setCollapsedSwimlanes(prev => {
+      const next = new Set(prev);
+      groups.forEach((g) => next.add(g.groupKey));
+      return next;
+    });
+  }, [groups]);
+
   const total = groupBy === 'none' ? Object.values(colMap).reduce((a, ids) => a + ids.length, 0) : filtered.length;
-
-  /* When the user switches groupBy to 'epic', collapse all swimlane rows so the
-     board opens in a compact overview. Other groupings start fully expanded.
-     prevGroupByRef guards against re-firing when groups changes (new issues loaded)
-     while groupBy stays the same. */
-  const prevGroupByRef = useRef<GroupByMode>(groupBy);
-  useEffect(() => {
-    if (prevGroupByRef.current === groupBy) return;
-    prevGroupByRef.current = groupBy;
-    if (groupBy === 'epic') {
-      setCollapsedSwimlanes(new Set(groups.map((g: any) => g.groupKey)));
-    } else {
-      setCollapsedSwimlanes(new Set());
-    }
-  }, [groupBy, groups]);
-
-  /* Computed expand/collapse availability for the View Settings panel */
-  const hasSwimlanes = groupBy !== 'none';
-  const canExpandAll = hasSwimlanes && collapsedSwimlanes.size > 0;
-  const canCollapseAll = hasSwimlanes && groups.length > 0 && collapsedSwimlanes.size < groups.length;
 
   /* ═══ CARD ACTIONS ═══ */
 
@@ -903,6 +901,32 @@ export default function KanbanBoardPage() {
 
   /* ═══ DND HANDLERS ═══ */
 
+  const onDragStart = useCallback((e: DragStartEvent) => setDragId(String(e.active.id)), []);
+
+  const resolveColId = useCallback((overId: string): string | null => {
+    if (overId.includes('::')) return overId.split('::')[1] ?? null;
+    if (COLUMN_ID_SET.has(overId)) return overId;
+    return null;
+  }, [COLUMN_ID_SET]);
+
+  const onDragOver = useCallback((e: DragOverEvent) => {
+    if (groupBy !== 'none') return;
+    const aid = String(e.active.id), oid = e.over?.id ? String(e.over.id) : null;
+    if (!oid) return;
+    setColMap(prev => {
+      const from = findCol(prev, aid);
+      if (!from) return prev;
+      const isCol = COLUMN_ID_SET.has(oid);
+      const to = isCol ? oid : findCol(prev, oid);
+      if (!to || from === to) return prev;
+      const f = [...prev[from]], t = [...prev[to]], idx = f.indexOf(aid);
+      if (idx < 0) return prev;
+      f.splice(idx, 1);
+      if (!isCol) { const oi = t.indexOf(oid); t.splice(oi >= 0 ? oi : 0, 0, aid); } else t.unshift(aid);
+      return { ...prev, [from]: f, [to]: t };
+    });
+  }, [groupBy]);
+
   const persistStatusChange = useCallback(async (issueId: string, newStatus: string) => {
     // V2: Zod boundary on DnD — guards against empty/whitespace payloads from
     // aborted drags or stale overlay references. Silent noop when invalid so
@@ -927,25 +951,36 @@ export default function KanbanBoardPage() {
     }
   }, [issuesById, key, qc, toastSuccess, toastError]);
 
-  /* monitorForElements: swimlane drop → status change via Pragmatic DnD */
-  useEffect(() => {
-    return monitorForElements({
-      onDragStart: ({ source }) => {
-        setDragId(String(source.data.issueId ?? ''));
-      },
-      onDrop: ({ source, location }) => {
-        setDragId(null);
-        if (groupBy === 'none') return; // flat mode handled by PragmaticBoard
-        const target = location.current.dropTargets[0];
-        if (!target) return;
-        const issueId = String(source.data.issueId ?? '');
-        const targetColId = String(target.data.colId ?? '');
-        if (!issueId || !targetColId) return;
-        const newStatus = COL_PRIMARY_STATUS[targetColId];
-        if (newStatus) persistStatusChange(issueId, newStatus);
-      },
+  const onDragEnd = useCallback((e: DragEndEvent) => {
+    const aid = String(e.active.id), oid = e.over?.id ? String(e.over.id) : null;
+    setDragId(null);
+    if (!oid) return;
+
+    if (groupBy !== 'none') {
+      const targetColId = resolveColId(oid);
+      if (!targetColId) return;
+      const newStatus = COL_PRIMARY_STATUS[targetColId];
+      if (newStatus) persistStatusChange(aid, newStatus);
+      return;
+    }
+
+    // Flat mode: reorder + persist
+    setColMap(prev => {
+      const c = findCol(prev, aid);
+      if (!c) return prev;
+      if (COLUMN_ID_SET.has(oid)) return prev;
+      const ids = prev[c], oi = ids.indexOf(aid), ni = ids.indexOf(oid);
+      if (oi < 0 || ni < 0 || oi === ni) return prev;
+      return { ...prev, [c]: arrayMove(ids, oi, ni) };
     });
-  }, [groupBy, persistStatusChange, COL_PRIMARY_STATUS]);
+    const targetCol = findCol(colMap, aid);
+    if (targetCol) {
+      const ns = COL_PRIMARY_STATUS[targetCol];
+      if (ns) persistStatusChange(aid, ns);
+    }
+  }, [groupBy, resolveColId, persistStatusChange, colMap]);
+
+  const dragIssue = dragId ? issuesById.get(dragId) : null;
 
   /* ═══ ACTIVE FILTER COUNT ═══ */
   const advFilterCount = countAdvancedFilters(advancedFilters);
@@ -958,6 +993,10 @@ export default function KanbanBoardPage() {
     debSearch.trim().length > 0,
     advFilterCount > 0,
   ].filter(Boolean).length;
+
+  // Stable card-click handler — prevents inline arrow re-creation on every render
+  // which would defeat React.memo on PragmaticCard / VirtualizedColumnBody.
+  const handleCardClick = useCallback((id: string) => setSelIssueId(id), []);
 
   const clearAllFilters = useCallback(() => {
     setSearch(''); setDebSearch('');
@@ -997,7 +1036,7 @@ export default function KanbanBoardPage() {
       {key && <ProjectHeaderChip projectKey={key} />}
       {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
       {/* ── Page header with board switcher ── */}
-      <div className="flex items-center gap-2" style={{ padding: '0 16px', minHeight: 48, flexShrink: 0, position: 'relative' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 16px', minHeight: 48, flexShrink: 0, position: 'relative' }}>
         <span style={{ fontSize: 20, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
           Board
         </span>
@@ -1007,7 +1046,7 @@ export default function KanbanBoardPage() {
             onClick={() => setShowBoardSwitcher(v => !v)}
             style={{
               display: 'flex', alignItems: 'center', gap: 4,
-              height: 28, padding: '0 10px',
+              height: 32, padding: '0 8px',
               background: showBoardSwitcher ? tk.surfaceHover : 'transparent',
               border: `1px solid ${showBoardSwitcher ? tk.border : 'transparent'}`,
               borderRadius: 4, cursor: 'pointer', fontSize: 13, fontWeight: 500,
@@ -1018,7 +1057,7 @@ export default function KanbanBoardPage() {
             onMouseLeave={e => { if (!showBoardSwitcher) e.currentTarget.style.background = 'transparent'; }}
           >
             {projectBoards.find(b => b.id === resolvedBoardId)?.name ?? 'Board'}
-            <span style={{ fontSize: 10, marginLeft: 2 }}>▾</span>
+            <span style={{ fontSize: 10, marginLeft: 4 }}>▾</span>
           </button>
           {showBoardSwitcher && (
             <div
@@ -1026,8 +1065,8 @@ export default function KanbanBoardPage() {
                 position: 'absolute', top: 'calc(100% + 4px)', left: 0,
                 width: 220, background: tk.surfaceBg,
                 border: `1px solid ${tk.border}`, borderRadius: 8,
-                boxShadow: '0 8px 24px rgba(0,0,0,0.16)', zIndex: 60,
-                padding: '6px 0',
+                boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(0,0,0,0.16))', zIndex: 60,
+                padding: '8px 0',
               }}
               onMouseDown={e => e.stopPropagation()}
             >
@@ -1036,7 +1075,7 @@ export default function KanbanBoardPage() {
                   key={b.id}
                   onClick={() => { setActiveBoardId(b.id); setShowBoardSwitcher(false); }}
                   style={{
-                    width: '100%', textAlign: 'left', padding: '8px 14px',
+                    width: '100%', textAlign: 'left', padding: '8px 16px',
                     background: b.id === resolvedBoardId ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent',
                     border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500,
                     color: b.id === resolvedBoardId ? 'var(--ds-link, var(--cp-primary-60, #0052CC))' : tk.textPrimary,
@@ -1048,11 +1087,11 @@ export default function KanbanBoardPage() {
                   {b.name}
                 </button>
               ))}
-              <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 8px' }} />
+              {projectBoards.length > 0 && <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 8px' }} />}
               <button
-                onClick={() => { setShowBoardSwitcher(false); setShowCreateBoard(true); }}
+                onClick={() => { setShowBoardSwitcher(false); setNewBoardName(''); setShowCreateBoard(true); }}
                 style={{
-                  width: '100%', textAlign: 'left', padding: '8px 14px',
+                  width: '100%', textAlign: 'left', padding: '8px 16px',
                   background: 'transparent', border: 'none', cursor: 'pointer',
                   fontSize: 13, fontWeight: 500,
                   color: 'var(--ds-link, var(--cp-primary-60, #0052CC))', fontFamily: 'var(--cp-font-body)',
@@ -1062,36 +1101,157 @@ export default function KanbanBoardPage() {
               >
                 + Create board
               </button>
-              <button
-                onClick={() => { setShowBoardSwitcher(false); navigate(`/project-hub/${key}/boards`); }}
-                style={{
-                  width: '100%', textAlign: 'left', padding: '8px 14px',
-                  background: 'transparent', border: 'none', cursor: 'pointer',
-                  fontSize: 13, fontWeight: 400,
-                  color: tk.textSecondary, fontFamily: 'var(--cp-font-body)',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              >
-                ⚙ Manage all boards
-              </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* Create board — full modal (replaces the old bare-name inline dialog) */}
-      {showCreateBoard && projMeta?.id && (
-        <CreateBoardModal
-          projectId={projMeta.id}
-          basePath={`/project-hub/${key}/board`}
-          onClose={() => setShowCreateBoard(false)}
-          onCreated={(boardId) => {
-            refetchBoards();
-            setActiveBoardId(boardId);
-            qc.invalidateQueries({ queryKey: ['kanban-board-columns', boardId] });
+      {/* Create board dialog */}
+      {showCreateBoard && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 200,
+            background: 'var(--ds-blanket, rgba(9,30,66,0.54))',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
-        />
+          onClick={() => setShowCreateBoard(false)}
+        >
+          <div
+            style={{
+              width: 400, background: tk.surfaceBg, borderRadius: 8,
+              padding: 24, boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(0,0,0,0.24))',
+              fontFamily: 'var(--cp-font-body)',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ fontSize: 18, fontWeight: 600, color: tk.textPrimary, marginBottom: 16, fontFamily: 'var(--cp-font-heading)' }}>
+              Create board
+            </div>
+            <label style={{ fontSize: 12, fontWeight: 600, color: tk.textMuted, display: 'block', marginBottom: 4 }}>
+              BOARD NAME
+            </label>
+            <input
+              autoFocus
+              type="text"
+              value={newBoardName}
+              onChange={e => setNewBoardName(e.target.value)}
+              onKeyDown={async e => {
+                if (e.key === 'Enter' && newBoardName.trim()) {
+                  e.preventDefault();
+                  const trimmed = newBoardName.trim();
+                  setShowCreateBoard(false);
+                  const { data: userData } = await supabase.auth.getUser();
+                  const userId = userData.user?.id;
+                  if (!userId || !projMeta?.id) return;
+                  const { data: newBoard } = await supabase
+                    .from('boards')
+                    .insert({
+                      name: trimmed,
+                      project_id: projMeta.id,
+                      board_type: 'scrum',
+                      created_by: userId,
+                      filter_config: {},
+                      filter_project_ids: [],
+                      sort_order: (projectBoards.length + 1) * 10,
+                    } as any)
+                    .select('id')
+                    .single();
+                  if (newBoard?.id) {
+                    // Copy columns from the current board if one exists
+                    if (resolvedBoardId) {
+                      const { data: srcCols } = await supabase
+                        .from('board_columns')
+                        .select('name, position, status_ids, is_backlog, is_done')
+                        .eq('board_id', resolvedBoardId)
+                        .order('position');
+                      if (srcCols?.length) {
+                        await supabase.from('board_columns').insert(
+                          srcCols.map(c => ({ ...c, board_id: newBoard.id, id: undefined } as any))
+                        );
+                      }
+                    }
+                    await refetchBoards();
+                    setActiveBoardId(newBoard.id);
+                    qc.invalidateQueries({ queryKey: ['kanban-board-columns', newBoard.id] });
+                  }
+                }
+              }}
+              placeholder="e.g. Sprint board"
+              style={{
+                width: '100%', height: 32, padding: '0 8px',
+                border: `2px solid var(--ds-border-focused, #4C9AFF)`,
+                borderRadius: 4, fontSize: 14, color: tk.textPrimary,
+                background: tk.surfaceBg, outline: 'none', boxSizing: 'border-box',
+                fontFamily: 'var(--cp-font-body)',
+              }}
+            />
+            <div style={{ fontSize: 11, color: tk.textMuted, marginTop: 8 }}>Press Enter to create, Escape to cancel</div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+              <button
+                onClick={() => setShowCreateBoard(false)}
+                style={{
+                  height: 32, padding: '0 16px', borderRadius: 3,
+                  border: `1px solid ${tk.border}`, background: 'transparent',
+                  fontSize: 14, cursor: 'pointer', color: tk.textSecondary,
+                  fontFamily: 'var(--cp-font-body)',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                disabled={!newBoardName.trim()}
+                onClick={async () => {
+                  const trimmed = newBoardName.trim();
+                  if (!trimmed) return;
+                  setShowCreateBoard(false);
+                  const { data: userData } = await supabase.auth.getUser();
+                  const userId = userData.user?.id;
+                  if (!userId || !projMeta?.id) return;
+                  const { data: newBoard } = await supabase
+                    .from('boards')
+                    .insert({
+                      name: trimmed,
+                      project_id: projMeta.id,
+                      board_type: 'scrum',
+                      created_by: userId,
+                      filter_config: {},
+                      filter_project_ids: [],
+                      sort_order: (projectBoards.length + 1) * 10,
+                    } as any)
+                    .select('id')
+                    .single();
+                  if (newBoard?.id) {
+                    if (resolvedBoardId) {
+                      const { data: srcCols } = await supabase
+                        .from('board_columns')
+                        .select('name, position, status_ids, is_backlog, is_done')
+                        .eq('board_id', resolvedBoardId)
+                        .order('position');
+                      if (srcCols?.length) {
+                        await supabase.from('board_columns').insert(
+                          srcCols.map(c => ({ ...c, board_id: newBoard.id, id: undefined } as any))
+                        );
+                      }
+                    }
+                    await refetchBoards();
+                    setActiveBoardId(newBoard.id);
+                    qc.invalidateQueries({ queryKey: ['kanban-board-columns', newBoard.id] });
+                  }
+                }}
+                style={{
+                  height: 32, padding: '0 16px', borderRadius: 3,
+                  border: 'none',
+                  background: newBoardName.trim() ? 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))' : tk.chipBg,
+                  fontSize: 14, cursor: newBoardName.trim() ? 'pointer' : 'not-allowed',
+                  color: newBoardName.trim() ? 'var(--ds-text-inverse, #FFFFFF)' : tk.textMuted,
+                  fontFamily: 'var(--cp-font-body)',
+                }}
+              >
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* F3: "Show archived" moved into the board ••• menu — no standalone row above toolbar */}
@@ -1111,7 +1271,7 @@ export default function KanbanBoardPage() {
 
       {/* ── Toolbar — canonical <KanbanToolbar/> (Phase 1 extraction) ── */}
       {/* Offset matches standup panel width when open */}
-      <div style={{ marginLeft: showStandup ? 280 : 0, transition: 'margin-left 200ms ease' }}>
+      <div style={{ marginLeft: showStandup ? 'var(--standup-panel-width, 280px)' : 0, transition: 'margin-left 200ms ease' }}>
       <KanbanToolbar<GroupByMode>
         tk={tk}
         search={search}
@@ -1158,9 +1318,6 @@ export default function KanbanBoardPage() {
             return next;
           });
         }}
-        hasSwimlanes={hasSwimlanes}
-        canExpandAll={canExpandAll}
-        canCollapseAll={canCollapseAll}
         enableDensity={ENABLE_KANBAN_V2}
         density={density}
         onDensityChange={onDensityChange}
@@ -1178,9 +1335,10 @@ export default function KanbanBoardPage() {
 
       {/* ── Board content (Jira parity: 8px inter-column gap, 16px outer padding) ── */}
       {/* When standup panel is open, offset content 280px to the right (Jira parity) */}
-      <div className="flex-1 min-h-0" style={{ overflow: 'auto', padding: '0 16px 16px 16px', marginLeft: showStandup ? 280 : 0, transition: 'margin-left 200ms ease' }}>
+      <div className="flex-1 min-h-0" style={{ overflow: 'auto', padding: '0 16px 16px 16px', marginLeft: showStandup ? 'var(--standup-panel-width, 280px)' : 0, transition: 'margin-left 200ms ease' }}>
         {groupBy !== 'none' ? (
-          <div style={{ background: 'transparent', minWidth: KANBAN_COLUMNS.length * 267 + (KANBAN_COLUMNS.length - 1) * 8 }}>
+          <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
+            <div style={{ background: 'transparent', minWidth: KANBAN_COLUMNS.length * 267 + (KANBAN_COLUMNS.length - 1) * 8 }}>
               {/* Column headers for swimlane mode (Jira parity: 48h, 267w, transparent) */}
               <div className="flex sticky top-0 z-20" style={{ background: tk.pageBg, gap: 8, paddingBottom: 4 }}>
                 {KANBAN_COLUMNS.map((col) => {
@@ -1189,16 +1347,21 @@ export default function KanbanBoardPage() {
                     return issue ? STATUS_TO_COL_ID.get(issue.status.toLowerCase()) === col.id : false;
                   }).length, 0);
                   // jira-compare 2026-05-08: fix category dot colors + column header typography to match PragmaticBoard patch
-                  const categoryDot = col.category === 'done' ? '#94C748' : col.category === 'in_progress' ? '#669DF1' : '#5E6C84';
+                  const categoryDot = col.category === 'done'
+                    ? 'var(--ds-background-success-bold, #94C748)'
+                    : col.category === 'in_progress'
+                    ? 'var(--ds-background-information, #669DF1)'
+                    : 'var(--ds-text-subtlest, #5E6C84)';
                   return (
-                    <div key={col.id} className="flex items-center gap-2" style={{
+                    <div key={col.id} style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
                       width: 267, minWidth: 267, maxWidth: 267, height: 48, flexShrink: 0,
                       padding: '0 12px',
                       background: tk.headerBg,
                       borderRadius: '6px 6px 0 0',
                     }}>
                       <span style={{ width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: tk.textMuted, flex: 1, lineHeight: '16px', fontFamily: 'var(--cp-font-body)' }}>{col.name}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', color: tk.textMuted, flex: 1, lineHeight: '16px', fontFamily: 'var(--cp-font-body)' }}>{col.name.toUpperCase()}</span>
                       <span style={{ fontSize: 11, fontWeight: 500, color: tk.textMuted, lineHeight: '16px', fontFamily: 'var(--cp-font-body)' }}>{count}</span>
                     </div>
                   );
@@ -1213,7 +1376,7 @@ export default function KanbanBoardPage() {
                   mode={groupBy}
                   issuesById={issuesById}
                   avatarsByName={avatarsByName}
-                  onCardClick={id => setSelIssueId(id)}
+                  onCardClick={handleCardClick}
                   defaultOpen={!collapsedSwimlanes.has(g.groupKey)}
                   d={d}
                   tk={tk}
@@ -1239,11 +1402,15 @@ export default function KanbanBoardPage() {
                 />
               ))}
               {groups.length === 0 && (
-                <div className="flex items-center justify-center py-12" style={{ color: tk.textDisabled, fontSize: 13 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 0', color: tk.textDisabled, fontSize: 13 }}>
                   No issues match filters
                 </div>
               )}
-          </div>
+            </div>
+            <DragOverlay dropAnimation={null}>
+              {dragIssue ? <OverlayCard issue={dragIssue} avatarUrl={dragIssue.assigneeName ? avatarsByName.get(dragIssue.assigneeName.toLowerCase()) : null} d={d} tk={tk} /> : null}
+            </DragOverlay>
+          </DndContext>
         ) : (
           /* Pragmatic drag-and-drop path (non-swimlane).
              Monitor-based reconciliation; host owns colMap + supabase persist. */

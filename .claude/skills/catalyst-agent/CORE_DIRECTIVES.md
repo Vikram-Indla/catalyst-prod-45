@@ -237,6 +237,41 @@ EVIDENCE — Component N ([Component Name])
 
 ---
 
+## Directive 6 — Screenshot-Defect Auto-Fix Loop (mandatory on every defect screenshot)
+
+When ANY screenshot is shared in chat that shows a defect, crash, build error, error overlay, or broken UI state, you MUST:
+
+1. **Diagnose immediately** — identify the root cause from the screenshot without asking for permission. Do not ask "should I fix this?" — proceed automatically.
+2. **Fix the code** — apply the minimum correct fix. No scope creep.
+3. **Rebuild the dev server** on port 8080:
+   ```bash
+   kill $(lsof -t -i:8080) 2>/dev/null
+   bun run dev --port 8080 &
+   sleep 8  # wait for startup
+   cat /tmp/vite-dev.log  # verify no startup errors
+   ```
+4. **Navigate and verify** — use Chrome MCP to navigate to the affected URL. Read console errors with `mcp__Claude_in_Chrome__read_console_messages` (pattern: `error|Error`).
+5. **Take a Computer Use screenshot** — visually confirm the fix. Output a Directive 5 evidence block.
+6. **Loop if still broken** — if the error persists, go back to step 2. Cap at 5 iterations; escalate to user after cap.
+
+### What triggers Directive 6
+
+- Any red Vite error overlay in a screenshot
+- Any "Something went wrong" / crash screen
+- Any console error visible in a screenshot
+- Any visually broken/missing UI element in a screenshot
+- Any TypeScript build error, import resolution failure, or runtime exception
+
+### What does NOT require a question
+
+- "Should I fix this?" — no, fix it
+- "Do you want me to rebuild the server?" — no, rebuild it
+- "Should I verify this worked?" — no, verify it
+
+Directive 6 overrides the default "ask before acting" behaviour for defect screenshots only.
+
+---
+
 ## How to use this file
 
 `/catalyst-agent`'s dispatch template **prepends** the contents of this file to every agent's prompt. The agent reads these directives first, then receives its task-specific brief.

@@ -69,7 +69,6 @@ const BacklogDetailPageLazy = lazy(() => import("../modules/project-work-hub/pag
 const AllWorkDetailPageLazy = lazy(() => import("../modules/project-work-hub/pages/AllWorkDetailPage"));
 const FiltersListPageLazy = lazy(() => import("../pages/project-hub/filters/FiltersListPage"));
 const CreateFilterPageLazy = lazy(() => import("../pages/project-hub/filters/CreateFilterPage"));
-const FilterDetailPageLazy = lazy(() => import("../pages/project-hub/filters/FilterDetailPage"));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const IssueDetailPageLazy = lazy(() => import("../pages/project-hub/IssueDetailPage"));
 const HierarchyPageLazy = lazy(() => import("../pages/project-hub/HierarchyPage"));
@@ -525,10 +524,8 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:key/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />
         <Route path="/product-hub/:key/filters/create" element={<MG k="producthub" t="ProductHub"><S><CreateFilterPageLazy hubType="product" /></S></MG>} />
-        <Route path="/product-hub/:key/filters/:filterId" element={<MG k="producthub" t="ProductHub"><S><FilterDetailPageLazy /></S></MG>} />
         <Route path="/product-hub/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />
         <Route path="/product-hub/filters/create" element={<MG k="producthub" t="ProductHub"><S><CreateFilterPageLazy hubType="product" /></S></MG>} />
-        <Route path="/product-hub/filters/:filterId" element={<MG k="producthub" t="ProductHub"><S><FilterDetailPageLazy /></S></MG>} />
         <Route path="/product-hub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
         <Route path="/product-hub/roadmaps-v1" element={<MG k="producthub" t="ProductHub"><S><IndustryRoadmapPage /></S></MG>} />
         <Route path="/product-hub/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />
@@ -672,9 +669,6 @@ export default function FullAppRoutes() {
           <Route path="caty" element={<MG k="ai_features" t="Caty AI"><S><CatyAIPage /></S></MG>} />
           <Route path="docs" element={<S><TestHubDocsPage /></S>} />
           <Route path="verify" element={<S><TestHubVerifyPage /></S>} />
-          {/* Test Hub filters — hubType="test" scope */}
-          <Route path="filters" element={<S><FiltersListPageLazy hubType="test" /></S>} />
-          <Route path="filters/:filterId" element={<S><FilterDetailPageLazy /></S>} />
         </Route>
 
         {/* ═══ IncidentHub ═══ */}
@@ -973,7 +967,6 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />
         <Route path="/project-hub/:key/filters" element={<S><FiltersListPageLazy /></S>} />
         <Route path="/project-hub/:key/filters/create" element={<S><CreateFilterPageLazy hubType="project" /></S>} />
-        <Route path="/project-hub/:key/filters/:filterId" element={<S><FilterDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/timeline" element={<PHPlaceholder title="Timeline" phase="Phase 3" />} />
         <Route path="/project-hub/:key/releases" element={<PHPlaceholder title="Releases" phase="Phase 3" />} />
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />

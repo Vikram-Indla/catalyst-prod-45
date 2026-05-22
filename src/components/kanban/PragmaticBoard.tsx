@@ -34,6 +34,7 @@
 import { memo, forwardRef, useEffect, useRef, useState, useCallback, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
+// @atlaskit/motion is not Vite pre-bundled in this project; stagger implemented via CSS animation-delay below.
 import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element';
@@ -125,15 +126,20 @@ const PragmaticCard = memo(function PragmaticCard({
   // software-context-menu.ui.context-menu on every card). Catalyst previously
   // suppressed contextmenu via preventDefault; this restores it.
   const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(null);
+  // F5: context menu fade-in — start invisible, go visible on next frame
+  const [ctxMenuVisible, setCtxMenuVisible] = useState(false);
   useEffect(() => {
-    if (!ctxMenu) return;
+    if (!ctxMenu) { setCtxMenuVisible(false); return; }
     const close = () => setCtxMenu(null);
     window.addEventListener('click', close);
     window.addEventListener('scroll', close, true);
     window.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    // Trigger fade-in on next animation frame so CSS transition fires
+    const raf = requestAnimationFrame(() => setCtxMenuVisible(true));
     return () => {
       window.removeEventListener('click', close);
       window.removeEventListener('scroll', close, true);
+      cancelAnimationFrame(raf);
     };
   }, [ctxMenu]);
 
@@ -143,23 +149,8 @@ const PragmaticCard = memo(function PragmaticCard({
     return draggable({
       element: el,
       getInitialData: () => ({ type: 'kanban-card', cardId: issue.id, colId }),
-      onDragStart: () => {
-        setIsDragging(true);
-        // ADS Motion: lift = scale(1.02) + overlay elevation, 150ms cubic-bezier(0,0.4,0,1)
-        if (el) {
-          el.style.transition = 'transform 150ms cubic-bezier(0,0.4,0,1), box-shadow 150ms cubic-bezier(0,0.4,0,1)';
-          el.style.transform = 'scale(1.02)';
-          el.style.zIndex = '100';
-        }
-      },
-      onDrop: () => {
-        setIsDragging(false);
-        if (el) {
-          el.style.transition = '';
-          el.style.transform = '';
-          el.style.zIndex = '';
-        }
-      },
+      onDragStart: () => setIsDragging(true),
+      onDrop: () => setIsDragging(false),
     });
   }, [issue.id, colId]);
 
@@ -206,9 +197,8 @@ const PragmaticCard = memo(function PragmaticCard({
     padding: d.cardPad,
     display: 'flex',
     flexDirection: 'column',
-    cursor: isDragging ? 'grabbing' : 'grab',
-    /* ADS Motion: interactive-element enter = 100ms cubic-bezier(0.4,1,0.6,1) */
-    transition: 'background 100ms cubic-bezier(0.4,1,0.6,1), box-shadow 100ms cubic-bezier(0.4,1,0.6,1), transform 100ms cubic-bezier(0.4,1,0.6,1), border-left 100ms cubic-bezier(0.4,1,0.6,1)',
+    cursor: 'grab',
+    transition: 'background 150ms ease, box-shadow 150ms ease, border-left 120ms ease',
     opacity: isDragging ? 0.35 : 1,
     boxShadow: isDragging ? tk.cardDragShadow : isFocused ? focusShadow : restShadow,
     position: 'relative',
@@ -239,16 +229,9 @@ const PragmaticCard = memo(function PragmaticCard({
         onMouseLeave={(e) => {
           e.currentTarget.style.background = tk.cardBg;
           e.currentTarget.style.boxShadow = isDragging ? tk.cardDragShadow : isFocused ? focusShadow : restShadow;
-          e.currentTarget.style.transform = '';
           e.currentTarget.querySelectorAll('.kanban-card-menu-btn, .kanban-card-edit-btn').forEach((el) => {
             (el as HTMLElement).style.opacity = '0';
           });
-        }}
-        onMouseDown={(e) => {
-          if (!isDragging) (e.currentTarget as HTMLDivElement).style.transform = 'scale(0.98)';
-        }}
-        onMouseUp={(e) => {
-          (e.currentTarget as HTMLDivElement).style.transform = '';
         }}
         tabIndex={-1}
         role="listitem"
@@ -284,9 +267,14 @@ const PragmaticCard = memo(function PragmaticCard({
             minWidth: 180,
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             borderRadius: 4,
-            boxShadow: 'rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px',
+            boxShadow: 'var(--ds-shadow-overlay, rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px)',
             padding: '4px 0',
             fontFamily: 'var(--cp-font-body)',
+            /* F5: fade-in transition — opacity 0→1, scale 0.97→1 */
+            opacity: ctxMenuVisible ? 1 : 0,
+            transform: ctxMenuVisible ? 'scale(1)' : 'scale(0.97)',
+            transformOrigin: 'top left',
+            transition: 'opacity 100ms cubic-bezier(0.4,1,0.6,1), transform 100ms cubic-bezier(0.4,1,0.6,1)',
           }}
         >
           {[
@@ -304,10 +292,10 @@ const PragmaticCard = memo(function PragmaticCard({
               onClick={() => { item.act(); setCtxMenu(null); }}
               style={{
                 display: 'block', width: '100%',
-                padding: '6px 16px', background: 'transparent',
+                padding: '8px 16px', background: 'transparent',
                 border: 'none', cursor: 'pointer', textAlign: 'left',
                 fontSize: 14, lineHeight: '20px',
-                color: item.danger ? '#AE2A19' : tk.textPrimary,
+                color: item.danger ? 'var(--ds-text-danger, #AE2A19)' : tk.textPrimary,
               }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
@@ -399,9 +387,11 @@ const PragmaticColumn = memo(function PragmaticColumn({
 
   // jira-compare 2026-05-08 — K.11 measured status category colors
   // Done: lime green #94C748, In Progress: cornflower #669DF1, To Do: muted grey #5E6C84
-  const categoryDot = column.category === 'done' ? '#94C748'
-    : column.category === 'in_progress' ? '#669DF1'
-    : '#5E6C84';
+  const categoryDot = column.category === 'done'
+    ? 'var(--ds-background-success-bold, #94C748)'
+    : column.category === 'in_progress'
+    ? 'var(--ds-background-information, #669DF1)'
+    : 'var(--ds-text-subtlest, #5E6C84)';
 
   return (
     <div
@@ -429,7 +419,8 @@ const PragmaticColumn = memo(function PragmaticColumn({
           menu mounts at viewport (0,0) instead of below trigger). The sticky
           behaviour can be reintroduced once Floating UI's reference resolution
           is fixed (open Atlaskit issue) or a `@atlaskit/popup` swap is in. */}
-      <div className="flex items-center gap-2" style={{
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: SPACING_TOKENS.gap8,
         position: 'relative',
         height: 48,
         padding: '0 12px',
@@ -441,11 +432,12 @@ const PragmaticColumn = memo(function PragmaticColumn({
           width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0,
         }} />
         <span style={{
-          // jira-compare 2026-05-08 — Jira column headers: 11px/600/uppercase/0.04em
+          // jira-compare 2026-05-08 — Jira column headers: 11px/600/0.04em
+          // Column names are uppercase in content (e.g. "IN REQUIREMENTS") — no CSS transform needed.
           fontSize: 11, fontWeight: 600,
           color: tk.textMuted, fontFamily: 'var(--cp-font-body)',
           lineHeight: '16px', flex: 1,
-          textTransform: 'uppercase', letterSpacing: '0.04em',
+          letterSpacing: '0.04em',
         }}>{column.name}</span>
         {/* MAX badge — Jira board 597 surfaces column WIP via `MAX: <n>`. */}
         {column.wipLimit != null && (
@@ -454,13 +446,13 @@ const PragmaticColumn = memo(function PragmaticColumn({
             style={{
               fontSize: 11,
               fontWeight: 600,
-              color: issueIds.length > column.wipLimit ? '#AE2A19' : tk.textMuted,
+              color: issueIds.length > column.wipLimit ? 'var(--ds-text-danger, #AE2A19)' : tk.textMuted,
               fontFamily: 'var(--cp-font-body)',
               lineHeight: '16px',
               padding: '0 8px',
               borderRadius: 3,
-              background: issueIds.length > column.wipLimit ? '#FFEBE6' : 'transparent',
-              border: `1px solid ${issueIds.length > column.wipLimit ? '#AE2A19' : tk.borderSubtle}`,
+              background: issueIds.length > column.wipLimit ? 'var(--ds-background-danger, #FFEBE6)' : 'transparent',
+              border: `1px solid ${issueIds.length > column.wipLimit ? 'var(--ds-border-danger, #AE2A19)' : tk.borderSubtle}`,
               letterSpacing: 0.2,
             }}
             aria-label={`Work-in-progress limit ${column.wipLimit}`}
@@ -511,20 +503,26 @@ const PragmaticColumn = memo(function PragmaticColumn({
               minWidth: 200,
               background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               borderRadius: 4,
-              boxShadow: 'rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px',
+              boxShadow: 'var(--ds-shadow-overlay, rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px)',
               padding: '8px 0',
               fontFamily: 'var(--cp-font-body)',
             }}
           >
-            {/* Actionable items only — column name + card count are already visible
-                in the column header; repeating them as non-interactive rows is not
-                Jira-parity. WIP limit retained as actionable configuration context. */}
+            {/* Column name header */}
+            <div style={{
+              padding: '4px 16px 8px', fontSize: 11, fontWeight: 700, color: tk.textMuted,
+              letterSpacing: 0.5,
+              borderBottom: `1px solid ${tk.border}`, marginBottom: 4,
+            }}>{column.name}</div>
+            {/* Column stats — non-interactive info rows */}
+            <div style={{ padding: '8px 16px', fontSize: 12, color: tk.textPrimary, display: 'flex', justifyContent: 'space-between' }}>
+              <span>Cards</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600 }}>{issueIds.length}</span>
+            </div>
             {column.wipLimit != null && (
               <div style={{
                 padding: '8px 16px', fontSize: 12, display: 'flex', justifyContent: 'space-between',
-                color: issueIds.length > column.wipLimit ? '#AE2A19' : tk.textPrimary,
-                borderBottom: `1px solid ${tk.border}`,
-                marginBottom: 4,
+                color: issueIds.length > column.wipLimit ? 'var(--ds-text-danger, #AE2A19)' : tk.textPrimary,
               }}>
                 <span>WIP limit</span>
                 <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600 }}>
@@ -532,39 +530,48 @@ const PragmaticColumn = memo(function PragmaticColumn({
                 </span>
               </div>
             )}
-            {(actions.onCreateInColumn || actions.onCreateCard) && (
-              <>
-                <div style={{ height: 1, background: tk.border, margin: '4px 0' }} />
-                {[{
-                  key: 'create',
-                  label: actions.createInColumnLabel ?? 'Create issue here',
-                  act: () => { setInlineCreateColId(column.id); setMeatballAnchor(null); },
-                }].map((item) => (
-                  <button
-                    key={item.key}
-                    role="menuitem"
-                    type="button"
-                    onClick={item.act}
-                    style={{
-                      display: 'flex',
-                      width: '100%',
-                      padding: '7px 16px',
-                      fontSize: 13,
-                      color: tk.textPrimary,
-                      background: 'none',
-                      border: 'none',
-                      textAlign: 'left',
-                      cursor: 'pointer',
-                      fontFamily: 'var(--cp-font-body)',
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = tk.surfaceHover; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </>
-            )}
+            {/* Separator */}
+            <div style={{ height: 1, background: tk.border, margin: '4px 0' }} />
+            {/* Actionable items — Jira parity */}
+            {[
+              {
+                key: 'copy-cards',
+                label: `Copy column stats`,
+                act: () => {
+                  const text = `${column.name}: ${issueIds.length} card${issueIds.length !== 1 ? 's' : ''}${column.wipLimit != null ? ` (WIP: ${column.wipLimit})` : ''}`;
+                  navigator.clipboard.writeText(text).catch(() => {/* silent */});
+                  setMeatballAnchor(null);
+                },
+              },
+              ...((actions.onCreateInColumn || actions.onCreateCard) ? [{
+                key: 'create',
+                label: actions.createInColumnLabel ?? 'Create issue here',
+                act: () => { setInlineCreateColId(column.id); setMeatballAnchor(null); },
+              }] : []),
+            ].map((item) => (
+              <button
+                key={item.key}
+                role="menuitem"
+                type="button"
+                onClick={item.act}
+                style={{
+                  display: 'flex',
+                  width: '100%',
+                  padding: '8px 16px',
+                  fontSize: 13,
+                  color: tk.textPrimary,
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  fontFamily: 'var(--cp-font-body)',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = tk.surfaceHover; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+              >
+                {item.label}
+              </button>
+            ))}
           </div>,
           document.body,
         )}
@@ -636,11 +643,45 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
 ) {
   const parentRef = ref || useRef<HTMLDivElement>(null);
 
+  // A23/A24 — Scroll overflow shadows.
+  // Architecture note (2026-05-22): this board uses PAGE-LEVEL scroll via the
+  // CatalystShell content area (overflow-y-auto). Column bodies are NOT individually
+  // scrollable — they expand to their full card height. Per-column scroll shadows
+  // therefore track the column's position within the PAGE scroll, not a local
+  // scrollTop. We use window scroll + column bounding rect to detect when:
+  //   showTopShadow:    column content starts above the visible viewport top
+  //   showBottomShadow: column content ends below the visible viewport bottom
+  const [showTopShadow, setShowTopShadow] = useState(false);
+  const [showBottomShadow, setShowBottomShadow] = useState(false);
+
+  const updateScrollShadows = useCallback(() => {
+    const el = typeof parentRef === 'object' && parentRef !== null
+      ? (parentRef as React.RefObject<HTMLDivElement>).current
+      : null;
+    if (!el) return;
+    // For page-level scroll: compare column bounding rect to viewport
+    const rect = el.getBoundingClientRect();
+    const viewH = window.innerHeight;
+    setShowTopShadow(rect.top < -4);          // column top is above viewport
+    setShowBottomShadow(rect.bottom > viewH + 4); // column bottom is below viewport
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('scroll', updateScrollShadows, { passive: true });
+    // Also listen on the shell scroll container if it exists
+    const shell = document.querySelector<HTMLElement>('.overflow-y-auto.overflow-x-hidden');
+    if (shell) shell.addEventListener('scroll', updateScrollShadows, { passive: true });
+    updateScrollShadows(); // Initial check
+    return () => {
+      window.removeEventListener('scroll', updateScrollShadows);
+      if (shell) shell.removeEventListener('scroll', updateScrollShadows);
+    };
+  }, [updateScrollShadows]);
+
   // Calculate estimated card height per density config.
   // Accounts for: cardPad (top+bottom) + titleSize + lineHeight + metaSize + footerHeight + cardGap
-  // + epic chip row when visible + footer marginTop (WorkItemCard.tsx:319)
   // Jira evidence (Lane A MDT board 597, 2026-05-20): card heights vary by visual density, not uniform.
-  const calculateCardHeight = (cfg: DensityConfig, hasEpicChip: boolean): number => {
+  const calculateCardHeight = (cfg: DensityConfig): number => {
     // Parse top padding from "6px 8px" or "12px" format
     const padParts = cfg.cardPad.split(' ');
     const padTop = parseInt(padParts[0], 10);
@@ -649,31 +690,27 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
     const titleRow = cfg.titleSize + (cfg.titleSize + 6);
     // Meta row: metaSize
     const metaRow = cfg.metaSize;
-    // Footer row: footerHeight + marginTop: 8 declared in WorkItemCard.tsx:319
-    const footerRow = cfg.footerHeight + 8;
-    // Epic chip row (WorkItemCard.tsx:301-313): lineHeight(16) + padding(4+4) + marginBottom(4) = 28px
-    // Visible when visibleFields.epic !== false — always true in group-by-none mode.
-    const epicRow = hasEpicChip ? 28 : 0;
+    // Footer row: footerHeight
+    const footerRow = cfg.footerHeight;
     // Gap below card
     const gap = parseInt(cfg.cardGap?.toString() || '8', 10) || 8;
     // Total: all vertical components + gap
-    const total = padTop + titleRow + metaRow + epicRow + footerRow + padBottom + gap;
+    const total = padTop + titleRow + metaRow + footerRow + padBottom + gap;
     return Math.max(total, cfg.cardMinHeight || 26); // Ensure minimum viable height
   };
 
-  // Epic chip shows when visibleFields.epic !== false (always true in group-by-none;
-  // swimlane mode suppresses it via { ...visibleFields, epic: false }).
-  const hasEpicChip = actions.visibleFields?.epic !== false;
-  const estimatedCardHeight = calculateCardHeight(d, hasEpicChip);
+  const estimatedCardHeight = calculateCardHeight(d);
 
   const virtualizer = useVirtualizer({
     count: issueIds.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => estimatedCardHeight,
+    // measureElement: dynamic height measurement — required for correct virtualizer math.
+    // Without this, variable-height cards cause position drift as the user scrolls.
     measureElement: typeof window !== 'undefined'
       ? (el) => el.getBoundingClientRect().height
       : undefined,
-    overscan: 3,
+    overscan: 3,  // Render 3 extra items above/below viewport for smoother scrolling
   });
 
   // Skip virtualization for small lists (< 15 cards) to avoid overhead
@@ -683,13 +720,8 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
         ref={parentRef}
         className="flex flex-col overflow-y-auto"
         style={{
-          // spec: gap between cards via CSS gap (React adds px for numbers)
+          padding: '8px',
           gap: d.cardGap,
-          // spec: 12px header→first-card, 8px last-card→bottom, 4px horizontal shadow-safe inset
-          paddingTop: 12,
-          paddingBottom: d.cardGap,
-          paddingLeft: 4,
-          paddingRight: 4,
           flex: 1,
           minHeight: 120,
           background: isOver ? tk.dropHighlight : 'transparent',
@@ -697,13 +729,20 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
           borderRadius: '0 0 6px 6px',
         }}
       >
+        {/* A25 — Skeleton pulse: neutral background so skeletons are visible against white column bg.
+             Uses var(--ds-skeleton) with ADS-canonical fallback. */}
         {issueIds.length === 0 && isLoading && (
-          <div className="flex flex-col" style={{ gap: SPACING_TOKENS.gap4 }}>
+          <div className="flex flex-col" style={{ gap: SPACING_TOKENS.gap8 }}>
             {[72, 56, 88].map((h, i) => (
-              <div key={i} className="animate-pulse" style={{
+              <div key={i} style={{
                 height: h, borderRadius: 4,
-                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                background: 'var(--ds-skeleton, var(--ds-background-neutral, #F1F2F4))',
                 boxShadow: tk.cardShadowRest,
+                animationName: 'kanbanSkeletonPulse',
+                animationDuration: '1.6s',
+                animationTimingFunction: 'ease-in-out',
+                animationIterationCount: 'infinite',
+                animationDelay: `${i * 120}ms`,
               }} />
             ))}
           </div>
@@ -720,24 +759,36 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
             )}
           </div>
         )}
-        {issueIds.map((id) => {
+        {/* F7: Staggered card entrance — CSS animation-delay per index, capped at 8 cards
+            to avoid long wait on wide boards. seenIds ref prevents re-animation on reorder. */}
+        {issueIds.map((id, idx) => {
           const issue = issuesById.get(id);
           if (!issue) return null;
           return (
-            <PragmaticCard
+            <div
               key={id}
-              issue={issue}
-              colId={column.id}
-              avatarUrl={issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null}
-              onClick={() => onCardClick(id)}
-              d={d}
-              tk={tk}
-              isSelected={selectedId === id}
-              isFocused={focusedId === id}
-              avatarsByName={avatarsByName}
-              cardColorMode={cardColorMode}
-              {...actions}
-            />
+              style={{
+                animationName: 'kanbanCardFadeIn',
+                animationDuration: '120ms',
+                animationDelay: `${Math.min(idx, 8) * 25}ms`,
+                animationTimingFunction: 'cubic-bezier(0.4,1,0.6,1)',
+                animationFillMode: 'both',
+              }}
+            >
+              <PragmaticCard
+                issue={issue}
+                colId={column.id}
+                avatarUrl={issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null}
+                onClick={() => onCardClick(id)}
+                d={d}
+                tk={tk}
+                isSelected={selectedId === id}
+                isFocused={focusedId === id}
+                avatarsByName={avatarsByName}
+                cardColorMode={cardColorMode}
+                {...actions}
+              />
+            </div>
           );
         })}
         {(actions.onCreateInColumn || actions.onCreateCard) && (
@@ -763,7 +814,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 gap: SPACING_TOKENS.gap8,
-                padding: '6px 8px',
+                padding: '4px 8px',
                 border: 'none',
                 background: 'transparent',
                 color: tk.textMuted,
@@ -776,7 +827,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
                 marginTop: issueIds.length === 0 ? 0 : 4,
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover ?? 'rgba(0,0,0,0.04)';
+                (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover ?? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))';
                 (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
               }}
               onMouseLeave={(e) => {
@@ -797,18 +848,38 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
   const virtualItems = virtualizer.getVirtualItems();
 
   return (
+    // A23/A24 wrapper — position: relative so the gradient shadow overlays are anchored
+    // to the visible column body edges, not to the scrollable content inside parentRef.
+    <div style={{ position: 'relative', flex: 1, minHeight: 120, display: 'flex', flexDirection: 'column' }}>
+      {/* A23 — Top overflow shadow: appears when user has scrolled past the first card */}
+      {showTopShadow && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute', top: 0, left: 0, right: 0, height: 20, zIndex: 2,
+            background: 'linear-gradient(to bottom, var(--ds-overlay, rgba(9,30,66,0.08)) 0%, transparent 100%)',
+            pointerEvents: 'none', borderRadius: '0 0 0 0',
+          }}
+        />
+      )}
+      {/* A24 — Bottom overflow shadow: appears when there are cards below the visible fold */}
+      {showBottomShadow && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0, height: 20, zIndex: 2,
+            background: 'linear-gradient(to top, var(--ds-overlay, rgba(9,30,66,0.08)) 0%, transparent 100%)',
+            pointerEvents: 'none',
+          }}
+        />
+      )}
     <div
       ref={parentRef}
       className="flex flex-col overflow-y-auto"
       style={{
-        // spec: 12px header→first-card, 8px last-card→bottom, 4px horizontal shadow-safe inset
-        // gap is handled per-slot via paddingBottom on the slot wrapper (absolute positioning)
-        paddingTop: 12,
-        paddingBottom: d.cardGap,
-        paddingLeft: 4,
-        paddingRight: 4,
+        padding: '8px',
         flex: 1,
-        minHeight: 120,
+        minHeight: 0,
         background: isOver ? tk.dropHighlight : 'transparent',
         transition: 'background 150ms ease',
         borderRadius: '0 0 6px 6px',
@@ -836,9 +907,13 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
                 top: 0,
                 left: 0,
                 width: '100%',
+                // NOTE: NO height here — TanStack Virtual v3 measures via measureElement.
+                // Setting height: virtualItem.size prevents dynamic measurement.
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
+              {/* paddingBottom as numeric → React auto-appends 'px'. Template literal is BANNED
+                  here because `0 0 8 0` is invalid CSS (unitless 8) → padding-bottom resolves 0 */}
               <div style={{ paddingBottom: d.cardGap }}>
                 <PragmaticCard
                   issue={issue}
@@ -883,7 +958,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
               alignItems: 'center',
               justifyContent: 'flex-start',
               gap: 8,
-              padding: '6px 8px',
+              padding: '4px 8px',
               border: 'none',
               background: 'transparent',
               color: tk.textMuted,
@@ -899,7 +974,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
               left: '10px',
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover ?? 'rgba(0,0,0,0.04)';
+              (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover ?? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))';
               (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
             }}
             onMouseLeave={(e) => {
@@ -913,11 +988,21 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
         )
       )}
     </div>
+    {/* closes A23/A24 wrapper */}
+    </div>
   );
 }), (prevProps, nextProps) => {
-  // Memoization comparison: only re-render if these props change
+  // Memoization: skip re-render when nothing actually changed.
+  // issueIds uses CONTENT equality (not reference ===) because KanbanBoardPage
+  // passes `colMap[col.id] ?? []` — the fallback `[]` and group-derived arrays
+  // produce new references on every parent re-render even when card order is
+  // identical. Reference equality would defeat React.memo entirely, causing all
+  // column bodies to re-render on every `setSelIssueId`, filter open, etc.
+  const idsEqual =
+    prevProps.issueIds.length === nextProps.issueIds.length &&
+    prevProps.issueIds.every((id, i) => id === nextProps.issueIds[i]);
   return (
-    prevProps.issueIds === nextProps.issueIds &&
+    idsEqual &&
     prevProps.selectedId === nextProps.selectedId &&
     prevProps.focusedId === nextProps.focusedId &&
     prevProps.isOver === nextProps.isOver &&
@@ -1020,6 +1105,27 @@ export function PragmaticBoard({
   ...actions
 }: PragmaticBoardProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  /* F7 + A25: Inject kanban CSS keyframes once per page load.
+     - kanbanCardFadeIn: staggered card entrance (CSS-based, avoids @atlaskit/motion Vite pre-bundle issue)
+     - kanbanSkeletonPulse: loading skeleton breathe animation (opacity 1→0.4→1) */
+  useEffect(() => {
+    const TAG = 'kanban-card-fade-in-styles';
+    if (document.getElementById(TAG)) return;
+    const style = document.createElement('style');
+    style.id = TAG;
+    style.textContent = `
+      @keyframes kanbanCardFadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes kanbanSkeletonPulse {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0.4; }
+      }
+    `;
+    document.head.appendChild(style);
+  }, []);
 
   /* Horizontal auto-scroll on the board viewport. */
   useEffect(() => {
@@ -1128,7 +1234,7 @@ export function PragmaticBoard({
                 style={{
                   position: 'sticky', top: 0, zIndex: 4,
                   display: 'flex', alignItems: 'center', gap: SPACING_TOKENS.gap8,
-                  padding: '6px 8px',
+                  padding: '8px 8px',
                   background: tk.surfaceAlt,
                   borderBottom: `1px solid ${tk.border}`,
                   borderRadius: 4,
@@ -1148,7 +1254,7 @@ export function PragmaticBoard({
                   gap: SPACING_TOKENS.gap8,
                   width: '100%',
                   minWidth: columns.length * 267 + (columns.length - 1) * 8,
-                  marginTop: 6,
+                  marginTop: 4,
                 }}
               >
                 {columns.map((col) => (

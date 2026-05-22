@@ -99,7 +99,165 @@ AGENTS ACTIVATED — N implementers
 
 ## Triggers and flags
 
+<<<<<<< HEAD
 **Canonical:** `/catalyst-agent <task>` · `/agent <task>`
+=======
+Invoke the chosen wrapper skills in declared composition order. Pass the full PROBE + GAP REPORT as a pre-loaded context envelope so the wrapper can skip redundant evidence acquisition.
+
+**MANDATORY after every implementation action (Directive 5):**
+
+After any code change, style fix, or component update:
+
+1. Navigate to the exact URL on `localhost:8080`
+2. Take a screenshot using `mcp__computer-use__screenshot` (preferred) OR `mcp__Claude_in_Chrome__read_page`
+3. If Computer Use is not yet granted: call `mcp__computer-use__request_access` with the browser application
+4. Print the completion evidence block:
+
+```
+EVIDENCE — Component N ([Component Name]) after fix
+   URL:       http://localhost:8080/[path]
+   Screenshot: [attached via computer-use]
+   Gap items resolved: N of total
+   Fixed: [dimension labels fixed this session]
+   Remaining: [list with reason if deferred]
+   ADS violations fixed: N
+   ADS violations remaining: N
+```
+
+**Never declare a fix "done" without a screenshot.** "The code should now X" is not evidence. Prove it.
+
+### Step 9 — Loop back if needed
+
+**Context Guard checkpoint** — check signals (this step signals a long session).
+
+If the wrapper's CRUD acceptance gate fails or new gaps emerge, the router can re-fire the probe (Step 4) to refresh the state. Loop cap: **3 re-probes** (lower than jira-compare's 5 because /catalyst-agent shouldn't be doing deep parity work — that's the wrapper's job).
+
+After each re-probe, update the gap report table with the latest state (mark fixed items, add any newly discovered gaps).
+
+---
+
+## Worked example — the dynamic-table pain point (with probe + code archaeology)
+
+Input:
+
+```
+/agent the BacklogPage dynamic table sort is broken — clicking column
+header doesn't reorder rows
+```
+
+Output:
+
+```
+ROUTING — /catalyst-agent v3
+   intent:     fix column-header sort in BacklogPage list view
+   surface:    ui-bug-fix BacklogPage / JiraTable
+   signals:    "dynamic table" "sort" "BacklogPage" "column header"
+   classifier: standard (per RUBRIC.md — single surface, no schema change)
+   bans hit:   none
+   context:    ~15% OK
+
+CODE ARCHAEOLOGY — existing implementations first
+   search:    grep -r "JiraTable" src/ + read JiraTable.tsx prior art
+   found:     JiraTable.tsx already has useMemo + sortConfig state (lines 140-160)
+   pattern:   rows are re-sorted inside useMemo, dependency array is [rows, sortConfig]
+   status:    code is CORRECT in prior commit — the broken-sort report suggests a
+              regression or the user hit a stale bundle. Probe will identify which.
+
+MCP PROBE — what's actually on Jira vs Catalyst
+   Lane A (Jira via Atlassian MCP — project-management-jira-workflow-steward):
+     - BAU project list view sortable columns: Key, Status, Priority, Updated, Sprint, Assignee
+     - Sort mechanism: REST /search?orderBy=<field>+<asc|desc> (server-side)
+     - "Sprint" column belongs to screen scheme 10006 (Story) — visible by default in BAU
+   Lane B (Catalyst via Chrome MCP + screenshot — engineering-frontend-developer):
+     - localhost:8080/backlog visible columns: Key, Summary, Status, Comments, Parent
+     - Sort handler: column header has onClick={handleSort(colId)} — correctly wired
+     - useMemo dependency is CORRECT (no regression confirmed)
+     - "Sprint" column missing from defaultColumns registry entirely
+   Lane C (Supabase): n/a — sort is client-side
+   Lane D (codebase — engineering-codebase-onboarding-engineer):
+     - BacklogPage.atlaskit.tsx:312 — column definitions
+     - JiraTable.tsx:140-160 — useMemo([rows, sortConfig]) is CORRECT
+
+GAP REPORT — Component 1: BacklogPage List Table (sort feature)
+
+# | Dimension      | Jira (live probe)                       | Catalyst Current          | Gap
+--|-----------------|-----------------------------------------|---------------------------|----
+1 | Sprint column   | Visible by default for Story rows       | Missing from columns registry | Sprint column absent from BacklogPage
+2 | Sort trigger    | Server-side (REST /search?orderBy=...)  | Client-side useMemo (correct) | Match — different mechanism, both work
+3 | Sort indicator  | Arrow icon on sorted column header      | Arrow icon present         | Match
+
+ADS COMPLIANCE SCAN — BacklogPage.atlaskit.tsx
+(running node design-governance/cli/index.js audit src/pages/backlog...)
+
+# | File                     | Violation  | Current       | ADS fix              | Severity
+--|--------------------------|------------|---------------|----------------------|--------
+1 | BacklogPage.atlaskit.tsx:318 | OFF_GRID_SPACING | gap: 6px | gap: 8px        | P2
+
+Total: 1 violation — P0: 0 P1: 0 P2: 1
+
+AGENTS ACTIVATED — 3
+   primary:  engineering-frontend-developer (add Sprint column to BacklogPage defaultColumns)
+   augment:  design-ui-designer (Sprint column header styling per ADS)
+   review:   engineering-code-reviewer (ADS gate + ask-before-add Sprint column)
+   ads-fix:  engineering-frontend-developer (fix gap: 6px -> 8px in BacklogPage.atlaskit.tsx:318)
+   <- /catalyst-agent v3 wrappers: jira-compare CLAUDE.md gates: ask-before-add, 2026-05-07 default-visible sync
+
+-> handing off to jira-compare Lane A (DOM probe of Sprint column styling)...
+```
+
+---
+
+## Worked example — banned task (halt before probe)
+
+Input: `/agent re-add Story Points to the right rail for stories`
+
+Output:
+
+```
+ROUTING — /catalyst-agent v3
+   intent:     add Story Points field to right rail
+   surface:    ui-feature
+   signals:    "Story Points" "right rail"
+   classifier: aborted at step 2
+
+HALT — CLAUDE.md ban hit
+   Story Points are BANNED platform-wide. Source: CatalystSidebarDetails.tsx:422
+   (in-code directive added 2026-04-16). No probe runs. No agents activate.
+
+   The ban supersedes any request to add this field.
+```
+
+---
+
+## Hard rules (non-negotiable)
+
+1. **CORE_DIRECTIVES.md is the preamble for every dispatch.** Every persona prompt prepends Directives 1-5 (ADS ring-fence, Green Signal gate, tool authorization, context guard, screenshot evidence).
+2. **Green Signal required before execution.** Step 5.5 must produce a GREEN verdict. RED halts the pipeline. Only Vikram can override RED, explicitly in chat.
+3. **CLAUDE.md is law.** Step 2 must execute before step 4. A banned task halts pre-probe.
+4. **Code archaeology FIRST** (Step 4.0, before all MCP probes). Read existing working implementations before probing externally. Replicate the working pattern exactly. Only debug if replication fails. See CLAUDE.md 2026-05-16 lesson.
+5. **No silent re-routing.** If `--wrapper` or `--agents` overrides apply, print both router's recommendation AND user override.
+6. **Probe is read-only.** Probe agents NEVER write code, NEVER mutate Jira / Supabase / DOM.
+7. **Max 5 implementer + 4 probe agents.** Slop kills signal.
+8. **Activation block is mandatory.** Probe + gap TABLE + ADS scan TABLE + green-signal + agents — all must print before hand-off.
+9. **Per-wrapper rules still apply.** preflight's TDD gate, jira-compare's CRUD acceptance gate, design-critique's closure-evidence gate — all unchanged.
+10. **Port 8080 lock** (CLAUDE.md). Lane B probe MUST hit localhost:8080. Any 8081 → HALT.
+11. **No `preview_*` tools.** Still banned (global, cannot be overridden even by Directive 3).
+12. **Re-probe loop cap: 3.** Beyond that, escalate to user.
+13. **Supabase MCP for Lane C.** Read-only: `list_tables`, `execute_sql` (SELECT only), `list_extensions`, `list_migrations` on project `lmqwtldpfacrrlvdnmld`. Never write via MCP during probe phase.
+14. **Jira REST API endpoints** (Lane A): Prefer proven endpoints from `wh-jira-bulk-sync`. Approved: `/rest/api/3/search/jql` (paginated), `/rest/api/3/issue/{key}/changelog` (transitions), `/rest/api/3/issue/{key}` (details).
+15. **gh CLI for git.** Push directly to `origin main` (Vikram authorized — see memory: feedback_git_push.md). Still use commit message format: `<type>(<scope>): <subject>` + `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>` footer.
+16. **Gap report is a TABLE, not prose.** Step 5 output must use the `GAP_REPORT.md` table format. Bullet-list-only gap reports from this skill are rejected.
+17. **ADS scan is mandatory for every surface** (Step 4.5). Even if the task is not ADS-related. Value-added violations must be surfaced and offered to the user.
+18. **Context Guard runs at every phase boundary** (Continuous Duty A). Never skip a checkpoint. 90% = save immediately, no exceptions.
+19. **Screenshot after every fix** (Directive 5). A fix without a screenshot is not done. Call `mcp__computer-use__screenshot` or `mcp__Claude_in_Chrome__read_page`. If Computer Use access is not granted, call `mcp__computer-use__request_access` and wait.
+20. **Computer Use MCP is authorized** (Directive 3). The CLAUDE.md "Chrome MCP only for Lane B" restriction is suspended under /catalyst-agent. Computer Use is authorized for screenshots and visual verification.
+21. **TestSprite and preview_* remain banned** even under Directive 3's tool override. These are global bans.
+22. **Screenshot → auto-fix → verify loop (MANDATORY).** When ANY screenshot is shared in chat that shows a defect, crash, error overlay, or broken UI state, immediately: (a) diagnose the root cause from the screenshot, (b) fix it without asking, (c) kill and rebuild the dev server on port 8080 (`kill $(lsof -t -i:8080); bun run dev --port 8080`), (d) navigate to the affected URL in Chrome MCP and check for console errors, (e) take a Computer Use screenshot to confirm the fix visually. If still broken, loop steps b–e until resolved. Never ask "should I fix this?" when a defect screenshot is shared — fix it immediately.
+
+---
+
+## Flags reference
+>>>>>>> origin/BAU-filters-01
 
 | Flag | Effect |
 |---|---|
