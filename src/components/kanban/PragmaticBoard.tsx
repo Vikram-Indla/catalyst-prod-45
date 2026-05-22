@@ -34,6 +34,7 @@
 import { memo, forwardRef, useEffect, useRef, useState, useCallback, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { FadeIn, StaggeredEntrance } from '@atlaskit/motion';
 import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element';
@@ -125,15 +126,20 @@ const PragmaticCard = memo(function PragmaticCard({
   // software-context-menu.ui.context-menu on every card). Catalyst previously
   // suppressed contextmenu via preventDefault; this restores it.
   const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(null);
+  // F5: context menu fade-in — start invisible, go visible on next frame
+  const [ctxMenuVisible, setCtxMenuVisible] = useState(false);
   useEffect(() => {
-    if (!ctxMenu) return;
+    if (!ctxMenu) { setCtxMenuVisible(false); return; }
     const close = () => setCtxMenu(null);
     window.addEventListener('click', close);
     window.addEventListener('scroll', close, true);
     window.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    // Trigger fade-in on next animation frame so CSS transition fires
+    const raf = requestAnimationFrame(() => setCtxMenuVisible(true));
     return () => {
       window.removeEventListener('click', close);
       window.removeEventListener('scroll', close, true);
+      cancelAnimationFrame(raf);
     };
   }, [ctxMenu]);
 
@@ -264,6 +270,11 @@ const PragmaticCard = memo(function PragmaticCard({
             boxShadow: 'rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px',
             padding: '4px 0',
             fontFamily: 'var(--cp-font-body)',
+            /* F5: fade-in transition — opacity 0→1, scale 0.97→1 */
+            opacity: ctxMenuVisible ? 1 : 0,
+            transform: ctxMenuVisible ? 'scale(1)' : 'scale(0.97)',
+            transformOrigin: 'top left',
+            transition: 'opacity 100ms cubic-bezier(0.4,1,0.6,1), transform 100ms cubic-bezier(0.4,1,0.6,1)',
           }}
         >
           {[
@@ -697,26 +708,36 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
             )}
           </div>
         )}
-        {issueIds.map((id) => {
-          const issue = issuesById.get(id);
-          if (!issue) return null;
-          return (
-            <PragmaticCard
-              key={id}
-              issue={issue}
-              colId={column.id}
-              avatarUrl={issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null}
-              onClick={() => onCardClick(id)}
-              d={d}
-              tk={tk}
-              isSelected={selectedId === id}
-              isFocused={focusedId === id}
-              avatarsByName={avatarsByName}
-              cardColorMode={cardColorMode}
-              {...actions}
-            />
-          );
-        })}
+        {/* F7: StaggeredEntrance — 30ms stagger, small (100ms) FadeIn per card.
+            Only fires on initial mount of each card; re-renders don't retrigger
+            because React preserves keyed FadeIn elements across renders. */}
+        <StaggeredEntrance columns={1} delayStep={30}>
+          {issueIds.map((id) => {
+            const issue = issuesById.get(id);
+            if (!issue) return null;
+            return (
+              <FadeIn key={id} duration="small">
+                {(fadeProps) => (
+                  <div {...fadeProps}>
+                    <PragmaticCard
+                      issue={issue}
+                      colId={column.id}
+                      avatarUrl={issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null}
+                      onClick={() => onCardClick(id)}
+                      d={d}
+                      tk={tk}
+                      isSelected={selectedId === id}
+                      isFocused={focusedId === id}
+                      avatarsByName={avatarsByName}
+                      cardColorMode={cardColorMode}
+                      {...actions}
+                    />
+                  </div>
+                )}
+              </FadeIn>
+            );
+          })}
+        </StaggeredEntrance>
         {(actions.onCreateInColumn || actions.onCreateCard) && (
           inlineCreateColId === column.id ? (
             <div style={{ marginTop: issueIds.length === 0 ? 0 : 4 }}>
