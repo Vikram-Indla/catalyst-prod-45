@@ -206,27 +206,58 @@ Output as ADS Compliance Scan table (GAP_REPORT.md format). Route P0/P1 violatio
 > Resources NOT fetched for their triggered signal = GREEN SIGNAL withheld (dimension 8).
 > Each resource consulted MUST produce a finding row in the GAP REPORT — even if the finding is "compliant".
 > Use `WebFetch` for each triggered URL. Cite the URL in the Fix column of every affected GAP REPORT row.
+>
+> **Full qualification of all 15 resources: see `ADS_CHECKPOINT.md` Resource Qualification Matrix.**
 
-| Signal detected in Step 1 | Mandatory resource | What to extract |
+| Signal detected in Step 1 | Mandatory resource | Verdict |
 |---|---|---|
-| Any UI surface (always) | https://atlassian.design/ | Canonical component list + current ADS version |
-| "token", "color", "background", "border", "theme", "dark mode" | https://atlassian.design/components/tokens/all-tokens | Exact token name, light value, dark value, semantic use-case |
-| "description", "comment", "ADF", "rich text", "editor", "renderer" | https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ | ADF node type for the content being rendered/edited |
-| ADF content needs validation or test data | https://developer.atlassian.com/cloud/jira/platform/apis/document/playground/ | Validated ADF structure sample for the content type |
-| Description field in write/edit mode | https://www.npmjs.com/package/@atlaskit/editor-core | Package version, EditorContext API surface, peer deps |
-| Description field in read/display mode | https://www.npmjs.com/package/@atlaskit/renderer | Package version, ReactRenderer props, ADF support matrix |
-| ADF content traversal or programmatic modification | https://www.npmjs.com/package/@atlaskit/adf-utils | traverse/map API, supported node types |
+| Any UI surface (always) | https://atlassian.design/ | INCLUDE |
+| "token", "color", "background", "border", "theme", "dark mode" | https://atlassian.design/components/tokens/all-tokens | INCLUDE |
+| New component / "is there an ADS version" / install guide | https://atlassian.design/get-started/develop | INCLUDE |
+| Unknown component needed | https://atlaskit.atlassian.com/get-started | INCLUDE |
+| "description", "comment", "ADF", "rich text" | https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ | INCLUDE |
+| ADF validation or test data | https://developer.atlassian.com/cloud/jira/platform/apis/document/playground/ | INCLUDE |
+| Description field in write/edit mode | https://www.npmjs.com/package/@atlaskit/editor-core | INCLUDE |
+| Description field in read/display mode | https://www.npmjs.com/package/@atlaskit/renderer | INCLUDE |
+| ADF content manipulation | https://www.npmjs.com/package/@atlaskit/adf-utils | INCLUDE |
+| "drag", "drop", "rank", "reorder", "kanban", "backlog sort" | https://atlassian.design/components/pragmatic-drag-and-drop | **INCLUDE — HIGH PRIORITY** |
+| Same drag signals | https://github.com/atlassian/pragmatic-drag-and-drop | **INCLUDE — HIGH PRIORITY** |
+| @atlaskit/dynamic-table seen in probe | https://www.npmjs.com/package/@atlaskit/dynamic-table | **FLAG — reference only, BANNED as primary for work items** |
+| Catalyst screen inside Forge | https://developer.atlassian.com/platform/forge/design-tokens-and-theming/ | CONDITIONAL |
+| @atlassian/aui seen in probe | — | **REJECT — legacy, banned** |
 
 **GAP REPORT extension for Step 4.6:**
 
 ```
 ADS RESOURCE AUDIT — [Surface]
-Resource                                 | Signal | Status    | Finding
-atlassian.design/                        | always | FETCHED   | <canonical component confirmed or gap>
-atlassian.design/components/tokens/...   | color  | FETCHED   | <token name + light/dark values>
-developer.atlassian.com/.../structure/   | ADF    | FETCHED   | <ADF node type verified>
-...                                      | ...    | NOT FETCHED | ← blocks GREEN SIGNAL
+Resource                                              | Signal  | Status    | Finding
+atlassian.design/                                    | always  | FETCHED   | <canonical component confirmed or gap>
+atlassian.design/components/tokens/all-tokens        | color   | FETCHED   | <token name · light · dark>
+developer.atlassian.com/.../document/structure/      | ADF     | FETCHED   | <ADF node type verified>
+atlassian.design/components/pragmatic-drag-and-drop  | drag    | FETCHED   | <drag adapter confirmed or violation>
+...                                                  | ...     | NOT FETCHED | ← BLOCKS GREEN SIGNAL
 ```
+
+### Step 4.7 — ACAFC (ADS Compliance Audit & Fix Checkpoint)
+
+**Context Guard checkpoint.**
+
+> **Full spec:** `ADS_CHECKPOINT.md` in this directory.
+> ACAFC is a 5-phase pipeline stage — not a report. It runs after resource fetch and produces fix dispatches.
+
+**Trigger:** runs for every `standard` and `high-stake` tier task. Skip for `trivial` tier only.
+
+```
+1. Phase 1 — Static scan: run design-governance CLI + grep checks (ADS_CHECKPOINT.md Phase 1)
+2. Phase 2 — Runtime scan: inject audit probe into localhost:8080 (ADS_CHECKPOINT.md Phase 2)
+3. Phase 3 — Triage: produce ACAFC COMPLIANCE REPORT block (ADS_CHECKPOINT.md Phase 3)
+4. Phase 4 — Fix dispatch: P0 → dispatch immediately; P1 → offer to fix (ADS_CHECKPOINT.md Phase 4)
+5. Phase 5 — Re-verify: re-run phases 1+2 after fixes; confirm score ≥ 85% (ADS_CHECKPOINT.md Phase 5)
+```
+
+**Pass condition:** score ≥ 85% AND P0 = 0.
+**On pass:** GREEN SIGNAL dimension 8 satisfied → proceed to Step 5 (gap report).
+**On fail after 3 ACAFC cycles:** escalate to user with explicit remaining violation list.
 
 ### Step 5 — Synthesize gap report (TABLE mandatory)
 
@@ -349,12 +380,17 @@ CLAUDE.md "Chrome MCP only for Lane B" is **suspended** under /catalyst-agent. C
 
 ## Pre-delivery checklist (all must be TRUE before declaring any fix done)
 
-- [ ] Green Signal emitted (Step 5.5 verdict = GREEN)
+- [ ] Green Signal emitted (Step 5.5 verdict = GREEN, all 8 dimensions satisfied)
 - [ ] Activation block printed (PRIMACY ZONE format, verbatim)
 - [ ] No banned fields/tools used (Story Points, MDT Ref, testsprite_*, preview_*)
 - [ ] Screenshot taken after fix (`mcp__computer-use__screenshot`)
 - [ ] EVIDENCE block printed (format below)
 - [ ] ADS scan run (Step 4.5) — violations surfaced and offered to user
+- [ ] **ACAFC run (Step 4.7) — compliance score ≥ 85%, P0 = 0, report block emitted**
+- [ ] **All P0/P1 violations from ACAFC dispatched to fix agents**
+- [ ] **No wrong DnD library (only @atlaskit/pragmatic-drag-and-drop for drag interactions)**
+- [ ] **No @atlassian/aui imports (legacy, banned)**
+- [ ] **@atlaskit/dynamic-table not introduced as primary for work item surfaces**
 - [ ] Gap report is a TABLE (not prose)
 - [ ] CLAUDE.md ban check completed (Step 2)
 - [ ] Code archaeology completed before MCP probes (Step 4.0)
@@ -399,7 +435,9 @@ WARNING CONTEXT GUARD — ~70% consumed
 - `AGENT_ROSTER.md` — Phase 0-5 dispatch
 - `INDEX.md` — 184 agents with Catalyst-relevance flags
 - `PREFLIGHT_VS_AGENT.md` — full comparison + composition patterns
+- **`ADS_CHECKPOINT.md` — ACAFC 5-phase spec + full 15-resource qualification matrix + fix patterns**
 - `../preflight/SKILL.md` — Phase 0-7 definition
 - `../preflight/RUBRIC.md` — trivial / standard / high-stake classification
 - `design-governance/cli/index.js` — ADS audit CLI
+- `design-governance/scripts/self-test.mjs` — audit self-test (verifies scanner not broken)
 - `CLAUDE.md` — gates, bans, lessons (source of truth)
