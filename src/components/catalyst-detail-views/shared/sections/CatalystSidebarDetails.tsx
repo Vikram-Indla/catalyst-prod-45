@@ -81,6 +81,7 @@ function FieldRow({
         {label}
       </div>
       <div
+        className="cv-rail-value"
         style={{
           fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #292A2E)',
           minWidth: 0,
@@ -88,15 +89,8 @@ function FieldRow({
           alignSelf: isRow ? 'stretch' : undefined,
           display: 'flex',
           alignItems: 'center',
-          borderRadius: 4,
           padding: '0 4px',
-          transition: 'background-color 0.15s ease-out',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.08))';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = 'transparent';
+          borderRadius: 4,
         }}
       >
         {children}

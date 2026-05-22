@@ -1308,9 +1308,19 @@ export function EditableFixVersions({
 
   return (
     <div
-      style={{ flex: 1, minWidth: 0 }}
+      style={{
+        flex: 1,
+        minWidth: 0,
+        position: "relative",
+        border: menuIsOpen
+          ? "2px solid var(--ds-border-focused, #388BFF)"
+          : "2px solid transparent",
+        borderRadius: 4,
+      }}
       onMouseDownCapture={(e) => {
-        const labelEl = (e.target as HTMLElement).closest('.cv-fixversions-select__multi-value__label');
+        const labelEl = (e.target as HTMLElement).closest(
+          ".cv-fixversions-select__multi-value__label",
+        );
         if (!labelEl) return;
         e.stopPropagation();
         const ver = versions.find((v) => v.name === labelEl.textContent);
@@ -1320,7 +1330,11 @@ export function EditableFixVersions({
       <Select<FixVersionOption, true>
         inputId={`fix-versions-${issueId}`}
         isMulti
-        isClearable={false}
+        isClearable
+        closeMenuOnSelect={false}
+        hideSelectedOptions
+        menuPlacement="auto"
+        menuShouldFlip
         appearance="subtle"
         spacing="compact"
         classNamePrefix="cv-fixversions-select"
@@ -1336,14 +1350,80 @@ export function EditableFixVersions({
         onMenuOpen={() => setMenuIsOpen(true)}
         onMenuClose={() => setMenuIsOpen(false)}
         components={{
-          DropdownIndicator: () => null,
           IndicatorSeparator: () => null,
+          ClearIndicator: (props) => (
+            <div
+              {...props.innerProps}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                height: 24,
+                padding: "0 4px",
+                cursor: "pointer",
+              }}
+            >
+              <CrossCircleIcon
+                label="Clear all"
+                size="small"
+                primaryColor="var(--ds-text-subtle, #5E6C84)"
+              />
+            </div>
+          ),
+          DropdownIndicator: (props) => (
+            <div
+              {...props.innerProps}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                height: 24,
+                padding: "0 4px",
+                cursor: "pointer",
+              }}
+            >
+              <ChevronDownIcon
+                label=""
+                size="small"
+                primaryColor="var(--ds-text-subtle, #5E6C84)"
+              />
+            </div>
+          ),
+          Option: ({
+            innerRef,
+            innerProps,
+            isSelected,
+            isFocused,
+            children,
+          }) => (
+            <div
+              ref={innerRef}
+              {...innerProps}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                padding: "6px 12px",
+                fontSize: 12,
+                lineHeight: "20px",
+                cursor: "pointer",
+                borderLeft:
+                  isSelected || isFocused
+                    ? "3px solid var(--ds-border-focused, #388BFF)"
+                    : "3px solid transparent",
+                background: isSelected
+                  ? "var(--ds-background-information, #DEEBFF)"
+                  : isFocused
+                    ? "var(--ds-surface-sunken, #F4F5F7)"
+                    : "transparent",
+              }}
+            >
+              {children}
+            </div>
+          ),
         }}
         styles={{
           control: (base) => ({
             ...base,
             minHeight: 32,
-            alignItems: "center",
+            alignItems: "flex-start",
           }),
           valueContainer: (base) => ({
             ...base,
@@ -1356,7 +1436,23 @@ export function EditableFixVersions({
           }),
           indicatorsContainer: (base) => ({
             ...base,
-            display: "none",
+            display: menuIsOpen ? "flex" : "none",
+            alignItems: "flex-start",
+            paddingTop: 4,
+          }),
+          menu: (base) => ({
+            ...base,
+            // minWidth: 300,
+            right: 0,
+            left: "auto",
+          }),
+          menuPortal: (base) => ({
+            ...base,
+            zIndex: 9999,
+          }),
+          groupHeading: (base) => ({
+            ...base,
+            fontSize: 11,
           }),
           // jira-compare 2026-05-20: Live DOM probe of digital-transformation.atlassian.net
           // confirms Fix versions chip = transparent bg + 0.556px solid rgb(183,185,190) border
