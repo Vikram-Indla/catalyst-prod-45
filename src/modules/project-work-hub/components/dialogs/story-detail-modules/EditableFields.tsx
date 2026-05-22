@@ -5,6 +5,7 @@
  */
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Select, { CreatableSelect } from "@atlaskit/select";
@@ -1206,7 +1207,7 @@ export function EditableStoryPoints({
  * `onUpdate`. Chips in the control are the built-in MultiValue with the
  * subtle appearance, which matches Jira's small blue token chips.
  */
-type FixVersionOption = { value: string; label: string };
+type FixVersionOption = { value: string; label: string; id?: string };
 
 export function EditableFixVersions({
   issueId,
@@ -1220,6 +1221,7 @@ export function EditableFixVersions({
   onUpdate: () => void;
 }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const navigate = useNavigate();
   // Parse current fix version names (legacy JSON shape: [{ name }, ...] or string[]).
   const fixVersionNames: string[] = useMemo(() => {
     if (!currentFixVersions) return [];
@@ -1259,10 +1261,10 @@ export function EditableFixVersions({
   const groupedOptions = useMemo(() => {
     const unreleased = versions
       .filter((v) => !v.released && !v.archived)
-      .map((v) => ({ value: v.name, label: v.name }));
+      .map((v) => ({ value: v.name, label: v.name, id: v.jira_id }));
     const released = versions
       .filter((v) => v.released && !v.archived)
-      .map((v) => ({ value: v.name, label: v.name }));
+      .map((v) => ({ value: v.name, label: v.name, id: v.jira_id }));
     const groups: { label: string; options: FixVersionOption[] }[] = [];
     if (unreleased.length)
       groups.push({ label: "Unreleased", options: unreleased });
@@ -1273,6 +1275,7 @@ export function EditableFixVersions({
   const selected: FixVersionOption[] = fixVersionNames.map((n) => ({
     value: n,
     label: n,
+    id: versions.find((v) => v.name === n)?.jira_id,
   }));
 
   const updateMutation = useMutation({
@@ -1304,7 +1307,16 @@ export function EditableFixVersions({
   });
 
   return (
-    <div style={{ flex: 1, minWidth: 0 }}>
+    <div
+      style={{ flex: 1, minWidth: 0 }}
+      onMouseDownCapture={(e) => {
+        const labelEl = (e.target as HTMLElement).closest('.cv-fixversions-select__multi-value__label');
+        if (!labelEl) return;
+        e.stopPropagation();
+        const ver = versions.find((v) => v.name === labelEl.textContent);
+        if (ver?.jira_id) navigate(`/release-hub/${ver.jira_id}`);
+      }}
+    >
       <Select<FixVersionOption, true>
         inputId={`fix-versions-${issueId}`}
         isMulti
@@ -1365,11 +1377,14 @@ export function EditableFixVersions({
             fontWeight: 400,
             color: "var(--ds-text, #292A2E)",
             padding: 0,
+            cursor: "pointer",
+            ":hover": { textDecoration: "underline" },
           }),
           multiValueRemove: (base) => ({
             ...base,
             display: menuIsOpen ? "flex" : "none",
             color: "var(--ds-text-subtle, #505258)",
+            marginLeft: 4,
             ":hover": {
               backgroundColor:
                 "var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.08))",
