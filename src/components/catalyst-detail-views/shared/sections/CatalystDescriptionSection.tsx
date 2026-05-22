@@ -646,6 +646,10 @@ export function CatalystDescriptionSection({
     issue?.issue_key != null &&
     catyPayload.issueKey === issue.issue_key;
 
+  useEffect(() => {
+    if (catyActiveForThisIssue) setEditing(true);
+  }, [catyActiveForThisIssue]);
+
   const handleImproveFromToolbar = useCallback(async () => {
     if (!issue?.issue_key) return;
     let attachmentUrls: string[] = [];
@@ -674,7 +678,6 @@ export function CatalystDescriptionSection({
         attachmentUrls = [];
       }
     }
-    setEditing(false);
     startCatyImprove({
       issueKey: issue.issue_key,
       issueType: issue.issue_type ?? null,
@@ -797,6 +800,7 @@ export function CatalystDescriptionSection({
         return;
       }
       stopCatyImprove();
+      setEditing(false);
       queryClient.invalidateQueries({
         queryKey: ["cv-issue-detail", issue.issue_key],
       });
@@ -806,6 +810,7 @@ export function CatalystDescriptionSection({
 
   const handleCatyCancel = useCallback(() => {
     stopCatyImprove();
+    setEditing(false);
   }, [stopCatyImprove]);
 
   const { user } = useAuth();
@@ -922,20 +927,7 @@ export function CatalystDescriptionSection({
         )}
       </div>
 
-      {catyActiveForThisIssue && catyPayload ? (
-        <CatyStreamingOverlay
-          key={catyPayload.issueKey}
-          issueKey={catyPayload.issueKey}
-          issueType={catyPayload.issueType}
-          issueSummary={catyPayload.issueSummary}
-          currentDescription={catyPayload.currentDescription}
-          currentAcceptanceCriteria={catyPayload.currentAcceptanceCriteria}
-          attachmentUrls={catyPayload.attachmentUrls}
-          improveSubType={catyPayload.improveSubType}
-          onApply={handleCatyApply}
-          onCancel={handleCatyCancel}
-        />
-      ) : editing && issue ? (
+      {(editing || catyActiveForThisIssue) && issue ? (
         <div>
           <Suspense fallback={<AtlaskitFallback minHeight={240} />}>
             <AdfDescriptionField
@@ -943,12 +935,28 @@ export function CatalystDescriptionSection({
                 issue.description_adf ?? issue.description_text ?? null
               }
               onSave={handleSave}
-              onCancel={handleCancel}
+              onCancel={catyActiveForThisIssue ? handleCatyCancel : handleCancel}
               workItemId={issue.id}
               placeholder="Add a description..."
               onAttachmentUploaded={handleInlineAttachmentUploaded}
               appearance="comment"
               onImprove={handleImproveFromToolbar}
+              bodyOverlay={
+                catyActiveForThisIssue && catyPayload ? (
+                  <CatyStreamingOverlay
+                    key={catyPayload.issueKey}
+                    issueKey={catyPayload.issueKey}
+                    issueType={catyPayload.issueType}
+                    issueSummary={catyPayload.issueSummary}
+                    currentDescription={catyPayload.currentDescription}
+                    currentAcceptanceCriteria={catyPayload.currentAcceptanceCriteria}
+                    attachmentUrls={catyPayload.attachmentUrls}
+                    improveSubType={catyPayload.improveSubType}
+                    onApply={handleCatyApply}
+                    onCancel={handleCatyCancel}
+                  />
+                ) : undefined
+              }
             />
           </Suspense>
         </div>

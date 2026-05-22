@@ -110,6 +110,13 @@ export interface EpicDescriptionEditorProps {
    */
   onAttachmentUploaded?: (meta: AttachmentUploadMeta) => void;
   onImprove?: () => void;
+  /**
+   * Content that covers the ProseMirror body while the toolbar stays
+   * visible. Used by the "Improve description" flow to render the
+   * muted snapshot + streaming output + status strap inside the same
+   * editor surface, so nothing escapes the description boundary.
+   */
+  bodyOverlay?: React.ReactNode;
 }
 
 const DEFAULT_MEDIA_PIXEL_WIDTH = 500;
@@ -147,6 +154,7 @@ function EpicDescriptionEditorImpl({
   appearance: appearanceProp = 'comment',
   onAttachmentUploaded,
   onImprove,
+  bodyOverlay,
 }: EpicDescriptionEditorProps) {
   const initialAdf = useMemo(() => parseStoredDescriptionToAdf(initialContent), [initialContent]);
   const defaultValueString = useMemo(() => JSON.stringify(initialAdf), [initialAdf]);
@@ -173,6 +181,25 @@ function EpicDescriptionEditorImpl({
 
   const [improveSlot, setImproveSlot] = useState<HTMLElement | null>(null);
   const [imageSlot, setImageSlot] = useState<HTMLElement | null>(null);
+  const [bodySlot, setBodySlot] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    const root = wrapperRef.current;
+    if (!root) return;
+    const find = () => {
+      const pm = root.querySelector<HTMLElement>('.ProseMirror');
+      if (pm && pm.parentElement) {
+        setBodySlot(pm.parentElement);
+        return true;
+      }
+      return false;
+    };
+    if (find()) return;
+    const obs = new MutationObserver(() => {
+      if (find()) obs.disconnect();
+    });
+    obs.observe(root, { childList: true, subtree: true });
+    return () => obs.disconnect();
+  }, []);
   useEffect(() => {
     const root = wrapperRef.current;
     if (!root) return;
@@ -410,6 +437,7 @@ function EpicDescriptionEditorImpl({
       <div
         ref={wrapperRef}
         className="epic-desc-atlaskit-wrapper"
+        data-has-body-overlay={bodyOverlay ? '' : undefined}
         style={{
           position: 'relative',
           // Drop-zone affordance — appears only while a file is being dragged
@@ -563,7 +591,7 @@ function EpicDescriptionEditorImpl({
           </div>
         )}
         {/* H6/H10: idle affordance — tells users they can paste or drag images */}
-        {!isDragOver && !uploading && (
+        {!isDragOver && !uploading && !bodyOverlay && (
           <div
             style={{
               fontSize: 11,
@@ -575,6 +603,10 @@ function EpicDescriptionEditorImpl({
           >
             Tip: paste a screenshot or drag an image into the editor
           </div>
+        )}
+        {bodyOverlay && bodySlot && createPortal(
+          <div className="epic-desc-body-overlay">{bodyOverlay}</div>,
+          bodySlot,
         )}
       </div>
     </IntlProvider>
