@@ -33,6 +33,7 @@ metadata:
 6. **5-cycle cap.** Maximum 5 probe-fix-reprobe cycles per surface per session. On cycle 5, list remaining open items in handover rather than looping again.
 7. **Jira REST API endpoints** — Always use the proven endpoints from existing code: `/rest/api/3/search/jql` (search), `/rest/api/3/issue/{key}` (details), `/rest/api/3/issue/{key}/changelog` (history). Never try deprecated alternatives.
 8. **gh CLI for git operations with user confirmation gates.** After audit completes with fixes applied, ask user: "The parity audit is complete and changes have been implemented. Should I create a PR / commit and push to main? [yes/no]". User must confirm before `git commit`, `git push`, or `gh pr create`. Never auto-commit or auto-push without explicit user approval.
+9. **Screenshot → auto-fix → rebuild loop (MANDATORY).** When ANY screenshot is shared in chat that shows a defect, crash, build error, or broken UI state: (a) immediately diagnose the root cause from the screenshot without asking for permission, (b) fix the code, (c) kill and rebuild the dev server on port 8080 (`kill $(lsof -t -i:8080); bun run dev --port 8080`), (d) navigate Chrome MCP to the affected URL and check for console errors, (e) take a Computer Use screenshot to confirm visually. If still broken, loop steps b–e. Never wait for "should I fix this?" — diagnose and fix immediately on screenshot receipt.
 
 ---
 

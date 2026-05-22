@@ -569,6 +569,7 @@ HALT — CLAUDE.md ban hit
 19. **Screenshot after every fix** (Directive 5). A fix without a screenshot is not done. Call `mcp__computer-use__screenshot` or `mcp__Claude_in_Chrome__read_page`. If Computer Use access is not granted, call `mcp__computer-use__request_access` and wait.
 20. **Computer Use MCP is authorized** (Directive 3). The CLAUDE.md "Chrome MCP only for Lane B" restriction is suspended under /catalyst-agent. Computer Use is authorized for screenshots and visual verification.
 21. **TestSprite and preview_* remain banned** even under Directive 3's tool override. These are global bans.
+22. **Screenshot → auto-fix → verify loop (MANDATORY).** When ANY screenshot is shared in chat that shows a defect, crash, error overlay, or broken UI state, immediately: (a) diagnose the root cause from the screenshot, (b) fix it without asking, (c) kill and rebuild the dev server on port 8080 (`kill $(lsof -t -i:8080); bun run dev --port 8080`), (d) navigate to the affected URL in Chrome MCP and check for console errors, (e) take a Computer Use screenshot to confirm the fix visually. If still broken, loop steps b–e until resolved. Never ask "should I fix this?" when a defect screenshot is shared — fix it immediately.
 
 ---
 

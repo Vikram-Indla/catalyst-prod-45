@@ -352,6 +352,7 @@ If the score is below **22 / 30** (< 73%), the surface MUST NOT ship. Halt and f
 3. **No `text-transform: uppercase` on column headers** — sentence-case only (jira-compare lesson 2026-05-09).
 4. **Row density** — target 48px row height (Jira benchmark). Anything ≥ 56px is H8 P1.
 5. **Sidebar Recent** — two-line layout (summary line 1, KEY line 2) is the canonical pattern. Single-line truncation is H6 P1.
+6. **Screenshot → auto-fix → rebuild loop (MANDATORY).** When ANY screenshot is shared in chat that shows a defect, crash, error overlay, or broken UI state: (a) immediately diagnose the root cause without asking, (b) fix the code, (c) kill and rebuild the dev server on port 8080 (`kill $(lsof -t -i:8080); bun run dev --port 8080`), (d) navigate Chrome MCP to the affected URL and check for console errors, (e) take a Computer Use screenshot to confirm the fix visually. If still broken, loop steps b–e. This applies whether the screenshot is shared mid-critique or at the start of a new session. Do not ask "should I fix this?" — fix it immediately.
 
 ---
 
