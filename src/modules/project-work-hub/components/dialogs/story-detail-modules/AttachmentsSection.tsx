@@ -59,9 +59,6 @@ interface AttachmentsSectionProps {
   source?: WorkItemSource;
 }
 
-type SortKey = 'name' | 'size' | 'dateAdded';
-type SortDir = 'asc' | 'desc';
-
 interface UploadProgress {
   id: string;
   fileName: string;
@@ -78,16 +75,35 @@ function formatSize(bytes: number): string {
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
-  return d.toLocaleString('en-US', {
-    month: 'short', day: '2-digit', year: 'numeric',
-    hour: 'numeric', minute: '2-digit', hour12: true,
+  // Jira-parity card timestamp: "22 May 2026, 03:21 PM"
+  const datePart = d.toLocaleString('en-GB', {
+    day: '2-digit', month: 'short', year: 'numeric',
   });
+  const timePart = d.toLocaleString('en-US', {
+    hour: '2-digit', minute: '2-digit', hour12: true,
+  });
+  return `${datePart}, ${timePart}`;
 }
 
 function splitFilename(name: string): [string, string] {
   const dotIdx = name.lastIndexOf('.');
   if (dotIdx === -1) return [name, ''];
   return [name.slice(0, dotIdx), name.slice(dotIdx)];
+}
+
+/**
+ * Middle-truncate filename for card labels — "Screenshot 20…917.png".
+ * Preserves the extension and the last few characters of the basename.
+ */
+function truncateFilenameMiddle(name: string, maxLength = 22): string {
+  if (name.length <= maxLength) return name;
+  const [base, ext] = splitFilename(name);
+  const reserved = 1 + ext.length; // 1 char for the ellipsis
+  const remaining = Math.max(maxLength - reserved, 6);
+  const headLen = Math.ceil(remaining * 0.7);
+  const tailLen = Math.max(remaining - headLen, 3);
+  if (base.length <= headLen + tailLen) return name;
+  return `${base.slice(0, headLen)}…${base.slice(-tailLen)}${ext}`;
 }
 
 function validateFile(file: File): string | null {
@@ -109,8 +125,6 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
   const ATTACHMENTS_TABLE = source === 'catalyst' ? 'catalyst_attachments' : 'ph_attachments';
   const queryClient = useQueryClient();
   const [collapsed, setCollapsed] = useState(attachments.length === 0);
-  const [sortKey, setSortKey] = useState<SortKey>('dateAdded');
-  const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [uploads, setUploads] = useState<UploadProgress[]>([]);
@@ -152,18 +166,13 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
     return () => document.removeEventListener('mousedown', onClickAway);
   }, [moreMenuOpen]);
 
-  const handleSort = (key: SortKey) => {
-    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    else { setSortKey(key); setSortDir('asc'); }
-  };
-
-  const sorted = useMemo(() => [...attachments].sort((a, b) => {
-    let cmp = 0;
-    if (sortKey === 'name') cmp = a.file_name.localeCompare(b.file_name);
-    else if (sortKey === 'size') cmp = a.file_size - b.file_size;
-    else cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-    return sortDir === 'asc' ? cmp : -cmp;
-  }), [attachments, sortKey, sortDir]);
+  // Jira parity: card grid is always newest-first by date added.
+  const sorted = useMemo(
+    () => [...attachments].sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    ),
+    [attachments],
+  );
 
   const invalidate = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
@@ -449,43 +458,18 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
               >Drop files here or click to upload</button>
             </div>
           ) : attachments.length > 0 ? (
-            <table className="att-table">
-              <thead>
-                <tr>
-                  <th className="att-th att-th-name">
-                    <button className="att-sort-btn" onClick={() => handleSort('name')}>
-                      <span>Name</span>
-                      <SortIcon active={sortKey === 'name'} dir={sortDir} />
-                    </button>
-                  </th>
-                  <th className="att-th att-th-size">
-                    <button className="att-sort-btn" onClick={() => handleSort('size')}>
-                      <span>Size</span>
-                      <SortIcon active={sortKey === 'size'} dir={sortDir} />
-                    </button>
-                  </th>
-                  <th className="att-th att-th-date">
-                    <button className="att-sort-btn" onClick={() => handleSort('dateAdded')}>
-                      <span>Date added</span>
-                      <SortIcon active={sortKey === 'dateAdded'} dir={sortDir} />
-                    </button>
-                  </th>
-                  <th className="att-th att-th-actions" aria-label="Actions" />
-                </tr>
-              </thead>
-              <tbody>
-                {sorted.map(att => (
-                  <AttachmentRow
-                    key={att.id}
-                    attachment={att}
-                    canDelete={canDelete(att)}
-                    bucket={BUCKET}
-                    onPreview={() => setPreviewId(att.id)}
-                    onDelete={() => setPendingDelete(att)}
-                  />
-                ))}
-              </tbody>
-            </table>
+            <div className="att-grid" role="list">
+              {sorted.map(att => (
+                <AttachmentCard
+                  key={att.id}
+                  attachment={att}
+                  canDelete={canDelete(att)}
+                  bucket={BUCKET}
+                  onPreview={() => setPreviewId(att.id)}
+                  onDelete={() => setPendingDelete(att)}
+                />
+              ))}
+            </div>
           ) : null}
         </div>
       )}
@@ -521,15 +505,14 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
   );
 }
 
-/* ── Row ── */
-function AttachmentRow({ attachment, canDelete, bucket, onPreview, onDelete }: {
+/* ── Card ── */
+function AttachmentCard({ attachment, canDelete, bucket, onPreview, onDelete }: {
   attachment: PhAttachment;
   canDelete: boolean;
   bucket: string;
   onPreview: () => void;
   onDelete: () => void;
 }) {
-  const [base, ext] = splitFilename(attachment.file_name);
   const isImage = attachment.mime_type?.startsWith('image/');
   const isVideo = attachment.mime_type?.startsWith('video/');
   const [thumbUrl, setThumbUrl] = useState<string | null>(null);
@@ -547,50 +530,38 @@ function AttachmentRow({ attachment, canDelete, bucket, onPreview, onDelete }: {
     return () => { cancelled = true; };
   }, [attachment.storage_path, isImage, bucket]);
 
+  const displayName = truncateFilenameMiddle(attachment.file_name);
+
   return (
-    <tr className="att-row">
-      <td className="att-td att-td-name">
-        <div
-          className="att-file-row"
-          role="button"
-          tabIndex={0}
-          aria-label={`Preview ${attachment.file_name}`}
-          onClick={onPreview}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPreview(); } }}
-        >
-          <div className="att-thumb">
-            {isImage && thumbUrl ? (
-              <img src={thumbUrl} alt="" className="att-thumb-img" />
-            ) : isVideo ? (
-              <div className="att-thumb-fallback">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ds-text-subtle, #42526E)"><path d="M8 5v14l11-7z" /></svg>
-              </div>
-            ) : (
-              <FileIcon />
-            )}
+    <div
+      className="att-card"
+      role="listitem"
+      tabIndex={0}
+      aria-label={`Preview ${attachment.file_name}`}
+      onClick={onPreview}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPreview(); } }}
+    >
+      <div className="att-card__thumb">
+        {isImage && thumbUrl ? (
+          <img src={thumbUrl} alt="" className="att-card__thumb-img" />
+        ) : isVideo ? (
+          <div className="att-card__thumb-fallback">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
           </div>
-          <div className="att-filename">
-            <div className="att-filename-inner">
-              <span className="att-filename-base">{base}</span>
-              <span className="att-filename-ext">{ext}</span>
-            </div>
+        ) : (
+          <div className="att-card__thumb-fallback">
+            <FileIcon />
           </div>
-        </div>
-      </td>
+        )}
 
-      <td className="att-td att-td-size">{formatSize(attachment.file_size)}</td>
-      <td className="att-td att-td-date">{formatDate(attachment.created_at)}</td>
-
-      {/* Hover-revealed actions */}
-      <td className="att-td att-td-actions-cell">
-        <div className="att-row-actions">
+        {/* Hover-revealed actions */}
+        <div className="att-card__actions" onClick={(e) => e.stopPropagation()}>
           {downloadUrl && (
             <a
               className="att-action-btn att-download-btn"
               href={downloadUrl}
               download={attachment.file_name}
               title="Download"
-              onClick={(e) => e.stopPropagation()}
             >
               <DownloadIcon label="Download" />
             </a>
@@ -599,15 +570,22 @@ function AttachmentRow({ attachment, canDelete, bucket, onPreview, onDelete }: {
             <button
               className="att-action-btn att-delete-btn"
               title="Delete"
-              onClick={(e) => { e.stopPropagation(); onDelete(); }}
+              onClick={onDelete}
               aria-label="Delete attachment"
             >
               <DeleteIcon label="Delete" />
             </button>
           )}
         </div>
-      </td>
-    </tr>
+      </div>
+
+      <div className="att-card__name" title={attachment.file_name}>
+        {displayName}
+      </div>
+      <div className="att-card__date">
+        {formatDate(attachment.created_at)}
+      </div>
+    </div>
   );
 }
 
@@ -631,27 +609,6 @@ function PlusIcon() {
         d="M7.25 8.75V15h1.5V8.75H15v-1.5H8.75V1h-1.5v6.25H1v1.5z"
         clipRule="evenodd"
       />
-    </svg>
-  );
-}
-
-function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
-  return (
-    <svg
-      width="16" height="16" viewBox="0 0 16 16" fill="none"
-      style={{ color: active ? 'currentColor' : 'transparent', flexShrink: 0 }}
-    >
-      {dir === 'desc' || !active ? (
-        <path fill="currentColor" fillRule="evenodd"
-          d="M8.75 1v11.44l3.72-3.72 1.06 1.06-5 5a.75.75 0 0 1-1.06 0l-5-5 1.06-1.06 3.72 3.72V1z"
-          clipRule="evenodd"
-        />
-      ) : (
-        <path fill="currentColor" fillRule="evenodd"
-          d="M7.25 15V3.56L3.53 7.28 2.47 6.22l5-5a.75.75 0 0 1 1.06 0l5 5-1.06 1.06-3.72-3.72V15z"
-          clipRule="evenodd"
-        />
-      )}
     </svg>
   );
 }

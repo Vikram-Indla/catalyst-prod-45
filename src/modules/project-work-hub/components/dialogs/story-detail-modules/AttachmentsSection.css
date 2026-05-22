@@ -182,112 +182,6 @@
   font-family: var(--cp-font-body);
 }
 
-/* ─── TABLE ─── */
-.att-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  table-layout: auto;
-}
-
-/* Column widths — Jira ratios */
-.att-th-name     { width: 60%; }
-.att-th-size     { width: 8%; }
-.att-th-date     { width: 20%; }
-.att-th-view     { width: 4%; }
-.att-th-download { width: 5%; }
-
-/* Header cells */
-.att-th {
-  padding: 4px 8px;
-  font-size: 12px;
-  font-weight: 650;
-  color: rgb(80, 82, 88);
-  border-bottom: 1.667px solid rgba(11, 18, 14, 0.14);
-  white-space: nowrap;
-  background: transparent;
-  text-align: left;
-  font-family: var(--cp-font-body);
-}
-
-.att-th-name {
-  padding-left: 0;
-  padding-right: 8px;
-}
-
-.att-th-download {
-  padding-right: 0;
-  padding-left: 8px;
-}
-
-/* Sort button inside header */
-.att-sort-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  color: rgb(80, 82, 88);
-  font-size: 12px;
-  font-weight: 650;
-  font-family: var(--cp-font-body);
-}
-
-.att-sort-btn:hover {
-  color: rgb(41, 42, 46);
-}
-
-/* ─── DATA ROWS ─── */
-.att-row {
-  height: 41px;
-  background: transparent;
-  transition: background-color 0.1s ease;
-}
-
-.att-row:hover {
-  background-color: rgba(9, 30, 66, 0.04);
-}
-
-/* Data cells */
-.att-td {
-  padding: 4px 8px;
-  font-size: 14px;
-  color: rgb(41, 42, 46);
-  vertical-align: middle;
-  border-bottom: none;
-  font-family: var(--cp-font-body);
-}
-
-.att-td-name {
-  padding-left: 0;
-  padding-right: 8px;
-  max-width: 0;
-}
-
-.att-td-size {
-  white-space: nowrap;
-  color: rgb(80, 82, 88);
-  font-size: 14px;
-}
-
-.att-td-date {
-  white-space: nowrap;
-  color: rgb(80, 82, 88);
-  font-size: 14px;
-}
-
-.att-td-action {
-  padding: 4px 8px;
-  text-align: center;
-}
-
-.att-td-download-cell {
-  padding-right: 0;
-  padding-left: 8px;
-}
-
 /* sr-only — visually hidden but accessible */
 .att-section .sr-only {
   position: absolute;
@@ -297,79 +191,6 @@
   clip: rect(0,0,0,0);
   white-space: nowrap;
   border: 0;
-}
-
-/* ─── FILE ROW (thumbnail + name) ─── */
-.att-file-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  min-width: 0;
-  height: 33px;
-}
-
-/* Thumbnail container */
-.att-thumb {
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-}
-
-.att-thumb-img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  border-radius: 4px;
-}
-
-.att-thumb-fallback {
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
-  background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Filename text */
-.att-filename {
-  min-width: 0;
-  flex: 1;
-}
-
-.att-filename-inner {
-  display: flex;
-  align-items: baseline;
-  min-width: 0;
-}
-
-.att-filename-base {
-  display: inline-block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 14px;
-  color: rgb(41, 42, 46);
-  font-weight: 400;
-  min-width: 0;
-}
-
-.att-filename-ext {
-  display: inline-block;
-  white-space: nowrap;
-  font-size: 14px;
-  color: rgb(41, 42, 46);
-  font-weight: 400;
-  flex-shrink: 0;
 }
 
 /* ─── ACTION BUTTONS ─── */
@@ -425,20 +246,6 @@
   z-index: 5;
 }
 
-/* ─── ROW ACTIONS (hover-revealed) ─── */
-.att-th-actions { width: 80px; }
-.att-td-actions-cell { padding-right: 0; padding-left: 8px; text-align: right; }
-.att-row-actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  opacity: 0;
-  transition: opacity 0.1s ease;
-}
-.att-row:hover .att-row-actions,
-.att-row:focus-within .att-row-actions { opacity: 1; }
-@media (max-width: 768px) { .att-row-actions { opacity: 1; } }
-
 .att-delete-btn { color: rgba(8, 15, 33, 0.55); }
 .att-delete-btn:hover { color: var(--ds-text-danger, #DE350B); background-color: rgba(222, 53, 11, 0.08); }
 
@@ -493,14 +300,6 @@
 .dark .att-badge { background: none; color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .att-icon-btn { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .att-icon-btn:hover { background-color: rgba(255, 255, 255, 0.06); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
-.dark .att-th { color: var(--ds-text-subtlest, #A1A1A1); border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
-.dark .att-sort-btn { color: var(--ds-text-subtlest, #A1A1A1); }
-.dark .att-sort-btn:hover { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
-.dark .att-row:hover { background-color: rgba(255, 255, 255, 0.04); }
-.dark .att-td { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
-.dark .att-td-size, .dark .att-td-date { color: var(--ds-text-subtlest, #A1A1A1); }
-.dark .att-filename-base, .dark .att-filename-ext { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
-.dark .att-thumb-fallback { background: var(--ds-border, var(--cp-ink-1, #292929)); }
 .dark .att-empty-text { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .att-empty-cta { border-color: var(--ds-border-bold, #454545); color: var(--ds-text-brand, #60A5FA); }
 .dark .att-empty-cta:hover { background: rgba(96, 165, 250, 0.06); border-color: var(--ds-text-brand, #60A5FA); }
@@ -518,3 +317,118 @@
 .dark .att-delete-btn { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .att-delete-btn:hover { color: #FF5630; background-color: rgba(255, 86, 48, 0.12); }
 .dark .att-drop-overlay { background: rgba(37, 99, 235, 0.10); color: #93C5FD; }
+
+/* ─── CARD GRID (Jira parity) ───────────────────────────
+   Replaces the row-based table with a horizontal grid of cards.
+   Each card: thumbnail (top), middle-truncated filename, date+time. */
+.att-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.att-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-surface, #FFFFFF);
+  border: 1px solid var(--ds-border, #DFE1E6);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  font-family: var(--cp-font-body);
+}
+
+.att-card:hover,
+.att-card:focus-visible {
+  border-color: var(--ds-border-bold, #B3BAC5);
+  box-shadow: 0 1px 2px rgba(9, 30, 66, 0.08);
+  outline: none;
+}
+
+.att-card:focus-visible {
+  border-color: var(--ds-border-focused, #1868DB);
+  box-shadow: 0 0 0 2px var(--ds-border-focused, #1868DB);
+}
+
+.att-card__thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--ds-surface-sunken, #F4F5F7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.att-card__thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.att-card__thumb-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-text-subtle, #42526E);
+}
+
+.att-card__actions {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: inline-flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 3px;
+  padding: 2px;
+}
+
+.att-card:hover .att-card__actions,
+.att-card:focus-within .att-card__actions { opacity: 1; }
+
+@media (max-width: 768px) {
+  .att-card__actions { opacity: 1; }
+}
+
+.att-card__name {
+  padding: 8px 10px 2px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ds-text, #292A2E);
+  line-height: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.att-card__date {
+  padding: 0 10px 10px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ds-text-subtle, #505258);
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dark .att-card {
+  background: var(--cp-bg-surface, #1E2027);
+  border-color: var(--ds-border, #2E2E2E);
+}
+.dark .att-card:hover { border-color: var(--ds-border-bold, #454545); }
+.dark .att-card__thumb { background: var(--ds-surface-sunken, #242528); }
+.dark .att-card__thumb-fallback { color: var(--ds-text-subtlest, #A1A1A1); }
+.dark .att-card__name { color: var(--ds-text, #EDEDED); }
+.dark .att-card__date { color: var(--ds-text-subtlest, #A1A1A1); }
+.dark .att-card__actions { background: rgba(30, 32, 39, 0.92); }
