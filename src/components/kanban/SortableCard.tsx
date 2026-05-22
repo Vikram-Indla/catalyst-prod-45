@@ -2,9 +2,8 @@
  * SortableCard — DnD-enabled wrapper around WorkItemCard (memoized)
  * Jira parity: 4px radius, shadow-only (no border), dual-stack shadow.
  */
-import React, { useCallback, memo, useState, useEffect } from 'react';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import React, { useCallback, memo, useState, useEffect, useRef } from 'react';
+import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { WorkItemCard } from './WorkItemCard';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
@@ -41,7 +40,19 @@ interface SortableCardProps {
 }
 
 export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields, cardColorMode }: SortableCardProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: issue.id });
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    return draggable({
+      element: el,
+      getInitialData: () => ({ issueId: issue.id }),
+      onDragStart: () => setIsDragging(true),
+      onDrop: () => setIsDragging(false),
+    });
+  }, [issue.id]);
 
   const restShadow = tk.cardShadowRest;
   const hoverShadow = tk.cardHoverShadow;
@@ -84,8 +95,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
     display: 'flex',
     flexDirection: 'column',
     cursor: 'pointer',
-    transition: transition || 'background 150ms ease, box-shadow 150ms ease, border-left 120ms ease',
-    transform: CSS.Transform.toString(transform),
+    transition: 'background 150ms ease, box-shadow 150ms ease, border-left 120ms ease',
     opacity: isDragging ? 0.35 : 1,
     zIndex: isDragging ? 999 : 'auto',
     boxShadow: isDragging ? tk.cardDragShadow : isFocused ? focusShadow : restShadow,
@@ -95,16 +105,14 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
   };
 
   const handleClick = useCallback(() => {
-    if (!isDragging) onClick();
-  }, [isDragging, onClick]);
+    onClick();
+  }, [onClick]);
 
   return (
     <>
     <div
-      ref={setNodeRef}
+      ref={cardRef}
       style={cardStyle}
-      {...attributes}
-      {...listeners}
       onClick={handleClick}
       onContextMenu={(e) => {
         e.preventDefault();
