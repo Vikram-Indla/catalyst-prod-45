@@ -20,55 +20,10 @@ import {
   type JiraFilterValue,
 } from '@/components/shared/JiraFilterAtlaskit';
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
-import { useCatySearch, type CatyFilter } from '@/components/caty/catySearchStore';
 import { FilterTemplateGallery } from '@/components/filters/FilterTemplateGallery';
 import { translate } from '@/lib/jql';
 import type { HubType } from './FiltersListPage';
 import type { HubTemplateScope } from '@/lib/filters/filterTemplates';
-
-/** Convert a CATY structured filter into a JQL string */
-function catyFilterToJql(f: CatyFilter, projectKey?: string): string {
-  const clauses: string[] = [];
-
-  if (projectKey) clauses.push(`project = "${projectKey}"`);
-
-  if (f.status_names?.length === 1)   clauses.push(`status = "${f.status_names[0]}"`);
-  else if (f.status_names?.length)    clauses.push(`status in (${f.status_names.map(s => `"${s}"`).join(', ')})`);
-
-  if (f.priorities?.length === 1)     clauses.push(`priority = "${f.priorities[0]}"`);
-  else if (f.priorities?.length)      clauses.push(`priority in (${f.priorities.map(p => `"${p}"`).join(', ')})`);
-
-  if (f.types?.length === 1)          clauses.push(`issuetype = "${f.types[0]}"`);
-  else if (f.types?.length)           clauses.push(`issuetype in (${f.types.map(t => `"${t}"`).join(', ')})`);
-
-  if (f.is_unassigned)                clauses.push('assignee is EMPTY');
-  else if (f.assignee_names?.length === 1) clauses.push(`assignee = "${f.assignee_names[0]}"`);
-  else if (f.assignee_names?.length)  clauses.push(`assignee in (${f.assignee_names.map(a => `"${a}"`).join(', ')})`);
-
-  if (f.reporter_names?.length === 1) clauses.push(`reporter = "${f.reporter_names[0]}"`);
-  else if (f.reporter_names?.length)  clauses.push(`reporter in (${f.reporter_names.map(r => `"${r}"`).join(', ')})`);
-
-  if (f.labels?.length === 1)         clauses.push(`labels = "${f.labels[0]}"`);
-  else if (f.labels?.length)          clauses.push(`labels in (${f.labels.map(l => `"${l}"`).join(', ')})`);
-
-  if (f.fix_versions?.length === 1)   clauses.push(`fixVersion = "${f.fix_versions[0]}"`);
-  else if (f.fix_versions?.length)    clauses.push(`fixVersion in (${f.fix_versions.map(v => `"${v}"`).join(', ')})`);
-
-  if (f.sprint_names?.length === 1)   clauses.push(`sprint = "${f.sprint_names[0]}"`);
-  else if (f.sprint_names?.length)    clauses.push(`sprint in (${f.sprint_names.map(s => `"${s}"`).join(', ')})`);
-
-  if (f.parent_keys?.length)          clauses.push(`parent in (${f.parent_keys.join(', ')})`);
-
-  if (f.created_within_days)          clauses.push(`created >= -${f.created_within_days}d`);
-  if (f.updated_within_days)          clauses.push(`updated >= -${f.updated_within_days}d`);
-  if (f.stale_for_days)               clauses.push(`updated <= -${f.stale_for_days}d`);
-
-  if (f.text_contains)                clauses.push(`summary ~ "${f.text_contains}"`);
-  if (f.resolution_set === false)     clauses.push('resolution is EMPTY');
-  if (f.resolution_set === true)      clauses.push('resolution is not EMPTY');
-
-  return clauses.join(' AND ') + (clauses.length ? ' ORDER BY updated DESC' : '');
-}
 
 interface CreateFilterPageProps {
   hubType?: HubType;
@@ -112,20 +67,6 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
   const [jqlValue,   setJqlValue]     = useState('');
   const [activeTabIdx, setActiveTabIdx] = useState(0);
   const [saveModalOpen, setSaveModalOpen] = useState(false);
-
-  // Wire CATY output → JQL tab: when CATY returns a ready filter, convert it
-  // to JQL, populate the JQL editor, and switch to the JQL tab automatically.
-  const catyStatus = useCatySearch(s => s.status);
-  const catyFilter = useCatySearch(s => s.filter);
-  React.useEffect(() => {
-    if (catyStatus === 'ready' && catyFilter) {
-      const jql = catyFilterToJql(catyFilter, projectKey);
-      if (jql.trim()) {
-        setJqlValue(jql);
-        setActiveTabIdx(1); // switch to JQL tab so user can review and save
-      }
-    }
-  }, [catyStatus, catyFilter, projectKey]);
 
   // Derive the effective JQL from whichever tab is active
   // 0=Basic 1=JQL 2=Templates 3=Ask CATY
@@ -209,7 +150,6 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
       <div style={{ flex: 1, overflowY: 'auto', padding: '24px 32px' }}>
         <Tabs
           id="create-filter-tabs"
-          selected={activeTabIdx}
           onChange={setActiveTabIdx}
         >
           <TabList>

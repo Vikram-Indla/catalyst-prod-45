@@ -7,7 +7,7 @@ import TextArea from '@atlaskit/textarea';
 import { RadioGroup } from '@atlaskit/radio';
 import Select from '@atlaskit/select';
 import { supabase } from '@/integrations/supabase/client';
-import { useCreateSavedFilter, useUpdateSavedFilter, useRecordFilterVersion, type SavedFilterFull, type HubScope } from '@/hooks/workhub/useSavedFilters';
+import { useCreateSavedFilter, useUpdateSavedFilter, type SavedFilterFull, type HubScope } from '@/hooks/workhub/useSavedFilters';
 
 interface ProfileOption {
   label: string;
@@ -66,11 +66,9 @@ export function FilterSaveModal({
   const isEditing = !!filter;
   const createFilter = useCreateSavedFilter();
   const updateFilter = useUpdateSavedFilter();
-  const recordVersion = useRecordFilterVersion();
 
   const [name, setName] = useState(filter?.name ?? '');
   const [description, setDescription] = useState(filter?.description ?? '');
-  const [jql, setJql] = useState<string>(filter?.jql_query ?? initialJql ?? '');
   const [viewersType, setViewersType] = useState<string>(filter?.viewers_config?.type ?? 'private');
   const [editorsType, setEditorsType] = useState<string>(filter?.editors_config?.type ?? 'owner_only');
   const [crossHub, setCrossHub] = useState<boolean>(filter?.hub_scope === 'both');
@@ -133,28 +131,20 @@ export function FilterSaveModal({
           updates: {
             name: name.trim(),
             description: description.trim() || null,
-            jql_query: jql.trim() || null,
-            filter_config: { jql_query: jql.trim() || null },
             is_shared: isShared,
             hub_scope: resolvedHubScope,
             viewers_config: viewersConfig,
             editors_config: editorsConfig,
           } as any,
         },
-        {
-          onSuccess: () => {
-            recordVersion.mutate({ filterId: filter.id, jqlQuery: jql.trim() || null });
-            onSaved?.(filter.id);
-            onClose();
-          },
-        }
+        { onSuccess: () => { onSaved?.(filter.id); onClose(); } }
       );
     } else {
       createFilter.mutate(
         {
           name: name.trim(),
-          filter_config: { jql_query: jql.trim() || null },
-          jql_query: jql.trim() || null,
+          filter_config: { jql_query: initialJql ?? null },
+          jql_query: initialJql ?? null,
           page: 'filters',
           is_shared: isShared,
           hub_scope: resolvedHubScope,
@@ -199,52 +189,6 @@ export function FilterSaveModal({
               maxHeight="80px"
             />
           </div>
-
-          {/* JQL query — editable when editing, shown when initialJql provided on create */}
-          {(isEditing || jql) && (
-            <div>
-              <FieldLabel>JQL query</FieldLabel>
-              {isEditing ? (
-                <textarea
-                  value={jql}
-                  onChange={e => setJql(e.target.value)}
-                  placeholder="project = BAU AND status != Done ORDER BY priority DESC"
-                  rows={3}
-                  style={{
-                    width: '100%',
-                    boxSizing: 'border-box',
-                    fontFamily: 'var(--cp-font-mono, monospace)',
-                    fontSize: 12,
-                    padding: '8px',
-                    border: `2px solid ${token('color.border.input')}`,
-                    borderRadius: 3,
-                    background: token('elevation.surface'),
-                    color: token('color.text'),
-                    resize: 'vertical',
-                    lineHeight: 1.5,
-                    outline: 'none',
-                  }}
-                  onFocus={e => (e.target.style.borderColor = token('color.border.focused'))}
-                  onBlur={e => (e.target.style.borderColor = token('color.border.input'))}
-                />
-              ) : (
-                <pre style={{
-                  margin: 0,
-                  padding: '8px',
-                  fontFamily: 'var(--cp-font-mono, monospace)',
-                  fontSize: 12,
-                  color: token('color.text.subtle'),
-                  background: token('elevation.surface.sunken'),
-                  borderRadius: 3,
-                  border: `1px solid ${token('color.border')}`,
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-all',
-                }}>
-                  {jql}
-                </pre>
-              )}
-            </div>
-          )}
 
           {/* Viewers */}
           <div>
