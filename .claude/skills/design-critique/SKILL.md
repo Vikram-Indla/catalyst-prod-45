@@ -248,18 +248,18 @@ Raw screenshots with no arrows are REJECTED. Resize after injection to confirm a
 
 ## The 10 Heuristics (scored 0–3 per surface)
 
-| # | Heuristic | What passes |
-|---|---|---|
-| H1 | **Visibility of system status** | User always knows what's loading, synced, errored |
-| H2 | **Match between system and real world** | Labels, icons, terminology match user's mental model (Jira vocabulary where applicable) |
-| H3 | **User control and freedom** | Undo, cancel, escape — no dead ends |
-| H4 | **Consistency and standards** | ADS tokens used; same component for same pattern throughout |
-| H5 | **Error prevention** | Destructive actions confirm; required fields validate before submit |
-| H6 | **Recognition over recall** | State visible in UI without requiring memory; no hidden columns |
-| H7 | **Flexibility and efficiency** | Power users: keyboard shortcuts, bulk actions; beginners: discoverable defaults |
-| H8 | **Aesthetic and minimalist design** | No redundant info, no banned columns, density matches Jira benchmark |
-| H9 | **Typography and visual hierarchy** | ADS token stack (12px/600 headers, 14px/400 body, sentence-case labels, `token()` colours) |
-| H10 | **Help and documentation** | Empty states have a call-to-action; error messages name the fix |
+| # | Heuristic | What passes | ADS resource required |
+|---|---|---|---|
+| H1 | **Visibility of system status** | User always knows what's loading, synced, errored | — |
+| H2 | **Match between system and real world** | Labels, icons, terminology match Jira vocabulary; description/comment fields use ADF format (`@atlaskit/renderer` / `@atlaskit/editor-core`), not markdown or raw HTML | https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ |
+| H3 | **User control and freedom** | Undo, cancel, escape — no dead ends | — |
+| H4 | **Consistency and standards** | ADS tokens used; same `@atlaskit/*` component for same pattern throughout; ADF content uses canonical packages | https://atlassian.design/components · https://atlassian.design/components/tokens/all-tokens |
+| H5 | **Error prevention** | Destructive actions confirm; required fields validate before submit | — |
+| H6 | **Recognition over recall** | State visible in UI without requiring memory; no hidden columns | — |
+| H7 | **Flexibility and efficiency** | Power users: keyboard shortcuts, bulk actions; beginners: discoverable defaults | — |
+| H8 | **Aesthetic and minimalist design** | No redundant info, no banned columns, density matches Jira benchmark | — |
+| H9 | **Typography and visual hierarchy** | ADS token stack (12px/600 headers, 14px/400 body, sentence-case labels, `token()` colours); every token cited from all-tokens page | https://atlassian.design/components/tokens/all-tokens · https://atlassian.design/foundations/typography |
+| H10 | **Help and documentation** | Empty states have a call-to-action; error messages name the fix | — |
 
 Score per heuristic: **3** = fully met · **2** = minor gap · **1** = significant gap · **0** = failing
 
@@ -352,6 +352,22 @@ If the score is below **22 / 30** (< 73%), the surface MUST NOT ship. Halt and f
 3. **No `text-transform: uppercase` on column headers** — sentence-case only (jira-compare lesson 2026-05-09).
 4. **Row density** — target 48px row height (Jira benchmark). Anything ≥ 56px is H8 P1.
 5. **Sidebar Recent** — two-line layout (summary line 1, KEY line 2) is the canonical pattern. Single-line truncation is H6 P1.
+6. **ADS citation required for H4 and H9.** Any H4 (Consistency) or H9 (Typography) finding that scores below 3/3 MUST cite a specific URL from the ADS Extended Resources below. Uncited H4/H9 findings are capped at 1/3 regardless of the actual score.
+7. **ADF compliance is an H2 and H4 check.** If the surface contains a description or comment field, the critique MUST verify whether ADF structure is being used (H2: real-world match with Jira) and whether `@atlaskit/renderer` / `@atlaskit/editor-core` are the implementation (H4: consistency). Fetch the ADF structure doc and package pages before scoring these heuristics.
+
+## ADS Extended Resources — Contextual Fetch Table
+
+> These resources are fetched contextually during the critique. Each triggered resource must produce a named finding in the findings table.
+
+| Trigger | Resource | Heuristics informed |
+|---|---|---|
+| Any surface (always) | https://atlassian.design/ | H4, H9 |
+| Any token / color / border / background decision | https://atlassian.design/components/tokens/all-tokens | H4, H9 |
+| Description, comment, or rich-text field present | https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ | H2, H4 |
+| ADF content needs validation | https://developer.atlassian.com/cloud/jira/platform/apis/document/playground/ | H2, H5 |
+| Description in write/edit mode | https://www.npmjs.com/package/@atlaskit/editor-core | H2, H4 |
+| Description in read/display mode | https://www.npmjs.com/package/@atlaskit/renderer | H2, H4 |
+| ADF data manipulation in scope | https://www.npmjs.com/package/@atlaskit/adf-utils | H4 |
 
 ---
 
@@ -361,7 +377,18 @@ If the score is below **22 / 30** (< 73%), the surface MUST NOT ship. Halt and f
 - `jira-compare` skill — pixel parity gate (pairs with this skill)
 - `ads-validator` skill — token compliance gate
 - `preflight` Phase 6 — closure evidence protocol (same arrow/annotation rule)
-- Atlassian Design System: https://atlassian.design/
+
+### ADS Extended Resources (see contextual fetch table above)
+
+| Resource | Heuristics | Use |
+|---|---|---|
+| https://atlassian.design/ | H4, H9 | ADS source of truth — canonical components + guidelines |
+| https://atlassian.design/components/tokens/all-tokens | H4, H9 | All tokens with light/dark values — cite in every H4/H9 finding |
+| https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ | H2, H4 | ADF document structure — verify description/comment field compliance |
+| https://developer.atlassian.com/cloud/jira/platform/apis/document/playground/ | H2, H5 | ADF playground — validate ADF content structure |
+| https://www.npmjs.com/package/@atlaskit/editor-core | H2, H4 | Rich-text editor for description write mode |
+| https://www.npmjs.com/package/@atlaskit/renderer | H2, H4 | ADF read-only renderer for description display mode |
+| https://www.npmjs.com/package/@atlaskit/adf-utils | H4 | ADF content traversal/modification utilities |
 
 ---
 

@@ -40,6 +40,7 @@ Every single recommendation, token choice, component suggestion, spacing value, 
 | ADS source | URL |
 |---|---|
 | Tokens | https://atlassian.design/foundations/tokens |
+| **All tokens (light + dark values)** | **https://atlassian.design/components/tokens/all-tokens** |
 | Components | https://atlassian.design/components |
 | Color | https://atlassian.design/foundations/color |
 | Typography | https://atlassian.design/foundations/typography |
@@ -48,8 +49,15 @@ Every single recommendation, token choice, component suggestion, spacing value, 
 | Motion | https://atlassian.design/foundations/motion |
 | Elevation | https://atlassian.design/foundations/elevation |
 | Accessibility | https://atlassian.design/foundations/accessibility |
+| **ADF document structure** | **https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/** |
+| **ADF playground (validation + test data)** | **https://developer.atlassian.com/cloud/jira/platform/apis/document/playground/** |
+| **@atlaskit/editor-core (ADF write mode)** | **https://www.npmjs.com/package/@atlaskit/editor-core** |
+| **@atlaskit/renderer (ADF read mode)** | **https://www.npmjs.com/package/@atlaskit/renderer** |
+| **@atlaskit/adf-utils (ADF traversal/modification)** | **https://www.npmjs.com/package/@atlaskit/adf-utils** |
 
 **If a recommendation cannot be cited to one of the above URLs — it is rejected.**
+
+> **Enforcement for ADF surfaces:** When the surface under audit contains a description field, comment field, or any rich-text content: fetch the ADF structure doc and the relevant npm package page before proceeding to council analysis. An ADF-related finding without a citation to `developer.atlassian.com/.../structure/` or the relevant package is structurally invalid.
 
 No Tailwind classes. No shadcn components. No raw hex values (unless a live Jira DOM probe proves the token resolves to that hex and ADS has no matching token). No generic design-system advice. This skill does NOT know about Material Design, Carbon, or Fluent — only ADS.
 
@@ -155,6 +163,10 @@ Red arrows injected. Screenshot inline ↓
 | Priority in wrong location | CLAUDE.md 2026-05-06 | Priority in right rail for non-Epic types? (Must be in Key details left). Priority in left for Epic? (Must be in right rail). → P1 |
 | Star button dead interaction | CLAUDE.md 2026-05-10 | AgeingPanel star button rendered but no-op? → P1 |
 | Motion not ADS-spec | CLAUDE.md 2026-04-28 | Any linear/ease/custom-bezier animation not from ADS motion spec? → P2 |
+| ADF description editor | ADS + HARD BOUNDARY | Description field in edit mode NOT using `@atlaskit/editor-core`? → P0 (fetch https://www.npmjs.com/package/@atlaskit/editor-core) |
+| ADF description renderer | ADS + HARD BOUNDARY | Description field in read mode NOT using `@atlaskit/renderer`? → P0 (fetch https://www.npmjs.com/package/@atlaskit/renderer) |
+| ADF structure compliance | ADS + HARD BOUNDARY | Rich-text content stored/transmitted as markdown or raw HTML instead of ADF JSON? → P0 (fetch https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/) |
+| Token light/dark parity | ADS + HARD BOUNDARY | Any token used without checking its dark-mode value? → P1 (fetch https://atlassian.design/components/tokens/all-tokens) |
 
 **Output of pre-scan:**
 
@@ -209,12 +221,17 @@ Every slot has exactly ONE canonical. No debate. No exceptions.
 | Breadcrumbs | `@atlaskit/breadcrumbs` | `Breadcrumbs` from `@atlaskit/breadcrumbs` | https://atlassian.design/components/breadcrumbs | Custom / or › separator spans |
 | Inline message | `@atlaskit/inline-message` | `InlineMessage` | https://atlassian.design/components/inline-message | Custom alert divs |
 | Flag / toast | `@atlaskit/flag` | `Flag` + `FlagGroup` from `@atlaskit/flag` | https://atlassian.design/components/flag | react-hot-toast, Sonner, custom toast |
+| Description editor (write/edit mode) | `@atlaskit/editor-core` | `EditorContext, Editor` from `@atlaskit/editor-core` | https://www.npmjs.com/package/@atlaskit/editor-core | contenteditable, TipTap, Quill, Trix, any non-Atlaskit editor |
+| Description viewer (read/display mode) | `@atlaskit/renderer` | `ReactRenderer` from `@atlaskit/renderer` | https://www.npmjs.com/package/@atlaskit/renderer | dangerouslySetInnerHTML, markdown-it, react-markdown, custom ADF parser |
+| ADF content traversal / modification | `@atlaskit/adf-utils` | `traverse, map` from `@atlaskit/adf-utils` | https://www.npmjs.com/package/@atlaskit/adf-utils | Manual JSON walking, custom recursive ADF traversal |
 
 ---
 
 ## ADS Token Map (mandatory for all Catalyst styling)
 
 Every color, spacing, elevation, and typography value must use `token()` from `@atlaskit/tokens`. Raw hex is banned unless a live Jira DOM probe confirms no ADS token matches.
+
+**Canonical source for all token names, light-mode values, and dark-mode values:** https://atlassian.design/components/tokens/all-tokens — fetch this page when any token decision is being made. The table below is a curated subset; the full token registry is authoritative.
 
 | Category | Token | Value (light) | When to use |
 |---|---|---|---|
@@ -718,10 +735,23 @@ Every use case specifies which ADS component renders the AI output.
 
 ## References
 
+### ADS Core
 - Atlassian Design System: https://atlassian.design/
 - ADS Tokens: https://atlassian.design/foundations/tokens
+- **All tokens (light + dark):** https://atlassian.design/components/tokens/all-tokens ← fetch for every token decision
 - ADS Components: https://atlassian.design/components
 - ADS Motion: https://atlassian.design/foundations/motion
+
+### ADF (Atlassian Document Format)
+- **ADF structure:** https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ ← fetch when description/comments in scope
+- **ADF playground:** https://developer.atlassian.com/cloud/jira/platform/apis/document/playground/ ← fetch to generate/validate ADF samples
+
+### Atlaskit Content Packages
+- **@atlaskit/editor-core:** https://www.npmjs.com/package/@atlaskit/editor-core ← fetch for description edit-mode surfaces
+- **@atlaskit/renderer:** https://www.npmjs.com/package/@atlaskit/renderer ← fetch for description read-mode surfaces
+- **@atlaskit/adf-utils:** https://www.npmjs.com/package/@atlaskit/adf-utils ← fetch for ADF content manipulation
+
+### Skills
 - `CLAUDE.md` (worktree root) — ban list, canonical rules
 - `design-critique/SKILL.md` — post-build H1-H10 scoring (pairs with this skill)
 - `jira-compare/SKILL.md` — parity gate (provides evidence for section 3)

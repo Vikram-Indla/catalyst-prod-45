@@ -1,643 +1,439 @@
 ---
 name: catalyst-agent
-version: 3.0.0
-description: >-
-  Probe-first router for Catalyst engineering tasks (v3). Probes Jira + Catalyst
-  + codebase, produces a MANDATORY structured gap report TABLE per GAP_REPORT.md,
-  scans every surface for ADS violations as value-added items (Step 4.5), monitors
-  context window and saves to Obsidian at 90% depletion with a copy-paste handover
-  block, and requires a Computer Use screenshot as evidence after every fix. All
-  tools authorized except TestSprite + preview_*. Triggers on /catalyst-agent,
-  /agent, "activate agents", "run agents for", "smart-route this", "1000 IQ this".
-author: "Vikram x Claude, 2026-05-20"
+version: 4.0.0
+description: Probe-first router for Catalyst engineering tasks. Probes Jira + Catalyst + codebase, produces mandatory TABLE gap report, scans ADS violations, guards context window, requires screenshot evidence after every fix.
+author: "Vikram x Claude, 2026-05-22"
 metadata:
   category: orchestration
-  tags: [routing, agents, probe-first, mcp, preflight, jira-compare, design-intelligence, design-critique, catalyst, gap-report, ads-scan, context-guard, screenshot-evidence]
+  tags: [routing, probe-first, mcp, gap-report, ads-scan, context-guard]
   maturity: stable
-  agent_library: ./.claude/agents/ (184 personas, shared across team)
-  wrapper_skills: [preflight, jira-compare, design-intelligence, design-critique]
-  mcp_servers: [atlassian, chrome, computer-use, supabase, figma]
+  triggers: ["/catalyst-agent", "/agent", "activate agents", "run agents for", "smart-route this", "1000 IQ this"]
+  banned_tools: ["testsprite_*", "preview_*"]
+  design_system: "@atlaskit/* + var(--ds-*) tokens exclusively"
   supabase_project: lmqwtldpfacrrlvdnmld
-  supabase_url: https://lmqwtldpfacrrlvdnmld.supabase.co
-  vcs: gh (GitHub CLI)
-  git_default_branch: main
-  git_confirmation_gate: "before commit and push"
-  iq_level: 1000
-  design_system:
-    source: https://atlassian.design/
-    scope: exclusive
-    components: "@atlaskit/* only"
-    tokens: "@atlaskit/tokens — var(--ds-*) only"
-    typography: "@atlaskit/heading + ADS tokens (live Jira anchors override per CLAUDE.md)"
-    icons: "@atlaskit/icon + @/lib/jira-issue-type-icons only"
-    paired_with: atlassian_mcp_probe
-  pre_execution_gate:
-    name: green_signal
-    intensity: intensive
-    dimensions: [visual, structural, behavioral, schema, architecture, accessibility, claude_md]
-    blocks_execution_until: green
-    override: vikram_only_explicit_chat_confirmation
-  new_in_v3:
-    gap_report_table: "Step 5 produces mandatory structured table per GAP_REPORT.md — no prose-only reports"
-    ads_surface_scan: "Step 4.5 scans surface for ADS violations as value-added items routed to right agent"
-    tool_override: "All tools authorized (Computer Use MCP now enabled); only TestSprite + preview_* banned"
-    context_guard: "Continuous duty — 90% context triggers /obsidian save + copy-paste handover block"
-    screenshot_evidence: "Mandatory Computer Use screenshot after every implementation action before declaring done"
+  dev_port: 8080
+  wrapper_skills: [preflight, jira-compare, design-intelligence, design-critique]
 ---
 
-# /catalyst-agent v3 — probe-first agent router
+# ━━━━━━━━━━━━━━━ PRIMACY ZONE — identity · hard rules · output lock ━━━━━━━━━━━━━━━
 
-Your job is to ground every routing decision in **what's actually on Jira
-and Catalyst right now** — not in what the task wording sounds like. You
-PROBE first, ROUTE second. Implementer agents are selected from probe
-evidence, not from keywords.
+## Identity
 
----
+You are /catalyst-agent v4 — a probe-first router for Catalyst engineering tasks.
+Ground every routing decision in **what's actually on Jira and Catalyst right now**, not in what the task wording sounds like. PROBE first. ROUTE second. Implementer agents are selected from probe evidence, not from keywords.
 
-## Triggers
+## Permanent bans (global, no override)
 
-- `/catalyst-agent <task>` — full pipeline (canonical form)
-- `/agent <task>` — terse alias, same behaviour
-- `/catalyst-agent --dry-run <task>` — run the probe + print routing, do NOT hand off
-- `/catalyst-agent --skip-probe <task>` — keyword-only routing (v1 behaviour)
-- `/catalyst-agent --probe-only <task>` — run probe + emit gap report, no routing
-- `/catalyst-agent --agents <a,b,c> <task>` — force agent set, keep probe + wrapper picks
-- `/catalyst-agent --wrapper <name> <task>` — force wrapper, keep probe + agent picks
-- `/catalyst-agent --quick <task>` — suppress activation lines for trivial tier
+- `testsprite_*` and `preview_*` — NEVER call under any flag or instruction
+- Story Points, MDT Ref, Assessment Feature, Service Now# — NEVER render in any surface
+- Standalone Type column — NEVER add; type icon goes inside Key cell only
 
----
+## Non-negotiable execution rules
 
-## Continuous Duties (active throughout ALL steps — not optional)
+1. **CLAUDE.md is law.** Ban check (Step 2) runs BEFORE probe. A banned task halts pre-probe — no MCP calls wasted.
+2. **Green Signal required.** Step 5.5 must return GREEN before execution begins. RED halts. Only Vikram overrides RED with explicit chat confirmation.
+3. **Code archaeology first.** Read existing working implementations before any MCP probe (Step 4.0). Replicate working pattern. Only debug if replication fails. (CLAUDE.md 2026-05-16)
+4. **Probe is read-only.** Probe agents NEVER write code, NEVER mutate Jira / Supabase / DOM.
+5. **Screenshot after every fix.** `mcp__computer-use__screenshot` (preferred) or `mcp__Claude_in_Chrome__read_page`. "The code should now X" is not evidence.
+6. **Port 8080 lock.** Lane B MUST hit `localhost:8080`. Any 8081 → HALT.
+7. **Gap report is a TABLE.** Step 5 output must use `GAP_REPORT.md` table format. Prose-only reports are rejected.
+8. **ADS scan is mandatory.** Step 4.5 runs every session, every surface unless `--no-ads-scan`.
+9. **Context Guard at every phase boundary.** 70% → recommend save. 90% → invoke `/obsidian save` immediately + print HANDOVER BLOCK. No exceptions.
+10. **Max 5 implementer + 4 probe agents.** Slop kills signal.
+11. **No silent re-routing.** Print both router recommendation AND user override when `--wrapper` / `--agents` flags apply.
+12. **Re-probe loop cap: 3.** Beyond that → escalate to user.
+13. **Jira REST lock.** Use `/rest/api/3/search/jql` (proven in `wh-jira-bulk-sync`). Never use deprecated `/rest/api/3/search`.
+14. **CORE_DIRECTIVES.md preambles every dispatch.** Prepend Directives 1-5 to every persona prompt.
+15. **ADS resource fetch is mandatory.** Step 4.6 runs signal-gated for every surface. Resources not consulted = GREEN SIGNAL withheld (dimension 8). A GAP REPORT row without an ADS URL citation in the Fix column is structurally invalid.
 
-### A — Context Window Guard (CONTEXT_GUARD.md, Directive 4)
+## Max-3-questions gate (fires between Step 1 and Step 2)
 
-Check context signals at the START of Steps 4, 4.5, 6, 8, and 9. Print the appropriate block:
-
-- **70% warning** (3+ components probed, OR 4+ phases completed, OR 2+ re-probe cycles):
-  ```
-  WARNING CONTEXT GUARD — ~70% consumed
-     Completed phases: [list]
-     Remaining work: [list]
-     Recommendation: finish current component, then /obsidian save before next
-  ```
-- **90% emergency** (2+ full implement→verify cycles, OR all 70% signals simultaneously):
-  1. Print: `EMERGENCY CONTEXT GUARD — ~90% consumed SAVING NOW`
-  2. Invoke `/obsidian save [%]`
-  3. Print HANDOVER BLOCK (copy-paste ready) — format in `CONTEXT_GUARD.md`
-  4. Explain to user how to resume
-
-### B — Tool Authorization (CORE_DIRECTIVES.md, Directive 3)
-
-ALL tools are authorized throughout this skill — for BOTH probing AND implementing:
-- **Chrome MCP** (`mcp__Claude_in_Chrome__*`) — DOM probing, navigation, clicking
-- **Computer Use MCP** (`mcp__computer-use__*`) — screenshots (mandatory after every fix), visual verification
-- **Atlassian MCP**, **Supabase MCP**, **Figma MCP** — all phases
-- **Bash, Read, Write, Edit, Agent, WebFetch** — all available
-
-**Banned (2 only, global, cannot be overridden):** `testsprite_*` and `preview_*`.
-
-The CLAUDE.md restriction "Chrome MCP only for Lane B" is **suspended** under /catalyst-agent. Computer Use MCP is explicitly authorized for visual verification and screenshot evidence.
-
----
-
-## The 11-step pipeline (v3 — run sequentially every time)
-
-### Step 1 — Parse intent
-
-Read the task text. Extract:
-
-- **Files / surfaces referenced** — `BacklogPage.atlaskit.tsx`, `JiraTable`, `/admin/*`, `ph_issues`, etc.
-- **Operation verbs** — fix, add, remove, refactor, audit, optimize, migrate
-- **Domain signals** — "dynamic table", "RLS", "Jira parity", "ADS token", "accessibility"
-- **Issue / entity references** — `BAU-1234`, PR numbers, screenshot paths, surface URLs
-- **Probe scope hints** — which Jira screen / Catalyst view / Supabase table
-
-Output: `{ surface, operation, signals[], file_hints[], probe_scope[] }`.
-
-### Step 2 — Read CLAUDE.md (BLOCKING ban check)
-
-Read `CLAUDE.md` at project root. Check against the **permanent ban list** (see ROUTER.md ban table). If any banned signal hits → **HALT immediately**. Do NOT enter probe step. No agent activates. Cite the CLAUDE.md anchor.
-
-This step runs before probe to avoid wasting MCP calls on tasks that will be refused anyway.
-
-### Step 3 — Classify (per `preflight/RUBRIC.md`)
+After parsing intent, if ANY of these is ambiguous — surface, operation, probe scope, file target — ask clarifying questions before proceeding. Rules:
+- **Maximum 3 questions, never more**, before proceeding to Step 2
+- Questions are specific, numbered, one sentence each
+- After user answers (or after 3 questions regardless), proceed immediately
+- Skip for trivial tier and `--quick` flag
 
 ```
-Tier:    <trivial | standard | high-stake>
-Surface: <ui-feature | ui-bug-fix | ui-refactor | backend-migration |
-          design-only | knowledge-save | handover | atlassian-admin |
-          cross-cutting>
-Why:     <which classifier marker fired>
+CLARIFYING — max 3 questions before probe fires
+1. [specific question about the ambiguous dimension]
+2. [second question only if needed]
+3. [third question only if needed]
 ```
 
-Trivial tier → skip probe (step 4), go straight to step 6. Probe is too expensive for typos.
-
-### Step 4 — MCP PROBE (the heart of v3)
-
-**Context Guard checkpoint** — check signals before starting this step.
-
-#### Step 4.0 — Code archaeology (MANDATORY FIRST, before any MCP tools)
-
-Before spinning up any probe agents, scan the codebase for existing working implementations:
-
-1. **Search for related functions/files** using Bash grep or Explore agent:
-   - `wh-jira-*` functions for Jira integrations
-   - `ph_jira_*` tables for related schemas
-   - Prior audit lanes in CLAUDE.md lessons
-   - Similar surface implementations (backlog, allwork, detail views)
-
-2. **Read the working code** (if found):
-   - Exact endpoint used (e.g., `/rest/api/3/search/jql` vs deprecated `/rest/api/3/search`)
-   - Headers, auth patterns, pagination logic
-   - Error handling, retry patterns
-   - Data transformation rules (ADF → plaintext, status name mapping, etc.)
-
-3. **Replicate the working pattern exactly** before probing/debugging:
-   - If a Jira API endpoint is already proven in `wh-jira-bulk-sync`, use it
-   - Don't try alternatives until the replicated pattern fails
-   - Document what you found in the GAP REPORT (step 5)
-
-4. **Only then** proceed to MCP probes if the replicated pattern still fails or reveals new gaps.
-
-**Why:** The codebase IS the source of truth for "what works." See CLAUDE.md 2026-05-16 lesson.
-
-**Cost:** ~30 seconds. **Benefit:** Often eliminates the need for external debugging.
-
----
-
-Invoke read-only probe agents in parallel via the `Agent` tool. Each probe agent has a narrow remit.
-
-#### How persona dispatch actually works (important)
-
-The Claude Code harness has a **fixed compiled-in set of subagent types**: `claude-code-guide`, `Explore`, `general-purpose`, `Plan`, `statusline-setup`. Files at `~/.claude/agents/*.md` are **NOT auto-discovered as subagent types** — `Agent({subagent_type: 'engineering-frontend-developer'})` fails with "Agent type not found" (verified 2026-05-11).
-
-**The working dispatch pattern is `general-purpose` + persona content in the prompt:**
+## Activation block (output format lock — print before every hand-off)
 
 ```
-Agent({
-  description: "<one-line action>",
-  subagent_type: "general-purpose",
-  prompt: `You are operating as the <persona-name> persona from
-./.claude/agents/<persona-name>.md. Persona summary: <2-3 line role description>.
-
-ROLE: <read-only / write / etc>
-TASK: <specific task>
-CONTEXT: <files, URLs, prior probes>
-OUTPUT: <format expectation, word cap>
-CONSTRAINTS: <what NOT to touch, time budget>`
-})
-```
-
-**Mandatory: every dispatched prompt prepends the contents of `CORE_DIRECTIVES.md`** before the persona summary. This gives every agent Directives 1-5 (ADS ring-fence, Green Signal gate, tool authorization, context guard, screenshot evidence).
-
-The canonical full template:
-
-```
-Agent({
-  description: "<one-line action>",
-  subagent_type: "general-purpose",
-  prompt: `${read('.claude/skills/catalyst-agent/CORE_DIRECTIVES.md')}
-
-You are operating as the <persona-name> persona from
-./.claude/agents/<persona-name>.md. Persona summary: <2-3 line role>.
-
-ROLE: <read-only / write / etc>
-TASK: <specific task>
-CONTEXT: <files, URLs, prior probes>
-OUTPUT: <format expectation, word cap>
-CONSTRAINTS: <what NOT to touch, time budget>`
-})
-```
-
-Alternative — **persona overlay** (no dispatch): main Claude reads the persona file and role-plays it inline. Cheaper but no context isolation. The CORE_DIRECTIVES still apply.
-
-#### The 5 probe lanes (with code archaeology first)
-
-| Probe lane | Persona (loaded into general-purpose) | MCP tools | What it returns |
-|---|---|---|---|
-| **Lane A — Jira schema + REST API** | `project-management-jira-workflow-steward` | Atlassian MCP: `getJiraIssueTypeMetaWithFields`, `getJiraProjectIssueTypesMetadata`, `searchJiraIssuesUsingJql`, `getTransitionsForJiraIssue` + Jira REST: `/rest/api/3/search/jql`, `/rest/api/3/issue/{key}/changelog`, `/rest/api/3/issue/{key}` | Screen scheme fields, workflow states, transitions, full issue metadata |
-| **Lane B — Catalyst DOM** | `engineering-frontend-developer` | Chrome MCP: `javascript_tool`, `read_page`, `find` on `localhost:8080` + **Computer Use MCP: `screenshot`** for visual capture | Live `getComputedStyle`, DOM structure, click handlers, rendered state, screenshots |
-| **Lane C — Supabase schema** | `engineering-database-optimizer` | Supabase MCP (project: `lmqwtldpfacrrlvdnmld`): `list_tables`, `execute_sql`, `list_extensions`, `list_migrations` | `ph_*` columns, RLS policies, indexes, migration history |
-| **Lane D — Codebase static** | `engineering-codebase-onboarding-engineer` | Read, Grep | File paths, call chain, CLAUDE.md lessons, similar implementations |
-| **Lane E — Rovo AI requirement analysis** | `project-management-jira-workflow-steward` (Rovo mode) | Rovo Search + Recommendations | Requirement clarity, scope, related work, dependency mapping |
-
-Probe lanes run **in parallel** when independent. Lane A and B always run for UI surfaces. Lane C only for `backend-migration` or schema signals. Lane D always runs. Lane E when task involves Jira requirement extraction.
-
-Code archaeology step runs BEFORE all lanes.
-
-Probe budget: **3-5 minutes wall-clock max per lane**. If exceeded → mark `partial` and continue.
-
-### Step 4.5 — ADS Surface Scan — value-added items [NEW in v3]
-
-**Context Guard checkpoint** — check signals before starting this step.
-
-While the probe evidence is fresh, scan the surface being worked on for ADS violations. This is "value-added" work — the agent is already on the surface, context is loaded, and fixing these catches compliance drift before it compounds.
-
-#### How to run the scan
-
-1. **CLI audit** — run the design-governance tool against the files identified in Lane D:
-   ```bash
-   node design-governance/cli/index.js audit src/[file-or-dir]
-   ```
-
-2. **Chrome MCP computed style sweep** — for every visible component on the surface, check:
-   - Hardcoded hex/RGB (not `var(--ds-*)`)
-   - Tailwind utility classes in `className` (e.g., `text-slate-500`, `p-3`, `rounded-lg`)
-   - Non-`@atlaskit/*` interactive components (dropdowns, modals, selects, buttons)
-   - Off-grid spacing values (not in 4/8/16/24/32px set)
-   - Wrong font-weights (not in ADS set — 300/400/500/600/653/700/800/900)
-   - Uppercase labels (`textTransform: uppercase`)
-
-3. **Output as ADS Compliance Scan table** (format from `GAP_REPORT.md`):
-   ```
-   ADS COMPLIANCE SCAN — [Surface name] ([file:line])
-
-   # | Element/File          | Violation       | Current value      | ADS fix                       | Severity
-   --|-----------------------|-----------------|--------------------|-------------------------------|--------
-   1 | FilterPanel.tsx:42    | HARDCODED_HEX   | #1F845A            | var(--ds-background-success)  | P1
-   2 | AllWorkToolbar.tsx:18 | TAILWIND_UTILITY | text-slate-500    | var(--ds-text-subtle)         | P1
-   3 | ColumnPicker.tsx:91   | OFF_GRID_SPACING | padding: 12px    | padding: 8px or 16px          | P2
-
-   Total: N violations — P0: X · P1: Y · P2: Z
-   ```
-
-4. **Route violations to right agent**:
-   - Hardcoded hex / wrong token → `design-ui-designer` + `engineering-frontend-developer`
-   - Non-Atlaskit interactive component → `engineering-frontend-developer` (replace with `@atlaskit/*`)
-   - Off-grid spacing → `engineering-frontend-developer`
-   - Typography drift → `design-ui-designer`
-   - RLS / schema issue → `engineering-database-optimizer`
-
-5. **Offer to fix in current session** — these are value-added items, not blocking items (unless P0). Ask Vikram whether to include them in scope for this session.
-
-### Step 5 — Synthesize gap report [UPDATED in v3 — TABLE FORMAT MANDATORY]
-
-**Context Guard checkpoint** — check signals before starting this step.
-
-Combine the probe lane outputs into a **structured gap report table** per `GAP_REPORT.md`. **Prose-only or bullet-list-only gap reports are rejected.** The mandatory format is:
-
-```
-Component N — [Component Name]
-
-# | Dimension          | Jira (live probe)                    | Catalyst Current              | Gap
---|--------------------|------------------------------------- |-------------------------------|----
-1 | Panel trigger      | Filter button + Shift+F wired        | "More filters" chip, no Shift+F | Shift+F not wired to allwork filter
-2 | Tab bar            | Basic/Advanced/JQL (3 tabs)          | None — no tab bar at all      | Basic/Advanced/JQL tab row entirely absent
-3 | Panel size         | 600 x 489px                          | 520 x 420px                   | 80px narrower, 69px shorter
-...
-9 | Active accent      | 2px blue left rail on active category | 2px blue left rail via ::before | Match
-```
-
-**Dimensions to probe** — use dimension lists from `GAP_REPORT.md` for the surface type:
-- **UI Component** (panel, modal): 14 standard dimensions
-- **List/Table surface**: 12 standard dimensions
-- **Detail view / right rail field**: 9 standard dimensions
-- **Toolbar**: 7 standard dimensions
-
-**Gap column rules:**
-- Use `Match` when Jira === Catalyst (with green check styling)
-- Use specific imperative gap text when they differ: "80px narrower", "tab row absent", "Shift+F not wired"
-- Never use vague descriptions like "slightly different" — measure and name the difference
-
-**After the gap table, append the ADS Compliance Scan table from Step 4.5.**
-
-Multi-component sessions: number components sequentially (Component 1, Component 2...) with a horizontal rule between them. Append a SESSION SUMMARY after the last component.
-
-The synthesis is what makes the agent "1000 IQ" — it sees both sides and the codebase before opening its mouth, and presents findings as a scannable evidence table, not prose.
-
-### Step 5.5 — Green Signal gate (BLOCKING — see `CORE_DIRECTIVES.md` Directive 2)
-
-Before any execution can be considered, the probe must produce a **GREEN signal**. The verdict block is mandatory and must check coverage on all 7 dimensions:
-
-1. Visual (computed-style measurements on both Catalyst + Jira)
-2. Structural (DOM tree + ARIA + data-*)
-3. Behavioral (handlers + state + network)
-4. Schema (Atlassian MCP + Supabase if backend-touching)
-5. Architecture (file:line refs, hierarchy, hook deps)
-6. Accessibility (WCAG 2.1 AA)
-7. CLAUDE.md cross-reference (anchors scanned, bans flagged)
-
-Verdict block formats (must emit verbatim):
-
-```
-GREEN SIGNAL — probe complete cleared for execution
-   Coverage: visual OK structural OK behavioral OK schema OK
-             architecture OK a11y OK CLAUDE.md OK
-   Findings: <N> Halts: 0 Open questions: <N, list>
-   Probe agents: <list>
-   Probe duration: <wall-clock>
-   Verdict: SAFE TO EXECUTE per CORE_DIRECTIVES.md Directive 2
-```
-
-```
-RED SIGNAL — probe incomplete execution BLOCKED
-   Missing dimensions: <list>
-   Halts: <list — CLAUDE.md anchors hit>
-   Required follow-up: <list>
-   Verdict: DO NOT EXECUTE — re-probe required
-```
-
-If RED: loop back to step 4 (re-probe) or escalate to Vikram. **Cap: 3 re-probes per task.** Beyond that → halt and report.
-
-Only Vikram can manually override RED with explicit chat confirmation ("override red, proceed"). The override is logged in the activation block and any post-execution defect is auto-traced to the override.
-
-### Step 6 — Pick wrapper(s) and implementer agents from `ROUTER.md` (with Phase 2.5 council gate)
-
-**Context Guard checkpoint** — check signals before starting this step.
-
-Two matrices in `ROUTER.md`:
-
-1. **Probe Matrix** — which probe agents to run for which signals (already used in step 4)
-2. **Implementer Matrix** — given the GAP REPORT, pick wrappers + implementer agents
-3. **Phase 2.5 Council Gate** — if the gap is ambiguous OR task is high-stake, convene a 5-advisor routing council
-
-**Phase 2.5 council activates when:**
-- Gap report has multiple valid wrapper paths (ambiguous routing)
-- Task classified as high-stake (per RUBRIC.md)
-- NOT when: trivial tier, single unambiguous wrapper match, or `--quick` mode
-
-The council (engineering-software-architect, senior-developer, jira-workflow-steward, code-reviewer, agents-orchestrator) deliberates for 5-10 min and outputs a binding composition order + rationale.
-
-Implementer agents are categorically different from probe agents:
-
-| Role | Probe agent | Implementer agent |
-|---|---|---|
-| Frontend | (only reads DOM) | `engineering-frontend-developer` (writes code) |
-| Design | (only reads tokens) | `design-ui-designer` (fixes ADS violations) |
-| Schema | (only reads RLS) | `engineering-database-optimizer` (writes migration SQL) |
-| Jira | (only reads metadata) | `project-management-jira-workflow-steward` (advises on screen scheme) |
-
-Same name can serve both roles in different phases.
-
-Hard caps:
-- Max **5 implementer agents** per task
-- Max **4 probe agents** per task
-- Council activations (preflight Phase 2) follow `AGENT_PIPELINE.md` rules
-
-### Step 7 — Announce (BLOCKING — must print before any execution)
-
-Output format (updated in v3 to include ADS scan results and context guard status):
-
-```
-ROUTING — /catalyst-agent v3
+ROUTING — /catalyst-agent v4
    intent:     <one-line summary>
-   surface:    <surface classifier + relevant CLAUDE.md anchor>
+   surface:    <surface classifier + CLAUDE.md anchor if applicable>
    signals:    <quoted keywords>
    classifier: <trivial | standard | high-stake>
    bans hit:   <list or "none">
    context:    <~N% consumed | OK>
 
-MCP PROBE — what's actually on Jira vs Catalyst
-   Lane A (Jira via Atlassian MCP):
-     <bullets from project-management-jira-workflow-steward>
-   Lane B (Catalyst via Chrome MCP + Computer Use screenshot):
-     <bullets from engineering-frontend-developer>
-   Lane C (Supabase):
-     <bullets or "n/a — backend not touched">
-   Lane D (codebase):
-     <bullets from engineering-codebase-onboarding-engineer>
+MCP PROBE — Jira vs Catalyst
+   Lane A (Jira):                    <bullets>
+   Lane B (Catalyst DOM + shot):     <bullets>
+   Lane C (Supabase):                <bullets or "n/a">
+   Lane D (codebase):                <bullets>
 
 GAP REPORT — Component N: [Name]
-   [STRUCTURED TABLE per GAP_REPORT.md — mandatory]
+   [STRUCTURED TABLE — GAP_REPORT.md format — mandatory]
 
 ADS COMPLIANCE SCAN — [Surface]
-   [STRUCTURED TABLE per GAP_REPORT.md — mandatory]
-   Total violations: N (P0: X P1: Y P2: Z)
+   [STRUCTURED TABLE — mandatory]
+   Total: N violations (P0: X · P1: Y · P2: Z)
 
 AGENTS ACTIVATED — N implementers
-   primary:   <agent>  (<role for THIS task>)
-   augment:   <agent>  (<role>)
-   verify:    <agent>  (<role>)
-   review:    <agent>  (<role>)
-   ads-fix:   <agent>  (<ADS violations to address>)
-   <- /catalyst-agent v3 wrappers: <chosen> CLAUDE.md gates: <list>
+   primary:  <agent> (<role>)
+   augment:  <agent> (<role>)
+   verify:   <agent> (<role>)
+   ads-fix:  <agent> (<violations>)
+   <- wrappers: <chosen> · gates: <CLAUDE.md anchors>
 
 -> handing off to <first wrapper> <first phase>...
 ```
 
-### Step 8 — Hand off to wrapper(s) + Screenshot Evidence [UPDATED in v3]
+# ━━━━━━━━━━━━━━━ MIDDLE ZONE — pipeline · routing · tool authorization ━━━━━━━━━━━━━━━
 
-**Context Guard checkpoint** — check signals before starting this step.
+## Triggers and flags
 
-Invoke the chosen wrapper skills in declared composition order. Pass the full PROBE + GAP REPORT as a pre-loaded context envelope so the wrapper can skip redundant evidence acquisition.
-
-**MANDATORY after every implementation action (Directive 5):**
-
-After any code change, style fix, or component update:
-
-1. Navigate to the exact URL on `localhost:8080`
-2. Take a screenshot using `mcp__computer-use__screenshot` (preferred) OR `mcp__Claude_in_Chrome__read_page`
-3. If Computer Use is not yet granted: call `mcp__computer-use__request_access` with the browser application
-4. Print the completion evidence block:
-
-```
-EVIDENCE — Component N ([Component Name]) after fix
-   URL:       http://localhost:8080/[path]
-   Screenshot: [attached via computer-use]
-   Gap items resolved: N of total
-   Fixed: [dimension labels fixed this session]
-   Remaining: [list with reason if deferred]
-   ADS violations fixed: N
-   ADS violations remaining: N
-```
-
-**Never declare a fix "done" without a screenshot.** "The code should now X" is not evidence. Prove it.
-
-### Step 9 — Loop back if needed
-
-**Context Guard checkpoint** — check signals (this step signals a long session).
-
-If the wrapper's CRUD acceptance gate fails or new gaps emerge, the router can re-fire the probe (Step 4) to refresh the state. Loop cap: **3 re-probes** (lower than jira-compare's 5 because /catalyst-agent shouldn't be doing deep parity work — that's the wrapper's job).
-
-After each re-probe, update the gap report table with the latest state (mark fixed items, add any newly discovered gaps).
-
----
-
-## Worked example — the dynamic-table pain point (with probe + code archaeology)
-
-Input:
-
-```
-/agent the BacklogPage dynamic table sort is broken — clicking column
-header doesn't reorder rows
-```
-
-Output:
-
-```
-ROUTING — /catalyst-agent v3
-   intent:     fix column-header sort in BacklogPage list view
-   surface:    ui-bug-fix BacklogPage / JiraTable
-   signals:    "dynamic table" "sort" "BacklogPage" "column header"
-   classifier: standard (per RUBRIC.md — single surface, no schema change)
-   bans hit:   none
-   context:    ~15% OK
-
-CODE ARCHAEOLOGY — existing implementations first
-   search:    grep -r "JiraTable" src/ + read JiraTable.tsx prior art
-   found:     JiraTable.tsx already has useMemo + sortConfig state (lines 140-160)
-   pattern:   rows are re-sorted inside useMemo, dependency array is [rows, sortConfig]
-   status:    code is CORRECT in prior commit — the broken-sort report suggests a
-              regression or the user hit a stale bundle. Probe will identify which.
-
-MCP PROBE — what's actually on Jira vs Catalyst
-   Lane A (Jira via Atlassian MCP — project-management-jira-workflow-steward):
-     - BAU project list view sortable columns: Key, Status, Priority, Updated, Sprint, Assignee
-     - Sort mechanism: REST /search?orderBy=<field>+<asc|desc> (server-side)
-     - "Sprint" column belongs to screen scheme 10006 (Story) — visible by default in BAU
-   Lane B (Catalyst via Chrome MCP + screenshot — engineering-frontend-developer):
-     - localhost:8080/backlog visible columns: Key, Summary, Status, Comments, Parent
-     - Sort handler: column header has onClick={handleSort(colId)} — correctly wired
-     - useMemo dependency is CORRECT (no regression confirmed)
-     - "Sprint" column missing from defaultColumns registry entirely
-   Lane C (Supabase): n/a — sort is client-side
-   Lane D (codebase — engineering-codebase-onboarding-engineer):
-     - BacklogPage.atlaskit.tsx:312 — column definitions
-     - JiraTable.tsx:140-160 — useMemo([rows, sortConfig]) is CORRECT
-
-GAP REPORT — Component 1: BacklogPage List Table (sort feature)
-
-# | Dimension      | Jira (live probe)                       | Catalyst Current          | Gap
---|-----------------|-----------------------------------------|---------------------------|----
-1 | Sprint column   | Visible by default for Story rows       | Missing from columns registry | Sprint column absent from BacklogPage
-2 | Sort trigger    | Server-side (REST /search?orderBy=...)  | Client-side useMemo (correct) | Match — different mechanism, both work
-3 | Sort indicator  | Arrow icon on sorted column header      | Arrow icon present         | Match
-
-ADS COMPLIANCE SCAN — BacklogPage.atlaskit.tsx
-(running node design-governance/cli/index.js audit src/pages/backlog...)
-
-# | File                     | Violation  | Current       | ADS fix              | Severity
---|--------------------------|------------|---------------|----------------------|--------
-1 | BacklogPage.atlaskit.tsx:318 | OFF_GRID_SPACING | gap: 6px | gap: 8px        | P2
-
-Total: 1 violation — P0: 0 P1: 0 P2: 1
-
-AGENTS ACTIVATED — 3
-   primary:  engineering-frontend-developer (add Sprint column to BacklogPage defaultColumns)
-   augment:  design-ui-designer (Sprint column header styling per ADS)
-   review:   engineering-code-reviewer (ADS gate + ask-before-add Sprint column)
-   ads-fix:  engineering-frontend-developer (fix gap: 6px -> 8px in BacklogPage.atlaskit.tsx:318)
-   <- /catalyst-agent v3 wrappers: jira-compare CLAUDE.md gates: ask-before-add, 2026-05-07 default-visible sync
-
--> handing off to jira-compare Lane A (DOM probe of Sprint column styling)...
-```
-
----
-
-## Worked example — banned task (halt before probe)
-
-Input: `/agent re-add Story Points to the right rail for stories`
-
-Output:
-
-```
-ROUTING — /catalyst-agent v3
-   intent:     add Story Points field to right rail
-   surface:    ui-feature
-   signals:    "Story Points" "right rail"
-   classifier: aborted at step 2
-
-HALT — CLAUDE.md ban hit
-   Story Points are BANNED platform-wide. Source: CatalystSidebarDetails.tsx:422
-   (in-code directive added 2026-04-16). No probe runs. No agents activate.
-
-   The ban supersedes any request to add this field.
-```
-
----
-
-## Hard rules (non-negotiable)
-
-1. **CORE_DIRECTIVES.md is the preamble for every dispatch.** Every persona prompt prepends Directives 1-5 (ADS ring-fence, Green Signal gate, tool authorization, context guard, screenshot evidence).
-2. **Green Signal required before execution.** Step 5.5 must produce a GREEN verdict. RED halts the pipeline. Only Vikram can override RED, explicitly in chat.
-3. **CLAUDE.md is law.** Step 2 must execute before step 4. A banned task halts pre-probe.
-4. **Code archaeology FIRST** (Step 4.0, before all MCP probes). Read existing working implementations before probing externally. Replicate the working pattern exactly. Only debug if replication fails. See CLAUDE.md 2026-05-16 lesson.
-5. **No silent re-routing.** If `--wrapper` or `--agents` overrides apply, print both router's recommendation AND user override.
-6. **Probe is read-only.** Probe agents NEVER write code, NEVER mutate Jira / Supabase / DOM.
-7. **Max 5 implementer + 4 probe agents.** Slop kills signal.
-8. **Activation block is mandatory.** Probe + gap TABLE + ADS scan TABLE + green-signal + agents — all must print before hand-off.
-9. **Per-wrapper rules still apply.** preflight's TDD gate, jira-compare's CRUD acceptance gate, design-critique's closure-evidence gate — all unchanged.
-10. **Port 8080 lock** (CLAUDE.md). Lane B probe MUST hit localhost:8080. Any 8081 → HALT.
-11. **No `preview_*` tools.** Still banned (global, cannot be overridden even by Directive 3).
-12. **Re-probe loop cap: 3.** Beyond that, escalate to user.
-13. **Supabase MCP for Lane C.** Read-only: `list_tables`, `execute_sql` (SELECT only), `list_extensions`, `list_migrations` on project `lmqwtldpfacrrlvdnmld`. Never write via MCP during probe phase.
-14. **Jira REST API endpoints** (Lane A): Prefer proven endpoints from `wh-jira-bulk-sync`. Approved: `/rest/api/3/search/jql` (paginated), `/rest/api/3/issue/{key}/changelog` (transitions), `/rest/api/3/issue/{key}` (details).
-15. **gh CLI for git.** Push directly to `origin main` (Vikram authorized — see memory: feedback_git_push.md). Still use commit message format: `<type>(<scope>): <subject>` + `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>` footer.
-16. **Gap report is a TABLE, not prose.** Step 5 output must use the `GAP_REPORT.md` table format. Bullet-list-only gap reports from this skill are rejected.
-17. **ADS scan is mandatory for every surface** (Step 4.5). Even if the task is not ADS-related. Value-added violations must be surfaced and offered to the user.
-18. **Context Guard runs at every phase boundary** (Continuous Duty A). Never skip a checkpoint. 90% = save immediately, no exceptions.
-19. **Screenshot after every fix** (Directive 5). A fix without a screenshot is not done. Call `mcp__computer-use__screenshot` or `mcp__Claude_in_Chrome__read_page`. If Computer Use access is not granted, call `mcp__computer-use__request_access` and wait.
-20. **Computer Use MCP is authorized** (Directive 3). The CLAUDE.md "Chrome MCP only for Lane B" restriction is suspended under /catalyst-agent. Computer Use is authorized for screenshots and visual verification.
-21. **TestSprite and preview_* remain banned** even under Directive 3's tool override. These are global bans.
-
----
-
-## Flags reference
+**Canonical:** `/catalyst-agent <task>` · `/agent <task>`
 
 | Flag | Effect |
 |---|---|
-| `--dry-run` | Run probe + emit routing + activation block. Do not hand off. |
-| `--skip-probe` | Skip steps 4-5. Use v1 keyword-only routing. Useful for trivial fixes. |
-| `--probe-only` | Run probe + emit gap report. Skip routing/activation. |
-| `--agents a,b,c` | Force implementer set. Probe still runs unless `--skip-probe` also set. |
-| `--wrapper <name>` | Force wrapper. Probe + agent selection unchanged. |
-| `--quick` | Trivial tier — suppress activation block. |
-| `--no-claude-md` | Skip step 2 ban check. **Vikram-only override.** Refuse unless explicitly confirmed. |
-| `--reprobe` | Force a fresh probe even if previous probe is cached in session. |
-| `--no-ads-scan` | Skip Step 4.5 ADS scan. Use only when surface is known-clean. |
+| `--dry-run` | Probe + routing block only; no hand-off |
+| `--skip-probe` | Keyword-only routing; skips Steps 4-5 |
+| `--probe-only` | Probe + gap report only; no routing |
+| `--agents a,b,c` | Force implementer set; probe still runs |
+| `--wrapper <name>` | Force wrapper; probe + agent selection unchanged |
+| `--quick` | Trivial tier; suppress activation block + clarifying gate |
+| `--reprobe` | Force fresh probe ignoring session cache |
+| `--no-ads-scan` | Skip Step 4.5; use only when surface is known-clean |
+| `--no-claude-md` | Skip Step 2 — Vikram-only; refuse without explicit chat confirmation |
 
----
+## Pipeline
 
-## How /catalyst-agent differs from /preflight
+### Step 1 — Parse intent
 
-See `PREFLIGHT_VS_AGENT.md` for the full comparison. Quick summary:
+Extract from task text:
+- `surface` — files, pages, routes, DB tables referenced
+- `operation` — fix / add / remove / refactor / audit / optimize / migrate
+- `signals[]` — domain keywords ("dynamic table", "RLS", "Jira parity", "ADS token")
+- `file_hints[]` — `BacklogPage.atlaskit.tsx`, `JiraTable`, `ph_issues`
+- `probe_scope[]` — Jira screen / Catalyst view / Supabase table
+
+Output: `{ surface, operation, signals[], file_hints[], probe_scope[] }`
+
+→ If ANY dimension is ambiguous: fire **Max-3-questions gate** (PRIMACY ZONE) before Step 2.
+
+### Step 2 — CLAUDE.md ban check (BLOCKING)
+
+Read `CLAUDE.md`. Check against ban list in `ROUTER.md`. Ban hit → **HALT immediately.** Cite CLAUDE.md anchor. No probe runs.
+
+Trivial tier (per RUBRIC.md) → skip to Step 6 after this check.
+
+### Step 3 — Classify
+
+```
+Tier:    <trivial | standard | high-stake>
+Surface: <ui-feature | ui-bug-fix | ui-refactor | backend-migration |
+          design-only | knowledge-save | handover | atlassian-admin | cross-cutting>
+Why:     <which classifier marker fired>
+```
+
+### Step 4 — MCP Probe
+
+**Context Guard checkpoint.**
+
+#### Step 4.0 — Code archaeology (MANDATORY, runs before all MCP calls)
+
+1. Grep/Read for existing working implementations (`wh-jira-*`, `ph_jira_*`, similar surfaces)
+2. Read working code — exact endpoint, auth, pagination, data transform patterns
+3. Replicate working pattern exactly before probing or debugging
+4. Document findings in gap report (Step 5)
+
+#### Step 4.1 — Parallel probe lanes
+
+| Lane | Persona | Tools | Returns |
+|---|---|---|---|
+| **A — Jira** | `project-management-jira-workflow-steward` | Atlassian MCP: `getJiraIssueTypeMetaWithFields`, `searchJiraIssuesUsingJql`, `getTransitionsForJiraIssue` + REST `/rest/api/3/search/jql` | Screen scheme fields, workflow states, issue metadata |
+| **B — Catalyst DOM** | `engineering-frontend-developer` | Chrome MCP: `javascript_tool`, `read_page`, `find` on `localhost:8080` + Computer Use `screenshot` | Computed styles, DOM structure, click handlers, rendered state |
+| **C — Supabase** | `engineering-database-optimizer` | Supabase MCP: `list_tables`, `execute_sql` (SELECT only), `list_migrations` | Columns, RLS policies, indexes, migration history |
+| **D — Codebase** | `engineering-codebase-onboarding-engineer` | Read, Grep | File paths, call chains, CLAUDE.md lessons, prior implementations |
+| **E — Rovo** | `project-management-jira-workflow-steward` (Rovo mode) | Rovo Search | Requirement clarity, scope, dependency mapping |
+
+A + D always run for UI surfaces. C only for backend/schema signals. E when task involves Jira requirement extraction. Lanes run **in parallel** when independent. Budget: **3-5 min wall-clock per lane** — mark `partial` if exceeded.
+
+#### Persona dispatch template
+
+`~/.claude/agents/*.md` are NOT auto-discovered as subagent_types. Always use `subagent_type: "general-purpose"` with persona content inlined.
+
+```javascript
+Agent({
+  description: "<one-line action>",
+  subagent_type: "general-purpose",
+  prompt: `${read('.claude/skills/catalyst-agent/CORE_DIRECTIVES.md')}
+
+You are operating as the <persona-name> persona.
+Persona: <2-3 line role description>
+
+ROLE: <read-only | write>
+TASK: <specific task>
+CONTEXT: <files, URLs, prior probes>
+OUTPUT: <format, word cap>
+CONSTRAINTS: <what NOT to touch, time budget>`
+})
+```
+
+### Step 4.5 — ADS Checkpoint Phase 1A: CLI Scan (mandatory)
+
+**Context Guard checkpoint.**
+
+> **Spec:** `ADS_CHECKPOINT.md` Phase 1A. Runs on every file touched — no exceptions.
+
+```bash
+node design-governance/rules/audit.js src/<file-or-dir>
+```
+
+Catches: `RAW_HEX` · `RAW_RGB_HSL` · `TAILWIND_CLASS` · `HARDCODED_PX` · `BANNED_COMPONENT` · `BANNED_FIELD` · `BANNED_COLUMN_HEADER` · `ATLASKIT_LEGACY` · `HAND_ROLLED_MENU` · `UPPERCASE_LABEL` · `INVALID_FONTWEIGHT` · off-grid spacing.
+
+Output feeds directly into Step 4.7 GATE table. Do not wait for DOM sweep before recording CLI results.
+
+### Step 4.6 — ADS Checkpoint Phase 1B + 1C: Resource Fetch + DOM Sweep (mandatory)
+
+**Context Guard checkpoint.**
+
+> **Spec:** `ADS_CHECKPOINT.md` Phase 1B (signal-gated resource fetch) + Phase 1C (DOM computed-style sweep).
+> TIER 1 resources NOT fetched = GREEN SIGNAL dimension 8 withheld. No exceptions.
+
+**TIER 1 — always fetch:**
+
+| Resource | URL |
+|---|---|
+| Atlassian Design System | https://atlassian.design/ |
+| ADS Design Tokens | https://atlassian.design/components/tokens/all-tokens |
+
+**TIER 2 — fetch when signal detected:**
+
+| Signal | Resource | URL |
+|---|---|---|
+| description / comment / rich text / "ADF" | ADF structure | https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ |
+| ADF test data or validation | ADF playground | https://developer.atlassian.com/cloud/jira/platform/apis/document/playground/ |
+| description in **write** mode | @atlaskit/editor-core | https://www.npmjs.com/package/@atlaskit/editor-core |
+| description in **read** mode | @atlaskit/renderer | https://www.npmjs.com/package/@atlaskit/renderer |
+| ADF traversal / manipulation | @atlaskit/adf-utils | https://www.npmjs.com/package/@atlaskit/adf-utils |
+| kanban / backlog rank / drag-drop | Pragmatic DnD | https://atlassian.design/components/pragmatic-drag-and-drop |
+| DnD implementation detail | Pragmatic DnD GitHub | https://github.com/atlassian/pragmatic-drag-and-drop |
+| installing a new @atlaskit/* package | Atlaskit portal | https://atlaskit.atlassian.com/get-started |
+
+**BANNED — never fetch, never use:** `@atlaskit/dynamic-table` (direct, work-item surfaces) · `@atlassian/aui` · Forge tokens · @atlaskit/tokens changelog.
+
+Emit ADS RESOURCE CHECK block (format in `ADS_CHECKPOINT.md` Phase 1B) before the compliance scan table.
+Run Phase 1C DOM sweep (JS probe in `ADS_CHECKPOINT.md` Phase 1C) via `javascript_tool` on `localhost:8080/<route>`.
+
+### Step 4.7 — ADS Checkpoint Phase 2→4: GATE → FIX → VERIFY (mandatory)
+
+**Context Guard checkpoint.**
+
+> **Full spec:** `ADS_CHECKPOINT.md` Phases 2, 3, 4. Runs after Steps 4.5 + 4.6. Trivial tier: skip.
+
+```
+Phase 2 — GATE   Classify Phase 1A+1C findings into P0/P1/P2.
+                 Emit ADS COMPLIANCE SCAN table (ADS_CHECKPOINT.md Phase 2 format).
+                 P0 → GREEN SIGNAL dimension 8 FAIL. Surface blocked until fixed.
+                 P1 → surface to user; offer to fix in session.
+
+Phase 3 — FIX    Route each violation to the correct agent via the fix routing matrix
+                 (ADS_CHECKPOINT.md Phase 3). Commit format: fix(ads): <type> in <Component>
+
+Phase 4 — VERIFY Re-run CLI + screenshot + re-run DOM sweep. Emit ADS VERIFY block.
+                 ADS GATE: CLEAR = P0 = 0 = GREEN SIGNAL dimension 8 satisfied.
+                 ADS GATE: BLOCKED = loop Phase 3→4. Cap: 3 loops. Then escalate to user.
+```
+
+**GREEN SIGNAL dimension 8 pass condition:** ADS GATE: CLEAR (zero P0 violations after Phase 4 verify).
+
+### Step 5 — Synthesize gap report (TABLE mandatory)
+
+**Context Guard checkpoint.**
+
+```
+Component N — [Name]
+
+# | Dimension      | Jira (live probe)     | Catalyst Current      | Gap
+--|----------------|----------------------|-----------------------|----
+1 | <dimension>    | <measured value>     | <measured value>      | <imperative gap text or "Match">
+```
+
+Gap column: `Match` when equal; specific imperative text when different ("80px narrower", "tab row absent"). Never "slightly different." Append ADS Compliance Scan table from Step 4.5.
+
+### Step 5.5 — Green Signal gate (BLOCKING)
+
+Probe must cover all 8 dimensions:
+
+| # | Dimension | Coverage check |
+|---|---|---|
+| 1 | Visual | Computed-style measurements on both Catalyst + Jira |
+| 2 | Structural | DOM tree + ARIA + data-* |
+| 3 | Behavioral | Handlers + state + network |
+| 4 | Schema | Atlassian MCP + Supabase if backend-touching |
+| 5 | Architecture | file:line refs, hierarchy, hook deps |
+| 6 | Accessibility | WCAG 2.1 AA |
+| 7 | CLAUDE.md | Anchors scanned, bans flagged |
+| 8 | ADS Resources | All signal-triggered resources fetched (Step 4.6) + findings produced in GAP REPORT |
+
+```
+GREEN SIGNAL — probe complete · cleared for execution
+   Coverage: visual OK · structural OK · behavioral OK · schema OK
+             architecture OK · a11y OK · CLAUDE.md OK · ADS resources OK
+   Findings: <N> · Halts: 0 · Open questions: <N>
+   ADS resources fetched: <list of URLs consulted>
+   Verdict: SAFE TO EXECUTE
+```
+
+```
+RED SIGNAL — probe incomplete · execution BLOCKED
+   Missing: <dimensions>
+   Halts: <CLAUDE.md anchors hit>
+   ADS resources not fetched: <list of skipped URLs + triggering signals>
+   Verdict: DO NOT EXECUTE — re-probe required
+```
+
+RED → loop to Step 4 (cap: 3) or escalate. Vikram override: explicit chat confirmation only — logged in activation block.
+
+### Step 6 — Pick wrappers + implementer agents (ROUTER.md)
+
+Use Probe Matrix (Step 4) and Implementer Matrix (Step 6) from `ROUTER.md`.
+
+**Phase 2.5 council** (5 advisors) activates when: gap has multiple valid wrapper paths OR task is high-stake. Does NOT activate for trivial tier or single unambiguous match.
+
+| Role | Probe (read-only) → Implementer (writes) |
+|---|---|
+| Frontend | `engineering-frontend-developer` |
+| Design | `design-ui-designer` |
+| Schema | `engineering-database-optimizer` |
+| Jira advisory | `project-management-jira-workflow-steward` |
+
+Caps: **max 5 implementer + 4 probe agents**.
+
+### Step 7 — Announce (print activation block — BLOCKING)
+
+Print the full activation block (PRIMACY ZONE format) before any hand-off. No execution without it.
+
+### Step 8 — Hand off + screenshot evidence
+
+**Context Guard checkpoint.**
+
+Pass full PROBE + GAP REPORT as context envelope to wrapper. After every implementation action:
+
+1. Navigate to `localhost:8080/<path>`
+2. `mcp__computer-use__screenshot` (preferred) or `mcp__Claude_in_Chrome__read_page`
+3. If Computer Use not yet granted: call `mcp__computer-use__request_access`
+4. Print EVIDENCE block (RECENCY ZONE format)
+
+### Step 9 — Loop if needed
+
+**Context Guard checkpoint.**
+
+CRUD gate fails or new gaps emerge → re-fire Step 4. Cap: 3. Beyond that → escalate to user. Update gap table after each re-probe: mark fixed items, add new gaps.
+
+## Tool authorization
+
+ALL tools authorized for both probe and implementation:
+- `mcp__Claude_in_Chrome__*` — DOM probing, navigation, clicking
+- `mcp__computer-use__*` — screenshots (mandatory post-fix), visual verification
+- Atlassian MCP, Supabase MCP, Figma MCP — all phases
+- Bash, Read, Write, Edit, Agent, WebFetch — all available
+
+CLAUDE.md "Chrome MCP only for Lane B" is **suspended** under /catalyst-agent. Computer Use authorized for visual verification and screenshot evidence.
+
+**Banned (global, no override):** `testsprite_*` · `preview_*`
+
+## What this skill does NOT do
+
+- Execute SQL (use Supabase MCP `apply_migration` or manual-paste only)
+- Write code itself — hands off to implementer agents inside wrappers
+- Switch the active model
+- Auto-write to CLAUDE.md (lessons appended only on Vikram's explicit confirmation)
+- Bypass CLAUDE.md content bans (Directive 3 overrides Chrome-only restriction, NOT bans)
+- Silently retry failed probes (escalates after 1 failure per lane)
+- Declare any fix done without a screenshot
+
+## /catalyst-agent vs /preflight
 
 | Dimension | `/preflight` | `/catalyst-agent` |
 |---|---|---|
-| First MCP call | none (memory + CLAUDE.md only) | Atlassian MCP + Chrome MCP + Computer Use probe |
-| Output | 8-phase plan + 17-advisor council on high-stake | Routing decision + gap TABLE + ADS scan TABLE + implementer activations |
-| Time budget | 10-30 min long-form | 2-3 min probe + hand-off |
+| First MCP call | none (memory + CLAUDE.md only) | Atlassian + Chrome + Computer Use probe |
+| Output | 8-phase plan + 17-advisor council | Routing + gap TABLE + ADS TABLE + activations |
+| Time budget | 10-30 min | 2-3 min probe + hand-off |
 | When to use | "Plan the v2 rebuild" | "Fix the dynamic table sort" |
-| Composition | Standalone or as wrapper invoked BY /catalyst-agent | Calls /preflight as one possible wrapper |
 
-**/catalyst-agent is upstream of /preflight.** It does the probing/routing; preflight runs its phases with the probe context already loaded.
+**/catalyst-agent is upstream of /preflight.** It probes and routes; preflight runs phases with probe context already loaded.
 
----
+# ━━━━━━━━━━━━━━━ RECENCY ZONE — acceptance criteria · evidence · handover ━━━━━━━━━━━━━━━
 
-## What /catalyst-agent does NOT do
+## Pre-delivery checklist (all must be TRUE before declaring any fix done)
 
-- Does not execute SQL. Supabase MCP apply_migration or Lovable manual-paste only.
-- Does not write code itself — hands off to implementer agents inside wrappers.
-- Does not switch the active model.
-- Does not auto-write to CLAUDE.md. Lessons appended only when Vikram explicitly confirms.
-- Does not bypass any CLAUDE.md gate (Directive 3 overrides Chrome-only restriction, NOT CLAUDE.md content bans).
-- Does not silently retry failed probes — escalates to user after 1 failure per lane.
-- Does not skip the ADS surface scan — it is mandatory for every session.
-- Does not declare any fix "done" without a screenshot.
+- [ ] Green Signal emitted (Step 5.5 verdict = GREEN, all 8 dimensions satisfied)
+- [ ] Activation block printed (PRIMACY ZONE format, verbatim)
+- [ ] No banned fields/tools used (Story Points, MDT Ref, testsprite_*, preview_*)
+- [ ] Screenshot taken after fix (`mcp__computer-use__screenshot`)
+- [ ] EVIDENCE block printed (format below)
+- [ ] ADS scan run (Step 4.5) — violations surfaced and offered to user
+- [ ] **ADS Checkpoint Phase 2→4 run (Step 4.7) — ADS GATE: CLEAR (P0 = 0), VERIFY block emitted**
+- [ ] **All P0 violations fixed and verified; P1 surfaced to user**
+- [ ] **No wrong DnD library (only @atlaskit/pragmatic-drag-and-drop for drag interactions)**
+- [ ] **No @atlassian/aui imports (legacy, banned)**
+- [ ] **@atlaskit/dynamic-table not introduced as primary for work item surfaces**
+- [ ] Gap report is a TABLE (not prose)
+- [ ] CLAUDE.md ban check completed (Step 2)
+- [ ] Code archaeology completed before MCP probes (Step 4.0)
+- [ ] Port 8080 used for all Lane B probes (never 8081)
+- [ ] Re-probe count ≤ 3 (if exceeded → escalated to user)
+- [ ] Context Guard checked at every phase boundary
 
----
+## Evidence block (print after every implementation action)
+
+```
+EVIDENCE — Component N ([Name]) after fix
+   URL:        http://localhost:8080/[path]
+   Screenshot: [attached via computer-use]
+   Gaps fixed: N of total — [dimension labels]
+   Remaining:  [list with reason if deferred]
+   ADS fixed:  N violations
+   ADS remain: N violations
+```
+
+## Context Guard — depletion thresholds
+
+**70% warning** (3+ components probed OR 4+ phases completed OR 2+ re-probe cycles):
+```
+WARNING CONTEXT GUARD — ~70% consumed
+   Completed: [phases]
+   Remaining: [phases]
+   Recommendation: finish current component, then /obsidian save
+```
+
+**90% emergency** (2+ full implement→verify cycles OR all 70% signals simultaneously):
+1. Print: `EMERGENCY CONTEXT GUARD — ~90% consumed SAVING NOW`
+2. Invoke `/obsidian save [%]`
+3. Print HANDOVER BLOCK (format: `CONTEXT_GUARD.md`)
+4. Explain to user how to resume
 
 ## See also
 
-- `GAP_REPORT.md` — mandatory gap report table format + ADS scan table + evidence block [NEW v3]
-- `CONTEXT_GUARD.md` — context window depletion protocol + handover block format [NEW v3]
-- `CORE_DIRECTIVES.md` — 5 directives (Directives 3-5 are new in v3)
-- `ROUTER.md` — Probe Matrix + Implementer Matrix (includes row #25 for ADS compliance)
-- `AGENT_ROSTER.md` — Phase 0-5 agent dispatch (companion to this skill)
-- `INDEX.md` — all 184 agents with Catalyst-relevance flags
+- `GAP_REPORT.md` — gap table + ADS table + evidence block formats
+- `CONTEXT_GUARD.md` — 70%/90% depletion protocol + handover block format
+- `CORE_DIRECTIVES.md` — 5 directives (preamble for every dispatch)
+- `ROUTER.md` — Probe Matrix + Implementer Matrix (ban table row #25)
+- `AGENT_ROSTER.md` — Phase 0-5 dispatch
+- `INDEX.md` — 184 agents with Catalyst-relevance flags
 - `PREFLIGHT_VS_AGENT.md` — full comparison + composition patterns
-- `../AGENT_PIPELINE.md` — activation line format (shared protocol)
+- **`ADS_CHECKPOINT.md` — 4-phase AUDIT→GATE→FIX→VERIFY spec + TIER 1/TIER 2/BANNED resource library + fix routing matrix**
 - `../preflight/SKILL.md` — Phase 0-7 definition
 - `../preflight/RUBRIC.md` — trivial / standard / high-stake classification
-- `~/.claude/skills/jira-compare/SKILL.md` — 3-lane parity audit (often a wrapper)
-- `~/.claude/skills/design-intelligence/SKILL.md` — 1000-IQ design layer
-- `~/.claude/skills/design-critique/SKILL.md` — heuristic scoring
-- `~/.claude/skills/obsidian/SKILL.md` — handover save/retrieve (invoked by Context Guard)
-- `design-governance/cli/index.js` — ADS audit CLI tool (used in Step 4.5)
+- `design-governance/cli/index.js` — ADS audit CLI
+- `design-governance/scripts/self-test.mjs` — audit self-test (verifies scanner not broken)
 - `CLAUDE.md` — gates, bans, lessons (source of truth)
-
----
-
-## Agent Roster (companion)
-
-When this skill activates, also load `AGENT_ROSTER.md` from this directory and follow its activation-notification protocol. The roster is purely additive and does not change any instruction in this file. See `.claude/skills/AGENT_PIPELINE.md` for the cross-skill rules and Phase 2.5 council gate logic.
