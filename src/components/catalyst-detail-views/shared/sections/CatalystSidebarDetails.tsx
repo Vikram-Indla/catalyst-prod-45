@@ -638,20 +638,13 @@ export function CatalystSidebarDetails({
               D1: Tooltip "View profile" on hover per Jira parity. */}
           <FieldRow label="Reporter" alignBlock="center">
             {issue && (
-              <Tooltip content="View profile" position="left">
-                <div
-                  onClick={() => console.log('View profile', issue.reporter_display_name)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <EditableReporter
-                    issueId={issue.id}
-                    projectId={projectId || ''}
-                    currentReporterId={issue.reporter_account_id}
-                    currentReporterName={issue.reporter_display_name}
-                    onUpdate={invalidateIssue}
-                  />
-                </div>
-              </Tooltip>
+              <EditableReporter
+                issueId={issue.id}
+                projectId={projectId || ''}
+                currentReporterId={issue.reporter_account_id}
+                currentReporterName={issue.reporter_display_name}
+                onUpdate={invalidateIssue}
+              />
             )}
           </FieldRow>
 

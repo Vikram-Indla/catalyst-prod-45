@@ -24,10 +24,10 @@ import { PriorityIcon as CanonicalPriorityIcon } from "@/components/icons";
    select idle-state rule from K.12). Inject once per session. */
 if (
   typeof document !== "undefined" &&
-  !document.getElementById("cv-priority-select-idle-style")
+  !document.getElementById("cv-priority-select-idle-style-v4")
 ) {
   const s = document.createElement("style");
-  s.id = "cv-priority-select-idle-style";
+  s.id = "cv-priority-select-idle-style-v4";
   s.textContent = `
     .cv-priority-select__dropdown-indicator { display: none !important; }
     .cv-priority-select__control:hover .cv-priority-select__dropdown-indicator,
@@ -35,6 +35,8 @@ if (
     .cv-priority-select__control--menu-is-open .cv-priority-select__dropdown-indicator { display: flex !important; }
     .cv-priority-select__control { border-color: transparent !important; background: transparent !important; box-shadow: none !important; }
     .cv-priority-select__control:hover { background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7)) !important; }
+    .cv-assignee-select__value-container, .cv-reporter-select__value-container { display: flex !important; }
+    .cv-assignee-select__input-container, .cv-reporter-select__input-container { order: 99 !important; }
   `;
   document.head.appendChild(s);
 }
@@ -252,6 +254,7 @@ export function EditableAssignee({
   currentAssigneeName: string | null;
   onUpdate: () => void;
 }) {
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
   const { data: members = [] } = useQuery({
     queryKey: ["projectMembers-edit-local", projectId],
     queryFn: async () => {
@@ -356,14 +359,33 @@ export function EditableAssignee({
   }, [currentAssigneeId, currentAssigneeName, options]);
 
   return (
-    <div style={{ flex: 1, minWidth: 0 }}>
+    <div style={{
+      flex: 1,
+      minWidth: 0,
+      border: menuIsOpen ? "2px solid var(--ds-border-focused, #388BFF)" : "2px solid transparent",
+      borderRadius: 4,
+    }}>
       <Select<AssigneeOption>
         inputId={`assignee-${issueKey ?? issueId}`}
         appearance="subtle"
         spacing="compact"
         isSearchable
+        isClearable
+        menuIsOpen={menuIsOpen}
+        onMenuOpen={() => setMenuIsOpen(true)}
+        onMenuClose={() => setMenuIsOpen(false)}
         classNamePrefix="cv-assignee-select"
-        placeholder="Unassigned"
+        placeholder="Select Assignee"
+        components={{
+          ClearIndicator: (props) => (
+            <div {...props.innerProps} style={{ display: "flex", alignItems: "center", padding: "0 4px", cursor: "pointer" }}>
+              <CrossCircleIcon label="Clear" size="small" primaryColor="var(--ds-text-subtle, #5E6C84)" />
+            </div>
+          ),
+        }}
+        styles={{
+          indicatorsContainer: (base) => ({ ...base, display: menuIsOpen ? "flex" : "none" }),
+        }}
         options={options}
         value={selected}
         onChange={(v) => {
@@ -456,6 +478,7 @@ export function EditableReporter({
   currentReporterName: string | null;
   onUpdate: () => void;
 }) {
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
   const { data: members = [] } = useQuery({
     queryKey: ["projectMembers-reporter", projectId],
     queryFn: async () => {
@@ -544,14 +567,33 @@ export function EditableReporter({
   }, [currentReporterId, currentReporterName, options]);
 
   return (
-    <div style={{ flex: 1, minWidth: 0 }}>
+    <div style={{
+      flex: 1,
+      minWidth: 0,
+      border: menuIsOpen ? "2px solid var(--ds-border-focused, #388BFF)" : "2px solid transparent",
+      borderRadius: 4,
+    }}>
       <Select<ReporterOption>
         inputId={`reporter-${issueId}`}
         appearance="subtle"
         spacing="compact"
         isSearchable
+        isClearable
+        menuIsOpen={menuIsOpen}
+        onMenuOpen={() => setMenuIsOpen(true)}
+        onMenuClose={() => setMenuIsOpen(false)}
         classNamePrefix="cv-reporter-select"
-        placeholder="None"
+        placeholder="Select Reporter"
+        components={{
+          ClearIndicator: (props) => (
+            <div {...props.innerProps} style={{ display: "flex", alignItems: "center", padding: "0 4px", cursor: "pointer" }}>
+              <CrossCircleIcon label="Clear" size="small" primaryColor="var(--ds-text-subtle, #5E6C84)" />
+            </div>
+          ),
+        }}
+        styles={{
+          indicatorsContainer: (base) => ({ ...base, display: menuIsOpen ? "flex" : "none" }),
+        }}
         options={options}
         value={selected}
         onChange={(v) => {
@@ -1338,7 +1380,7 @@ export function EditableFixVersions({
         appearance="subtle"
         spacing="compact"
         classNamePrefix="cv-fixversions-select"
-        placeholder="None"
+        placeholder="Select version"
         options={groupedOptions}
         value={selected}
         onChange={(v) => {
