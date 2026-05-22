@@ -3,9 +3,8 @@
  * Jira-parity: epic key, icon, summary, child count, status lozenge.
  */
 
-import { useState, useMemo, useEffect } from 'react';
-import { useDroppable } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { KanbanAvatar } from './KanbanAvatar';
@@ -206,20 +205,32 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
   cardColorMode?: CardColorMode;
 }) {
   const droppableId = `${groupKey}::${colId}`;
-  const { setNodeRef, isOver } = useDroppable({ id: droppableId });
+  const colRef = useRef<HTMLDivElement>(null);
+  const [isDraggedOver, setIsDraggedOver] = useState(false);
+
+  useEffect(() => {
+    const el = colRef.current;
+    if (!el) return;
+    return dropTargetForElements({
+      element: el,
+      getData: () => ({ colId, groupKey, droppableId }),
+      onDragEnter: () => setIsDraggedOver(true),
+      onDragLeave: () => setIsDraggedOver(false),
+      onDrop: () => setIsDraggedOver(false),
+    });
+  }, [colId, groupKey, droppableId]);
 
   return (
     <div className="flex flex-col" style={{
       flex: '1 1 0', minWidth: 180,
       borderLeft: isFirst ? 'none' : `1px solid ${tk.border}`,
     }}>
-      <div ref={setNodeRef} className="flex flex-col" style={{
+      <div ref={colRef} className="flex flex-col" style={{
         gap: d.cardGap, minHeight: 40, padding: 8,
-        background: isOver ? tk.dropHighlight : tk.surfaceBg,
+        background: isDraggedOver ? tk.dropHighlight : tk.surfaceBg,
         transition: 'background 100ms',
       }}>
-        <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>
-          {issueIds.length === 0 && isOver && (
+          {issueIds.length === 0 && isDraggedOver && (
             <div className="flex items-center justify-center" style={{ minHeight: 40, color: tk.textDisabled, fontSize: 11 }}>Drop here</div>
           )}
           {issueIds.map(id => {
@@ -255,7 +266,6 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
               />
             );
           })}
-        </SortableContext>
       </div>
     </div>
   );

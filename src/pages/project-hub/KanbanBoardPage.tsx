@@ -27,18 +27,7 @@ import { useProjectMemberRole } from '@/modules/project-work-hub/hooks/useProjec
 import { useTheme } from '@/hooks/useTheme';
 import { usePriToast } from '@/modules/priorities/hooks/usePriToast';
 import { PriToastContainer } from '@/modules/priorities/components/PriToastContainer';
-import {
-  DndContext,
-  DragEndEvent,
-  DragOverEvent,
-  DragStartEvent,
-  DragOverlay,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  closestCorners,
-} from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
+import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 
 // Kanban modules
 import { KANBAN_TOKENS, DENSITY_CONFIG, KANBAN_COLUMNS as DEFAULT_KANBAN_COLUMNS, COL_PRIMARY_STATUS as DEFAULT_COL_PRIMARY_STATUS, STATUS_TO_COL_ID as DEFAULT_STATUS_TO_COL_ID, COLUMN_ID_SET as DEFAULT_COLUMN_ID_SET } from '@/components/kanban/kanban-tokens';
@@ -47,7 +36,6 @@ import type { BoardIssue, GroupByMode, ColMap } from '@/components/kanban/kanban
 import { BOARD_SUBTASK_TYPES } from '@/components/kanban/kanban-types';
 import { groupIssues, findCol } from '@/components/kanban/kanban-utils';
 import { DroppableColumn } from '@/components/kanban/KanbanColumn';
-import { OverlayCard } from '@/components/kanban/SortableCard';
 import { SwimlaneRow } from '@/components/kanban/KanbanSwimlane';
 import { PragmaticBoard } from '@/components/kanban/PragmaticBoard';
 import { StandupModal } from '@/components/kanban/StandupModal';
@@ -128,7 +116,6 @@ export default function KanbanBoardPage() {
   const boardScrollContainerRef = useRef<HTMLDivElement>(null);
 
   const d = DENSITY_CONFIG[density];
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
 
   // Current user ID for realtime suppression
@@ -924,32 +911,6 @@ export default function KanbanBoardPage() {
 
   /* ═══ DND HANDLERS ═══ */
 
-  const onDragStart = useCallback((e: DragStartEvent) => setDragId(String(e.active.id)), []);
-
-  const resolveColId = useCallback((overId: string): string | null => {
-    if (overId.includes('::')) return overId.split('::')[1] ?? null;
-    if (COLUMN_ID_SET.has(overId)) return overId;
-    return null;
-  }, [COLUMN_ID_SET]);
-
-  const onDragOver = useCallback((e: DragOverEvent) => {
-    if (groupBy !== 'none') return;
-    const aid = String(e.active.id), oid = e.over?.id ? String(e.over.id) : null;
-    if (!oid) return;
-    setColMap(prev => {
-      const from = findCol(prev, aid);
-      if (!from) return prev;
-      const isCol = COLUMN_ID_SET.has(oid);
-      const to = isCol ? oid : findCol(prev, oid);
-      if (!to || from === to) return prev;
-      const f = [...prev[from]], t = [...prev[to]], idx = f.indexOf(aid);
-      if (idx < 0) return prev;
-      f.splice(idx, 1);
-      if (!isCol) { const oi = t.indexOf(oid); t.splice(oi >= 0 ? oi : 0, 0, aid); } else t.unshift(aid);
-      return { ...prev, [from]: f, [to]: t };
-    });
-  }, [groupBy]);
-
   const persistStatusChange = useCallback(async (issueId: string, newStatus: string) => {
     // V2: Zod boundary on DnD — guards against empty/whitespace payloads from
     // aborted drags or stale overlay references. Silent noop when invalid so
@@ -974,36 +935,25 @@ export default function KanbanBoardPage() {
     }
   }, [issuesById, key, qc, toastSuccess, toastError]);
 
-  const onDragEnd = useCallback((e: DragEndEvent) => {
-    const aid = String(e.active.id), oid = e.over?.id ? String(e.over.id) : null;
-    setDragId(null);
-    if (!oid) return;
-
-    if (groupBy !== 'none') {
-      const targetColId = resolveColId(oid);
-      if (!targetColId) return;
-      const newStatus = COL_PRIMARY_STATUS[targetColId];
-      if (newStatus) persistStatusChange(aid, newStatus);
-      return;
-    }
-
-    // Flat mode: reorder + persist
-    setColMap(prev => {
-      const c = findCol(prev, aid);
-      if (!c) return prev;
-      if (COLUMN_ID_SET.has(oid)) return prev;
-      const ids = prev[c], oi = ids.indexOf(aid), ni = ids.indexOf(oid);
-      if (oi < 0 || ni < 0 || oi === ni) return prev;
-      return { ...prev, [c]: arrayMove(ids, oi, ni) };
+  /* monitorForElements: swimlane drop → status change via Pragmatic DnD */
+  useEffect(() => {
+    return monitorForElements({
+      onDragStart: ({ source }) => {
+        setDragId(String(source.data.issueId ?? ''));
+      },
+      onDrop: ({ source, location }) => {
+        setDragId(null);
+        if (groupBy === 'none') return; // flat mode handled by PragmaticBoard
+        const target = location.current.dropTargets[0];
+        if (!target) return;
+        const issueId = String(source.data.issueId ?? '');
+        const targetColId = String(target.data.colId ?? '');
+        if (!issueId || !targetColId) return;
+        const newStatus = COL_PRIMARY_STATUS[targetColId];
+        if (newStatus) persistStatusChange(issueId, newStatus);
+      },
     });
-    const targetCol = findCol(colMap, aid);
-    if (targetCol) {
-      const ns = COL_PRIMARY_STATUS[targetCol];
-      if (ns) persistStatusChange(aid, ns);
-    }
-  }, [groupBy, resolveColId, persistStatusChange, colMap]);
-
-  const dragIssue = dragId ? issuesById.get(dragId) : null;
+  }, [groupBy, persistStatusChange, COL_PRIMARY_STATUS]);
 
   /* ═══ ACTIVE FILTER COUNT ═══ */
   const advFilterCount = countAdvancedFilters(advancedFilters);
@@ -1359,8 +1309,7 @@ export default function KanbanBoardPage() {
       {/* When standup panel is open, offset content 280px to the right (Jira parity) */}
       <div className="flex-1 min-h-0" style={{ overflow: 'auto', padding: '0 16px 16px 16px', marginLeft: showStandup ? 280 : 0, transition: 'margin-left 200ms ease' }}>
         {groupBy !== 'none' ? (
-          <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
-            <div style={{ background: 'transparent', minWidth: KANBAN_COLUMNS.length * 267 + (KANBAN_COLUMNS.length - 1) * 8 }}>
+          <div style={{ background: 'transparent', minWidth: KANBAN_COLUMNS.length * 267 + (KANBAN_COLUMNS.length - 1) * 8 }}>
               {/* Column headers for swimlane mode (Jira parity: 48h, 267w, transparent) */}
               <div className="flex sticky top-0 z-20" style={{ background: tk.pageBg, gap: 8, paddingBottom: 4 }}>
                 {KANBAN_COLUMNS.map((col) => {
@@ -1423,11 +1372,7 @@ export default function KanbanBoardPage() {
                   No issues match filters
                 </div>
               )}
-            </div>
-            <DragOverlay dropAnimation={null}>
-              {dragIssue ? <OverlayCard issue={dragIssue} avatarUrl={dragIssue.assigneeName ? avatarsByName.get(dragIssue.assigneeName.toLowerCase()) : null} d={d} tk={tk} /> : null}
-            </DragOverlay>
-          </DndContext>
+          </div>
         ) : (
           /* Pragmatic drag-and-drop path (non-swimlane).
              Monitor-based reconciliation; host owns colMap + supabase persist. */
