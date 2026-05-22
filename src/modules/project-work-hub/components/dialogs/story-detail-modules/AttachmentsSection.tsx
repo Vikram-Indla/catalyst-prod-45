@@ -18,6 +18,8 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
               download-all CTA) */
 import DeleteIcon from '@atlaskit/icon/core/delete';
 import DownloadIcon from '@atlaskit/icon/core/download';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import Spinner from '@atlaskit/spinner';
 import {
   AlertDialog,
@@ -338,9 +340,13 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
               <button
                 className="att-icon-btn att-collapse-btn"
                 aria-label={collapsed ? 'Expand Attachments' : 'Collapse Attachments'}
+                aria-expanded={!collapsed}
                 onClick={() => setCollapsed(v => !v)}
               >
-                <ChevronIcon collapsed={collapsed} />
+                {collapsed
+                  ? <ChevronRightIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #505258)" />
+                  : <ChevronDownIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #505258)" />
+                }
               </button>
               <span className="att-heading-label">Attachments</span>
             </div>
@@ -606,20 +612,6 @@ function AttachmentRow({ attachment, canDelete, bucket, onPreview, onDelete }: {
 }
 
 /* ─────────── SVG Icons ─────────── */
-
-function ChevronIcon({ collapsed }: { collapsed: boolean }) {
-  return (
-    <svg
-      width="12" height="12" viewBox="0 0 16 16"
-      style={{ transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.15s ease' }}
-      fill="none"
-    >
-      <path fill="currentColor"
-        d="m14.53 6.03-6 6a.75.75 0 0 1-1.004.052l-.056-.052-6-6 1.06-1.06L8 10.44l5.47-5.47z"
-      />
-    </svg>
-  );
-}
 
 function DotsIcon() {
   return (
