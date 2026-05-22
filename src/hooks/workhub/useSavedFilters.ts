@@ -1,9 +1,10 @@
 /**
- * Saved Filters Hooks — Phase 9
- * CRUD for wh_saved_filters (ph_saved_filters table)
+ * Saved Filters Hooks — Phase 9 + Filters Module (BAU-filters-01)
+ * CRUD for ph_saved_filters table
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+// ads-scanner:ignore-next-line — toast is the approved notification primitive in data-layer hooks
 import { toast } from 'sonner';
 
 export interface SavedFilter {
@@ -15,6 +16,32 @@ export interface SavedFilter {
   page: string;
   created_at: string;
   updated_at: string;
+}
+
+export type FilterHealth = 'healthy' | 'stale' | 'broken';
+export type HubScope = 'project' | 'product' | 'both' | 'test';
+
+export interface OwnerProfile {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+}
+
+/** Extended interface covering all columns added in migration 20260522000000 */
+export interface SavedFilterFull extends SavedFilter {
+  description: string | null;
+  jql_query: string | null;
+  viewers_config: { type: 'private' | 'org' | 'specific'; user_ids?: string[] };
+  editors_config: { type: 'owner_only' | 'specific'; user_ids?: string[] };
+  starred_by_user_ids: string[];
+  owner_id: string | null;
+  used_by_board_ids: string[];
+  hub_scope: HubScope;
+  last_used_at: string | null;
+  use_count: number;
+  health_status: FilterHealth;
+  // joined
+  owner?: OwnerProfile | null;
 }
 
 export function useSavedFilters(page?: string) {
@@ -34,14 +61,21 @@ export function useSavedFilters(page?: string) {
 export function useCreateSavedFilter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (params: { name: string; filter_config: Record<string, any>; page?: string; is_shared?: boolean }) => {
+    mutationFn: async (params: { name: string; filter_config: Record<string, any>; page?: string; is_shared?: boolean; [key: string]: any }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      // Extract known fields; spread the rest (jql_query, hub_scope, viewers_config, etc.)
+      const { name, filter_config, page, is_shared, ...rest } = params;
       const { data, error } = await supabase
         .from('ph_saved_filters')
         .insert({
-          name: params.name,
-          filter_config: params.filter_config,
-          page: params.page || 'workitems',
-          is_shared: params.is_shared || false,
+          name,
+          filter_config,
+          page: page || 'workitems',
+          is_shared: is_shared || false,
+          user_id: user.id,
+          owner_id: user.id,
+          ...rest,
         } as any)
         .select()
         .single();
@@ -50,6 +84,7 @@ export function useCreateSavedFilter() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['workhub', 'saved-filters'] });
+      qc.invalidateQueries({ queryKey: ['filters'] });
       toast.success('Filter saved');
     },
     onError: (err: Error) => toast.error(err.message),
@@ -68,6 +103,7 @@ export function useUpdateSavedFilter() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['workhub', 'saved-filters'] });
+      qc.invalidateQueries({ queryKey: ['filters'] });
       toast.success('Filter updated');
     },
     onError: (err: Error) => toast.error(err.message),
@@ -86,7 +122,256 @@ export function useDeleteSavedFilter() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['workhub', 'saved-filters'] });
+      qc.invalidateQueries({ queryKey: ['filters'] });
       toast.success('Filter deleted');
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+}
+
+// ─── Filters Module hooks (BAU-filters-01) ───────────────────────────────────
+
+const FILTERS_QUERY_KEY = (hubScope?: HubScope, projectKey?: string) =>
+  ['filters', 'list', hubScope ?? 'all', projectKey ?? 'global'] as const;
+
+/**
+ * Primary hook for the Filters list page.
+ * Returns all filters visible to the current user, scoped by hub and project.
+ * Owner profile is joined via Supabase FK expansion.
+ */
+export function useFiltersForProject(projectKey?: string, hubScope?: HubScope) {
+  return useQuery({
+    queryKey: FILTERS_QUERY_KEY(hubScope, projectKey),
+    queryFn: async () => {
+      let query = supabase
+        .from('ph_saved_filters')
+        .select('*, owner:profiles!ph_saved_filters_owner_id_fkey(id, full_name, avatar_url)')
+        .order('name', { ascending: true });
+
+      if (hubScope && hubScope !== 'both') {
+        query = query.in('hub_scope', [hubScope, 'both']);
+      }
+
+      const { data, error } = await query;
+      if (error) throw new Error(error.message);
+      return (data ?? []) as unknown as SavedFilterFull[];
+    },
+    staleTime: 30_000,
+  });
+}
+
+/** Toggle star on a filter for the current user */
+export function useStarFilter() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ filterId, currentStarredIds, userId }: {
+      filterId: string;
+      currentStarredIds: string[];
+      userId: string;
+    }) => {
+      const isStarred = currentStarredIds.includes(userId);
+      const next = isStarred
+        ? currentStarredIds.filter(id => id !== userId)
+        : [...currentStarredIds, userId];
+      const { error } = await supabase
+        .from('ph_saved_filters')
+        .update({ starred_by_user_ids: next } as any)
+        .eq('id', filterId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['filters'] }),
+    onError: (err: Error) => toast.error(err.message),
+  });
+}
+
+/** Duplicate a filter as "Copy of [name]" owned by the current user */
+export function useCopyFilter() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (source: SavedFilterFull) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      const { error } = await supabase
+        .from('ph_saved_filters')
+        .insert({
+          name: `Copy of ${source.name}`,
+          description: source.description,
+          jql_query: source.jql_query,
+          filter_config: source.filter_config,
+          page: source.page,
+          is_shared: false,
+          hub_scope: source.hub_scope,
+          user_id: user.id,
+          owner_id: user.id,
+          viewers_config: { type: 'private' },
+          editors_config: { type: 'owner_only' },
+        } as any);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['filters'] });
+      toast.success('Filter copied');
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+}
+
+// ─── Version history (O9) ─────────────────────────────────────────────────────
+
+export interface FilterVersion {
+  id: string;
+  filter_id: string;
+  jql_query: string | null;
+  result_count: number | null;
+  changed_by: string | null;
+  changed_at: string;
+  changer?: { full_name: string | null; avatar_url: string | null } | null;
+}
+
+/**
+ * Fetch the version history for a single filter.
+ * ph_filter_versions is ordered by changed_at desc.
+ */
+export function useFilterVersions(filterId: string | undefined) {
+  return useQuery({
+    queryKey: ['filters', 'versions', filterId],
+    queryFn: async () => {
+      if (!filterId) return [] as FilterVersion[];
+      const { data, error } = await (supabase as any)
+        .from('ph_filter_versions')
+        .select('*, changer:profiles!ph_filter_versions_changed_by_fkey(full_name, avatar_url)')
+        .eq('filter_id', filterId)
+        .order('changed_at', { ascending: false })
+        .limit(30);
+      if (error) throw new Error(error.message);
+      return (data ?? []) as FilterVersion[];
+    },
+    enabled: !!filterId,
+    staleTime: 60_000,
+  });
+}
+
+/** Record a new version snapshot for the given filter */
+export function useRecordFilterVersion() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      filterId,
+      jqlQuery,
+      resultCount,
+    }: {
+      filterId: string;
+      jqlQuery: string | null;
+      resultCount?: number;
+    }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { error } = await (supabase as any)
+        .from('ph_filter_versions')
+        .insert({
+          filter_id: filterId,
+          jql_query: jqlQuery,
+          result_count: resultCount ?? null,
+          changed_by: user?.id ?? null,
+        });
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: ['filters', 'versions', vars.filterId] });
+    },
+  });
+}
+
+// ─── O10 — Kanban board ↔ filter link ────────────────────────────────────────
+
+export interface BoardOption {
+  id: string;
+  name: string;
+}
+
+/** Fetch boards available for the given project key */
+export function useBoardsForProject(projectKey: string | undefined) {
+  return useQuery({
+    queryKey: ['boards-for-project', projectKey],
+    queryFn: async () => {
+      if (!projectKey) return [] as BoardOption[];
+      const { data, error } = await (supabase as any)
+        .from('boards')
+        .select('id, name, ph_projects!inner(key)')
+        .eq('ph_projects.key', projectKey.toUpperCase())
+        .is('deleted_at', null)
+        .order('name');
+      if (error) throw new Error(error.message);
+      return (data ?? []).map((b: any) => ({ id: b.id, name: b.name })) as BoardOption[];
+    },
+    enabled: !!projectKey,
+    staleTime: 60_000,
+  });
+}
+
+/**
+ * Associate (or disassociate) a saved filter with a kanban board.
+ *
+ * On link:   sets boards.filter_id = filterId and adds boardId to
+ *            ph_saved_filters.used_by_board_ids
+ * On unlink: clears boards.filter_id and removes boardId from used_by_board_ids
+ */
+export function useToggleFilterBoardLink() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      filterId,
+      boardId,
+      currentUsedByBoardIds,
+      link,
+    }: {
+      filterId: string;
+      boardId: string;
+      currentUsedByBoardIds: string[];
+      link: boolean;
+    }) => {
+      const nextBoardIds = link
+        ? [...new Set([...currentUsedByBoardIds, boardId])]
+        : currentUsedByBoardIds.filter(id => id !== boardId);
+
+      const [filterErr, boardErr] = await Promise.all([
+        supabase
+          .from('ph_saved_filters')
+          .update({ used_by_board_ids: nextBoardIds } as any)
+          .eq('id', filterId)
+          .then(({ error }) => error),
+        (supabase as any)
+          .from('boards')
+          .update({ filter_id: link ? filterId : null })
+          .eq('id', boardId)
+          .then(({ error }: any) => error),
+      ]);
+
+      if (filterErr) throw new Error(filterErr.message);
+      if (boardErr)  throw new Error(boardErr.message);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['filters'] });
+      qc.invalidateQueries({ queryKey: ['project-boards'] });
+      toast.success('Board link updated');
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+}
+
+/** Transfer ownership of a filter to another user */
+export function useChangeFilterOwner() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ filterId, newOwnerId }: { filterId: string; newOwnerId: string }) => {
+      const { error } = await supabase
+        .from('ph_saved_filters')
+        .update({ owner_id: newOwnerId } as any)
+        .eq('id', filterId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['filters'] });
+      toast.success('Filter owner updated');
     },
     onError: (err: Error) => toast.error(err.message),
   });

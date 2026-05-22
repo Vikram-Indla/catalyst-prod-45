@@ -21,6 +21,9 @@ import React, { lazy, Suspense, useState, useCallback, useRef, useEffect, useMem
 // (token import removed — switched to var(--cp-*) for proper dark-mode flip)
 import Button from '@atlaskit/button';
 import Select from '@atlaskit/select';
+import { useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { WorkListPanel } from './components/WorkListPanel';
 import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
 import { useItemSelection } from '@/hooks/useItemSelection';
@@ -37,6 +40,9 @@ import {
 import { useCatySearch } from '@/components/caty/catySearchStore';
 import { applyCatyFilter } from '@/components/caty/applyCatyFilter';
 import type { WorkItem } from '@/types/workItem.types';
+import { jqlToFilterState } from '@/lib/jql/jqlToFilterState';
+import { filterStateToJql } from '@/lib/filters/filterStateToJql';
+import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter'),
@@ -70,6 +76,38 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     fetchPrevPage,
   } = useProjectAllWorkItems(projectKey);
 
+  /* ── Filter URL params ────────────────────────────────────────────────────
+     ?filterId=<uuid>    — navigated here by clicking a saved filter name
+     ?mode=create-filter — navigated here by clicking "Create filter"
+     These implement the correct Jira flow:
+       • Filters list → click filter → AllWork with items filtered by JQL
+       • Filters list → Create filter → AllWork with filter builder active + Save button
+  */
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlFilterId   = searchParams.get('filterId');
+  const urlMode       = searchParams.get('mode');
+  const isCreateMode  = urlMode === 'create-filter';
+
+  // Load the saved filter when ?filterId is present
+  const { data: activeFilter } = useQuery({
+    queryKey: ['active-filter-banner', urlFilterId],
+    queryFn: async () => {
+      if (!urlFilterId) return null;
+      const { data, error } = await supabase
+        .from('ph_saved_filters')
+        .select('id, name, jql_query')
+        .eq('id', urlFilterId)
+        .single();
+      if (error) return null;
+      return data as { id: string; name: string; jql_query: string | null };
+    },
+    enabled: !!urlFilterId,
+    staleTime: 60_000,
+  });
+
+  // Save filter modal state — opened from "Save filter" toolbar button
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
+
   /* jira-compare catalog items 3-9 (2026-05-02): toolbar state.
      2026-05-03 (P2.1): toolbarFilters reshaped from string[] (facet
      names) to per-facet selections so values plumb into the items
@@ -79,7 +117,20 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   const [toolbarView, setToolbarView] = useState<AllWorkView>('split');
   const [toolbarFilters, setToolbarFilters] = useState<FilterState>(EMPTY_FILTERS);
   const [toolbarAssignees, setToolbarAssignees] = useState<string[]>([]);
-  const [filterOpen, setFilterOpen] = useState(false);
+  // Open the filter panel by default when entering create-filter mode
+  const [filterOpen, setFilterOpen] = useState(isCreateMode);
+
+  // When a saved filter loads, apply its JQL as the initial toolbar filter state.
+  // We use a ref so this only fires once per filterId change, not on every re-render.
+  const appliedFilterIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (activeFilter && activeFilter.id !== appliedFilterIdRef.current) {
+      appliedFilterIdRef.current = activeFilter.id;
+      if (activeFilter.jql_query) {
+        setToolbarFilters(jqlToFilterState(activeFilter.jql_query));
+      }
+    }
+  }, [activeFilter]);
 
   /* Shift+F toggles the filter popup, mirroring Jira's "Press Shift + F
      to open and close" hint at the bottom of the popup. Skipped while
@@ -248,6 +299,52 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
           fullscreen actions. The previous solo h2 was a Catalyst-only
           divergence with no parity reference on the Jira side. */}
       <ProjectHeaderChip projectKey={projectKey} />
+      {/* Filter context banner — shown when viewing a saved filter or in create-filter mode.
+          Matches Jira's "Filter by: [name]" breadcrumb strip above the issue list. */}
+      {(activeFilter || isCreateMode) && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '8px 12px',
+          background: 'var(--ds-background-information, #E9F2FF)',
+          borderBottom: '1px solid var(--ds-border-information, #CCE0FF)',
+          fontSize: 13,
+          color: 'var(--ds-text-information, #0055CC)',
+          flexShrink: 0,
+        }}>
+          {isCreateMode ? (
+            <>
+              <span style={{ fontWeight: 500 }}>Creating filter</span>
+              <span style={{ color: 'var(--ds-text-subtle, #42526E)' }}>
+                — set your filters below, then click Save filter
+              </span>
+            </>
+          ) : activeFilter ? (
+            <>
+              <span>Filter:</span>
+              <span style={{ fontWeight: 500 }}>{activeFilter.name}</span>
+              <button
+                onClick={() => {
+                  setToolbarFilters(EMPTY_FILTERS);
+                  setSearchParams({});
+                }}
+                style={{
+                  marginLeft: 'auto',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: 12,
+                  color: 'var(--ds-text-subtle, #42526E)',
+                  padding: '0 4px',
+                }}
+              >
+                Clear filter
+              </button>
+            </>
+          ) : null}
+        </div>
+      )}
       {/* ProjectTabBar removed 2026-05-02 per Vikram — Catalyst navigation
           lives in the side menu, the tab strip duplicated those labels. */}
       <AllWorkToolbar
@@ -263,7 +360,33 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
         onFilterOpenChange={setFilterOpen}
         selectedAssignees={toolbarAssignees}
         onAssigneesChange={setToolbarAssignees}
+        onSaveFilter={
+          (isCreateMode || !!urlFilterId)
+            ? () => setSaveModalOpen(true)
+            : undefined
+        }
+        saveFilterLabel={urlFilterId ? 'Update filter' : 'Save filter'}
       />
+
+      {/* Save filter modal — opened from toolbar's Save filter button.
+          Initialises with the JQL derived from current toolbar filter state. */}
+      {saveModalOpen && (
+        <FilterSaveModal
+          filter={urlFilterId && activeFilter ? {
+            id: activeFilter.id,
+            name: activeFilter.name,
+            jql_query: filterStateToJql(toolbarFilters, projectKey),
+          } as any : undefined}
+          initialJql={!urlFilterId ? filterStateToJql(toolbarFilters, projectKey) : undefined}
+          hubScope="project"
+          onClose={() => setSaveModalOpen(false)}
+          onSaved={() => {
+            setSaveModalOpen(false);
+            // After saving, clear the create-filter mode
+            if (isCreateMode) setSearchParams({});
+          }}
+        />
+      )}
 
       {/* Split region — 3-panel responsive model (corrected 2026-04-20):
           • Wide   (≥1120px): [Navigator 260px] [Middle flex] [Right sidebar inside detail]

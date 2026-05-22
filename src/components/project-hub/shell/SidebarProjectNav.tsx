@@ -21,6 +21,7 @@ import {
   Network,
   Clock,
   X,
+  Filter,
 } from '@/lib/atlaskit-icons';
 import { NavItem } from './NavItem';
 import { ProjectSwitcher, ProjectEntry } from './ProjectSwitcher';
@@ -50,6 +51,7 @@ const PLANNING_NAV = [
   { icon: BookOpen, label: 'Story Backlog', path: 'story-backlog' },
   { icon: Network, label: 'All Work', path: 'allwork' },
   { icon: Columns3, label: 'Boards', path: 'boards' },
+  { icon: Filter, label: 'Project Filters', path: 'filters' },
   { icon: GanttChart, label: 'Timeline', path: 'timeline' },
 ];
 
