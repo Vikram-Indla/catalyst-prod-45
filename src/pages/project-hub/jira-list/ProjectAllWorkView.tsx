@@ -269,6 +269,13 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     selectItem(id);
   }, [selectItem]);
 
+  // Overlay-specific navigate: chevrons inside the modal must update the
+  // modal's displayed issue, not just the background list selection.
+  const handleOverlayNavigate = useCallback((id: string) => {
+    setOverlayItemId(id);
+    selectItem(id);
+  }, [selectItem]);
+
   /* Memoize navigationItems so CatalystDetailRouter doesn't re-render on
      every toolbar state change (new array reference would break React.memo). */
   const navigationItems = useMemo(
@@ -422,9 +429,19 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
               items={filteredItems}
               selectedKey={activeItem?.id ?? null}
               onSelect={id => {
-                setOverlayItemId(id);
+                if (isNarrow) {
+                  setOverlayItemId(id);
+                } else {
+                  selectItem(id);
+                }
               }}
-              onKeyClick={id => setOverlayItemId(id)}
+              onKeyClick={id => {
+                if (isNarrow) {
+                  setOverlayItemId(id);
+                } else {
+                  selectItem(id);
+                }
+              }}
               projectId={projectId}
               /* jira-compare 2026-05-02: AllWorkToolbar owns search — pass
                  toolbarQuery so the inner search hides and the rail filters
@@ -623,7 +640,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             projectKey={projectKey}
             onOpenItem={handleOpenItem}
             navigationItems={navigationItems}
-            onNavigate={handleNavigate}
+            onNavigate={handleOverlayNavigate}
           />
         </Suspense>
       )}
