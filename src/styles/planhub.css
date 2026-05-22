@@ -16,7 +16,10 @@
 
 .planhub-module {
   /* Colors - Primary */
-  --ph-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  --ph-primary: var(
+    --ds-text-brand,
+    var(--cp-workstream-catalyst-primary, #2563eb)
+  );
   --ph-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --ph-primary-active: #1e40af;
   --ph-primary-light: rgba(37, 99, 235, 0.08);
@@ -35,7 +38,10 @@
   --ph-purple-light: rgba(139, 92, 246, 0.1);
 
   /* Colors - Gray Scale */
-  --ph-white: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --ph-white: var(
+    --cp-bg-elevated,
+    var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))
+  );
   --ph-gray-50: #f9fafb;
   --ph-gray-100: #f3f4f6;
   --ph-gray-200: var(--ds-border, #e5e7eb);
@@ -49,7 +55,10 @@
 
   /* Surfaces */
   --ph-bg: #f9fafb;
-  --ph-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --ph-surface: var(
+    --cp-bg-elevated,
+    var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))
+  );
   --ph-surface-hover: #f3f4f6;
   --ph-border: var(--ds-border, #e5e7eb);
   --ph-border-dark: #d1d5db;
@@ -300,12 +309,30 @@
   text-transform: capitalize;
 }
 
-.planhub-module .ph-badge-primary { background: var(--ph-primary-light); color: var(--ph-primary); }
-.planhub-module .ph-badge-success { background: var(--ph-success-light); color: var(--ph-success); }
-.planhub-module .ph-badge-warning { background: var(--ph-warning-light); color: var(--ph-warning); }
-.planhub-module .ph-badge-danger { background: var(--ph-danger-light); color: var(--ph-danger); }
-.planhub-module .ph-badge-gray { background: var(--ph-gray-100); color: var(--ph-gray-600); }
-.planhub-module .ph-badge-purple { background: var(--ph-purple-light); color: var(--ph-purple); }
+.planhub-module .ph-badge-primary {
+  background: var(--ph-primary-light);
+  color: var(--ph-primary);
+}
+.planhub-module .ph-badge-success {
+  background: var(--ph-success-light);
+  color: var(--ph-success);
+}
+.planhub-module .ph-badge-warning {
+  background: var(--ph-warning-light);
+  color: var(--ph-warning);
+}
+.planhub-module .ph-badge-danger {
+  background: var(--ph-danger-light);
+  color: var(--ph-danger);
+}
+.planhub-module .ph-badge-gray {
+  background: var(--ph-gray-100);
+  color: var(--ph-gray-600);
+}
+.planhub-module .ph-badge-purple {
+  background: var(--ph-purple-light);
+  color: var(--ph-purple);
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    CARDS
@@ -482,8 +509,13 @@
   border-radius: var(--ph-radius-full);
 }
 
-.planhub-module .ph-task-flag { color: var(--ph-danger); cursor: pointer; }
-.planhub-module .ph-task-flag.inactive { color: var(--ph-gray-300); }
+.planhub-module .ph-task-flag {
+  color: var(--ph-danger);
+  cursor: pointer;
+}
+.planhub-module .ph-task-flag.inactive {
+  color: var(--ph-gray-300);
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    GANTT CHART
@@ -535,7 +567,9 @@
   overflow: hidden;
 }
 
-.planhub-module .ph-gantt-bar.phase { background: var(--ph-gray-600); }
+.planhub-module .ph-gantt-bar.phase {
+  background: var(--ph-gray-600);
+}
 .planhub-module .ph-gantt-bar.milestone {
   width: 16px !important;
   height: 16px;
@@ -578,7 +612,7 @@
 }
 
 .planhub-module .ph-gantt-today::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -4px;
@@ -827,10 +861,19 @@
   flex: 1;
 }
 
-.planhub-module .ph-util-fill { height: 100%; border-radius: var(--ph-radius-full); }
-.planhub-module .ph-util-fill.low { background: var(--ph-success); }
-.planhub-module .ph-util-fill.medium { background: var(--ph-warning); }
-.planhub-module .ph-util-fill.high { background: var(--ph-danger); }
+.planhub-module .ph-util-fill {
+  height: 100%;
+  border-radius: var(--ph-radius-full);
+}
+.planhub-module .ph-util-fill.low {
+  background: var(--ph-success);
+}
+.planhub-module .ph-util-fill.medium {
+  background: var(--ph-warning);
+}
+.planhub-module .ph-util-fill.high {
+  background: var(--ph-danger);
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    REPORT CENTER
@@ -867,11 +910,26 @@
   font-size: var(--ph-text-xl);
 }
 
-.planhub-module .ph-report-icon.schedule { background: var(--ph-primary-light); color: var(--ph-primary); }
-.planhub-module .ph-report-icon.resource { background: var(--ph-teal-light); color: var(--ph-teal); }
-.planhub-module .ph-report-icon.budget { background: var(--ph-success-light); color: var(--ph-success); }
-.planhub-module .ph-report-icon.risk { background: var(--ph-danger-light); color: var(--ph-danger); }
-.planhub-module .ph-report-icon.ai { background: var(--ph-purple-light); color: var(--ph-purple); }
+.planhub-module .ph-report-icon.schedule {
+  background: var(--ph-primary-light);
+  color: var(--ph-primary);
+}
+.planhub-module .ph-report-icon.resource {
+  background: var(--ph-teal-light);
+  color: var(--ph-teal);
+}
+.planhub-module .ph-report-icon.budget {
+  background: var(--ph-success-light);
+  color: var(--ph-success);
+}
+.planhub-module .ph-report-icon.risk {
+  background: var(--ph-danger-light);
+  color: var(--ph-danger);
+}
+.planhub-module .ph-report-icon.ai {
+  background: var(--ph-purple-light);
+  color: var(--ph-purple);
+}
 
 .planhub-module .ph-report-name {
   font-size: var(--ph-text-lg);
@@ -929,7 +987,9 @@
 }
 
 @keyframes ph-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -1218,7 +1278,9 @@
   padding: var(--ph-space-5);
   display: flex;
   flex-direction: column;
-  transition: border-color var(--ph-transition-base), box-shadow var(--ph-transition-base);
+  transition:
+    border-color var(--ph-transition-base),
+    box-shadow var(--ph-transition-base);
 }
 
 .planhub-module .ph-report-card:hover {
@@ -1340,22 +1402,54 @@
    UTILITIES
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-.planhub-module .ph-flex { display: flex; }
-.planhub-module .ph-flex-col { flex-direction: column; }
-.planhub-module .ph-items-center { align-items: center; }
-.planhub-module .ph-justify-between { justify-content: space-between; }
-.planhub-module .ph-gap-2 { gap: var(--ph-space-2); }
-.planhub-module .ph-gap-3 { gap: var(--ph-space-3); }
-.planhub-module .ph-gap-4 { gap: var(--ph-space-4); }
-.planhub-module .ph-grid { display: grid; }
-.planhub-module .ph-grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
-.planhub-module .ph-mb-4 { margin-bottom: var(--ph-space-4); }
-.planhub-module .ph-mb-6 { margin-bottom: var(--ph-space-6); }
-.planhub-module .ph-mt-4 { margin-top: var(--ph-space-4); }
-.planhub-module .ph-text-sm { font-size: var(--ph-text-sm); }
-.planhub-module .ph-text-xs { font-size: var(--ph-text-xs); }
-.planhub-module .ph-text-gray-500 { color: var(--ph-gray-500); }
-.planhub-module .ph-font-semibold { font-weight: var(--ph-font-semibold); }
+.planhub-module .ph-flex {
+  display: flex;
+}
+.planhub-module .ph-flex-col {
+  flex-direction: column;
+}
+.planhub-module .ph-items-center {
+  align-items: center;
+}
+.planhub-module .ph-justify-between {
+  justify-content: space-between;
+}
+.planhub-module .ph-gap-2 {
+  gap: var(--ph-space-2);
+}
+.planhub-module .ph-gap-3 {
+  gap: var(--ph-space-3);
+}
+.planhub-module .ph-gap-4 {
+  gap: var(--ph-space-4);
+}
+.planhub-module .ph-grid {
+  display: grid;
+}
+.planhub-module .ph-grid-cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+.planhub-module .ph-mb-4 {
+  margin-bottom: var(--ph-space-4);
+}
+.planhub-module .ph-mb-6 {
+  margin-bottom: var(--ph-space-6);
+}
+.planhub-module .ph-mt-4 {
+  margin-top: var(--ph-space-4);
+}
+.planhub-module .ph-text-sm {
+  font-size: var(--ph-text-sm);
+}
+.planhub-module .ph-text-xs {
+  font-size: var(--ph-text-xs);
+}
+.planhub-module .ph-text-gray-500 {
+  color: var(--ph-gray-500);
+}
+.planhub-module .ph-font-semibold {
+  font-weight: var(--ph-font-semibold);
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    ECLIPSE — DARK MODE DARK MODE OVERRIDES
@@ -1365,24 +1459,24 @@
 [data-theme="dark"] .planhub-module,
 .dark .planhub-module {
   /* Surfaces */
-  --ph-bg: var(--cp-bg-page, #1F1F21);
+  --ph-bg: var(--cp-bg-page, #1f1f21);
   --ph-surface: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   --ph-surface-hover: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   --ph-border: rgba(255, 255, 255, 0.08);
   --ph-border-dark: rgba(255, 255, 255, 0.12);
 
   /* Gray Scale (inverted for dark) */
-  --ph-white: var(--cp-bg-page, #1F1F21);
+  --ph-white: var(--cp-bg-page, #1f1f21);
   --ph-gray-50: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   --ph-gray-100: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   --ph-gray-200: var(--ds-border, var(--cp-ink-1, #292929));
   --ph-gray-300: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
   --ph-gray-400: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
-  --ph-gray-500: var(--ds-text-subtlest, #A1A1A1);
-  --ph-gray-600: var(--ds-text-subtlest, #A1A1A1);
-  --ph-gray-700: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
-  --ph-gray-800: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
-  --ph-gray-900: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
+  --ph-gray-500: var(--ds-text-subtlest, #a1a1a1);
+  --ph-gray-600: var(--ds-text-subtlest, #a1a1a1);
+  --ph-gray-700: var(--ds-text, var(--cp-bg-neutral, #ededed));
+  --ph-gray-800: var(--ds-text, var(--cp-bg-neutral, #ededed));
+  --ph-gray-900: var(--ds-text, var(--cp-bg-neutral, #ededed));
 
   /* Shadows (darker for dark mode) */
   --ph-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -1400,7 +1494,7 @@
   --ph-primary-border: rgba(37, 99, 235, 0.3);
 
   /* Base text color override */
-  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #ededed)) !important;
 }
 
 /* Dark mode: modal backdrop darker */
@@ -1415,25 +1509,25 @@
 [data-theme="dark"] .planhub-module .ph-ai-message.assistant .ph-ai-bubble,
 .dark .planhub-module .ph-ai-message.assistant .ph-ai-bubble {
   background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
-  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
+  color: var(--ds-text, var(--cp-bg-neutral, #ededed));
 }
 
 /* Dark mode: resource warning text */
 [data-theme="dark"] .planhub-module .ph-resource-warning,
 .dark .planhub-module .ph-resource-warning {
-  color: #FCD34D;
+  color: #fcd34d;
 }
 
 [data-theme="dark"] .planhub-module .ph-resource-skeleton-badge,
 .dark .planhub-module .ph-resource-skeleton-badge {
-  color: #FCD34D;
+  color: #fcd34d;
 }
 
 /* Dark mode: AI input field */
 [data-theme="dark"] .planhub-module .ph-ai-input input,
 .dark .planhub-module .ph-ai-input input {
   background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
-  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
+  color: var(--ds-text, var(--cp-bg-neutral, #ededed));
   border-color: rgba(255, 255, 255, 0.08);
 }
 
@@ -1441,13 +1535,13 @@
 [data-theme="dark"] .planhub-module .ph-form-input,
 .dark .planhub-module .ph-form-input {
   background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
-  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
+  color: var(--ds-text, var(--cp-bg-neutral, #ededed));
   border-color: rgba(255, 255, 255, 0.12);
 }
 
 [data-theme="dark"] .planhub-module .ph-select,
 .dark .planhub-module .ph-select {
   background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
-  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
+  color: var(--ds-text, var(--cp-bg-neutral, #ededed));
   border-color: rgba(255, 255, 255, 0.08);
 }

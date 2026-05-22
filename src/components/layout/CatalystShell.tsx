@@ -1,12 +1,21 @@
-import { useState, useEffect, useRef, lazy, Suspense, ComponentType, useSyncExternalStore, useCallback } from 'react';
-import AkFlag, { FlagGroup } from '@atlaskit/flag';
-import InfoIcon from '@atlaskit/icon/core/information-circle';
-import { token } from '@atlaskit/tokens';
-import { consumeLastLoginDisplay } from '@/hooks/useSessionPersistence';
-import { Menu } from '@/lib/atlaskit-icons';
-import { useGlobalSearchStore } from '@/store/globalSearchStore';
-import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
-import { GlobalMobileDrawer } from './GlobalMobileDrawer';
+import {
+  useState,
+  useEffect,
+  useRef,
+  lazy,
+  Suspense,
+  ComponentType,
+  useSyncExternalStore,
+  useCallback,
+} from "react";
+import AkFlag, { FlagGroup } from "@atlaskit/flag";
+import InfoIcon from "@atlaskit/icon/core/information-circle";
+import { token } from "@atlaskit/tokens";
+import { consumeLastLoginDisplay } from "@/hooks/useSessionPersistence";
+import { Menu } from "@/lib/atlaskit-icons";
+import { useGlobalSearchStore } from "@/store/globalSearchStore";
+import { useNavBreakpoint } from "@/hooks/useNavBreakpoint";
+import { GlobalMobileDrawer } from "./GlobalMobileDrawer";
 
 /**
  * lazyWithRetry — defends against Vite stale-chunk errors after deploys/HMR.
@@ -22,18 +31,18 @@ import { GlobalMobileDrawer } from './GlobalMobileDrawer';
  */
 function lazyWithRetry<T extends ComponentType<any>>(
   factory: () => Promise<{ default: T }>,
-  chunkName: string
+  chunkName: string,
 ) {
   return lazy(async () => {
     try {
       return await factory();
     } catch (err: any) {
-      const msg = String(err?.message || err || '');
+      const msg = String(err?.message || err || "");
       const isStaleChunk =
-        msg.includes('Failed to fetch dynamically imported module') ||
-        msg.includes('Importing a module script failed') ||
-        msg.includes('error loading dynamically imported module');
-      if (isStaleChunk && typeof window !== 'undefined') {
+        msg.includes("Failed to fetch dynamically imported module") ||
+        msg.includes("Importing a module script failed") ||
+        msg.includes("error loading dynamically imported module");
+      if (isStaleChunk && typeof window !== "undefined") {
         const key = `__catalyst_lazy_retry__${chunkName}`;
         const alreadyRetried = sessionStorage.getItem(key);
         if (!alreadyRetried) {
@@ -49,46 +58,152 @@ function lazyWithRetry<T extends ComponentType<any>>(
   });
 }
 
-const CatalystDetailRouter = lazyWithRetry(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'), 'CatalystDetailRouter');
+const CatalystDetailRouter = lazyWithRetry(
+  () => import("@/components/catalyst-detail-views/CatalystDetailRouter"),
+  "CatalystDetailRouter",
+);
 
-import { useLocation, useParams, useMatch, Outlet, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-const CatalystHeader = lazyWithRetry(() => import('@/components/ja/CatalystHeader').then(m => ({ default: m.CatalystHeader })), 'CatalystHeader');
-import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
-const AnnouncementBanner = lazyWithRetry(() => import('@/components/notifications/AnnouncementBanner').then(m => ({ default: m.AnnouncementBanner })), 'AnnouncementBanner');
-import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
-import { useEnabledModules } from '@/hooks/useModules';
-import { useRecentPlaceTracker } from '@/hooks/useRecentPlaceTracker';
-import { useRecordProjectVisit } from '@/hooks/home/useRecentProjects';
-import { useCatalystTitle } from '@/hooks/useCatalystTitle';
-import { derivePageFromPath } from '@/lib/tabIdentity';
+import {
+  useLocation,
+  useParams,
+  useMatch,
+  Outlet,
+  useNavigate,
+} from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+const CatalystHeader = lazyWithRetry(
+  () =>
+    import("@/components/ja/CatalystHeader").then((m) => ({
+      default: m.CatalystHeader,
+    })),
+  "CatalystHeader",
+);
+import {
+  CatalystContextProvider,
+  useCatalystContext,
+} from "@/contexts/CatalystContext";
+const AnnouncementBanner = lazyWithRetry(
+  () =>
+    import("@/components/notifications/AnnouncementBanner").then((m) => ({
+      default: m.AnnouncementBanner,
+    })),
+  "AnnouncementBanner",
+);
+import { useTrackLastRoute } from "@/hooks/useSessionPersistence";
+import { useEnabledModules } from "@/hooks/useModules";
+import { useRecentPlaceTracker } from "@/hooks/useRecentPlaceTracker";
+import { useRecordProjectVisit } from "@/hooks/home/useRecentProjects";
+import { useCatalystTitle } from "@/hooks/useCatalystTitle";
+import { derivePageFromPath } from "@/lib/tabIdentity";
 
 // ─── Lazy-loaded sidebars (only the active one loads into memory) ────
-const UnifiedSidebar = lazyWithRetry(() => import('./UnifiedSidebar').then(m => ({ default: m.UnifiedSidebar })), 'UnifiedSidebar');
-const EnterpriseSidebar = lazyWithRetry(() => import('./EnterpriseSidebar').then(m => ({ default: m.EnterpriseSidebar })), 'EnterpriseSidebar');
-const ProductRoomSidebar = lazyWithRetry(() => import('./ProductRoomSidebar').then(m => ({ default: m.ProductRoomSidebar })), 'ProductRoomSidebar');
-const IdeationSidebar = lazyWithRetry(() => import('./IdeationSidebar').then(m => ({ default: m.IdeationSidebar })), 'IdeationSidebar');
-const ProjectSidebar = lazyWithRetry(() => import('./ProjectSidebar').then(m => ({ default: m.ProjectSidebar })), 'ProjectSidebar');
-const ReleaseRoomSidebar = lazyWithRetry(() => import('./OperationsSidebar').then(m => ({ default: m.ReleaseRoomSidebar })), 'ReleaseRoomSidebar');
-const TestManagementSidebar = lazyWithRetry(() => import('./TestManagementSidebar').then(m => ({ default: m.TestManagementSidebar })), 'TestManagementSidebar');
-const ReleasesManagementSidebar = lazyWithRetry(() => import('./ReleasesManagementSidebar').then(m => ({ default: m.ReleasesManagementSidebar })), 'ReleasesManagementSidebar');
-const ReleaseHubSidebar = lazyWithRetry(() => import('./ReleaseHubSidebar').then(m => ({ default: m.ReleaseHubSidebar })), 'ReleaseHubSidebar');
-const IncidentHubSidebar = lazyWithRetry(() => import('./IncidentHubSidebar').then(m => ({ default: m.IncidentHubSidebar })), 'IncidentHubSidebar');
-const PlanHubSidebar = lazyWithRetry(() => import('./PlanHubSidebar').then(m => ({ default: m.PlanHubSidebar })), 'PlanHubSidebar');
-const TaskHubSidebar = lazyWithRetry(() => import('./TaskHubSidebar').then(m => ({ default: m.TaskHubSidebar })), 'TaskHubSidebar');
-const TestHubSidebar = lazyWithRetry(() => import('./TestHubSidebar').then(m => ({ default: m.TestHubSidebar })), 'TestHubSidebar');
+const UnifiedSidebar = lazyWithRetry(
+  () => import("./UnifiedSidebar").then((m) => ({ default: m.UnifiedSidebar })),
+  "UnifiedSidebar",
+);
+const EnterpriseSidebar = lazyWithRetry(
+  () =>
+    import("./EnterpriseSidebar").then((m) => ({
+      default: m.EnterpriseSidebar,
+    })),
+  "EnterpriseSidebar",
+);
+const ProductRoomSidebar = lazyWithRetry(
+  () =>
+    import("./ProductRoomSidebar").then((m) => ({
+      default: m.ProductRoomSidebar,
+    })),
+  "ProductRoomSidebar",
+);
+const IdeationSidebar = lazyWithRetry(
+  () =>
+    import("./IdeationSidebar").then((m) => ({ default: m.IdeationSidebar })),
+  "IdeationSidebar",
+);
+const ProjectSidebar = lazyWithRetry(
+  () => import("./ProjectSidebar").then((m) => ({ default: m.ProjectSidebar })),
+  "ProjectSidebar",
+);
+const ReleaseRoomSidebar = lazyWithRetry(
+  () =>
+    import("./OperationsSidebar").then((m) => ({
+      default: m.ReleaseRoomSidebar,
+    })),
+  "ReleaseRoomSidebar",
+);
+const TestManagementSidebar = lazyWithRetry(
+  () =>
+    import("./TestManagementSidebar").then((m) => ({
+      default: m.TestManagementSidebar,
+    })),
+  "TestManagementSidebar",
+);
+const ReleasesManagementSidebar = lazyWithRetry(
+  () =>
+    import("./ReleasesManagementSidebar").then((m) => ({
+      default: m.ReleasesManagementSidebar,
+    })),
+  "ReleasesManagementSidebar",
+);
+const ReleaseHubSidebar = lazyWithRetry(
+  () =>
+    import("./ReleaseHubSidebar").then((m) => ({
+      default: m.ReleaseHubSidebar,
+    })),
+  "ReleaseHubSidebar",
+);
+const IncidentHubSidebar = lazyWithRetry(
+  () =>
+    import("./IncidentHubSidebar").then((m) => ({
+      default: m.IncidentHubSidebar,
+    })),
+  "IncidentHubSidebar",
+);
+const PlanHubSidebar = lazyWithRetry(
+  () => import("./PlanHubSidebar").then((m) => ({ default: m.PlanHubSidebar })),
+  "PlanHubSidebar",
+);
+const TaskHubSidebar = lazyWithRetry(
+  () => import("./TaskHubSidebar").then((m) => ({ default: m.TaskHubSidebar })),
+  "TaskHubSidebar",
+);
+const TestHubSidebar = lazyWithRetry(
+  () => import("./TestHubSidebar").then((m) => ({ default: m.TestHubSidebar })),
+  "TestHubSidebar",
+);
 
-const ProjectHubSidebar = lazyWithRetry(() => import('./ProjectHubSidebar').then(m => ({ default: m.ProjectHubSidebar })), 'ProjectHubSidebar');
-const ProductHubSidebar = lazyWithRetry(() => import('./ProductHubSidebar').then(m => ({ default: m.ProductHubSidebar })), 'ProductHubSidebar');
-const WikiSidebar = lazyWithRetry(() => import('./WikiSidebar').then(m => ({ default: m.WikiSidebar })), 'WikiSidebar');
+const ProjectHubSidebar = lazyWithRetry(
+  () =>
+    import("./ProjectHubSidebar").then((m) => ({
+      default: m.ProjectHubSidebar,
+    })),
+  "ProjectHubSidebar",
+);
+const ProductHubSidebar = lazyWithRetry(
+  () =>
+    import("./ProductHubSidebar").then((m) => ({
+      default: m.ProductHubSidebar,
+    })),
+  "ProductHubSidebar",
+);
+const WikiSidebar = lazyWithRetry(
+  () => import("./WikiSidebar").then((m) => ({ default: m.WikiSidebar })),
+  "WikiSidebar",
+);
 // C1 · Personal command center on / (Home). Replaces the empty 240px rail
 // users were seeing on Home with @atlaskit/side-navigation sections for
 // Pinned, Recent and Jump to. Atlaskit-only — see HomeSidebar.tsx.
-const HomeSidebar = lazyWithRetry(() => import('./HomeSidebar'), 'HomeSidebar');
-const AdminSidebarV2 = lazyWithRetry(() => import('@/components/admin/AdminSidebarV2').then(m => ({ default: m.AdminSidebarV2 })), 'AdminSidebarV2');
+const HomeSidebar = lazyWithRetry(() => import("./HomeSidebar"), "HomeSidebar");
+const AdminSidebarV2 = lazyWithRetry(
+  () =>
+    import("@/components/admin/AdminSidebarV2").then((m) => ({
+      default: m.AdminSidebarV2,
+    })),
+  "AdminSidebarV2",
+);
 
-import { HubSurface } from './HubSurface';
+import { HubSurface } from "./HubSurface";
 
 /**
  * Decision A (Apr 2026) — Jira blue-canvas on hub routes.
@@ -102,18 +217,22 @@ import { HubSurface } from './HubSurface';
 // background (which is white var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))). Catalyst owner decision: all hub
 // pages are white-canvas. Kept as a named constant in case we ever bring
 // back a tinted page wash.
-const JIRA_CANVAS_BG = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+const JIRA_CANVAS_BG =
+  "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))";
 function useIsDarkTheme(): boolean {
   return useSyncExternalStore(
     (onChange) => {
-      if (typeof window === 'undefined') return () => undefined;
+      if (typeof window === "undefined") return () => undefined;
       const obs = new MutationObserver(onChange);
-      obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+      obs.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-theme"],
+      });
       return () => obs.disconnect();
     },
     () =>
-      typeof document !== 'undefined' &&
-      document.documentElement.getAttribute('data-theme') === 'dark',
+      typeof document !== "undefined" &&
+      document.documentElement.getAttribute("data-theme") === "dark",
     () => false,
   );
 }
@@ -131,13 +250,12 @@ function useIsDarkTheme(): boolean {
 function CatalystShellContent() {
   // Dev-only instrumentation: prove shell doesn't remount on program navigation
   if (import.meta.env.DEV) {
-     
-    console.debug('[CatalystShell] render');
+    console.debug("[CatalystShell] render");
   }
 
   // Track last visited route for session persistence
   useTrackLastRoute();
-  
+
   // Track room visits for Recent Rooms functionality
   useRecentPlaceTracker();
   // Track ProjectHub project visits for Home rail "Recent projects"
@@ -145,8 +263,28 @@ function CatalystShellContent() {
   const location = useLocation();
   const page = derivePageFromPath(location.pathname);
   const navigate = useNavigate();
-  const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string; projectKey?: string }>();
-  const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded, sidebarHidden, setSidebarHidden, sidebarPinned, setSidebarPinned, sidebarHoverOpen, cycleSidebarState } = useCatalystContext();
+  const params = useParams<{
+    programId?: string;
+    portfolioId?: string;
+    teamId?: string;
+    projectId?: string;
+    projectKey?: string;
+  }>();
+  const {
+    workspaceType,
+    programId: contextProgramId,
+    projectId: contextProjectId,
+    selectedQuarter,
+    setSelectedQuarter,
+    sidebarExpanded,
+    setSidebarExpanded,
+    sidebarHidden,
+    setSidebarHidden,
+    sidebarPinned,
+    setSidebarPinned,
+    sidebarHoverOpen,
+    cycleSidebarState,
+  } = useCatalystContext();
 
   // ─── Sidebar is CLICK-ONLY (April 2026, final) ────────────────────────
   // Per user direction: hover-peek is fully disabled across every route.
@@ -166,7 +304,8 @@ function CatalystShellContent() {
   //     We no longer require !sidebarHidden, because the chevron is now
   //     always in the top-nav and we don't mutate sidebarHidden on hover.
   // Overlay mode is any "visible but not pinned" render — i.e. a peek.
-  const sidebarVisuallyOpen = (sidebarPinned && !sidebarHidden) || sidebarHoverOpen;
+  const sidebarVisuallyOpen =
+    (sidebarPinned && !sidebarHidden) || sidebarHoverOpen;
   const sidebarOverlayMode = !sidebarPinned && sidebarHoverOpen;
 
   // ⌘/Ctrl + [ toggles the sidebar (Jira parity, P2-1). Requires the platform
@@ -176,17 +315,19 @@ function CatalystShellContent() {
   // macOS → ⌘+[ ; other platforms → Ctrl+[. The preventDefault stops the
   // browser-back navigation the combo normally triggers on Chrome/Safari.
   useEffect(() => {
-    const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+    const isMac =
+      typeof navigator !== "undefined" &&
+      /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
     const handler = (e: KeyboardEvent) => {
-      if (e.key !== '[') return;
+      if (e.key !== "[") return;
       const modifier = isMac ? e.metaKey : e.ctrlKey;
       if (!modifier) return;
       if (e.altKey || e.shiftKey) return;
       e.preventDefault();
       cycleSidebarState();
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, [cycleSidebarState]);
 
   // ─── Mobile / tablet drawer (Loop 2, 2026-04-30) ──────────────────────
@@ -208,18 +349,20 @@ function CatalystShellContent() {
   }, [isNarrow, mobileDrawerOpen]);
 
   const { isModuleEnabled } = useEnabledModules();
-  
+
   // Extract IDs from URL params - these take precedence
   const urlProgramId = params.programId || null;
   const urlProjectId = params.projectId || null;
   // useParams can't see child-route params — use useMatch to extract :projectKey
   // from the InJira layout route (/project/:projectKey/*) from an ancestor component.
-  const inJiraMatch = useMatch('/project/:projectKey/*');
+  const inJiraMatch = useMatch("/project/:projectKey/*");
   const urlProjectKey = inJiraMatch?.params?.projectKey ?? null;
 
   // Determine which ID to use based on route pattern
-  const isProgramRoute = location.pathname.startsWith('/program/');
-  const isProjectRoute = location.pathname.startsWith('/projects/') || location.pathname.startsWith('/project/');
+  const isProgramRoute = location.pathname.startsWith("/program/");
+  const isProjectRoute =
+    location.pathname.startsWith("/projects/") ||
+    location.pathname.startsWith("/project/");
   // InJira routes use :projectKey (string key like "BAU"), not :projectId (UUID)
   const isInJiraRoute = isProjectRoute && !!urlProjectKey && !urlProjectId;
 
@@ -229,13 +372,13 @@ function CatalystShellContent() {
 
   // Fetch project details for sidebar (UUID-based routes)
   const { data: projectData } = useQuery({
-    queryKey: ['project-sidebar', activeProjectId],
+    queryKey: ["project-sidebar", activeProjectId],
     queryFn: async () => {
       if (!activeProjectId) return null;
       const { data, error } = await supabase
-        .from('projects')
-        .select('id, name, key')
-        .eq('id', activeProjectId)
+        .from("projects")
+        .select("id, name, key")
+        .eq("id", activeProjectId)
         .maybeSingle();
       if (error) throw error;
       return data;
@@ -245,13 +388,13 @@ function CatalystShellContent() {
 
   // Fetch project by key for InJira routes (/project/:projectKey/*)
   const { data: projectByKeyData } = useQuery({
-    queryKey: ['project-sidebar-by-key', urlProjectKey],
+    queryKey: ["project-sidebar-by-key", urlProjectKey],
     queryFn: async () => {
       if (!urlProjectKey) return null;
       const { data, error } = await supabase
-        .from('projects')
-        .select('id, name, key')
-        .eq('key', urlProjectKey)
+        .from("projects")
+        .select("id, name, key")
+        .eq("key", urlProjectKey)
         .maybeSingle();
       if (error) throw error;
       return data;
@@ -268,74 +411,84 @@ function CatalystShellContent() {
   // because the latter previously caught /product/ideas/* — those URLs now
   // redirect to /ideation/*, but the redirect is a transient state and we
   // want IdeationSidebar to render the moment the new URL lands.
-  const isIdeationRoute = location.pathname.startsWith('/ideation');
-  const isProductRoute = !isIdeationRoute && (location.pathname.startsWith('/producthub') || location.pathname.startsWith('/product'));
-  
+  const isIdeationRoute = location.pathname.startsWith("/ideation");
+  const isProductRoute =
+    !isIdeationRoute &&
+    (location.pathname.startsWith("/producthub") ||
+      location.pathname.startsWith("/product"));
+
   // Check if on release route (Operations/Incidents)
-  const isReleaseRoute = location.pathname.startsWith('/release');
-  
+  const isReleaseRoute = location.pathname.startsWith("/release");
+
   // Check if on releases route (Release & Test Management module - legacy)
-  const isReleasesRoute = location.pathname.startsWith('/releases');
-  
+  const isReleasesRoute = location.pathname.startsWith("/releases");
+
   // Check on releasehub route (new Release Management module)
-  const isReleaseHubRoute = location.pathname.startsWith('/release-hub') || location.pathname.startsWith('/releasehub');
-  
+  const isReleaseHubRoute =
+    location.pathname.startsWith("/release-hub") ||
+    location.pathname.startsWith("/releasehub");
+
   // Check if on test management route
-  const isTestsRoute = location.pathname.startsWith('/tests');
-  
+  const isTestsRoute = location.pathname.startsWith("/tests");
+
   // Check if on PlanHub route
-  const isPlanHubRoute = location.pathname.startsWith('/planhub');
-  
+  const isPlanHubRoute = location.pathname.startsWith("/planhub");
+
   // Check if on TaskHub route (includes /priorities which is part of TaskHub)
-  const isTaskHubRoute = location.pathname.startsWith('/taskhub') || location.pathname.startsWith('/priorities');
-  
+  const isTaskHubRoute =
+    location.pathname.startsWith("/taskhub") ||
+    location.pathname.startsWith("/priorities");
+
   // Check if on TestHub route
-  const isTestHubRoute = location.pathname.startsWith('/testhub');
+  const isTestHubRoute = location.pathname.startsWith("/testhub");
 
   // Check if on ProductHub V5 route (/product-hub/*)
-  const isProductHubRoute = location.pathname.startsWith('/product-hub');
+  const isProductHubRoute = location.pathname.startsWith("/product-hub");
 
   // Check if on ProjectHub V5 route (/project-hub/*)
-  const isProjectHubRoute = location.pathname.startsWith('/project-hub');
-  const isProjectHubAllWorkRoute = /\/project-hub\/[^/]+\/allwork(\/|$|\?)/.test(location.pathname);
+  const isProjectHubRoute = location.pathname.startsWith("/project-hub");
+  const isProjectHubAllWorkRoute =
+    /\/project-hub\/[^/]+\/allwork(\/|$|\?)/.test(location.pathname);
   // Apr 27, 2026 (L67): backlog route also needs the fullpage flex chain
   // (flex-1 min-h-0 overflow-hidden) so the rail's internal scroll fires
   // instead of pushing the whole page taller than viewport. Without
   // min-h-0 on the wrapper, the rail's content height (1638px) leaks
   // up the chain and the table column extends with it. Adding backlog
   // to the same code path that allwork uses.
-  const isProjectHubBacklogRoute = /\/project-hub\/[^/]+\/backlog/.test(location.pathname);
+  const isProjectHubBacklogRoute = /\/project-hub\/[^/]+\/backlog/.test(
+    location.pathname,
+  );
 
   // Check if on full-screen issue view (/browse/:issueKey)
-  const isIssueFullPageRoute = location.pathname.startsWith('/browse/');
+  const isIssueFullPageRoute = location.pathname.startsWith("/browse/");
 
   // Parse issue key from /issue/:issueKey for tab-title binding
   const fullPageIssueKey = isIssueFullPageRoute
-    ? (location.pathname.split('/')[2] || null)
+    ? location.pathname.split("/")[2] || null
     : null;
 
   // Detail-drawer item (modal opened via GlobalSearch / Notifications / ForYou)
-  const pendingDetailItem = useGlobalSearchStore(s => s.pendingItem);
+  const pendingDetailItem = useGlobalSearchStore((s) => s.pendingItem);
 
   // Fetch issue identity for tab title. Priority: detail drawer → full-page route.
   const issueLookupId = pendingDetailItem?.id ?? null;
   const issueLookupKey = fullPageIssueKey;
   const { data: tabIssueData } = useQuery({
-    queryKey: ['tab-title-issue', issueLookupId, issueLookupKey],
+    queryKey: ["tab-title-issue", issueLookupId, issueLookupKey],
     queryFn: async () => {
       if (issueLookupId) {
         const { data } = await supabase
-          .from('catalyst_issues')
-          .select('issue_key, title')
-          .eq('id', issueLookupId)
+          .from("catalyst_issues")
+          .select("issue_key, title")
+          .eq("id", issueLookupId)
           .maybeSingle();
         return data;
       }
       if (issueLookupKey) {
         const { data } = await supabase
-          .from('catalyst_issues')
-          .select('issue_key, title')
-          .eq('issue_key', issueLookupKey)
+          .from("catalyst_issues")
+          .select("issue_key, title")
+          .eq("issue_key", issueLookupKey)
           .maybeSingle();
         return data;
       }
@@ -346,36 +499,43 @@ function CatalystShellContent() {
   });
 
   // Compose tab title inputs (issue ▸ project ▸ page fallback ladder)
-  const titleIssue = (issueLookupId || issueLookupKey)
-    ? { key: tabIssueData?.issue_key ?? issueLookupKey ?? null, title: tabIssueData?.title ?? null }
-    : null;
+  const titleIssue =
+    issueLookupId || issueLookupKey
+      ? {
+          key: tabIssueData?.issue_key ?? issueLookupKey ?? null,
+          title: tabIssueData?.title ?? null,
+        }
+      : null;
   const titleProject = projectData
     ? { key: projectData.key, name: projectData.name }
     : null;
-  useCatalystTitle({ issue: titleIssue, project: titleProject, pageName: page });
-
+  useCatalystTitle({
+    issue: titleIssue,
+    project: titleProject,
+    pageName: page,
+  });
 
   // Check if on Wiki route
-  const isWikiRoute = location.pathname.startsWith('/wiki');
+  const isWikiRoute = location.pathname.startsWith("/wiki");
 
   // Check if on IncidentHub route
-  const isIncidentHubRoute = location.pathname.startsWith('/incident-hub');
+  const isIncidentHubRoute = location.pathname.startsWith("/incident-hub");
 
   // Decision A (Apr 2026): Jira blue canvas (#E9F2FE) + white panel on all
   // hub routes. /for-you, Home, Wiki, Admin are intentionally excluded.
   const isHubSurfaceRoute =
-    location.pathname.startsWith('/strategyhub') ||
-    location.pathname.startsWith('/producthub') ||
-    location.pathname.startsWith('/product/') ||      // /product/ideas/*, /product/room, etc.
-    location.pathname.startsWith('/product-hub') ||
-    location.pathname.startsWith('/project-hub') ||
-    location.pathname.startsWith('/release-hub') ||
-    location.pathname.startsWith('/releasehub') ||
-    location.pathname.startsWith('/testhub') ||
-    location.pathname.startsWith('/incident-hub') ||
-    location.pathname.startsWith('/taskhub') ||
-    location.pathname.startsWith('/ideation') ||      // peer hub Ideation
-    location.pathname.startsWith('/priorities');
+    location.pathname.startsWith("/strategyhub") ||
+    location.pathname.startsWith("/producthub") ||
+    location.pathname.startsWith("/product/") || // /product/ideas/*, /product/room, etc.
+    location.pathname.startsWith("/product-hub") ||
+    location.pathname.startsWith("/project-hub") ||
+    location.pathname.startsWith("/release-hub") ||
+    location.pathname.startsWith("/releasehub") ||
+    location.pathname.startsWith("/testhub") ||
+    location.pathname.startsWith("/incident-hub") ||
+    location.pathname.startsWith("/taskhub") ||
+    location.pathname.startsWith("/ideation") || // peer hub Ideation
+    location.pathname.startsWith("/priorities");
 
   // Pages that already paint their own Jira canvas + white card. Wrapping these
   // in <HubSurface> would double-stack canvas layers. They still sit on the
@@ -383,28 +543,31 @@ function CatalystShellContent() {
   //   /project-hub/:key/backlog   → BacklogPage.atlaskit.tsx:1083
   const isSelfFramedRoute =
     /^\/project-hub\/[^/]+\/backlog/.test(location.pathname) ||
-    location.pathname.startsWith('/browse/');  // full-screen issue view
+    location.pathname.startsWith("/browse/"); // full-screen issue view
 
   // Hub routes that explicitly opt out of the Jira blue canvas — pure white
   // page surface (Confluence Spaces parity, not Jira hub parity). Owner
   // decision (Apr 2026): the All Projects landing should match Confluence's
   // Spaces page, not Jira's hub canvas.
   const isWhiteCanvasRoute =
-    location.pathname === '/project-hub/projects' ||
-    location.pathname === '/project/all-projects' ||
-    location.pathname === '/product-hub/products';
+    location.pathname === "/project-hub/projects" ||
+    location.pathname === "/project/all-projects" ||
+    location.pathname === "/product-hub/products";
 
-  const shouldWrapHubSurface = isHubSurfaceRoute && !isSelfFramedRoute && !isWhiteCanvasRoute;
+  const shouldWrapHubSurface =
+    isHubSurfaceRoute && !isSelfFramedRoute && !isWhiteCanvasRoute;
   const isDarkTheme = useIsDarkTheme();
   // 2026-04-30 Jira parity: in dark mode, route the canvas through the
   // ADS background.neutral token (one step BELOW elevation.surface).
   // This produces Jira's exact two-tier shell: canvas dim, sidebar+header
   // raised. Previously fell back to --cp-bg legacy alias.
   const mainBg = isWhiteCanvasRoute
-    ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'
+    ? "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))"
     : isDarkTheme
-      ? 'var(--ds-background-neutral, #1D2125)'
-      : (isHubSurfaceRoute ? JIRA_CANVAS_BG : 'var(--cp-bg)');
+      ? "var(--ds-background-neutral, #1D2125)"
+      : isHubSurfaceRoute
+        ? JIRA_CANVAS_BG
+        : "var(--cp-bg)";
 
   // Prevent full document reloads caused by accidental <a href="/..."> navigation.
   // IMPORTANT: In Preview, the URL contains special query params (e.g. __lovable_token).
@@ -416,32 +579,37 @@ function CatalystShellContent() {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 
     const target = e.target as HTMLElement | null;
-    const anchor = target?.closest?.('a') as HTMLAnchorElement | null;
+    const anchor = target?.closest?.("a") as HTMLAnchorElement | null;
     if (!anchor) return;
 
-    const href = anchor.getAttribute('href');
+    const href = anchor.getAttribute("href");
     if (!href) return;
 
     // Ignore new-tab/external/download/hash links
-    if (anchor.target && anchor.target !== '_self') return;
-    if (anchor.hasAttribute('download')) return;
-    if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
-    if (href.startsWith('http://') || href.startsWith('https://')) return;
+    if (anchor.target && anchor.target !== "_self") return;
+    if (anchor.hasAttribute("download")) return;
+    if (
+      href.startsWith("#") ||
+      href.startsWith("mailto:") ||
+      href.startsWith("tel:")
+    )
+      return;
+    if (href.startsWith("http://") || href.startsWith("https://")) return;
 
     // Only handle internal absolute paths
-    if (!href.startsWith('/')) return;
+    if (!href.startsWith("/")) return;
 
     e.preventDefault();
 
     // Merge current query params into the link (link query takes precedence)
-    const [pathOnly, hrefQuery = ''] = href.split('?');
+    const [pathOnly, hrefQuery = ""] = href.split("?");
     const merged = new URLSearchParams(location.search);
     const linkParams = new URLSearchParams(hrefQuery);
     for (const [k, v] of linkParams.entries()) merged.set(k, v);
 
     const search = merged.toString();
-    performance.mark?.('internal_link_nav');
-    navigate(`${pathOnly}${search ? `?${search}` : ''}`);
+    performance.mark?.("internal_link_nav");
+    navigate(`${pathOnly}${search ? `?${search}` : ""}`);
   };
 
   // Determine sidebar based on workspaceType (single source of truth)
@@ -452,91 +620,52 @@ function CatalystShellContent() {
     // reading as a broken state rather than a deliberate "no nav".
     // HomeSidebar fills the rail with Pinned / Recent / Jump-to sections,
     // turning that real estate into the user's own navigation surface.
-    if (location.pathname === '/' || location.pathname === '/for-you') {
+    if (location.pathname === "/" || location.pathname === "/for-you") {
       // HomeSidebar now composes SidebarBase, so it shares the canonical
       // hub-rail props (expanded + onToggle) with every other panel —
       // identical density, active-state, and collapse behaviour.
-      return (
-        <HomeSidebar
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
-      );
+      return <HomeSidebar expanded={true} onToggle={cycleSidebarState} />;
     }
 
     // Admin routes use AdminSidebarV2 — controlled by the global
     // cycleSidebarState (single-chevron contract, design-critique 2026-05-17).
     // When the sidebar is visible at all it renders at the full 240px, just
     // like every other hub sidebar. No more 64px icon-only mode.
-    if (location.pathname.startsWith('/admin')) {
-      return (
-        <AdminSidebarV2
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
-      );
+    if (location.pathname.startsWith("/admin")) {
+      return <AdminSidebarV2 expanded={true} onToggle={cycleSidebarState} />;
     }
 
     // Full-screen issue view: show ProjectHub sidebar forced-collapsed
     if (isIssueFullPageRoute) {
-      return (
-        <ProjectHubSidebar
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
-      );
+      return <ProjectHubSidebar expanded={true} onToggle={cycleSidebarState} />;
     }
 
     // Wiki sidebar
     if (isWikiRoute) {
-      return (
-        <WikiSidebar
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
-      );
+      return <WikiSidebar expanded={true} onToggle={cycleSidebarState} />;
     }
 
     // ProductHub V5 sidebar (/product-hub/*) — checked before isProductRoute so
     // /product-hub/* doesn't fall through to ProductRoomSidebar (which gates on
     // isModuleEnabled('PRODUCT') and may return null).
     if (isProductHubRoute) {
-      return (
-        <ProductHubSidebar
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
-      );
+      return <ProductHubSidebar expanded={true} onToggle={cycleSidebarState} />;
     }
 
     // ProjectHub V5 sidebar (/project-hub/*)
     if (isProjectHubRoute) {
-      return (
-        <ProjectHubSidebar
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
-      );
+      return <ProjectHubSidebar expanded={true} onToggle={cycleSidebarState} />;
     }
-
 
     // ReleaseHub sidebar (new Release Management module)
     if (isReleaseHubRoute) {
-      return (
-        <ReleaseHubSidebar
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
-      );
+      return <ReleaseHubSidebar expanded={true} onToggle={cycleSidebarState} />;
     }
 
     // IncidentHub sidebar
     if (isIncidentHubRoute) {
       return (
-        <IncidentHubSidebar
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
+        <IncidentHubSidebar expanded={true} onToggle={cycleSidebarState} />
       );
     }
 
@@ -553,77 +682,48 @@ function CatalystShellContent() {
     // Test Management sidebar (legacy)
     if (isTestsRoute) {
       return (
-        <TestManagementSidebar
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
+        <TestManagementSidebar expanded={true} onToggle={cycleSidebarState} />
       );
     }
 
     // Release route sidebar (Operations/Incidents)
     if (isReleaseRoute) {
       return (
-        <ReleaseRoomSidebar
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
+        <ReleaseRoomSidebar expanded={true} onToggle={cycleSidebarState} />
       );
     }
 
     // Ideation hub sidebar (/ideation/*) — peer hub, checked before Product
     // so the lifted Ideation surfaces don't fall through to ProductRoomSidebar.
     if (isIdeationRoute) {
-      return (
-        <IdeationSidebar
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
-      );
+      return <IdeationSidebar expanded={true} onToggle={cycleSidebarState} />;
     }
 
     // Product route sidebar
-    if (isProductRoute && isModuleEnabled('PRODUCT')) {
+    if (isProductRoute && isModuleEnabled("PRODUCT")) {
       return (
-        <ProductRoomSidebar
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
+        <ProductRoomSidebar expanded={true} onToggle={cycleSidebarState} />
       );
     }
 
     // PlanHub sidebar
     if (isPlanHubRoute) {
-      return (
-        <PlanHubSidebar
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
-      );
+      return <PlanHubSidebar expanded={true} onToggle={cycleSidebarState} />;
     }
 
     // TaskHub sidebar
     if (isTaskHubRoute) {
-      return (
-        <TaskHubSidebar
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
-      );
+      return <TaskHubSidebar expanded={true} onToggle={cycleSidebarState} />;
     }
 
     // TestHub sidebar
     if (isTestHubRoute) {
-      return (
-        <TestHubSidebar
-          expanded={true}
-          onToggle={cycleSidebarState}
-        />
-      );
+      return <TestHubSidebar expanded={true} onToggle={cycleSidebarState} />;
     }
 
     // Use workspaceType to determine sidebar
     switch (workspaceType) {
-      case 'program':
+      case "program":
         if (activeProgramId) {
           return (
             <UnifiedSidebar
@@ -645,7 +745,7 @@ function CatalystShellContent() {
           </div>
         );
 
-      case 'project':
+      case "project":
         if (effectiveProjectId) {
           return (
             <ProjectSidebar
@@ -665,13 +765,10 @@ function CatalystShellContent() {
           </div>
         );
 
-      case 'enterprise':
+      case "enterprise":
         // Always show enterprise sidebar for enterprise routes
         return (
-          <EnterpriseSidebar
-            expanded={true}
-            onToggle={cycleSidebarState}
-          />
+          <EnterpriseSidebar expanded={true} onToggle={cycleSidebarState} />
         );
 
       default:
@@ -680,7 +777,11 @@ function CatalystShellContent() {
   };
 
   return (
-    <div className="h-screen flex flex-col text-[var(--cp-t1)]" style={{ background: 'var(--cp-bg-canvas)' }} onClickCapture={handleInternalLinkClickCapture}>
+    <div
+      className="h-screen flex flex-col text-[var(--cp-t1)]"
+      style={{ background: "var(--cp-bg-canvas)" }}
+      onClickCapture={handleInternalLinkClickCapture}
+    >
       {/* Skip link — WCAG AA (CG-12): keyboard users tab here first, then jump to main */}
       <a
         href="#catalyst-main"
@@ -690,8 +791,18 @@ function CatalystShellContent() {
       </a>
 
       {/* Global Header */}
-      <div data-catalyst-header style={{ position: 'relative' }}>
-        <Suspense fallback={<div className="h-[56px] border-b" style={{ background: 'var(--cp-bg)', borderColor: 'var(--cp-bd)' }} />}>
+      <div data-catalyst-header style={{ position: "relative" }}>
+        <Suspense
+          fallback={
+            <div
+              className="h-[56px] border-b"
+              style={{
+                background: "var(--cp-bg)",
+                borderColor: "var(--cp-bd)",
+              }}
+            />
+          }
+        >
           <CatalystHeader />
         </Suspense>
         {/* Mobile / tablet hamburger — only visible at <1024px.
@@ -706,20 +817,21 @@ function CatalystShellContent() {
             aria-controls="catalyst-mobile-drawer"
             onClick={() => setMobileDrawerOpen(true)}
             style={{
-              position: 'absolute',
-              top: '50%',
+              position: "absolute",
+              top: "50%",
               left: 8,
-              transform: 'translateY(-50%)',
+              transform: "translateY(-50%)",
               width: 36,
               height: 36,
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
               borderRadius: 4,
-              background: 'var(--ds-background-neutral-subtle, transparent)',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--ds-text, var(--cp-t1, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))))',
+              background: "var(--ds-background-neutral-subtle, transparent)",
+              border: "none",
+              cursor: "pointer",
+              color:
+                "var(--ds-text, var(--cp-t1, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))))",
               zIndex: 50,
             }}
           >
@@ -757,38 +869,38 @@ function CatalystShellContent() {
             // When NOT visually open we let the child (zero-width placeholder or
             // zero-width placeholder) size itself — forcing a width here
             // would collapse the edge-reveal handle.
-            ...(sidebarVisuallyOpen ? { width: 240 } : null),
-            ...(sidebarOverlayMode ? {
-              position: 'absolute' as const,
-              top: 56,   // start BELOW the 56px top nav — never covers the header
-              left: 0,
-              bottom: 0,
-              zIndex: 40,
-              boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-            } : {}),
+            // ...(sidebarVisuallyOpen ? { width: 240 } : null),
+            ...(sidebarOverlayMode
+              ? {
+                  position: "absolute" as const,
+                  top: 56, // start BELOW the 56px top nav — never covers the header
+                  left: 0,
+                  bottom: 0,
+                  zIndex: 40,
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+                }
+              : {}),
             // Loop 2 (2026-04-30): hide the inline rail at <1024px. The same
             // sidebar node is rendered inside GlobalMobileDrawer below.
             // display:none keeps it out of the flex flow without affecting
             // the desktop branch when isNarrow flips back to false.
-            ...(isNarrow ? { display: 'none' } : null),
+            ...(isNarrow ? { display: "none" } : null),
           }}
-          >
-            {sidebarVisuallyOpen ? (
-              // Visible — either pinned (solid panel) or hover-peek (overlay).
-              // Admin flows through here too (single-chevron contract,
-              // 2026-05-17): no more isAdminRoute carve-out.
-              <Suspense fallback={null}>
-                {renderSidebar()}
-              </Suspense>
-            ) : (
-              // Apr 28, 2026: the SidebarEdgeReveal handle was deprecated;
-              // when the sidebar is hidden / unpinned / not peeking we
-              // render a zero-width placeholder so the flex row stays
-              // stable. Restoring the sidebar happens via the top-nav
-              // chevron or ⌘/Ctrl + [.
-              <div style={{ width: 0, height: '100%' }} aria-hidden />
-            )}
-          </div>
+        >
+          {sidebarVisuallyOpen ? (
+            // Visible — either pinned (solid panel) or hover-peek (overlay).
+            // Admin flows through here too (single-chevron contract,
+            // 2026-05-17): no more isAdminRoute carve-out.
+            <Suspense fallback={null}>{renderSidebar()}</Suspense>
+          ) : (
+            // Apr 28, 2026: the SidebarEdgeReveal handle was deprecated;
+            // when the sidebar is hidden / unpinned / not peeking we
+            // render a zero-width placeholder so the flex row stays
+            // stable. Restoring the sidebar happens via the top-nav
+            // chevron or ⌘/Ctrl + [.
+            <div style={{ width: 0, height: "100%" }} aria-hidden />
+          )}
+        </div>
 
         <main
           id="catalyst-main"
@@ -796,9 +908,15 @@ function CatalystShellContent() {
           className="flex-1 min-w-0 w-full max-w-full flex flex-col overflow-hidden"
           style={{ background: mainBg }}
         >
-          <Suspense fallback={null}><AnnouncementBanner /></Suspense>
-          <div className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${(isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute) ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'}`}>
-            <div className={`w-full max-w-full ${(isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute) ? 'flex-1 min-h-0 flex flex-col overflow-hidden' : ''}`}>
+          <Suspense fallback={null}>
+            <AnnouncementBanner />
+          </Suspense>
+          <div
+            className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden"}`}
+          >
+            <div
+              className={`w-full max-w-full ${isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute ? "flex-1 min-h-0 flex flex-col overflow-hidden" : ""}`}
+            >
               {shouldWrapHubSurface ? (
                 /* jira-compare 2026-05-05 cycle 2 — D-4 fix · drop the LEFT
                    frame padding to 0 on AllWork (and full-page issue) so the
@@ -809,7 +927,11 @@ function CatalystShellContent() {
                    bottom keep 24px breathing room. */
                 <HubSurface
                   panelPadding={0}
-                  framePadding={(isProjectHubAllWorkRoute || isIssueFullPageRoute) ? '24px 24px 24px 0' : 24}
+                  framePadding={
+                    isProjectHubAllWorkRoute || isIssueFullPageRoute
+                      ? "24px 0 24px 0"
+                      : 24
+                  }
                 >
                   <Outlet />
                 </HubSurface>
@@ -841,8 +963,11 @@ function formatLastLogin(iso: string): string {
   try {
     const d = new Date(iso);
     return d.toLocaleString(undefined, {
-      weekday: 'short', month: 'short', day: 'numeric',
-      hour: '2-digit', minute: '2-digit',
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   } catch {
     return iso;
@@ -861,7 +986,9 @@ function LastLoginFlag() {
       setVisible(true);
       timerRef.current = setTimeout(() => setVisible(false), 6000);
     }
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, []);
 
   const dismiss = useCallback(() => setVisible(false), []);
@@ -869,15 +996,20 @@ function LastLoginFlag() {
   if (!visible || !lastLoginAt) return null;
 
   return (
-    <div style={{ position: 'fixed', bottom: 24, left: 24, zIndex: 9999 }}>
+    <div style={{ position: "fixed", bottom: 24, left: 24, zIndex: 9999 }}>
       <FlagGroup onDismissed={dismiss}>
         <AkFlag
           id="last-login-flag"
           appearance="info"
-          icon={<InfoIcon label="" color={token('color.icon.information', '#0055CC')} />}
+          icon={
+            <InfoIcon
+              label=""
+              color={token("color.icon.information", "#0055CC")}
+            />
+          }
           title="Welcome back"
           description={`You last signed in on ${formatLastLogin(lastLoginAt)}`}
-          actions={[{ content: 'Dismiss', onClick: dismiss }]}
+          actions={[{ content: "Dismiss", onClick: dismiss }]}
         />
       </FlagGroup>
     </div>
@@ -885,8 +1017,8 @@ function LastLoginFlag() {
 }
 
 export function CatalystShell() {
-  const pendingItem = useGlobalSearchStore(s => s.pendingItem);
-  const clearDetail = useGlobalSearchStore(s => s.clearDetail);
+  const pendingItem = useGlobalSearchStore((s) => s.pendingItem);
+  const clearDetail = useGlobalSearchStore((s) => s.clearDetail);
 
   return (
     <CatalystContextProvider>
@@ -900,8 +1032,8 @@ export function CatalystShell() {
             isOpen={true}
             onClose={clearDetail}
             itemId={pendingItem.id}
-            projectId={pendingItem.projectId || ''}
-            projectKey={pendingItem.projectKey || ''}
+            projectId={pendingItem.projectId || ""}
+            projectKey={pendingItem.projectKey || ""}
             itemType={pendingItem.itemType}
           />
         </Suspense>
@@ -909,4 +1041,3 @@ export function CatalystShell() {
     </CatalystContextProvider>
   );
 }
-
