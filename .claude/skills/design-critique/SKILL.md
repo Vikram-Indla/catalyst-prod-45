@@ -352,9 +352,9 @@ If the score is below **22 / 30** (< 73%), the surface MUST NOT ship. Halt and f
 3. **No `text-transform: uppercase` on column headers** — sentence-case only (jira-compare lesson 2026-05-09).
 4. **Row density** — target 48px row height (Jira benchmark). Anything ≥ 56px is H8 P1.
 5. **Sidebar Recent** — two-line layout (summary line 1, KEY line 2) is the canonical pattern. Single-line truncation is H6 P1.
-<<<<<<< HEAD
 6. **ADS citation required for H4 and H9.** Any H4 (Consistency) or H9 (Typography) finding that scores below 3/3 MUST cite a specific URL from the ADS Extended Resources below. Uncited H4/H9 findings are capped at 1/3 regardless of the actual score.
 7. **ADF compliance is an H2 and H4 check.** If the surface contains a description or comment field, the critique MUST verify whether ADF structure is being used (H2: real-world match with Jira) and whether `@atlaskit/renderer` / `@atlaskit/editor-core` are the implementation (H4: consistency). Fetch the ADF structure doc and package pages before scoring these heuristics.
+8. **Screenshot → auto-fix → rebuild loop (MANDATORY).** When ANY screenshot is shared in chat that shows a defect, crash, error overlay, or broken UI state: (a) immediately diagnose the root cause without asking, (b) fix the code, (c) kill and rebuild the dev server on port 8080 (`kill $(lsof -t -i:8080); bun run dev --port 8080`), (d) navigate Chrome MCP to the affected URL and check for console errors, (e) take a Computer Use screenshot to confirm the fix visually. If still broken, loop steps b–e. This applies whether the screenshot is shared mid-critique or at the start of a new session. Do not ask "should I fix this?" — fix it immediately.
 
 ## ADS Extended Resources — Contextual Fetch Table
 
@@ -369,9 +369,6 @@ If the score is below **22 / 30** (< 73%), the surface MUST NOT ship. Halt and f
 | Description in write/edit mode | https://www.npmjs.com/package/@atlaskit/editor-core | H2, H4 |
 | Description in read/display mode | https://www.npmjs.com/package/@atlaskit/renderer | H2, H4 |
 | ADF data manipulation in scope | https://www.npmjs.com/package/@atlaskit/adf-utils | H4 |
-=======
-6. **Screenshot → auto-fix → rebuild loop (MANDATORY).** When ANY screenshot is shared in chat that shows a defect, crash, error overlay, or broken UI state: (a) immediately diagnose the root cause without asking, (b) fix the code, (c) kill and rebuild the dev server on port 8080 (`kill $(lsof -t -i:8080); bun run dev --port 8080`), (d) navigate Chrome MCP to the affected URL and check for console errors, (e) take a Computer Use screenshot to confirm the fix visually. If still broken, loop steps b–e. This applies whether the screenshot is shared mid-critique or at the start of a new session. Do not ask "should I fix this?" — fix it immediately.
->>>>>>> origin/BAU-filters-01
 
 ---
 

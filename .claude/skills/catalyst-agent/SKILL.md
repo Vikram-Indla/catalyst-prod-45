@@ -99,23 +99,7 @@ AGENTS ACTIVATED — N implementers
 
 ## Triggers and flags
 
-<<<<<<< HEAD
 **Canonical:** `/catalyst-agent <task>` · `/agent <task>`
-=======
-Invoke the chosen wrapper skills in declared composition order. Pass the full PROBE + GAP REPORT as a pre-loaded context envelope so the wrapper can skip redundant evidence acquisition.
-
-**MANDATORY after every implementation action (Directive 5):**
-
-After any code change, style fix, or component update:
-
-1. Navigate to the exact URL on `localhost:8080`
-2. Take a screenshot using `mcp__computer-use__screenshot` (preferred) OR `mcp__Claude_in_Chrome__read_page`
-3. If Computer Use is not yet granted: call `mcp__computer-use__request_access` with the browser application
-4. Print the completion evidence block:
-
-```
-EVIDENCE — Component N ([Component Name]) after fix
-   URL:       http://localhost:8080/[path]
    Screenshot: [attached via computer-use]
    Gap items resolved: N of total
    Fixed: [dimension labels fixed this session]
@@ -257,7 +241,6 @@ HALT — CLAUDE.md ban hit
 ---
 
 ## Flags reference
->>>>>>> origin/BAU-filters-01
 
 | Flag | Effect |
 |---|---|
