@@ -169,7 +169,7 @@ export function CatalystViewBase({
   // (raised from 220 → 260 on 2026-05-19: "Improve Production Incident" button is 236px
   // and was visually clipping at 220px; 260 gives it breathing room without crowding the
   // left content area at typical 1140px AllWork panel widths).
-  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 260 : 313);
+  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 380 : 420);
   const [showCopyFlag, setShowCopyFlag] = useState(false);
   const isDraggingRef = useRef(false);
 

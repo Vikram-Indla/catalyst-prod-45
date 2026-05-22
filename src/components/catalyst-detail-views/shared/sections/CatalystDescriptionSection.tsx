@@ -376,6 +376,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       background-color: transparent !important;
       background: transparent !important;
     }
+    [class*="cv-"][class*="-select__control"]:hover { background: transparent !important; }
     /* v2 extra rule: the dark-mode global stylesheet has
        .dark [class*="Drawer"] input { background-color: rgb(10,10,10) !important; }
        with specificity 0,2,1 — beating our 0,1,1 plain rule. Add .dark prefix

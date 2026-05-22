@@ -47,15 +47,15 @@ function FieldRow({
   label,
   alignBlock = 'center',
   labelTopPad,
-  direction = 'column',
+  direction = 'row',
   children,
 }: {
   label: string;
-  /** @deprecated no-op in stacked layout; kept for call-site compat */
+  /** @deprecated no-op; kept for call-site compat */
   alignBlock?: 'start' | 'center';
   /** @deprecated no-op; kept for call-site compat */
   labelTopPad?: boolean;
-  /** Stack by default; pass 'row' for inline label + value (used by Due date). */
+  /** Inline (label + value on the same row) by default. Pass 'column' for stacked. */
   direction?: 'column' | 'row';
   children: React.ReactNode;
 }) {
@@ -65,30 +65,40 @@ function FieldRow({
       display: 'flex',
       flexDirection: isRow ? 'row' : 'column',
       alignItems: isRow ? 'center' : 'stretch',
-      gap: isRow ? 4 : 4, padding: '8px 4px',
-      borderRadius: 4,
-      transition: 'background-color 0.15s ease-out',
-    }}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.08))';
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.backgroundColor = 'transparent';
-    }}
-    >
+      gap: isRow ? 8 : 4,
+      padding: '4px 4px',
+      minHeight: isRow ? 32 : undefined,
+    }}>
       <div style={{
-        fontSize: 11, fontWeight: 600, lineHeight: '16px',
+        fontSize: isRow ? 12 : 11,
+        fontWeight: isRow ? 500 : 600,
+        lineHeight: '20px',
         color: 'var(--ds-text-subtle, #505258)',
         flexShrink: isRow ? 0 : undefined,
-        minWidth: isRow ? 60 : undefined,
+        width: isRow ? 128 : undefined,
+        alignSelf: isRow ? 'center' : undefined,
       }}>
         {label}
       </div>
-      <div style={{
-        fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #292A2E)',
-        minWidth: 0,
-        flex: isRow ? 1 : undefined,
-      }}>
+      <div
+        style={{
+          fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #292A2E)',
+          minWidth: 0,
+          flex: isRow ? 1 : undefined,
+          alignSelf: isRow ? 'stretch' : undefined,
+          display: 'flex',
+          alignItems: 'center',
+          borderRadius: 4,
+          padding: '0 4px',
+          transition: 'background-color 0.15s ease-out',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.08))';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'transparent';
+        }}
+      >
         {children}
       </div>
     </div>
@@ -592,28 +602,28 @@ export function CatalystSidebarDetails({
 
           {/* ── Assignee ──── */}
           <FieldRow label="Assignee">
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {issue && (
-                <EditableAssignee
-                  issueId={issue.id}
-                  projectId={projectId || ''}
-                  currentAssigneeId={issue.assignee_account_id}
-                  currentAssigneeName={issue.assignee_display_name}
-                  onUpdate={invalidateIssue}
-                />
-              )}
-              {/* jira-compare 2026-05-07: hide when current user IS the assignee (Jira account ID or Supabase UUID match) */}
-              {user && issue?.assignee_account_id !== user.id && issue?.assignee_account_id !== currentUserJiraId && (
-                <button
-                  type="button"
-                  onClick={handleAssignToMe}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--ds-link, #1868DB)', fontSize: 11, fontWeight: 400, lineHeight: '16px', textAlign: 'left', marginTop: 4 }}
-                >
-                  Assign to me
-                </button>
-              )}
-            </div>
+            {issue && (
+              <EditableAssignee
+                issueId={issue.id}
+                projectId={projectId || ''}
+                currentAssigneeId={issue.assignee_account_id}
+                currentAssigneeName={issue.assignee_display_name}
+                onUpdate={invalidateIssue}
+              />
+            )}
           </FieldRow>
+          {/* jira-compare 2026-05-07: hide when current user IS the assignee (Jira account ID or Supabase UUID match) */}
+          {user && issue?.assignee_account_id !== user.id && issue?.assignee_account_id !== currentUserJiraId && (
+            <button
+              type="button"
+              onClick={handleAssignToMe}
+              onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+              style={{ background: 'none', border: 'none', padding: '0 0 4px 152px', cursor: 'pointer', color: 'var(--ds-link, #1868DB)', fontSize: 12, fontWeight: 400, lineHeight: '16px', textAlign: 'left' }}
+            >
+              Assign to me
+            </button>
+          )}
 
           {/* ── Priority (Epic only) — jira-compare 2026-05-07: re-probe BAU-5419
               confirmed Priority IS in Jira's right rail for Epics.
