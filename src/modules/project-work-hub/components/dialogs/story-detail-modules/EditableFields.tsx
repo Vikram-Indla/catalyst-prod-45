@@ -3,27 +3,30 @@
  * EditableFields — EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker
  * Rebuilt to exact Jira parity — no pencil icons, Jira-native priority SVGs, 28px avatars, 14px names
  */
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { createPortal } from 'react-dom';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import Select, { CreatableSelect } from '@atlaskit/select';
-import CheckIcon from '@atlaskit/icon/glyph/check';
-import CrossCircleIcon from '@atlaskit/icon/glyph/cross-circle';
-import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
-import type { ProjectMember, ParentIssue } from './types';
-import { PRIORITY_LIST } from './constants';
-import { getAvatarColor, getInitials } from './helpers';
-import { resolveAvatarUrl } from '@/lib/avatars';
-import { PriorityIcon as CanonicalPriorityIcon } from '@/components/icons';
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { createPortal } from "react-dom";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import Select, { CreatableSelect } from "@atlaskit/select";
+import CheckIcon from "@atlaskit/icon/glyph/check";
+import CrossCircleIcon from "@atlaskit/icon/glyph/cross-circle";
+import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
+import type { ProjectMember, ParentIssue } from "./types";
+import { PRIORITY_LIST } from "./constants";
+import { getAvatarColor, getInitials } from "./helpers";
+import { resolveAvatarUrl } from "@/lib/avatars";
+import { PriorityIcon as CanonicalPriorityIcon } from "@/components/icons";
 
 /* jira-compare 2026-05-10 (P2): Hide dropdown indicator chevron from Priority
    select in Key details at rest — Jira's Key details rows show no visible
    chevron in idle state. Show only on hover/focus (matching the right-rail
    select idle-state rule from K.12). Inject once per session. */
-if (typeof document !== 'undefined' && !document.getElementById('cv-priority-select-idle-style')) {
-  const s = document.createElement('style');
-  s.id = 'cv-priority-select-idle-style';
+if (
+  typeof document !== "undefined" &&
+  !document.getElementById("cv-priority-select-idle-style")
+) {
+  const s = document.createElement("style");
+  s.id = "cv-priority-select-idle-style";
   s.textContent = `
     .cv-priority-select__dropdown-indicator { display: none !important; }
     .cv-priority-select__control:hover .cv-priority-select__dropdown-indicator,
@@ -37,47 +40,114 @@ if (typeof document !== 'undefined' && !document.getElementById('cv-priority-sel
 
 /** Atlassian-spec dropdown container styles */
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
-  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4, border: 'none',
-  boxShadow: 'var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,.15))',
-  padding: '4px 0', zIndex: 9999,
+  background:
+    "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+  borderRadius: 4,
+  border: "none",
+  boxShadow: "var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,.15))",
+  padding: "4px 0",
+  zIndex: 9999,
 };
 
 /** Atlassian checkmark icon — uses ADS tokens */
 const CheckmarkIcon = () => (
-  <CheckIcon size="small" primaryColor="var(--ds-icon-selected, var(--cp-primary-60, #0052CC))" />
+  <CheckIcon
+    size="small"
+    primaryColor="var(--ds-icon-selected, var(--cp-primary-60, #0052CC))"
+  />
 );
 
 /** Jira-native priority SVG icons — exact parity */
 const PRIORITY_SVG: Record<string, React.ReactNode> = {
   Highest: (
     <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 8l5-5 5 5" fill="none" stroke="var(--ds-icon-danger, #FF5630)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M3 12l5-5 5 5" fill="none" stroke="var(--ds-icon-danger, #FF5630)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path
+        d="M3 8l5-5 5 5"
+        fill="none"
+        stroke="var(--ds-icon-danger, #FF5630)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3 12l5-5 5 5"
+        fill="none"
+        stroke="var(--ds-icon-danger, #FF5630)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   ),
   High: (
     <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 10l5-5 5 5" fill="none" stroke="var(--ds-icon-danger, #FF5630)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path
+        d="M3 10l5-5 5 5"
+        fill="none"
+        stroke="var(--ds-icon-danger, #FF5630)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   ),
   Medium: (
     /* jira-compare S-23 (2026-04-28): Jira renders Medium as three
      * horizontal bars (≡), not two. Match Jira's medium_new.svg. */
     <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 4.5h10" fill="none" stroke="var(--ds-icon-warning, #FFAB00)" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M3 8h10" fill="none" stroke="var(--ds-icon-warning, #FFAB00)" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M3 11.5h10" fill="none" stroke="var(--ds-icon-warning, #FFAB00)" strokeWidth="2" strokeLinecap="round"/>
+      <path
+        d="M3 4.5h10"
+        fill="none"
+        stroke="var(--ds-icon-warning, #FFAB00)"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M3 8h10"
+        fill="none"
+        stroke="var(--ds-icon-warning, #FFAB00)"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M3 11.5h10"
+        fill="none"
+        stroke="var(--ds-icon-warning, #FFAB00)"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   ),
   Low: (
     <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 6l5 5 5-5" fill="none" stroke="var(--ds-link, #2684FF)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path
+        d="M3 6l5 5 5-5"
+        fill="none"
+        stroke="var(--ds-link, #2684FF)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   ),
   Lowest: (
     <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 4l5 5 5-5" fill="none" stroke="var(--ds-link, #2684FF)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M3 8l5 5 5-5" fill="none" stroke="var(--ds-link, #2684FF)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path
+        d="M3 4l5 5 5-5"
+        fill="none"
+        stroke="var(--ds-link, #2684FF)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3 8l5 5 5-5"
+        fill="none"
+        stroke="var(--ds-link, #2684FF)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   ),
 };
@@ -86,15 +156,57 @@ const PRIORITY_SVG: Record<string, React.ReactNode> = {
    Exported so peer fields (Reporter etc.) can reuse the canonical fallback and
    we stop fragmenting into hand-rolled initials tiles for the same user.
    Uses ADS tokens for color and text styling. See CLAUDE.md §19 + 2026-04-20 critique §P0-2. */
-export function AvatarCircle({ userId, name, avatarUrl, size = 28 }: { userId: string; name: string; avatarUrl?: string | null; size?: number }) {
+export function AvatarCircle({
+  userId,
+  name,
+  avatarUrl,
+  size = 28,
+}: {
+  userId: string;
+  name: string;
+  avatarUrl?: string | null;
+  size?: number;
+}) {
   if (avatarUrl) {
-    return <img src={avatarUrl} alt={name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
+    return (
+      <img
+        src={avatarUrl}
+        alt={name}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: "50%",
+          objectFit: "cover",
+          flexShrink: 0,
+        }}
+      />
+    );
   }
   const initials = getInitials(name);
   const fontSize = Math.max(10, Math.round(size * 0.35));
   return (
-    <div style={{ width: size, height: size, borderRadius: '50%', background: getAvatarColor(userId), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      <span style={{ fontSize, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{initials}</span>
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        background: getAvatarColor(userId),
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+      }}
+    >
+      <span
+        style={{
+          fontSize,
+          fontWeight: 700,
+          color:
+            "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+        }}
+      >
+        {initials}
+      </span>
     </div>
   );
 }
@@ -122,28 +234,46 @@ type AssigneeOption = {
   userId: string | null; // null for Unassigned
   avatarUrl: string | null;
 };
-const UNASSIGNED_VALUE = '__unassigned__';
+const UNASSIGNED_VALUE = "__unassigned__";
 
-export function EditableAssignee({ issueId, issueKey, projectId, currentAssigneeId, currentAssigneeName, onUpdate }: {
-  issueId: string; issueKey?: string; projectId: string; currentAssigneeId: string | null; currentAssigneeName: string | null; onUpdate: () => void;
+export function EditableAssignee({
+  issueId,
+  issueKey,
+  projectId,
+  currentAssigneeId,
+  currentAssigneeName,
+  onUpdate,
+}: {
+  issueId: string;
+  issueKey?: string;
+  projectId: string;
+  currentAssigneeId: string | null;
+  currentAssigneeName: string | null;
+  onUpdate: () => void;
 }) {
   const { data: members = [] } = useQuery({
-    queryKey: ['projectMembers-edit-local', projectId],
+    queryKey: ["projectMembers-edit-local", projectId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('project_members').select('user_id, role').eq('project_id', projectId);
+      const { data, error } = await supabase
+        .from("project_members")
+        .select("user_id, role")
+        .eq("project_id", projectId);
       if (error) throw error;
       if (!data?.length) return [];
-      const userIds = data.map(d => d.user_id);
+      const userIds = data.map((d) => d.user_id);
       // §19 chokepoint: select full_name + email so users without a
       // full_name (common for Jira-synced users) display their email
       // instead of the literal string "Unknown".
       // jira-compare 2026-05-11 fix: Vikram defect "Assignee / Reporter
       // is wrong — shows Unknown" was because the SELECT dropped email.
-      const { data: profiles } = await supabase.from('profiles').select('id, full_name, email').in('id', userIds);
-      const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
-      return data.map(d => {
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .in("id", userIds);
+      const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
+      return data.map((d) => {
         const p = profileMap.get(d.user_id);
-        const full_name = p?.full_name ?? p?.email ?? 'Unknown';
+        const full_name = p?.full_name ?? p?.email ?? "Unknown";
         return {
           user_id: d.user_id,
           full_name,
@@ -158,26 +288,41 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
     mutationFn: async (userId: string | null) => {
       const updateData = {
         assignee_account_id: userId,
-        assignee_display_name: userId ? (members.find(m => m.user_id === userId)?.full_name ?? null) : null,
+        assignee_display_name: userId
+          ? (members.find((m) => m.user_id === userId)?.full_name ?? null)
+          : null,
       };
       const query = issueKey
-        ? supabase.from('ph_issues').update(updateData as any).eq('issue_key', issueKey)
-        : supabase.from('ph_issues').update(updateData as any).eq('id', issueId);
+        ? supabase
+            .from("ph_issues")
+            .update(updateData as any)
+            .eq("issue_key", issueKey)
+        : supabase
+            .from("ph_issues")
+            .update(updateData as any)
+            .eq("id", issueId);
       const { error } = await query;
       if (error) throw error;
     },
-    onSuccess: () => { onUpdate(); },
+    onSuccess: () => {
+      onUpdate();
+    },
   });
 
   const options: AssigneeOption[] = useMemo(() => {
-    const memberOptions: AssigneeOption[] = members.map(m => ({
+    const memberOptions: AssigneeOption[] = members.map((m) => ({
       value: m.user_id,
       label: m.full_name,
       userId: m.user_id,
       avatarUrl: m.avatar_url ?? null,
     }));
     return [
-      { value: UNASSIGNED_VALUE, label: 'Unassigned', userId: null, avatarUrl: null },
+      {
+        value: UNASSIGNED_VALUE,
+        label: "Unassigned",
+        userId: null,
+        avatarUrl: null,
+      },
       ...memberOptions,
     ];
   }, [members]);
@@ -189,16 +334,23 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
    */
   const selected: AssigneeOption = useMemo(() => {
     if (!currentAssigneeId) {
-      return { value: UNASSIGNED_VALUE, label: 'Unassigned', userId: null, avatarUrl: null };
+      return {
+        value: UNASSIGNED_VALUE,
+        label: "Unassigned",
+        userId: null,
+        avatarUrl: null,
+      };
     }
-    const matched = options.find(o => o.userId === currentAssigneeId);
+    const matched = options.find((o) => o.userId === currentAssigneeId);
     if (matched) return matched;
     // Fallback when members haven't loaded yet: render from props.
     return {
       value: currentAssigneeId,
-      label: currentAssigneeName ?? 'Unknown',
+      label: currentAssigneeName ?? "Unknown",
       userId: currentAssigneeId,
-      avatarUrl: currentAssigneeName ? resolveAvatarUrl(currentAssigneeName) : null,
+      avatarUrl: currentAssigneeName
+        ? resolveAvatarUrl(currentAssigneeName)
+        : null,
     };
   }, [currentAssigneeId, currentAssigneeName, options]);
 
@@ -220,13 +372,31 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
           updateMutation.mutate(nextUserId);
         }}
         formatOptionLabel={(opt: AssigneeOption) => (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              minWidth: 0,
+            }}
+          >
             {opt.value === UNASSIGNED_VALUE ? (
-              <div style={{
-                width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
-                border: '1px dashed var(--ds-border, #C1C7D0)', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', fontSize: 14, color: 'var(--ds-text-disabled, #C1C7D0)',
-              }}>?</div>
+              <div
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: "50%",
+                  flexShrink: 0,
+                  border: "1px dashed var(--ds-border, #C1C7D0)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 14,
+                  color: "var(--ds-text-disabled, #C1C7D0)",
+                }}
+              >
+                ?
+              </div>
             ) : (
               <AvatarCircle
                 userId={opt.userId ?? opt.value}
@@ -235,14 +405,19 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
                 size={24}
               />
             )}
-            <span style={{
-              fontSize: 14,
-              color: opt.value === UNASSIGNED_VALUE ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-              fontWeight: 400,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}>
+            <span
+              style={{
+                fontSize: 14,
+                color:
+                  opt.value === UNASSIGNED_VALUE
+                    ? "var(--ds-text-subtlest, #6B6E76)"
+                    : "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
+                fontWeight: 400,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
               {opt.label}
             </span>
           </span>
@@ -265,24 +440,40 @@ type ReporterOption = {
   userId: string | null; // null for None
   avatarUrl: string | null;
 };
-const REPORTER_NONE_VALUE = '__none__';
+const REPORTER_NONE_VALUE = "__none__";
 
-export function EditableReporter({ issueId, projectId, currentReporterId, currentReporterName, onUpdate }: {
-  issueId: string; projectId: string; currentReporterId: string | null; currentReporterName: string | null; onUpdate: () => void;
+export function EditableReporter({
+  issueId,
+  projectId,
+  currentReporterId,
+  currentReporterName,
+  onUpdate,
+}: {
+  issueId: string;
+  projectId: string;
+  currentReporterId: string | null;
+  currentReporterName: string | null;
+  onUpdate: () => void;
 }) {
   const { data: members = [] } = useQuery({
-    queryKey: ['projectMembers-reporter', projectId],
+    queryKey: ["projectMembers-reporter", projectId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('project_members').select('user_id, role').eq('project_id', projectId);
+      const { data, error } = await supabase
+        .from("project_members")
+        .select("user_id, role")
+        .eq("project_id", projectId);
       if (error) throw error;
       if (!data?.length) return [];
-      const userIds = data.map(d => d.user_id);
+      const userIds = data.map((d) => d.user_id);
       // Same fallback chain as EditableAssignee — full_name ?? email ?? 'Unknown'
-      const { data: profiles } = await supabase.from('profiles').select('id, full_name, email').in('id', userIds);
-      const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
-      return data.map(d => {
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .in("id", userIds);
+      const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
+      return data.map((d) => {
         const p = profileMap.get(d.user_id);
-        const full_name = p?.full_name ?? p?.email ?? 'Unknown';
+        const full_name = p?.full_name ?? p?.email ?? "Unknown";
         return {
           user_id: d.user_id,
           full_name,
@@ -297,38 +488,57 @@ export function EditableReporter({ issueId, projectId, currentReporterId, curren
     mutationFn: async (userId: string | null) => {
       const updateData = {
         reporter_account_id: userId,
-        reporter_display_name: userId ? (members.find(m => m.user_id === userId)?.full_name ?? null) : null,
+        reporter_display_name: userId
+          ? (members.find((m) => m.user_id === userId)?.full_name ?? null)
+          : null,
       };
-      const { error } = await supabase.from('ph_issues').update(updateData as any).eq('id', issueId);
+      const { error } = await supabase
+        .from("ph_issues")
+        .update(updateData as any)
+        .eq("id", issueId);
       if (error) throw error;
     },
-    onSuccess: () => { onUpdate(); },
+    onSuccess: () => {
+      onUpdate();
+    },
   });
 
   const options: ReporterOption[] = useMemo(() => {
-    const memberOptions: ReporterOption[] = members.map(m => ({
+    const memberOptions: ReporterOption[] = members.map((m) => ({
       value: m.user_id,
       label: m.full_name,
       userId: m.user_id,
       avatarUrl: m.avatar_url ?? null,
     }));
     return [
-      { value: REPORTER_NONE_VALUE, label: 'None', userId: null, avatarUrl: null },
+      {
+        value: REPORTER_NONE_VALUE,
+        label: "None",
+        userId: null,
+        avatarUrl: null,
+      },
       ...memberOptions,
     ];
   }, [members]);
 
   const selected: ReporterOption = useMemo(() => {
     if (!currentReporterId) {
-      return { value: REPORTER_NONE_VALUE, label: 'None', userId: null, avatarUrl: null };
+      return {
+        value: REPORTER_NONE_VALUE,
+        label: "None",
+        userId: null,
+        avatarUrl: null,
+      };
     }
-    const matched = options.find(o => o.userId === currentReporterId);
+    const matched = options.find((o) => o.userId === currentReporterId);
     if (matched) return matched;
     return {
       value: currentReporterId,
-      label: currentReporterName ?? 'Unknown',
+      label: currentReporterName ?? "Unknown",
       userId: currentReporterId,
-      avatarUrl: currentReporterName ? resolveAvatarUrl(currentReporterName) : null,
+      avatarUrl: currentReporterName
+        ? resolveAvatarUrl(currentReporterName)
+        : null,
     };
   }, [currentReporterId, currentReporterName, options]);
 
@@ -350,13 +560,31 @@ export function EditableReporter({ issueId, projectId, currentReporterId, curren
           updateMutation.mutate(nextUserId);
         }}
         formatOptionLabel={(opt: ReporterOption) => (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              minWidth: 0,
+            }}
+          >
             {opt.value === REPORTER_NONE_VALUE ? (
-              <div style={{
-                width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
-                border: '1px dashed var(--ds-border, #C1C7D0)', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', fontSize: 14, color: 'var(--ds-text-disabled, #C1C7D0)',
-              }}>?</div>
+              <div
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: "50%",
+                  flexShrink: 0,
+                  border: "1px dashed var(--ds-border, #C1C7D0)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 14,
+                  color: "var(--ds-text-disabled, #C1C7D0)",
+                }}
+              >
+                ?
+              </div>
             ) : (
               <AvatarCircle
                 userId={opt.userId ?? opt.value}
@@ -365,14 +593,19 @@ export function EditableReporter({ issueId, projectId, currentReporterId, curren
                 size={24}
               />
             )}
-            <span style={{
-              fontSize: 14,
-              color: opt.value === REPORTER_NONE_VALUE ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-              fontWeight: 400,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}>
+            <span
+              style={{
+                fontSize: 14,
+                color:
+                  opt.value === REPORTER_NONE_VALUE
+                    ? "var(--ds-text-subtlest, #6B6E76)"
+                    : "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
+                fontWeight: 400,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
               {opt.label}
             </span>
           </span>
@@ -400,24 +633,53 @@ export function EditableReporter({ issueId, projectId, currentReporterId, curren
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function PriorityChip({ value }: { value: string }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 6,
+        whiteSpace: "nowrap",
+      }}
+    >
       <CanonicalPriorityIcon level={value} size={16} label="" />
-      <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>{value}</span>
+      <span style={{ fontSize: 14, color: "var(--ds-text, #292A2E)" }}>
+        {value}
+      </span>
     </span>
   );
 }
 
-export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate }: { issueId: string; issueKey?: string; currentPriority: string; onUpdate: () => void }) {
+export function EditablePriority({
+  issueId,
+  issueKey,
+  currentPriority,
+  onUpdate,
+}: {
+  issueId: string;
+  issueKey?: string;
+  currentPriority: string;
+  onUpdate: () => void;
+}) {
   const [showPicker, setShowPicker] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
   const portalRef = useRef<HTMLDivElement>(null);
-  const [pickerPos, setPickerPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [pickerPos, setPickerPos] = useState<{
+    top: number;
+    left: number;
+    width: number;
+  } | null>(null);
 
   const updateMutation = useMutation({
     mutationFn: async (priority: string | null) => {
       const query = issueKey
-        ? supabase.from('ph_issues').update({ priority } as any).eq('issue_key', issueKey)
-        : supabase.from('ph_issues').update({ priority } as any).eq('id', issueId);
+        ? supabase
+            .from("ph_issues")
+            .update({ priority } as any)
+            .eq("issue_key", issueKey)
+        : supabase
+            .from("ph_issues")
+            .update({ priority } as any)
+            .eq("id", issueId);
       const { error } = await query;
       if (error) throw error;
     },
@@ -435,23 +697,30 @@ export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate 
       if (portalRef.current?.contains(t)) return;
       setShowPicker(false);
     };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
   }, [showPicker]);
 
   useEffect(() => {
-    if (!showPicker) { setPickerPos(null); return; }
+    if (!showPicker) {
+      setPickerPos(null);
+      return;
+    }
     const recompute = () => {
       const r = triggerRef.current?.getBoundingClientRect();
       if (!r) return;
-      setPickerPos({ top: r.bottom + 4, left: r.left, width: Math.max(r.width, 180) });
+      setPickerPos({
+        top: r.bottom + 4,
+        left: r.left,
+        width: Math.max(r.width, 180),
+      });
     };
     recompute();
-    window.addEventListener('resize', recompute);
-    window.addEventListener('scroll', recompute, true);
+    window.addEventListener("resize", recompute);
+    window.addEventListener("scroll", recompute, true);
     return () => {
-      window.removeEventListener('resize', recompute);
-      window.removeEventListener('scroll', recompute, true);
+      window.removeEventListener("resize", recompute);
+      window.removeEventListener("scroll", recompute, true);
     };
   }, [showPicker]);
 
@@ -462,22 +731,38 @@ export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate 
       {showPicker ? (
         <div
           style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            border: '2px solid var(--ds-border-focused, #388BFF)',
-            borderRadius: 4, padding: '2px 6px',
-            background: 'var(--ds-background-input, #fff)',
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            border: "2px solid var(--ds-border-focused, #388BFF)",
+            borderRadius: 4,
+            padding: "2px 6px",
+            background: "var(--ds-background-input, #fff)",
           }}
         >
           <span
             style={{
-              flex: 1, display: 'inline-flex', alignItems: 'center', gap: 6,
+              flex: 1,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
               fontSize: 14,
-              color: hasValue ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtlest, #8993A4)',
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              color: hasValue
+                ? "var(--ds-text, #292A2E)"
+                : "var(--ds-text-subtlest, #8993A4)",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
             }}
           >
-            {hasValue && <CanonicalPriorityIcon level={currentPriority} size={16} label="" />}
-            <span>{currentPriority || 'Select priority'}</span>
+            {hasValue && (
+              <CanonicalPriorityIcon
+                level={currentPriority}
+                size={16}
+                label=""
+              />
+            )}
+            <span>{currentPriority || "Select priority"}</span>
           </span>
           {hasValue && (
             <button
@@ -488,16 +773,29 @@ export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate 
               }}
               aria-label="Clear priority"
               style={{
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
                 flexShrink: 0,
               }}
             >
-              <CrossCircleIcon label="Clear priority" size="small" primaryColor="var(--ds-text-subtle, #5E6C84)" />
+              <CrossCircleIcon
+                label="Clear priority"
+                size="small"
+                primaryColor="var(--ds-text-subtle, #5E6C84)"
+              />
             </button>
           )}
-          <span style={{ display: 'inline-flex', alignItems: 'center' }}>
-            <ChevronDownIcon label="" size="large" primaryColor="var(--ds-text-subtle, #5E6C84)" />
+          <span style={{ display: "inline-flex", alignItems: "center" }}>
+            <ChevronDownIcon
+              label=""
+              size="large"
+              primaryColor="var(--ds-text-subtle, #5E6C84)"
+            />
           </span>
         </div>
       ) : (
@@ -505,55 +803,93 @@ export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate 
           type="button"
           onClick={() => setShowPicker(true)}
           style={{
-            display: 'flex', alignItems: 'center', width: '100%',
-            background: 'none', border: '2px solid transparent', cursor: 'pointer',
-            padding: '2px 6px', borderRadius: 4,
-            fontFamily: 'inherit', textAlign: 'left',
+            display: "flex",
+            alignItems: "center",
+            width: "100%",
+            background: "none",
+            border: "2px solid transparent",
+            cursor: "pointer",
+            padding: "2px 6px",
+            borderRadius: 4,
+            fontFamily: "inherit",
+            textAlign: "left",
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background =
+              "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "none";
+          }}
         >
-          {hasValue
-            ? <PriorityChip value={currentPriority} />
-            : <span style={{ fontSize: 14, color: 'var(--ds-text-subtle, #5E6C84)' }}>None</span>}
+          {hasValue ? (
+            <PriorityChip value={currentPriority} />
+          ) : (
+            <span
+              style={{ fontSize: 14, color: "var(--ds-text-subtle, #5E6C84)" }}
+            >
+              None
+            </span>
+          )}
         </button>
       )}
 
-      {showPicker && pickerPos && createPortal(
-        <div
-          ref={portalRef}
-          style={{
-            position: 'fixed', top: pickerPos.top, left: pickerPos.left, width: pickerPos.width,
-            background: 'var(--ds-surface, #fff)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
-            borderRadius: 6,
-            boxShadow: '0 8px 16px rgba(9,30,66,0.15)',
-            zIndex: 1000, padding: '6px 0',
-          }}
-        >
-          {PRIORITY_LIST.map((p) => {
-            const isSelected = currentPriority === p;
-            return (
-              <div
-                key={p}
-                onClick={() => updateMutation.mutate(p)}
-                style={{
-                  display: 'flex', alignItems: 'center', padding: '6px 12px',
-                  cursor: 'pointer',
-                  background: isSelected ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
-                  borderLeft: isSelected ? '3px solid var(--ds-border-focused, #388BFF)' : '3px solid transparent',
-                  transition: 'background 80ms',
-                }}
-                onMouseEnter={(e) => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = isSelected ? 'var(--ds-background-information, #DEEBFF)' : 'transparent'; }}
-              >
-                <PriorityChip value={p} />
-              </div>
-            );
-          })}
-        </div>,
-        document.body,
-      )}
+      {showPicker &&
+        pickerPos &&
+        createPortal(
+          <div
+            ref={portalRef}
+            style={{
+              position: "fixed",
+              top: pickerPos.top,
+              left: pickerPos.left,
+              width: pickerPos.width,
+              background: "var(--ds-surface, #fff)",
+              border: "1px solid var(--ds-border, #DFE1E6)",
+              borderRadius: 6,
+              boxShadow: "0 8px 16px rgba(9,30,66,0.15)",
+              zIndex: 1000,
+              padding: "6px 0",
+            }}
+          >
+            {PRIORITY_LIST.map((p) => {
+              const isSelected = currentPriority === p;
+              return (
+                <div
+                  key={p}
+                  onClick={() => updateMutation.mutate(p)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "6px 12px",
+                    cursor: "pointer",
+                    background: isSelected
+                      ? "var(--ds-background-information, #DEEBFF)"
+                      : "transparent",
+                    borderLeft: isSelected
+                      ? "3px solid var(--ds-border-focused, #388BFF)"
+                      : "3px solid transparent",
+                    transition: "background 80ms",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSelected)
+                      (e.currentTarget as HTMLElement).style.background =
+                        "var(--ds-surface-sunken, #F4F5F7)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background =
+                      isSelected
+                        ? "var(--ds-background-information, #DEEBFF)"
+                        : "transparent";
+                  }}
+                >
+                  <PriorityChip value={p} />
+                </div>
+              );
+            })}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
@@ -561,22 +897,23 @@ export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate 
 /* ── EditableLabels — Jira-parity: type + Enter to create, reuse existing ── */
 
 const LABEL_COLORS = [
-  'var(--ds-background-accent-blue-bold, #4C9AFF)',
-  'var(--ds-background-accent-teal-bold, #00B8D9)',
-  'var(--ds-background-accent-green-bold, #36B37E)',
-  'var(--ds-background-accent-yellow-bold, #FFAB00)',
-  'var(--ds-background-accent-red-bold, #FF5630)',
-  'var(--ds-background-accent-purple-bold, #6554C0)',
-  'var(--ds-background-accent-orange-bold, #FF7452)',
-  'var(--ds-background-accent-green-bolder, #57D9A3)',
-  'var(--ds-background-accent-yellow-bolder, #FFC400)',
-  'var(--ds-background-accent-purple-bolder, #998DD9)',
-  'var(--ds-background-accent-teal-bolder, #79E2F2)',
-  'var(--ds-background-accent-red-bolder, #FF8F73)',
+  "var(--ds-background-accent-blue-bold, #4C9AFF)",
+  "var(--ds-background-accent-teal-bold, #00B8D9)",
+  "var(--ds-background-accent-green-bold, #36B37E)",
+  "var(--ds-background-accent-yellow-bold, #FFAB00)",
+  "var(--ds-background-accent-red-bold, #FF5630)",
+  "var(--ds-background-accent-purple-bold, #6554C0)",
+  "var(--ds-background-accent-orange-bold, #FF7452)",
+  "var(--ds-background-accent-green-bolder, #57D9A3)",
+  "var(--ds-background-accent-yellow-bolder, #FFC400)",
+  "var(--ds-background-accent-purple-bolder, #998DD9)",
+  "var(--ds-background-accent-teal-bolder, #79E2F2)",
+  "var(--ds-background-accent-red-bolder, #FF8F73)",
 ];
 function getLabelColor(name: string) {
   let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
+  for (let i = 0; i < name.length; i++)
+    hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
   return LABEL_COLORS[Math.abs(hash) % LABEL_COLORS.length];
 }
 
@@ -594,12 +931,28 @@ function getLabelColor(name: string) {
  */
 type LabelOption = { value: string; label: string };
 
-export function EditableLabels({ issueId, issueKey, currentLabels, onUpdate }: { issueId: string; issueKey?: string; currentLabels: string[]; onUpdate: () => void }) {
+export function EditableLabels({
+  issueId,
+  issueKey,
+  currentLabels,
+  onUpdate,
+}: {
+  issueId: string;
+  issueKey?: string;
+  currentLabels: string[];
+  onUpdate: () => void;
+}) {
   const updateMutation = useMutation({
     mutationFn: async (labels: string[]) => {
       const query = issueKey
-        ? supabase.from('ph_issues').update({ labels: labels as any }).eq('issue_key', issueKey)
-        : supabase.from('ph_issues').update({ labels: labels as any }).eq('id', issueId);
+        ? supabase
+            .from("ph_issues")
+            .update({ labels: labels as any })
+            .eq("issue_key", issueKey)
+        : supabase
+            .from("ph_issues")
+            .update({ labels: labels as any })
+            .eq("id", issueId);
       const { error } = await query;
       if (error) throw error;
     },
@@ -608,15 +961,20 @@ export function EditableLabels({ issueId, issueKey, currentLabels, onUpdate }: {
 
   // Fetch all unique labels used across issues for reuse
   const { data: allLabels = [] } = useQuery({
-    queryKey: ['ph-all-labels'],
+    queryKey: ["ph-all-labels"],
     queryFn: async () => {
-      const { data, error } = await supabase.from('ph_issues')
-        .select('labels').is('deleted_at', null).not('labels', 'is', null);
+      const { data, error } = await supabase
+        .from("ph_issues")
+        .select("labels")
+        .is("deleted_at", null)
+        .not("labels", "is", null);
       if (error) throw error;
       const labelSet = new Set<string>();
-      (data ?? []).forEach(row => {
+      (data ?? []).forEach((row) => {
         if (Array.isArray(row.labels)) {
-          (row.labels as string[]).forEach(l => { if (typeof l === 'string' && l.trim()) labelSet.add(l.trim()); });
+          (row.labels as string[]).forEach((l) => {
+            if (typeof l === "string" && l.trim()) labelSet.add(l.trim());
+          });
         }
       });
       return Array.from(labelSet).sort((a, b) => a.localeCompare(b));
@@ -625,10 +983,13 @@ export function EditableLabels({ issueId, issueKey, currentLabels, onUpdate }: {
   });
 
   const options: LabelOption[] = useMemo(
-    () => allLabels.map(l => ({ value: l, label: l })),
+    () => allLabels.map((l) => ({ value: l, label: l })),
     [allLabels],
   );
-  const selected: LabelOption[] = currentLabels.map(l => ({ value: l, label: l }));
+  const selected: LabelOption[] = currentLabels.map((l) => ({
+    value: l,
+    label: l,
+  }));
 
   return (
     <div style={{ flex: 1, minWidth: 0 }}>
@@ -644,24 +1005,28 @@ export function EditableLabels({ issueId, issueKey, currentLabels, onUpdate }: {
         onChange={(v) => {
           // @atlaskit/select's CreatableSelect yields both existing and
           // newly-created options with the same { value, label } shape.
-          const next: string[] = (v ?? []).map((o) => String(o.value).trim()).filter(Boolean);
+          const next: string[] = (v ?? [])
+            .map((o) => String(o.value).trim())
+            .filter(Boolean);
           // Dedupe (case-sensitive match) before persisting.
           const deduped: string[] = Array.from(new Set<string>(next));
           updateMutation.mutate(deduped);
         }}
         formatCreateLabel={(input) => `Create "${input}"`}
-        noOptionsMessage={() => 'Type to create a label'}
+        noOptionsMessage={() => "Type to create a label"}
         // Give each chip a per-label border colour (Jira-parity rainbow pill).
         styles={{
           multiValue: (base, state) => ({
             ...base,
             border: `1px solid ${getLabelColor((state.data as LabelOption).value)}`,
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            background:
+              "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
             borderRadius: 3,
           }),
           multiValueLabel: (base) => ({
             ...base,
-            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+            color:
+              "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
             fontSize: 12,
             fontWeight: 500,
           }),
@@ -675,64 +1040,148 @@ export function EditableLabels({ issueId, issueKey, currentLabels, onUpdate }: {
 
 const FIBONACCI_POINTS = [0, 0.5, 1, 2, 3, 5, 8, 13, 21];
 
-export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
-  issueId: string; currentPoints: number | null | undefined; onUpdate: () => void;
+export function EditableStoryPoints({
+  issueId,
+  currentPoints,
+  onUpdate,
+}: {
+  issueId: string;
+  currentPoints: number | null | undefined;
+  onUpdate: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const updateMutation = useMutation({
     mutationFn: async (points: number | null) => {
-      const { error } = await supabase.from('ph_issues').update({ story_points: points } as any).eq('id', issueId);
+      const { error } = await supabase
+        .from("ph_issues")
+        .update({ story_points: points } as any)
+        .eq("id", issueId);
       if (error) throw error;
     },
-    onSuccess: () => { onUpdate(); setOpen(false); },
+    onSuccess: () => {
+      onUpdate();
+      setOpen(false);
+    },
   });
 
   useEffect(() => {
     if (!open) return;
-    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
-    document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h);
+    const h = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setOpen(false);
+    };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
   }, [open]);
 
   return (
-    <div ref={ref} style={{ flex: 1, position: 'relative' }}>
-      <div onClick={() => setOpen(o => !o)} style={{
-        display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
-        padding: '4px 8px', borderRadius: 4, transition: 'background .12s',
-      }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
-        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+    <div ref={ref} style={{ flex: 1, position: "relative" }}>
+      <div
+        onClick={() => setOpen((o) => !o)}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          cursor: "pointer",
+          padding: "4px 8px",
+          borderRadius: 4,
+          transition: "background .12s",
+        }}
+        onMouseEnter={(e) =>
+          (e.currentTarget.style.background =
+            "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))")
+        }
+        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
       >
-        <span style={{ fontSize: 14, color: currentPoints != null ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #97A0AF)', fontWeight: 400 }}>
-          {currentPoints != null ? currentPoints : 'None'}
+        <span
+          style={{
+            fontSize: 14,
+            color:
+              currentPoints != null
+                ? "var(--ds-text, #172B4D)"
+                : "var(--ds-text-subtlest, #97A0AF)",
+            fontWeight: 400,
+          }}
+        >
+          {currentPoints != null ? currentPoints : "None"}
         </span>
       </div>
       {open && (
-        <div style={{ ...ATLASSIAN_DROPDOWN, position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 160, overflow: 'hidden' }}>
+        <div
+          style={{
+            ...ATLASSIAN_DROPDOWN,
+            position: "absolute",
+            top: "calc(100% + 4px)",
+            left: 0,
+            width: 160,
+            overflow: "hidden",
+          }}
+        >
           {/* Clear option */}
-          <div onClick={() => updateMutation.mutate(null)}
+          <div
+            onClick={() => updateMutation.mutate(null)}
             style={{
-              height: 36, padding: '0 12px', display: 'flex', alignItems: 'center',
-              cursor: 'pointer', fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
-              background: currentPoints == null ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
-              borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
+              height: 36,
+              padding: "0 12px",
+              display: "flex",
+              alignItems: "center",
+              cursor: "pointer",
+              fontSize: 14,
+              fontWeight: 400,
+              color:
+                "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+              background:
+                currentPoints == null
+                  ? "var(--ds-background-information, #DEEBFF)"
+                  : "transparent",
+              borderBottom:
+                "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))",
             }}
-            onMouseEnter={e => { if (currentPoints != null) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
-            onMouseLeave={e => { if (currentPoints != null) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+            onMouseEnter={(e) => {
+              if (currentPoints != null)
+                (e.currentTarget as HTMLElement).style.background =
+                  "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+            }}
+            onMouseLeave={(e) => {
+              if (currentPoints != null)
+                (e.currentTarget as HTMLElement).style.background =
+                  "transparent";
+            }}
           >
             <span style={{ flex: 1 }}>None</span>
             {currentPoints == null && <CheckmarkIcon />}
           </div>
-          {FIBONACCI_POINTS.map(p => (
-            <div key={p} onClick={() => updateMutation.mutate(p)}
+          {FIBONACCI_POINTS.map((p) => (
+            <div
+              key={p}
+              onClick={() => updateMutation.mutate(p)}
               style={{
-                height: 36, padding: '0 12px', display: 'flex', alignItems: 'center',
-                cursor: 'pointer', fontSize: 14, fontWeight: 400, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-                background: p === currentPoints ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
+                height: 36,
+                padding: "0 12px",
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+                fontSize: 14,
+                fontWeight: 400,
+                color:
+                  "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
+                background:
+                  p === currentPoints
+                    ? "var(--ds-background-information, #DEEBFF)"
+                    : "transparent",
               }}
-              onMouseEnter={e => { if (p !== currentPoints) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
-              onMouseLeave={e => { if (p !== currentPoints) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+              onMouseEnter={(e) => {
+                if (p !== currentPoints)
+                  (e.currentTarget as HTMLElement).style.background =
+                    "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+              }}
+              onMouseLeave={(e) => {
+                if (p !== currentPoints)
+                  (e.currentTarget as HTMLElement).style.background =
+                    "transparent";
+              }}
             >
               <span style={{ flex: 1 }}>{p}</span>
               {p === currentPoints && <CheckmarkSVG />}
@@ -759,30 +1208,47 @@ export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
  */
 type FixVersionOption = { value: string; label: string };
 
-export function EditableFixVersions({ issueId, currentFixVersions, projectKey, onUpdate }: {
-  issueId: string; currentFixVersions: any | null; projectKey: string | null | undefined; onUpdate: () => void;
+export function EditableFixVersions({
+  issueId,
+  currentFixVersions,
+  projectKey,
+  onUpdate,
+}: {
+  issueId: string;
+  currentFixVersions: any | null;
+  projectKey: string | null | undefined;
+  onUpdate: () => void;
 }) {
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
   // Parse current fix version names (legacy JSON shape: [{ name }, ...] or string[]).
   const fixVersionNames: string[] = useMemo(() => {
     if (!currentFixVersions) return [];
     if (Array.isArray(currentFixVersions)) {
-      return currentFixVersions.map((v: any) => v?.name || v).filter(Boolean) as string[];
+      return currentFixVersions
+        .map((v: any) => v?.name || v)
+        .filter(Boolean) as string[];
     }
     return [];
   }, [currentFixVersions]);
 
   // Fetch available versions from ph_versions
   const { data: versionsData } = useQuery({
-    queryKey: ['ph-fix-versions', projectKey],
+    queryKey: ["ph-fix-versions", projectKey],
     queryFn: async () => {
       if (!projectKey) return [];
       const { data, error } = await supabase
-        .from('ph_versions' as any)
-        .select('jira_id, name, released, archived, release_date')
-        .eq('project_key', projectKey)
-        .order('name', { ascending: true });
+        .from("ph_versions" as any)
+        .select("jira_id, name, released, archived, release_date")
+        .eq("project_key", projectKey)
+        .order("name", { ascending: true });
       if (error) throw error;
-      return (data ?? []) as unknown as { jira_id: string; name: string; released: boolean; archived: boolean; release_date: string | null }[];
+      return (data ?? []) as unknown as {
+        jira_id: string;
+        name: string;
+        released: boolean;
+        archived: boolean;
+        release_date: string | null;
+      }[];
     },
     enabled: !!projectKey,
     staleTime: 60_000,
@@ -791,29 +1257,47 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
   const versions = versionsData ?? [];
 
   const groupedOptions = useMemo(() => {
-    const unreleased = versions.filter(v => !v.released && !v.archived).map(v => ({ value: v.name, label: v.name }));
-    const released = versions.filter(v => v.released && !v.archived).map(v => ({ value: v.name, label: v.name }));
+    const unreleased = versions
+      .filter((v) => !v.released && !v.archived)
+      .map((v) => ({ value: v.name, label: v.name }));
+    const released = versions
+      .filter((v) => v.released && !v.archived)
+      .map((v) => ({ value: v.name, label: v.name }));
     const groups: { label: string; options: FixVersionOption[] }[] = [];
-    if (unreleased.length) groups.push({ label: 'Unreleased', options: unreleased });
-    if (released.length) groups.push({ label: 'Released', options: released });
+    if (unreleased.length)
+      groups.push({ label: "Unreleased", options: unreleased });
+    if (released.length) groups.push({ label: "Released", options: released });
     return groups;
   }, [versions]);
 
-  const selected: FixVersionOption[] = fixVersionNames.map(n => ({ value: n, label: n }));
+  const selected: FixVersionOption[] = fixVersionNames.map((n) => ({
+    value: n,
+    label: n,
+  }));
 
   const updateMutation = useMutation({
     mutationFn: async (names: string[]) => {
       // Preserve full Jira shape: look up each name in ph_versions, fall back to
       // existing JSONB entry so we never lose id/releaseDate written by Jira sync.
-      const jsonValue = names.map(n => {
-        const ver = versions.find(v => v.name === n);
-        if (ver) return { id: ver.jira_id, name: ver.name, releaseDate: ver.release_date, released: ver.released, archived: ver.archived };
+      const jsonValue = names.map((n) => {
+        const ver = versions.find((v) => v.name === n);
+        if (ver)
+          return {
+            id: ver.jira_id,
+            name: ver.name,
+            releaseDate: ver.release_date,
+            released: ver.released,
+            archived: ver.archived,
+          };
         const existing = Array.isArray(currentFixVersions)
-          ? (currentFixVersions as any[]).find(cv => cv?.name === n)
+          ? (currentFixVersions as any[]).find((cv) => cv?.name === n)
           : null;
         return existing ?? { name: n };
       });
-      const { error } = await supabase.from('ph_issues').update({ fix_versions: jsonValue } as any).eq('id', issueId);
+      const { error } = await supabase
+        .from("ph_issues")
+        .update({ fix_versions: jsonValue } as any)
+        .eq("id", issueId);
       if (error) throw error;
     },
     onSuccess: () => onUpdate(),
@@ -832,25 +1316,35 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
         options={groupedOptions}
         value={selected}
         onChange={(v) => {
-          const next = (v ?? []).map(o => o.value);
+          const next = (v ?? []).map((o) => o.value);
           updateMutation.mutate(next);
         }}
-        noOptionsMessage={() => 'No versions found for this project'}
-        components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
+        noOptionsMessage={() => "No versions found for this project"}
+        menuIsOpen={menuIsOpen}
+        onMenuOpen={() => setMenuIsOpen(true)}
+        onMenuClose={() => setMenuIsOpen(false)}
+        components={{
+          DropdownIndicator: () => null,
+          IndicatorSeparator: () => null,
+        }}
         styles={{
           control: (base) => ({
             ...base,
             minHeight: 32,
-            alignItems: 'center',
+            alignItems: "center",
           }),
           valueContainer: (base) => ({
             ...base,
-            alignItems: 'center',
-            padding: '0 4px',
+            alignItems: "center",
+            padding: "0 4px",
+          }),
+          input: (base) => ({
+            ...base,
+            caretColor: menuIsOpen ? "auto" : "transparent",
           }),
           indicatorsContainer: (base) => ({
             ...base,
-            display: 'none',
+            display: "none",
           }),
           // jira-compare 2026-05-20: Live DOM probe of digital-transformation.atlassian.net
           // confirms Fix versions chip = transparent bg + 0.556px solid rgb(183,185,190) border
@@ -858,23 +1352,29 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
           // Uses @atlaskit/tag "appearance=default" pattern — not a lozenge fill.
           multiValue: (base) => ({
             ...base,
-            background: 'transparent',
-            border: '0.556px solid var(--ds-border-neutral, rgb(183,185,190))',
+            background: "transparent",
+            border: "0.556px solid var(--ds-border-neutral, rgb(183,185,190))",
             borderRadius: 4,
-            margin: '0 4px 0 0',
-            padding: '0 4px',
-            alignItems: 'center',
+            margin: "0 4px 0 0",
+            padding: "1px 4px",
+            alignItems: "center",
           }),
           multiValueLabel: (base) => ({
             ...base,
             fontSize: 14,
             fontWeight: 400,
-            color: 'var(--ds-text, #292A2E)',
+            color: "var(--ds-text, #292A2E)",
             padding: 0,
           }),
           multiValueRemove: (base) => ({
             ...base,
-            color: 'var(--ds-text-subtle, #505258)',
+            display: menuIsOpen ? "flex" : "none",
+            color: "var(--ds-text-subtle, #505258)",
+            ":hover": {
+              backgroundColor:
+                "var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.08))",
+              color: "var(--ds-text-subtle, #505258)",
+            },
           }),
         }}
       />
@@ -887,13 +1387,29 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
 /** Canonical epic icon — lightning bolt on purple rounded square (Jira parity) */
 const EpicIconInline = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 16 16" style={{ flexShrink: 0 }}>
-    <rect fill="var(--ds-background-discovery-bold, #6554C0)" width="16" height="16" rx="2"/>
-    <path fill="var(--ds-surface, #FFF)" d="M8.39 2L4.5 9h3.11v5L11.5 7H8.39V2z"/>
+    <rect
+      fill="var(--ds-background-discovery-bold, #6554C0)"
+      width="16"
+      height="16"
+      rx="2"
+    />
+    <path
+      fill="var(--ds-surface, #FFF)"
+      d="M8.39 2L4.5 9h3.11v5L11.5 7H8.39V2z"
+    />
   </svg>
 );
 
-export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentChange, triggerOpen }: {
-  storyKey: string; parentKey: string | null; projectKey: string;
+export function ParentFieldPicker({
+  storyKey,
+  parentKey,
+  projectKey,
+  onParentChange,
+  triggerOpen,
+}: {
+  storyKey: string;
+  parentKey: string | null;
+  projectKey: string;
   onParentChange: (newParentKey: string | null) => void;
   triggerOpen?: number; // increment to open externally
 }) {
@@ -903,18 +1419,21 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
   useEffect(() => {
     if (triggerOpen && triggerOpen > 0) setOpen(true);
   }, [triggerOpen]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [showDone, setShowDone] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { data: currentParent } = useQuery({
-    queryKey: ['parentIssue', parentKey],
+    queryKey: ["parentIssue", parentKey],
     queryFn: async () => {
       if (!parentKey) return null;
-      const { data, error } = await supabase.from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status, status_category')
-        .eq('issue_key', parentKey).is('deleted_at', null).single();
+      const { data, error } = await supabase
+        .from("ph_issues")
+        .select("id, issue_key, summary, issue_type, status, status_category")
+        .eq("issue_key", parentKey)
+        .is("deleted_at", null)
+        .single();
       if (error) return null;
       return data as ParentIssue;
     },
@@ -922,18 +1441,24 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
   });
 
   const { data: searchResults = [] } = useQuery({
-    queryKey: ['parentSearch', projectKey, search, showDone],
+    queryKey: ["parentSearch", projectKey, search, showDone],
     queryFn: async () => {
-      let query = supabase.from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status, status_category')
-        .eq('project_key', projectKey).eq('issue_type', 'Epic')
-        .is('deleted_at', null).neq('issue_key', storyKey)
-        .order('jira_updated_at', { ascending: false }).limit(20);
+      let query = supabase
+        .from("ph_issues")
+        .select("id, issue_key, summary, issue_type, status, status_category")
+        .eq("project_key", projectKey)
+        .eq("issue_type", "Epic")
+        .is("deleted_at", null)
+        .neq("issue_key", storyKey)
+        .order("jira_updated_at", { ascending: false })
+        .limit(20);
       if (!showDone) {
-        query = query.neq('status_category', 'done');
+        query = query.neq("status_category", "done");
       }
       if (search.trim()) {
-        query = query.or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`);
+        query = query.or(
+          `issue_key.ilike.${search}%,summary.ilike.%${search}%`,
+        );
       }
       const { data, error } = await query;
       if (error) throw error;
@@ -945,123 +1470,326 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
   useEffect(() => {
     if (!open) return;
     const handleClick = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) { setOpen(false); setSearch(''); }
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+        setSearch("");
+      }
     };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, [open]);
 
-  useEffect(() => { if (open) setTimeout(() => searchInputRef.current?.focus(), 50); }, [open]);
-  const handleSelect = (key: string | null) => { onParentChange(key); setOpen(false); setSearch(''); };
+  useEffect(() => {
+    if (open) setTimeout(() => searchInputRef.current?.focus(), 50);
+  }, [open]);
+  const handleSelect = (key: string | null) => {
+    onParentChange(key);
+    setOpen(false);
+    setSearch("");
+  };
 
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div ref={containerRef} style={{ position: 'relative', flex: 1 }}>
+    <div ref={containerRef} style={{ position: "relative", flex: 1 }}>
       {/* Trigger — Jira click-to-edit style (no border when idle) */}
-      <div onClick={() => setOpen(o => !o)} style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        minHeight: 32, padding: '4px 8px',
-        border: 'none',
-        borderRadius: 3, cursor: 'pointer', background: 'transparent',
-        transition: 'background 0.15s',
-      }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; setHovered(true); }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; setHovered(false); }}
+      <div
+        onClick={() => setOpen((o) => !o)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          minHeight: 32,
+          padding: "4px 8px",
+          border: "none",
+          borderRadius: 3,
+          cursor: "pointer",
+          background: "transparent",
+          transition: "background 0.15s",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background =
+            "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+          setHovered(true);
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "transparent";
+          setHovered(false);
+        }}
       >
         {parentKey && currentParent ? (
           <>
             <EpicIconInline />
-            <span style={{ flex: 1, fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span
+              style={{
+                flex: 1,
+                fontSize: 14,
+                color:
+                  "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
               {currentParent.issue_key} {currentParent.summary}
             </span>
             {/* Clear button — hover only */}
-            <button onClick={e => { e.stopPropagation(); handleSelect(null); }} style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: 20, height: 20, borderRadius: '50%', border: 'none',
-              background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', cursor: 'pointer', color: 'var(--ds-text-subtle, #42526E)', flexShrink: 0,
-              opacity: hovered ? 1 : 0, transition: 'opacity 0.15s',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-bold, #C1C7D0)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))')}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSelect(null);
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 20,
+                height: 20,
+                borderRadius: "50%",
+                border: "none",
+                background:
+                  "var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
+                cursor: "pointer",
+                color: "var(--ds-text-subtle, #42526E)",
+                flexShrink: 0,
+                opacity: hovered ? 1 : 0,
+                transition: "opacity 0.15s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background =
+                  "var(--ds-background-neutral-bold, #C1C7D0)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background =
+                  "var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))")
+              }
             >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
             </button>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" strokeWidth="2" style={{ flexShrink: 0, opacity: hovered ? 1 : 0, transition: 'opacity 0.15s' }}><path d="M6 9l6 6 6-6"/></svg>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))"
+              strokeWidth="2"
+              style={{
+                flexShrink: 0,
+                opacity: hovered ? 1 : 0,
+                transition: "opacity 0.15s",
+              }}
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
           </>
         ) : (
           <>
-            <span style={{ flex: 1, fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>None</span>
+            <span
+              style={{
+                flex: 1,
+                fontSize: 14,
+                color:
+                  "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+              }}
+            >
+              None
+            </span>
           </>
         )}
       </div>
 
       {/* Dropdown — Jira parity with two-line rows, color dots, "Show done" checkbox */}
-      {open && (() => {
-        return (
-          <div style={{
-            ...ATLASSIAN_DROPDOWN, position: 'absolute', top: '100%', left: 0, marginTop: 4,
-            width: Math.max(containerRef.current?.offsetWidth ?? 420, 420),
-            maxHeight: 440, display: 'flex', flexDirection: 'column', overflow: 'hidden',
-          }}>
-            {/* Search input */}
-            <div style={{ padding: '8px 8px 4px' }}>
-              <input ref={searchInputRef} value={search} onChange={e => setSearch(e.target.value)}
-                placeholder="Search epics..."
-                onKeyDown={e => { if (e.key === 'Escape') { setOpen(false); setSearch(''); } }}
+      {open &&
+        (() => {
+          return (
+            <div
+              style={{
+                ...ATLASSIAN_DROPDOWN,
+                position: "absolute",
+                top: "100%",
+                left: 0,
+                marginTop: 4,
+                width: Math.max(containerRef.current?.offsetWidth ?? 420, 420),
+                maxHeight: 440,
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+              }}
+            >
+              {/* Search input */}
+              <div style={{ padding: "8px 8px 4px" }}>
+                <input
+                  ref={searchInputRef}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search epics..."
+                  onKeyDown={(e) => {
+                    if (e.key === "Escape") {
+                      setOpen(false);
+                      setSearch("");
+                    }
+                  }}
+                  style={{
+                    width: "100%",
+                    height: 40,
+                    padding: "0 12px",
+                    border: "2px solid var(--ds-border-focused, #4C9AFF)",
+                    borderRadius: 3,
+                    fontSize: 14,
+                    fontFamily: "inherit",
+                    outline: "none",
+                    color:
+                      "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
+                  }}
+                />
+              </div>
+
+              {/* Show done checkbox */}
+              <div
                 style={{
-                  width: '100%', height: 40, padding: '0 12px',
-                  border: '2px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 3,
-                  fontSize: 14, fontFamily: 'inherit', outline: 'none', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-                }} />
-            </div>
-
-            {/* Show done checkbox */}
-            <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
-                <input type="checkbox" checked={showDone} onChange={e => setShowDone(e.target.checked)}
-                  style={{ width: 16, height: 16, accentColor: 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))', cursor: 'pointer' }} />
-                Show done work items
-              </label>
-            </div>
-
-            {/* Results — Jira parity: epic icon + key on line 1, summary on line 2, NO color dots */}
-            <div style={{ flex: 1, overflowY: 'auto' }}>
-              {searchResults.map(result => {
-                const isActive = result.issue_key === parentKey;
-                return (
-                  <div key={result.id} onClick={() => handleSelect(result.issue_key)}
+                  padding: "8px 12px",
+                  borderBottom: "1px solid var(--ds-surface-sunken, #F4F5F7)",
+                }}
+              >
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    cursor: "pointer",
+                    fontSize: 14,
+                    color:
+                      "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={showDone}
+                    onChange={(e) => setShowDone(e.target.checked)}
                     style={{
-                      padding: '8px 12px', cursor: 'pointer',
-                      borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
-                      background: isActive ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
-                      transition: 'background 0.1s',
+                      width: 16,
+                      height: 16,
+                      accentColor:
+                        "var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))",
+                      cursor: "pointer",
                     }}
-                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
-                    onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = isActive ? 'var(--ds-background-information, #DEEBFF)' : 'transparent'; }}
+                  />
+                  Show done work items
+                </label>
+              </div>
+
+              {/* Results — Jira parity: epic icon + key on line 1, summary on line 2, NO color dots */}
+              <div style={{ flex: 1, overflowY: "auto" }}>
+                {searchResults.map((result) => {
+                  const isActive = result.issue_key === parentKey;
+                  return (
+                    <div
+                      key={result.id}
+                      onClick={() => handleSelect(result.issue_key)}
+                      style={{
+                        padding: "8px 12px",
+                        cursor: "pointer",
+                        borderBottom:
+                          "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))",
+                        background: isActive
+                          ? "var(--ds-background-information, #DEEBFF)"
+                          : "transparent",
+                        transition: "background 0.1s",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isActive)
+                          (e.currentTarget as HTMLElement).style.background =
+                            "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActive)
+                          (e.currentTarget as HTMLElement).style.background =
+                            isActive
+                              ? "var(--ds-background-information, #DEEBFF)"
+                              : "transparent";
+                      }}
+                    >
+                      {/* Line 1: icon + key */}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          marginBottom: 4,
+                        }}
+                      >
+                        <EpicIconInline />
+                        <span
+                          style={{
+                            fontFamily: "var(--cp-font-mono)",
+                            fontWeight: 600,
+                            color:
+                              "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                            fontSize: 12,
+                          }}
+                        >
+                          {result.issue_key}
+                        </span>
+                      </div>
+                      {/* Line 2: summary */}
+                      <div
+                        style={{
+                          fontSize: 14,
+                          color: "var(--ds-text, #172B4D)",
+                          paddingLeft: 24,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {result.summary}
+                      </div>
+                    </div>
+                  );
+                })}
+                {searchResults.length === 0 && search && (
+                  <div
+                    style={{
+                      padding: 16,
+                      fontSize: 13,
+                      color:
+                        "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                      textAlign: "center",
+                    }}
                   >
-                    {/* Line 1: icon + key */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <EpicIconInline />
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 12 }}>{result.issue_key}</span>
-                    </div>
-                    {/* Line 2: summary */}
-                    <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', paddingLeft: 24, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {result.summary}
-                    </div>
+                    No epics found for "{search}"
                   </div>
-                );
-              })}
-              {searchResults.length === 0 && search && (
-                <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No epics found for "{search}"</div>
-              )}
-              {searchResults.length === 0 && !search && (
-                <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No epics available</div>
-              )}
+                )}
+                {searchResults.length === 0 && !search && (
+                  <div
+                    style={{
+                      padding: 16,
+                      fontSize: 13,
+                      color:
+                        "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                      textAlign: "center",
+                    }}
+                  >
+                    No epics available
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
     </div>
   );
 }
