@@ -1,15 +1,3 @@
-/*
- * Animations for the Caty streaming overlay. Layout / colour stays in
- * the component's inline styles so per-instance overrides don't fight
- * a stylesheet. Only the keyframes live here because inline styles
- * can't carry @keyframes.
- */
-
-/* ── "Caty is analyzing" heartbeat pulse ──
- * Two-stage opacity oscillation that reads as a heartbeat: a long
- * dwell at full opacity, two brief beats below it. Subtler than a
- * symmetric sine wave so the user notices motion without the text
- * feeling jittery while they read it. */
 .caty-pulse {
   animation: caty-pulse-anim 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -22,12 +10,11 @@
   100% { opacity: 1; }
 }
 
-/* ── Streaming-text caret blink ── */
 .caty-caret {
   display: inline-block;
   width: 2px;
   height: 1em;
-  background: #6554c0;
+  background: var(--ds-text-accent-purple, #6554C0);
   margin-left: 1px;
   vertical-align: text-bottom;
   animation: caty-caret-blink 1s steps(2) infinite;
@@ -37,21 +24,204 @@
   to { opacity: 0; }
 }
 
-/* ── Slide-up entrance for the floating status pill ── */
 .caty-pill-enter {
   animation: caty-pill-slide 220ms cubic-bezier(0.2, 0, 0, 1) both;
 }
 
 @keyframes caty-pill-slide {
-  from { opacity: 0; transform: translate(-50%, 16px); }
-  to   { opacity: 1; transform: translate(-50%, 0); }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Spinning gradient logo ring (analyzing state) ── */
 .caty-logo-spin {
   animation: caty-logo-spin-anim 2.4s linear infinite;
 }
 
 @keyframes caty-logo-spin-anim {
   to { transform: rotate(360deg); }
+}
+
+.caty-improve {
+  position: relative;
+  padding: 8px 0;
+  min-height: 80px;
+}
+
+.caty-improve__output {
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--ds-text, #292A2E);
+  white-space: pre-wrap;
+}
+
+.caty-improve__output--with-snapshot {
+  margin-bottom: 12px;
+}
+
+.caty-improve__caret {
+  display: inline-block;
+  vertical-align: text-bottom;
+  margin-left: 4px;
+  width: 14px;
+  height: 14px;
+  line-height: 0;
+}
+
+.caty-improve__caret-img {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.caty-improve__snapshot {
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--ds-text-disabled, #8993A4);
+  opacity: 0.65;
+  white-space: pre-wrap;
+}
+
+.caty-improve__error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 6px;
+  background: var(--ds-background-danger, #FFECEB);
+  color: var(--ds-text-danger, #AE2A19);
+  font-size: 13px;
+}
+
+.caty-improve__error-text {
+  flex: 1;
+}
+
+.caty-improve__error-close {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--ds-text-danger, #AE2A19);
+  cursor: pointer;
+}
+
+.caty-improve__done {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.caty-improve__btn {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.caty-improve__btn--secondary {
+  border: 1px solid var(--ds-border, #DFE1E6);
+  background: var(--ds-surface, #FFFFFF);
+  color: var(--ds-text, #292A2E);
+}
+
+.caty-improve__btn--primary {
+  border: none;
+  background: var(--ds-background-brand-bold, #0C66E4);
+  color: var(--ds-text-inverse, #FFFFFF);
+}
+
+.caty-improve__strap-anchor {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.caty-improve__strap {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: var(--ds-background-neutral-bold, #292A2E);
+  color: var(--ds-text-inverse, #FFFFFF);
+  font-family: inherit;
+  font-size: 13px;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.caty-improve__strap-logo {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+}
+
+.caty-improve__strap-logo--sm {
+  width: 18px;
+  height: 18px;
+}
+
+.caty-improve__strap-label {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.caty-improve__strap-esc {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--ds-border-inverse, rgba(255, 255, 255, 0.18));
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  font-size: 11px;
+  color: var(--ds-text-subtlest, #96999E);
+}
+
+.caty-improve__strap-stop {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: var(--ds-background-danger-bold, #DE350B);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.caty-improve__strap-stop-icon {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  background: var(--ds-text-inverse, #FFFFFF);
+}
+
+.caty-improve__strap-btn {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border: none;
+  background: transparent;
+  color: var(--ds-text-inverse, #FFFFFF);
+  cursor: pointer;
+}
+
+.caty-improve__strap-btn--keep {
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--ds-border-information, #85B8FF);
+  background: var(--ds-background-information, rgba(132, 169, 255, 0.18));
 }

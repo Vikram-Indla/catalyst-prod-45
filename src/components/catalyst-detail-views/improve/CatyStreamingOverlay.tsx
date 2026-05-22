@@ -352,330 +352,135 @@ export function CatyStreamingOverlay({
     return `${desc}\n\n## Acceptance criteria\n${ac}`;
   }, [currentDescription, currentAcceptanceCriteria]);
 
-  // Visible content above the snapshot — what the user actually reads
-  // changes per phase:
-  //   analyzing → just the snapshot (muted) + "Caty is analyzing" pulse
-  //   streaming → streaming text in normal colour ABOVE the muted snapshot
-  //   done      → streaming text in normal colour, snapshot hidden
-  //   errored   → error message + close button
   const showSnapshot = phase === "analyzing" || phase === "streaming";
+  const streamingNeedsGap = phase === "streaming" && showSnapshot;
+  const showStrap =
+    phase === "analyzing" || phase === "streaming" || phase === "stopped";
 
   return (
-    <div
-      data-testid="caty-streaming-overlay"
-      style={{
-        position: "relative",
-        padding: "8px 0",
-        minHeight: 80,
-      }}
-    >
-      {/* Streaming / completed AI output. The inner span is owned by
-          the typewriter — it appends text nodes directly via
-          appendChild so React doesn't reconcile the growing text on
-          every chunk. The wrapper div + caret stay in React's hands.
-          Mounted as soon as we leave the analyzing phase so the ref
-          is available to the typewriter timer. */}
+    <div data-testid="caty-streaming-overlay" className="caty-improve">
       {(phase === "streaming" || phase === "done") && (
         <div
-          style={{
-            fontSize: 14,
-            lineHeight: "24px",
-            color: "var(--ds-text, #292A2E)",
-            whiteSpace: "pre-wrap",
-            fontFamily:
-              '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
-            marginBottom: phase === "streaming" && showSnapshot ? 12 : 0,
-          }}
+          className={
+            streamingNeedsGap
+              ? "caty-improve__output caty-improve__output--with-snapshot"
+              : "caty-improve__output"
+          }
         >
           <span ref={streamingTextRef} />
           {phase === "streaming" && (
-            <span
-              aria-hidden="true"
-              style={{
-                display: "inline-block",
-                verticalAlign: "text-bottom",
-                marginLeft: 4,
-                width: 14,
-                height: 14,
-                lineHeight: 0,
-              }}
-            >
+            <span aria-hidden="true" className="caty-improve__caret">
               <img
                 src={catalystAiLogo}
                 alt=""
                 width={14}
                 height={14}
-                className="caty-pulse"
-                style={{ display: "block" }}
+                className="caty-pulse caty-improve__caret-img"
               />
             </span>
           )}
         </div>
       )}
 
-      {/* Muted snapshot of the original — visible during analyzing + streaming */}
       {showSnapshot && (
-        <div
-          aria-hidden={phase === "streaming"}
-          style={{
-            fontSize: 14,
-            lineHeight: "24px",
-            whiteSpace: "pre-wrap",
-            fontFamily:
-              '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
-            color: "var(--ds-text-disabled, #8993A4)",
-            opacity: 0.65,
-          }}
-        >
+        <div aria-hidden={phase === "streaming"} className="caty-improve__snapshot">
           {mutedSnapshot}
-          {phase === "analyzing" && (
-            <span
-              className="caty-pulse"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                marginTop: 12,
-                paddingLeft: 0,
-                color: "var(--ds-text-subtle, #6B6E76)",
-                fontSize: 13,
-                fontWeight: 500,
-              }}
-            >
-              <img
-                src={catalystAiLogo}
-                alt=""
-                width={16}
-                height={16}
-                className="caty-pulse"
-                style={{ display: "inline-block", verticalAlign: "middle" }}
-              />
-              Caty is analyzing
-            </span>
-          )}
         </div>
       )}
 
-      {/* Error pane */}
       {phase === "errored" && (
-        <div
-          role="alert"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            padding: 12,
-            borderRadius: 6,
-            background: "var(--ds-background-danger, #FFECEB)",
-            color: "var(--ds-text-danger, #AE2A19)",
-            fontSize: 13,
-          }}
-        >
-          <span style={{ flex: 1 }}>
+        <div role="alert" className="caty-improve__error">
+          <span className="caty-improve__error-text">
             {errorMessage ?? "Caty couldn’t finish — please try again."}
           </span>
           <button
             type="button"
             onClick={onCancel}
-            style={{
-              border: "none",
-              background: "transparent",
-              cursor: "pointer",
-              fontSize: 13,
-              fontWeight: 500,
-              padding: "4px 10px",
-              borderRadius: 3,
-              color: "var(--ds-text-danger, #AE2A19)",
-            }}
+            className="caty-improve__error-close"
           >
             Close
           </button>
         </div>
       )}
 
-      {/* Done state — accept / discard */}
       {phase === "done" && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: 8,
-            marginTop: 12,
-          }}
-        >
+        <div className="caty-improve__done">
           <button
             type="button"
             onClick={onCancel}
-            style={{
-              border: "1px solid var(--ds-border, #DFE1E6)",
-              background: "var(--ds-surface, #FFFFFF)",
-              cursor: "pointer",
-              fontSize: 13,
-              fontWeight: 500,
-              padding: "6px 14px",
-              borderRadius: 3,
-              color: "var(--ds-text, #292A2E)",
-              fontFamily: "inherit",
-            }}
+            className="caty-improve__btn caty-improve__btn--secondary"
           >
             Discard
           </button>
           <button
             type="button"
             onClick={handleAccept}
-            style={{
-              border: "none",
-              background: "var(--ds-background-brand-bold, #0C66E4)",
-              color: "white",
-              cursor: "pointer",
-              fontSize: 13,
-              fontWeight: 500,
-              padding: "6px 14px",
-              borderRadius: 3,
-              fontFamily: "inherit",
-            }}
+            className="caty-improve__btn caty-improve__btn--primary"
           >
             Accept
           </button>
         </div>
       )}
 
-      {/* Floating status pill — visible during in-flight phases AND
-          the post-stop "Keep / Discard" prompt. Done state hides it
-          (the inline Accept/Discard at the bottom of the doc takes
-          over for a natural completion). */}
-      {(phase === "analyzing" ||
-        phase === "streaming" ||
-        phase === "stopped") && (
-        <div
-          className="caty-pill-enter"
-          style={{
-            position: "fixed",
-            bottom: 24,
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 12,
-            padding: "8px 16px",
-            background: "rgba(41, 42, 46, 0.96)",
-            color: "rgba(206, 207, 210, 1)",
-            borderRadius: 12,
-            border: "1px solid rgba(255, 255, 255, 0.10)",
-            boxShadow:
-              "0 12px 32px rgba(0, 0, 0, 0.35), 0 4px 8px rgba(0, 0, 0, 0.18)",
-            zIndex: 1000,
-            fontSize: 13,
-            fontFamily: "inherit",
-            whiteSpace: "nowrap",
-            pointerEvents: "auto",
-          }}
-        >
-          {phase === "stopped" ? (
-            <>
-              <img
-                src={catalystAiLogo}
-                alt=""
-                width={16}
-                height={16}
-                style={{ display: "inline-block" }}
-              />
-              <span>Keep what Caty wrote, or discard?</span>
-              <button
-                type="button"
-                onClick={onCancel}
-                style={{
-                  border: "none",
-                  background: "transparent",
-                  cursor: "pointer",
-                  color: "rgba(206, 207, 210, 1)",
-                  fontSize: 13,
-                  fontWeight: 500,
-                  padding: "4px 10px",
-                  fontFamily: "inherit",
-                }}
-              >
-                Discard
-              </button>
-              <button
-                type="button"
-                onClick={handleAccept}
-                style={{
-                  border: "1px solid rgba(132, 169, 255, 0.85)",
-                  background: "rgba(132, 169, 255, 0.18)",
-                  color: "rgba(206, 207, 210, 1)",
-                  cursor: "pointer",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  padding: "4px 12px",
-                  borderRadius: 4,
-                  fontFamily: "inherit",
-                }}
-              >
-                Keep
-              </button>
-            </>
-          ) : (
-            <>
-              <img
-                src={catalystAiLogo}
-                alt=""
-                width={16}
-                height={16}
-                className={phase === "analyzing" ? "caty-pulse" : ""}
-                style={{ display: "inline-block" }}
-              />
-              <span>
-                {phase === "analyzing"
-                  ? "Caty is analyzing"
-                  : "Caty is editing"}
-              </span>
-              <span
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  fontSize: 11,
-                  padding: "1px 6px",
-                  borderRadius: 3,
-                  border: "1px solid rgba(255, 255, 255, 0.18)",
-                  color: "rgba(150, 153, 158, 1)",
-                  fontFamily:
-                    "ui-monospace, SFMono-Regular, Menlo, Monaco, monospace",
-                }}
-              >
-                Esc
-              </span>
-              <button
-                type="button"
-                onClick={handleStopRequest}
-                aria-label="Stop"
-                title="Stop"
-                style={{
-                  width: 22,
-                  height: 22,
-                  borderRadius: 4,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  border: "none",
-                  background: "rgba(255, 86, 48, 0.92)",
-                  cursor: "pointer",
-                  padding: 0,
-                  flexShrink: 0,
-                }}
-              >
-                <span
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 1,
-                    background: "white",
-                    display: "inline-block",
-                  }}
+      {showStrap && (
+        <div className="caty-improve__strap-anchor">
+          <div className="caty-improve__strap caty-pill-enter">
+            {phase === "stopped" ? (
+              <>
+                <img
+                  src={catalystAiLogo}
+                  alt=""
+                  width={18}
+                  height={18}
+                  className="caty-improve__strap-logo caty-improve__strap-logo--sm"
                 />
-              </button>
-            </>
-          )}
+                <span>Keep what Caty wrote, or discard?</span>
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="caty-improve__strap-btn"
+                >
+                  Discard
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAccept}
+                  className="caty-improve__strap-btn caty-improve__strap-btn--keep"
+                >
+                  Keep
+                </button>
+              </>
+            ) : (
+              <>
+                <img
+                  src={catalystAiLogo}
+                  alt=""
+                  width={20}
+                  height={20}
+                  className={
+                    phase === "analyzing"
+                      ? "caty-improve__strap-logo caty-pulse"
+                      : "caty-improve__strap-logo"
+                  }
+                />
+                <span className="caty-improve__strap-label">
+                  {phase === "analyzing"
+                    ? "Caty is analyzing"
+                    : "Caty is editing"}
+                </span>
+                <span className="caty-improve__strap-esc">Esc</span>
+                <button
+                  type="button"
+                  onClick={handleStopRequest}
+                  aria-label="Stop"
+                  title="Stop"
+                  className="caty-improve__strap-stop"
+                >
+                  <span className="caty-improve__strap-stop-icon" />
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>
