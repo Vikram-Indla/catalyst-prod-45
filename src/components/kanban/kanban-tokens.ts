@@ -37,17 +37,17 @@ export interface KanbanThemeTokens {
 
 export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens } = {
   light: {
-    /* Jira parity: page transparent, column surface #F8F8F8, card var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) */
+    /* Jira parity: page transparent, column surface #F8F8F8, card #ffffff */
     pageBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     surfaceBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    surfaceHover: '#F1F2F4',
-    surfaceAlt: '#F8F8F8',     /* column surface (Jira: rgb(248,248,248)) */
-    headerBg: 'rgba(5,21,36,0.06)',  /* column header — Jira tint over #F8F8F8 */
-    border: '#DDDEE1',
-    borderSubtle: '#EBECF0',
-    textPrimary: '#292A2E',    /* Jira primary text */
-    textSecondary: '#42526E',
-    textMuted: '#505258',      /* Jira muted (column name, issue key) */
+    surfaceHover: 'var(--ds-background-neutral, #F1F2F4)',
+    surfaceAlt: 'var(--ds-surface-sunken, #F8F8F8)',     /* column surface — Jira parity */
+    headerBg: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',  /* column header — Jira tint */
+    border: 'var(--ds-border, #DDDEE1)',
+    borderSubtle: 'var(--ds-border-subtle, #EBECF0)',
+    textPrimary: 'var(--ds-text, #292A2E)',    /* Jira primary text */
+    textSecondary: 'var(--ds-text-subtle, #42526E)',
+    textMuted: 'var(--ds-text-subtlest, #505258)',      /* Jira muted (column name, issue key) */
     textDisabled: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
     badgeBg: 'transparent',    /* Jira: count badge is plain text, no pill */
     cardBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
@@ -55,48 +55,49 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     cardHoverBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     /* jira-compare 2026-05-08 — Jira card shadow: very subtle elevation 1
        (0 1px 2px rgba(9,30,66,0.25) rest, 0 2px 4px on hover). The prior
-       8px/12px value was 4× too heavy and made cards look like floating modals. */
-    cardShadowRest: 'rgba(9,30,66,0.25) 0 1px 2px 0, rgba(9,30,66,0.31) 0 0 1px 0',
-    cardHoverShadow: 'rgba(9,30,66,0.31) 0 2px 4px 0, rgba(9,30,66,0.31) 0 0 1px 0',
-    cardDragShadow: 'rgba(30,31,33,.45) 0 8px 16px 0, rgba(30,31,33,.31) 0 0 1px 0',
-    dropHighlight: '#DFE3E8',  /* Jira drop tint */
+       8px/12px value was 4× too heavy and made cards look like floating modals.
+       F2: wrapped in ADS shadow tokens as canonical fallback. */
+    cardShadowRest: 'var(--ds-shadow-raised, rgba(9,30,66,0.25) 0 1px 2px 0, rgba(9,30,66,0.31) 0 0 1px 0)',
+    cardHoverShadow: 'var(--ds-shadow-overlay, rgba(9,30,66,0.31) 0 2px 4px 0, rgba(9,30,66,0.31) 0 0 1px 0)',
+    cardDragShadow: 'var(--ds-shadow-overlay, rgba(30,31,33,.45) 0 8px 16px 0, rgba(30,31,33,.31) 0 0 1px 0)',
+    dropHighlight: 'var(--ds-background-neutral-hovered, #DFE3E8)',  /* Jira drop tint */
     dropIndicator: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',  /* 2px accent line on insertion */
     selectedAccent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     chipBg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
-    chipText: '#42526E',
+    chipText: 'var(--ds-text-subtle, #42526E)',
     inputBg: 'var(--ds-surface-sunken, #FAFBFC)',
-    inputBorder: '#DDDEE1',
-    overlay: 'rgba(9,30,66,.08)',
-    epicLozengeBg: '#DDDEE1',  /* Jira epic lozenge surface */
-    epicLozengeText: '#292A2E',
+    inputBorder: 'var(--ds-border, #DDDEE1)',
+    overlay: 'var(--ds-overlay, rgba(9,30,66,.08))',
+    epicLozengeBg: 'var(--ds-border, #DDDEE1)',  /* Jira epic lozenge surface */
+    epicLozengeText: 'var(--ds-text, #292A2E)',
   },
   dark: {
     pageBg: 'var(--ds-surface, #0A0A0A)',
     surfaceBg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))',
     surfaceHover: 'var(--ds-surface-overlay, #1F1F1F)',
-    surfaceAlt: '#111111',
-    headerBg: '#111111',
+    surfaceAlt: 'var(--ds-surface-sunken, #111111)',
+    headerBg: 'var(--ds-surface-sunken, #111111)',
     border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
     borderSubtle: 'var(--ds-border, var(--cp-ink-1, #292929))',
     textPrimary: 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))',
     textSecondary: 'var(--ds-text-subtlest, #A1A1A1)',
     textMuted: 'var(--ds-text-subtlest, #A1A1A1)',
-    textDisabled: '#7D7D7D',
+    textDisabled: 'var(--ds-text-disabled, #7D7D7D)',
     badgeBg: 'transparent',
     cardBg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))',
     cardBorder: 'transparent',
     cardHoverBg: 'var(--ds-surface-overlay, #1F1F1F)',
-    cardShadowRest: 'rgba(0,0,0,.45) 0 1px 1px 0, rgba(0,0,0,.55) 0 0 1px 0',
-    cardHoverShadow: 'rgba(0,0,0,.55) 0 2px 4px 0, rgba(0,0,0,.55) 0 0 1px 0',
-    cardDragShadow: 'rgba(0,0,0,.65) 0 8px 16px 0, rgba(0,0,0,.55) 0 0 1px 0',
+    cardShadowRest: 'var(--ds-shadow-raised, rgba(0,0,0,.45) 0 1px 1px 0, rgba(0,0,0,.55) 0 0 1px 0)',
+    cardHoverShadow: 'var(--ds-shadow-overlay, rgba(0,0,0,.55) 0 2px 4px 0, rgba(0,0,0,.55) 0 0 1px 0)',
+    cardDragShadow: 'var(--ds-shadow-overlay, rgba(0,0,0,.65) 0 8px 16px 0, rgba(0,0,0,.55) 0 0 1px 0)',
     dropHighlight: 'var(--ds-border, var(--cp-ink-1, #292929))',
     dropIndicator: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     selectedAccent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     chipBg: 'var(--ds-border, var(--cp-ink-1, #292929))',
     chipText: 'var(--ds-text-subtlest, #A1A1A1)',
-    inputBg: '#111111',
+    inputBg: 'var(--ds-surface-sunken, #111111)',
     inputBorder: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
-    overlay: 'rgba(255,255,255,.04)',
+    overlay: 'var(--ds-overlay, rgba(255,255,255,.04))',
     epicLozengeBg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
     epicLozengeText: 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))',
   },
