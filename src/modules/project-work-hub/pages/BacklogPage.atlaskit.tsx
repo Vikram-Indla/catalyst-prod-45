@@ -133,20 +133,10 @@ import type {
   FixVersionOption,
 } from '@/components/shared/JiraFilterAtlaskit';
 
-// Drag-and-drop support for row ranking (2026-05-12 Tier 1 gap)
-import {
-  DndContext,
-  DragEndEvent,
-  DragStartEvent,
-  DragOverlay,
-  closestCenter,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+// Drag-and-drop — migrated from @dnd-kit → Pragmatic (BAU-backlog-drag-01)
+import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
+import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 
 // ChevronsLeft/ChevronsRight (first/last page) have no ADS equivalent — inline SVG below
 const AkChevronsLeftIcon = () => (
@@ -157,58 +147,94 @@ const AkChevronsRightIcon = () => (
 );
 
 /**
- * DragHandleCell — useSortable hook for row ranking.
+ * DragHandleCell — Pragmatic drag-and-drop for row ranking (BAU-backlog-drag-01).
  *
- * 2026-05-17 jira-compare cycle 2 (revision 3): TR-transform hack reverted.
- * Trying to apply dnd-kit's transform to the parent <tr> via closest('tr')
- * was the wrong layer — TRs inside table-layout: fixed have inconsistent
- * transform behavior across browsers AND setNodeRef remained on the handle
- * so verticalListSortingStrategy never saw the actual rows. The canonical
- * fix is DragOverlay — a portal-mounted ghost that follows the cursor,
- * independent of any table clipping. The handle stays as the sortable item;
- * the overlay (rendered in BacklogPage's DndContext) gives the visual
- * feedback; original row stays put; drop persists. Cleaner, more reliable.
+ * Registers both draggable() (on the TR, with this handle as the dragHandle)
+ * and dropTargetForElements() (on the TR) using Pragmatic's imperative API
+ * inside a useEffect. The JiraTable TD has overflow:hidden so the drop
+ * indicator is rendered via createPortal to document.body at fixed coords
+ * derived from the TR's bounding rect — this escapes the clipping context.
  */
 function DragHandleCell({ row }: { row: BacklogItem }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useSortable({ id: row.id });
+  const handleRef = useRef<HTMLSpanElement>(null);
+  const [dropEdge, setDropEdge] = useState<Edge | null>(null);
+  const [trRect, setTrRect] = useState<DOMRect | null>(null);
+
+  useEffect(() => {
+    const handle = handleRef.current;
+    if (!handle) return;
+    const tr = handle.closest('tr') as HTMLElement | null;
+    if (!tr) return;
+
+    return combine(
+      draggable({
+        element: tr,
+        dragHandle: handle,
+        getInitialData: () => ({ rowId: row.id }),
+      }),
+      dropTargetForElements({
+        element: tr,
+        getData: ({ input, element }) =>
+          attachClosestEdge({ rowId: row.id }, { input, element, allowedEdges: ['top', 'bottom'] }),
+        onDrag: ({ self }) => {
+          setDropEdge(extractClosestEdge(self.data));
+          setTrRect(tr.getBoundingClientRect());
+        },
+        onDragLeave: () => setDropEdge(null),
+        onDrop: () => setDropEdge(null),
+      }),
+    );
+  }, [row.id]);
 
   return (
-    <span
-      ref={setNodeRef}
-      className="jira-drag-handle"
-      aria-hidden
-      style={{ opacity: isDragging ? 0.4 : 1 }}
-      {...attributes}
-      {...listeners}
-    >
+    <>
       <span
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 16,
-          height: 20,
-          // 2026-05-17 jira-compare cycle 2 (rev 2): Jira renders the drag
-          // handle as a small button with a subtle dark rounded background
-          // (per Vikram screenshot). Adds visual weight so the grip reads
-          // as an interactive affordance, not a decorative icon.
-          borderRadius: 3,
-          background: token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'),
-          cursor: listeners ? 'grabbing' : 'grab',
-          color: token('color.icon.subtle', '#626F86'),
-        }}
+        ref={handleRef}
+        className="jira-drag-handle"
+        aria-hidden
       >
-        {/* 6-dot grip — no ADS equivalent; inline SVG */}
-        <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden>
-          <circle cx="2" cy="2" r="1.5"/>
-          <circle cx="8" cy="2" r="1.5"/>
-          <circle cx="2" cy="8" r="1.5"/>
-          <circle cx="8" cy="8" r="1.5"/>
-          <circle cx="2" cy="14" r="1.5"/>
-          <circle cx="8" cy="14" r="1.5"/>
-        </svg>
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 16,
+            height: 20,
+            borderRadius: 3,
+            background: token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'),
+            cursor: 'grab',
+            color: token('color.icon.subtle', '#626F86'),
+          }}
+        >
+          {/* 6-dot grip — no ADS equivalent; inline SVG */}
+          <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden>
+            <circle cx="2" cy="2" r="1.5"/>
+            <circle cx="8" cy="2" r="1.5"/>
+            <circle cx="2" cy="8" r="1.5"/>
+            <circle cx="8" cy="8" r="1.5"/>
+            <circle cx="2" cy="14" r="1.5"/>
+            <circle cx="8" cy="14" r="1.5"/>
+          </svg>
+        </span>
       </span>
-    </span>
+      {dropEdge && trRect && createPortal(
+        <div
+          aria-hidden
+          style={{
+            position: 'fixed',
+            left: trRect.left,
+            width: trRect.width,
+            top: dropEdge === 'top' ? trRect.top - 1 : trRect.bottom - 1,
+            height: 2,
+            background: token('color.border.brand', '#0C66E4'),
+            zIndex: 9999,
+            pointerEvents: 'none',
+            borderRadius: 1,
+          }}
+        />,
+        document.body,
+      )}
+    </>
   );
 }
 
@@ -661,10 +687,6 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   const [filterValue, setFilterValue] = useState<JiraFilterValue>(emptyFilterValue);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => parseSet(searchParams.get('expanded')));
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  // 2026-05-17 jira-compare cycle 2 (rev 3): track the row currently being
-  // dragged so the DragOverlay portal can render a ghost preview that
-  // follows the cursor. Cleared on drag end / cancel.
-  const [activeDragRow, setActiveDragRow] = useState<BacklogItem | null>(null);
   // Default sort — Key ASC matches Jira's default "Rank" ordering which
   // surfaces oldest issues (BAU-310 first). Updated DESC was incorrect —
   // live probe 2026-05-04 shows Jira BAU list starts at BAU-310, not newest.
@@ -1792,6 +1814,66 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       hidden: (r) => r.source !== 'catalyst' },
   ]), [openDetail, projectKey, projectId, navigate, queryClient]);
 
+  // ── Pragmatic DnD monitor — row rank persistence (BAU-backlog-drag-01) ──
+  // Fires for every draggable() element in this tree. Extracts rowId and
+  // edge from the drop target data, calculates the new rank_order midpoint,
+  // and writes it directly to ph_issues (bypassing bulkUpdate's source filter
+  // which rejects Jira-synced rows — sort_order is a Catalyst-local field).
+  useEffect(() => {
+    return monitorForElements({
+      onDrop: async ({ source, location }) => {
+        const target = location.current.dropTargets[0];
+        if (!target || !projectKey) return;
+
+        const draggedId = source.data.rowId as string;
+        const targetId = target.data.rowId as string;
+        const edge = extractClosestEdge(target.data);
+
+        if (!draggedId || !targetId || draggedId === targetId) return;
+
+        const draggedRow = sortedRows.find((r) => r.id === draggedId);
+        const overRow = sortedRows.find((r) => r.id === targetId);
+        if (!draggedRow || !overRow) return;
+
+        const overIndex = sortedRows.indexOf(overRow);
+        const insertAfter = edge === 'bottom';
+
+        let newRankOrder: number;
+        if (insertAfter) {
+          const below = sortedRows[overIndex + 1];
+          const currentRank = overRow.rank_order ?? 0;
+          const belowRank = below?.rank_order ?? (currentRank + 100);
+          newRankOrder = (currentRank + belowRank) / 2;
+        } else {
+          const above = sortedRows[overIndex - 1];
+          const currentRank = overRow.rank_order ?? 0;
+          const aboveRank = above?.rank_order ?? Math.max(0, currentRank - 100);
+          newRankOrder = (aboveRank + currentRank) / 2;
+        }
+
+        try {
+          const { error: updErr } = await supabase
+            .from('ph_issues')
+            .update({ sort_order: newRankOrder, jira_updated_at: new Date().toISOString() })
+            .eq('issue_key', draggedRow.id);
+          if (updErr) throw updErr;
+          queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+          queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+          if (sortKey !== null) {
+            setSortKey(null);
+            setSortDir(null);
+          }
+          flag.success('Reordered', `${draggedRow.key || 'Row'} moved.`);
+        } catch (e: any) {
+          flag.error('Rank update failed', e?.message ?? String(e));
+        }
+      },
+    });
+  // sortedRows intentionally included — monitor must see the current row list
+  // to resolve rowId → BacklogItem. Re-registers on sort/filter changes.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortedRows, projectKey, projectId, supabase, queryClient, sortKey, setSortKey, setSortDir]);
+
   // ── Column schema ──
   // F8 (iter-9): __caret column dropped — caret affordance folded into the
   // Type col cell renderer instead (matches Jira's inline expand pattern).
@@ -2875,103 +2957,6 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           }}
         >
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-          <DndContext
-            collisionDetection={closestCenter}
-            onDragStart={(event: DragStartEvent) => {
-              // Capture the row being dragged so DragOverlay can render
-              // a portal-mounted ghost that follows the cursor.
-              const row = sortedRows.find((r) => r.id === event.active.id) ?? null;
-              setActiveDragRow(row);
-            }}
-            onDragCancel={() => setActiveDragRow(null)}
-            onDragEnd={async (event: DragEndEvent) => {
-              setActiveDragRow(null);
-              const { active, over } = event;
-              if (!over || active.id === over.id || !projectKey) return;
-
-              // Find the dragged row and target row
-              const draggedRow = sortedRows.find((r) => r.id === active.id);
-              const overRow = sortedRows.find((r) => r.id === over.id);
-              if (!draggedRow || !overRow) return;
-
-              // Calculate new rank_order: midpoint between neighbors
-              // If dragging above overRow: new_rank = (overRow.rank_order - ABOVE_rank_order) / 2
-              // If dragging below overRow: new_rank = (BELOW_rank_order - overRow.rank_order) / 2
-              const draggedIndex = sortedRows.indexOf(draggedRow);
-              const overIndex = sortedRows.indexOf(overRow);
-              const direction = draggedIndex < overIndex ? 1 : -1; // 1 = down, -1 = up
-
-              let newRankOrder: number;
-              if (direction === 1) {
-                // Dragging down: insert after overRow
-                const below = sortedRows[overIndex + 1];
-                const currentRank = overRow.rank_order ?? 0;
-                const belowRank = below?.rank_order ?? (currentRank + 100);
-                newRankOrder = (currentRank + belowRank) / 2;
-              } else {
-                // Dragging up: insert before overRow
-                const above = sortedRows[overIndex - 1];
-                const currentRank = overRow.rank_order ?? 0;
-                const aboveRank = above?.rank_order ?? Math.max(0, currentRank - 100);
-                newRankOrder = (aboveRank + currentRank) / 2;
-              }
-
-              // Write sort_order directly to ph_issues — bulkUpdate filters to
-              // source==='catalyst' (correct for Jira-synced fields like summary
-              // /status) but sort_order is a Catalyst-local rank field with no
-              // Jira sync, so the filter wrongly rejected Jira rows and drag
-              // silently failed. Row-menu Rank-to-top/bottom already write
-              // sort_order directly without a source filter — mirror that.
-              try {
-                const { error: updErr } = await supabase
-                  .from('ph_issues')
-                  .update({ sort_order: newRankOrder, jira_updated_at: new Date().toISOString() })
-                  .eq('issue_key', draggedRow.id);
-                if (updErr) throw updErr;
-                // Invalidate backlog queries to re-fetch and re-sort by rank_order
-                queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
-                queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
-                // 2026-05-17 jira-compare cycle 2: when an explicit column
-                // sort was active, the client-side sort was overriding the
-                // DB sort_order so the drag appeared to do nothing. Auto-
-                // clear the sort after a successful drag so the persisted
-                // rank order is visible immediately. Display now shows the
-                // row in its new position (DB-natural order, no client
-                // re-sort applied — see sortedRows guard at line ~1304).
-                if (sortKey !== null) {
-                  setSortKey(null);
-                  setSortDir(null);
-                }
-                flag.success(
-                  'Reordered',
-                  `${draggedRow.key || 'Row'} moved.`,
-                );
-              } catch (e: any) {
-                flag.error('Rank update failed', e?.message ?? String(e));
-              }
-            }}
-          >
-            <SortableContext
-              items={sortedRows.map((r) => r.id)}
-              strategy={verticalListSortingStrategy}
-              // 2026-05-17 jira-compare cycle 2: previously disabled unless
-              // sortKey === 'rank_order', but no column produces that sortKey,
-              // so SortableContext was always disabled and drag silently
-              // never fired. Vikram flagged "drag handle not working" once the
-              // handle was made visible.
-              //
-              // New gate matches the row-level handle's visibility gate
-              // (rowDragHandleHidden, set at the JiraTable call site below):
-              // drag is enabled in the default sort state (key ASC) with no
-              // grouping. Drag fires bulkUpdate of sort_order; visual reorder
-              // is immediate when sortKey resolves to rank_order, and persists
-              // for the next visit if the user later sorts by rank_order.
-              disabled={
-                sortKey !== DEFAULT_SORT_KEY ||
-                sortDir !== DEFAULT_SORT_DIR ||
-                (groupBy !== null && groupBy !== 'none')
-              }
-            >
           <JiraTable<BacklogItem>
             columns={filteredCols}
             data={groupedRows ? undefined : sortedRows}
@@ -3233,72 +3218,6 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               />
             }
           />
-            </SortableContext>
-            {/* 2026-05-17 jira-compare cycle 2 (rev 3): DragOverlay portal.
-                Renders a ghost preview of the row being dragged. Portal-
-                mounted at document.body so it follows the cursor regardless
-                of the table's overflow:hidden clipping. Shows type icon,
-                key, and summary in a card-like wrapper with shadow. */}
-            <DragOverlay dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)' }}>
-              {activeDragRow ? (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '8px 12px',
-                    background: token('elevation.surface.overlay', '#FFFFFF'),
-                    border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-                    borderRadius: 4,
-                    boxShadow: token('elevation.shadow.overlay', '0 8px 24px rgba(9,30,66,0.15)'),
-                    opacity: 0.96,
-                    cursor: 'grabbing',
-                    maxWidth: 600,
-                    fontSize: 14,
-                    fontFamily: 'inherit',
-                  }}
-                >
-                  <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
-                    {activeDragRow.type === 'initiative' ? (
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: 16,
-                          height: 16,
-                          borderRadius: 3,
-                          background: '#904EE2',
-                          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                          fontSize: 10,
-                          fontWeight: 700,
-                        }}
-                      >
-                        I
-                      </span>
-                    ) : (
-                      <JiraIssueTypeIcon
-                        type={
-                          activeDragRow.type === 'epic' ? 'Epic'
-                          : activeDragRow.type === 'feature' ? 'Feature'
-                          : activeDragRow.type === 'bug' ? 'QA Bug'
-                          : activeDragRow.type === 'incident' ? 'Production Incident'
-                          : 'Story'
-                        }
-                        size={16}
-                      />
-                    )}
-                  </span>
-                  <span style={{ color: token('color.link', '#0C66E4'), textDecoration: 'underline', fontWeight: 500, flexShrink: 0 }}>
-                    {activeDragRow.key || '—'}
-                  </span>
-                  <span style={{ color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-                    {activeDragRow.title}
-                  </span>
-                </div>
-              ) : null}
-            </DragOverlay>
-          </DndContext>
           </div>
         </div>
       </div>

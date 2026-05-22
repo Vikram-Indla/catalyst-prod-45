@@ -8,12 +8,12 @@ const src = readFileSync(
   'utf8',
 );
 
-// Extract the onDragEnd handler body so assertions only target the drag path,
-// not bulkUpdate's other (correct) callsites for summary/status/etc.
-function extractOnDragEnd(source: string): string {
-  const start = source.indexOf('onDragEnd={async (event: DragEndEvent) =>');
-  if (start < 0) throw new Error('onDragEnd handler not found in BacklogPage.atlaskit.tsx');
-  // Walk braces from the first `{` after the arrow until they balance.
+// Extract the monitorForElements onDrop handler body (Pragmatic DnD migration,
+// BAU-backlog-drag-01). Replaces the previous onDragEnd={async ...} extraction.
+function extractOnDrop(source: string): string {
+  const marker = 'onDrop: async ({ source, location })';
+  const start = source.indexOf(marker);
+  if (start < 0) throw new Error('monitorForElements onDrop handler not found in BacklogPage.atlaskit.tsx');
   const arrowIdx = source.indexOf('=>', start);
   const bodyStart = source.indexOf('{', arrowIdx);
   let depth = 0;
@@ -25,28 +25,28 @@ function extractOnDragEnd(source: string): string {
       if (depth === 0) return source.slice(bodyStart, i + 1);
     }
   }
-  throw new Error('onDragEnd body braces never balanced');
+  throw new Error('onDrop body braces never balanced');
 }
 
-const onDragEndBody = extractOnDragEnd(src);
+const onDropBody = extractOnDrop(src);
 
-describe('BacklogPage drag-drop rank persistence (2026-05-17)', () => {
+describe('BacklogPage drag-drop rank persistence (BAU-backlog-drag-01 Pragmatic migration)', () => {
   it('does not route the rank-write through bulkUpdate (source filter rejects Jira-synced rows)', () => {
-    // bulkUpdate filters items to source === "catalyst" and throws for Jira-
-    // synced rows. sort_order is a Catalyst-local field with no Jira sync,
-    // so the drag handler must bypass that filter — the row-menu Rank-to-top
-    // / Rank-to-bottom actions already do this by writing supabase directly.
-    expect(onDragEndBody).not.toMatch(/bulkUpdate\.mutateAsync/);
+    expect(onDropBody).not.toMatch(/bulkUpdate\.mutateAsync/);
   });
 
   it('writes sort_order directly to ph_issues via supabase', () => {
-    expect(onDragEndBody).toMatch(/supabase[\s\S]{0,80}\.from\(['"]ph_issues['"]\)/);
-    expect(onDragEndBody).toMatch(/\.update\([\s\S]{0,200}sort_order/);
+    expect(onDropBody).toMatch(/supabase[\s\S]{0,80}\.from\(['"]ph_issues['"]\)/);
+    expect(onDropBody).toMatch(/\.update\([\s\S]{0,200}sort_order/);
   });
 
   it('gates the write by issue_key only (no source filter on rank-write)', () => {
-    expect(onDragEndBody).toMatch(/\.eq\(['"]issue_key['"]/);
-    // The drag handler must not re-introduce the source filter that broke it.
-    expect(onDragEndBody).not.toMatch(/\.eq\(['"]source['"]/);
+    expect(onDropBody).toMatch(/\.eq\(['"]issue_key['"]/);
+    expect(onDropBody).not.toMatch(/\.eq\(['"]source['"]/);
+  });
+
+  it('uses edge-aware insertion (top = insert before, bottom = insert after)', () => {
+    expect(onDropBody).toMatch(/extractClosestEdge/);
+    expect(onDropBody).toMatch(/insertAfter.*edge.*['"]bottom['"]/);
   });
 });
