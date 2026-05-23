@@ -21,5 +21,12 @@ export function useCatalystIssue(itemId: string, isOpen: boolean) {
         .maybeSingle();
       return data as unknown as PhIssue | null;
     },
+    // 2026-05-24 — anti-dance fix: keep the previous ticket's data visible
+    // while the next one loads so the breadcrumb and body don't flash through
+    // null/skeleton on every navigation in the allwork split panel.
+    // staleTime: 30s avoids refetching tickets the user revisits within the
+    // same session (back-and-forth between two tickets).
+    staleTime: 30_000,
+    placeholderData: (previousData: PhIssue | null | undefined) => previousData,
   });
 }
