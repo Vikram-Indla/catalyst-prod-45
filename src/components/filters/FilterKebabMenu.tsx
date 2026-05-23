@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { IconButton } from '@atlaskit/button/new';
-import MoreIcon from '@atlaskit/icon/core/show-more-horizontal';
+import { MoreHorizontal } from '@/lib/atlaskit-icons';
 import ModalTransition from '@atlaskit/modal-dialog';
 import {
   useCopyFilter,
@@ -51,7 +51,7 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
           <IconButton
             ref={triggerRef}
             {...props}
-            icon={MoreIcon}
+            icon={MoreHorizontal}
             label="Filter actions"
             appearance="subtle"
             spacing="compact"
