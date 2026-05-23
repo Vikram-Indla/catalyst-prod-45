@@ -279,7 +279,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         </div>
         <Button
           appearance="primary"
-          iconBefore={<Plus size="small" label="" />}
+          iconBefore={() => <Plus size="small" />}
           onClick={() => setCreateModalOpen(true)}
         >
           Create filter
