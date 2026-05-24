@@ -42,7 +42,9 @@
   align-items: center;
   padding: 4px 4px 4px 0;
   margin-left: -4px;
-  gap: 0;
+  /* 4px gap puts the "Attachments" label at 24px from the section left
+     edge, lining up with the Subtasks and Linked-work-items titles. */
+  gap: 4px;
   cursor: pointer;
 }
 

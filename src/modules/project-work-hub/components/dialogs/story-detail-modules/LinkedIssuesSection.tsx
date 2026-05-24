@@ -476,7 +476,9 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
   }, {} as Record<string, any[]>);
 
   return (
+    <>
     <SectionBlock title="Linked work items" count={links.length} defaultExpanded={links.length > 0} headerRight={
+      links.length === 0 ? null : (
       <button onClick={() => setShowAdd(true)} title="Link issue" style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
@@ -487,6 +489,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       >
         <AddIcon label="Link issue" />
       </button>
+      )
     }>
       {/* AI Link Similar panel */}
       <AiLinkSimilarPanel
@@ -499,9 +502,6 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       />
 
       {isLoading && <SkeletonRows />}
-      {!isLoading && links.length === 0 && !showAdd && (
-        <EmptyState heading="No linked issues" sub="Link related, blocking, or duplicate issues" cta="+ Link issue" onCta={() => setShowAdd(true)} />
-      )}
 
       {/* Grouped link display — Jira style */}
       {!isLoading && Object.entries(grouped).map(([type, typeLinks]) => (
@@ -632,5 +632,36 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
         </Suspense>
       )}
     </SectionBlock>
+    {!isLoading && links.length === 0 && !showAdd && (
+      <button
+        type="button"
+        onClick={() => setShowAdd(true)}
+        style={{
+          all: 'unset',
+          display: 'inline-flex',
+          alignItems: 'center',
+          marginLeft: 28,
+          marginTop: 2,
+          padding: '4px 8px',
+          borderRadius: 3,
+          fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
+          fontSize: 14,
+          color: 'var(--ds-text-subtle, #44546f)',
+          cursor: 'pointer',
+          transition: 'background 100ms ease, color 100ms ease',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, #f1f2f4)';
+          e.currentTarget.style.color = 'var(--ds-text, #172b4d)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'transparent';
+          e.currentTarget.style.color = 'var(--ds-text-subtle, #44546f)';
+        }}
+      >
+        Add linked work item
+      </button>
+    )}
+    </>
   );
 }

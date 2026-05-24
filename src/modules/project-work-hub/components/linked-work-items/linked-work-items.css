@@ -74,6 +74,32 @@
   margin-left: 4px;
 }
 
+/* Empty-state inline "Add linked work item" link — aligned with the
+   header title (chevron 16px + 8px toggle gap = 24px offset), gray to
+   match SubtasksPanel pattern. */
+.lwi-add-link {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 24px;
+  margin-top: 2px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
+  font-size: 14px;
+  color: var(--ds-text-subtle, #44546f);
+  cursor: pointer;
+  transition: background 100ms ease, color 100ms ease;
+}
+.lwi-add-link:hover {
+  background: var(--ds-background-neutral-subtle-hovered, #f1f2f4);
+  color: var(--ds-text, #172b4d);
+}
+.lwi-add-link:focus-visible {
+  outline: 2px solid var(--ds-border-focused, #4c9aff);
+  outline-offset: 1px;
+}
+
 .lwi-header__add {
   display: inline-flex;
   align-items: center;

@@ -52,7 +52,11 @@ export function LinkedWorkItemsHeader({
           </span>
         )}
       </button>
-      {expanded && canAdd && onAdd && (
+      {/* Show the inline header "+ Add linked work item" button only when
+          there ARE existing links. For the empty state the gray "Add linked
+          work item" link is rendered BELOW the header by LinkedWorkItems
+          (matching the SubtasksPanel "Add subtask" pattern). */}
+      {expanded && count > 0 && canAdd && onAdd && (
         <button
           type="button"
           className="lwi-header__add"
