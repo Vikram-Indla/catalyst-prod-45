@@ -44,6 +44,9 @@ import {
   createCatalystMentionProvider,
   type CatalystMentionResource,
 } from './catalystMentionProvider';
+import { useImageToolbarController } from './imageToolbar/useImageToolbarController';
+import { ImageToolbar } from './imageToolbar/ImageToolbar';
+import type { MinimalEditorView } from './imageToolbar/imageNodeOps';
 
 // 2026-05-03 — CONVERTED TO STATIC IMPORT
 // TipTap was removed 2026-04-20 (USER DIRECTIVE). The lazy-load was to prevent
@@ -110,6 +113,8 @@ export interface EpicDescriptionEditorProps {
    */
   onAttachmentUploaded?: (meta: AttachmentUploadMeta) => void;
   onImprove?: () => void;
+  improveLabel?: string;
+  improveDisabled?: boolean;
   /**
    * Content that covers the ProseMirror body while the toolbar stays
    * visible. Used by the "Improve description" flow to render the
@@ -154,6 +159,8 @@ function EpicDescriptionEditorImpl({
   appearance: appearanceProp = 'comment',
   onAttachmentUploaded,
   onImprove,
+  improveLabel = 'Improve description',
+  improveDisabled = false,
   bodyOverlay,
 }: EpicDescriptionEditorProps) {
   const initialAdf = useMemo(() => parseStoredDescriptionToAdf(initialContent), [initialContent]);
@@ -424,6 +431,21 @@ function EpicDescriptionEditorImpl({
     }, 300);
   }, [onChange]);
 
+  // Custom image toolbar — replaces Atlaskit's native floating-toolbar
+  // for image selections. The controller injects a slot div into the
+  // editor's DOM right after the clicked image; the toolbar renders
+  // into that slot via portal so it sits on its own line under the
+  // image and scrolls with it naturally. See imageToolbar/README.
+  const { selection: imageSelection, dismiss: dismissImageToolbar } =
+    useImageToolbarController({
+      editorRootRef: wrapperRef,
+      enabled: true,
+    });
+  const getEditorView = useCallback((): MinimalEditorView | null => {
+    const actions = actionsRef.current as any;
+    return actions?._privateGetEditorView?.() ?? null;
+  }, []);
+
   return (
     <IntlProvider locale="en">
       {/* Hidden file input — always in DOM so .click() works in all browsers */}
@@ -473,11 +495,12 @@ function EpicDescriptionEditorImpl({
             appearance="subtle"
             spacing="compact"
             onClick={onImprove}
+            isDisabled={improveDisabled}
             iconBefore={(iconProps: React.ComponentProps<typeof WandIcon>) => (
               <WandIcon {...iconProps} label="" />
             )}
           >
-            Improve description
+            {improveLabel}
           </Button>,
           improveSlot,
         )}
@@ -608,6 +631,11 @@ function EpicDescriptionEditorImpl({
           <div className="epic-desc-body-overlay">{bodyOverlay}</div>,
           bodySlot,
         )}
+        <ImageToolbar
+          selection={imageSelection}
+          getEditorView={getEditorView}
+          onDismiss={dismissImageToolbar}
+        />
       </div>
     </IntlProvider>
   );

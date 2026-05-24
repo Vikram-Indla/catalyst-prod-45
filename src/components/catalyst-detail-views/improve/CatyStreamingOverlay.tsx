@@ -48,6 +48,12 @@ export interface CatyStreamingOverlayProps {
   attachmentUrls: string[];
   /** Sub-instruction for the AI. Defaults to `improve_clarify`. */
   improveSubType?: string;
+  /**
+   * Which edge-function branch to call. Defaults to `improve_description_v2`
+   * (structured Description + AC output). Pass `improve_comment_v1` for the
+   * natural-prose comment refinement branch (no headings, single block).
+   */
+  improveType?: string;
   /** Called with the final markdown when the user accepts. */
   onApply: (
     fullMarkdown: string,
@@ -88,6 +94,7 @@ export function CatyStreamingOverlay({
   currentAcceptanceCriteria,
   attachmentUrls,
   improveSubType = "improve_clarify",
+  improveType = "improve_description_v2",
   onApply,
   onCancel,
 }: CatyStreamingOverlayProps) {
@@ -213,21 +220,31 @@ export function CatyStreamingOverlay({
         const { data: sessionData } = await supabase.auth.getSession();
         const accessToken = sessionData?.session?.access_token ?? null;
 
-        const res = await fetchFunction("ai-improve-story", {
+        const isCommentMode = improveType === "improve_comment_v1";
+        const endpointName = isCommentMode
+          ? "ai-improve-comment"
+          : "ai-improve-story";
+        const requestBody = isCommentMode
+          ? {
+              current_comment: currentDescription ?? "",
+              issue_summary: issueSummary ?? "",
+            }
+          : {
+              improve_type: improveType,
+              stream: true,
+              improve_sub_type: improveSubType,
+              issue_type: issueType ?? "Default",
+              issue_summary: issueSummary ?? "",
+              current_description: currentDescription ?? "",
+              current_ac: currentAcceptanceCriteria ?? "",
+              attachment_urls: attachmentUrls,
+            };
+        const res = await fetchFunction(endpointName, {
           method: "POST",
           accessToken,
           headers: { "Content-Type": "application/json" },
           signal: ctrl.signal,
-          body: JSON.stringify({
-            improve_type: "improve_description_v2",
-            stream: true,
-            improve_sub_type: improveSubType,
-            issue_type: issueType ?? "Default",
-            issue_summary: issueSummary ?? "",
-            current_description: currentDescription ?? "",
-            current_ac: currentAcceptanceCriteria ?? "",
-            attachment_urls: attachmentUrls,
-          }),
+          body: JSON.stringify(requestBody),
         });
 
         if (!res.ok || !res.body) {
@@ -340,9 +357,12 @@ export function CatyStreamingOverlay({
     // the typewriter is still draining, and we want to save the full
     // received text, not the half-rendered version.
     const text = fullTextRef.current;
-    const parts = splitImproveOutput(text);
+    const parts =
+      improveType === "improve_comment_v1"
+        ? { description: text.trim(), acceptanceCriteria: "" }
+        : splitImproveOutput(text);
     onApply(text, parts);
-  }, [onApply]);
+  }, [onApply, improveType]);
 
   const mutedSnapshot = useMemo(() => {
     const desc = (currentDescription ?? "").trim();

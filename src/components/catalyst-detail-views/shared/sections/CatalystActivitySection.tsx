@@ -101,23 +101,43 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     queryKey: ['cv-resolve-work-item-ref', itemId],
     enabled: !!itemId && isOpen,
     staleTime: 10 * 60 * 1000,
-    queryFn: async (): Promise<{ id: string; issue_key: string | null } | null> => {
+    queryFn: async (): Promise<{
+      id: string;
+      issue_key: string | null;
+      issue_type: string | null;
+      summary: string | null;
+    } | null> => {
       if (!itemId) return null;
       const column = isLikelyUuid(itemId) ? 'id' : 'issue_key';
       const { data } = await supabase
         .from('ph_issues')
-        .select('id, issue_key')
+        .select('id, issue_key, issue_type, summary')
         .eq(column, itemId)
         .maybeSingle();
       if (!data) return null;
+      const row = data as {
+        id: string;
+        issue_key?: string | null;
+        issue_type?: string | null;
+        summary?: string | null;
+      };
       return {
-        id: (data as { id: string }).id,
-        issue_key: ((data as { issue_key?: string | null }).issue_key ?? null),
+        id: row.id,
+        issue_key: row.issue_key ?? null,
+        issue_type: row.issue_type ?? null,
+        summary: row.summary ?? null,
       };
     },
   });
   const resolvedWorkItemId = resolvedRef?.id ?? null;
   const resolvedIssueKey = resolvedRef?.issue_key ?? null;
+  const improveContext = resolvedIssueKey
+    ? {
+        issueKey: resolvedIssueKey,
+        issueType: resolvedRef?.issue_type ?? null,
+        issueSummary: resolvedRef?.summary ?? null,
+      }
+    : undefined;
 
   const { data: profiles = [] } = useQuery({
     queryKey: ['profiles-for-mentions-approved'],
@@ -368,6 +388,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
         defaultSortOrder="newest"
         jiraUserMap={jiraUserMap}
         workItemId={resolvedWorkItemId ?? undefined}
+        improveContext={improveContext}
       />
     </div>
   );

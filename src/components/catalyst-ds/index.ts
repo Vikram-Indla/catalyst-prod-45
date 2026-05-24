@@ -29,7 +29,7 @@ export { CommentAction } from './comments/CommentAction';
 export type { CommentActionProps } from './comments/CommentAction';
 
 export { CommentEditor } from './comments/CommentEditor';
-export type { CommentEditorProps } from './comments/CommentEditor';
+export type { CommentEditorProps, CommentImproveContext } from './comments/CommentEditor';
 
 export { CommentThread } from './comments/CommentThread';
 export type { CommentThreadProps } from './comments/CommentThread';

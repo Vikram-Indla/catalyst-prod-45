@@ -3,6 +3,23 @@ import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ads';
 import type { CdsComment } from '../types';
 import { CommentAction } from './CommentAction';
+import {
+  AdfLightRenderer,
+  hasComplexAdfNodes,
+} from '@/components/shared/rich-text/atlaskit/adfLightRenderer';
+import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
+
+function tryParseAdf(content: string): unknown | null {
+  const v = content.trim();
+  if (!v.startsWith('{')) return null;
+  try {
+    const parsed = JSON.parse(v);
+    if (parsed && parsed.type === 'doc') return parsed;
+  } catch {
+    /* fallthrough to legacy renderer */
+  }
+  return null;
+}
 
 function getInitials(name: string): string {
   return name
@@ -31,6 +48,17 @@ function formatRelativeTime(dateStr: string): string {
 }
 
 function renderContent(content: string): React.ReactNode {
+  const adf = tryParseAdf(content);
+  if (adf) {
+    if (hasComplexAdfNodes(adf)) {
+      return (
+        <React.Suspense fallback={<span />}>
+          <EpicDescriptionRenderer content={adf} />
+        </React.Suspense>
+      );
+    }
+    return <AdfLightRenderer adf={adf} />;
+  }
   // Token-based renderer — handles inline images `![alt](url)`,
   // legacy ADF mentions `@[Name](id)`, multi-word `@Capitalized Name`
   // mentions, and plain `@word` mentions.
