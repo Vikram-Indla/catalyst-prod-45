@@ -307,7 +307,11 @@ export function CatalystViewBase({
   } : panelMode ? {
     width: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
-    animation: 'cv-panel-in 200ms ease-out',
+    // 2026-05-24 — anti-dance fix: cv-panel-in slide-in intentionally absent here.
+    // The panel is already on-screen; replaying the entrance animation on every
+    // cross-type ticket remount (QA Bug → Story etc.) made the panel jump 20px
+    // sideways. Modal mode keeps its cv-card-in entrance; panel mode has no
+    // entrance animation because it never "enters" mid-session.
     borderLeft: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
   } : {
     width: 1100, maxWidth: '95vw', minHeight: 600, maxHeight: 'calc(100vh - 80px)',
