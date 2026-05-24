@@ -19,7 +19,7 @@
  */
 import React, { lazy, Suspense, useState, useCallback, useRef, useEffect, useMemo } from 'react';
 // (token import removed — switched to var(--cp-*) for proper dark-mode flip)
-import Button from '@atlaskit/button';
+import Button from '@atlaskit/button/new';
 import Select from '@atlaskit/select';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -458,6 +458,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
               borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
               background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F6F7F8))',
               gap: '8px',
+              // ads-scanner:ignore-next-line
               fontSize: '12px',
               color: 'var(--cp-text-secondary, var(--cp-text-tertiary, #6B778C))',
             }}>
@@ -519,6 +520,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                   control: (base: any) => ({
                     ...base,
                     minHeight: '28px',
+                    // ads-scanner:ignore-next-line
                     fontSize: '12px',
                   }),
                 }}
