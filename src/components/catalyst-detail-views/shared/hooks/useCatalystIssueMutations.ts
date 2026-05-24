@@ -36,8 +36,48 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
       oldValue?: string | null;
     }) => {
       await supabase.from('ph_issues').update({ [field]: value }).eq('issue_key', itemId) /* F-iter9 PK fix */;
+      // Title is mirrored into user_recent_items.display_summary (a
+      // snapshot taken at view time) so the right-rail Recents stays
+      // performant. The snapshot is not joined live to ph_issues, so
+      // we have to write it ourselves when the title changes — otherwise
+      // the sidebar shows the old title until the user re-visits the
+      // item or refreshes the page.
+      if (field === 'summary' && typeof value === 'string') {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase
+            .from('user_recent_items')
+            .update({ display_summary: value })
+            .eq('user_id', user.id)
+            .eq('entity_key', itemId);
+        }
+      }
     },
-    onSuccess: invalidate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] });
+      // Any query whose key matches a list/board/sidebar that renders
+      // issue summaries. Predicate-based so we don't have to chase
+      // every individual key as new surfaces get added.
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const root = query.queryKey?.[0];
+          if (typeof root !== 'string') return false;
+          if (root === 'cv-issue-detail') return true;
+          if (root === 'global-recent-items') return true;
+          if (root === 'product-hub-per-product-recents') return true;
+          if (root === 'product-hub-recent-brs') return true;
+          if (root.includes('ph_issues')) return true;
+          if (root.includes('allwork-items')) return true;
+          if (root.includes('kanban-issues')) return true;
+          if (root.includes('backlog-data')) return true;
+          if (root.includes('requests-backlog')) return true;
+          if (root.includes('work-items')) return true;
+          if (root.includes('childIssues')) return true;
+          if (root.includes('linkedIssues')) return true;
+          return false;
+        },
+      });
+    },
   });
 
   const deleteIssue = useMutation({

@@ -14,13 +14,15 @@
  *     hack that previously forced a fresh mount on async load is no
  *     longer needed — InlineEdit's `defaultValue` handles it).
  */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import InlineEdit from '@atlaskit/inline-edit';
 import Textfield from '@atlaskit/textfield';
 import { Heading } from '@/components/ads';
 // IssueIcon import removed Apr 27, 2026 (L55) — see comment above the
 // return block for why the duplicate icon prefix was dropped.
 import type { PhIssue } from '../types';
+import { TitleTranslateWrapper } from '@/components/shared/title-translate/TitleTranslateWrapper';
+import { containsArabic } from '@/lib/detectArabic';
 
 /* Visually hide Atlaskit InlineEdit's "Issue title" field-label above the
    H1. The label is still required (a11y), so we keep it in the DOM but
@@ -100,6 +102,43 @@ interface CatalystTitleEditorProps {
   onTitleChange: (newTitle: string) => void;
 }
 
+function TranslatableTitleEditView({ fieldProps }: { fieldProps: any }) {
+  const [val, setVal] = useState<string>(fieldProps?.value ?? '');
+  useEffect(() => {
+    setVal(fieldProps?.value ?? '');
+  }, [fieldProps?.value]);
+
+  const pushToInlineEdit = (next: string) => {
+    fieldProps?.onChange?.({
+      target: { value: next },
+      currentTarget: { value: next },
+    } as React.ChangeEvent<HTMLInputElement>);
+  };
+
+  return (
+    <TitleTranslateWrapper
+      value={val}
+      onValueChange={(next) => {
+        setVal(next);
+        pushToInlineEdit(next);
+      }}
+    >
+      {({ dir }) => (
+        <Textfield
+          {...fieldProps}
+          value={val}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            setVal(e.target.value);
+            fieldProps?.onChange?.(e);
+          }}
+          autoFocus
+          dir={dir}
+        />
+      )}
+    </TitleTranslateWrapper>
+  );
+}
+
 export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEditorProps) {
   const summary = (issue?.summary ?? '').trim(); // jira-compare E-7 (2026-04-28): trim trailing whitespace
 
@@ -142,11 +181,17 @@ export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEdito
             // measurement (2026-04-20). Scoped CSS above locks weight/
             // color/family to the Jira-measured values (653/#292A2E/
             // Atlassian Sans).
-            <Heading size="large" as="h1">
-              {summary || '—'}
-            </Heading>
+            <TitleTranslateWrapper value={summary} onValueChange={onTitleChange}>
+              {({ dir }) => (
+                <div dir={dir}>
+                  <Heading size="large" as="h1">
+                    {summary || '—'}
+                  </Heading>
+                </div>
+              )}
+            </TitleTranslateWrapper>
           )}
-          editView={(fieldProps) => <Textfield {...fieldProps} autoFocus />}
+          editView={(fieldProps) => <TranslatableTitleEditView fieldProps={fieldProps} />}
           onConfirm={(value) => {
             const trimmed = value.trim();
             if (trimmed && trimmed !== summary) {

@@ -24,6 +24,7 @@ import { CornerDownLeft, Loader2, Search, Sparkles } from '@/lib/atlaskit-icons'
 import { useAIPredictTitles } from './hooks/useAIPredictTitles';
 import { useFuzzyChildSearch } from './hooks/useFuzzyChildSearch';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { TitleTranslateWrapper } from '@/components/shared/title-translate/TitleTranslateWrapper';
 
 export interface InlineCreateWithAIProps {
   /** Allowed child types for this parent — from hierarchy.ts */
@@ -145,22 +146,25 @@ export function InlineCreateWithAI({
     <div className="sp-create-wrap" role="combobox" aria-expanded={showPanel && hasAnyPanelContent} aria-controls={panelId} aria-haspopup="listbox">
       <div className="sp-create-row">
         <div className="sp-create-input-wrap">
-          <Textfield
-            ref={inputRef}
-            placeholder="What needs to be done?"
-            value={draft}
-            onChange={(e) => setDraft((e.target as HTMLInputElement).value)}
-            onFocus={() => setShowPanel(true)}
-            onBlur={() => {
-              // Keep panel visible for a tick so click events on suggestions
-              // have time to fire before we hide it.
-              setTimeout(() => setShowPanel(false), 150);
-            }}
-            onKeyDown={onKeyDown}
-            maxLength={255}
-            isCompact
-            appearance="subtle"
-          />
+          <TitleTranslateWrapper value={draft} onValueChange={setDraft}>
+            {({ dir }) => (
+              <Textfield
+                ref={inputRef}
+                placeholder="What needs to be done?"
+                value={draft}
+                onChange={(e) => setDraft((e.target as HTMLInputElement).value)}
+                onFocus={() => setShowPanel(true)}
+                onBlur={() => {
+                  setTimeout(() => setShowPanel(false), 150);
+                }}
+                onKeyDown={onKeyDown}
+                maxLength={255}
+                isCompact
+                appearance="subtle"
+                dir={dir}
+              />
+            )}
+          </TitleTranslateWrapper>
         </div>
         <div className="sp-create-actions">
           {typeSelectorSlot}

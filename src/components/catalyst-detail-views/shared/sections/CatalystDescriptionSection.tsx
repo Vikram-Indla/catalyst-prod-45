@@ -57,6 +57,7 @@ const AdfDescriptionField = lazy(
 import EpicDescriptionRenderer from "@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer";
 import { useCatyImprove } from "@/components/catalyst-detail-views/improve/catyImproveStore";
 import { CatyStreamingOverlay } from "@/components/catalyst-detail-views/improve/CatyStreamingOverlay";
+import { openImagePreview } from "@/lib/openImagePreview";
 import type { PhIssue } from "../types";
 
 /**
@@ -411,6 +412,11 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     [data-testid="comment-save-button"],
     [data-testid="comment-cancel-button"] {
       font-weight: 500 !important;
+      cursor: pointer !important;
+    }
+    [data-testid="editor-comment-save-button"]:disabled,
+    [data-testid="comment-save-button"]:disabled {
+      cursor: not-allowed !important;
     }
 
     .assistive {
@@ -477,14 +483,16 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       box-sizing: border-box !important;
     }
 
-    [data-testid="editor-floating-toolbar"],
-    [data-testid="floating-toolbar-items"],
-    [data-testid="editor-floating-toolbar"] [role="group"],
-    [data-testid="editor-floating-toolbar"] [role="radiogroup"] {
-      overflow: visible !important;
-    }
+    /* 2026-05-24 — Atlaskit's native floating image toolbar (popper +
+       portal-to-body) is completely hidden. We render our own custom
+       toolbar inline inside the editor DOM, anchored as a sibling of
+       the image's mediaSingle block (see imageToolbar/). The custom
+       toolbar scrolls with the image, never gets clipped, and supports
+       the full Jira action set (border / align / wrap / link / alt /
+       resize / copy / delete) — none of which we could reliably wire
+       through Atlaskit's floating-toolbar plugin API. */
     [data-testid="editor-floating-toolbar"] {
-      transform: translateY(-76px) !important;
+      display: none !important;
     }
     [data-testid="editor-floating-toolbar"] button {
       position: relative !important;
@@ -558,71 +566,6 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     }
   `;
   document.head.appendChild(s);
-}
-
-function openImagePreview(src: string): void {
-  const overlay = document.createElement("div");
-  overlay.style.cssText = [
-    "position:fixed",
-    "inset:0",
-    "background:rgba(9,30,66,0.85)",
-    "display:flex",
-    "align-items:center",
-    "justify-content:center",
-    "z-index:2147483600",
-    "cursor:zoom-out",
-  ].join(";");
-
-  const img = document.createElement("img");
-  img.src = src;
-  img.style.cssText = [
-    "max-width:90vw",
-    "max-height:90vh",
-    "object-fit:contain",
-    "border-radius:3px",
-    "cursor:default",
-    "box-shadow:0 8px 16px -4px rgba(9,30,66,0.4)",
-  ].join(";");
-  img.addEventListener("click", (e) => e.stopPropagation());
-
-  const close = document.createElement("button");
-  close.setAttribute("aria-label", "Close preview");
-  close.innerHTML = "&times;";
-  close.style.cssText = [
-    "position:absolute",
-    "top:16px",
-    "right:16px",
-    "width:36px",
-    "height:36px",
-    "border-radius:50%",
-    "border:none",
-    "background:rgba(255,255,255,0.15)",
-    "color:#fff",
-    "font-size:24px",
-    "cursor:pointer",
-    "display:flex",
-    "align-items:center",
-    "justify-content:center",
-  ].join(";");
-
-  const teardown = () => {
-    overlay.remove();
-    document.removeEventListener("keydown", onKey);
-  };
-  const onKey = (e: KeyboardEvent) => {
-    if (e.key === "Escape") teardown();
-  };
-
-  overlay.addEventListener("click", teardown);
-  close.addEventListener("click", (e) => {
-    e.stopPropagation();
-    teardown();
-  });
-
-  overlay.appendChild(img);
-  overlay.appendChild(close);
-  document.body.appendChild(overlay);
-  document.addEventListener("keydown", onKey);
 }
 
 interface CatalystDescriptionSectionProps {

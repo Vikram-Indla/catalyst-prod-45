@@ -2,3 +2,9 @@ project_id = "lmqwtldpfacrrlvdnmld"
 
 [functions.jira-bau-reload]
 verify_jwt = false
+
+[functions.ai-translate-title]
+verify_jwt = false
+
+[functions.ai-improve-comment]
+verify_jwt = false

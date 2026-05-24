@@ -1,0 +1,92 @@
+.ttw-root {
+  position: relative;
+  border-radius: 6px;
+  isolation: isolate;
+}
+
+.ttw-root.ttw-translating {
+  padding: 1.5px;
+  background: transparent;
+  overflow: hidden;
+}
+
+.ttw-root.ttw-translating::before {
+  content: "";
+  position: absolute;
+  width: 250%;
+  aspect-ratio: 1 / 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  z-index: -2;
+  background: conic-gradient(
+    from 0deg,
+    #2684ff 0deg,
+    #6554c0 90deg,
+    #ff5630 180deg,
+    #ffab00 270deg,
+    #2684ff 360deg
+  );
+  animation: ttw-rotate 3s linear infinite;
+  pointer-events: none;
+}
+
+.ttw-root.ttw-translating::after {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  border-radius: 4.5px;
+  background: var(--ds-surface, #ffffff);
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes ttw-rotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+
+.ttw-root[data-dir="rtl"] input,
+.ttw-root[data-dir="rtl"] textarea {
+  direction: rtl;
+  text-align: right;
+}
+
+.ttw-translate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ds-link, #0c66e4);
+  cursor: pointer;
+  user-select: none;
+}
+
+.ttw-translate-btn:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.ttw-translate-btn:disabled {
+  cursor: default;
+  color: var(--ds-text-subtle, #6b778c);
+}
+
+.ttw-translate-btn__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: ttw-dot 1s ease-in-out infinite;
+}
+
+@keyframes ttw-dot {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}

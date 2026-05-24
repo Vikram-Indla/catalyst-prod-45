@@ -14,7 +14,7 @@ import { CommentThread } from '../comments/CommentThread';
 import { ActivityFeed } from './ActivityFeed';
 import { Comment } from '../comments/Comment';
 import { CommentAction } from '../comments/CommentAction';
-import { CommentEditor } from '../comments/CommentEditor';
+import { CommentEditor, type CommentImproveContext } from '../comments/CommentEditor';
 import { ActivityItem } from './ActivityItem';
 
 export type ActivityTabKey = 'all' | 'comments' | 'history' | 'worklog';
@@ -46,6 +46,9 @@ export interface ActivityPanelProps {
   /** Work item id — threaded into CommentEditor for image uploads. */
   workItemId?: string;
 
+  /** Context for the "Improve writing" wand in the comment composer. */
+  improveContext?: CommentImproveContext;
+
   className?: string;
 }
 
@@ -68,6 +71,7 @@ function ActivityPanel({
   defaultSortOrder = 'oldest', // jira-compare S-50: Jira's default is Oldest first
   jiraUserMap,
   workItemId,
+  improveContext,
   className,
 }: ActivityPanelProps) {
   const [activeTab, setActiveTab] = useState<ActivityTabKey>(defaultTab);
@@ -232,6 +236,7 @@ function ActivityPanel({
             isSubmitting={isSubmitting}
             shortcutHint="Pro tip: press **M** to comment"
             workItemId={workItemId}
+            improveContext={improveContext}
           />
 
           <div className="mt-4 divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
@@ -265,6 +270,7 @@ function ActivityPanel({
                           }}
                           onCancel={() => setEditingId(null)}
                           workItemId={workItemId}
+                          improveContext={improveContext}
                         />
                       </div>
                     );
