@@ -536,29 +536,96 @@ export default defineConfig(({ mode, command }) => {
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // ── ORDER IS LOAD-BEARING ──────────────────────────────────────
-          // @atlaskit/* checks MUST come before @radix-ui. Several atlaskit
-          // packages (editor-core, renderer, smart-card) ship nested copies
-          // of @radix-ui in their own node_modules. If @radix-ui matched
-          // first those nested copies would land in vendor-ui, creating a
-          // cross-chunk cycle. Matching @atlaskit/* first keeps nested
-          // @radix-ui inside the atlaskit chunk that owns it.
-          // ──────────────────────────────────────────────────────────────
-
+          // Stable vendor chunks for better long-term caching
           if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router')) {
             return 'vendor-react';
           }
+          if (id.includes('node_modules/@radix-ui/')) {
+            return 'vendor-ui';
+          }
+          if (id.includes('node_modules/@tanstack/')) {
+            return 'vendor-query';
+          }
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3')) {
+            return 'vendor-charts';
+          }
 
-          // ── Atlaskit editor-stack (must precede @radix-ui catch) ──────
-          // The previous fine-grained split (editor/forms/renderer/prosemirror/
-          // adf/media/rich) produced circular chunk dependencies that made
-          // rollup's resolution algorithm exponential, OOMing CI at 6 GB.
-          // Fix: one chunk for the entire tightly-coupled editor ecosystem.
-          if (id.includes('node_modules/prosemirror-')) return 'vendor-atlaskit-editor';
-          if (id.includes('node_modules/@atlaskit/editor-')) return 'vendor-atlaskit-editor';
-          if (id.includes('node_modules/@atlaskit/renderer')) return 'vendor-atlaskit-editor';
-          if (id.includes('node_modules/@atlaskit/adf-')) return 'vendor-atlaskit-editor';
-          if (id.includes('node_modules/@atlaskit/media-')) return 'vendor-atlaskit-editor';
+          // ═══════════════════════════════════════════════════════════════
+          // LAYER 4 — Atlaskit chunk split along Atlassian package boundaries.
+          // ═══════════════════════════════════════════════════════════════
+          // Before: every @atlaskit/*, every @tiptap/* and every prosemirror-*
+          // package was fused into one ~4MB `vendor-editor` chunk. Any feature
+          // that mounted an Atlaskit primitive (Lozenge, Avatar, DynamicTable)
+          // paid the full editor-core + renderer + editor-plugin-* cost up
+          // front — that's what made BAU-4771's Epic view slow to open.
+          //
+          // After: chunks match Atlassian's own package boundaries so each
+          // surface only downloads what it renders. `if` ORDER IS LOAD-BEARING
+          // — editor-plugin-* and editor-* must be matched BEFORE the generic
+          // `@atlaskit/` catch-all, or plugins leak into the ui chunk.
+          //
+          //   vendor-prosemirror      ProseMirror core (shared by editor +
+          //                           renderer + tiptap; deduped via
+          //                           `resolve.dedupe` above). Must be a
+          //                           stable singleton or PM throws
+          //                           "Duplicate use of selection JSON ID".
+          //   vendor-atlaskit-editor  editor-core + all editor-plugin-* +
+          //                           editor-common + editor-json-transformer.
+          //                           Only loaded when the user clicks Edit
+          //                           on an Epic description. ~2MB.
+          //   vendor-atlaskit-renderer  @atlaskit/renderer. Loaded on Epic
+          //                           view. ~400–600KB.
+          //   vendor-atlaskit-adf     @atlaskit/adf-* utilities. Tiny,
+          //                           shared by editor + renderer + the
+          //                           main-bundle `adfToPlainText`.
+          //   vendor-atlaskit-media   @atlaskit/media-* (external media
+          //                           support). Loaded alongside renderer.
+          //   vendor-atlaskit-ui      primitives used by SubtasksPanel /
+          //                           LinkedWorkItems: avatar, lozenge,
+          //                           dropdown-menu, popup, select,
+          //                           textfield, tokens, icon, button,
+          //                           checkbox, primitives, progress-bar.
+          //                           Cached once, reused on every feature.
+          //   vendor-tiptap           tiptap editor (legacy non-Epic path).
+          //                           Isolated from Atlaskit so changes to
+          //                           one don't bust the other's cache.
+          // ═══════════════════════════════════════════════════════════════
+          if (id.includes('node_modules/prosemirror-')) {
+            return 'vendor-prosemirror';
+          }
+          if (
+            id.includes('node_modules/@atlaskit/editor-core') ||
+            id.includes('node_modules/@atlaskit/editor-common') ||
+            id.includes('node_modules/@atlaskit/editor-plugin-') ||
+            id.includes('node_modules/@atlaskit/editor-json-transformer') ||
+            id.includes('node_modules/@atlaskit/editor-markdown-transformer') ||
+            id.includes('node_modules/@atlaskit/editor-palette') ||
+            id.includes('node_modules/@atlaskit/editor-performance-metrics') ||
+            id.includes('node_modules/@atlaskit/editor-prosemirror') ||
+            id.includes('node_modules/@atlaskit/editor-tables')
+          ) {
+            return 'vendor-atlaskit-editor';
+          }
+          if (id.includes('node_modules/@atlaskit/renderer')) {
+            return 'vendor-atlaskit-renderer';
+          }
+          if (id.includes('node_modules/@atlaskit/adf-')) {
+            return 'vendor-atlaskit-adf';
+          }
+          if (id.includes('node_modules/@atlaskit/media-')) {
+            return 'vendor-atlaskit-media';
+          }
+          // ─── @atlaskit/* split per role ──────────────────────────────────
+          // The catch-all `vendor-atlaskit-ui` chunk previously absorbed
+          // every non-editor Atlaskit package and ballooned to ~8.4MB. Most
+          // surfaces use only a handful of these. Splitting along usage
+          // boundaries (drag/drop, mention/emoji/smart-card, user-picker
+          // and form heavies, base primitives) keeps the universally-shared
+          // primitives chunk small and pushes feature-specific weight to
+          // chunks that load on demand.
+          if (id.includes('node_modules/@atlaskit/pragmatic-drag-and-drop')) {
+            return 'vendor-atlaskit-dnd';
+          }
           if (
             id.includes('node_modules/@atlaskit/mention') ||
             id.includes('node_modules/@atlaskit/emoji') ||
@@ -568,25 +635,42 @@ export default defineConfig(({ mode, command }) => {
             id.includes('node_modules/@atlaskit/status') ||
             id.includes('node_modules/@atlaskit/date')
           ) {
-            return 'vendor-atlaskit-editor';
+            return 'vendor-atlaskit-rich';
           }
-          // DnD has zero deps on the editor stack — keep it isolated
-          if (id.includes('node_modules/@atlaskit/pragmatic-drag-and-drop')) return 'vendor-atlaskit-dnd';
-          // All remaining @atlaskit/* primitives (avatar, lozenge, button, etc.)
-          if (id.includes('node_modules/@atlaskit/')) return 'vendor-atlaskit-ui';
+          if (
+            id.includes('node_modules/@atlaskit/user-picker') ||
+            id.includes('node_modules/@atlaskit/form') ||
+            id.includes('node_modules/@atlaskit/dynamic-table') ||
+            id.includes('node_modules/@atlaskit/inline-edit') ||
+            id.includes('node_modules/@atlaskit/modal-dialog') ||
+            id.includes('node_modules/@atlaskit/calendar') ||
+            id.includes('node_modules/@atlaskit/datetime-picker') ||
+            id.includes('node_modules/@atlaskit/page-layout') ||
+            id.includes('node_modules/@atlaskit/atlassian-navigation') ||
+            id.includes('node_modules/@atlaskit/menu') ||
+            id.includes('node_modules/@atlaskit/dropdown-menu')
+          ) {
+            return 'vendor-atlaskit-forms';
+          }
+          if (id.includes('node_modules/@atlaskit/')) {
+            return 'vendor-atlaskit-ui';
+          }
+          // @tiptap/* intentionally not split — it's only reached via the
+          // (lazy) ConfluenceEditor path; in lean builds it's stubbed out
+          // entirely, and in full builds it co-locates fine with whichever
+          // route imports it. A dedicated chunk would fail the SW drift
+          // verify in lean builds (chunk declared but never produced).
 
-          // ── Non-atlaskit vendor chunks ────────────────────────────────
-          if (id.includes('node_modules/@radix-ui/')) return 'vendor-ui';
-          if (id.includes('node_modules/@tanstack/')) return 'vendor-query';
-          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3')) return 'vendor-charts';
-          if (id.includes('node_modules/framer-motion')) return 'vendor-motion';
-          if (id.includes('node_modules/lucide-react')) return 'vendor-icons';
-          if (id.includes('node_modules/date-fns')) return 'vendor-date';
-          if (id.includes('node_modules/zod') || id.includes('node_modules/react-hook-form') || id.includes('node_modules/@hookform/')) return 'vendor-forms';
-          if (id.includes('node_modules/@supabase/')) return 'vendor-supabase';
-
-          // Export libraries — split per-tool so a CSV download doesn't
-          // pull 2.4 MB of unrelated tooling
+          if (id.includes('node_modules/framer-motion')) {
+            return 'vendor-motion';
+          }
+          // ─── Export libraries: split per-tool ────────────────────────────
+          // Previously fused into one ~2.4MB `vendor-export` chunk that any
+          // single export action (CSV download, PDF render, PPTX export)
+          // would pay in full. They are all dynamic-imported on demand
+          // (see src/lib/exportLoaders.ts and friends) — splitting per
+          // package means a CSV export pulls ~30KB of papaparse instead
+          // of 2.4MB of unrelated tooling.
           if (id.includes('node_modules/exceljs')) return 'vendor-export-exceljs';
           if (id.includes('node_modules/xlsx')) return 'vendor-export-xlsx';
           if (id.includes('node_modules/jspdf-autotable')) return 'vendor-export-jspdf';
@@ -596,6 +680,18 @@ export default defineConfig(({ mode, command }) => {
           if (id.includes('node_modules/html2canvas')) return 'vendor-export-html2canvas';
           if (id.includes('node_modules/papaparse')) return 'vendor-export-papaparse';
           if (id.includes('node_modules/file-saver')) return 'vendor-export-filesaver';
+          if (id.includes('node_modules/lucide-react')) {
+            return 'vendor-icons';
+          }
+          if (id.includes('node_modules/date-fns')) {
+            return 'vendor-date';
+          }
+          if (id.includes('node_modules/zod') || id.includes('node_modules/react-hook-form') || id.includes('node_modules/@hookform/')) {
+            return 'vendor-forms';
+          }
+          if (id.includes('node_modules/@supabase/')) {
+            return 'vendor-supabase';
+          }
         },
       },
     },

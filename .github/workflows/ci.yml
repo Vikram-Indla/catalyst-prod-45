@@ -60,7 +60,7 @@ jobs:
       - name: Build
         run: npx vite build
         env:
-          NODE_OPTIONS: '--max-old-space-size=10240'
+          NODE_OPTIONS: '--max-old-space-size=6144'
 
       - name: Run tests
         run: npx vitest run --passWithNoTests
