@@ -76,6 +76,16 @@ serve(async (req) => {
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
     const headers = { 'Authorization': authHeader, 'Accept': 'application/json' }
 
+    // ── Strategy 2: Load per-project sync state for smart incremental JQL ──────
+    // Replaces the fixed updated >= "-30m" window with the actual last_synced_at
+    // per project. If a sync was late or failed, the next run covers the full gap.
+    const { data: syncStates } = await supabase
+      .from('ph_project_sync_state')
+      .select('project_key, last_synced_at, consecutive_failures')
+    const syncStateMap = new Map<string, { last_synced_at: string | null; consecutive_failures: number }>(
+      (syncStates || []).map((s: any) => [s.project_key, s])
+    )
+
     // ── Pre-sync authentication check (2026-05-24) ──
     // A 401 here means the token is expired or revoked. Throwing early prevents
     // the search call from silently returning 200+0 results (Jira's anonymous
@@ -273,13 +283,26 @@ serve(async (req) => {
         jqlParts.push(`fixVersion in (${syncFixVersions.map(v => `"${v}"`).join(',')})`)
       }
 
-      // ── Incremental mode: only fetch recently-changed issues ──
-      // Running every 15 min → look back 30 min to guarantee a 15-min overlap buffer.
-      // This prevents fetching hundreds of issues on every tick.
-      // Full sync (manual or first-run recovery) skips this clause and fetches everything.
+      // ── Strategy 2: Smart incremental — per-project timestamp, not fixed window ──
+      // Full sync skips this clause and fetches everything (for recovery / backfill).
+      // Incremental sync uses the actual last_synced_at from ph_project_sync_state
+      // with a 2-minute buffer to handle Jira clock skew and boundary misses.
+      // Falls back to a configurable lookback window for projects with no prior state.
       if (syncType === 'incremental') {
-        const lookbackMinutes: number = (body.lookback_minutes as number) || 30
-        jqlParts.push(`updated >= "-${lookbackMinutes}m"`)
+        const state = syncStateMap.get(projectKey)
+        if (state?.last_synced_at) {
+          const bufferMs = 2 * 60 * 1000 // 2-min boundary buffer
+          const since = new Date(new Date(state.last_synced_at).getTime() - bufferMs)
+          // Jira JQL timestamp format: "YYYY/MM/DD HH:mm"
+          const jiraTs = since.toISOString().replace('T', ' ').substring(0, 16).replace(/-/g, '/')
+          jqlParts.push(`updated >= "${jiraTs}"`)
+          console.log(`[sync] ${projectKey}: smart-incremental since ${jiraTs} (prev state: ${state.last_synced_at})`)
+        } else {
+          // Bootstrap: no prior state for this project → use lookback_minutes
+          const lookbackMinutes: number = (body.lookback_minutes as number) || 30
+          jqlParts.push(`updated >= "-${lookbackMinutes}m"`)
+          console.log(`[sync] ${projectKey}: bootstrap incremental -${lookbackMinutes}m (no prior state)`)
+        }
       }
 
       const jql = `${jqlParts.join(' AND ')} ORDER BY updated DESC`
@@ -661,6 +684,25 @@ serve(async (req) => {
             console.log(`[sync] Pruned ${toDelete.length} issues from ${projectKey}`)
           }
         }
+      }
+
+      // ── Strategy 2: Update per-project sync state ──────────────────────────────
+      // On success: advance last_synced_at to now so next incremental starts here.
+      // On error:   preserve last_synced_at so next run covers the full gap.
+      // consecutive_failures resets to 0 on any non-error outcome.
+      {
+        const syncNow = new Date().toISOString()
+        const prevState = syncStateMap.get(projectKey)
+        const prevFailures = prevState?.consecutive_failures ?? 0
+        await supabase.from('ph_project_sync_state').upsert({
+          project_key:             projectKey,
+          last_synced_at:          projectError ? (prevState?.last_synced_at ?? null) : syncNow,
+          last_successful_sync_at: projectError ? undefined : syncNow,
+          last_sync_status:        projectError ? 'error' : 'success',
+          issues_synced:           projectIssueCount,
+          consecutive_failures:    projectError ? prevFailures + 1 : 0,
+          updated_at:              syncNow,
+        }, { onConflict: 'project_key', ignoreDuplicates: false })
       }
 
       // ── Progressive log update after EACH project (prevents stale "15 hours ago") ──
