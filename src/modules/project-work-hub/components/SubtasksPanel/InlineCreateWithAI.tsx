@@ -42,6 +42,10 @@ export interface InlineCreateWithAIProps {
   onCreate: (summary: string) => void;
   onLinkExisting: (issueId: string) => void;
   onCancel: () => void;
+  /** Override the input placeholder text. Defaults to Jira's "What needs to be done?". */
+  placeholder?: string;
+  /** Forwarded to the underlying input so parents can refocus it programmatically. */
+  inputRef?: React.RefObject<HTMLInputElement | null>;
 }
 
 type HighlightKind = 'suggestion' | 'existing';
@@ -58,14 +62,18 @@ export function InlineCreateWithAI({
   onCreate,
   onLinkExisting,
   onCancel,
+  placeholder = 'What needs to be done?',
+  inputRef: externalInputRef,
 }: InlineCreateWithAIProps) {
   const [draft, setDraft] = useState('');
   const [showPanel, setShowPanel] = useState(false);
   const [highlight, setHighlight] = useState<{ kind: HighlightKind; index: number } | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const internalInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = externalInputRef ?? internalInputRef;
 
   useEffect(() => {
     inputRef.current?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { suggestions, isLoading: aiLoading } = useAIPredictTitles({
@@ -150,7 +158,7 @@ export function InlineCreateWithAI({
             {({ dir }) => (
               <Textfield
                 ref={inputRef}
-                placeholder="What needs to be done?"
+                placeholder={placeholder}
                 value={draft}
                 onChange={(e) => setDraft((e.target as HTMLInputElement).value)}
                 onFocus={() => setShowPanel(true)}

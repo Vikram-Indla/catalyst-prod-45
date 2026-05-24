@@ -45,6 +45,7 @@ import { WorkCell } from './cells/WorkCell';
 import { useAtlaskitThemeSync } from './atlaskitTheme';
 import { allowedChildTypes, panelTitleFor } from './hierarchy';
 import { InlineCreateWithAI } from './InlineCreateWithAI';
+import { AiSuggestChildrenPanel } from './AiSuggestChildrenPanel';
 import { DescriptionPopover } from './DescriptionPopover';
 import { subtaskCreateInputSchema } from './schemas';
 import { resolveAvatarUrl } from '@/lib/avatars';
@@ -239,7 +240,7 @@ export function SubtasksPanel({
   const effectiveTitle = title ?? panelTitleFor(parentIssueType);
   const defaultDraftType = allowedTypes[0] ?? 'Sub-task';
 
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const [creating, setCreating] = useState(false);
   const [draftType, setDraftType] = useState(defaultDraftType);
   // Re-seed draft type when the allowed set changes (e.g. parent type reload)
@@ -272,6 +273,10 @@ export function SubtasksPanel({
     if (typeof window === 'undefined') return;
     try { window.localStorage.setItem(sortStorageKey, JSON.stringify(sort)); } catch { /* quota */ }
   }, [sort, sortStorageKey]);
+
+  // Ref forwarded to InlineCreateWithAI so the "+" in the heading can
+  // refocus the input when the user is already in creating mode.
+  const inlineCreateInputRef = useRef<HTMLInputElement>(null);
 
   // Jira parity: 4 columns only (Work / Priority / Assignee / Status).
   const [columns, setColumns] = useState<Record<VisibleColumn, boolean>>({
@@ -651,19 +656,13 @@ export function SubtasksPanel({
           >
             {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </button>
-          {/* jira-compare 2026-05-02: dropped inline `inherit` overrides
-              that were killing the .sp-title 14/600 styling — Vikram
-              probe showed fontWeight rendering at 400. */}
           <h2 className="sp-title" style={{margin:0}}>{effectiveTitle}</h2>
           {totalCount > 0 && (
             <span className="sp-title-count">{doneCount}/{totalCount}</span>
           )}
         </div>
-        {expanded && (
+        {expanded && children.length > 0 && (
           <div className="sp-header-right">
-            {/* jira-compare 2026-05-05: ColumnPicker removed — Jira parity.
-                Jira's child issues panel has no column visibility toggle.
-                Columns are always visible at Jira-default set. */}
             <HeaderOverflowMenu
               hideDone={hideDone}
               onToggleHideDone={() => setHideDone(h => !h)}
@@ -686,7 +685,42 @@ export function SubtasksPanel({
             )}
           </div>
         )}
+        {creating && canCreate && children.length === 0 && (
+          <div className="sp-header-right">
+            <button
+              type="button"
+              className="sp-title-plus"
+              aria-label="Focus subtask name input"
+              title="Focus subtask name input"
+              onClick={() => {
+                if (!expanded) setExpanded(true);
+                inlineCreateInputRef.current?.focus();
+                inlineCreateInputRef.current?.select();
+              }}
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Always-visible "Add subtask" link when there are no items. Sits
+          outside the collapse gate so the user sees it even when the
+          panel is collapsed (Jira parity — see Screenshot 2026-05-24). */}
+      {!isLoading && children.length === 0 && !creating && canCreate && (
+        <button
+          type="button"
+          className="sp-add-link"
+          onClick={() => {
+            setCreating(true);
+            if (!expanded) setExpanded(true);
+          }}
+        >
+          Add {effectiveTitle.toLowerCase().endsWith('s')
+            ? effectiveTitle.toLowerCase().slice(0, -1)
+            : effectiveTitle.toLowerCase()}
+        </button>
+      )}
 
       {expanded && (
         <>
@@ -716,31 +750,9 @@ export function SubtasksPanel({
             </div>
           )}
 
-          {/* ═══ Empty state (no subtasks at all) ═══ */}
-          {!isLoading && children.length === 0 && !creating && (
+          {!isLoading && children.length === 0 && !creating && !canCreate && (
             <div className="sp-empty">
-              <div className="sp-empty-heading">No {effectiveTitle.toLowerCase()} yet</div>
-              <div className="sp-empty-sub">
-                {canCreate
-                  ? 'Break this item down to track progress.'
-                  : 'This work item cannot have children.'}
-              </div>
-              {canCreate && (
-                <button
-                  type="button"
-                  onClick={() => setCreating(true)}
-                  style={{
-                    background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0',
-                    fontSize: 14, color: 'var(--ds-text-subtle, #42526E)',
-                    textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4,
-                    fontFamily: 'inherit',
-                  }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.textDecoration = 'underline'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.textDecoration = 'none'; }}
-                >
-                  + Create a child issue
-                </button>
-              )}
+              <div className="sp-empty-sub">This work item cannot have children.</div>
             </div>
           )}
 
@@ -749,6 +761,26 @@ export function SubtasksPanel({
               already exist. When the list is empty, that IIFE never runs, so we
               render a standalone copy here — triggered by the header + button or
               the "+ Create sub-task" CTA in the empty state. */}
+          {creating && canCreate && children.length === 0 && (
+            <AiSuggestChildrenPanel
+              parentSummary={parentSummary ?? ''}
+              parentType={parentIssueType ?? ''}
+              allowedChildTypes={allowedTypes}
+              siblingSummaries={siblingSummaries}
+              defaultDraftType={defaultDraftType}
+              isCreatingAny={createMutation.isPending}
+              onCreate={(s) => {
+                setDraftType(s.type as typeof draftType);
+                createMutation.mutate(s.title);
+              }}
+              onCreateAll={(list) => {
+                list.forEach((s) => {
+                  setDraftType(s.type as typeof draftType);
+                  createMutation.mutate(s.title);
+                });
+              }}
+            />
+          )}
           {creating && canCreate && children.length === 0 && (
             <InlineCreateWithAI
               allowedTypes={allowedTypes}
@@ -769,6 +801,10 @@ export function SubtasksPanel({
                 setCreating(false);
               }}
               onCancel={() => setCreating(false)}
+              placeholder={`Name this ${(effectiveTitle.toLowerCase().endsWith('s')
+                ? effectiveTitle.toLowerCase().slice(0, -1)
+                : effectiveTitle.toLowerCase())}`}
+              inputRef={inlineCreateInputRef}
             />
           )}
 

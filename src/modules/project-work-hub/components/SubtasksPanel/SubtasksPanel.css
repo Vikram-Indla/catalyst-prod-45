@@ -665,6 +665,52 @@
 /* ══════════════════════════════════════════════
    Inline create row + AI/search panel
    ══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   Empty-state "Add subtask" link (Jira parity)
+   ══════════════════════════════════════════════ */
+.sp-add-link {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  /* Align with the title text — offset = chevron width (24px) + title
+     left padding (4px) = 28px. */
+  margin-left: 28px;
+  margin-top: 2px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
+  font-size: 14px;
+  color: var(--ds-text-subtle, #44546f);
+  cursor: pointer;
+  transition: background 100ms ease, color 100ms ease;
+}
+.sp-add-link:hover {
+  background: var(--ds-background-neutral-subtle-hovered, #f1f2f4);
+  color: var(--ds-text, #172b4d);
+}
+.sp-add-link:focus-visible {
+  outline: 2px solid var(--ds-border-focused, #4c9aff);
+  outline-offset: 1px;
+}
+
+/* "+" prefix on the heading while in creating mode */
+.sp-title-plus {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 2px;
+  color: var(--ds-text-subtle, #44546f);
+  border-radius: 3px;
+  cursor: pointer;
+}
+.sp-title-plus:hover {
+  background: var(--ds-background-neutral-subtle-hovered, #f1f2f4);
+  color: var(--ds-text, #172b4d);
+}
+
 .sp-create-wrap { position: relative; margin-top: 4px; }
 
 .sp-create-row {
@@ -682,8 +728,19 @@
 }
 .sp-create-wrap:focus-within .sp-create-row {
   border-color: var(--ds-border-focused, #4C9AFF);
+  box-shadow: 0 0 0 1px var(--ds-border-focused, #4C9AFF);
 }
 .sp-create-input-wrap { flex: 1; min-width: 0; }
+.sp-create-input-wrap [data-ds--text-field--container] {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+.sp-create-input-wrap [data-ds--text-field--container]:focus-within {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
 
 .sp-create-actions {
   display: flex;
