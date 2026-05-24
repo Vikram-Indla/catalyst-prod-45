@@ -44,6 +44,10 @@ import {
   createCatalystMentionProvider,
   type CatalystMentionResource,
 } from './catalystMentionProvider';
+import { useImageToolbarController } from './imageToolbar/useImageToolbarController';
+import { ImageToolbar } from './imageToolbar/ImageToolbar';
+import type { MinimalEditorView } from './imageToolbar/imageNodeOps';
+import { useVoiceToText } from '@/lib/voiceToText/useVoiceToText';
 
 // 2026-05-03 — CONVERTED TO STATIC IMPORT
 // TipTap was removed 2026-04-20 (USER DIRECTIVE). The lazy-load was to prevent
@@ -110,6 +114,8 @@ export interface EpicDescriptionEditorProps {
    */
   onAttachmentUploaded?: (meta: AttachmentUploadMeta) => void;
   onImprove?: () => void;
+  improveLabel?: string;
+  improveDisabled?: boolean;
   /**
    * Content that covers the ProseMirror body while the toolbar stays
    * visible. Used by the "Improve description" flow to render the
@@ -154,6 +160,8 @@ function EpicDescriptionEditorImpl({
   appearance: appearanceProp = 'comment',
   onAttachmentUploaded,
   onImprove,
+  improveLabel = 'Improve description',
+  improveDisabled = false,
   bodyOverlay,
 }: EpicDescriptionEditorProps) {
   const initialAdf = useMemo(() => parseStoredDescriptionToAdf(initialContent), [initialContent]);
@@ -424,6 +432,31 @@ function EpicDescriptionEditorImpl({
     }, 300);
   }, [onChange]);
 
+  // Custom image toolbar — replaces Atlaskit's native floating-toolbar
+  // for image selections. The controller injects a slot div into the
+  // editor's DOM right after the clicked image; the toolbar renders
+  // into that slot via portal so it sits on its own line under the
+  // image and scrolls with it naturally. See imageToolbar/README.
+  const { selection: imageSelection, dismiss: dismissImageToolbar } =
+    useImageToolbarController({
+      editorRootRef: wrapperRef,
+      enabled: true,
+    });
+  const getEditorView = useCallback((): MinimalEditorView | null => {
+    const actions = actionsRef.current as any;
+    return actions?._privateGetEditorView?.() ?? null;
+  }, []);
+
+  const {
+    isSupported: voiceSupported,
+    isRecording: voiceRecording,
+    interimText: voiceInterim,
+  } = useVoiceToText({
+    editorRootRef: wrapperRef,
+    getEditorView,
+    enabled: true,
+  });
+
   return (
     <IntlProvider locale="en">
       {/* Hidden file input — always in DOM so .click() works in all browsers */}
@@ -473,11 +506,12 @@ function EpicDescriptionEditorImpl({
             appearance="subtle"
             spacing="compact"
             onClick={onImprove}
+            isDisabled={improveDisabled}
             iconBefore={(iconProps: React.ComponentProps<typeof WandIcon>) => (
               <WandIcon {...iconProps} label="" />
             )}
           >
-            Improve description
+            {improveLabel}
           </Button>,
           improveSlot,
         )}
@@ -590,7 +624,6 @@ function EpicDescriptionEditorImpl({
             Uploading image…
           </div>
         )}
-        {/* H6/H10: idle affordance — tells users they can paste or drag images */}
         {!isDragOver && !uploading && !bodyOverlay && (
           <div
             style={{
@@ -599,15 +632,71 @@ function EpicDescriptionEditorImpl({
               paddingTop: 4,
               paddingLeft: 2,
               userSelect: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              flexWrap: 'wrap',
             }}
           >
-            Tip: paste a screenshot or drag an image into the editor
+            <span>Tip: paste a screenshot or drag an image into the editor</span>
+            {voiceSupported && (
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  color: voiceRecording
+                    ? token('color.text.danger', '#AE2A19')
+                    : token('color.text.subtlest', '#626F86'),
+                  fontWeight: voiceRecording ? 600 : 400,
+                }}
+              >
+                {voiceRecording ? (
+                  <>
+                    <span
+                      aria-hidden
+                      style={{
+                        display: 'inline-block',
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        background: token('color.background.danger.bold', '#CA3521'),
+                        animation: 'cv-voice-pulse 1s ease-in-out infinite',
+                      }}
+                    />
+                    <span>Recording — release Ctrl to stop</span>
+                    {voiceInterim && (
+                      <span
+                        style={{
+                          color: token('color.text.subtle', '#42526E'),
+                          fontStyle: 'italic',
+                          fontWeight: 400,
+                          maxWidth: 320,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        "{voiceInterim}"
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span>Hold Ctrl to record voice-to-text</span>
+                )}
+              </span>
+            )}
           </div>
         )}
         {bodyOverlay && bodySlot && createPortal(
           <div className="epic-desc-body-overlay">{bodyOverlay}</div>,
           bodySlot,
         )}
+        <ImageToolbar
+          selection={imageSelection}
+          getEditorView={getEditorView}
+          onDismiss={dismissImageToolbar}
+        />
       </div>
     </IntlProvider>
   );

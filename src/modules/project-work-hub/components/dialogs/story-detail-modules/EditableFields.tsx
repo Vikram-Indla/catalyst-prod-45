@@ -255,34 +255,25 @@ export function EditableAssignee({
   onUpdate: () => void;
 }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+  // Pull from `profiles` (approved users) so every user is searchable —
+  // not just the project_members row. Mirrors Jira's "assignable user"
+  // search which spans the whole org, not just project membership.
   const { data: members = [] } = useQuery({
-    queryKey: ["projectMembers-edit-local", projectId],
+    queryKey: ["assignee-profiles-approved"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("project_members")
-        .select("user_id, role")
-        .eq("project_id", projectId);
-      if (error) throw error;
-      if (!data?.length) return [];
-      const userIds = data.map((d) => d.user_id);
-      // §19 chokepoint: select full_name + email so users without a
-      // full_name (common for Jira-synced users) display their email
-      // instead of the literal string "Unknown".
-      // jira-compare 2026-05-11 fix: Vikram defect "Assignee / Reporter
-      // is wrong — shows Unknown" was because the SELECT dropped email.
-      const { data: profiles } = await supabase
         .from("profiles")
         .select("id, full_name, email")
-        .in("id", userIds);
-      const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
-      return data.map((d) => {
-        const p = profileMap.get(d.user_id);
-        const full_name = p?.full_name ?? p?.email ?? "Unknown";
+        .eq("approval_status", "APPROVED")
+        .order("full_name", { ascending: true });
+      if (error) throw error;
+      return (data ?? []).map((p) => {
+        const full_name = p.full_name ?? p.email ?? "Unknown";
         return {
-          user_id: d.user_id,
+          user_id: p.id,
           full_name,
           avatar_url: resolveAvatarUrl(full_name) ?? null,
-          role: d.role,
+          role: null,
         };
       }) as ProjectMember[];
     },
@@ -358,6 +349,9 @@ export function EditableAssignee({
     };
   }, [currentAssigneeId, currentAssigneeName, options]);
 
+  const inputId = `assignee-${issueKey ?? issueId}`;
+  const [inputValue, setInputValue] = useState("");
+
   return (
     <div style={{
       flex: 1,
@@ -366,14 +360,33 @@ export function EditableAssignee({
       borderRadius: 4,
     }}>
       <Select<AssigneeOption>
-        inputId={`assignee-${issueKey ?? issueId}`}
+        inputId={inputId}
         appearance="subtle"
         spacing="compact"
         isSearchable
         isClearable
         menuIsOpen={menuIsOpen}
-        onMenuOpen={() => setMenuIsOpen(true)}
-        onMenuClose={() => setMenuIsOpen(false)}
+        onMenuOpen={() => {
+          setMenuIsOpen(true);
+          const initial =
+            selected.value === UNASSIGNED_VALUE ? "" : (selected.label ?? "");
+          setInputValue(initial);
+          if (initial.length > 0) {
+            setTimeout(() => {
+              const el = document.getElementById(inputId) as HTMLInputElement | null;
+              el?.select();
+            }, 0);
+          }
+        }}
+        onMenuClose={() => {
+          setMenuIsOpen(false);
+          setInputValue("");
+        }}
+        inputValue={inputValue}
+        onInputChange={(next, meta) => {
+          if (meta.action === "input-change") setInputValue(next);
+        }}
+        controlShouldRenderValue={!menuIsOpen}
         classNamePrefix="cv-assignee-select"
         placeholder="Select Assignee"
         components={{
@@ -389,8 +402,12 @@ export function EditableAssignee({
         options={options}
         value={selected}
         onChange={(v) => {
-          if (!v) return;
-          const nextUserId = v.value === UNASSIGNED_VALUE ? null : v.userId;
+          const nextUserId =
+            v === null
+              ? null
+              : v.value === UNASSIGNED_VALUE
+                ? null
+                : v.userId;
           if (nextUserId === (currentAssigneeId ?? null)) return;
           updateMutation.mutate(nextUserId);
         }}
@@ -480,29 +497,21 @@ export function EditableReporter({
 }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const { data: members = [] } = useQuery({
-    queryKey: ["projectMembers-reporter", projectId],
+    queryKey: ["reporter-profiles-approved"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("project_members")
-        .select("user_id, role")
-        .eq("project_id", projectId);
-      if (error) throw error;
-      if (!data?.length) return [];
-      const userIds = data.map((d) => d.user_id);
-      // Same fallback chain as EditableAssignee — full_name ?? email ?? 'Unknown'
-      const { data: profiles } = await supabase
         .from("profiles")
         .select("id, full_name, email")
-        .in("id", userIds);
-      const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
-      return data.map((d) => {
-        const p = profileMap.get(d.user_id);
-        const full_name = p?.full_name ?? p?.email ?? "Unknown";
+        .eq("approval_status", "APPROVED")
+        .order("full_name", { ascending: true });
+      if (error) throw error;
+      return (data ?? []).map((p) => {
+        const full_name = p.full_name ?? p.email ?? "Unknown";
         return {
-          user_id: d.user_id,
+          user_id: p.id,
           full_name,
           avatar_url: resolveAvatarUrl(full_name) ?? null,
-          role: d.role,
+          role: null,
         };
       }) as ProjectMember[];
     },
@@ -566,6 +575,9 @@ export function EditableReporter({
     };
   }, [currentReporterId, currentReporterName, options]);
 
+  const inputId = `reporter-${issueId}`;
+  const [inputValue, setInputValue] = useState("");
+
   return (
     <div style={{
       flex: 1,
@@ -574,14 +586,33 @@ export function EditableReporter({
       borderRadius: 4,
     }}>
       <Select<ReporterOption>
-        inputId={`reporter-${issueId}`}
+        inputId={inputId}
         appearance="subtle"
         spacing="compact"
         isSearchable
         isClearable
         menuIsOpen={menuIsOpen}
-        onMenuOpen={() => setMenuIsOpen(true)}
-        onMenuClose={() => setMenuIsOpen(false)}
+        onMenuOpen={() => {
+          setMenuIsOpen(true);
+          const initial =
+            selected.value === REPORTER_NONE_VALUE ? "" : (selected.label ?? "");
+          setInputValue(initial);
+          if (initial.length > 0) {
+            setTimeout(() => {
+              const el = document.getElementById(inputId) as HTMLInputElement | null;
+              el?.select();
+            }, 0);
+          }
+        }}
+        onMenuClose={() => {
+          setMenuIsOpen(false);
+          setInputValue("");
+        }}
+        inputValue={inputValue}
+        onInputChange={(next, meta) => {
+          if (meta.action === "input-change") setInputValue(next);
+        }}
+        controlShouldRenderValue={!menuIsOpen}
         classNamePrefix="cv-reporter-select"
         placeholder="Select Reporter"
         components={{
@@ -597,8 +628,12 @@ export function EditableReporter({
         options={options}
         value={selected}
         onChange={(v) => {
-          if (!v) return;
-          const nextUserId = v.value === REPORTER_NONE_VALUE ? null : v.userId;
+          const nextUserId =
+            v === null
+              ? null
+              : v.value === REPORTER_NONE_VALUE
+                ? null
+                : v.userId;
           if (nextUserId === (currentReporterId ?? null)) return;
           updateMutation.mutate(nextUserId);
         }}
