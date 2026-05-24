@@ -76,6 +76,22 @@ serve(async (req) => {
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
     const headers = { 'Authorization': authHeader, 'Accept': 'application/json' }
 
+    // ── Pre-sync authentication check (2026-05-24) ──
+    // A 401 here means the token is expired or revoked. Throwing early prevents
+    // the search call from silently returning 200+0 results (Jira's anonymous
+    // fallback), which would trigger the prune and delete all synced data.
+    const myselfRes = await fetch(`${base}/rest/api/3/myself`, { headers })
+    if (!myselfRes.ok) {
+      throw new Error(
+        `Jira authentication failed (HTTP ${myselfRes.status}). ` +
+        `The API token stored in ph_jira_connection may be expired or revoked. ` +
+        `Go to admin → Jira Connection and update the API token from ` +
+        `https://id.atlassian.com/manage-profile/security/api-tokens`
+      )
+    }
+    const myselfData = await myselfRes.json().catch(() => ({}))
+    console.log(`[sync] Authenticated as ${myselfData.displayName || 'unknown'} (${myselfData.emailAddress || conn.auth_email})`)
+
     // 3. Discover project keys
     let allProjectKeys: string[] = []
     const projectNameLookup: Record<string, string> = {}
@@ -255,6 +271,15 @@ serve(async (req) => {
         jqlParts.push(`fixVersion is EMPTY`)
       } else if (syncFixVersions.length > 0) {
         jqlParts.push(`fixVersion in (${syncFixVersions.map(v => `"${v}"`).join(',')})`)
+      }
+
+      // ── Incremental mode: only fetch recently-changed issues ──
+      // Running every 15 min → look back 30 min to guarantee a 15-min overlap buffer.
+      // This prevents fetching hundreds of issues on every tick.
+      // Full sync (manual or first-run recovery) skips this clause and fetches everything.
+      if (syncType === 'incremental') {
+        const lookbackMinutes: number = (body.lookback_minutes as number) || 30
+        jqlParts.push(`updated >= "-${lookbackMinutes}m"`)
       }
 
       const jql = `${jqlParts.join(' AND ')} ORDER BY updated DESC`
@@ -600,19 +625,33 @@ serve(async (req) => {
       completedProjects.push(projectKey)
 
       // ── Per-project prune ──
-      if (syncType === 'full' && !projectError) {
-        const { data: existingIssues } = await supabase
-          .from('ph_issues')
-          .select('issue_key')
-          .eq('project_key', projectKey)
+      // SAFETY GUARD: never prune when 0 issues fetched (2026-05-24 RCA).
+      // A 0-result response almost always means a Jira auth/network failure that
+      // returned HTTP 200 + empty list. Pruning on 0 would silently wipe all data.
+      if (syncType === 'full' && !projectError && projectIssueCount > 0) {
+        // Paginate the existing-issues select to avoid the implicit 1000-row cap.
+        // Without pagination, a project with >1000 issues would only read the
+        // first 1000, compute a partial toDelete set, and leave stale rows behind.
+        const allExistingKeys: string[] = []
+        let page = 0
+        const PAGE = 1000
+        while (true) {
+          const { data: batch } = await supabase
+            .from('ph_issues')
+            .select('issue_key')
+            .eq('project_key', projectKey)
+            .range(page * PAGE, (page + 1) * PAGE - 1)
+          if (!batch || batch.length === 0) break
+          for (const r of batch) allExistingKeys.push(r.issue_key)
+          if (batch.length < PAGE) break
+          page++
+        }
 
-        if (existingIssues && existingIssues.length > 0) {
+        if (allExistingKeys.length > 0) {
           const projectFetchedKeys = new Set(
             [...allFetchedKeys].filter(k => k.startsWith(projectKey + '-'))
           )
-          const toDelete = existingIssues
-            .map((i: any) => i.issue_key)
-            .filter((k: string) => !projectFetchedKeys.has(k))
+          const toDelete = allExistingKeys.filter((k: string) => !projectFetchedKeys.has(k))
 
           if (toDelete.length > 0) {
             for (let i = 0; i < toDelete.length; i += 500) {
