@@ -47,6 +47,7 @@ import {
 import { useImageToolbarController } from './imageToolbar/useImageToolbarController';
 import { ImageToolbar } from './imageToolbar/ImageToolbar';
 import type { MinimalEditorView } from './imageToolbar/imageNodeOps';
+import { useVoiceToText } from '@/lib/voiceToText/useVoiceToText';
 
 // 2026-05-03 — CONVERTED TO STATIC IMPORT
 // TipTap was removed 2026-04-20 (USER DIRECTIVE). The lazy-load was to prevent
@@ -446,6 +447,16 @@ function EpicDescriptionEditorImpl({
     return actions?._privateGetEditorView?.() ?? null;
   }, []);
 
+  const {
+    isSupported: voiceSupported,
+    isRecording: voiceRecording,
+    interimText: voiceInterim,
+  } = useVoiceToText({
+    editorRootRef: wrapperRef,
+    getEditorView,
+    enabled: true,
+  });
+
   return (
     <IntlProvider locale="en">
       {/* Hidden file input — always in DOM so .click() works in all browsers */}
@@ -613,7 +624,6 @@ function EpicDescriptionEditorImpl({
             Uploading image…
           </div>
         )}
-        {/* H6/H10: idle affordance — tells users they can paste or drag images */}
         {!isDragOver && !uploading && !bodyOverlay && (
           <div
             style={{
@@ -622,9 +632,60 @@ function EpicDescriptionEditorImpl({
               paddingTop: 4,
               paddingLeft: 2,
               userSelect: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              flexWrap: 'wrap',
             }}
           >
-            Tip: paste a screenshot or drag an image into the editor
+            <span>Tip: paste a screenshot or drag an image into the editor</span>
+            {voiceSupported && (
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  color: voiceRecording
+                    ? token('color.text.danger', '#AE2A19')
+                    : token('color.text.subtlest', '#626F86'),
+                  fontWeight: voiceRecording ? 600 : 400,
+                }}
+              >
+                {voiceRecording ? (
+                  <>
+                    <span
+                      aria-hidden
+                      style={{
+                        display: 'inline-block',
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        background: token('color.background.danger.bold', '#CA3521'),
+                        animation: 'cv-voice-pulse 1s ease-in-out infinite',
+                      }}
+                    />
+                    <span>Recording — release Ctrl to stop</span>
+                    {voiceInterim && (
+                      <span
+                        style={{
+                          color: token('color.text.subtle', '#42526E'),
+                          fontStyle: 'italic',
+                          fontWeight: 400,
+                          maxWidth: 320,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        "{voiceInterim}"
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span>Hold Ctrl to record voice-to-text</span>
+                )}
+              </span>
+            )}
           </div>
         )}
         {bodyOverlay && bodySlot && createPortal(
