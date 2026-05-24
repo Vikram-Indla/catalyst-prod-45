@@ -17,7 +17,8 @@ import { AllProjectsToolbar } from '@/components/projecthub/AllProjectsToolbar';
 import { AllProjectsTable } from '@/components/projecthub/AllProjectsTable';
 import { ProjectDetailPanel } from '@/components/projecthub/ProjectDetailPanel';
 import { CreateSpaceModal } from '@/spaces';
-import { toast } from 'sonner';
+import { token } from '@atlaskit/tokens';
+import { FlagsHost, flag } from '@/components/shared/JiraTable/flags';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import { supabase } from '@/integrations/supabase/client';
@@ -143,7 +144,7 @@ export default function AllProjectsPage() {
     else setSelectedRows(new Set(pageData.map(p => p.id)));
   };
 
-  if (error) toast.error('Failed to load projects');
+  if (error) flag.error('Failed to load projects');
 
   const startIdx = (page - 1) * effectivePageSize;
   const endIdx = Math.min(startIdx + effectivePageSize, filtered.length);
@@ -155,24 +156,62 @@ export default function AllProjectsPage() {
   const isSearchNoResults = !isLoading && !!filters.search && filtered.length === 0 && projects.length > 0;
 
   return (
-    <div className="flex flex-col h-full bg-white dark:!bg-[var(--ds-surface,#0A0A0A)] font-['Inter',-apple-system,system-ui,sans-serif] antialiased">
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        backgroundColor: token('elevation.surface', '#FFFFFF'),
+        fontFamily: 'var(--cp-font-body)',
+      }}
+    >
       <CatalystPageHeader
         title="All Projects"
         actions={
-          <div className="flex items-center gap-3">
+          <div style={{ display: 'flex', alignItems: 'center', gap: token('space.150', '12px') }}>
             {isNarrow ? (
               <button
                 onClick={() => setShowCreateModal(true)}
                 aria-label="Create project"
                 title="Create project"
-                className="h-9 w-9 rounded-md flex items-center justify-center text-white bg-blue-600 hover:bg-blue-700 border-none cursor-pointer shadow-[0_2px_8px_rgba(37,99,235,0.15)] focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
+                style={{
+                  height: 36,
+                  width: 36,
+                  borderRadius: 6,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: token('color.text.inverse', '#FFFFFF'),
+                  backgroundColor: token('color.background.brand.bold', '#0052CC'),
+                  border: 'none',
+                  cursor: 'pointer',
+                  outline: 'none',
+                }}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold.hovered', '#0065FF')}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold', '#0052CC')}
               >
                 <Plus size={18} strokeWidth={2.5} />
               </button>
             ) : (
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="h-10 px-5 rounded-md text-sm font-semibold flex items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 border-none cursor-pointer shadow-[0_2px_8px_rgba(37,99,235,0.15)] focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
+                style={{
+                  height: 40,
+                  paddingInline: token('space.250', '20px'),
+                  borderRadius: 6,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: token('space.100', '8px'),
+                  color: token('color.text.inverse', '#FFFFFF'),
+                  backgroundColor: token('color.background.brand.bold', '#0052CC'),
+                  border: 'none',
+                  cursor: 'pointer',
+                  outline: 'none',
+                }}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold.hovered', '#0065FF')}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold', '#0052CC')}
               >
                 <Plus size={16} strokeWidth={2.5} /> Create project
               </button>
@@ -181,9 +220,18 @@ export default function AllProjectsPage() {
         }
       />
 
-      <div className="flex-1 overflow-auto px-6 py-3 bg-white dark:!bg-[var(--ds-surface,#0A0A0A)] text-foreground">
+      <div
+        style={{
+          flex: 1,
+          overflow: 'auto',
+          paddingInline: token('space.300', '24px'),
+          paddingBlock: token('space.150', '12px'),
+          backgroundColor: token('elevation.surface', '#FFFFFF'),
+          color: token('color.text', '#172B4D'),
+        }}
+      >
         {/* Toolbar */}
-        <div className="mb-2.5">
+        <div style={{ marginBlockEnd: token('space.100', '8px') }}>
           <AllProjectsToolbar
             filters={filters}
             onFilterChange={handleFilterChange}
@@ -193,14 +241,42 @@ export default function AllProjectsPage() {
 
         {/* Content */}
         {isLoading ? (
-          <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-10 bg-white dark:!bg-[var(--ds-surface,#0A0A0A)]">
-            <div className="flex flex-col gap-3">
+          <div
+            style={{
+              borderRadius: 8,
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              padding: token('space.500', '40px'),
+              backgroundColor: token('elevation.surface', '#FFFFFF'),
+            }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.150', '12px') }}>
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="animate-pulse flex items-center gap-4">
-                  <div className="h-7 w-7 rounded-full bg-slate-100 dark:bg-slate-800" />
-                  <div className="flex-1 flex flex-col gap-1.5">
-                    <div className="h-3 w-[30%] rounded bg-slate-100 dark:bg-slate-800" />
-                    <div className="h-2.5 w-[20%] rounded bg-slate-100 dark:bg-slate-800" />
+                <div key={i} className="animate-pulse" style={{ display: 'flex', alignItems: 'center', gap: token('space.200', '16px') }}>
+                  <div
+                    style={{
+                      height: 28,
+                      width: 28,
+                      borderRadius: '50%',
+                      backgroundColor: token('color.background.neutral.subtle', '#F4F5F7'),
+                    }}
+                  />
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: token('space.075', '6px') }}>
+                    <div
+                      style={{
+                        height: 12,
+                        width: '30%',
+                        borderRadius: 4,
+                        backgroundColor: token('color.background.neutral.subtle', '#F4F5F7'),
+                      }}
+                    />
+                    <div
+                      style={{
+                        height: 10,
+                        width: '20%',
+                        borderRadius: 4,
+                        backgroundColor: token('color.background.neutral.subtle', '#F4F5F7'),
+                      }}
+                    />
                   </div>
                 </div>
               ))}
@@ -208,46 +284,106 @@ export default function AllProjectsPage() {
           </div>
         ) : isEmptyProjects ? (
           /* QA1: Empty state — 0 projects */
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
-              <FolderOpen className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBlock: token('space.600', '80px'), textAlign: 'center' }}>
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: '50%',
+                backgroundColor: token('color.background.neutral.subtle', '#F4F5F7'),
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBlockEnd: token('space.200', '16px'),
+              }}
+            >
+              <FolderOpen size={32} style={{ color: token('color.icon.subtle', '#6B778C') }} />
             </div>
-            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-200 mb-1" style={{ fontFamily: 'var(--cp-font-heading)' }}>No projects yet</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-md">
+            <h3 style={{ fontSize: 16, fontWeight: '600', fontFamily: 'var(--cp-font-heading)', color: token('color.text', '#172B4D'), marginBlockEnd: token('space.050', '4px') }}>No projects yet</h3>
+            <p style={{ fontSize: 14, color: token('color.text.subtle', '#6B778C'), marginBlockEnd: token('space.300', '24px'), maxWidth: 448 }}>
               Projects appear here after the Jira sync has run, or create one manually to get started.
             </p>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="h-9 px-4 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700 flex items-center gap-2 border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
+              style={{
+                height: 36,
+                paddingInline: token('space.200', '16px'),
+                backgroundColor: token('color.background.brand.bold', '#0052CC'),
+                color: token('color.text.inverse', '#FFFFFF'),
+                borderRadius: 4,
+                fontSize: 14,
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: token('space.100', '8px'),
+                border: 'none',
+                cursor: 'pointer',
+                outline: 'none',
+              }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold.hovered', '#0065FF')}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold', '#0052CC')}
             >
-              <Plus className="w-4 h-4" /> Create project
+              <Plus size={16} /> Create project
             </button>
           </div>
         ) : isMyProjectsNoAuth ? (
           /* QA1: My Projects — not logged in */
-          <p className="text-sm text-slate-500 dark:text-slate-400 py-12 text-center">Sign in to see your assigned projects.</p>
+          <p style={{ fontSize: 14, color: token('color.text.subtle', '#6B778C'), paddingBlock: token('space.600', '48px'), textAlign: 'center' }}>Sign in to see your assigned projects.</p>
         ) : isStarredEmpty ? (
           /* QA1: Starred tab — 0 starred */
-          <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <Star className="w-8 h-8 text-slate-300" />
-            <p className="text-sm text-slate-500 dark:text-slate-400">Star projects to find them quickly here</p>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBlock: token('space.600', '48px'), gap: token('space.150', '12px') }}>
+            <Star size={32} style={{ color: token('color.icon.subtle', '#6B778C') }} />
+            <p style={{ fontSize: 14, color: token('color.text.subtle', '#6B778C') }}>Star projects to find them quickly here</p>
           </div>
         ) : isSearchNoResults ? (
           /* QA1: Search — no results */
-          <p className="text-sm text-slate-500 dark:text-slate-400 py-12 text-center">No projects match &ldquo;{filters.search}&rdquo;</p>
+          <p style={{ fontSize: 14, color: token('color.text.subtle', '#6B778C'), paddingBlock: token('space.600', '48px'), textAlign: 'center' }}>No projects match &ldquo;{filters.search}&rdquo;</p>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 px-10 py-20 text-center bg-white dark:!bg-[var(--ds-surface,#0A0A0A)]">
-            <FolderKanban size={48} className="text-slate-300 dark:text-slate-600" strokeWidth={1.25} />
-            <h3 className="mt-4 text-lg font-semibold text-foreground" style={{ fontFamily: 'var(--cp-font-heading)' }}>
+          <div
+            style={{
+              display: 'flex',
+              flex: 1,
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 8,
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              paddingInline: token('space.500', '40px'),
+              paddingBlock: token('space.600', '80px'),
+              textAlign: 'center',
+              backgroundColor: token('elevation.surface', '#FFFFFF'),
+            }}
+          >
+            <FolderKanban size={48} style={{ color: token('color.icon.subtle', '#6B778C') }} strokeWidth={1.25} />
+            <h3
+              style={{
+                fontSize: 16,
+                fontWeight: '600',
+                fontFamily: 'var(--cp-font-heading)',
+                color: token('color.text', '#172B4D'),
+                marginBlockStart: token('space.200', '16px'),
+              }}
+            >
               No projects match your filters
             </h3>
-            <p className="mt-1 max-w-[360px] text-[13px] text-muted-foreground">
+            <p style={{ marginBlockStart: token('space.050', '4px'), maxWidth: 360, fontSize: 13, color: token('color.text.subtle', '#6B778C') }}>
               Try adjusting your search or filter criteria.
             </p>
           </div>
         ) : (
           // Card view deprecated — list is the only mode.
-          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-slate-100 dark:border-slate-700 bg-white dark:!bg-[var(--ds-surface,#0A0A0A)]">
+          <div
+            style={{
+              display: 'flex',
+              minHeight: 0,
+              flex: 1,
+              flexDirection: 'column',
+              overflow: 'hidden',
+              borderRadius: 8,
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              backgroundColor: token('elevation.surface', '#FFFFFF'),
+            }}
+          >
             <div className="flex-1 min-h-0 overflow-auto">
               <AllProjectsTable
                 projects={pageData}
@@ -267,28 +403,63 @@ export default function AllProjectsPage() {
             </div>
             {totalPages > 1 && (
               <div
-                className="flex shrink-0 items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-700 bg-white dark:!bg-[var(--ds-surface,#0A0A0A)]"
-                style={{ fontSize: 13 }}
+                style={{
+                  display: 'flex',
+                  flexShrink: 0,
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingInline: token('space.200', '16px'),
+                  paddingBlock: token('space.100', '8px'),
+                  borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  backgroundColor: token('elevation.surface', '#FFFFFF'),
+                  fontSize: 13,
+                }}
               >
-                <span className="text-muted-foreground">
+                <span style={{ color: token('color.text.subtle', '#6B778C') }}>
                   Showing {startIdx + 1}–{endIdx} of {filtered.length} projects
                 </span>
-                <div className="flex items-center gap-2">
+                <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px') }}>
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
                     <button
                       key={n}
                       onClick={() => setPage(n)}
-                      className={`w-8 h-8 rounded text-sm border focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none cursor-pointer ${
-                        page === n
-                          ? 'bg-blue-600 text-white border-blue-600 font-semibold'
-                          : 'bg-transparent border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
-                      }`}
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 4,
+                        fontSize: 14,
+                        border: page === n ? `1px solid ${token('color.background.brand.bold', '#0052CC')}` : `1px solid ${token('color.border', '#DFE1E6')}`,
+                        outline: 'none',
+                        cursor: 'pointer',
+                        fontWeight: page === n ? 600 : 400,
+                        backgroundColor: page === n ? token('color.background.brand.bold', '#0052CC') : 'transparent',
+                        color: page === n ? token('color.text.inverse', '#FFFFFF') : token('color.text.subtle', '#6B778C'),
+                      }}
+                      onMouseEnter={e => {
+                        if (page !== n) {
+                          e.currentTarget.style.backgroundColor = token('color.background.neutral.subtle.hovered', '#F4F5F7');
+                        }
+                      }}
+                      onMouseLeave={e => {
+                        if (page !== n) {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }
+                      }}
                     >
                       {n}
                     </button>
                   ))}
                   <Select value={String(perPage)} onValueChange={v => { setPerPage(Number(v)); setPage(1); }}>
-                    <SelectTrigger className="h-8 w-[72px] text-xs border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 focus-visible:ring-2 focus-visible:ring-blue-600">
+                    <SelectTrigger
+                      style={{
+                        height: 32,
+                        width: 72,
+                        fontSize: 12,
+                        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                        color: token('color.text.subtle', '#6B778C'),
+                        backgroundColor: token('elevation.surface', '#FFFFFF'),
+                      }}
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -317,7 +488,7 @@ export default function AllProjectsPage() {
             // Refresh the v_project_list query so the new row shows up
             // immediately without waiting for the realtime subscription.
             queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
-            toast.success('Project created');
+            flag.success('Project created');
           }}
         />
         {new URLSearchParams(window.location.search).has('debug') && (
@@ -326,6 +497,7 @@ export default function AllProjectsPage() {
           </Suspense>
         )}
       </div>
+      <FlagsHost />
     </div>
   );
 }

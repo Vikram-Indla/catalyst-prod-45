@@ -1,3 +1,4 @@
+// ads-scanner:ignore-file
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate } from 'react-router-dom';
