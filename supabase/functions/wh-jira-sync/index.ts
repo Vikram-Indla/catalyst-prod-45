@@ -356,10 +356,12 @@ serve(async (req) => {
             status_category: issue.fields.status?.statusCategory?.name || mapStatusCategory(issue.fields.status?.name || 'To Do'),
             assignee_account_id: issue.fields.assignee?.accountId || null,
             assignee_display_name: issue.fields.assignee?.displayName || null,
-            assignee_user_id: userMap.get(issue.fields.assignee?.accountId) || null,
+            // assignee_user_id intentionally null: useDirectFromSync resolves via assignee_account_id.
+            // ph_user_mapping catalyst_profile_ids may reference stale Lovable UUIDs not in profiles.
+            assignee_user_id: null,
             reporter_account_id: issue.fields.reporter?.accountId || null,
             reporter_display_name: issue.fields.reporter?.displayName || null,
-            reporter_user_id: userMap.get(issue.fields.reporter?.accountId) || null,
+            reporter_user_id: null,
             parent_key: issue.fields.parent?.key || resolveParentFromLinks(issue) || null,
             parent_summary: issue.fields.parent?.fields?.summary || resolveParentSummaryFromLinks(issue) || null,
             hierarchy_level: getHierarchyLevel(issue.fields.issuetype?.name || 'Task'),
@@ -605,12 +607,9 @@ serve(async (req) => {
               // Upsert with dedup: skip if this user already has a watching notif for this entity
               const { error: wErr } = await supabase
                 .from('notifications')
-                .upsert(watchingNotifRows, {
-                  onConflict: 'recipient_user_id,notification_type,entity_key,tab',
-                  ignoreDuplicates: true,
-                })
+                .insert(watchingNotifRows)
               if (wErr && wErr.code !== '23505') {
-                console.warn(`[sync] watching notifications upsert: ${wErr.message}`)
+                console.warn(`[sync] watching notifications insert: ${wErr.message}`)
               } else {
                 console.log(`[sync] Emitted ${watchingNotifRows.length} watching notifications for ${newIssues.length} new issues`)
               }
@@ -677,11 +676,20 @@ serve(async (req) => {
           const toDelete = allExistingKeys.filter((k: string) => !projectFetchedKeys.has(k))
 
           if (toDelete.length > 0) {
+            // Soft-delete: set jira_removed_at + deleted_at instead of hard DELETE.
+            // guard_ph_issues_no_delete blocks physical deletes by design;
+            // guard_2026_ph_issues now allows this specific UPDATE path.
+            const removedAt = new Date().toISOString()
             for (let i = 0; i < toDelete.length; i += 500) {
-              await supabase.from('ph_issues').delete().in('issue_key', toDelete.slice(i, i + 500))
+              const { error: pruneErr } = await supabase
+                .from('ph_issues')
+                .update({ jira_removed_at: removedAt, deleted_at: removedAt })
+                .in('issue_key', toDelete.slice(i, i + 500))
+                .is('jira_removed_at', null) // idempotent — only mark once
+              if (pruneErr) console.warn(`[sync] prune soft-delete error ${projectKey}: ${pruneErr.message}`)
             }
             totalPruned += toDelete.length
-            console.log(`[sync] Pruned ${toDelete.length} issues from ${projectKey}`)
+            console.log(`[sync] Soft-deleted ${toDelete.length} stale issues from ${projectKey}`)
           }
         }
       }
