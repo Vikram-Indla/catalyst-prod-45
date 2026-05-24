@@ -52,41 +52,50 @@
   text-align: right;
 }
 
+.ttw-btn-row {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 4px;
+}
+.ttw-root[data-dir="rtl"] .ttw-btn-row {
+  justify-content: flex-end;
+}
+
 .ttw-translate-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  margin-top: 4px;
-  padding: 0;
+  gap: 6px;
+  padding: 4px 10px;
   background: none;
   border: none;
+  border-radius: 3px;
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 12px;
   font-weight: 500;
   color: var(--ds-link, #0c66e4);
   cursor: pointer;
   user-select: none;
+  transition: background 100ms ease;
 }
 
 .ttw-translate-btn:hover:not(:disabled) {
-  text-decoration: underline;
+  background: var(--ds-background-neutral-subtle-hovered, #f1f2f4);
 }
 
 .ttw-translate-btn:disabled {
   cursor: default;
   color: var(--ds-text-subtle, #6b778c);
+  background: var(--ds-background-neutral-subtle, #f7f8f9);
 }
 
-.ttw-translate-btn__dot {
+.ttw-translate-btn__logo {
   display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  animation: ttw-dot 1s ease-in-out infinite;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  animation: ttw-logo-spin 2.4s linear infinite;
 }
 
-@keyframes ttw-dot {
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 1; }
+@keyframes ttw-logo-spin {
+  to { transform: rotate(360deg); }
 }

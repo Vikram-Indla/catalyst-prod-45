@@ -73,34 +73,45 @@ export function TitleTranslateWrapper({
     >
       {children({ dir })}
       {hasText && (
-        <button
-          type="button"
-          className={cn('ttw-translate-btn', buttonClassName)}
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleTranslate();
-          }}
-          disabled={isTranslating}
-          aria-label={
-            isTranslating
-              ? 'Translating'
-              : target === 'ar'
-                ? 'Translate to Arabic'
-                : 'Translate to English'
-          }
-        >
-          {isTranslating ? (
-            <>
-              <span className="ttw-translate-btn__dot" />
-              <span>Translating…</span>
-            </>
-          ) : target === 'ar' ? (
-            'Translate to Arabic'
-          ) : (
-            'Translate to English'
-          )}
-        </button>
+        <div className="ttw-btn-row">
+          <button
+            type="button"
+            className={cn('ttw-translate-btn', buttonClassName)}
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleTranslate();
+            }}
+            disabled={isTranslating}
+            dir={isArabic ? 'rtl' : 'ltr'}
+            aria-label={
+              isTranslating
+                ? 'Caty is translating'
+                : target === 'ar'
+                  ? 'Translate to Arabic'
+                  : 'Translate to English'
+            }
+          >
+            {isTranslating ? (
+              <>
+                <img
+                  src="/caty.svg"
+                  alt=""
+                  width={14}
+                  height={14}
+                  className="ttw-translate-btn__logo"
+                />
+                <span>
+                  {isArabic ? 'كاتي تترجم…' : 'Caty is translating…'}
+                </span>
+              </>
+            ) : target === 'ar' ? (
+              'Translate to Arabic'
+            ) : (
+              'ترجم إلى الإنجليزية'
+            )}
+          </button>
+        </div>
       )}
     </div>
   );
