@@ -269,7 +269,7 @@ export default function NotificationTriggers() {
           className="flex items-center justify-between mt-3 pt-3"
           style={{ borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }}
         >
-          <span style={{ fontSize: 12 }} style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #626F86)' }}>
             Showing {filtered.length} of {totalCount} triggers across {groups.length} categories
           </span>
           <div className="flex gap-2">
@@ -292,7 +292,7 @@ export default function NotificationTriggers() {
             border: '1px solid var(--ds-border, #DCDFE4)',
           }}
         >
-          <span style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text-brand, #0C66E4)' }}>
+          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text-brand, #0C66E4)' }}>
             {selection.selectedCount} trigger{selection.selectedCount > 1 ? 's' : ''} selected
           </span>
           <hr style={{ border: 'none', borderLeft: '1px solid var(--ds-border-layout, #EBECF0)', height: '20px', margin: '0' }} />
@@ -326,7 +326,7 @@ export default function NotificationTriggers() {
       ) : groups.length === 0 ? (
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '48px 16px', textAlign: 'center' }}>
           <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 12 }}><NotificationIcon label="" size="large" /></span>
-          <p style={{ fontSize: 14 }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>No triggers match your filters.</p>
+          <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>No triggers match your filters.</p>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -439,8 +439,7 @@ function StatsCard({
   return (
     <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px', textAlign: 'center' }}>
       <p
-        style={{ fontSize: 20, fontWeight: 600, color: "var(--ds-text, #292A2E)" }}
-        style={{ color: colorMap[variant], fontFamily: 'var(--cp-font-mono)' }}
+        style={{ fontSize: 20, fontWeight: 600, color: colorMap[variant], fontFamily: 'var(--cp-font-mono)' }}
       >
         {value}
       </p>

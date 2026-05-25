@@ -187,12 +187,12 @@ export function SidebarBase({
   // affordance pop without reintroducing brand colour.
   const chevronColor = 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))';
   const chevronHoverColor = 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))';
-  // ADS canonical: side-nav uses --ds-surface (rail surface lifts above
+  // ADS canonical: side-nav uses --ds-surface-raised (rail surface lifts above
   // page bg --ds-background-neutral). Was incorrectly using page bg token.
-  const sidebarBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+  const sidebarBg = 'var(--ds-surface-raised, var(--cp-bg-elevated, #ffffff))';
   // ADS canonical: --ds-border is translucent (#a6c5e229 dark / #0b120e24 light)
-  const sidebarBorder = 'var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
-  const dividerColor = 'var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
+  const sidebarBorder = 'var(--ds-border, var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))))';
+  const dividerColor = 'var(--ds-border, var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))))';
   const sectionLabel = 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))';
   const hubLabel = 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))';
 
