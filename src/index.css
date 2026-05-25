@@ -1279,7 +1279,7 @@ html:has(body[data-scroll-locked]) {
     --accent-border: rgba(37, 99, 235, 0.30);
     
     /* === SIDEBAR (Neutral dark) === */
-    --sidebar-background: 0 0% 4%;
+    --sidebar-background: 210 9% 15%;
     --sidebar-foreground: 0 0% 90%;
     --sidebar-primary: 217 91% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
@@ -2054,8 +2054,8 @@ html:has(body[data-scroll-locked]) {
   [data-theme="dark"] aside,
   [data-theme="dark"] [data-sidebar],
   .dark .sidebar , [data-theme="dark"] .sidebar {
-    background-color: #0A0A0A;
-    border-right-color: var(--cp-ink-1, #2E2E2E);
+    background-color: var(--ds-surface-raised, var(--cp-bg-elevated, #22272B));
+    border-right-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
     box-shadow: none;
   }
   
@@ -3749,7 +3749,7 @@ input[type="range"]::-moz-range-thumb {
   --border:                  0 0% 18%;
   --input:                   0 0% 18%;
   --ring:                    217 91% 60%;
-  --sidebar-background:      0 0% 7%;
+  --sidebar-background:      210 9% 15%;
   --sidebar-foreground:      0 0% 63%;
   --sidebar-primary:         217 91% 60%;
   --sidebar-primary-foreground: 0 0% 100%;
