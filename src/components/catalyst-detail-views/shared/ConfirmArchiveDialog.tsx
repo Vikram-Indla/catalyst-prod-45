@@ -4,6 +4,10 @@
  * Replaces the native confirm dialog across all CatalystView* components.
  * Mirrors MoveIssueDialog structure: @atlaskit/modal-dialog + @atlaskit/button/new.
  * The caller owns the async archive logic and passes it via onConfirm.
+ *
+ * Pattern: if (!isOpen) return null, then render ModalDialog directly — matches the
+ * working MoveIssueDialog pattern. ModalTransition causes portal containerInfo=null
+ * in v14 when the component is always-mounted.
  */
 import React from 'react';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';

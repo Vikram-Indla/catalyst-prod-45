@@ -5,6 +5,10 @@
  * Uses appearance="danger" to signal irreversibility — Jira's canonical delete modal
  * pattern (probed against digital-transformation.atlassian.net delete flow).
  *
+ * Pattern: if (!isOpen) return null, then render ModalDialog directly — matches the
+ * working MoveIssueDialog pattern. ModalTransition causes portal containerInfo=null
+ * in v14 when the component is always-mounted.
+ *
  * The caller owns the async delete logic via onConfirm. Dialog closes itself after
  * calling onConfirm so the mutation's onSuccess (toast + query invalidation) takes over.
  */
