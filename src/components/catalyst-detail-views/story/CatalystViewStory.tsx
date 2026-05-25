@@ -35,6 +35,7 @@ import {
 import type { PhAttachment } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
+import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewStory({
@@ -48,6 +49,7 @@ export default function CatalystViewStory({
   const { user } = useAuth();
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
   /* ── Catalyst-vs-Jira source split ─────────
      Mirrors StoryDetailModal line 291. When ph_issues row carries the
@@ -223,7 +225,7 @@ export default function CatalystViewStory({
           } },
           { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
           { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
-          { label: 'Delete story', onClick: () => mutations.deleteIssue.mutate(), danger: true },
+          { label: 'Delete story', onClick: () => setShowDeleteDialog(true), danger: true },
         ]}
         onTogglePanelMode={onTogglePanelMode}
         navigationItems={navigationItems}
@@ -254,6 +256,14 @@ export default function CatalystViewStory({
             .then(() => { toast.success('Issue archived'); onClose(); })
             .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
         }}
+      />
+      <ConfirmDeleteDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        issueKey={issue?.issue_key}
+        issueSummary={issue?.summary}
+        typeLabel="story"
+        onConfirm={() => mutations.deleteIssue.mutate()}
       />
     </>
   );

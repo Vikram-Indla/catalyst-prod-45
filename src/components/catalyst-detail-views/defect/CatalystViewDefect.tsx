@@ -26,6 +26,7 @@ import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPan
 import { EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
+import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   PRIORITY_STYLES,
@@ -42,6 +43,7 @@ export default function CatalystViewDefect({
   const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const queryClient = useQueryClient();
 
   const leftContent = (
@@ -187,7 +189,7 @@ export default function CatalystViewDefect({
         } },
         { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
-        { label: 'Delete defect', onClick: () => mutations.deleteIssue.mutate(), danger: true },
+        { label: 'Delete defect', onClick: () => setShowDeleteDialog(true), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
@@ -202,6 +204,25 @@ export default function CatalystViewDefect({
         onMoved={onClose}
       />
     )}
+    <ConfirmArchiveDialog
+      isOpen={showArchiveDialog}
+      onClose={() => setShowArchiveDialog(false)}
+      issueSummary={issue?.summary}
+      onConfirm={() => {
+        if (!issue?.issue_key) return;
+        archiveIssue(issue.issue_key)
+          .then(() => { onClose(); })
+          .catch((e: unknown) => { console.error('Archive failed', e); });
+      }}
+    />
+    <ConfirmDeleteDialog
+      isOpen={showDeleteDialog}
+      onClose={() => setShowDeleteDialog(false)}
+      issueKey={issue?.issue_key}
+      issueSummary={issue?.summary}
+      typeLabel="defect"
+      onConfirm={() => mutations.deleteIssue.mutate()}
+    />
     </>
   );
 }

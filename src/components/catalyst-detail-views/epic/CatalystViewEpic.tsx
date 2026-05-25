@@ -19,6 +19,7 @@ import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/li
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
+import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewEpic({
@@ -31,6 +32,7 @@ export default function CatalystViewEpic({
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
   // Track this view in user_recent_items so the sidebar Recents rail picks it up.
   // Per CLAUDE.md §7A + the Apr 2026 Recents directive: subtasks are excluded.
@@ -123,7 +125,7 @@ export default function CatalystViewEpic({
         } },
         { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
-        { label: 'Delete epic', onClick: () => mutations.deleteIssue.mutate(), danger: true },
+        { label: 'Delete epic', onClick: () => setShowDeleteDialog(true), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
@@ -138,6 +140,25 @@ export default function CatalystViewEpic({
         onMoved={onClose}
       />
     )}
+    <ConfirmArchiveDialog
+      isOpen={showArchiveDialog}
+      onClose={() => setShowArchiveDialog(false)}
+      issueSummary={issue?.summary}
+      onConfirm={() => {
+        if (!issue?.issue_key) return;
+        archiveIssue(issue.issue_key)
+          .then(() => { onClose(); })
+          .catch((e: unknown) => { console.error('Archive failed', e); });
+      }}
+    />
+    <ConfirmDeleteDialog
+      isOpen={showDeleteDialog}
+      onClose={() => setShowDeleteDialog(false)}
+      issueKey={issue?.issue_key}
+      issueSummary={issue?.summary}
+      typeLabel="epic"
+      onConfirm={() => mutations.deleteIssue.mutate()}
+    />
     </>
   );
 }

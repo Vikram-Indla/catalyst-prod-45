@@ -21,6 +21,7 @@ import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPan
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
+import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import { BrStatusSection } from '@/components/business-requests/BrStatusSection';
 import { useBRStatusTransition } from '@/hooks/useBRStatusTransition';
 import type { CatalystViewBaseProps } from '../shared/types';
@@ -36,6 +37,7 @@ export default function CatalystViewBusinessRequest({
   const { mutate: transitionStatus, isPending: isTransitioning } = useBRStatusTransition();
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
   const leftContent = (
     <>
@@ -121,7 +123,7 @@ export default function CatalystViewBusinessRequest({
         } },
         { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
-        { label: 'Delete request', onClick: () => mutations.deleteIssue.mutate(), danger: true },
+        { label: 'Delete request', onClick: () => setShowDeleteDialog(true), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
@@ -143,9 +145,17 @@ export default function CatalystViewBusinessRequest({
       onConfirm={() => {
         if (!issue?.issue_key) return;
         archiveIssue(issue.issue_key)
-          .then(() => { toast.success('Issue archived'); onClose(); })
-          .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
+          .then(() => { onClose(); })
+          .catch((e: unknown) => { console.error('Archive failed', e); });
       }}
+    />
+    <ConfirmDeleteDialog
+      isOpen={showDeleteDialog}
+      onClose={() => setShowDeleteDialog(false)}
+      issueKey={issue?.issue_key}
+      issueSummary={issue?.summary}
+      typeLabel="request"
+      onConfirm={() => mutations.deleteIssue.mutate()}
     />
     </>
   );
