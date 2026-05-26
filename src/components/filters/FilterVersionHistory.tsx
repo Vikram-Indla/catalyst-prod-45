@@ -39,7 +39,7 @@ function VersionRow({ v }: { v: FilterVersion }) {
       borderBottom: `1px solid ${token('color.border')}`,
       alignItems: 'flex-start',
     }}>
-      <div style={{ flexShrink: 0, marginTop: 2 }}>
+      <div style={{ flexShrink: 0, marginTop: 4 }}>
         <Avatar src={avatar} name={name} size="small" />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>

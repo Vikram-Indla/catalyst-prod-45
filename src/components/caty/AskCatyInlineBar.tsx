@@ -27,6 +27,7 @@ import InfoIconCore from "@atlaskit/icon/core/information";
 import SparkIconCore from "@atlaskit/icon/core/ai-chat";
 import { useCatySearch } from "@/components/caty/catySearchStore";
 import { useAuth } from "@/lib/auth";
+import { catyFilterToJql } from "@/lib/filters/catyFilterToJql";
 import "@/pages/project-hub/jira-list/components/ask-caty-input.css";
 
 const SUBTLE = "var(--ds-text-subtlest, #6B778C)";
@@ -46,9 +47,11 @@ const ASK_CATY_PLACEHOLDER_SAMPLES: string[] = [
 export interface AskCatyInlineBarProps {
   projectKey: string | null;
   onClose: () => void;
+  /** Called with the JQL string when CATY finishes generating a filter. */
+  onJqlGenerated?: (jql: string) => void;
 }
 
-export function AskCatyInlineBar({ projectKey, onClose }: AskCatyInlineBarProps) {
+export function AskCatyInlineBar({ projectKey, onClose, onJqlGenerated }: AskCatyInlineBarProps) {
   const [askCatyQuery, setAskCatyQuery] = useState("");
   const askCatyInputRef = useRef<HTMLInputElement>(null);
 
@@ -60,6 +63,7 @@ export function AskCatyInlineBar({ projectKey, onClose }: AskCatyInlineBarProps)
   const catyErrorMessage = useCatySearch((s) => s.errorMessage);
   const catySecondaryQuery = useCatySearch((s) => s.secondaryQuery);
   const catySetSecondaryQuery = useCatySearch((s) => s.setSecondaryQuery);
+  const catyFilter = useCatySearch((s) => s.filter);
 
   const askCatyLoading =
     catyStatus === "loading" && catyStoreProjectKey === projectKey;
@@ -72,6 +76,14 @@ export function AskCatyInlineBar({ projectKey, onClose }: AskCatyInlineBarProps)
   useEffect(() => {
     if (catyStatus === "loading") setAskCatyFeedback(null);
   }, [catyStatus]);
+
+  // Fire onJqlGenerated when CATY produces a result for this project
+  useEffect(() => {
+    if (askCatyHasResults && catyFilter && onJqlGenerated) {
+      const jql = catyFilterToJql(catyFilter);
+      if (jql) onJqlGenerated(jql);
+    }
+  }, [askCatyHasResults, catyFilter, onJqlGenerated]);
 
   const { user } = useAuth();
 

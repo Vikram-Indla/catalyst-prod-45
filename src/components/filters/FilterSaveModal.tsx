@@ -135,7 +135,7 @@ export function FilterSaveModal({
             hub_scope: resolvedHubScope,
             viewers_config: viewersConfig,
             editors_config: editorsConfig,
-          } as any,
+          },
         },
         { onSuccess: () => { onSaved?.(filter.id); onClose(); } }
       );
@@ -151,7 +151,7 @@ export function FilterSaveModal({
           viewers_config: viewersConfig,
           editors_config: editorsConfig,
           description: description.trim() || null,
-        } as any,
+        },
         { onSuccess: (data: any) => { onSaved?.(data?.id); onClose(); } }
       );
     }
@@ -165,6 +165,29 @@ export function FilterSaveModal({
 
       <ModalBody>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* JQL preview — shown in edit mode or when creating with a JQL */}
+          {(isEditing ? filter?.jql_query : initialJql) && (
+            <div>
+              <FieldLabel>JQL query</FieldLabel>
+              <pre style={{
+                margin: 0,
+                padding: '8px 12px',
+                background: `var(--ds-surface-sunken, #F7F8F9)`,
+                borderRadius: 3,
+                border: `1px solid ${token('color.border')}`,
+                fontFamily: 'monospace',
+                fontSize: 12,
+                color: token('color.text'),
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-all',
+                maxHeight: 100,
+                overflowY: 'auto',
+              }}>
+                {isEditing ? filter?.jql_query : initialJql}
+              </pre>
+            </div>
+          )}
 
           {/* Name */}
           <div>
@@ -215,6 +238,10 @@ export function FilterSaveModal({
           {viewersType !== 'private' && (
             <div>
               <FieldLabel>Hub visibility</FieldLabel>
+              <p style={{ margin: '0 0 8px', fontSize: 12, color: token('color.text.subtlest') }}>
+                "This hub only" keeps the filter within the current project or product hub.
+                "Both hubs" makes it available as a shared filter across Project Hub and Product Hub.
+              </p>
               <RadioGroup
                 options={HUB_SCOPE_OPTIONS}
                 value={crossHub ? 'both' : 'current'}

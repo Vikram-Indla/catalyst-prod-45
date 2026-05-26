@@ -62,7 +62,6 @@ export function JQLAutocompleteDropdown({ result, anchorRect, onSelect, onDismis
         fontWeight: token('font.weight.semibold'),
         color: token('color.text.subtlest'),
         borderBottom: `1px solid ${token('color.border')}`,
-        textTransform: 'uppercase',
         letterSpacing: '0.05em',
       }}>
         {TYPE_LABEL[result.type] ?? result.type}

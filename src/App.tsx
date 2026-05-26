@@ -14,7 +14,6 @@ import { AdsThemeProvider } from "@/theme/ads";
 import { AuthProvider } from "./lib/auth";
 import { NavigationProvider } from "./contexts/NavigationContext";
 import { ProcessStepsProvider } from "./contexts/ProcessStepsContext";
-import { CatalystToastProvider } from "./contexts/CatalystToastContext";
 import { FeatureFlagProvider } from "./contexts/FeatureFlagContext";
 import { WorkflowProvider } from "./lib/workflows";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -141,7 +140,6 @@ function App() {
         <WorkflowProvider>
         <NavigationProvider>
           <ProcessStepsProvider>
-          <CatalystToastProvider position="top-right" maxToasts={5}>
               <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
               <Routes>
                 <Route path="/auth" element={<S><CatalystLoginPageLazy /></S>} />
@@ -208,7 +206,6 @@ function App() {
                 <Route path="*" element={<S><NotFound /></S>} />
               </Routes>
               </BrowserRouter>
-          </CatalystToastProvider>
           </ProcessStepsProvider>
         </NavigationProvider>
         </WorkflowProvider>

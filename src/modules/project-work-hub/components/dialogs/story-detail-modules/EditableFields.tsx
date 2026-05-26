@@ -236,6 +236,7 @@ type AssigneeOption = {
   label: string;
   userId: string | null; // null for Unassigned
   avatarUrl: string | null;
+  jiraAccountId?: string | null; // Jira account ID — different ID space from userId (UUID)
 };
 const UNASSIGNED_VALUE = "__unassigned__";
 
@@ -263,7 +264,7 @@ export function EditableAssignee({
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, email")
+        .select("id, full_name, email, jira_account_id")
         .eq("approval_status", "APPROVED")
         .order("full_name", { ascending: true });
       if (error) throw error;
@@ -274,6 +275,9 @@ export function EditableAssignee({
           full_name,
           avatar_url: resolveAvatarUrl(full_name) ?? null,
           role: null,
+          // Preserve jira_account_id so the assignee picker can match
+          // ph_issues.assignee_account_id (Jira account ID space, not UUID space).
+          jira_account_id: (p as any).jira_account_id ?? null,
         };
       }) as ProjectMember[];
     },
@@ -310,6 +314,7 @@ export function EditableAssignee({
       label: m.full_name,
       userId: m.user_id,
       avatarUrl: m.avatar_url ?? null,
+      jiraAccountId: (m as any).jira_account_id ?? null,
     }));
     return [
       {
@@ -336,7 +341,12 @@ export function EditableAssignee({
         avatarUrl: null,
       };
     }
-    const matched = options.find((o) => o.userId === currentAssigneeId);
+    // Try UUID match first (issues edited inside Catalyst), then Jira account ID
+    // match (issues synced from Jira where assignee_account_id is a Jira account ID,
+    // not a Catalyst UUID). Mirrors the same dual-match applied to EditableReporter.
+    const matched =
+      options.find((o) => o.userId === currentAssigneeId) ??
+      options.find((o) => o.jiraAccountId && o.jiraAccountId === currentAssigneeId);
     if (matched) return matched;
     // Fallback when members haven't loaded yet: render from props.
     return {
