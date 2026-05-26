@@ -63,6 +63,8 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
           const root = query.queryKey?.[0];
           if (typeof root !== 'string') return false;
           if (root === 'cv-issue-detail') return true;
+          if (root === 'uwv-data') return true;           // allwork canonical key
+          if (root === 'workhub') return true;            // legacy allwork key
           if (root === 'global-recent-items') return true;
           if (root === 'product-hub-per-product-recents') return true;
           if (root === 'product-hub-recent-brs') return true;
@@ -90,12 +92,14 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
     onSuccess: () => {
       catalystToast.success('Issue deleted');
       // Invalidate all list and navigator queries so deleted item disappears
-      // from backlog, allwork, kanban, subtask panels, and nav chevrons.
+      // from backlog, allwork (uwv-data), kanban, subtask panels, and nav chevrons.
       queryClient.invalidateQueries({
         predicate: (query) => {
           const root = query.queryKey?.[0];
           if (typeof root !== 'string') return false;
           if (root === 'cv-issue-detail') return true;
+          if (root === 'uwv-data') return true;           // allwork canonical key
+          if (root === 'workhub') return true;            // legacy allwork key
           if (root.includes('allwork-items')) return true;
           if (root.includes('kanban-issues')) return true;
           if (root.includes('backlog-data')) return true;
