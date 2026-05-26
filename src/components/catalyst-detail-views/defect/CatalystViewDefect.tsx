@@ -26,6 +26,7 @@ import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPan
 import { EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
+import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
@@ -42,8 +43,22 @@ export default function CatalystViewDefect({
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
+  const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+
+  const handleClone = React.useCallback(() => {
+    if (!issue?.issue_key) return;
+    cloneIssue(issue.issue_key)
+      .then((newKey) => {
+        toast.success(`Cloned as ${newKey}`, {
+          action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+        });
+      })
+      .catch((e: unknown) => {
+        toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+      });
+  }, [issue?.issue_key, onOpenItem]);
   const queryClient = useQueryClient();
 
   const leftContent = (
@@ -174,19 +189,7 @@ export default function CatalystViewDefect({
       }}
       /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
       moreMenuItems={[
-        { label: 'Print', onClick: () => window.print() },
-        { label: 'Clone', onClick: () => {
-          if (!issue?.issue_key) return;
-          cloneIssue(issue.issue_key)
-            .then((newKey) => {
-              toast.success(`Cloned as ${newKey}`, {
-                action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
-              });
-            })
-            .catch((e: unknown) => {
-              toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
-            });
-        } },
+        { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
         { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
         { label: 'Delete defect', onClick: () => setShowDeleteDialog(true), danger: true },
@@ -194,7 +197,14 @@ export default function CatalystViewDefect({
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />
-    {showMoveDialog && issue?.issue_key && (
+      <ConfirmCloneDialog
+        isOpen={showCloneDialog}
+        onClose={() => setShowCloneDialog(false)}
+        issueKey={issue?.issue_key}
+        issueSummary={issue?.summary}
+        onConfirm={handleClone}
+      />
+      {showMoveDialog && issue?.issue_key && (
       <MoveIssueDialog
         isOpen={showMoveDialog}
         onClose={() => setShowMoveDialog(false)}

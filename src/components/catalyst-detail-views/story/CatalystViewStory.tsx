@@ -35,6 +35,7 @@ import {
 import type { PhAttachment } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
+import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 
@@ -48,8 +49,22 @@ export default function CatalystViewStory({
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const { user } = useAuth();
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
+  const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+
+  const handleClone = React.useCallback(() => {
+    if (!issue?.issue_key) return;
+    cloneIssue(issue.issue_key)
+      .then((newKey) => {
+        toast.success(`Cloned as ${newKey}`, {
+          action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+        });
+      })
+      .catch((e: unknown) => {
+        toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+      });
+  }, [issue?.issue_key, onOpenItem]);
 
   /* ── Catalyst-vs-Jira source split ─────────
      Mirrors StoryDetailModal line 291. When ph_issues row carries the
@@ -210,19 +225,7 @@ export default function CatalystViewStory({
         }}
         /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
         moreMenuItems={[
-          { label: 'Print', onClick: () => window.print() },
-          { label: 'Clone', onClick: () => {
-            if (!issue?.issue_key) return;
-            cloneIssue(issue.issue_key)
-              .then((newKey) => {
-                toast.success(`Cloned as ${newKey}`, {
-                  action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
-                });
-              })
-              .catch((e: unknown) => {
-                toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
-              });
-          } },
+          { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
           { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
           { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
           { label: 'Delete story', onClick: () => setShowDeleteDialog(true), danger: true },
@@ -235,6 +238,13 @@ export default function CatalystViewStory({
         rightContent={rightContent}
         isLoading={isLoading}
         isNotFound={!isLoading && issue === null}
+      />
+      <ConfirmCloneDialog
+        isOpen={showCloneDialog}
+        onClose={() => setShowCloneDialog(false)}
+        issueKey={issue?.issue_key}
+        issueSummary={issue?.summary}
+        onConfirm={handleClone}
       />
       {showMoveDialog && issue?.issue_key && (
         <MoveIssueDialog

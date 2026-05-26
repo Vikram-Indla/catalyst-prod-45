@@ -19,6 +19,7 @@ import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/li
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
+import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 
@@ -31,8 +32,22 @@ export default function CatalystViewEpic({
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
+  const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+
+  const handleClone = React.useCallback(() => {
+    if (!issue?.issue_key) return;
+    cloneIssue(issue.issue_key)
+      .then((newKey) => {
+        toast.success(`Cloned as ${newKey}`, {
+          action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+        });
+      })
+      .catch((e: unknown) => {
+        toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+      });
+  }, [issue?.issue_key, onOpenItem]);
 
   // Track this view in user_recent_items so the sidebar Recents rail picks it up.
   // Per CLAUDE.md §7A + the Apr 2026 Recents directive: subtasks are excluded.
@@ -110,19 +125,7 @@ export default function CatalystViewEpic({
       }}
       /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
       moreMenuItems={[
-        { label: 'Print', onClick: () => window.print() },
-        { label: 'Clone', onClick: () => {
-          if (!issue?.issue_key) return;
-          cloneIssue(issue.issue_key)
-            .then((newKey) => {
-              toast.success(`Cloned as ${newKey}`, {
-                action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
-              });
-            })
-            .catch((e: unknown) => {
-              toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
-            });
-        } },
+        { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
         { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
         { label: 'Delete epic', onClick: () => setShowDeleteDialog(true), danger: true },
@@ -130,7 +133,14 @@ export default function CatalystViewEpic({
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />
-    {showMoveDialog && issue?.issue_key && (
+      <ConfirmCloneDialog
+        isOpen={showCloneDialog}
+        onClose={() => setShowCloneDialog(false)}
+        issueKey={issue?.issue_key}
+        issueSummary={issue?.summary}
+        onConfirm={handleClone}
+      />
+      {showMoveDialog && issue?.issue_key && (
       <MoveIssueDialog
         isOpen={showMoveDialog}
         onClose={() => setShowMoveDialog(false)}
