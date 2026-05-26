@@ -1,7 +1,7 @@
 /**
  * CatalystViewIncident — Production Incident detail overlay.
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { toast } from 'sonner';
 import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
@@ -48,7 +48,15 @@ export default function CatalystViewIncident({
   }, [issue?.issue_key, onOpenItem]);
   const queryClient = useQueryClient();
 
-  const leftContent = (
+  // Memoize leftContent / rightContent / moreMenuItems so that opening a
+  // confirmation dialog (showDeleteDialog, showCloneDialog, etc.) does NOT
+  // cause the entire CatalystViewBase tree to re-render. Without memos, any
+  // state change in this component creates new JSX/array references, which
+  // forces CatalystViewBase (not React.memo'd) to re-diff SubtasksPanel +
+  // LinkedWorkItemsSection + ActivitySection + AttachmentsPanel + SidebarDetails
+  // synchronously — blocking the main thread for ~150–400ms before the dialog
+  // paint. With memos, the refs stay stable and CatalystViewBase bails out.
+  const leftContent = useMemo(() => (
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
@@ -91,9 +99,10 @@ export default function CatalystViewIncident({
       <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [issue, itemId, projectKey, onOpenItem, isOpen, queryClient]);
 
-  const rightContent = (
+  const rightContent = useMemo(() => (
     <CatalystSidebarDetails
       issue={issue ?? null} itemId={itemId} projectId={projectId}
       onStatusChange={(st) => mutations.updateStatus.mutate(st)}
@@ -104,7 +113,8 @@ export default function CatalystViewIncident({
       statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [issue, itemId, projectId, projectKey, onOpenItem, onClose, improveHandlers]);
 
   return (
     <>
@@ -122,12 +132,13 @@ export default function CatalystViewIncident({
         });
       }}
       /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
-      moreMenuItems={[
+      moreMenuItems={useMemo(() => [
         { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
         { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
         { label: 'Delete incident', onClick: () => setShowDeleteDialog(true), danger: true },
-      ]}
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      ], [issue?.issue_key])}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />

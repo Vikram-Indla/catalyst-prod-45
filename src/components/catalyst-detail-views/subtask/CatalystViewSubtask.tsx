@@ -1,7 +1,7 @@
 /**
  * CatalystViewSubtask — Sub-task detail overlay.
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -64,7 +64,15 @@ export default function CatalystViewSubtask({
     },
   });
 
-  const leftContent = (
+  // Memoize leftContent / rightContent / moreMenuItems so that opening a
+  // confirmation dialog (showDeleteDialog, showCloneDialog, etc.) does NOT
+  // cause the entire CatalystViewBase tree to re-render. Without memos, any
+  // state change in this component creates new JSX/array references, which
+  // forces CatalystViewBase (not React.memo'd) to re-diff SubtasksPanel +
+  // LinkedWorkItemsSection + ActivitySection + AttachmentsPanel + SidebarDetails
+  // synchronously — blocking the main thread for ~150–400ms before the dialog
+  // paint. With memos, the refs stay stable and CatalystViewBase bails out.
+  const leftContent = useMemo(() => (
     <>
       {/* SUBTASK-UNIQUE: Parent story context banner */}
       {parentIssue && (
@@ -108,11 +116,13 @@ export default function CatalystViewSubtask({
       <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [issue, itemId, projectKey, onOpenItem, isOpen, parentIssue]);
 
-  const rightContent = (
+  const rightContent = useMemo(() => (
     <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="sub-task" statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />} improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />} />
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [issue, itemId, projectId, projectKey, onOpenItem, onClose, improveHandlers]);
 
   return (
     <>
@@ -129,12 +139,13 @@ export default function CatalystViewSubtask({
         });
       }}
       /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
-      moreMenuItems={[
+      moreMenuItems={useMemo(() => [
         { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
         { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
         { label: 'Delete sub-task', onClick: () => setShowDeleteDialog(true), danger: true },
-      ]}
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      ], [issue?.issue_key])}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />

@@ -13,7 +13,7 @@
  * types, shared-components and the section files are still consumed
  * across the Catalyst views.
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -109,7 +109,8 @@ export default function CatalystViewStory({
     });
   }, [isOpen, issue?.id, issue?.summary, issue?.issue_key, issue?.project_key, issue?.project_name, projectId, projectKey, trackRecent]);
 
-  const leftContent = (
+  // Memoize so dialog state changes (showDeleteDialog etc.) don't re-render CatalystViewBase tree
+  const leftContent = useMemo(() => (
     <>
       <CatalystTitleEditor
         issue={issue ?? null}
@@ -178,9 +179,10 @@ export default function CatalystViewStory({
 
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [issue, itemId, projectKey, onOpenItem, isOpen, attachments, workItemSource, user, projectId]);
 
-  const rightContent = (
+  const rightContent = useMemo(() => (
     <CatalystSidebarDetails
       issue={issue ?? null}
       itemId={itemId}
@@ -200,7 +202,8 @@ export default function CatalystViewStory({
       statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [issue, itemId, projectId, projectKey, onOpenItem, onClose, improveHandlers]);
 
   return (
     <>
@@ -224,12 +227,13 @@ export default function CatalystViewStory({
           });
         }}
         /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
-        moreMenuItems={[
+        moreMenuItems={useMemo(() => [
           { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
           { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
           { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
           { label: 'Delete story', onClick: () => setShowDeleteDialog(true), danger: true },
-        ]}
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        ], [issue?.issue_key])}
         onTogglePanelMode={onTogglePanelMode}
         navigationItems={navigationItems}
         currentItemId={itemId}
