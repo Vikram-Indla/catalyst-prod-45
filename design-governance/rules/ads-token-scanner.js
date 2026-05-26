@@ -88,8 +88,13 @@ class ADSTokenScanner {
     // flagged as violations.
     this.rgbHslPattern = /\b(?:rgb|rgba|hsl|hsla)\(\s*\d/;
     // Banned toast libraries. Catalyst standardizes on @atlaskit/flag.
+    // NOTE: `from 'sonner'` is NOT banned here because vite.config.ts aliases
+    // 'sonner' → src/components/ui/sonner.tsx (our ADS shim). Callsites that
+    // import from 'sonner' directly are transparently redirected to showFlag().
+    // The alias was added 2026-05-26. Once Phase 5 removes the sonner package
+    // entirely, update callsites to `from '@/components/ui/sonner'` and remove
+    // the alias; at that point re-add the ban below.
     this.bannedToastImports = [
-      /from\s+['"]sonner['"]/,
       /from\s+['"]react-hot-toast['"]/,
       /from\s+['"]react-toastify['"]/,
     ];

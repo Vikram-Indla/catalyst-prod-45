@@ -422,8 +422,6 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
     if (!canGenerate) return;
     setGenState('generating');
     try {
-      toast.loading('Generating Excel report…', { id: 'export-xl' });
-
       const months: { label: string; start: Date; end: Date }[] = [];
 
       // Add selected predefined months
@@ -449,12 +447,12 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
 
       await generateExcel(months, deptFilter);
       setGenState('done');
-      toast.success('Excel exported successfully', { id: 'export-xl' });
+      toast.success('Excel exported successfully');
 
       setTimeout(() => setGenState('idle'), 3000);
     } catch (err: any) {
       setGenState('idle');
-      toast.error(err.message || 'Export failed', { id: 'export-xl' });
+      toast.error(err.message || 'Export failed');
     }
   }, [canGenerate, selected, customFrom, customTo, monthOptions, deptFilter]);
 

@@ -160,7 +160,6 @@ export default function ReqAssistLibrary() {
     let failed = 0;
     for (let i = 0; i < unsyncedReady.length; i++) {
       const doc = unsyncedReady[i];
-      toast.loading(`Indexing ${i + 1} of ${unsyncedReady.length}...`, { id: 'sync-all-progress' });
       try {
         const jiraKey = (doc as any)?.jira_ticket_key;
         let brdId: string | null = null;
@@ -179,7 +178,6 @@ export default function ReqAssistLibrary() {
         console.error('[RA] Sync failed for doc:', sanitiseError(err));
       }
     }
-    toast.dismiss('sync-all-progress');
     if (failed > 0) {
       toast.warning(`Indexed ${success} of ${unsyncedReady.length}. ${failed} failed.`);
     } else {

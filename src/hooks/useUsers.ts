@@ -597,22 +597,18 @@ export function useDeleteUser() {
         (old || []).filter((u) => u.id !== userId)
       );
 
-      toast.loading('Removing user…', { id: `delete-user-${userId}` });
-
       return { previousUsers };
     },
-    onSuccess: (_data, userId) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
-      toast.success('User removed from the system', { id: `delete-user-${userId}` });
+      toast.success('User removed from the system');
     },
-    onError: (error, userId, context) => {
+    onError: (error, _userId, context) => {
       // Rollback optimistic update
       if (context?.previousUsers) {
         queryClient.setQueryData(['users-list'], context.previousUsers);
       }
-      toast.error((error as Error).message || 'Failed to remove user', {
-        id: `delete-user-${userId}`,
-      });
+      toast.error((error as Error).message || 'Failed to remove user');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
