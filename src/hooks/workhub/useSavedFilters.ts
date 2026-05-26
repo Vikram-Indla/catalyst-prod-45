@@ -5,7 +5,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 // ads-scanner:ignore-next-line — toast is the approved notification primitive in data-layer hooks
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface SavedFilter {
   id: string;
@@ -101,9 +101,9 @@ export function useCreateSavedFilter() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['filters'] });
-      toast.success('Filter saved');
+      catalystToast.success('Filter saved');
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 }
 
@@ -132,9 +132,9 @@ export function useUpdateSavedFilter() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['filters'] });
-      toast.success('Filter updated');
+      catalystToast.success('Filter updated');
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 }
 
@@ -150,9 +150,9 @@ export function useDeleteSavedFilter() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['filters'] });
-      toast.success('Filter deleted');
+      catalystToast.success('Filter deleted');
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 }
 
@@ -236,7 +236,7 @@ export function useStarFilter() {
       if (error) throw new Error(error.message);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['filters'] }),
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 }
 
@@ -262,9 +262,9 @@ export function useToggleFilterSubscription() {
     },
     onSuccess: (result) => {
       qc.invalidateQueries({ queryKey: ['filters'] });
-      toast.success(result.isSubscribed ? 'Unsubscribed from filter' : 'Subscribed — you\'ll be notified on changes');
+      catalystToast.success(result.isSubscribed ? 'Unsubscribed from filter' : 'Subscribed — you\'ll be notified on changes');
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 }
 
@@ -294,9 +294,9 @@ export function useCopyFilter() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['filters'] });
-      toast.success('Filter copied');
+      catalystToast.success('Filter copied');
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 }
 
@@ -436,9 +436,9 @@ export function useToggleFilterBoardLink() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['filters'] });
       qc.invalidateQueries({ queryKey: ['project-boards'] });
-      toast.success('Board link updated');
+      catalystToast.success('Board link updated');
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 }
 
@@ -484,8 +484,8 @@ export function useChangeFilterOwner() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['filters'] });
-      toast.success('Filter owner updated');
+      catalystToast.success('Filter owner updated');
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 }
