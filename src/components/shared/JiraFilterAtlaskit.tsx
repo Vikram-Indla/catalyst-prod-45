@@ -43,6 +43,7 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import Avatar from '@atlaskit/avatar';
 import Lozenge from '@atlaskit/lozenge';
 import { resolveAvatarUrl } from '@/lib/avatars';
@@ -145,7 +146,7 @@ export function countActiveFilters(v: JiraFilterValue): number {
 const PRIORITY_LEVELS: Array<{ level: PriorityLevel; label: string; icon: React.ReactNode; color: string }> = [
   { level: 'highest', label: 'Highest', icon: <HighestPriIcon label="" size="small" />, color: token('color.icon.danger', '#E5484D') },
   { level: 'high',    label: 'High',    icon: <HighPriIcon    label="" size="small" />, color: token('color.icon.danger', '#E5484D') },
-  { level: 'medium',  label: 'Medium',  icon: <MediumPriIcon  label="" size="small" />, color: token('color.icon.warning', 'var(--cp-amber, #F59E0B)') },
+  { level: 'medium',  label: 'Medium',  icon: <MediumPriIcon  label="" size="small" />, color: token('color.icon.warning', '#F59E0B') },
   { level: 'low',     label: 'Low',     icon: <LowPriIcon     label="" size="small" />, color: token('color.icon.information', '#0065FF') },
   { level: 'lowest',  label: 'Lowest',  icon: <LowestPriIcon  label="" size="small" />, color: token('color.icon.information', '#0065FF') },
 ];
@@ -179,8 +180,20 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
   } = props;
 
   const [isOpen, setIsOpen] = useState(false);
+  const [drawerPos, setDrawerPos] = useState<{ top: number; right: number } | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
+
+  function openDrawer() {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setDrawerPos({
+        top: rect.bottom + 4,
+        right: window.innerWidth - rect.right,
+      });
+    }
+    setIsOpen(true);
+  }
 
   useEffect(() => {
     if (!isOpen) return;
@@ -209,16 +222,16 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
       <button
         ref={triggerRef}
         type="button"
-        onClick={() => setIsOpen(v => !v)}
+        onClick={() => isOpen ? setIsOpen(false) : openDrawer()}
         aria-expanded={isOpen}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 8,
           height: 32,
           padding: '0 12px',
           borderRadius: 3,
-          border: `1px solid ${isOpen ? token('color.border.selected', '#0C66E4') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+          border: `1px solid ${isOpen ? token('color.border.selected', '#0C66E4') : token('color.border', '#DFE1E6')}`,
           background: isOpen ? token('color.background.selected', '#E9F2FF') : token('elevation.surface', '#FFFFFF'),
           color: isOpen ? token('color.text.selected', '#0055CC') : token('color.text', '#292A2E'),
           fontSize: 13,
@@ -252,22 +265,22 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
         )}
       </button>
 
-      {isOpen && (
+      {isOpen && drawerPos && createPortal(
         <div
           ref={drawerRef}
           role="dialog"
           aria-label="Filters"
+          data-filter-drawer="true"
           style={{
-            position: 'absolute',
-            top: '100%',
-            marginTop: 4,
-            right: 0,
-            zIndex: 900,
+            position: 'fixed',
+            top: drawerPos.top,
+            right: drawerPos.right,
+            zIndex: 9999,
             width: 360,
             maxHeight: 'calc(100vh - 160px)',
             overflowY: 'auto',
             background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 8px 24px -4px rgba(9,30,66,0.18)'),
             color: token('color.text', '#292A2E'),
@@ -279,7 +292,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
           <div
             style={{
               padding: '12px 16px',
-              borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+              borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -288,9 +301,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
             <span
               style={{
                 fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
+                fontWeight: 653,
                 color: token('color.text.subtlest', '#6B778C'),
               }}
             >
@@ -459,7 +470,8 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
               emptyHint="No labels yet."
             />
           </Section>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
@@ -476,13 +488,13 @@ function Section({
     <div
       style={{
         padding: '16px 16px 18px',
-        borderBottom: noBorder ? 'none' : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        borderBottom: noBorder ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
       }}
     >
       <div
         style={{
           fontSize: 13,
-          fontWeight: 600,
+          fontWeight: 500,
           color: token('color.text', '#292A2E'),
           marginBottom: 10,
         }}
@@ -564,7 +576,7 @@ function AvatarGrid({
             width: 32,
             height: 32,
             borderRadius: '50%',
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
             background: token('elevation.surface', '#FFFFFF'),
             color: token('color.text.subtle', '#42526E'),
             cursor: 'pointer',
@@ -617,7 +629,7 @@ function StatusChipGrid({
               gap: 8,
               padding: '6px 12px',
               borderRadius: 16,
-              border: `1px solid ${isSel ? token('color.border.selected', '#0C66E4') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+              border: `1px solid ${isSel ? token('color.border.selected', '#0C66E4') : token('color.border', '#DFE1E6')}`,
               background: isSel ? token('color.background.selected', '#E9F2FF') : token('elevation.surface', '#FFFFFF'),
               cursor: 'pointer',
             }}
@@ -637,7 +649,7 @@ function StatusChipGrid({
             width: 32,
             height: 32,
             borderRadius: '50%',
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
             background: token('elevation.surface', '#FFFFFF'),
             color: token('color.text.subtle', '#42526E'),
             cursor: 'pointer',
@@ -690,10 +702,10 @@ function WorkTypeChipGrid({
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 8,
               padding: '6px 12px',
               borderRadius: 16,
-              border: `1px solid ${isSel ? token('color.border.selected', '#0C66E4') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+              border: `1px solid ${isSel ? token('color.border.selected', '#0C66E4') : token('color.border', '#DFE1E6')}`,
               background: isSel ? token('color.background.selected', '#E9F2FF') : token('color.background.neutral.subtle', '#FAFBFC'),
               color: isSel ? token('color.text.selected', '#0055CC') : token('color.text', '#292A2E'),
               fontSize: 13,
@@ -720,7 +732,7 @@ function WorkTypeChipGrid({
             width: 32,
             height: 32,
             borderRadius: '50%',
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
             background: token('elevation.surface', '#FFFFFF'),
             color: token('color.text.subtle', '#42526E'),
             cursor: 'pointer',
@@ -804,7 +816,7 @@ function PillChipGrid({
             width: 28,
             height: 28,
             borderRadius: '50%',
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
             background: token('elevation.surface', '#FFFFFF'),
             color: token('color.text.subtle', '#42526E'),
             cursor: 'pointer',

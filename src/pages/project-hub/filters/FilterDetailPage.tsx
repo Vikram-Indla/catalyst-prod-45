@@ -41,8 +41,8 @@ export default function FilterDetailPage() {
     queryKey: ['filter-boards', filter?.used_by_board_ids],
     queryFn: async () => {
       if (!filter?.used_by_board_ids?.length) return [];
-      const { data, error } = await (supabase as any)
-        .from('boards')
+      const { data, error } = await supabase
+        .from('boards' as any)
         .select('id, name')
         .in('id', filter.used_by_board_ids);
       if (error) throw new Error(error.message);
@@ -177,15 +177,26 @@ export default function FilterDetailPage() {
             >
               Edit filter
             </Button>
-            {filter.jql_query && (
+            {filter.jql_query && projectKey && (
+              <>
+                <Button
+                  appearance="subtle"
+                  onClick={() => navigate(`/project-hub/${projectKey}/allwork?filterId=${filter.id}`)}
+                >
+                  Open in all work
+                </Button>
+                <Button
+                  appearance="primary"
+                  onClick={() => navigate(`/project-hub/${projectKey}/backlog?filterId=${filter.id}`)}
+                >
+                  Apply to backlog
+                </Button>
+              </>
+            )}
+            {filter.jql_query && !projectKey && (
               <Button
                 appearance="primary"
-                onClick={() => {
-                  const allWorkHref = projectKey
-                    ? `/project-hub/${projectKey}/allwork?filterId=${filter.id}`
-                    : backHref;
-                  navigate(allWorkHref);
-                }}
+                onClick={() => navigate(backHref)}
               >
                 Apply filter
               </Button>

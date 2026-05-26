@@ -61,7 +61,7 @@ import AkLinkExternalIcon from '@atlaskit/icon/core/link-external';
 import AkLinkIcon from '@atlaskit/icon/core/link';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
-import DropdownMenu, { DropdownItemRadioGroup, DropdownItemRadio } from '@atlaskit/dropdown-menu';
+import DropdownMenu, { DropdownItem, DropdownItemGroup, DropdownItemRadioGroup, DropdownItemRadio } from '@atlaskit/dropdown-menu';
 import Modal, {
   ModalBody,
   ModalFooter,
@@ -127,6 +127,10 @@ import { writeTicketOrigin } from '../hooks/useTicketOrigin';
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 import { jiraSyncService } from '@/services/jira-sync.service';
 import { JiraFilterAtlaskit, emptyFilterValue } from '@/components/shared/JiraFilterAtlaskit';
+import { useFiltersForProject, useRecordFilterUsage } from '@/hooks/workhub/useSavedFilters';
+import { jqlToJiraFilterValue } from '@/lib/jql/jqlToJiraFilterValue';
+import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
+import { basicToJql } from '@/lib/filters/basicToJql';
 import type {
   JiraFilterValue,
   AssigneeOption,
@@ -680,6 +684,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
   // ── UI state (URL-seeded) ──
+  const urlFilterId = searchParams.get('filterId');
+
   const [typeFilter, setTypeFilter] = useState<BacklogType | 'all'>(
     () => (searchParams.get('type') as BacklogType | 'all') || 'all',
   );
@@ -764,6 +770,34 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
     try { const r = localStorage.getItem(COL_WIDTHS_KEY); return r ? JSON.parse(r) : {}; } catch { return {}; }
   });
+
+  // P0-29: Load saved filter from ?filterId URL param and apply once.
+  const { data: urlSavedFilter } = useQuery({
+    queryKey: ['backlog-url-filter', urlFilterId],
+    queryFn: async () => {
+      if (!urlFilterId) return null;
+      const { data, error } = await supabase
+        .from('ph_saved_filters')
+        .select('id, name, jql_query')
+        .eq('id', urlFilterId)
+        .single();
+      if (error) return null;
+      return data as { id: string; name: string; jql_query: string | null };
+    },
+    enabled: !!urlFilterId,
+    staleTime: 60_000,
+  });
+  const recordFilterUsage = useRecordFilterUsage();
+  const appliedBacklogFilterRef = React.useRef<string | null>(null);
+  React.useEffect(() => {
+    if (urlSavedFilter && urlSavedFilter.id !== appliedBacklogFilterRef.current) {
+      appliedBacklogFilterRef.current = urlSavedFilter.id;
+      if (urlSavedFilter.jql_query) {
+        setFilterValue(jqlToJiraFilterValue(urlSavedFilter.jql_query));
+      }
+      recordFilterUsage.mutate(urlSavedFilter.id);
+    }
+  }, [urlSavedFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Apr 27 2026 (jira-compare regression iter 3 — Add people modal).
   // Catalyst's Add people CTA in the chrome band opens this modal,
@@ -2262,6 +2296,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   const [bulkTransitionOpen, setBulkTransitionOpen] = useState(false);
   const [bulkTransitionTarget, setBulkTransitionTarget] = useState<string | null>(null);
   // Bulk change wizard — 2-step modal (step 1: choose action; step 2: configure + confirm).
+  const [saveFilterOpen, setSaveFilterOpen] = useState(false);
   const [bulkWizardOpen, setBulkWizardOpen] = useState(false);
   const [bulkWizardStep, setBulkWizardStep] = useState<1 | 2>(1);
   const [bulkWizardAction, setBulkWizardAction] = useState<'edit' | 'move' | 'transition' | 'delete' | null>(null);
@@ -2536,6 +2571,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         ]},
         // Group 2 — data ops (Jira parity items 6 + 7 + 8)
         { items: [
+          { id: 'save-filter', label: 'Save current filter', icon: <AkLinkIcon label="" size="small" />,
+            onClick: () => setSaveFilterOpen(true), opensModal: true },
           { id: 'refresh', label: 'Refresh', icon: <AkRefreshIcon label="" size="small" />, onClick: handleRefreshBacklog },
           { id: 'export', label: 'Export to CSV', icon: <AkDownloadIcon label="" size="small" />, onClick: handleExportCSV },
           { id: 'import-csv', label: 'Import work items from CSV', icon: <AkDownloadIcon label="" size="small" />,
@@ -2865,6 +2902,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             Audit pass 10 type-chips removal note retained: inline type
             chips (All/Epics/Features/Stories/...) live in the Filter
             dropdown's Work-type facet now, not the toolbar. */}
+        {/* Saved filters dropdown — P0-25 */}
+        <BacklogSavedFiltersDropdown
+          projectKey={projectKey}
+          onApply={(jql) => setFilterValue(jqlToJiraFilterValue(jql))}
+        />
+
         <div style={{ flex: 1 }} />
 
         {/* RIGHT cluster begins — Group control + view-options + more-actions */}
@@ -3577,6 +3620,19 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           </Modal>
         )}
       </ModalTransition>
+
+      {/* P0-26: Save current filter as a named saved filter */}
+      {saveFilterOpen && (
+        <FilterSaveModal
+          initialJql={basicToJql(filterValue)}
+          hubScope="project"
+          onClose={() => setSaveFilterOpen(false)}
+          onSaved={() => {
+            setSaveFilterOpen(false);
+            flag.success('Filter saved', 'Find it in Project Filters.');
+          }}
+        />
+      )}
 
       {/* Single FlagsHost for this route — picks up every showFlag()/flag.* call. */}
       <FlagsHost />
@@ -6399,5 +6455,47 @@ function EditBacklogItemModal({
         </Modal>
       )}
     </ModalTransition>
+  );
+}
+
+// ─── BacklogSavedFiltersDropdown ─────────────────────────────────────────────
+
+interface BacklogSavedFiltersDropdownProps {
+  projectKey: string;
+  onApply: (jql: string) => void;
+}
+
+function BacklogSavedFiltersDropdown({ projectKey, onApply }: BacklogSavedFiltersDropdownProps) {
+  const { data: filters = [] } = useFiltersForProject(projectKey, 'project');
+  const jqlFilters = filters.filter(f => f.jql_query);
+
+  if (jqlFilters.length === 0) return null;
+
+  return (
+    <DropdownMenu
+      trigger={({ triggerRef, ...props }) => (
+        <Button
+          ref={triggerRef as React.Ref<HTMLButtonElement>}
+          {...props}
+          appearance="subtle"
+        >
+          <span style={{ color: token('color.text.subtle', '#42526E'), fontSize: 13 }}>
+            Saved filters ({jqlFilters.length})
+          </span>
+        </Button>
+      )}
+    >
+      <DropdownItemGroup>
+        {jqlFilters.map(f => (
+          <DropdownItem
+            key={f.id}
+            description={f.description ?? undefined}
+            onClick={() => onApply(f.jql_query!)}
+          >
+            {f.name}
+          </DropdownItem>
+        ))}
+      </DropdownItemGroup>
+    </DropdownMenu>
   );
 }

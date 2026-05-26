@@ -69,6 +69,7 @@ const BacklogDetailPageLazy = lazy(() => import("../modules/project-work-hub/pag
 const AllWorkDetailPageLazy = lazy(() => import("../modules/project-work-hub/pages/AllWorkDetailPage"));
 const FiltersListPageLazy = lazy(() => import("../pages/project-hub/filters/FiltersListPage"));
 const CreateFilterPageLazy = lazy(() => import("../pages/project-hub/filters/CreateFilterPage"));
+const FilterDetailPageLazy = lazy(() => import("../pages/project-hub/filters/FilterDetailPage"));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const IssueDetailPageLazy = lazy(() => import("../pages/project-hub/IssueDetailPage"));
 const HierarchyPageLazy = lazy(() => import("../pages/project-hub/HierarchyPage"));
@@ -967,6 +968,8 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />
         <Route path="/project-hub/:key/filters" element={<S><FiltersListPageLazy /></S>} />
         <Route path="/project-hub/:key/filters/create" element={<S><CreateFilterPageLazy hubType="project" /></S>} />
+        <Route path="/project-hub/:key/filters/:filterId" element={<S><FilterDetailPageLazy /></S>} />
+        <Route path="/project-hub/filters" element={<S><FiltersListPageLazy /></S>} />
         <Route path="/project-hub/:key/timeline" element={<PHPlaceholder title="Timeline" phase="Phase 3" />} />
         <Route path="/project-hub/:key/releases" element={<PHPlaceholder title="Releases" phase="Phase 3" />} />
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />

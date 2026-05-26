@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import AkDynamicTable from '@atlaskit/dynamic-table';
 import Button from '@atlaskit/button/new';
@@ -9,7 +9,6 @@ import AkAvatar from '@atlaskit/avatar';
 import { useFiltersForProject, useStarFilter, useDeleteSavedFilter, type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
 import { FilterHealthBadge } from '@/components/filters/FilterHealthBadge';
 import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
-import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { Star, StarOff, Plus, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -19,17 +18,18 @@ interface FiltersListPageProps {
   hubType?: HubType;
 }
 
-type TabId = 'my' | 'starred' | 'recent';
+type TabId = 'my' | 'starred' | 'shared' | 'recent';
 
 const TABLE_HEAD = {
   cells: [
     { key: 'star',      content: '',                   width: 4,  isSortable: false },
-    { key: 'name',      content: 'Name',               width: 36, isSortable: true  },
-    { key: 'owner',     content: 'Owner',              width: 18, isSortable: false },
-    { key: 'viewers',   content: 'Viewers',            width: 12, isSortable: false },
+    { key: 'name',      content: 'Name',               width: 30, isSortable: true  },
+    { key: 'owner',     content: 'Owner',              width: 16, isSortable: false },
+    { key: 'viewers',   content: 'Viewers',            width: 10, isSortable: false },
     { key: 'starred',   content: 'Starred by',         width: 8,  isSortable: true  },
-    { key: 'boards',    content: 'Boards',             width: 8,  isSortable: true  },
-    { key: 'health',    content: 'Health',             width: 10, isSortable: false },
+    { key: 'boards',    content: 'Boards',             width: 6,  isSortable: true  },
+    { key: 'health',    content: 'Health',             width: 8,  isSortable: false },
+    { key: 'lastUsed',  content: 'Last used',          width: 12, isSortable: true  },
     { key: 'actions',   content: '',                   width: 4,  isSortable: false },
   ],
 };
@@ -65,8 +65,8 @@ function BoardsBadge({ count }: { count: number }) {
       alignItems: 'center',
       padding: '4px 8px',
       borderRadius: 3,
-      background: token('color.background.information'),
-      color: token('color.text.information'),
+      background: token('color.background.neutral'),
+      color: token('color.text.subtle'),
       fontSize: 12,
       fontWeight: token('font.weight.medium'),
     }}>
@@ -78,10 +78,13 @@ function BoardsBadge({ count }: { count: number }) {
 export default function FiltersListPage({ hubType = 'project' }: FiltersListPageProps) {
   const { key: projectKey } = useParams<{ key: string }>();
 
+  const navigate = useNavigate();
+
   const [activeTab, setActiveTab] = useState<TabId>('my');
   const [search, setSearch] = useState('');
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [sortKey, setSortKey] = useState<string>('name');
+  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
 
   // Resolve current user id once on mount
   React.useEffect(() => {
@@ -103,6 +106,12 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       list = list.filter(f => f.user_id === currentUserId || f.owner_id === currentUserId);
     } else if (activeTab === 'starred') {
       list = list.filter(f => currentUserId && f.starred_by_user_ids.includes(currentUserId));
+    } else if (activeTab === 'shared') {
+      list = list.filter(f =>
+        f.viewers_config?.type !== 'private' &&
+        f.user_id !== currentUserId &&
+        f.owner_id !== currentUserId
+      );
     } else {
       // recent — show all, sorted by last_used_at desc
       list = [...list].sort((a, b) => {
@@ -163,8 +172,8 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             key: 'name',
             content: (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <a
-                  href={projectKey
+                <Link
+                  to={projectKey
                     ? `/project-hub/${projectKey}/filters/${f.id}`
                     : `/product-hub/filters/${f.id}`}
                   style={{
@@ -177,7 +186,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                   onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
                 >
                   {f.name}
-                </a>
+                </Link>
                 {f.jql_query && (
                   <span style={{
                     fontSize: 11,
@@ -232,6 +241,19 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             content: <FilterHealthBadge health={f.health_status} />,
           },
           {
+            key: 'lastUsed',
+            content: (
+              <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
+                {f.last_used_at
+                  ? new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
+                      Math.round((new Date(f.last_used_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
+                      'day'
+                    )
+                  : '—'}
+              </span>
+            ),
+          },
+          {
             key: 'actions',
             content: (
               <FilterKebabMenu filter={f} currentUserId={currentUserId} />
@@ -280,7 +302,9 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         <Button
           appearance="primary"
           iconBefore={() => <Plus size="small" />}
-          onClick={() => setCreateModalOpen(true)}
+          onClick={() => navigate(projectKey
+            ? `/project-hub/${projectKey}/filters/create`
+            : `/project-hub/filters/create`)}
         >
           Create filter
         </Button>
@@ -297,11 +321,12 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       }}>
         <Tabs
           id="filters-tabs"
-          onChange={idx => setActiveTab((['my', 'starred', 'recent'] as TabId[])[idx])}
+          onChange={idx => setActiveTab((['my', 'starred', 'shared', 'recent'] as TabId[])[idx])}
         >
           <TabList>
             <Tab>My filters</Tab>
             <Tab>Starred</Tab>
+            <Tab>Shared</Tab>
             <Tab>Recent</Tab>
           </TabList>
         </Tabs>
@@ -339,25 +364,26 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                 {search ? 'No filters match your search' : 'No filters yet'}
               </span>
               {!search && (
-                <Button appearance="primary" onClick={() => setCreateModalOpen(true)}>
+                <Button
+                  appearance="primary"
+                  onClick={() => navigate(projectKey
+                    ? `/project-hub/${projectKey}/filters/create`
+                    : `/project-hub/filters/create`)}
+                >
                   Create your first filter
                 </Button>
               )}
             </div>
           }
-          defaultSortKey="name"
-          defaultSortOrder="ASC"
+          sortKey={sortKey}
+          sortOrder={sortOrder}
+          onSort={({ key, sortOrder: order }: { key: string; sortOrder: 'ASC' | 'DESC' }) => {
+            setSortKey(key);
+            setSortOrder(order);
+          }}
         />
       </div>
 
-      {/* Create filter modal */}
-      {createModalOpen && (
-        <FilterSaveModal
-          hubScope={hubType === 'product' ? 'product' : 'project'}
-          onClose={() => setCreateModalOpen(false)}
-          onSaved={() => setCreateModalOpen(false)}
-        />
-      )}
     </div>
   );
 }

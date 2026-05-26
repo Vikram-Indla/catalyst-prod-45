@@ -2,6 +2,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import { getSuggestions, translate } from '@/lib/jql';
 import { JQLAutocompleteDropdown } from './JQLAutocompleteDropdown';
+import { useJQLValidation } from '@/hooks/workhub/useJQLValidation';
 import type { SuggestionResult } from '@/lib/jql';
 
 interface Props {
@@ -29,6 +30,7 @@ export function JQLEditor({
   const [suggestions, setSuggestions] = useState<SuggestionResult | null>(null);
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const validation = useJQLValidation(value);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
@@ -81,7 +83,8 @@ export function JQLEditor({
     try { return translate(value).length; } catch { return 0; }
   }, [value]);
 
-  const borderColor = isInvalid
+  const hasServerErrors = !validation.valid && validation.errors.length > 0;
+  const borderColor = (isInvalid || hasServerErrors)
     ? token('color.border.danger')
     : `var(--ds-border, #DFE1E6)`;
 
@@ -126,6 +129,24 @@ export function JQLEditor({
           color: token('color.text.subtlest'),
         }}>
           {filterCount} active {filterCount === 1 ? 'filter' : 'filters'}
+          {validation.isChecking && <span style={{ marginLeft: 8, color: token('color.text.subtlest') }}>Validating…</span>}
+        </div>
+      )}
+
+      {hasServerErrors && (
+        <div style={{ marginTop: 4 }}>
+          {validation.errors.map((err, i) => (
+            <div key={i} style={{
+              fontSize: 12,
+              color: token('color.text.danger'),
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 4,
+            }}>
+              <span aria-hidden>✕</span>
+              <span>{err}</span>
+            </div>
+          ))}
         </div>
       )}
 

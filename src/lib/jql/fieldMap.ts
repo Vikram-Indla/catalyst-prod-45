@@ -32,11 +32,28 @@ export const JQL_FIELD_MAP: Record<string, FieldDef> = {
 
 /** JQL functions and what they resolve to at query time */
 export const JQL_FUNCTIONS = [
-  { value: 'currentUser()',   description: 'Current signed-in user'            },
-  { value: 'startOfWeek()',  description: 'Start of the current week'          },
-  { value: 'endOfWeek()',    description: 'End of the current week'            },
-  { value: 'startOfMonth()', description: 'Start of the current month'         },
-  { value: 'endOfMonth()',   description: 'End of the current month'           },
+  // User functions
+  { value: 'currentUser()',                description: 'Current signed-in user'                  },
+  { value: 'membersOf("group")',           description: 'All members of a named group'             },
+
+  // Date functions
+  { value: 'startOfWeek()',               description: 'Start of the current week'                },
+  { value: 'endOfWeek()',                 description: 'End of the current week'                  },
+  { value: 'startOfMonth()',              description: 'Start of the current month'               },
+  { value: 'endOfMonth()',               description: 'End of the current month'                 },
+  { value: 'startOfYear()',              description: 'Start of the current year'                },
+  { value: 'endOfYear()',               description: 'End of the current year'                  },
+
+  // Sprint functions
+  { value: 'openSprints()',              description: 'All currently open sprints'               },
+  { value: 'closedSprints()',            description: 'All closed sprints'                       },
+  { value: 'futureSprints()',            description: 'All future (not yet started) sprints'     },
+
+  // Version functions
+  { value: 'latestReleasedVersion()',    description: 'The most recently released version'       },
+  { value: 'earliestUnreleasedVersion()', description: 'The earliest version not yet released'  },
+  { value: 'releasedVersions()',         description: 'All released versions'                    },
+  { value: 'unreleasedVersions()',       description: 'All unreleased versions'                  },
 ];
 
 /** Relative date shorthand: -7d, -30d, -1w, -4w */
