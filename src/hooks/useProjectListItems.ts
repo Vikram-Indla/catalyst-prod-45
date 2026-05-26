@@ -190,6 +190,7 @@ export function useProjectListItems(projectKey: string | undefined) {
       const rows = await fetchAllPhIssues((qb) => qb
         .eq('project_key', projectKey)
         .is('jira_removed_at', null)
+        .is('deleted_at', null)
         .order('jira_updated_at', { ascending: false, nullsFirst: false }),
       );
       return rows.map(mapPhIssue);
@@ -251,6 +252,7 @@ export function useProjectAllWorkItems(projectKey: string | undefined): AllWorkP
         .select(PH_ISSUES_SELECT)
         .eq('project_key', projectKey)
         .is('jira_removed_at', null)
+        .is('deleted_at', null)
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .order('issue_key', { ascending: false });
 
@@ -321,6 +323,7 @@ export function useWorkItemChildren(parentKey: string | undefined, enabled: bool
         .select(PH_ISSUES_SELECT)
         .eq('parent_key', parentKey)
         .is('jira_removed_at', null)
+        .is('deleted_at', null)
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(500);
       if (error) throw error;
@@ -344,6 +347,8 @@ export function useWorkItem(itemId: string | undefined) {
         .from('ph_issues')
         .select(PH_ISSUES_SELECT)
         .eq('issue_key', itemId)
+        .is('jira_removed_at', null)
+        .is('deleted_at', null)
         .maybeSingle();
       if (error) throw error;
       if (!data) return null;
@@ -368,6 +373,7 @@ export function useSearchWorkItems(projectKey: string | undefined, query: string
         .select(PH_ISSUES_SELECT)
         .eq('project_key', projectKey)
         .is('jira_removed_at', null)
+        .is('deleted_at', null)
         .or(`summary.ilike.%${query}%,issue_key.ilike.%${query}%`)
         .limit(20);
       if (error) throw error;
