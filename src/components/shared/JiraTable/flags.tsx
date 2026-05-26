@@ -145,7 +145,13 @@ export function FlagsHost() {
     if (document.getElementById('cp-flag-left-offset')) return;
     const s = document.createElement('style');
     s.id = 'cp-flag-left-offset';
-    s.textContent = `.atlaskit-portal { --ds-space-1000: calc(var(--cp-layout-sidebar, 240px) + 16px); }`;
+    // Override inset-inline-start directly on the compiled class that positions
+    // the FlagGroup. The CSS variable approach (overriding --ds-space-1000 on
+    // .atlaskit-portal) doesn't cascade down to the fixed element because ADS
+    // spacing theme re-declares --ds-space-1000 on html[data-theme~="spacing:spacing"]
+    // with higher effective specificity. Directly overriding the compiled property
+    // avoids that race entirely.
+    s.textContent = `._1e021epz { inset-inline-start: calc(var(--cp-layout-sidebar, 240px) + 16px) !important; }`;
     document.head.appendChild(s);
   }, []);
 
