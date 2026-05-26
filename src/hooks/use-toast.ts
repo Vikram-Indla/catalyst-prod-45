@@ -1,186 +1,55 @@
-import * as React from "react";
+/**
+ * ADS shim for the radix useToast() / toast() API.
+ *
+ * All 69 files that `import { useToast } from '@/hooks/use-toast'`
+ * continue to work unchanged. Calls route to @atlaskit/flag via showFlag().
+ *
+ * Variant mapping:
+ *   variant: 'destructive'  →  appearance: 'error'  (persistent — user dismisses)
+ *   variant: 'default' / none  →  appearance: 'info'  (auto-dismiss 8s)
+ *
+ * The original 180-line radix reducer is replaced; the exported interface
+ * (useToast, toast, reducer) is kept stable for any callsite that imports them.
+ */
+import { showFlag } from '@/components/shared/JiraTable/flags';
 
-import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
-
-const TOAST_LIMIT = 1;
-const TOAST_REMOVE_DELAY = 1000000;
-
-type ToasterToast = ToastProps & {
-  id: string;
-  title?: React.ReactNode;
-  description?: React.ReactNode;
-  action?: ToastActionElement;
-};
-
-const actionTypes = {
-  ADD_TOAST: "ADD_TOAST",
-  UPDATE_TOAST: "UPDATE_TOAST",
-  DISMISS_TOAST: "DISMISS_TOAST",
-  REMOVE_TOAST: "REMOVE_TOAST",
-} as const;
-
-let count = 0;
-
-function genId() {
-  count = (count + 1) % Number.MAX_SAFE_INTEGER;
-  return count.toString();
+interface ToastOptions {
+  title?: string;
+  description?: string;
+  /** 'destructive' → error flag; anything else → info flag */
+  variant?: 'default' | 'destructive';
+  // Additional fields from radix API accepted but ignored (no radix renderer)
+  action?: unknown;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  duration?: number;
 }
 
-type ActionType = typeof actionTypes;
+type ToastReturn = { id: string; dismiss: () => void; update: (props: ToastOptions) => void };
 
-type Action =
-  | {
-      type: ActionType["ADD_TOAST"];
-      toast: ToasterToast;
-    }
-  | {
-      type: ActionType["UPDATE_TOAST"];
-      toast: Partial<ToasterToast>;
-    }
-  | {
-      type: ActionType["DISMISS_TOAST"];
-      toastId?: ToasterToast["id"];
-    }
-  | {
-      type: ActionType["REMOVE_TOAST"];
-      toastId?: ToasterToast["id"];
-    };
-
-interface State {
-  toasts: ToasterToast[];
-}
-
-const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
-
-const addToRemoveQueue = (toastId: string) => {
-  if (toastTimeouts.has(toastId)) {
-    return;
-  }
-
-  const timeout = setTimeout(() => {
-    toastTimeouts.delete(toastId);
-    dispatch({
-      type: "REMOVE_TOAST",
-      toastId: toastId,
-    });
-  }, TOAST_REMOVE_DELAY);
-
-  toastTimeouts.set(toastId, timeout);
-};
-
-export const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case "ADD_TOAST":
-      return {
-        ...state,
-        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
-      };
-
-    case "UPDATE_TOAST":
-      return {
-        ...state,
-        toasts: state.toasts.map((t) => (t.id === action.toast.id ? { ...t, ...action.toast } : t)),
-      };
-
-    case "DISMISS_TOAST": {
-      const { toastId } = action;
-
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
-      if (toastId) {
-        addToRemoveQueue(toastId);
-      } else {
-        state.toasts.forEach((toast) => {
-          addToRemoveQueue(toast.id);
-        });
-      }
-
-      return {
-        ...state,
-        toasts: state.toasts.map((t) =>
-          t.id === toastId || toastId === undefined
-            ? {
-                ...t,
-                open: false,
-              }
-            : t,
-        ),
-      };
-    }
-    case "REMOVE_TOAST":
-      if (action.toastId === undefined) {
-        return {
-          ...state,
-          toasts: [],
-        };
-      }
-      return {
-        ...state,
-        toasts: state.toasts.filter((t) => t.id !== action.toastId),
-      };
-  }
-};
-
-const listeners: Array<(state: State) => void> = [];
-
-let memoryState: State = { toasts: [] };
-
-function dispatch(action: Action) {
-  memoryState = reducer(memoryState, action);
-  listeners.forEach((listener) => {
-    listener(memoryState);
+function toast(opts: ToastOptions): ToastReturn {
+  const appearance = opts.variant === 'destructive' ? 'error' : 'info';
+  showFlag({
+    title: typeof opts.title === 'string' ? opts.title : String(opts.title ?? ''),
+    description: typeof opts.description === 'string' ? opts.description : undefined,
+    appearance,
   });
-}
-
-type Toast = Omit<ToasterToast, "id">;
-
-function toast({ ...props }: Toast) {
-  const id = genId();
-
-  const update = (props: ToasterToast) =>
-    dispatch({
-      type: "UPDATE_TOAST",
-      toast: { ...props, id },
-    });
-  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id });
-
-  dispatch({
-    type: "ADD_TOAST",
-    toast: {
-      ...props,
-      id,
-      open: true,
-      onOpenChange: (open) => {
-        if (!open) dismiss();
-      },
-    },
-  });
-
-  return {
-    id: id,
-    dismiss,
-    update,
-  };
+  // Return a no-op handle — radix callers that stored the id for update/dismiss
+  // can still call dismiss() safely (it's a no-op; ADS flags manage themselves).
+  return { id: '', dismiss: () => {}, update: () => {} };
 }
 
 function useToast() {
-  const [state, setState] = React.useState<State>(memoryState);
-
-  React.useEffect(() => {
-    listeners.push(setState);
-    return () => {
-      const index = listeners.indexOf(setState);
-      if (index > -1) {
-        listeners.splice(index, 1);
-      }
-    };
-  }, [state]);
-
   return {
-    ...state,
+    // toasts: [] satisfies callers that spread state or check toasts.length
+    toasts: [] as ToastOptions[],
     toast,
-    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+    dismiss: (_toastId?: string) => { /* no-op — ADS flags self-dismiss */ },
   };
 }
+
+// reducer is exported for any file that imports it from use-toast
+// (toaster.tsx uses it). Keep as a no-op stub so the import doesn't break.
+export const reducer = (state: { toasts: ToastOptions[] }) => state;
 
 export { useToast, toast };
