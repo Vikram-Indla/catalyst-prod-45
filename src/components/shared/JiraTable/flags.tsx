@@ -136,6 +136,19 @@ export function FlagsHost() {
     return () => { listeners.delete(cb); };
   }, []);
 
+  // ADS FlagGroup positions at inset-inline-start: var(--ds-space-1000, 5rem) = 80px
+  // from the viewport left edge — which puts it BEHIND Catalyst's 240px sidebar nav.
+  // Override --ds-space-1000 on the Atlaskit portal elements (class="atlaskit-portal")
+  // so the FlagGroup shifts to the content-area edge. Scoped to the portal class so
+  // the override doesn't affect any non-portal ADS spacing.
+  useEffect(() => {
+    if (document.getElementById('cp-flag-left-offset')) return;
+    const s = document.createElement('style');
+    s.id = 'cp-flag-left-offset';
+    s.textContent = `.atlaskit-portal { --ds-space-1000: calc(var(--cp-layout-sidebar, 240px) + 16px); }`;
+    document.head.appendChild(s);
+  }, []);
+
   const dismiss = useCallback((id: string | number) => {
     queue = queue.filter((f) => f.id !== id);
     notify();

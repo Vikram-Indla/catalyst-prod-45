@@ -479,6 +479,9 @@ type ReporterOption = {
   label: string;
   userId: string | null; // null for None
   avatarUrl: string | null;
+  /** Jira account ID (e.g. 5b10ac8d82e05b22cc7d4ef5) — different ID space
+   *  from userId (Catalyst UUID). We match on EITHER to resolve the reporter. */
+  jiraAccountId?: string | null;
 };
 const REPORTER_NONE_VALUE = "__none__";
 
@@ -501,7 +504,7 @@ export function EditableReporter({
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, email")
+        .select("id, full_name, email, jira_account_id")
         .eq("approval_status", "APPROVED")
         .order("full_name", { ascending: true });
       if (error) throw error;
@@ -512,6 +515,8 @@ export function EditableReporter({
           full_name,
           avatar_url: resolveAvatarUrl(full_name) ?? null,
           role: null,
+          // jira_account_id bridges Catalyst UUID space ↔ Jira account ID space
+          jira_account_id: p.jira_account_id ?? null,
         };
       }) as ProjectMember[];
     },
@@ -542,6 +547,8 @@ export function EditableReporter({
       label: m.full_name,
       userId: m.user_id,
       avatarUrl: m.avatar_url ?? null,
+      // Carry jira_account_id so the "selected" memo can match Jira account IDs
+      jiraAccountId: (m as any).jira_account_id ?? null,
     }));
     return [
       {
@@ -563,7 +570,12 @@ export function EditableReporter({
         avatarUrl: null,
       };
     }
-    const matched = options.find((o) => o.userId === currentReporterId);
+    // ph_issues.reporter_account_id is a Jira account ID (e.g. "5b10ac8d82e05b22cc7d4ef5"),
+    // but profiles.id is a Catalyst UUID. Match on EITHER so existing Jira-synced
+    // issues resolve the reporter name instead of showing "Unknown".
+    const matched =
+      options.find((o) => o.userId === currentReporterId) ??
+      options.find((o) => o.jiraAccountId && o.jiraAccountId === currentReporterId);
     if (matched) return matched;
     return {
       value: currentReporterId,
