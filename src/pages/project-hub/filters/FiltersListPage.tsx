@@ -23,9 +23,10 @@ type TabId = 'my' | 'starred' | 'shared' | 'recent';
 const TABLE_HEAD = {
   cells: [
     { key: 'star',      content: '',                   width: 4,  isSortable: false },
-    { key: 'name',      content: 'Name',               width: 30, isSortable: true  },
-    { key: 'owner',     content: 'Owner',              width: 16, isSortable: false },
-    { key: 'viewers',   content: 'Viewers',            width: 10, isSortable: false },
+    { key: 'name',      content: 'Name',               width: 28, isSortable: true  },
+    { key: 'owner',     content: 'Owner',              width: 14, isSortable: false },
+    { key: 'viewers',   content: 'Viewers',            width: 8,  isSortable: false },
+    { key: 'editors',   content: 'Editors',            width: 8,  isSortable: false },
     { key: 'starred',   content: 'Starred by',         width: 8,  isSortable: true  },
     { key: 'boards',    content: 'Boards',             width: 6,  isSortable: true  },
     { key: 'health',    content: 'Health',             width: 8,  isSortable: false },
@@ -39,6 +40,28 @@ function ViewersChip({ config }: { config: SavedFilterFull['viewers_config'] }) 
     config.type === 'private' ? 'Private' :
     config.type === 'org'     ? 'Organisation' :
     `${config.user_ids?.length ?? 0} people`;
+
+  return (
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      padding: '4px 8px',
+      borderRadius: 3,
+      background: token('color.background.neutral'),
+      color: token('color.text.subtle'),
+      fontSize: 12,
+      fontWeight: token('font.weight.medium'),
+      whiteSpace: 'nowrap',
+    }}>
+      {label}
+    </span>
+  );
+}
+
+function EditorsChip({ config }: { config: SavedFilterFull['editors_config'] }) {
+  const label =
+    config?.type === 'owner_only' ? 'Owner only' :
+    `${config?.user_ids?.length ?? 0} people`;
 
   return (
     <span style={{
@@ -225,12 +248,19 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             content: <ViewersChip config={f.viewers_config} />,
           },
           {
+            key: 'editors',
+            content: <EditorsChip config={f.editors_config} />,
+          },
+          {
             key: 'starred',
-            content: (
-              <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
-                {f.starred_by_user_ids.length}
-              </span>
-            ),
+            content: (() => {
+              const n = f.starred_by_user_ids.length;
+              return (
+                <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
+                  {n === 0 ? '0 people' : `${n} ${n === 1 ? 'person' : 'people'}`}
+                </span>
+              );
+            })(),
           },
           {
             key: 'boards',
