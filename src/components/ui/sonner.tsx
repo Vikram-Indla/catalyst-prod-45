@@ -74,3 +74,12 @@ export const toast = Object.assign(
  * Kept as a named export so App.tsx import doesn't break before it's updated.
  */
 export const Toaster = () => null;
+
+/**
+ * Default export for react-hot-toast compatibility.
+ * 12 files use `import toast from 'react-hot-toast'` (default import pattern).
+ * The Vite alias `"react-hot-toast" → sonner.tsx` intercepts those imports at
+ * bundle time. Since react-hot-toast exports a default, we need this line.
+ * Zero callsite edits required.
+ */
+export default toast;

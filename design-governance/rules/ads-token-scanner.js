@@ -91,11 +91,17 @@ class ADSTokenScanner {
     // NOTE: `from 'sonner'` is NOT banned here because vite.config.ts aliases
     // 'sonner' → src/components/ui/sonner.tsx (our ADS shim). Callsites that
     // import from 'sonner' directly are transparently redirected to showFlag().
-    // The alias was added 2026-05-26. Once Phase 5 removes the sonner package
-    // entirely, update callsites to `from '@/components/ui/sonner'` and remove
-    // the alias; at that point re-add the ban below.
+    // The alias was added 2026-05-26 (Phase 1).
+    //
+    // NOTE: `from 'react-hot-toast'` is NOT banned here because vite.config.ts
+    // aliases 'react-hot-toast' → src/components/ui/sonner.tsx (same ADS shim).
+    // 12 files use the default-import pattern (`import toast from 'react-hot-toast'`).
+    // sonner.tsx exports `export default toast` for this pattern.
+    // The alias was added 2026-05-26 (Phase 5).
+    //
+    // Future cleanup: once source files are updated to `from '@/components/ui/sonner'`
+    // and both packages are uninstalled, re-add the bans below.
     this.bannedToastImports = [
-      /from\s+['"]react-hot-toast['"]/,
       /from\s+['"]react-toastify['"]/,
     ];
     // Banned column-header string literals — catches hand-rolled
