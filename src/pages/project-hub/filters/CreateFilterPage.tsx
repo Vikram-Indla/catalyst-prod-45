@@ -15,10 +15,10 @@ import Button from '@atlaskit/button/new';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { JQLEditor } from '@/components/filters/JQLEditor';
 import {
-  JiraFilterAtlaskit,
   emptyFilterValue,
   type JiraFilterValue,
 } from '@/components/shared/JiraFilterAtlaskit';
+import { BasicFilterBar } from '@/components/filters/BasicFilterBar';
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
 import { FilterTemplateGallery } from '@/components/filters/FilterTemplateGallery';
 import { translate } from '@/lib/jql';
@@ -138,10 +138,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
           {/* ── Basic ── */}
           <TabPanel>
             <div style={{ paddingTop: 16 }}>
-              <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle') }}>
-                Select field values to build your filter. Switch to JQL to see the generated query.
-              </p>
-              <JiraFilterAtlaskit
+              <BasicFilterBar
                 value={basicValue}
                 onChange={setBasicValue}
                 assignees={pools.assignees}
@@ -150,6 +147,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                 workTypes={pools.workTypes}
                 fixVersions={pools.fixVersions}
                 labels={pools.labels}
+                isLoading={pools.isLoading}
               />
               {effectiveJql.trim() && (
                 <div style={{
@@ -157,7 +155,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                   padding: 12,
                   background: `var(--ds-surface-sunken, #F7F8F9)`,
                   borderRadius: 3,
-                  fontFamily: 'monospace',
+                  fontFamily: 'var(--cp-font-mono, monospace)',
                   fontSize: 12,
                   color: token('color.text.subtle'),
                   display: 'flex',
