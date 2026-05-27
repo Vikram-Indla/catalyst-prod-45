@@ -21,7 +21,7 @@
  *  - Keyboard: Up/Down arrows, J/K vim-style, Home/End, Enter/Space, Escape propagates to parent
  */
 import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import { GroupByPopover, type GroupByOption } from '@/components/shared/GroupByPopover';
 import { IconButton } from '@atlaskit/button/new';
 import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
 import ArrowDownIcon from '@atlaskit/icon/glyph/arrow-down';
@@ -35,13 +35,13 @@ import type { WorkItem } from '@/types/workItem.types';
 
 type GroupBy = 'none' | 'status' | 'assignee' | 'priority' | 'type';
 
-const GROUP_BY_LABELS: Record<GroupBy, string> = {
-  none: 'None',
-  status: 'Status',
-  assignee: 'Assignee',
-  priority: 'Priority',
-  type: 'Issue type',
-};
+
+const GROUP_BY_OPTIONS: GroupByOption<GroupBy>[] = [
+  { key: 'status',   label: 'Status',     icon: 'status' },
+  { key: 'assignee', label: 'Assignee',   icon: 'assignee' },
+  { key: 'priority', label: 'Priority',   icon: 'priority' },
+  { key: 'type',     label: 'Issue type', icon: 'type' },
+];
 
 const SUBTASK_TYPE_RE = /^(sub-?task|backend|frontend|figma|entity figma|integration)$/i;
 
@@ -465,91 +465,14 @@ export function WorkListPanel({
           background: 'var(--ds-surface, #FFFFFF)',
         }}
       >
-        {/* GroupBySelector */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-          <DropdownMenu
-            trigger={({ triggerRef, ...triggerProps }) => (
-              <button
-                ref={triggerRef as React.Ref<HTMLButtonElement>}
-                {...triggerProps}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  background: groupBy !== 'none'
-                    ? 'var(--ds-background-selected, #E9F2FF)'
-                    : 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontWeight: 400,
-                  fontSize: 13,
-                  color: groupBy !== 'none'
-                    ? 'var(--ds-link, #0C66E4)'
-                    : 'var(--ds-text-subtlest, #44546F)',
-                  padding: '4px 8px',
-                  borderRadius: 3,
-                }}
-                onMouseEnter={e => {
-                  if (groupBy === 'none')
-                    e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)';
-                }}
-                onMouseLeave={e => {
-                  if (groupBy === 'none')
-                    e.currentTarget.style.background = 'transparent';
-                }}
-              >
-                Group by:{' '}
-                <strong style={{ fontWeight: 600 }}>
-                  {GROUP_BY_LABELS[groupBy]}
-                </strong>
-                <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true" style={{ flexShrink: 0 }}>
-                  <path d="M0 0l5 6 5-6z" fill="currentColor" opacity="0.55" />
-                </svg>
-              </button>
-            )}
-          >
-            <DropdownItemGroup>
-              {(Object.keys(GROUP_BY_LABELS) as GroupBy[]).map(opt => (
-                <DropdownItem
-                  key={opt}
-                  onClick={() => {
-                    setGroupBy(opt);
-                    setCollapsedGroups(new Set());
-                  }}
-                >
-                  {GROUP_BY_LABELS[opt]}
-                </DropdownItem>
-              ))}
-            </DropdownItemGroup>
-          </DropdownMenu>
-          {/* Reset button — only visible when groupBy is active */}
-          {groupBy !== 'none' && (
-            <button
-              onClick={() => { setGroupBy('none'); setCollapsedGroups(new Set()); }}
-              title="Clear grouping"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 20,
-                height: 20,
-                background: 'none',
-                border: 'none',
-                borderRadius: '50%',
-                cursor: 'pointer',
-                color: 'var(--ds-text-subtlest, #44546F)',
-                padding: 0,
-                fontSize: 14,
-                lineHeight: 1,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
-              aria-label="Clear grouping"
-            >
-              ×
-            </button>
-          )}
-        </div>
+        {/* GroupBySelector — GroupByPopover: instant open, search, keyboard nav, clear */}
+        <GroupByPopover
+          value={groupBy}
+          onChange={(v) => { setGroupBy(v); setCollapsedGroups(new Set()); }}
+          options={GROUP_BY_OPTIONS}
+          noneKey="none"
+          label="Group by"
+        />
 
         {/* SortConfigButton + RefreshButton */}
         <div style={{ display: 'flex', gap: 2 }}>
