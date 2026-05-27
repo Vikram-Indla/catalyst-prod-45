@@ -364,7 +364,6 @@ function MetaField({ label, children }: { label: string; children: React.ReactNo
         fontSize: 11,
         fontWeight: token('font.weight.semibold'),
         color: token('color.text.subtlest'),
-        letterSpacing: '0.06em',
       }}>
         {label}
       </span>

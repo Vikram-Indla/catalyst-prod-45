@@ -146,7 +146,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           {
             key: 'name',
             content: (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <Link
                   to={projectKey
                     ? `/project-hub/${projectKey}/filters/${f.id}`
@@ -324,7 +324,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       </div>
 
       {/* Table */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '0 32px 32px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 32px 32px', fontSize: 14 }}>
         <AkDynamicTable
           head={TABLE_HEAD}
           rows={buildRows()}
