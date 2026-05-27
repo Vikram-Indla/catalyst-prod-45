@@ -69,6 +69,7 @@ export function FilterSaveModal({
 
   const [name, setName] = useState(filter?.name ?? '');
   const [description, setDescription] = useState(filter?.description ?? '');
+  const [jql, setJql] = useState(filter?.jql_query ?? (initialJql ?? ''));
   const [viewersType, setViewersType] = useState<string>(filter?.viewers_config?.type ?? 'private');
   const [editorsType, setEditorsType] = useState<string>(filter?.editors_config?.type ?? 'owner_only');
   const [crossHub, setCrossHub] = useState<boolean>(filter?.hub_scope === 'both');
@@ -131,6 +132,7 @@ export function FilterSaveModal({
           updates: {
             name: name.trim(),
             description: description.trim() || null,
+            jql_query: jql.trim() || null,
             is_shared: isShared,
             hub_scope: resolvedHubScope,
             viewers_config: viewersConfig,
@@ -143,8 +145,8 @@ export function FilterSaveModal({
       createFilter.mutate(
         {
           name: name.trim(),
-          filter_config: { jql_query: initialJql ?? null },
-          jql_query: initialJql ?? null,
+          filter_config: { jql_query: jql.trim() || null },
+          jql_query: jql.trim() || null,
           page: 'filters',
           is_shared: isShared,
           hub_scope: resolvedHubScope,
@@ -166,28 +168,19 @@ export function FilterSaveModal({
       <ModalBody>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-          {/* JQL preview — shown in edit mode or when creating with a JQL */}
-          {(isEditing ? filter?.jql_query : initialJql) && (
-            <div>
-              <FieldLabel>JQL query</FieldLabel>
-              <pre style={{
-                margin: 0,
-                padding: '8px 12px',
-                background: `var(--ds-surface-sunken, #F7F8F9)`,
-                borderRadius: 3,
-                border: `1px solid ${token('color.border')}`,
-                fontFamily: 'monospace',
-                fontSize: 12,
-                color: token('color.text'),
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-all',
-                maxHeight: 100,
-                overflowY: 'auto',
-              }}>
-                {isEditing ? filter?.jql_query : initialJql}
-              </pre>
-            </div>
-          )}
+          {/* JQL query — always editable */}
+          <div>
+            <FieldLabel>JQL query</FieldLabel>
+            <TextArea
+              value={jql}
+              onChange={e => setJql((e.target as HTMLTextAreaElement).value)}
+              placeholder="e.g. project = BAU AND status != Done ORDER BY priority DESC"
+              minimumRows={3}
+              maxHeight="120px"
+              spellCheck={false}
+              style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12 }}
+            />
+          </div>
 
           {/* Name */}
           <div>
