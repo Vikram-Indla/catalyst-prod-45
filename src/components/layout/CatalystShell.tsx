@@ -620,7 +620,7 @@ function CatalystShellContent() {
     // reading as a broken state rather than a deliberate "no nav".
     // HomeSidebar fills the rail with Pinned / Recent / Jump-to sections,
     // turning that real estate into the user's own navigation surface.
-    if (location.pathname === "/" || location.pathname === "/for-you") {
+    if (location.pathname === "/" || location.pathname === "/for-you" || location.pathname.startsWith("/for-you/")) {
       // HomeSidebar now composes SidebarBase, so it shares the canonical
       // hub-rail props (expanded + onToggle) with every other panel —
       // identical density, active-state, and collapse behaviour.
