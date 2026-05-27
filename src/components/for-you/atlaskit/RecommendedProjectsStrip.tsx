@@ -136,11 +136,7 @@ export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: Rec
           <ProjectCardButton
             key={card.id}
             card={card}
-            onClick={() => {
-              // Prefer the canonical ProjectHub route when we have an id.
-              if (card.id) navigate(`/projects/${card.id}`);
-              else navigate('/projects');
-            }}
+            onClick={() => navigate(`/project-hub/${card.key}`)}
           />
         ))}
       </div>

@@ -781,9 +781,9 @@ export default function FullAppRoutes() {
         <Route path="/release-train-calendar" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.3px' }}>Release Calendar</div><p className="text-muted-foreground">Coming soon</p></div>} />
         <Route path="/program-backlog" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.3px' }}>Program Backlog</div><p className="text-muted-foreground">Coming soon</p></div>} />
 
-        <Route path="/projects" element={<S><ProjectDirectory /></S>} />
-        <Route path="/projects/:projectKey" element={<Navigate to={`/projects`} replace />} />
-        <Route path="/projects/:projectKey/summary" element={<Navigate to={`/projects`} replace />} />
+        <Route path="/projects" element={<Navigate to="/project-hub/projects" replace />} />
+        <Route path="/projects/:projectKey" element={<Navigate to="/project-hub/projects" replace />} />
+        <Route path="/projects/:projectKey/summary" element={<Navigate to="/project-hub/projects" replace />} />
         <Route path="/workhub/all-work" element={<S><WorkHubAllWork /></S>} />
         <Route path="/workhub" element={<Navigate to="/project-hub" replace />} />
         <Route path="/projecthub" element={<Navigate to="/project-hub" replace />} />
