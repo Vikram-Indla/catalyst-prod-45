@@ -5,7 +5,6 @@ import Button from '@atlaskit/button/new';
 import AkAvatar from '@atlaskit/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { FilterHealthBadge } from '@/components/filters/FilterHealthBadge';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { FilterVersionHistory } from '@/components/filters/FilterVersionHistory';
 import { FilterUsageSparkline } from '@/components/filters/FilterUsageSparkline';
@@ -214,10 +213,6 @@ export default function FilterDetailPage() {
           borderRadius: 4,
           marginBottom: 24,
         }}>
-          <MetaField label="Health">
-            <FilterHealthBadge health={filter.health_status} />
-          </MetaField>
-
           <MetaField label="Visibility">
             <span style={{
               display: 'inline-flex',

@@ -7,8 +7,8 @@ import Textfield from '@atlaskit/textfield';
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import AkAvatar from '@atlaskit/avatar';
 import Lozenge from '@atlaskit/lozenge';
+import SectionMessage from '@atlaskit/section-message';
 import { useFiltersForProject, useStarFilter, useDeleteSavedFilter, type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
-import { FilterHealthBadge } from '@/components/filters/FilterHealthBadge';
 import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { Star, StarOff, Plus, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,7 +29,6 @@ const TABLE_HEAD = {
     { key: 'viewers',   content: 'Viewers',            width: 10, isSortable: false },
     { key: 'editors',   content: 'Editors',            width: 10, isSortable: false },
     { key: 'starred',   content: 'Starred by',         width: 10, isSortable: true  },
-    { key: 'health',    content: 'Health',             width: 10, isSortable: false },
     { key: 'lastUsed',  content: 'Last used',          width: 14, isSortable: true  },
     { key: 'actions',   content: '',                   width: 4,  isSortable: false },
   ],
@@ -69,7 +68,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   }, []);
 
   const hubScope = hubType === 'product' ? 'product' as const : 'project' as const;
-  const { data: filters = [], isLoading } = useFiltersForProject(projectKey, hubScope);
+  const { data: filters = [], isLoading, error } = useFiltersForProject(projectKey, hubScope);
 
   const starFilter = useStarFilter();
   const deleteFilter = useDeleteSavedFilter();
@@ -215,10 +214,6 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             })(),
           },
           {
-            key: 'health',
-            content: <FilterHealthBadge health={f.health_status} />,
-          },
-          {
             key: 'lastUsed',
             content: (
               <span style={{ fontSize: 14, color: token('color.text.subtle') }}>
@@ -325,6 +320,13 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
 
       {/* Table */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 32px 32px', fontSize: 14 }}>
+        {error && (
+          <div style={{ padding: '16px 0' }}>
+            <SectionMessage appearance="error" title="Couldn't load filters">
+              Check your connection and refresh the page.
+            </SectionMessage>
+          </div>
+        )}
         <AkDynamicTable
           head={TABLE_HEAD}
           rows={buildRows()}
