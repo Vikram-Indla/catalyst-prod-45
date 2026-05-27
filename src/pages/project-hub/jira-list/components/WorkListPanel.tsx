@@ -27,19 +27,20 @@ import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
 import ArrowDownIcon from '@atlaskit/icon/glyph/arrow-down';
 import RefreshIcon from '@atlaskit/icon/glyph/refresh';
 import Spinner from '@atlaskit/spinner';
-import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { WorkCardAssigneePicker } from './WorkCardAssigneePicker';
 import type { WorkItem } from '@/types/workItem.types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type GroupBy = 'none' | 'status' | 'assignee' | 'priority';
+type GroupBy = 'none' | 'status' | 'assignee' | 'priority' | 'type';
 
 const GROUP_BY_LABELS: Record<GroupBy, string> = {
   none: 'None',
   status: 'Status',
   assignee: 'Assignee',
   priority: 'Priority',
+  type: 'Issue type',
 };
 
 const SUBTASK_TYPE_RE = /^(sub-?task|backend|frontend|figma|entity figma|integration)$/i;
@@ -76,6 +77,16 @@ export function WorkListPanel({
 
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [groupBy, setGroupBy] = useState<GroupBy>('none');
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+
+  const toggleGroup = useCallback((label: string) => {
+    setCollapsedGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  }, []);
 
   /* Infinite scroll — 50 items per page, expanded by IntersectionObserver. */
   const [page, setPage] = useState(50);
@@ -194,12 +205,18 @@ export function WorkListPanel({
 
     const map = new Map<string, WorkItem[]>();
     for (const item of visible) {
-      const key =
-        groupBy === 'status'
-          ? item.statusName || item.status || 'Unknown'
-          : groupBy === 'assignee'
-          ? item.assignee?.name || 'Unassigned'
-          : /* priority */ (item.priority || 'Unknown');
+      let key: string;
+      switch (groupBy) {
+        case 'status':   key = item.statusName || item.status || 'Unknown'; break;
+        case 'assignee': key = item.assignee?.name || 'Unassigned'; break;
+        case 'priority': key = item.priority || 'Unknown'; break;
+        case 'type': {
+          const raw = ((item as any).rawType || item.type || 'Unknown') as string;
+          key = raw.charAt(0).toUpperCase() + raw.slice(1);
+          break;
+        }
+        default: key = 'Unknown';
+      }
       const arr = map.get(key) ?? [];
       arr.push(item);
       map.set(key, arr);
@@ -313,7 +330,7 @@ export function WorkListPanel({
                 gap: 6,
               }}
             >
-              {/* IssueTypeIcon — 20px circle per spec */}
+              {/* IssueTypeIcon — 20px per spec; JiraIssueTypeIcon is canonical */}
               <span
                 style={{
                   width: 20,
@@ -324,8 +341,8 @@ export function WorkListPanel({
                   flexShrink: 0,
                 }}
               >
-                <WorkItemTypeIcon
-                  type={(item as any).rawType || item.type}
+                <JiraIssueTypeIcon
+                  type={((item as any).rawType || item.type) as any}
                   size={20}
                 />
               </span>
@@ -449,56 +466,90 @@ export function WorkListPanel({
         }}
       >
         {/* GroupBySelector */}
-        <DropdownMenu
-          trigger={({ triggerRef, ...triggerProps }) => (
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+          <DropdownMenu
+            trigger={({ triggerRef, ...triggerProps }) => (
+              <button
+                ref={triggerRef as React.Ref<HTMLButtonElement>}
+                {...triggerProps}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  background: groupBy !== 'none'
+                    ? 'var(--ds-background-selected, #E9F2FF)'
+                    : 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: 400,
+                  fontSize: 13,
+                  color: groupBy !== 'none'
+                    ? 'var(--ds-link, #0C66E4)'
+                    : 'var(--ds-text-subtlest, #44546F)',
+                  padding: '4px 8px',
+                  borderRadius: 3,
+                }}
+                onMouseEnter={e => {
+                  if (groupBy === 'none')
+                    e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)';
+                }}
+                onMouseLeave={e => {
+                  if (groupBy === 'none')
+                    e.currentTarget.style.background = 'transparent';
+                }}
+              >
+                Group by:{' '}
+                <strong style={{ fontWeight: 600 }}>
+                  {GROUP_BY_LABELS[groupBy]}
+                </strong>
+                <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true" style={{ flexShrink: 0 }}>
+                  <path d="M0 0l5 6 5-6z" fill="currentColor" opacity="0.55" />
+                </svg>
+              </button>
+            )}
+          >
+            <DropdownItemGroup>
+              {(Object.keys(GROUP_BY_LABELS) as GroupBy[]).map(opt => (
+                <DropdownItem
+                  key={opt}
+                  onClick={() => {
+                    setGroupBy(opt);
+                    setCollapsedGroups(new Set());
+                  }}
+                >
+                  {GROUP_BY_LABELS[opt]}
+                </DropdownItem>
+              ))}
+            </DropdownItemGroup>
+          </DropdownMenu>
+          {/* Reset button — only visible when groupBy is active */}
+          {groupBy !== 'none' && (
             <button
-              ref={triggerRef as React.Ref<HTMLButtonElement>}
-              {...triggerProps}
+              onClick={() => { setGroupBy('none'); setCollapsedGroups(new Set()); }}
+              title="Clear grouping"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 4,
-                background: 'transparent',
+                justifyContent: 'center',
+                width: 20,
+                height: 20,
+                background: 'none',
                 border: 'none',
+                borderRadius: '50%',
                 cursor: 'pointer',
-                fontWeight: 400,
-                fontSize: 13,
                 color: 'var(--ds-text-subtlest, #44546F)',
-                padding: '4px 8px',
-                borderRadius: 3,
+                padding: 0,
+                fontSize: 14,
+                lineHeight: 1,
               }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background =
-                  'var(--ds-background-neutral-hovered, #F1F2F4)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'transparent';
-              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
+              aria-label="Clear grouping"
             >
-              Group by:{' '}
-              <strong style={{ fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
-                {GROUP_BY_LABELS[groupBy]}
-              </strong>
-              <svg
-                width="10"
-                height="6"
-                viewBox="0 0 10 6"
-                aria-hidden="true"
-                style={{ flexShrink: 0 }}
-              >
-                <path d="M0 0l5 6 5-6z" fill="currentColor" opacity="0.55" />
-              </svg>
+              ×
             </button>
           )}
-        >
-          <DropdownItemGroup>
-            {(Object.keys(GROUP_BY_LABELS) as GroupBy[]).map(opt => (
-              <DropdownItem key={opt} onClick={() => setGroupBy(opt)}>
-                {GROUP_BY_LABELS[opt]}
-              </DropdownItem>
-            ))}
-          </DropdownItemGroup>
-        </DropdownMenu>
+        </div>
 
         {/* SortConfigButton + RefreshButton */}
         <div style={{ display: 'flex', gap: 2 }}>
@@ -533,31 +584,58 @@ export function WorkListPanel({
           padding: '8px',
         }}
       >
-        {grouped.map(group => (
-          <React.Fragment key={group.label ?? '__root'}>
-            {/* Group header — rendered when groupBy is active */}
-            {group.label != null && (
-              <div
-                style={{
-                  padding: '4px 4px 4px',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: '0.04em',
-                  color: 'var(--ds-text-subtle, #626F86)',
-                  // Slightly elevated surface so group header stands out
-                  // against the card-list #F7F8F9 background
-                  background: 'var(--ds-background-neutral, #F7F8F9)',
-                  borderBottom: '1px solid var(--ds-border, rgba(9,30,66,0.08))',
-                  userSelect: 'none' as const,
-                  marginTop: 4,
-                }}
-              >
-                {group.label}
-              </div>
-            )}
-            {group.items.map(renderCard)}
-          </React.Fragment>
-        ))}
+        {grouped.map(group => {
+          const isCollapsed = group.label != null && collapsedGroups.has(group.label);
+          return (
+            <React.Fragment key={group.label ?? '__root'}>
+              {/* Group header — collapsible with chevron + count (Jira parity) */}
+              {group.label != null && (
+                <button
+                  onClick={() => toggleGroup(group.label!)}
+                  aria-expanded={!isCollapsed}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '8px 8px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: 'var(--ds-text-subtle, #626F86)',
+                    background: 'var(--ds-background-neutral, #F7F8F9)',
+                    border: 'none',
+                    borderBottom: '1px solid var(--ds-border, rgba(9,30,66,0.08))',
+                    borderRadius: 0,
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    userSelect: 'none',
+                    marginTop: 4,
+                    flexShrink: 0,
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-background-neutral, #F7F8F9)'; }}
+                >
+                  {/* Chevron — rotates 90° when collapsed */}
+                  <svg
+                    width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"
+                    style={{ flexShrink: 0, transition: 'transform 120ms', transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}
+                  >
+                    <path d="M2 3l3 4 3-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  {/* Type icon when grouping by issue type */}
+                  {groupBy === 'type' && (
+                    <JiraIssueTypeIcon type={group.label as any} size={14} />
+                  )}
+                  <span style={{ flex: 1 }}>{group.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--ds-text-subtlest, #8590A2)' }}>
+                    {group.items.length}
+                  </span>
+                </button>
+              )}
+              {!isCollapsed && group.items.map(renderCard)}
+            </React.Fragment>
+          );
+        })}
 
         {/* IntersectionObserver sentinel — triggers next-page load */}
         {hasMore && !isFetchingMore && (
