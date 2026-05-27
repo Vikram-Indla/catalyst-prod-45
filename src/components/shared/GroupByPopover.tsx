@@ -5,7 +5,6 @@
  * Token reference: atlassian.design/tokens
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useTheme } from '@/hooks/useTheme';
 
 /* ═══ Inline field icons (replaces lucide FIELD_ICONS — no lucide dependency) ═══ */
 
@@ -105,20 +104,18 @@ interface GroupByPopoverProps<K extends string> {
   label?: string;
 }
 
-/* ═══ ADS tokens ═══ */
+/* ═══ ADS tokens — all values use var(--ds-*) so light/dark mode is automatic ═══ */
 
-const ADS = {
-  text:          'rgb(41, 42, 46)',          /* --ds-text              #292A2E */
-  textMuted:     'rgb(80, 82, 88)',           /* --ds-text-subtle       #505258 */
-  textSubtlest:  'rgb(107, 119, 140)',        /* --ds-text-subtlest     var(--cp-text-secondary, #6B778C) */
-  border:        'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',                   /* --ds-border                    */
-  borderFocus:   '#4C9AFF',                   /* --ds-border-focused            */
-  surfaceBg:     '#FFFFFF',
-  surfaceHover:  'rgba(9,30,66,0.06)',        /* --ds-background-neutral-subtle-hovered */
-  selected:      'var(--ds-background-selected, #DEEBFF)',
-  selectedText:  'var(--ds-link, var(--cp-primary-60, #0052CC))',
-  shadow:        'rgba(9,30,66,0.08) 0 0 0 1px, rgba(9,30,66,0.08) 0 4px 8px -2px',
-  shadowDark:    '0 4px 24px rgba(0,0,0,0.5)',
+const T = {
+  text:         'var(--ds-text, #172B4D)',
+  textSubtlest: 'var(--ds-text-subtlest, #6B778C)',
+  border:       'var(--ds-border, #DFE1E6)',
+  borderFocus:  'var(--ds-border-focused, #4C9AFF)',
+  surface:      'var(--ds-surface, #FFFFFF)',
+  hover:        'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
+  selected:     'var(--ds-background-selected, #DEEBFF)',
+  selectedText: 'var(--ds-link, #0052CC)',
+  shadow:       'var(--ds-shadow-overlay)',
 };
 
 /* ═══ GroupByPopover ═══ */
@@ -130,7 +127,6 @@ export function GroupByPopover<K extends string>({
   noneKey = 'none' as K,
   label = 'Group',
 }: GroupByPopoverProps<K>) {
-  const { isDark } = useTheme();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [focusIdx, setFocusIdx] = useState(-1);
@@ -187,15 +183,15 @@ export function GroupByPopover<K extends string>({
     el?.scrollIntoView({ block: 'nearest' });
   }, [focusIdx]);
 
-  /* Derived token overrides for dark mode */
-  const bg      = isDark ? '#1A1A1A' : ADS.surfaceBg;
-  const border  = isDark ? '#2E2E2E' : ADS.border;
-  const shadow  = isDark ? ADS.shadowDark : ADS.shadow;
-  const hover   = isDark ? 'rgba(255,255,255,0.06)' : ADS.surfaceHover;
-  const selBg   = isDark ? 'rgba(0,82,204,0.2)' : ADS.selected;
-  const selText = isDark ? '#4C9AFF' : ADS.selectedText;
-  const text    = isDark ? '#EDEDED' : ADS.text;
-  const muted   = isDark ? '#A1A1A1' : ADS.textSubtlest;
+  /* ADS tokens handle light/dark automatically — no JS ternary needed */
+  const bg      = T.surface;
+  const border  = T.border;
+  const shadow  = T.shadow;
+  const hover   = T.hover;
+  const selBg   = T.selected;
+  const selText = T.selectedText;
+  const text    = T.text;
+  const muted   = T.textSubtlest;
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
@@ -203,8 +199,8 @@ export function GroupByPopover<K extends string>({
       <button
         onClick={() => { setOpen(p => !p); if (!open) setTimeout(() => inputRef.current?.focus(), 50); }}
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          height: 32, padding: '0 10px',
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          height: 32, padding: '0 8px',
           background: isActive ? selBg : 'transparent',
           border: 'none',
           borderRadius: 3,
@@ -225,7 +221,7 @@ export function GroupByPopover<K extends string>({
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             minWidth: 18, height: 18,
-            background: 'var(--ds-link, var(--cp-primary-60, #0052CC))', color: '#FFFFFF',
+            background: 'var(--ds-link, var(--cp-primary-60, #0052CC))', color: 'var(--ds-text-inverse, #FFFFFF)',
             fontSize: 10, fontWeight: 700, borderRadius: 9,
           }}>1</span>
         )}
@@ -244,7 +240,7 @@ export function GroupByPopover<K extends string>({
           onKeyDown={handleKeyDown}
         >
           {/* Search */}
-          <div style={{ padding: '8px 8px 6px', borderBottom: `1px solid ${border}` }}>
+          <div style={{ padding: '8px 8px 8px', borderBottom: `1px solid ${border}` }}>
             <div style={{ position: 'relative' }}>
               <span style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
                 <IcSearch size={13} color={muted} />
@@ -258,14 +254,14 @@ export function GroupByPopover<K extends string>({
                 autoFocus
                 style={{
                   width: '100%', height: 30,
-                  paddingLeft: 26, paddingRight: search ? 26 : 8,
+                  paddingLeft: 24, paddingRight: search ? 24 : 8,
                   border: `1px solid ${border}`, borderRadius: 3,
                   fontSize: 13, color: text, background: bg,
                   fontFamily: 'var(--cp-font-body)',
                   outline: 'none',
                   transition: 'border-color 100ms',
                 }}
-                onFocus={e => (e.currentTarget.style.borderColor = ADS.borderFocus)}
+                onFocus={e => (e.currentTarget.style.borderColor = T.borderFocus)}
                 onBlur={e => (e.currentTarget.style.borderColor = border)}
               />
               {search && (
@@ -274,7 +270,7 @@ export function GroupByPopover<K extends string>({
                   style={{
                     position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)',
                     background: 'none', border: 'none', cursor: 'pointer',
-                    color: muted, padding: 2, display: 'flex',
+                    color: muted, padding: 4, display: 'flex',
                   }}
                   aria-label="Clear search"
                 >
@@ -287,8 +283,8 @@ export function GroupByPopover<K extends string>({
           {/* Options */}
           <div ref={listRef} style={{ padding: '4px 0', maxHeight: 240, overflowY: 'auto' }}>
             <div style={{
-              padding: '6px 12px 4px', fontSize: 11, fontWeight: 600,
-              color: muted, textTransform: 'uppercase', letterSpacing: '0.05em',
+              padding: '8px 12px 4px', fontSize: 11, fontWeight: 600,
+              color: muted,
             }}>
               All fields
             </div>
@@ -336,7 +332,7 @@ export function GroupByPopover<K extends string>({
 
           {/* Clear Footer */}
           {isActive && (
-            <div style={{ padding: '6px 12px', borderTop: `1px solid ${border}` }}>
+            <div style={{ padding: '8px 12px', borderTop: `1px solid ${border}` }}>
               <button
                 onClick={() => { onChange(noneKey); setOpen(false); setSearch(''); }}
                 style={{
