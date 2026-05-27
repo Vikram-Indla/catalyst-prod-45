@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,6 +22,8 @@ export function TitleTranslateWrapper({
   buttonClassName,
 }: TitleTranslateWrapperProps) {
   const [isTranslating, setIsTranslating] = useState(false);
+  const [showingTranslation, setShowingTranslation] = useState(false);
+  const originalRef = useRef<string>('');
 
   const isArabic = useMemo(() => containsArabic(value), [value]);
   const dir: 'rtl' | 'ltr' = isArabic ? 'rtl' : 'ltr';
@@ -30,6 +32,7 @@ export function TitleTranslateWrapper({
   const handleTranslate = useCallback(async () => {
     const text = value.trim();
     if (!text || isTranslating) return;
+    originalRef.current = text;
     setIsTranslating(true);
     try {
       const { data: sessionData } = await supabase.auth.getSession();
@@ -54,6 +57,7 @@ export function TitleTranslateWrapper({
       const json = (await res.json()) as { translated?: string };
       if (json.translated && json.translated.trim()) {
         onValueChange(json.translated.trim());
+        setShowingTranslation(true);
       } else {
         toast.error('Translation returned empty text');
       }
@@ -64,6 +68,14 @@ export function TitleTranslateWrapper({
     }
   }, [value, target, isTranslating, onValueChange]);
 
+  const handleShowOriginal = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (originalRef.current) {
+      onValueChange(originalRef.current);
+    }
+    setShowingTranslation(false);
+  }, [onValueChange]);
+
   const hasText = value.trim().length > 0;
 
   return (
@@ -73,34 +85,48 @@ export function TitleTranslateWrapper({
     >
       {children({ dir })}
       {hasText && (
-        <button
-          type="button"
-          className={cn('ttw-translate-btn', buttonClassName)}
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleTranslate();
-          }}
-          disabled={isTranslating}
-          aria-label={
-            isTranslating
-              ? 'Translating'
-              : target === 'ar'
-                ? 'Translate to Arabic'
-                : 'Translate to English'
-          }
-        >
+        <div className="ttw-action-row">
           {isTranslating ? (
-            <>
-              <span className="ttw-translate-btn__dot" />
-              <span>Translating…</span>
-            </>
-          ) : target === 'ar' ? (
-            'Translate to Arabic'
+            <span className="ttw-caty-translating" aria-live="polite" aria-label="CATY is translating">
+              <span className="ttw-sparkle" aria-hidden="true">✦</span>
+              <span>CATY is translating</span>
+              <span className="ttw-waveform" aria-hidden="true">
+                <span /><span /><span /><span /><span />
+              </span>
+            </span>
+          ) : showingTranslation ? (
+            <span className="ttw-translated-state">
+              <span className="ttw-sparkle" aria-hidden="true">✦</span>
+              <span>CATY translated</span>
+              <span className="ttw-sep" aria-hidden="true">·</span>
+              <button
+                type="button"
+                className={cn('ttw-revert-btn', buttonClassName)}
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={handleShowOriginal}
+                aria-label="Show original text"
+              >
+                ↩ Show original
+              </button>
+            </span>
           ) : (
-            'Translate to English'
+            <button
+              type="button"
+              className={cn('ttw-translate-btn', buttonClassName)}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleTranslate();
+              }}
+              disabled={isTranslating}
+              aria-label={
+                target === 'ar' ? 'Translate to Arabic' : 'Translate to English'
+              }
+            >
+              {target === 'ar' ? 'Translate to Arabic' : 'Translate to English'}
+            </button>
           )}
-        </button>
+        </div>
       )}
     </div>
   );
