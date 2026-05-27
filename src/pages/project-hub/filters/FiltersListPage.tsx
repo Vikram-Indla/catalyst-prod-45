@@ -67,6 +67,23 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     });
   }, []);
 
+  // H7 P2 — keyboard shortcut: press N to open Create filter (Jira pattern)
+  React.useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (
+        e.key === 'n' &&
+        !e.ctrlKey && !e.metaKey && !e.altKey &&
+        !(e.target as HTMLElement).matches('input, textarea, [contenteditable]')
+      ) {
+        navigate(projectKey
+          ? `/project-hub/${projectKey}/filters/create`
+          : `/project-hub/filters/create`);
+      }
+    }
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [navigate, projectKey]);
+
   const hubScope = hubType === 'product' ? 'product' as const : 'project' as const;
   const { data: filters = [], isLoading, error } = useFiltersForProject(projectKey, hubScope);
 
@@ -162,15 +179,18 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                   {f.name}
                 </Link>
                 {f.jql_query && (
-                  <span style={{
-                    fontSize: 11,
-                    color: token('color.text.subtlest'),
-                    fontFamily: 'var(--cp-font-mono, monospace)',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    maxWidth: 360,
-                  }}>
+                  <span
+                    title={f.jql_query}
+                    style={{
+                      fontSize: 11,
+                      color: token('color.text.subtlest'),
+                      fontFamily: 'var(--cp-font-mono, monospace)',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      maxWidth: 360,
+                    }}
+                  >
                     {f.jql_query}
                   </span>
                 )}
@@ -196,11 +216,27 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           },
           {
             key: 'viewers',
-            content: <ViewersChip config={f.viewers_config} />,
+            content: (
+              <span title={
+                f.viewers_config.type === 'private' ? 'Only the owner can view' :
+                f.viewers_config.type === 'org'     ? 'Everyone in the organisation can view' :
+                `${f.viewers_config.user_ids?.length ?? 0} specific people can view`
+              }>
+                <ViewersChip config={f.viewers_config} />
+              </span>
+            ),
           },
           {
             key: 'editors',
-            content: <EditorsChip config={f.editors_config} />,
+            content: (
+              <span title={
+                f.editors_config?.type === 'owner_only'
+                  ? 'Only the owner can edit'
+                  : `${f.editors_config?.user_ids?.length ?? 0} specific people can edit`
+              }>
+                <EditorsChip config={f.editors_config} />
+              </span>
+            ),
           },
           {
             key: 'starred',
@@ -325,6 +361,11 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             <SectionMessage appearance="error" title="Couldn't load filters">
               Check your connection and refresh the page.
             </SectionMessage>
+          </div>
+        )}
+        {!isLoading && !error && (
+          <div style={{ padding: '12px 0 4px', fontSize: 12, color: token('color.text.subtlest') }}>
+            {visibleFilters.length} {visibleFilters.length === 1 ? 'filter' : 'filters'}
           </div>
         )}
         <AkDynamicTable
