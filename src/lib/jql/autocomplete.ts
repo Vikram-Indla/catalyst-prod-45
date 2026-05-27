@@ -102,9 +102,18 @@ function filterByPrefix<T extends Suggestion>(items: T[], prefix: string): T[] {
 }
 
 /**
- * Return autocomplete suggestions for the given JQL string at the cursor position.
+ * Optional map of field-name → actual project values, injected from pool data.
+ * Keys must match JQL_FIELD_MAP keys (e.g. 'status', 'assignee', 'issuetype').
+ * When provided, value-state completions will include these before JQL functions.
  */
-export function getSuggestions(jql: string, cursor: number): SuggestionResult {
+export type ValuePool = Record<string, Suggestion[]>;
+
+/**
+ * Return autocomplete suggestions for the given JQL string at the cursor position.
+ * Pass `valuePool` to surface actual project data (status names, assignees, etc.)
+ * in addition to the built-in JQL functions.
+ */
+export function getSuggestions(jql: string, cursor: number, valuePool?: ValuePool): SuggestionResult {
   const { state, partial, fieldName } = inferCursorState(jql, cursor);
 
   if (state === 'field') {
@@ -120,8 +129,21 @@ export function getSuggestions(jql: string, cursor: number): SuggestionResult {
   }
 
   if (state === 'value') {
-    const items: Suggestion[] = filterByPrefix(ALL_FUNCTIONS, partial);
-    return { type: items.length ? 'functions' : 'values', items };
+    // Project-data values take priority over generic JQL functions
+    const poolValues: Suggestion[] = fieldName && valuePool?.[fieldName]
+      ? valuePool[fieldName]
+      : [];
+    const functionItems = filterByPrefix(ALL_FUNCTIONS, partial);
+    const poolFiltered = filterByPrefix(poolValues, partial);
+
+    if (poolFiltered.length > 0) {
+      // Merge: project values first, then functions (deduped by value)
+      const seen = new Set(poolFiltered.map(s => s.value.toLowerCase()));
+      const deduped = functionItems.filter(f => !seen.has(f.value.toLowerCase()));
+      return { type: 'values', items: [...poolFiltered, ...deduped].slice(0, 12) };
+    }
+
+    return { type: functionItems.length ? 'functions' : 'values', items: functionItems };
   }
 
   // keyword

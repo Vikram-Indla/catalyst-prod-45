@@ -109,11 +109,13 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
             {filtersCount > 0 && (
               <span style={{
                 marginLeft: 8,
-                fontSize: 12,
-                background: `var(--ds-background-neutral, #F1F2F4)`,
-                color: token('color.text.subtle'),
+                fontSize: 11,
+                fontWeight: token('font.weight.semibold'),
+                background: `var(--ds-background-inverse-subtle, rgba(255,255,255,0.24))`,
+                color: token('color.text.inverse', '#FFFFFF'),
                 borderRadius: 8,
-                padding: '4px 8px',
+                padding: '0 8px',
+                lineHeight: '20px',
               }}>
                 {filtersCount}
               </span>
@@ -149,6 +151,43 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                 labels={pools.labels}
                 isLoading={pools.isLoading}
               />
+
+              {/* Empty state — shown when no criteria selected yet */}
+              {activeTabIdx === 0 && !effectiveJql.trim() && (
+                <div style={{
+                  marginTop: 32,
+                  padding: '32px 24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 8,
+                  background: `var(--ds-surface-sunken, #F7F8F9)`,
+                  borderRadius: 4,
+                  border: `1px dashed ${token('color.border')}`,
+                  textAlign: 'center',
+                }}>
+                  <span style={{ fontSize: 24, lineHeight: 1 }}>⚙</span>
+                  <p style={{
+                    margin: 0,
+                    fontSize: 14,
+                    fontWeight: token('font.weight.semibold'),
+                    color: token('color.text'),
+                  }}>
+                    No criteria selected
+                  </p>
+                  <p style={{
+                    margin: 0,
+                    fontSize: 13,
+                    color: token('color.text.subtle'),
+                    maxWidth: 360,
+                    lineHeight: 1.5,
+                  }}>
+                    Use the chips above to filter by Assignee, Type, Status, Priority or more.
+                    Your JQL query will appear here as you build it.
+                  </p>
+                </div>
+              )}
+
               {effectiveJql.trim() && (
                 <div style={{
                   marginTop: 16,
@@ -205,6 +244,15 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                 value={jqlValue}
                 onChange={setJqlValue}
                 showFilterCount
+                valuePool={{
+                  status:    (pools.statuses   ?? []).map(s => s.label),
+                  assignee:  (pools.assignees  ?? []).map(a => a.label),
+                  reporter:  (pools.reporters  ?? []).map(r => r.label),
+                  issuetype: (pools.workTypes  ?? []).map(w => w.label),
+                  fixVersion:(pools.fixVersions?? []).map(f => f.label),
+                  labels:    (pools.labels     ?? []).map(l => l.label),
+                  priority:  ['Highest', 'High', 'Medium', 'Low', 'Lowest'],
+                }}
               />
             </div>
           </TabPanel>

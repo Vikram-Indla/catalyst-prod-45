@@ -3,7 +3,8 @@ import { token } from '@atlaskit/tokens';
 import { getSuggestions, translate } from '@/lib/jql';
 import { JQLAutocompleteDropdown } from './JQLAutocompleteDropdown';
 import { useJQLValidation } from '@/hooks/workhub/useJQLValidation';
-import type { SuggestionResult } from '@/lib/jql';
+import type { SuggestionResult, ValuePool } from '@/lib/jql';
+import type { Suggestion } from '@/lib/jql';
 
 interface Props {
   value: string;
@@ -15,6 +16,13 @@ interface Props {
   isInvalid?: boolean;
   /** Show the filter count below the editor */
   showFilterCount?: boolean;
+  /**
+   * Map of JQL field name → list of actual project values.
+   * When provided, value-state completions will surface these first
+   * (e.g. actual status names, assignee display names, label strings).
+   * Keys must match JQL_FIELD_MAP keys: status, assignee, issuetype, etc.
+   */
+  valuePool?: Record<string, string[]>;
 }
 
 export function JQLEditor({
@@ -25,6 +33,7 @@ export function JQLEditor({
   autoFocus,
   isInvalid,
   showFilterCount,
+  valuePool,
 }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [suggestions, setSuggestions] = useState<SuggestionResult | null>(null);
@@ -32,13 +41,23 @@ export function JQLEditor({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const validation = useJQLValidation(value);
 
+  // Convert string[] valuePool into Suggestion[] format once per render
+  const resolvedPool: ValuePool | undefined = valuePool
+    ? Object.fromEntries(
+        Object.entries(valuePool).map(([field, vals]) => [
+          field,
+          vals.map((v): Suggestion => ({ value: v })),
+        ])
+      )
+    : undefined;
+
   const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
     onChange(newValue);
 
-    // Autocomplete
+    // Autocomplete — thread pool data for value-state completions
     const cursor = e.target.selectionStart ?? newValue.length;
-    const result = getSuggestions(newValue, cursor);
+    const result = getSuggestions(newValue, cursor, resolvedPool);
     setSuggestions(result.items.length ? result : null);
     setAnchorRect(e.target.getBoundingClientRect());
 
