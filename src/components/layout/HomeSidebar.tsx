@@ -26,6 +26,7 @@
  *     not a project, surfacing it was misleading).
  */
 import React, { useMemo } from 'react';
+import { token } from '@atlaskit/tokens';
 import ClockIcon from '@atlaskit/icon/core/clock';
 import FolderOpenIcon from '@atlaskit/icon/core/folder-open';
 import GridIcon from '@atlaskit/icon/core/grid';
@@ -89,8 +90,28 @@ function formatTimestamp(visitedAtMs: number): string {
 }
 
 /**
- * Title renderer — "Project Name › Section" on line 1, timestamp on line 2.
- * Uses ADS tokens so it themes correctly in dark mode.
+ * Title renderer — ADS split-hierarchy layout (2026-05-28 identity redesign).
+ *
+ * Two-line structure with clear typographic weight separation:
+ *   Line 1: Section name — dominant (14px/500/color.text)
+ *   Line 2: Project key (left) + Timestamp (right) — subordinate meta
+ *
+ * Design rationale:
+ * - "All work" is what you want to jump back to — it's the PRIMARY identifier
+ * - "BAU" is WHICH project — already implied by context, shown as quiet meta
+ * - "7h ago" is WHEN — useful for recency scanning, pushed right so it
+ *    doesn't compete with the destination name
+ * - No "›" separator — the two-line vertical split IS the hierarchy;
+ *   symbols that encode structure Tufte-style add zero data-ink value
+ *
+ * ADS tokens used:
+ *   color.text          (#292A2E)  — section name (primary)
+ *   color.text.subtle   (#44546F)  — project key (secondary)
+ *   color.text.subtlest (#626F86)  — timestamp (tertiary)
+ *   font.size.100       (14px)     — body
+ *   font.size.050       (11px)     — micro/labels
+ * Source: https://atlassian.design/foundations/typography
+ *         https://atlassian.design/foundations/color
  */
 function LocationRowTitle({ location }: { location: RecentLocation }) {
   return (
@@ -99,40 +120,71 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
-        gap: 2,
+        gap: 0,
         minWidth: 0,
-        maxWidth: '100%',
+        width: '100%',
       }}
     >
-      {/* Project Key › Section — primary */}
+      {/* Line 1: Section name — the destination, primary weight */}
       <span
         style={{
-          color: 'var(--ds-text, #292A2E)',
+          color: token('color.text', '#292A2E'),
           fontWeight: 500,
-          fontSize: '13px',
+          // ADS font.size.100 = 14px body
+          // Source: https://atlassian.design/foundations/typography
+          fontSize: token('font.size.100', '14px'),
           lineHeight: '18px',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
-          flex: 1,
+          width: '100%',
         }}
       >
-        {location.projectKey} › {location.sectionLabel}
+        {location.sectionLabel}
       </span>
 
-      {/* Timestamp — secondary */}
+      {/* Line 2: Project key (left) + Timestamp (right) — context meta */}
       <span
         style={{
-          color: 'var(--ds-text-subtlest, #626F86)',
-          fontWeight: 400,
-          fontSize: '11px',
-          lineHeight: '16px',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
+          display: 'flex',
+          alignItems: 'center',
+          width: '100%',
+          gap: 0,
+          marginTop: 0,
         }}
       >
-        {formatTimestamp(location.visitedAt)}
+        {/* Project key — subtle, secondary context */}
+        <span
+          style={{
+            color: token('color.text.subtle', '#44546F'),
+            fontWeight: 400,
+            // ADS font.size.050 = 11px micro/rail labels
+            // Source: https://atlassian.design/foundations/typography
+            fontSize: token('font.size.050', '11px'),
+            lineHeight: '16px',
+            flex: 1,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {location.projectKey}
+        </span>
+
+        {/* Timestamp — subtlest, pushed to right edge */}
+        <span
+          style={{
+            color: token('color.text.subtlest', '#626F86'),
+            fontWeight: 400,
+            // ADS font.size.050 = 11px
+            fontSize: token('font.size.050', '11px'),
+            lineHeight: '16px',
+            flexShrink: 0,
+            paddingLeft: token('space.050', '4px'),
+          }}
+        >
+          {formatTimestamp(location.visitedAt)}
+        </span>
       </span>
     </span>
   );
@@ -234,6 +286,11 @@ export default function HomeSidebar({
           title: <LocationRowTitle location={loc} />,
           path: loc.path,
           icon: getSectionIconComponent(loc.sectionLabel),
+          // Project identity bar: data-driven from ph_projects.color.
+          // Each row carries its project's brand color as a persistent 3px
+          // left spine — instant visual differentiation between projects.
+          // Falls back gracefully to undefined (no bar) when color is null.
+          accentColor: loc.color ?? undefined,
         }));
 
     return {

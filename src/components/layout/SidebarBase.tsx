@@ -109,6 +109,15 @@ export interface SidebarMenuItem {
    * behaviour.
    */
   onStarClick?: () => void;
+  /**
+   * Optional project/hub accent color for the persistent left identity bar.
+   * When set, a 3px colored bar renders on the left edge of the row at all
+   * times (not just active state) — giving each Recent item a distinct
+   * project identity. Value comes from ph_projects.color (data-driven,
+   * not a hardcoded design token). Falls back to transparent when null.
+   * Added 2026-05-28: HomeSidebar Recent items identity redesign.
+   */
+  accentColor?: string;
 }
 
 export interface SidebarSection {
@@ -366,12 +375,15 @@ export function SidebarBase({
                   {sectionIndex > 0 && (
                     <div style={{ borderTop: `1px solid ${dividerColor}`, margin: '8px 12px' }} />
                   )}
-                  {/* Section header — ADS sentence case, --ds-text-subtlest */}
+                  {/* Section header — ADS rail micro-label spec:
+                      11px/600/color.text.subtlest — matches Jira admin
+                      sidebar section headers (probed 2026-05-19).
+                      Previously 14px/400/color.text — no hierarchy vs items.
+                      Source: https://atlassian.design/foundations/typography */}
                   {expanded && section.title && (
                     <div
                       style={{
-                        padding: '8px 12px 0 12px',
-                        marginBottom: '4px',
+                        padding: '8px 12px 4px 12px',
                         lineHeight: 1,
                       }}
                     >
@@ -449,8 +461,11 @@ function renderMenuItem(
       aria-current={active ? 'page' : undefined}
       className="group w-full flex items-center border-none cursor-pointer transition-all relative"
       style={{
-        height: '32px',
-        padding: expanded ? '0 12px' : '0',
+        // minHeight instead of height so 2-line titles (HomeSidebar Recent)
+        // expand naturally without clipping. ADS interactive row: 40px min.
+        // Single-line items visually sit at ~32px with 4px v-padding.
+        minHeight: '40px',
+        padding: expanded ? '4px 12px 4px 12px' : '4px 0',
         gap: '8px',
         marginBottom: '0',
         fontSize: token('font.size.100', '14px'),
@@ -463,6 +478,9 @@ function renderMenuItem(
         lineHeight: 1,
         borderRadius: '4px',
         letterSpacing: '0',
+        // ADS hover motion: cubic-bezier(0.15,1,0.3,1) 150ms
+        // Source: https://atlassian.design/foundations/motion
+        transition: 'background 150ms cubic-bezier(0.15,1,0.3,1)',
       }}
       onMouseEnter={(e) => {
         prefetchRoute(item.path);
@@ -496,21 +514,69 @@ function renderMenuItem(
           }}
         />
       )}
-      {/* Icon container */}
+      {/* Project identity bar — always-on, light mode only.
+          Renders when item.accentColor is set (HomeSidebar Recent items).
+          Color is data-driven from ph_projects.color — NOT a hardcoded
+          design value. Each recent row gets its project's brand color as
+          a persistent left spine, giving instant project recognition
+          without avatars. ADS anchor: color.icon.brand pattern + hub-tone
+          language (2026-05-28 identity redesign). */}
+      {!active && item.accentColor && expanded && !tk.isDark && (
+        <span
+          data-project-accent
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: '6px',
+            bottom: '6px',
+            width: '3px',
+            background: item.accentColor,
+            borderRadius: '0 3px 3px 0',
+            opacity: 0.6,
+            transition: 'opacity 150ms cubic-bezier(0.15,1,0.3,1)',
+          }}
+        />
+      )}
+      {/* Project identity bar — active state: full opacity */}
+      {active && item.accentColor && expanded && !tk.isDark && (
+        <span
+          data-project-accent-active
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: '4px',
+            bottom: '4px',
+            width: '3px',
+            background: item.accentColor,
+            borderRadius: '0 3px 3px 0',
+            opacity: 1,
+          }}
+        />
+      )}
+      {/* Icon container — ADS icon color tokens:
+          active  → color.icon.brand (#0052CC) — council-approved 2026-05-28
+          inactive → color.icon.subtle (#6B778C)
+          Source: https://atlassian.design/foundations/color */}
       <span
         className="flex items-center justify-center flex-shrink-0"
         style={{
           width: '16px',
           height: '16px',
-          opacity: active ? 1.0 : tk.iconOpacityInactive,
-          transition: 'opacity 150ms ease',
+          opacity: 1,
+          flexShrink: 0,
+          transition: 'color 150ms cubic-bezier(0.15,1,0.3,1)',
         }}
       >
         {CustomIcon && (
           <CustomIcon
             className="h-[16px] w-[16px]"
             style={{
-              color: active ? tk.activeText : tk.itemText,
+              // ADS canonical: color.icon.brand for active, color.icon.subtle
+              // for inactive. Raw hex used as token() not available in this
+              // file — values match ADS light-mode token resolution.
+              color: active
+                ? 'var(--ds-icon-brand, #0052CC)'
+                : 'var(--ds-icon-subtle, #6B778C)',
               strokeWidth: active ? 2 : 1.5,
             }}
           />
