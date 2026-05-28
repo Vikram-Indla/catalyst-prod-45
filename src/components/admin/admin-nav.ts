@@ -124,6 +124,15 @@ export const adminPockets: AdminNavPocket[] = [
     ],
   },
   {
+    id: 'ai-governance',
+    label: 'AI Governance',
+    iconName: 'Sparkles',
+    path: '/admin/ai-governance',
+    children: [
+      { label: 'Translation logs', path: '/admin/ai-governance/translations' },
+    ],
+  },
+  {
     id: 'developer',
     label: 'Developer',
     iconName: 'Code2',
@@ -182,6 +191,7 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   //   /admin/workhub/sync-logs.
   '/admin/feature-flags',
   '/admin/catalyst-features',
+  '/admin/ai-governance/translations',
 ]);
 
 /** Returns all leaf navigation paths (children only; section-level paths excluded). */
