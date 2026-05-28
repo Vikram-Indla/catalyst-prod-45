@@ -32,6 +32,8 @@ import Button from '@atlaskit/button/new';
 import ImageIcon from '@atlaskit/icon/core/image';
 import EditIcon from '@atlaskit/icon/core/edit';
 import WandIcon from '@atlaskit/icon/core/magic-wand';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import { toggleMark as atlaskitToggleMark } from '@atlaskit/editor-common/mark';
 import Spinner from '@atlaskit/spinner';
 import { token } from '@atlaskit/tokens';
 import { toast } from 'sonner';
@@ -53,6 +55,313 @@ import { useVoiceToText } from '@/lib/voiceToText/useVoiceToText';
 // TipTap was removed 2026-04-20 (USER DIRECTIVE). The lazy-load was to prevent
 // "Duplicate use of selection JSON ID cell" collision with Tiptap's prosemirror
 // registration. With TipTap gone, we can load @atlaskit/editor-core eagerly.
+
+/* Toolbar-level CSS — universal across EVERY editor instance.
+   Lives here (not in CatalystDescriptionSection) so it injects whenever
+   ANY editor mounts: description, comments, create-modal, business-
+   request description, admin component previews. The selectors all hang
+   off [data-testid="ak-editor-main-toolbar"], which Atlaskit applies to
+   the toolbar regardless of appearance ("comment" | "chromeless" |
+   "full-page"). Bump TOOLBAR_STYLE_ID to force HMR re-injection. */
+const TOOLBAR_STYLE_ID = 'cv-editor-toolbar-styles-v11';
+if (typeof document !== 'undefined' && !document.getElementById(TOOLBAR_STYLE_ID)) {
+  const s = document.createElement('style');
+  s.id = TOOLBAR_STYLE_ID;
+  s.textContent = `
+    /* Compact text-style trigger (T, H₁-H₆) — replaces Atlaskit's verbose
+       "Normal text" / "Heading 1" label and removes both the chevron and
+       the leading text/heading icon. The aria-label format used to drive
+       ::before content is "{blockTypeName} Text styles" per
+       node_modules/@atlaskit/editor-common/dist/cjs/messages/toolbar.js. */
+
+    [data-testid="ak-editor-main-toolbar"] button.block-type-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-width: 28px !important;
+      width: 28px !important;
+      height: 28px !important;
+      padding: 0 !important;
+      position: relative;
+    }
+    [data-testid="ak-editor-main-toolbar"] button.block-type-btn > span > div {
+      display: none !important;
+    }
+    [data-testid="ak-editor-main-toolbar"] button.block-type-btn [data-testid="toolbar-block-type-text-styles-icon"] {
+      display: none !important;
+    }
+    [data-testid="ak-editor-main-toolbar"] button.block-type-btn::before {
+      content: "T";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ds-text, #292A2E);
+      line-height: 1;
+      letter-spacing: 0;
+      pointer-events: none;
+      min-width: 18px;
+    }
+    [data-testid="ak-editor-main-toolbar"] button.block-type-btn[aria-label*="normal Text styles"]::before { content: "T"; }
+    [data-testid="ak-editor-main-toolbar"] button.block-type-btn[aria-label*="smallText Text styles"]::before { content: "T\\209B"; }
+    [data-testid="ak-editor-main-toolbar"] button.block-type-btn[aria-label*="heading1 Text styles"]::before { content: "H\\2081"; }
+    [data-testid="ak-editor-main-toolbar"] button.block-type-btn[aria-label*="heading2 Text styles"]::before { content: "H\\2082"; }
+    [data-testid="ak-editor-main-toolbar"] button.block-type-btn[aria-label*="heading3 Text styles"]::before { content: "H\\2083"; }
+    [data-testid="ak-editor-main-toolbar"] button.block-type-btn[aria-label*="heading4 Text styles"]::before { content: "H\\2084"; }
+    [data-testid="ak-editor-main-toolbar"] button.block-type-btn[aria-label*="heading5 Text styles"]::before { content: "H\\2085"; }
+    [data-testid="ak-editor-main-toolbar"] button.block-type-btn[aria-label*="heading6 Text styles"]::before { content: "H\\2086"; }
+    [data-testid="ak-editor-main-toolbar"] button.block-type-btn[aria-label*="blockquote Text styles"]::before { content: "\\275D"; }
+
+    /* Hide the vertical toolbar separator line + shrink its wrapper to a
+       tiny gap. data-vc="primary-toolbar-separator" comes from
+       node_modules/@atlaskit/editor-plugin-primary-toolbar/dist/cjs/ui/
+       separator.js. */
+    [data-testid="ak-editor-main-toolbar"] [data-vc="primary-toolbar-separator"] {
+      display: none !important;
+    }
+    [data-testid="ak-editor-main-toolbar"] span:has(> [data-vc="primary-toolbar-separator"]) {
+      width: 0 !important;
+      min-width: 0 !important;
+      max-width: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Hide the entire stock text-formatting cluster (Bold/Italic + the
+       responsive "More" overflow). Replaced by our chevron dropdown
+       injected via portal. .js-text-format-wrap comes from
+       node_modules/@atlaskit/editor-plugin-text-formatting/dist/cjs/ui/Toolbar/index.js. */
+    [data-testid="ak-editor-main-toolbar"] .js-text-format-wrap {
+      display: none !important;
+    }
+
+    /* Hide standalone Code-snippet toolbar button (inline code is in
+       our dropdown now). */
+    [data-testid="ak-editor-main-toolbar"] button[aria-label*="Code snippet" i],
+    [data-testid="ak-editor-main-toolbar"] button[title*="Code snippet" i],
+    [data-testid="ak-editor-main-toolbar"] button[aria-label*="Code block" i],
+    [data-testid="ak-editor-main-toolbar"] button[title*="Code block" i] {
+      display: none !important;
+    }
+
+    /* Slot wrapper — center the chevron vertically with T. */
+    .cv-editor-format-slot {
+      display: inline-flex !important;
+      align-items: center !important;
+      align-self: center !important;
+    }
+
+    /* Chevron trigger — square hit area so hover background has equal
+       padding on every side, centered both axes. */
+    .cv-tfmt-trigger {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: var(--ds-text, #292A2E);
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .cv-tfmt-trigger:hover {
+      background: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06));
+    }
+    .cv-tfmt-trigger[aria-expanded="true"] {
+      background: var(--ds-background-selected, #E9F2FF);
+      color: var(--ds-text-selected, #0055CC);
+    }
+    /* Force chevron SVG size — size="large" on the icon prop wasn't
+       picking up in this Atlaskit version, so we set it explicitly. */
+    .cv-tfmt-trigger svg {
+      width: 24px !important;
+      height: 24px !important;
+    }
+
+    /* Self-rolled popover panel. position: fixed so it escapes toolbar
+       overflow:hidden; coords are viewport-relative. */
+    .cv-tfmt-popover {
+      position: fixed;
+      z-index: 2147483600;
+      min-width: 240px;
+      background: var(--ds-surface-overlay, #FFFFFF);
+      border: 1px solid var(--ds-border, #DFE1E6);
+      border-radius: 4px;
+      box-shadow: 0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31);
+      padding: 4px 0;
+      font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
+    }
+    .cv-tfmt-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 6px 12px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--ds-text, #292A2E);
+      text-align: left;
+    }
+    .cv-tfmt-item:hover {
+      background: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06));
+    }
+    .cv-tfmt-glyph {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ds-text-subtle, #42526E);
+      flex-shrink: 0;
+    }
+    .cv-tfmt-glyph--bold { font-weight: 700; }
+    .cv-tfmt-glyph--italic { font-style: italic; }
+    .cv-tfmt-glyph--underline { text-decoration: underline; }
+    .cv-tfmt-glyph--strike { text-decoration: line-through; }
+    .cv-tfmt-glyph--code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+    .cv-tfmt-label { flex: 1; }
+    .cv-tfmt-kbd {
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ds-text-subtle, #6B778C);
+      background: var(--ds-background-neutral, #F1F2F4);
+      padding: 1px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+  `;
+  document.head.appendChild(s);
+}
+
+/* Platform-aware modifier label. Mac uses ⌘ + ⇧, everyone else uses
+   Ctrl + Shift. Matches what Atlaskit's own help-dialog renders. */
+const IS_MAC = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
+const MOD = IS_MAC ? '⌘' : 'Ctrl';
+const SHIFT = IS_MAC ? '⇧' : 'Shift';
+
+/**
+ * TextFormatDropdown — replaces Atlaskit's stock Bold/Italic/More cluster
+ * with a single chevron trigger and Jira-parity menu (Bold, Italic,
+ * Underline, Strikethrough, Code, Subscript, Superscript).
+ *
+ * Self-rolled popover (NOT @atlaskit/dropdown-menu) to keep the toolbar
+ * bundle light — every editor instance (description + every comment)
+ * gets this dropdown, so a heavy dropdown component multiplied 10× on
+ * the page was tanking the UI thread.
+ *
+ * Each item dispatches Atlaskit's toggleMark (editor-common/mark)
+ * against the live editor view so selection-vs-cursor semantics and
+ * subsup swap behavior match the keyboard shortcuts exactly. */
+const FORMAT_ITEMS = [
+  { name: 'strong', label: 'Bold', glyph: 'B', glyphMod: 'bold', shortcut: 'B' },
+  { name: 'em', label: 'Italic', glyph: 'I', glyphMod: 'italic', shortcut: 'I' },
+  { name: 'underline', label: 'Underline', glyph: 'U', glyphMod: 'underline', shortcut: 'U' },
+  { name: 'strike', label: 'Strikethrough', glyph: 'S', glyphMod: 'strike', shortcut: 'Shift+S' },
+  { name: 'code', label: 'Code', glyph: '</>', glyphMod: 'code', shortcut: 'Shift+M' },
+  { name: 'subsup', attrs: { type: 'sub' }, label: 'Subscript', glyph: 'X₁', glyphMod: '', shortcut: 'Shift+,' },
+  { name: 'subsup', attrs: { type: 'sup' }, label: 'Superscript', glyph: 'X¹', glyphMod: '', shortcut: 'Shift+.' },
+] as const;
+
+function TextFormatDropdown({ getView }: { getView: () => any }) {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (popRef.current?.contains(t) || triggerRef.current?.contains(t)) return;
+      setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onDown, true);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown, true);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [open]);
+
+  const dispatchToggle = useCallback(
+    (markName: string, attrs?: Record<string, unknown>) => {
+      const view = getView();
+      if (!view) return;
+      const markType = view.state.schema.marks[markName];
+      if (!markType) return;
+      const tr = view.state.tr;
+      const result = atlaskitToggleMark(markType, attrs)({ tr });
+      if (result) view.dispatch(result);
+      view.focus();
+      setOpen(false);
+    },
+    [getView],
+  );
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        className="cv-tfmt-trigger"
+        aria-label="More text formatting"
+        aria-expanded={open}
+        title="More text formatting"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <ChevronDownIcon label="" size="large" />
+      </button>
+      {open && (() => {
+        // Portal to document.body so position:fixed is honored regardless
+        // of any transform/filter/will-change applied by ancestors of the
+        // toolbar (which would otherwise re-anchor fixed positioning).
+        const rect = triggerRef.current?.getBoundingClientRect();
+        return createPortal(
+          <div
+            ref={popRef}
+            className="cv-tfmt-popover"
+            style={{
+              top: (rect?.bottom ?? 0) + 4,
+              left: rect?.left ?? 0,
+            }}
+            role="menu"
+          >
+            {FORMAT_ITEMS.map((item) => (
+              <button
+                key={item.label}
+                type="button"
+                role="menuitem"
+                className="cv-tfmt-item"
+                onClick={() => dispatchToggle(item.name, (item as any).attrs)}
+              >
+                <span className={`cv-tfmt-glyph${item.glyphMod ? ' cv-tfmt-glyph--' + item.glyphMod : ''}`}>
+                  {item.glyph}
+                </span>
+                <span className="cv-tfmt-label">{item.label}</span>
+                <span className="cv-tfmt-kbd">{`${MOD}+${item.shortcut}`}</span>
+              </button>
+            ))}
+          </div>,
+          document.body,
+        );
+      })()}
+    </>
+  );
+}
 
 // Local type alias — avoid eager type import from @atlaskit/editor-core.
 type EditorActions = {
@@ -189,6 +498,7 @@ function EpicDescriptionEditorImpl({
 
   const [improveSlot, setImproveSlot] = useState<HTMLElement | null>(null);
   const [imageSlot, setImageSlot] = useState<HTMLElement | null>(null);
+  const [formatSlot, setFormatSlot] = useState<HTMLElement | null>(null);
   const [bodySlot, setBodySlot] = useState<HTMLElement | null>(null);
   useEffect(() => {
     const root = wrapperRef.current;
@@ -211,33 +521,52 @@ function EpicDescriptionEditorImpl({
   useEffect(() => {
     const root = wrapperRef.current;
     if (!root) return;
-    const make = () => {
+    const make = (cls?: string) => {
       const el = document.createElement('span');
       el.style.cssText = 'display:inline-flex;align-items:center;white-space:nowrap;flex-shrink:0';
+      if (cls) el.className = cls;
       return el;
     };
+    let currentImprove: HTMLElement | null = null;
+    let currentImage: HTMLElement | null = null;
+    let currentFormat: HTMLElement | null = null;
     const attach = () => {
-      const buttons = root.querySelectorAll<HTMLButtonElement>(
-        '[data-testid="ak-editor-main-toolbar"] button',
+      const toolbar = root.querySelector<HTMLElement>(
+        '[data-testid="ak-editor-main-toolbar"]',
       );
+      if (!toolbar) return false;
+      const buttons = toolbar.querySelectorAll<HTMLButtonElement>('button');
       if (buttons.length === 0) return false;
       const first = buttons[0];
       const last = buttons[buttons.length - 1];
-      if (onImprove && first.parentElement) {
-        const improve = make();
-        first.parentElement.insertBefore(improve, first);
-        setImproveSlot(improve);
+      // Re-inject the Improve slot whenever Atlaskit rebuilds the toolbar
+      // (it does this on every focus / selection change, which used to
+      // make the "Improve description" pill vanish on first click).
+      if (onImprove && first.parentElement && (!currentImprove || !currentImprove.isConnected)) {
+        currentImprove = make();
+        first.parentElement.insertBefore(currentImprove, first);
+        setImproveSlot(currentImprove);
       }
-      if (last.parentElement) {
-        const image = make();
-        last.parentElement.insertBefore(image, last.nextSibling);
-        setImageSlot(image);
+      // Format slot — visually sits where stock Bold was (we hide the
+      // .js-text-format-wrap cluster via CSS). Insert as a sibling of
+      // that cluster, no DOM-walking. If the cluster isn't there yet,
+      // we'll try again on the next mutation.
+      const fmtWrap = toolbar.querySelector<HTMLElement>('.js-text-format-wrap');
+      if (fmtWrap && fmtWrap.parentElement && (!currentFormat || !currentFormat.isConnected)) {
+        currentFormat = make('cv-editor-format-slot');
+        fmtWrap.parentElement.insertBefore(currentFormat, fmtWrap);
+        setFormatSlot(currentFormat);
+      }
+      if (last.parentElement && (!currentImage || !currentImage.isConnected)) {
+        currentImage = make();
+        last.parentElement.insertBefore(currentImage, last.nextSibling);
+        setImageSlot(currentImage);
       }
       return true;
     };
-    if (attach()) return;
+    attach();
     const obs = new MutationObserver(() => {
-      if (attach()) obs.disconnect();
+      attach();
     });
     obs.observe(root, { childList: true, subtree: true });
     return () => obs.disconnect();
@@ -514,6 +843,10 @@ function EpicDescriptionEditorImpl({
             {improveLabel}
           </Button>,
           improveSlot,
+        )}
+        {formatSlot && createPortal(
+          <TextFormatDropdown getView={getEditorView} />,
+          formatSlot,
         )}
         {imageSlot && createPortal(
           <Button

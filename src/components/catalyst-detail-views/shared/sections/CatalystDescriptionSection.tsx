@@ -241,7 +241,7 @@ const DESC_BUILD_ID = "atlaskit-canonical-v218";
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
 /* Bump this version when the style block changes — forces re-injection on HMR. */
-const STYLE_ID = "cv-desc-styles-v25";
+const STYLE_ID = "cv-desc-styles-v34";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
   const s = document.createElement("style");
   s.id = STYLE_ID;
@@ -418,6 +418,12 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     [data-testid="comment-save-button"]:disabled {
       cursor: not-allowed !important;
     }
+
+    /* Toolbar-level CSS (compact T/H₁-H₆ trigger + separator removal)
+       moved to EpicDescriptionEditor.tsx (TOOLBAR_STYLE_ID
+       "cv-editor-toolbar-styles-v01") so it injects for every editor
+       instance, including comments, create-modal, and business-request
+       descriptions — not just surfaces that mount this section. */
 
     .assistive {
       position: absolute !important;
