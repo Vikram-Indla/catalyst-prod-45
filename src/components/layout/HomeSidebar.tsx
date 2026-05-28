@@ -29,6 +29,7 @@ import React, { useMemo } from 'react';
 import { token } from '@atlaskit/tokens';
 import ClockIcon from '@atlaskit/icon/core/clock';
 import FolderOpenIcon from '@atlaskit/icon/core/folder-open';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
 
@@ -180,72 +181,51 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
   );
 }
 
-// ─── Project key badge ────────────────────────────────────────────────────────
-// Each Recent row shows a 20×20 colored square with the project key's first
-// letter — this is the Jira-canonical project identifier pattern and is
-// scannable in ~50ms without reading text.
+// ─── Project icon factory ─────────────────────────────────────────────────────
+// Each Recent row uses ProjectIcon — the canonical single-source-of-truth
+// project tile (src/components/shared/ProjectIcon.tsx).
 //
-// Design rationale (design-critique 2026-05-29):
-//   @atlaskit/avatar xsmall rendered a generic grey filing-cabinet icon because
-//   the size is too small to resolve initials reliably. A purpose-built badge
-//   always shows the correct letter with the correct project color — no fallback
-//   ambiguity. The accent bar (3px left spine) was redundant noise (Tufte:
-//   chartjunk) and has been removed; the badge is now the sole project identity
-//   signal alongside the key text on line 2.
+// Resolution order (handled inside ProjectIcon):
+//   0. Admin override (/admin/icons upload) — wins for ANY project key
+//   1. PROJECT_AVATAR_REGISTRY — 18 bundled PNGs keyed by project key
+//   2. avatarUrl — Jira-uploaded project image
+//   3. iconName + color — Lucide icon on tinted square (ph_projects fields)
+//   4. Grey Folder fallback — NEVER a letter tile
 //
-// Color: data-driven from ph_projects.color (user-configurable, not ADS token).
-//   Falls back to ADS color.background.brand.bold (#0052CC) when null.
-//   Using raw fallback is intentional — the project color IS the design value.
+// RCA (2026-05-29): Prior implementation used a hand-rolled letter badge
+// that violated mem://constraints/canonical-project-icons rule ("NEVER
+// from a single-letter initial tile") and bypassed the admin icon override
+// system entirely. ProjectIcon is the correct primitive.
 //
-// Component cache keyed by projectKey+color so React reconciles correctly.
-// Color is included in the key because a project can have its color changed
-// (though rare — guards against stale cache showing wrong color).
-const PROJECT_BADGE_COMPONENTS = new Map<
+// Component cache keyed by projectKey so React reconciles correctly.
+const PROJECT_ICON_COMPONENTS = new Map<
   string,
   React.FC<{ className?: string; style?: React.CSSProperties }>
 >();
 
-function getProjectBadgeComponent(location: RecentLocation) {
-  const cacheKey = `${location.projectKey}|${location.color ?? ''}`;
-  const cached = PROJECT_BADGE_COMPONENTS.get(cacheKey);
+function getProjectIconComponent(location: RecentLocation) {
+  const cached = PROJECT_ICON_COMPONENTS.get(location.projectKey);
   if (cached) return cached;
 
-  const initial = location.projectKey.charAt(0).toUpperCase();
-  // Project color from ph_projects.color (hex string).
-  // ADS color.background.brand.bold fallback when null.
-  const bg = location.color ?? 'var(--ds-background-brand-bold, #0052CC)';
-
+  const { projectKey, projectName, iconName, color } = location;
+  // size="small" = 20px — matches the 20px icon slot in SidebarBase.
+  // variant="solid" = filled tile matching Jira's project-card style.
+  // Source: https://atlassian.design/components/avatar (square pattern)
   const Component: React.FC<{ className?: string; style?: React.CSSProperties }> = ({
     className,
   }) => (
-    <span
+    <ProjectIcon
+      projectKey={projectKey}
+      iconName={iconName}
+      color={color}
+      name={projectName}
+      size="small"
+      variant="solid"
       className={className}
-      aria-hidden="true"
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 20,
-        height: 20,
-        borderRadius: 4,
-        background: bg,
-        flexShrink: 0,
-        // ADS font.size.050 = 11px for micro labels
-        // Source: https://atlassian.design/foundations/typography
-        fontSize: token('font.size.050', '11px'),
-        fontWeight: 700,
-        color: '#ffffff',
-        fontFamily: 'var(--cp-font-body, system-ui, -apple-system, sans-serif)',
-        lineHeight: 1,
-        letterSpacing: '-0.01em',
-        userSelect: 'none',
-      }}
-    >
-      {initial}
-    </span>
+    />
   );
-  Component.displayName = `ProjectBadge(${location.projectKey})`;
-  PROJECT_BADGE_COMPONENTS.set(cacheKey, Component);
+  Component.displayName = `ProjectIconWrapper(${projectKey})`;
+  PROJECT_ICON_COMPONENTS.set(projectKey, Component);
   return Component;
 }
 
@@ -293,7 +273,7 @@ export default function HomeSidebar({
           id: `recent-${loc.path}`,
           title: <LocationRowTitle location={loc} />,
           path: loc.path,
-          icon: getProjectBadgeComponent(loc),
+          icon: getProjectIconComponent(loc),
         }));
 
     return {
