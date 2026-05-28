@@ -43,7 +43,8 @@
  * body for "@<First Last>" tokens (as produced by our adfToPlainText fix)
  * and wrapping them in a styled <span>.
  */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
 import Lozenge from '@atlaskit/lozenge';
@@ -1221,6 +1222,284 @@ function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
   );
 }
 
+// ─── Emoji picker data ───────────────────────────────────────────────────────
+
+const EMOJI_CATALOG: { key: string; label: string; emojis: { key: string; char: string }[] }[] = [
+  {
+    key: 'smileys', label: 'Smileys',
+    emojis: [
+      { key: 'grinning', char: '😀' }, { key: 'joy', char: '😂' },
+      { key: 'rofl', char: '🤣' }, { key: 'slightly_smiling', char: '🙂' },
+      { key: 'smile', char: '😊' }, { key: 'heart_eyes', char: '😍' },
+      { key: 'kissing_heart', char: '😘' }, { key: 'sunglasses', char: '😎' },
+      { key: 'thinking', char: '🤔' }, { key: 'hugging', char: '🤗' },
+      { key: 'star_struck', char: '🤩' }, { key: 'partying', char: '🥳' },
+      { key: 'cry', char: '😢' }, { key: 'sob', char: '😭' },
+      { key: 'angry', char: '😡' }, { key: 'sleeping', char: '😴' },
+      { key: 'smirk', char: '😏' }, { key: 'grimacing', char: '😬' },
+    ],
+  },
+  {
+    key: 'gestures', label: 'Gestures',
+    emojis: [
+      { key: 'wave', char: '👋' }, { key: 'clap', char: '👏' },
+      { key: 'raised_hands', char: '🙌' }, { key: 'thumb', char: '👍' },
+      { key: 'thumbsdown', char: '👎' }, { key: 'ok', char: '👌' },
+      { key: 'v', char: '✌️' }, { key: 'crossed_fingers', char: '🤞' },
+      { key: 'muscle', char: '💪' }, { key: 'pray', char: '🙏' },
+      { key: 'point_right', char: '👉' }, { key: 'point_left', char: '👈' },
+    ],
+  },
+  {
+    key: 'nature', label: 'Nature',
+    emojis: [
+      { key: 'fire', char: '🔥' }, { key: 'sparkles', char: '✨' },
+      { key: 'sun', char: '☀️' }, { key: 'moon', char: '🌙' },
+      { key: 'star', char: '⭐' }, { key: 'rainbow', char: '🌈' },
+      { key: 'zap', char: '⚡' }, { key: 'snowflake', char: '❄️' },
+      { key: 'ocean', char: '🌊' }, { key: 'leaves', char: '🍃' },
+      { key: 'clover', char: '🍀' }, { key: 'rose', char: '🌹' },
+    ],
+  },
+  {
+    key: 'activities', label: 'Activities',
+    emojis: [
+      { key: 'trophy', char: '🏆' }, { key: 'medal', char: '🥇' },
+      { key: 'tada', char: '🎉' }, { key: 'confetti', char: '🎊' },
+      { key: 'gift', char: '🎁' }, { key: 'rocket', char: '🚀' },
+      { key: 'dart', char: '🎯' }, { key: 'boom', char: '💥' },
+      { key: 'musical_note', char: '🎵' }, { key: 'headphones', char: '🎧' },
+      { key: 'video_game', char: '🎮' }, { key: 'art', char: '🎨' },
+    ],
+  },
+  {
+    key: 'symbols', label: 'Symbols',
+    emojis: [
+      { key: 'heart', char: '❤️' }, { key: 'orange_heart', char: '🧡' },
+      { key: 'yellow_heart', char: '💛' }, { key: 'green_heart', char: '💚' },
+      { key: 'blue_heart', char: '💙' }, { key: 'purple_heart', char: '💜' },
+      { key: 'hundred', char: '💯' }, { key: 'check', char: '✅' },
+      { key: 'x', char: '❌' }, { key: 'exclamation', char: '❗' },
+      { key: 'question', char: '❓' }, { key: 'eyes', char: '👀' },
+    ],
+  },
+];
+
+const ALL_EMOJIS = EMOJI_CATALOG.flatMap(c => c.emojis);
+
+// ─── Emoji picker popover ────────────────────────────────────────────────────
+//
+// Self-rolled portal popup (createPortal to document.body, position:fixed).
+// @atlaskit/popup v4.16 has an empty-portal bug on overflow:hidden parents
+// (CLAUDE.md 2026-05-08) so we use the same pattern as AllProjectsTable.
+// Category tab bar + search + 9-column emoji grid, matching Jira DOM probe.
+
+function EmojiPickerPopover({
+  anchorRef,
+  onSelect,
+  onClose,
+}: {
+  anchorRef: React.RefObject<HTMLButtonElement | null>;
+  onSelect: (key: string) => void;
+  onClose: () => void;
+}) {
+  const [search, setSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState('smileys');
+  const portalRef = useRef<HTMLDivElement>(null);
+
+  // Position the picker relative to the trigger button.
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  useEffect(() => {
+    if (!anchorRef.current) return;
+    const r = anchorRef.current.getBoundingClientRect();
+    const PICKER_W = 320;
+    const PICKER_H = 340;
+    const spaceBelow = window.innerHeight - r.bottom;
+    const top = spaceBelow >= PICKER_H ? r.bottom + 4 : r.top - PICKER_H - 4;
+    const left = Math.min(r.left, window.innerWidth - PICKER_W - 8);
+    setPos({ top, left });
+  }, [anchorRef]);
+
+  // Close on Escape (capture phase beats parent modal's bubble handler).
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
+    };
+    document.addEventListener('keydown', handler, true);
+    return () => document.removeEventListener('keydown', handler, true);
+  }, [onClose]);
+
+  // Close on mousedown outside.
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const t = e.target as Element;
+      if (
+        portalRef.current && !portalRef.current.contains(t) &&
+        !(t as Element).closest?.('[data-emoji-portal="true"]')
+      ) {
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [onClose]);
+
+  const filtered = search.trim()
+    ? ALL_EMOJIS.filter(e => e.key.includes(search.toLowerCase().replace(/\s+/g, '_')))
+    : null;
+  const visibleEmojis = filtered ??
+    (EMOJI_CATALOG.find(c => c.key === activeCategory)?.emojis ?? EMOJI_CATALOG[0].emojis);
+
+  if (!pos) return null;
+
+  return createPortal(
+    <div
+      ref={portalRef}
+      data-emoji-portal="true"
+      style={{
+        position: 'fixed',
+        top: pos.top,
+        left: pos.left,
+        zIndex: 10000,
+        width: 320,
+        maxHeight: 340,
+        background: token('elevation.surface.overlay', '#FFFFFF'),
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRadius: 8,
+        boxShadow: 'var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Category tab bar */}
+      <div
+        style={{
+          display: 'flex',
+          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          padding: '4px 4px 0',
+          gap: 0,
+          flexShrink: 0,
+        }}
+      >
+        {EMOJI_CATALOG.map(cat => (
+          <button
+            key={cat.key}
+            type="button"
+            title={cat.label}
+            onClick={() => { setActiveCategory(cat.key); setSearch(''); }}
+            style={{
+              all: 'unset',
+              flex: 1,
+              display: 'flex',
+              justifyContent: 'center',
+              padding: '4px 0 8px',
+              fontSize: 16,
+              cursor: 'pointer',
+              borderBottom: `2px solid ${activeCategory === cat.key && !search
+                ? token('color.border.brand', '#0C66E4')
+                : 'transparent'}`,
+              transition: 'border-color 120ms ease',
+            }}
+          >
+            {cat.emojis[0].char}
+          </button>
+        ))}
+      </div>
+
+      {/* Search row */}
+      <div style={{ padding: '8px 8px', flexShrink: 0, display: 'flex', gap: 4 }}>
+        <input
+          autoFocus
+          type="text"
+          placeholder="Search..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          style={{
+            flex: 1,
+            border: `1px solid ${token('color.border.input', '#8590A2')}`,
+            borderRadius: 4,
+            padding: '4px 8px',
+            fontSize: 13,
+            outline: 'none',
+            fontFamily: 'inherit',
+            color: token('color.text', '#172B4D'),
+            background: token('elevation.surface', '#FFFFFF'),
+          }}
+          onFocus={e => (e.target.style.borderColor = token('color.border.focused', '#388BFF'))}
+          onBlur={e => (e.target.style.borderColor = token('color.border.input', '#8590A2'))}
+        />
+      </div>
+
+      {/* Category header */}
+      {!search && (
+        <div
+          style={{
+            padding: '4px 8px',
+            fontSize: 11,
+            fontWeight: 700,
+            color: token('color.text.subtlest', '#6B778C'),
+            letterSpacing: '0.5px',
+            flexShrink: 0,
+          }}
+        >
+          {EMOJI_CATALOG.find(c => c.key === activeCategory)?.label}
+        </div>
+      )}
+
+      {/* Emoji grid */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(9, 1fr)',
+          padding: '0 4px 4px',
+          overflowY: 'auto',
+          flex: 1,
+        }}
+      >
+        {visibleEmojis.length === 0 ? (
+          <div
+            style={{
+              gridColumn: '1 / -1',
+              padding: '16px 8px',
+              textAlign: 'center',
+              fontSize: 13,
+              color: token('color.text.subtlest', '#6B778C'),
+            }}
+          >
+            No results
+          </div>
+        ) : visibleEmojis.map(em => (
+          <button
+            key={em.key}
+            type="button"
+            title={em.key.replace(/_/g, ' ')}
+            onClick={() => { onSelect(em.key); onClose(); }}
+            style={{
+              all: 'unset',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 32,
+              height: 32,
+              fontSize: 20,
+              borderRadius: 4,
+              cursor: 'pointer',
+              transition: 'background 100ms ease',
+              fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
+            }}
+            onMouseEnter={e => ((e.target as HTMLElement).style.background = token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)'))}
+            onMouseLeave={e => ((e.target as HTMLElement).style.background = 'transparent')}
+          >
+            {em.char}
+          </button>
+        ))}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 // ─── Reaction strip ─────────────────────────────────────────────────────────
 //
 // Jira renders a toolbar of emoji chips (data-testid="render-reactions")
@@ -1275,6 +1554,11 @@ function ReactionStrip({
   // so the user knows their click was registered (P1 from design-critique 2026-05-29).
   const [isUpserting, setIsUpserting] = useState(false);
 
+  // Emoji picker state
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const pickerTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const handlePickerClose = useCallback(() => setPickerOpen(false), []);
+
   // If phCommentId arrives non-null on a later render (e.g. after a refetch
   // that found the row), sync it in so we don't create a duplicate.
   React.useEffect(() => {
@@ -1303,16 +1587,31 @@ function ReactionStrip({
     if (!issueUuid) return null;
     setIsUpserting(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // SELECT first — avoids the partial-index upsert issue and is safe
+      // against concurrent inserts (the unique index prevents duplicates).
+      const { data: existing } = await (supabase as any)
+        .from('ph_comments')
+        .select('id')
+        .eq('jira_comment_id', jiraCommentId)
+        .maybeSingle();
+
+      if (existing?.id) {
+        setResolvedId(existing.id as string);
+        return existing.id as string;
+      }
+
+      // Row does not exist yet — create it. author_id is required by the
+      // "Members can create comments" RLS policy (WITH CHECK (author_id = auth.uid())).
       const { data, error } = await (supabase as any)
         .from('ph_comments')
-        .upsert(
-          { work_item_id: issueUuid, body: commentBody || '', jira_comment_id: jiraCommentId },
-          { onConflict: 'jira_comment_id', ignoreDuplicates: false }
-        )
+        .insert({ work_item_id: issueUuid, body: commentBody || '', jira_comment_id: jiraCommentId, author_id: user.id })
         .select('id')
         .single();
       if (error) throw error;
-      setResolvedId(data.id);
+      setResolvedId(data.id as string);
       return data.id as string;
     } catch (err) {
       console.warn('[ReactionStrip] ensurePhComment failed', err);
@@ -1402,12 +1701,17 @@ function ReactionStrip({
           <Spinner size="small" />
         </span>
       )}
-      {/* Trigger chip — Jira parity: 32×24 with emoji-add glyph. */}
+      {/* Trigger chip — Jira parity: 32×24 with emoji-add glyph.
+          Opens the emoji picker popover (CLAUDE.md: self-rolled portal,
+          @atlaskit/popup v4.16 has empty-portal bug). */}
       <button
+        ref={pickerTriggerRef}
         type="button"
         aria-label="Add reaction"
-        onClick={() => handleReact('party')}
+        aria-expanded={pickerOpen}
+        onClick={() => isAvailable && setPickerOpen(p => !p)}
         disabled={!isAvailable}
+        data-emoji-portal="true"
         style={{
           all: 'unset',
           cursor: isAvailable ? 'pointer' : 'not-allowed',
@@ -1416,16 +1720,24 @@ function ReactionStrip({
           justifyContent: 'center',
           width: 32,
           height: 24,
-          border: `1px solid ${chipBorder}`,
+          border: `1px solid ${pickerOpen ? token('color.border.focused', '#388BFF') : chipBorder}`,
           borderRadius: 4,
           color: token('color.text.subtle', '#626F86'),
-          background: 'transparent',
-          transition: 'background-color 120ms ease',
+          background: pickerOpen ? token('color.background.selected', 'rgba(28,85,170,0.06)') : 'transparent',
+          transition: 'background-color 120ms ease, border-color 120ms ease',
           opacity: 1,
         }}
       >
         <EmojiAddIcon label="" size="small" primaryColor="currentColor" />
       </button>
+
+      {pickerOpen && (
+        <EmojiPickerPopover
+          anchorRef={pickerTriggerRef}
+          onSelect={(key) => handleReact(key)}
+          onClose={handlePickerClose}
+        />
+      )}
     </div>
   );
 }
