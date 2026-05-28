@@ -1515,7 +1515,21 @@ function HeadlineIssueTitle({
   issueStatus?: string;
 }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, verticalAlign: 'middle', flexWrap: 'wrap' }}>
+    // Jira parity: issue reference renders as an Atlaskit `inline-card-resolved-view`
+    // DOM probe 2026-05-29 on digital-transformation.atlassian.net/jira/for-you:
+    //   hairline border (color.border token), borderRadius 4, white surface bg.
+    // The bordered pill is the "grey border on the ticket" the user sees in Jira.
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 6,
+      verticalAlign: 'middle',
+      flexWrap: 'wrap',
+      border: `1px solid ${token('color.border', 'rgba(11, 18, 14, 0.14)')}`,
+      borderRadius: 4,
+      backgroundColor: token('elevation.surface', '#FFFFFF'),
+      padding: '0px 4px',
+    }}>
       <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
         <WorkItemIcon type={normalizeIconType(issueType)} size={16} />
       </span>
