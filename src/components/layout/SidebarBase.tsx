@@ -514,45 +514,6 @@ function renderMenuItem(
           }}
         />
       )}
-      {/* Project identity bar — always-on, light mode only.
-          Renders when item.accentColor is set (HomeSidebar Recent items).
-          Color is data-driven from ph_projects.color — NOT a hardcoded
-          design value. Each recent row gets its project's brand color as
-          a persistent left spine, giving instant project recognition
-          without avatars. ADS anchor: color.icon.brand pattern + hub-tone
-          language (2026-05-28 identity redesign). */}
-      {!active && item.accentColor && expanded && !tk.isDark && (
-        <span
-          data-project-accent
-          style={{
-            position: 'absolute',
-            left: 0,
-            top: '6px',
-            bottom: '6px',
-            width: '3px',
-            background: item.accentColor,
-            borderRadius: '0 3px 3px 0',
-            opacity: 0.6,
-            transition: 'opacity 150ms cubic-bezier(0.15,1,0.3,1)',
-          }}
-        />
-      )}
-      {/* Project identity bar — active state: full opacity */}
-      {active && item.accentColor && expanded && !tk.isDark && (
-        <span
-          data-project-accent-active
-          style={{
-            position: 'absolute',
-            left: 0,
-            top: '4px',
-            bottom: '4px',
-            width: '3px',
-            background: item.accentColor,
-            borderRadius: '0 3px 3px 0',
-            opacity: 1,
-          }}
-        />
-      )}
       {/* Icon container — ADS icon color tokens:
           active  → color.icon.brand (#0052CC) — council-approved 2026-05-28
           inactive → color.icon.subtle (#6B778C)
@@ -560,8 +521,8 @@ function renderMenuItem(
       <span
         className="flex items-center justify-center flex-shrink-0"
         style={{
-          width: '16px',
-          height: '16px',
+          width: '20px',
+          height: '20px',
           opacity: 1,
           flexShrink: 0,
           transition: 'color 150ms cubic-bezier(0.15,1,0.3,1)',

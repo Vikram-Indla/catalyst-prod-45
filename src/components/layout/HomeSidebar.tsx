@@ -27,7 +27,6 @@
  */
 import React, { useMemo } from 'react';
 import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
 import ClockIcon from '@atlaskit/icon/core/clock';
 import FolderOpenIcon from '@atlaskit/icon/core/folder-open';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
@@ -181,51 +180,72 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
   );
 }
 
-// ─── Project avatar factory ───────────────────────────────────────────────────
-// Each Recent row shows the PROJECT avatar (@atlaskit/avatar appearance="square"
-// size="xsmall") instead of a section-type icon. This matches Jira's sidebar
-// pattern: the project avatar IS the leading visual identifier, and the section
-// name ("All work", "Backlog") is the row's primary text.
+// ─── Project key badge ────────────────────────────────────────────────────────
+// Each Recent row shows a 20×20 colored square with the project key's first
+// letter — this is the Jira-canonical project identifier pattern and is
+// scannable in ~50ms without reading text.
 //
-// Design rationale (council verdict 2026-05-28):
-//   Section icons communicated WHERE (view type) — useful but project key text
-//   already covers "which project". In multi-project workspaces, an avatar is
-//   faster to visually scan across rows than reading keys. The accent bar
-//   handles the color identity layer; the avatar handles the shape/initial layer.
+// Design rationale (design-critique 2026-05-29):
+//   @atlaskit/avatar xsmall rendered a generic grey filing-cabinet icon because
+//   the size is too small to resolve initials reliably. A purpose-built badge
+//   always shows the correct letter with the correct project color — no fallback
+//   ambiguity. The accent bar (3px left spine) was redundant noise (Tufte:
+//   chartjunk) and has been removed; the badge is now the sole project identity
+//   signal alongside the key text on line 2.
 //
-// Component cache keyed by projectKey so React reconciles correctly across
-// renders. Cache entries are stable for the session lifetime — project names
-// don't change intra-session.
-const PROJECT_AVATAR_COMPONENTS = new Map<
+// Color: data-driven from ph_projects.color (user-configurable, not ADS token).
+//   Falls back to ADS color.background.brand.bold (#0052CC) when null.
+//   Using raw fallback is intentional — the project color IS the design value.
+//
+// Component cache keyed by projectKey+color so React reconciles correctly.
+// Color is included in the key because a project can have its color changed
+// (though rare — guards against stale cache showing wrong color).
+const PROJECT_BADGE_COMPONENTS = new Map<
   string,
   React.FC<{ className?: string; style?: React.CSSProperties }>
 >();
 
-function getProjectAvatarComponent(location: RecentLocation) {
-  const key = location.projectKey;
-  const cached = PROJECT_AVATAR_COMPONENTS.get(key);
+function getProjectBadgeComponent(location: RecentLocation) {
+  const cacheKey = `${location.projectKey}|${location.color ?? ''}`;
+  const cached = PROJECT_BADGE_COMPONENTS.get(cacheKey);
   if (cached) return cached;
 
-  const { projectName } = location;
-  // Wrap in a span so SidebarBase's style injection (color, display) is
-  // applied to the wrapper, not the avatar element itself.
+  const initial = location.projectKey.charAt(0).toUpperCase();
+  // Project color from ph_projects.color (hex string).
+  // ADS color.background.brand.bold fallback when null.
+  const bg = location.color ?? 'var(--ds-background-brand-bold, #0052CC)';
+
   const Component: React.FC<{ className?: string; style?: React.CSSProperties }> = ({
     className,
-    style,
   }) => (
     <span
       className={className}
-      style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0, ...style }}
+      aria-hidden="true"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 20,
+        height: 20,
+        borderRadius: 4,
+        background: bg,
+        flexShrink: 0,
+        // ADS font.size.050 = 11px for micro labels
+        // Source: https://atlassian.design/foundations/typography
+        fontSize: token('font.size.050', '11px'),
+        fontWeight: 700,
+        color: '#ffffff',
+        fontFamily: 'var(--cp-font-body, system-ui, -apple-system, sans-serif)',
+        lineHeight: 1,
+        letterSpacing: '-0.01em',
+        userSelect: 'none',
+      }}
     >
-      {/* ADS Avatar — square appearance for project/space identity.
-          name prop: drives initials fallback when no src is available.
-          xsmall = 16px — matches existing icon slot width in SidebarBase.
-          Source: https://atlassian.design/components/avatar */}
-      <Avatar appearance="square" name={projectName} size="xsmall" />
+      {initial}
     </span>
   );
-  Component.displayName = `ProjectAvatar(${key})`;
-  PROJECT_AVATAR_COMPONENTS.set(key, Component);
+  Component.displayName = `ProjectBadge(${location.projectKey})`;
+  PROJECT_BADGE_COMPONENTS.set(cacheKey, Component);
   return Component;
 }
 
@@ -273,12 +293,7 @@ export default function HomeSidebar({
           id: `recent-${loc.path}`,
           title: <LocationRowTitle location={loc} />,
           path: loc.path,
-          icon: getProjectAvatarComponent(loc),
-          // Project identity bar: data-driven from ph_projects.color.
-          // Each row carries its project's brand color as a persistent 3px
-          // left spine — instant visual differentiation between projects.
-          // Falls back gracefully to undefined (no bar) when color is null.
-          accentColor: loc.color ?? undefined,
+          icon: getProjectBadgeComponent(loc),
         }));
 
     return {
