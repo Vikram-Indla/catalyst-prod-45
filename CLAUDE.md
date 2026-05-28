@@ -1227,3 +1227,28 @@ Sessions that combined planning and execution within the same context window acc
 - **Releases (`/releases/filters`):** templates scope to ph_issues filtered to fix_versions — emphasise fix-version, PI, production incidents
 - **TestHub:** templates scope to QA Bugs and related defect types
 **Rule:** The template registry (`src/lib/filters/filterTemplates.ts`) must export templates grouped by hub type. `FilterCreatePage` receives a `hubType: 'project' | 'product' | 'release' | 'testhub'` prop and renders only templates for that hub. Never show Project Hub templates inside Product Hub — they reference `project_key` which doesn't exist on `business_requests`. The JQL field set also differs per hub: `project` / `assignee` / `issuetype` are Project Hub concepts; Product Hub uses `request_type` / `product_code` / `requestor`.
+
+---
+
+## 2026-05-29 — For You feed status chip: raw DB rows use snake_case, WorkItem objects use camelCase — never mix
+
+**Surface:** For You / Recommended tab (RecommendedPanel + useForYouData)
+**Pattern:** `mentionIssueRows` from Supabase returns raw DB column names (`status_category` snake_case). The enrichment code at mention-push time wrote `issue?.statusCategory` (camelCase) — the field that only exists on fully-constructed `WorkItem` objects, not on raw query rows. Result: `issueStatusCategory` was ALWAYS `undefined` in `RecommendedMention`, causing the status chip to always render the grey fallback (`rgb(221,222,225)`) regardless of the actual Jira category.
+
+Two compounding bugs:
+1. **Field name mismatch**: `issue?.statusCategory` → `issue?.status_category` (raw row → snake_case)
+2. **Missing SELECT field**: the mention issues query only fetched `'id, issue_key, summary, issue_type, project_key, status'` — `status_category` was absent, so even after fixing the field name, the value would have been null. Fixed by adding `status_category` to both the mention-issues SELECT and the missed-comment-keys SELECT.
+
+**Fix:**
+- Line 754: `select('id, issue_key, summary, issue_type, project_key, status, status_category')`
+- Line 874: `select('id, issue_key, summary, issue_type, project_key, status, status_category')`
+- Line 850: `issueStatusCategory: issue?.status_category || undefined` (was `statusCategory`)
+- Line 921: `issueStatusCategory: issue?.status_category || undefined` (was `statusCategory`)
+
+**Rule:** When enriching a feed/comment with issue metadata via a mini-SELECT (not the full `SELECT_FIELDS`):
+1. Always list every field you will access — never assume it's present just because it's in the full query
+2. Access raw DB rows with snake_case: `row.status_category`, `row.issue_type`, `row.project_key`
+3. Access `WorkItem` objects with camelCase: `item.statusCategory`, `item.issueType`
+4. Before writing `issue?.X`, grep where `issue` was set — if it came from `.forEach((r: any) => map.set(key, r))` it is a raw DB row (snake_case), not a WorkItem (camelCase)
+
+**Severity:** P1 (status chip always showed grey fallback — the feature worked visually but carried wrong semantic color for all done-category statuses)
