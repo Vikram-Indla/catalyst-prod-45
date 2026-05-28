@@ -20,7 +20,7 @@ import Textfield from '@atlaskit/textfield';
 import AdsSelect from '@atlaskit/select';
 import RefreshIcon from '@atlaskit/icon/core/refresh';
 import SearchIcon from '@atlaskit/icon/core/search';
-import CrossIcon from '@atlaskit/icon/core/cross';
+import CrossIcon from '@atlaskit/icon/core/close';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { supabase } from '@/integrations/supabase/client';
 
