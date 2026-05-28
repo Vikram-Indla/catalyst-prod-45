@@ -110,6 +110,9 @@ export interface RecommendedMention {
   issueSummary: string;
   issueType: string;
   issueStatus?: string;
+  /** Jira status category key ('done' | 'new' | 'indeterminate'). Used by the
+   *  For You feed status chip to pick the correct category background color. */
+  issueStatusCategory?: string;
   projectKey: string;
   projectName: string;
   mentionerId: string | null;
@@ -128,6 +131,8 @@ export interface RecommendedComment {
   issueSummary: string;
   issueType: string;
   issueStatus?: string;
+  /** Jira status category key ('done' | 'new' | 'indeterminate'). */
+  issueStatusCategory?: string;
   projectKey: string;
   projectName: string;
   authorId: string | null;
@@ -746,7 +751,7 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
       : Promise.resolve({ data: [] as any[] }),
     // Mention issue enrichment (ph_issues for mention issue keys)
     mentionIssueKeys.length > 0
-      ? supabase.from('ph_issues').select('id, issue_key, summary, issue_type, project_key, status').in('issue_key', mentionIssueKeys)
+      ? supabase.from('ph_issues').select('id, issue_key, summary, issue_type, project_key, status, status_category').in('issue_key', mentionIssueKeys)
       : Promise.resolve({ data: [] as any[] }),
     // Attachment counts SCOPED to relevant keys — no full-table scan
     attachmentScopeKeys.length > 0
@@ -842,6 +847,7 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
       issueSummary: issue?.summary || row.issue_key,
       issueType: issue?.issue_type || 'task',
       issueStatus: issue?.status || undefined,
+      issueStatusCategory: issue?.status_category || undefined,
       projectKey,
       projectName: localProjectNameMap.get(projectKey) || projectKey || '',
       mentionerId: row.author_account_id || null,
@@ -865,7 +871,7 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
   if (missedCommentKeys.length > 0) {
     const { data: missedRows } = await supabase
       .from('ph_issues')
-      .select('id, issue_key, summary, issue_type, project_key, status')
+      .select('id, issue_key, summary, issue_type, project_key, status, status_category')
       .in('issue_key', missedCommentKeys);
     (missedRows || []).forEach((r: any) => commentIssueByKey.set(r.issue_key, r));
 
@@ -912,6 +918,7 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
       issueSummary: issue?.summary || row.issue_key,
       issueType: issue?.issue_type || 'task',
       issueStatus: issue?.status || undefined,
+      issueStatusCategory: issue?.status_category || undefined,
       projectKey,
       projectName: localProjectNameMap.get(projectKey) || projectKey || '',
       authorId: row.author_account_id || null,

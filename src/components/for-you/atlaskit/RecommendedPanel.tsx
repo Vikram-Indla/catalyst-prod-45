@@ -286,7 +286,7 @@ export default function RecommendedPanel({
                       visibly bolder than the "mentioned you on" connector. */}
                   <span style={{ color: token('color.text', '#292A2E'), fontWeight: 600 }}>{m.mentionerName}</span>
                   <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), fontWeight: 400 }}>{' '}mentioned you on{' '}</span>
-                  <HeadlineIssueTitle issueType={m.issueType} issueSummary={m.issueSummary} issueKey={m.issueKey} issueStatus={m.issueStatus} />
+                  <HeadlineIssueTitle issueType={m.issueType} issueSummary={m.issueSummary} issueKey={m.issueKey} issueStatus={m.issueStatus} issueStatusCategory={m.issueStatusCategory} />
                 </>
               ),
               authorName: m.mentionerName,
@@ -317,7 +317,7 @@ export default function RecommendedPanel({
                 <>
                   <span style={{ color: token('color.text', '#292A2E'), fontWeight: 600 }}>{c.authorName}</span>
                   <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), fontWeight: 400 }}>{' '}commented on{' '}</span>
-                  <HeadlineIssueTitle issueType={c.issueType} issueSummary={c.issueSummary} issueKey={c.issueKey} issueStatus={c.issueStatus} />
+                  <HeadlineIssueTitle issueType={c.issueType} issueSummary={c.issueSummary} issueKey={c.issueKey} issueStatus={c.issueStatus} issueStatusCategory={c.issueStatusCategory} />
                 </>
               ),
               authorName: c.authorName,
@@ -1815,16 +1815,37 @@ function ReactionChip({
 
 // ─── Headline helpers ───────────────────────────────────────────────────────
 
+// Jira For You feed status chip — category-colored background, always blue link text.
+// DOM probe 2026-05-29 on digital-transformation.atlassian.net/jira/for-you:
+//   done     → bg rgb(179,223,114) (lime green), text rgb(24,104,219) (blue)
+//   new      → bg rgb(221,222,225) (grey),       text rgb(24,104,219) (blue)
+//   other    → bg rgb(221,222,225) (grey fallback)
+// Lane B (Atlassian MCP 2026-05-29): BAU "Awaiting Info" AND "Closed" both = done category.
+const FOR_YOU_STATUS_CHIP_TEXT = 'rgb(24, 104, 219)';
+const FOR_YOU_STATUS_CHIP_BG: Record<string, string> = {
+  done:          'rgb(179, 223, 114)',
+  new:           'rgb(221, 222, 225)',
+  indeterminate: 'rgb(205, 229, 255)',
+};
+function forYouStatusBg(categoryKey?: string): string {
+  // DB stores "Done" (capitalised); normalise to lowercase before lookup.
+  const key = (categoryKey ?? '').toLowerCase();
+  return FOR_YOU_STATUS_CHIP_BG[key] ?? 'rgb(221, 222, 225)';
+}
+
 function HeadlineIssueTitle({
   issueType,
   issueSummary,
   issueKey,
   issueStatus,
+  issueStatusCategory,
 }: {
   issueType: string;
   issueSummary: string;
   issueKey?: string;
   issueStatus?: string;
+  /** Jira status category key: 'done' | 'new' | 'indeterminate' */
+  issueStatusCategory?: string;
 }) {
   return (
     // Jira parity: issue reference renders as an Atlaskit `inline-card-resolved-view`
@@ -1850,11 +1871,25 @@ function HeadlineIssueTitle({
       <span style={{ fontWeight: 400, color: token('color.link', '#0052CC') }}>
         {issueKey ? `${issueKey}: ` : ''}{issueSummary}
       </span>
-      {/* Jira parity: status lozenge displayed inline after the entity title.
-          Renders as a default grey pill (DOM probe: bg rgb(221,222,225)). */}
+      {/* Jira parity: status chip after entity title.
+          DOM probe 2026-05-29: bg = category color (lime green for done,
+          grey for todo), text always rgb(24,104,219) (blue link color).
+          Lane B confirmed BAU "Awaiting Info" + "Closed" = done category. */}
       {issueStatus && (
-        <span style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <Lozenge appearance="default">{issueStatus}</Lozenge>
+        <span style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          backgroundColor: forYouStatusBg(issueStatusCategory),
+          color: FOR_YOU_STATUS_CHIP_TEXT,
+          borderRadius: 3,
+          padding: '1px 4px',
+          fontSize: 12,
+          fontWeight: 400,
+          lineHeight: '16px',
+          whiteSpace: 'nowrap',
+          flexShrink: 0,
+        }}>
+          {issueStatus}
         </span>
       )}
     </span>
