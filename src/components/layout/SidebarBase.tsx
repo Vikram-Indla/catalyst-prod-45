@@ -11,6 +11,7 @@
  */
 
 import React from 'react';
+import { token } from '@atlaskit/tokens';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { hubAccentToken } from '@/lib/hub-tone';
 import { PanelLeftClose, PanelLeftOpen, Star, LucideIcon } from '@/lib/atlaskit-icons';
@@ -37,16 +38,16 @@ import { useTheme } from '@/hooks/useTheme';
 // Block A rule 7 (2026-05-01): canonical hub label casing matches HubSwitcher.
 // Block A rule 1 (2026-05-01): canonical URL prefix '/product-hub' (not /producthub).
 const HUB_ITEMS = [
-  { label: 'Home',         href: '/for-you',                    Icon: HomeIcon,            tone: '#42526E' },
-  { label: 'Strategy Hub', href: '/strategyhub',                Icon: OfficeBuildingIcon,  tone: '#8270DB' },
-  { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: 'var(--cp-primary-60, #0052CC)' },
-  { label: 'Project Hub',  href: '/project-hub',                Icon: FolderIcon,          tone: '#00A3BF' },
-  { label: 'Release Hub',  href: '/release-hub/command-center', Icon: ShipIcon,            tone: '#FF8B00' },
-  { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: '#36B37E' },
-  { label: 'Incident Hub', href: '/incident-hub',               Icon: WarningIcon,         tone: '#DE350B' },
-  { label: 'Task Hub',     href: '/taskhub/boards',             Icon: TaskIcon,            tone: '#FFAB00' },
-  { label: 'Plan Hub',     href: '/planhub',                    Icon: CalendarIcon,        tone: '#E774BB' },
-  { label: 'Wiki Hub',     href: '/wiki',                       Icon: BookIcon,            tone: '#65BA43' },
+  { label: 'Home',         href: '/for-you',                    Icon: HomeIcon,            tone: 'var(--ds-icon-subtle, #42526E)' },
+  { label: 'Strategy Hub', href: '/strategyhub',                Icon: OfficeBuildingIcon,  tone: 'var(--ds-icon-accent-purple, #8270DB)' },
+  { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: 'var(--ds-icon-brand, #0052CC)' },
+  { label: 'Project Hub',  href: '/project-hub',                Icon: FolderIcon,          tone: 'var(--ds-icon-accent-teal, #00A3BF)' },
+  { label: 'Release Hub',  href: '/release-hub/command-center', Icon: ShipIcon,            tone: 'var(--ds-icon-accent-orange, #FF8B00)' },
+  { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: 'var(--ds-icon-accent-green, #36B37E)' },
+  { label: 'Incident Hub', href: '/incident-hub',               Icon: WarningIcon,         tone: 'var(--ds-icon-accent-red, #DE350B)' },
+  { label: 'Task Hub',     href: '/taskhub/boards',             Icon: TaskIcon,            tone: 'var(--ds-icon-accent-yellow, #FFAB00)' },
+  { label: 'Plan Hub',     href: '/planhub',                    Icon: CalendarIcon,        tone: 'var(--ds-icon-accent-magenta, #E774BB)' },
+  { label: 'Wiki Hub',     href: '/wiki',                       Icon: BookIcon,            tone: 'var(--ds-icon-accent-lime, #65BA43)' },
 ] as const;
 
 /**
@@ -173,10 +174,10 @@ export function SidebarBase({
     isDark,
     itemText: 'var(--cp-text-secondary, #42526E)',
     activeText: 'var(--cp-text-link, var(--cp-primary-60, #0052CC))',
-    activeBg: isDark ? 'var(--ds-background-selected, #1C2B41)' : '#E9F2FF',
+    activeBg: isDark ? 'var(--ds-background-selected, #1C2B41)' : 'var(--ds-background-selected, #E9F2FF)',
     hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
     iconOpacityInactive: isDark ? 0.85 : 0.75,
-    badgeBg: isDark ? 'var(--ds-background-neutral-subtle, #22272B)' : '#EBECF0',
+    badgeBg: isDark ? 'var(--ds-background-neutral-subtle, #22272B)' : 'var(--ds-background-neutral, #EBECF0)',
     badgeText: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))',
   };
 
@@ -246,7 +247,7 @@ export function SidebarBase({
           willChange: 'width',
           contain: 'layout style',
           scrollbarWidth: 'thin' as any,
-          scrollbarColor: isDark ? '#454545 transparent' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)) transparent',
+          scrollbarColor: isDark ? 'var(--ds-border, #454545) transparent' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)) transparent',
         }}
       >
         {/* Header — hub badge + label only. The collapse toggle now lives
@@ -291,7 +292,7 @@ export function SidebarBase({
                   className="truncate"
                   style={{
                     fontFamily: 'var(--cp-font-heading)',
-                    fontSize: '14px',
+                    fontSize: token('font.size.100', '14px'),
                     fontWeight: 600,
                     color: 'var(--ds-text, #292A2E)',
                     letterSpacing: '-0.3px',
@@ -310,7 +311,7 @@ export function SidebarBase({
                   className="truncate"
                   style={{
                     fontFamily: 'var(--cp-font-heading)',
-                    fontSize: '14px',
+                    fontSize: token('font.size.100', '14px'),
                     fontWeight: 600,
                     color: 'var(--ds-text, #292A2E)',
                     letterSpacing: '-0.3px',
@@ -331,13 +332,13 @@ export function SidebarBase({
           {/* Favorites Section */}
           {config.showFavorites !== false && favoritedItems.length > 0 && !expanded && null}
           {config.showFavorites !== false && favoritedItems.length > 0 && expanded && (
-            <div className="mb-3">
+            <div style={{ marginBottom: '12px' }}>
               <div style={{ padding: '12px 12px 4px' }}>
                 <span
                   style={{
                     fontFamily: 'var(--cp-font-body)',
                     color: 'var(--ds-text-subtlest, #626F86)',
-                    fontSize: '11px',
+                    fontSize: token('font.size.050', '11px'),
                     fontWeight: 600,
                     letterSpacing: '0',
                     textTransform: 'none' as const,
@@ -377,12 +378,12 @@ export function SidebarBase({
                       <span
                         style={{
                           fontFamily: 'var(--cp-font-body)',
-                          color: 'var(--ds-text, #292A2E)',
-                          fontSize: '14px',
-                          fontWeight: 400,
+                          color: 'var(--ds-text-subtlest, #626F86)',
+                          fontSize: token('font.size.050', '11px'),
+                          fontWeight: 600,
                           letterSpacing: '0',
                           textTransform: 'none' as const,
-                          lineHeight: '20px',
+                          lineHeight: '16px',
                         }}
                       >
                         {section.title}
@@ -452,7 +453,7 @@ function renderMenuItem(
         padding: expanded ? '0 12px' : '0',
         gap: '8px',
         marginBottom: '0',
-        fontSize: '14px',
+        fontSize: token('font.size.100', '14px'),
         fontWeight: active ? 600 : 500,
         color: active ? tk.activeText : tk.itemText,
         fontFamily: 'var(--cp-font-body)',
@@ -576,7 +577,7 @@ function renderMenuItem(
           onMouseEnter={(e) => {
             if (!starred) {
               e.currentTarget.style.color = 'var(--ds-text-warning, #f59e0b)';
-              e.currentTarget.style.background = 'rgba(245, 158, 11, 0.1)';
+              e.currentTarget.style.background = 'var(--ds-background-warning-subtle, rgba(245,158,11,0.1))';
             }
           }}
           onMouseLeave={(e) => {
@@ -591,30 +592,38 @@ function renderMenuItem(
       )}
       {/* Text Badge (AI, NEW, BETA, etc.) */}
       {item.textBadge && (
-        <span 
+        <span
           style={{
-            fontSize: '9px',
+            // ADS font.size.050 = 11px — smallest rail label token
+            // Source: https://atlassian.design/foundations/typography
+            fontSize: token('font.size.050', '11px'),
             fontWeight: 600,
-            padding: '1px 6px',
+            // ADS 4/8dp spacing grid — 0 vertical, 4px horizontal
+            padding: '0 4px',
             borderRadius: '12px',
             letterSpacing: '0.3px',
-            textTransform: 'uppercase',
+            // UPPERCASE_LABEL banned (CLAUDE.md) — sentence case only
+            textTransform: 'none' as const,
             fontFamily: item.textBadge === 'AI' ? 'var(--cp-font-heading)' : 'var(--cp-font-body)',
-            background: item.textBadge === 'AI' 
-              ? 'rgba(124, 58, 237, 0.06)'
-              : item.textBadgeVariant === 'new' 
-              ? 'linear-gradient(135deg, #10b981 0%, var(--quality-high, #059669) 100%)'
+            background: item.textBadge === 'AI'
+              // ADS color.background.accent.purple.subtlest
+              ? 'var(--ds-background-accent-purple-subtlest, rgba(124,58,237,0.06))'
+              : item.textBadgeVariant === 'new'
+              // ADS color.background.success.bold
+              ? 'var(--ds-background-success-bold, #1F845A)'
               : item.textBadgeVariant === 'beta'
               ? 'linear-gradient(135deg, var(--ds-text-warning, #f59e0b) 0%, var(--ds-text-warning, #d97706) 100%)'
               : 'hsl(var(--brand-primary))',
             color: item.textBadge === 'AI'
               ? 'var(--cp-purple-60, #7C3AED)'
               : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-            border: item.textBadge === 'AI' ? '1px solid rgba(124, 58, 237, 0.12)' : 'none',
+            // ADS color.border.accent.purple
+            border: item.textBadge === 'AI' ? '1px solid var(--ds-border-accent-purple, rgba(124,58,237,0.12))' : 'none',
             position: expanded ? 'relative' : 'absolute',
             top: expanded ? 'auto' : '4px',
             right: expanded ? 'auto' : '4px',
-            boxShadow: item.textBadge === 'AI' ? 'none' : '0 1px 2px rgba(0,0,0,0.1)',
+            // ADS elevation.shadow.raised
+            boxShadow: item.textBadge === 'AI' ? 'none' : 'var(--ds-shadow-raised, 0 1px 2px rgba(0,0,0,0.1))',
             opacity: expanded ? 1 : 0,
             width: expanded ? 'auto' : '0',
             overflow: 'hidden',
