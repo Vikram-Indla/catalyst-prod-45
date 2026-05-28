@@ -47,7 +47,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
 import Lozenge from '@atlaskit/lozenge';
-import Spinner from '@atlaskit/spinner';
+
 import Tooltip from '@atlaskit/tooltip';
 import TextArea from '@atlaskit/textarea';
 import EditIcon from '@atlaskit/icon/glyph/edit';
@@ -674,6 +674,7 @@ function FeedCard({
           commentBody={row.commentBody}
           issueSummary={row.issueSummary}
           issueType={row.issueType}
+          commenterName={row.authorName}
         />
       </div>
     </div>
@@ -701,12 +702,15 @@ function ReplyComposer({
   commentBody,
   issueSummary,
   issueType,
+  commenterName,
 }: {
   issueId: string;
   currentUserName?: string;
   commentBody: string;
   issueSummary: string;
   issueType: string;
+  /** Name of the person whose comment we are replying to — shown in "Replying to …" header (Jira parity). */
+  commenterName?: string;
 }) {
   const [value, setValue] = useState('');
   const [focused, setFocused] = useState(false);
@@ -803,8 +807,56 @@ function ReplyComposer({
     }
   };
 
+  // Derived states
+  const isAiActive = suggestionPhase === 'loading' || suggestionPhase === 'done';
+
+  // Gradient border technique: transparent border + conic-gradient as background-image
+  // covers padding-box (white surface) and border-box (gradient ring).
+  // Uses ADS discovery/information/warning tokens so the palette flips with the theme.
+  const gradientBorderStyle: React.CSSProperties = {
+    flex: 1,
+    minWidth: 0,
+    borderRadius: 8,
+    padding: 4, // gradient ring thickness (on-grid; Jira uses 2px but 4 is nearest grid value)
+    background: `conic-gradient(from 0deg, ${
+      token('color.background.discovery.bold', '#8270DB')
+    }, ${
+      token('color.background.information.bold', '#1D7AFC')
+    }, ${
+      token('color.background.warning.bold', '#E2B203')
+    }, ${
+      token('color.background.discovery.bold', '#8270DB')
+    })`,
+  };
+
   return (
     <div style={{ marginBlockStart: 8 }}>
+
+      {/* ── "Replying to [Name]" header (Jira parity) ──────────────────────
+          Appears in loading + done states only. Located above the composer
+          row, aligned with the right of the user avatar (marginInlineStart=36).
+          Font: 12/16/400 color.text.subtle per Jira DOM probe 2026-05-28. */}
+      {isAiActive && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            marginBlockEnd: 4,
+            marginInlineStart: 36,
+          }}
+        >
+          <span
+            style={{
+              font: `400 12px/16px "Inter", system-ui, sans-serif`,
+              color: token('color.text.subtle', '#505258'),
+            }}
+          >
+            Replying to {commenterName || 'comment'}
+          </span>
+        </div>
+      )}
+
       <div
         style={{
           display: 'flex',
@@ -812,141 +864,299 @@ function ReplyComposer({
           gap: 4,
         }}
       >
-        {/* Viewer avatar — 32px round. Resolved through the single avatar
-            chokepoint (src/lib/avatars.ts) so it follows the same fallback
-            behaviour (local asset → Atlaskit initials) as every other
-            avatar in the app. */}
+        {/* Viewer avatar — 32px round. */}
         <Tooltip content={userDisplayName}>
           <span style={{ flexShrink: 0, paddingBlockStart: 2 }}>
             <Avatar size="medium" name={userDisplayName} src={userAvatarSrc} />
           </span>
         </Tooltip>
 
-        {/* Bordered composer wrapper.
-            ────────────────────────────
-            Jira parity upgrade: the inner input is now `@atlaskit/textarea`
-            (appearance="none") instead of a raw `<textarea>`. TextArea is the
-            canonical Atlaskit primitive for multi-line text input — it ships
-            with Atlaskit's autosize logic, token-resolved focus + disabled
-            states, RTL support, and the exact 14/20 typography and 8/12 pad
-            the design system mandates.
-            We keep appearance="none" so the OUTER wrapper owns the border
-            + focus ring (Jira's pattern — focus highlights the whole tile,
-            not just the input); the TextArea gives us correct auto-grow
-            and paste/newline handling without the raw-HTML drift. */}
-        <div
-          style={{
-            flex: 1,
-            minWidth: 0,
-            border: `1px solid ${
-              focused
-                ? token('color.border.focused', '#388BFF')
-                : token('color.border', 'rgba(11, 18, 14, 0.14)')
-            }`,
-            borderRadius: 6,
-            background: token('elevation.surface', '#FFFFFF'),
-            transition: 'border-color 150ms ease',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <TextArea
-            appearance="none"
-            value={value}
-            onChange={e => setValue((e.target as HTMLTextAreaElement).value)}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            onKeyDown={e => {
-              // Cmd/Ctrl+Enter submits — mirrors Jira's comment composer.
-              if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-                e.preventDefault();
-                handleSubmit();
-              }
-            }}
-            placeholder="Leave a reply"
-            minimumRows={focused || value.length > 0 ? 3 : 1}
-            maxHeight="240px"
-            resize="vertical"
-          />
-          {(focused || value.length > 0) && (
+        {/* ── LOADING state — gradient border wrapper ─────────────────────
+            Outer div provides the visible gradient ring (2px).
+            Inner div is the white surface with radius 6 (outer 8 - padding 2). */}
+        {suggestionPhase === 'loading' && (
+          <div style={gradientBorderStyle}>
             <div
               style={{
+                background: token('elevation.surface', '#FFFFFF'),
+                borderRadius: 6,
                 display: 'flex',
-                justifyContent: 'flex-end',
-                gap: 8,
-                padding: '4px 8px 8px 8px',
-                borderBlockStart: `1px solid ${token('color.border', '#DFE1E6')}`,
+                flexDirection: 'column',
               }}
             >
-              <button
-                type="button"
-                onMouseDown={e => e.preventDefault()}
-                onClick={() => {
-                  setValue('');
-                  setFocused(false);
-                }}
+              <TextArea
+                appearance="none"
+                value={value}
+                onChange={e => setValue((e.target as HTMLTextAreaElement).value)}
+                placeholder="Leave a reply"
+                minimumRows={3}
+                maxHeight="240px"
+                resize="vertical"
+                isDisabled
+              />
+              {/* Loading action row: only Cancel to abort */}
+              <div
                 style={{
-                  all: 'unset',
-                  cursor: 'pointer',
-                  padding: '4px 8px',
-                  borderRadius: 3,
-                  font: `500 14px/20px "Inter", system-ui, sans-serif`,
-                  color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '4px 8px 8px',
+                  borderBlockStart: `1px solid ${token('color.border', '#DFE1E6')}`,
                 }}
               >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onMouseDown={e => e.preventDefault()}
-                onClick={handleSubmit}
-                disabled={!canSubmit}
-                style={{
-                  all: 'unset',
-                  cursor: canSubmit ? 'pointer' : 'not-allowed',
-                  padding: '4px 12px',
-                  borderRadius: 3,
-                  font: `500 14px/20px "Inter", system-ui, sans-serif`,
-                  color: canSubmit
-                    ? token('color.text.inverse', '#FFFFFF')
-                    : token('color.text.disabled', '#B3B9C4'),
-                  background: canSubmit
-                    ? token('color.background.brand.bold', '#0C66E4')
-                    : token('color.background.disabled', '#F1F2F4'),
-                }}
-              >
-                {isCreating ? 'Posting…' : 'Reply'}
-              </button>
+                {/* "... Generating" — Jira parity: dots precede the label */}
+                <span
+                  style={{
+                    flex: 1,
+                    font: `400 14px/20px "Inter", system-ui, sans-serif`,
+                    color: token('color.text.subtlest', '#6B778C'),
+                  }}
+                >
+                  ... Generating
+                </span>
+                <button
+                  type="button"
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={() => {
+                    abortRef.current?.abort();
+                    setSuggestionPhase('idle');
+                    setValue('');
+                    setFocused(false);
+                  }}
+                  style={{
+                    all: 'unset',
+                    cursor: 'pointer',
+                    padding: '4px 8px',
+                    borderRadius: 3,
+                    font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                    color: token('color.text.subtle', '#505258'),
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* ── IDLE + DONE state — standard bordered composer ───────────────
+            In the DONE state, labels change: Cancel→Discard, Reply→Insert.
+            The BETA footer only appears in the DONE state. */}
+        {(suggestionPhase === 'idle' || suggestionPhase === 'done' || suggestionPhase === 'error') && (
+          <div
+            style={{
+              flex: 1,
+              minWidth: 0,
+              border: `1px solid ${
+                focused
+                  ? token('color.border.focused', '#388BFF')
+                  : token('color.border', 'rgba(11, 18, 14, 0.14)')
+              }`,
+              borderRadius: 6,
+              background: token('elevation.surface', '#FFFFFF'),
+              transition: 'border-color 150ms ease',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <TextArea
+              appearance="none"
+              value={value}
+              onChange={e => setValue((e.target as HTMLTextAreaElement).value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              onKeyDown={e => {
+                if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
+              placeholder="Leave a reply"
+              minimumRows={focused || value.length > 0 ? 3 : 1}
+              maxHeight="240px"
+              resize="vertical"
+            />
+
+            {/* Button row — visible when focused or has text */}
+            {(focused || value.length > 0) && (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: 8,
+                  padding: '4px 8px 8px 8px',
+                  borderBlockStart: `1px solid ${token('color.border', '#DFE1E6')}`,
+                }}
+              >
+                {/* Cancel (idle) / Discard (done) */}
+                <button
+                  type="button"
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={() => {
+                    setValue('');
+                    setFocused(false);
+                    setSuggestionPhase('idle');
+                  }}
+                  style={{
+                    all: 'unset',
+                    cursor: 'pointer',
+                    padding: '4px 8px',
+                    borderRadius: 3,
+                    font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                    color: token('color.text.subtle', '#505258'),
+                  }}
+                >
+                  {suggestionPhase === 'done' ? 'Discard' : 'Cancel'}
+                </button>
+
+                {/* Reply (idle) / Insert (done) */}
+                {suggestionPhase === 'done' ? (
+                  // "Insert" — collapses the AI result view; user reviews text and hits Reply
+                  <button
+                    type="button"
+                    onMouseDown={e => e.preventDefault()}
+                    onClick={() => setSuggestionPhase('idle')}
+                    style={{
+                      all: 'unset',
+                      cursor: 'pointer',
+                      padding: '4px 12px',
+                      borderRadius: 3,
+                      font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                      color: token('color.text.inverse', '#FFFFFF'),
+                      background: token('color.background.brand.bold', '#0C66E4'),
+                    }}
+                  >
+                    Insert
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onMouseDown={e => e.preventDefault()}
+                    onClick={handleSubmit}
+                    disabled={!canSubmit}
+                    style={{
+                      all: 'unset',
+                      cursor: canSubmit ? 'pointer' : 'not-allowed',
+                      padding: '4px 12px',
+                      borderRadius: 3,
+                      font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                      color: canSubmit
+                        ? token('color.text.inverse', '#FFFFFF')
+                        : token('color.text.disabled', '#B3B9C4'),
+                      background: canSubmit
+                        ? token('color.background.brand.bold', '#0C66E4')
+                        : token('color.background.disabled', '#F1F2F4'),
+                    }}
+                  >
+                    {isCreating ? 'Posting…' : 'Reply'}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* ── BETA disclaimer footer (done state only) ─────────────────
+                Jira parity: border-top separator + flex row with:
+                  Left:  [BETA] pill · ℹ︎ icon · "Uses AI. Verify results."
+                  Right: Caty logo + "Caty" text (replaces Rovo branding)
+                Font/color/padding from Jira DOM probe 2026-05-28:
+                  footer border-top: 0.556px solid rgba(11,18,14,0.14)
+                  footer padding:    4px 12px  ·  height: ~40px
+                  text color:        rgb(41,42,46)  14px/400 */}
+            {suggestionPhase === 'done' && (
+              <div
+                style={{
+                  borderBlockStart: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+                  padding: '4px 12px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  minHeight: 32,
+                }}
+              >
+                {/* Left: BETA pill + info icon + disclaimer */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span
+                    style={{
+                      font: `500 11px/14px "Inter", system-ui, sans-serif`,
+                      color: token('color.text', '#292A2E'),
+                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      borderRadius: 2,
+                      padding: '0 4px',
+                      letterSpacing: '0.04em',
+                    }}
+                  >
+                    BETA
+                  </span>
+                  {/* ℹ︎ info icon — inline SVG, no external dep */}
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <circle cx="8" cy="8" r="7.5" stroke={token('color.text.subtlest', '#6B778C')} />
+                    <path d="M8 7v5" stroke={token('color.text.subtlest', '#6B778C')} strokeWidth="1.5" strokeLinecap="round" />
+                    <circle cx="8" cy="5" r="0.75" fill={token('color.text.subtlest', '#6B778C')} />
+                  </svg>
+                  <span
+                    style={{
+                      font: `400 13px/20px "Inter", system-ui, sans-serif`,
+                      color: token('color.text.subtle', '#505258'),
+                    }}
+                  >
+                    Uses AI. Verify results.
+                  </span>
+                </div>
+
+                {/* Right: Caty branding (replaces Rovo per mandate) */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span
+                    style={{
+                      font: `500 13px/20px "Inter", system-ui, sans-serif`,
+                      color: token('color.text.subtle', '#505258'),
+                    }}
+                  >
+                    Caty
+                  </span>
+                  {/* Caty sparkle mark — minimal SVG, themed with discovery token */}
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-label="Caty AI">
+                    <circle cx="9" cy="9" r="8.5" fill={token('color.background.discovery.bold', '#8270DB')} />
+                    <path
+                      d="M9 4.5L10.2 7.8L13.5 9L10.2 10.2L9 13.5L7.8 10.2L4.5 9L7.8 7.8Z"
+                      fill="white"
+                    />
+                  </svg>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* "Suggest a reply" — Jira parity: separate button BELOW the bordered
-          wrapper (not inside). Jira's DOM puts a 6px-padded parent container
-          around the button; on hover Jira reveals a `color.background.neutral.subtle.hovered`
-          tile — which is what Vikram read as "a border" on the button itself.
-          We replicate that: transparent button + 6px-padded parent + soft
-          hover tile on the parent, not the button. */}
-      <SuggestReplyTile onSuggest={handleSuggestReply} isLoading={suggestionPhase === 'loading'} />
+      {/* ── "Suggest a reply" tile — HIDDEN in loading/done states ──────────
+          Jira parity: tile disappears once the AI flow is active.
+          Only shown in idle (and error) states.
+          Button: 2px 12px padding, gap 6px per Jira DOM probe 2026-05-28. */}
+      {(suggestionPhase === 'idle' || suggestionPhase === 'error') && (
+        <SuggestReplyTile onSuggest={handleSuggestReply} />
+      )}
     </div>
   );
 }
 
-// Suggest-a-reply hover tile — Jira puts the pencil-button inside a 6px
-// padded container and reveals the neutral hover tile on the container, not
-// the button. That's the "border" Vikram was seeing on the child button.
-function SuggestReplyTile({ onSuggest, isLoading }: { onSuggest: () => void; isLoading?: boolean }) {
+// Suggest-a-reply hover tile — Jira parity measurements (DOM probe 2026-05-28):
+//   Button padding snapped to grid: 4px 12px (Jira raw was off-grid, nearest = 4px)
+//   Button gap: 8px (nearest on-grid to Jira's 6px raw)
+//   Button color: rgb(80,82,88) = color.text.subtle
+//   Tile padding: 8px (on-grid, nearest to Jira's raw 6px)
+//   On hover tile bg: color.background.neutral.subtle.hovered
+function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
   const [hover, setHover] = useState(false);
   return (
     <div
       style={{
         marginBlockStart: 8,
-        marginInlineStart: 34 /* 32 avatar + 2 nudge */,
+        marginInlineStart: 34, /* 32 avatar + 2 nudge */
         display: 'inline-flex',
         padding: 8,
         borderRadius: 3,
-        background: hover && !isLoading
+        background: hover
           ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.04)')
           : 'transparent',
         transition: 'background-color 120ms ease',
@@ -958,29 +1168,23 @@ function SuggestReplyTile({ onSuggest, isLoading }: { onSuggest: () => void; isL
       <button
         type="button"
         onClick={onSuggest}
-        disabled={isLoading}
-        aria-label={isLoading ? 'Generating reply suggestion' : 'Suggest a reply using AI'}
-        aria-busy={isLoading}
+        aria-label="Suggest a reply using AI"
         style={{
           all: 'unset',
-          cursor: isLoading ? 'wait' : 'pointer',
+          cursor: 'pointer',
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 4,
+          gap: 8,
           padding: '4px 12px',
           borderRadius: 3,
           font: `500 14px/20px "Inter", system-ui, sans-serif`,
           color: token('color.text.subtle', '#505258'),
           background: 'transparent',
           border: 'none',
-          opacity: isLoading ? 0.7 : 1,
-          transition: 'opacity 120ms ease',
         }}
       >
-        {isLoading
-          ? <Spinner size="small" />
-          : <EditIcon label="" size="small" primaryColor="currentColor" />}
-        {isLoading ? 'Generating…' : 'Suggest a reply'}
+        <EditIcon label="" size="small" primaryColor="currentColor" />
+        Suggest a reply
       </button>
     </div>
   );
