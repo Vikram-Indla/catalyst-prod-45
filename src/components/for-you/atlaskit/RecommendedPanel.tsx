@@ -62,6 +62,7 @@ import { useWorkItemComments } from '@/hooks/useWorkItemComments';
 import { useCommentReactions } from '@/hooks/useCommentReactions';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { fetchFunction } from '@/integrations/supabase/functionsRouter';
+import { supabase } from '@/integrations/supabase/client';
 import type { WorkItem, RecommendedMention, RecommendedComment, TabType } from '@/hooks/useForYouData';
 
 interface RecommendedPanelProps {
@@ -654,13 +655,16 @@ function FeedCard({
 
         {/* Emoji reactions — Jira parity (DOM probe: data-testid="render-reactions").
             Each chip is 37×24 with a 0.556px border and radius 4. Persisted
-            against `ph_comment_reactions.comment_id` — which is a UUID FK to
-            `ph_comments.id`. We pass `phCommentId` (the resolved UUID), NOT
-            `commentId` (the Jira-side text id). When phCommentId is null —
-            no Catalyst-side row exists yet — the strip renders a disabled
-            placeholder so users see the affordance but can't fire an insert
-            that would silently fail the FK constraint. */}
-        <ReactionStrip phCommentId={row.phCommentId} />
+            against `ph_comment_reactions.comment_id` → `ph_comments.id` UUID.
+            When phCommentId is null (no ph_comments row yet), ReactionStrip
+            creates the row on first click via on-demand upsert so the chips
+            are always interactive. */}
+        <ReactionStrip
+          phCommentId={row.phCommentId}
+          jiraCommentId={row.commentId}
+          issueId={row.issueId}
+          commentBody={row.commentBody}
+        />
 
         {/* Reply composer — Jira parity:
              Row 1: 32px viewer avatar + a bordered textarea wrapper with
@@ -1217,13 +1221,85 @@ const EMOJI_CHAR: Record<string, string> = Object.fromEntries(
   DEFAULT_REACTIONS.map(r => [r.key, r.char])
 );
 
-function ReactionStrip({ phCommentId }: { phCommentId: string | null }) {
-  // Supabase-backed reactions for this specific ph_comments row. The hook
-  // is null-safe — when phCommentId is null we still render the affordance
-  // (with the buttons disabled) so the user knows reactions exist on the
-  // surface but their write would silently fail the FK.
-  const { reactions, toggleReaction } = useCommentReactions(phCommentId);
-  const isAvailable = phCommentId !== null;
+function ReactionStrip({
+  phCommentId,
+  jiraCommentId,
+  issueId,
+  commentBody,
+}: {
+  phCommentId: string | null;
+  /** Jira-side comment ID (text). Used to upsert ph_comments on first reaction. */
+  jiraCommentId: string;
+  /** ph_issues.id UUID — required for ph_comments.work_item_id FK. */
+  issueId: string;
+  /** Comment body — stored in ph_comments.body on upsert. */
+  commentBody: string;
+}) {
+  // UUID regex — issueId is sometimes a Jira key fallback (e.g. "BAU-123");
+  // only attempt ph_comments upsert when we have a real UUID.
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const issueUuid = UUID_RE.test(issueId) ? issueId : null;
+
+  // resolvedId starts from the pre-fetched phCommentId (may be null when
+  // ph_comments has no row yet). We set it after on-demand upsert.
+  const [resolvedId, setResolvedId] = useState<string | null>(phCommentId);
+
+  // If phCommentId arrives non-null on a later render (e.g. after a refetch
+  // that found the row), sync it in so we don't create a duplicate.
+  React.useEffect(() => {
+    if (phCommentId && !resolvedId) setResolvedId(phCommentId);
+  }, [phCommentId, resolvedId]);
+
+  const { reactions, toggleReaction } = useCommentReactions(resolvedId);
+
+  // After resolvedId is set (on-demand upsert complete), fire any queued emoji.
+  const pendingEmojiRef = useRef<string | null>(null);
+  React.useEffect(() => {
+    if (resolvedId && pendingEmojiRef.current) {
+      const emoji = pendingEmojiRef.current;
+      pendingEmojiRef.current = null;
+      toggleReaction(emoji);
+    }
+  }, [resolvedId, toggleReaction]);
+
+  // Always available when we can create a ph_comments row on demand.
+  // Only disable if issueId is not a UUID (rare fallback — Jira key string).
+  const isAvailable = issueUuid !== null;
+
+  /** Ensure a ph_comments row exists, returning its UUID. */
+  const ensurePhComment = async (): Promise<string | null> => {
+    if (resolvedId) return resolvedId;
+    if (!issueUuid) return null;
+    try {
+      const { data, error } = await (supabase as any)
+        .from('ph_comments')
+        .upsert(
+          { work_item_id: issueUuid, body: commentBody || '', jira_comment_id: jiraCommentId },
+          { onConflict: 'jira_comment_id', ignoreDuplicates: false }
+        )
+        .select('id')
+        .single();
+      if (error) throw error;
+      setResolvedId(data.id);
+      return data.id as string;
+    } catch (err) {
+      console.warn('[ReactionStrip] ensurePhComment failed', err);
+      toast.error('Could not save reaction');
+      return null;
+    }
+  };
+
+  /** Toggle a reaction, creating the ph_comments row first if needed. */
+  const handleReact = async (key: string) => {
+    if (resolvedId) {
+      toggleReaction(key);
+      return;
+    }
+    // Queue the emoji and trigger on-demand ph_comments creation.
+    // The pendingEmojiRef useEffect fires the toggle after resolvedId is set.
+    pendingEmojiRef.current = key;
+    await ensurePhComment();
+  };
 
   // Build a lookup map so we can decorate each default chip with its live
   // count + self-reacted state. Extra emojis in `reactions` (outside the
@@ -1240,9 +1316,6 @@ function ReactionStrip({ phCommentId }: { phCommentId: string | null }) {
   //   chip bg:       transparent (rest), `color.background.selected` when self-reacted
   //   trigger chip:  32 × 24 with emoji-add glyph (NOT a bare "+")
   //   gap:           4
-  // We route the chip border through ADS `color.border` so dark mode flips
-  // the hairline — previously a hardcoded `rgba(11,18,14,0.14)` literal
-  // disappeared on dark backgrounds.
   const chipBorder = token('color.border', 'rgba(11, 18, 14, 0.14)');
 
   return (
@@ -1262,10 +1335,6 @@ function ReactionStrip({ phCommentId }: { phCommentId: string | null }) {
         const live = byEmoji.get(r.key);
         const count = live?.count ?? 0;
         const isActive = !!live?.reactedByMe;
-        // Jira parity: render the full starter strip always so the
-        // affordance is discoverable. Chips with zero count render in a
-        // muted state until someone reacts. Earlier the strip suppressed
-        // unused chips, hiding the reaction surface from new users.
         return (
           <ReactionChip
             key={r.key}
@@ -1274,7 +1343,7 @@ function ReactionStrip({ phCommentId }: { phCommentId: string | null }) {
             count={count}
             isActive={isActive}
             disabled={!isAvailable}
-            onClick={() => isAvailable && toggleReaction(r.key)}
+            onClick={() => handleReact(r.key)}
             chipBorder={chipBorder}
           />
         );
@@ -1289,17 +1358,15 @@ function ReactionStrip({ phCommentId }: { phCommentId: string | null }) {
           count={r.count}
           isActive={r.reactedByMe}
           disabled={!isAvailable}
-          onClick={() => isAvailable && toggleReaction(r.emoji)}
+          onClick={() => handleReact(r.emoji)}
           chipBorder={chipBorder}
         />
       ))}
-      {/* Trigger chip — Jira parity: 32×24 with emoji-add glyph. A full
-          emoji picker is tracked separately; for now clicking falls back to
-          adding a 🎉 ("party") reaction so the chip is still useful. */}
+      {/* Trigger chip — Jira parity: 32×24 with emoji-add glyph. */}
       <button
         type="button"
-        aria-label={isAvailable ? 'Add reaction' : 'Reactions unavailable for this comment'}
-        onClick={() => isAvailable && toggleReaction('party')}
+        aria-label="Add reaction"
+        onClick={() => handleReact('party')}
         disabled={!isAvailable}
         style={{
           all: 'unset',
@@ -1314,7 +1381,7 @@ function ReactionStrip({ phCommentId }: { phCommentId: string | null }) {
           color: token('color.text.subtle', '#626F86'),
           background: 'transparent',
           transition: 'background-color 120ms ease',
-          opacity: isAvailable ? 1 : 0.4,
+          opacity: 1,
         }}
       >
         <EmojiAddIcon label="" size="small" primaryColor="currentColor" />
