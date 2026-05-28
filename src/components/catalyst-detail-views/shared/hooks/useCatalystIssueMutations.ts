@@ -4,7 +4,7 @@
  */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   getStatusCategory,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
@@ -63,6 +63,8 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
           const root = query.queryKey?.[0];
           if (typeof root !== 'string') return false;
           if (root === 'cv-issue-detail') return true;
+          if (root === 'uwv-data') return true;           // allwork canonical key
+          if (root === 'workhub') return true;            // legacy allwork key
           if (root === 'global-recent-items') return true;
           if (root === 'product-hub-per-product-recents') return true;
           if (root === 'product-hub-recent-brs') return true;
@@ -88,7 +90,28 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
         .eq('issue_key', itemId) /* F-iter9 PK fix */;
     },
     onSuccess: () => {
-      toast.success('Item deleted');
+      catalystToast.success('Issue deleted');
+      // Invalidate all list and navigator queries so deleted item disappears
+      // from backlog, allwork (uwv-data), kanban, subtask panels, and nav chevrons.
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const root = query.queryKey?.[0];
+          if (typeof root !== 'string') return false;
+          if (root === 'cv-issue-detail') return true;
+          if (root === 'uwv-data') return true;           // allwork canonical key
+          if (root === 'workhub') return true;            // legacy allwork key
+          if (root.includes('allwork-items')) return true;
+          if (root.includes('kanban-issues')) return true;
+          if (root.includes('backlog-data')) return true;
+          if (root.includes('work-items')) return true;
+          if (root.includes('childIssues')) return true;
+          if (root.includes('linkedIssues')) return true;
+          if (root.includes('subtasks')) return true;
+          if (root.includes('cv-subtask')) return true;
+          if (root.includes('ph_issues')) return true;
+          return false;
+        },
+      });
       onClose();
     },
   });

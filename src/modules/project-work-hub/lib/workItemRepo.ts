@@ -331,8 +331,7 @@ export async function cloneIssue(issueKey: string): Promise<string> {
     .from('ph_issues')
     .select(
       'issue_key, summary, description_adf, issue_type, priority, parent_key, ' +
-      'project_key, project_id, reporter_account_id, acceptance_criteria_adf, ' +
-      'status, status_category',
+      'project_key, reporter_account_id, status, status_category',
     )
     .eq('issue_key', issueKey)
     .single();
@@ -344,24 +343,26 @@ export async function cloneIssue(issueKey: string): Promise<string> {
   // 2. Generate a new key in the same project
   const newKey = await generateIssueKey(orig.project_key as string);
 
-  // 3. Insert the clone
+  const nowIso = new Date().toISOString();
+
+  // 3. Insert the clone — only columns that exist on ph_issues.
+  // Removed: acceptance_criteria_adf, project_id, is_archived (non-existent columns).
   const { data: inserted, error: insertError } = await supabase
     .from('ph_issues')
     .insert({
       issue_key: newKey,
       summary: `Copy of ${orig.summary ?? ''}`,
       description_adf: orig.description_adf ?? null,
-      acceptance_criteria_adf: orig.acceptance_criteria_adf ?? null,
       issue_type: orig.issue_type ?? null,
       priority: orig.priority ?? 'Medium',
       parent_key: orig.parent_key ?? null,
       project_key: orig.project_key,
-      project_id: orig.project_id ?? null,
       reporter_account_id: orig.reporter_account_id ?? null,
       status: 'To Do',
       status_category: 'todo',
-      is_archived: false,
       source: 'catalyst',
+      jira_created_at: nowIso,
+      jira_updated_at: nowIso,
     } as any)
     .select('issue_key')
     .single();

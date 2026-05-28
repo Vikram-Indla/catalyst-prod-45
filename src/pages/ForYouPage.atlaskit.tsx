@@ -354,7 +354,7 @@ export default function ForYouPageAtlaskit() {
             type="button"
             onClick={loadMore}
             style={{
-              padding: '8px 18px',
+              padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
               background: token('color.background.neutral', '#F1F2F4'),
               color: token('color.text', '#292A2E'),
               border: 'none',

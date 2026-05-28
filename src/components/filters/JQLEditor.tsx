@@ -2,7 +2,9 @@ import React, { useCallback, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import { getSuggestions, translate } from '@/lib/jql';
 import { JQLAutocompleteDropdown } from './JQLAutocompleteDropdown';
-import type { SuggestionResult } from '@/lib/jql';
+import { useJQLValidation } from '@/hooks/workhub/useJQLValidation';
+import type { SuggestionResult, ValuePool } from '@/lib/jql';
+import type { Suggestion } from '@/lib/jql';
 
 interface Props {
   value: string;
@@ -14,6 +16,13 @@ interface Props {
   isInvalid?: boolean;
   /** Show the filter count below the editor */
   showFilterCount?: boolean;
+  /**
+   * Map of JQL field name → list of actual project values.
+   * When provided, value-state completions will surface these first
+   * (e.g. actual status names, assignee display names, label strings).
+   * Keys must match JQL_FIELD_MAP keys: status, assignee, issuetype, etc.
+   */
+  valuePool?: Record<string, string[]>;
 }
 
 export function JQLEditor({
@@ -24,19 +33,31 @@ export function JQLEditor({
   autoFocus,
   isInvalid,
   showFilterCount,
+  valuePool,
 }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [suggestions, setSuggestions] = useState<SuggestionResult | null>(null);
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const validation = useJQLValidation(value);
+
+  // Convert string[] valuePool into Suggestion[] format once per render
+  const resolvedPool: ValuePool | undefined = valuePool
+    ? Object.fromEntries(
+        Object.entries(valuePool).map(([field, vals]) => [
+          field,
+          vals.map((v): Suggestion => ({ value: v })),
+        ])
+      )
+    : undefined;
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
     onChange(newValue);
 
-    // Autocomplete
+    // Autocomplete — thread pool data for value-state completions
     const cursor = e.target.selectionStart ?? newValue.length;
-    const result = getSuggestions(newValue, cursor);
+    const result = getSuggestions(newValue, cursor, resolvedPool);
     setSuggestions(result.items.length ? result : null);
     setAnchorRect(e.target.getBoundingClientRect());
 
@@ -81,7 +102,8 @@ export function JQLEditor({
     try { return translate(value).length; } catch { return 0; }
   }, [value]);
 
-  const borderColor = isInvalid
+  const hasServerErrors = !validation.valid && validation.errors.length > 0;
+  const borderColor = (isInvalid || hasServerErrors)
     ? token('color.border.danger')
     : `var(--ds-border, #DFE1E6)`;
 
@@ -126,6 +148,24 @@ export function JQLEditor({
           color: token('color.text.subtlest'),
         }}>
           {filterCount} active {filterCount === 1 ? 'filter' : 'filters'}
+          {validation.isChecking && <span style={{ marginLeft: 8, color: token('color.text.subtlest') }}>Validating…</span>}
+        </div>
+      )}
+
+      {hasServerErrors && (
+        <div style={{ marginTop: 4 }}>
+          {validation.errors.map((err, i) => (
+            <div key={i} style={{
+              fontSize: 12,
+              color: token('color.text.danger'),
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 4,
+            }}>
+              <span aria-hidden>✕</span>
+              <span>{err}</span>
+            </div>
+          ))}
         </div>
       )}
 

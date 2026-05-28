@@ -18,7 +18,8 @@ import { ConflictResolutionDrawer } from '@/components/project-hub/jira-sync/Con
 import { JiraSyncDrawer } from '@/components/project-hub/jira-sync/JiraSyncDrawer';
 import { updateWorkItem, createWorkItem, deleteWorkItem } from '@/services/workItemService';
 import { Loader2, History } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { token } from '@atlaskit/tokens';
+import { FlagsHost, flag } from '@/components/shared/JiraTable/flags';
 
 export default function WorkItemsListPage() {
   const { key } = useParams<{ key: string }>();
@@ -131,15 +132,15 @@ export default function WorkItemsListPage() {
         for (const [field, value] of Object.entries(changes)) {
           await jiraSyncService.queueWriteBack(id, field, String(value));
         }
-        toast.info('Change queued for Jira sync approval');
+        flag.info('Change queued for Jira sync approval');
       }
       // Always update locally
       await updateWorkItem(id, changes);
       invalidateItems();
       queryClient.invalidateQueries({ queryKey: jiraSyncKeys.writeBackQueue(projectId) });
-      if (item?.source !== 'jira') toast.success('Updated');
+      if (item?.source !== 'jira') flag.success('Updated');
     } catch (e: any) {
-      toast.error(e.message);
+      flag.error(e.message);
       invalidateItems();
     }
   }, [invalidateItems, items, projectId, queryClient]);
@@ -158,13 +159,13 @@ export default function WorkItemsListPage() {
       await Promise.all(ids.map(id => updateWorkItem(id, changes)));
       invalidateItems();
       queryClient.invalidateQueries({ queryKey: jiraSyncKeys.writeBackQueue(projectId) });
-      toast.success(`Updated ${ids.length} items`);
-    } catch (e: any) { toast.error(e.message); invalidateItems(); }
+      flag.success(`Updated ${ids.length} items`);
+    } catch (e: any) { flag.error(e.message); invalidateItems(); }
   }, [invalidateItems, items, projectId, queryClient]);
 
   const handleBulkDelete = useCallback(async (ids: string[]) => {
-    try { await Promise.all(ids.map(id => deleteWorkItem(id))); invalidateItems(); toast.success(`Deleted ${ids.length} item(s)`); }
-    catch (e: any) { toast.error(e.message); }
+    try { await Promise.all(ids.map(id => deleteWorkItem(id))); invalidateItems(); flag.success(`Deleted ${ids.length} item(s)`); }
+    catch (e: any) { flag.error(e.message); }
   }, [invalidateItems]);
 
   const handleClone = useCallback(async (id: string) => {
@@ -172,16 +173,16 @@ export default function WorkItemsListPage() {
     if (!item || !project) return;
     try {
       await createWorkItem({ project_id: project.id, type_id: item.type_id, status_id: item.status_id, title: `${item.title} (Copy)`, item_type: item.item_type, priority: item.priority, assignee_id: item.assignee_id, parent_id: item.parent_id, due_date: item.due_date, department: item.department, is_flagged: item.is_flagged });
-      invalidateItems(); toast.success('Item cloned');
-    } catch (e: any) { toast.error(e.message); }
+      invalidateItems(); flag.success('Item cloned');
+    } catch (e: any) { flag.error(e.message); }
   }, [items, project, invalidateItems]);
 
   // Sync Now handler
   const handleSyncNow = useCallback(() => {
     if (!projectId || triggerSync.isPending) return;
     triggerSync.mutate(projectId, {
-      onSuccess: () => toast.success('Sync triggered successfully'),
-      onError: () => toast.error('Sync failed. Please try again.'),
+      onSuccess: () => flag.success('Sync triggered successfully'),
+      onError: () => flag.error('Sync failed. Please try again.'),
     });
   }, [projectId, triggerSync]);
 
@@ -189,18 +190,18 @@ export default function WorkItemsListPage() {
   const handleResolveConflict = useCallback((conflictId: string, resolution: 'keep_catalyst' | 'keep_jira') => {
     resolveConflict.mutate({ conflictId, resolution }, {
       onSuccess: () => {
-        toast.success(`Conflict resolved: ${resolution === 'keep_catalyst' ? 'Kept Catalyst' : 'Kept Jira'}`);
+        flag.success(`Conflict resolved: ${resolution === 'keep_catalyst' ? 'Kept Catalyst' : 'Kept Jira'}`);
         invalidateItems();
       },
-      onError: (e: any) => toast.error(`Failed: ${e.message}`),
+      onError: (e: any) => flag.error(`Failed: ${e.message}`),
     });
   }, [resolveConflict, invalidateItems]);
 
   // Approve write-back handler
   const handleApproveWriteBack = useCallback((queueId: string) => {
     approveWriteBack.mutate(queueId, {
-      onSuccess: () => toast.success('Write-back approved'),
-      onError: (e: any) => toast.error(`Failed: ${e.message}`),
+      onSuccess: () => flag.success('Write-back approved'),
+      onError: (e: any) => flag.error(`Failed: ${e.message}`),
     });
   }, [approveWriteBack]);
 
@@ -264,9 +265,9 @@ export default function WorkItemsListPage() {
         />
       )}
 
-      <div className="px-6 py-4 max-w-[1400px] mx-auto">
+      <div style={{ paddingInline: token('space.300', '24px'), paddingBlock: token('space.200', '16px'), maxWidth: 1400, marginInline: 'auto' }}>
         {/* Breadcrumb */}
-        <div className="flex items-center gap-1 mb-3">
+        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px'), marginBlockEnd: token('space.150', '12px') }}>
           <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>ProjectHub</span>
           <span style={{ fontSize: 10, color: 'var(--ds-text-disabled, #CBD5E1)' }}>/</span>
           <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{project?.key ?? key?.toUpperCase()} — {project?.name ?? 'Loading…'}</span>
@@ -275,16 +276,16 @@ export default function WorkItemsListPage() {
         </div>
 
         {/* Page header */}
-        <div className="flex items-center justify-between mb-1">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBlockEnd: token('space.050', '4px') }}>
           <CatalystPageHeader title="Work Items" />
           <button
             onClick={() => setSyncDrawerOpen(true)}
-            className="inline-flex items-center gap-1.5"
             style={{
-              height: 30, padding: '0 10px', borderRadius: 4,
-              border: '0.75px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', background: 'none',
-              fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtle, #475569)',
+              height: 32, paddingInline: token('space.150', '12px'), borderRadius: 4,
+              border: `1px solid ${token('color.border', '#DFE1E6')}`, background: 'none',
+              fontSize: 11, fontWeight: 500, color: token('color.text.subtle', '#475569'),
               fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
+              display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px'),
             }}
           >
             <History size={13} />
@@ -293,7 +294,7 @@ export default function WorkItemsListPage() {
         </div>
 
         {/* Toolbar with source filter pills — counts from real DB */}
-        <div className="flex items-center gap-3 py-2">
+        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.150', '12px'), paddingBlock: token('space.100', '8px') }}>
           <SourceFilterPills
             value={sourceFilter}
             onChange={setSourceFilter}
@@ -328,7 +329,7 @@ export default function WorkItemsListPage() {
         <SyncLegend visible={sourceFilter !== 'catalyst'} />
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBlock: token('space.600', '80px') }}>
             <Loader2 size={24} className="animate-spin" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
           </div>
         ) : (
@@ -389,6 +390,7 @@ export default function WorkItemsListPage() {
         onApproveWriteBack={handleApproveWriteBack}
         isSyncing={triggerSync.isPending}
       />
+      <FlagsHost />
     </div>
   );
 }

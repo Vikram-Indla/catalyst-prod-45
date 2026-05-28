@@ -22,18 +22,13 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
-import TextArea from '@atlaskit/textarea';
 import { token } from '@atlaskit/tokens';
 import { toast } from 'sonner';
 import { useToggleStar, useStarredItemIds } from '@/hooks/home/useStarredItems';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import {
   PersonAddIcon,
-  ShareIcon,
   EditorMoreIcon,
-  LightbulbIcon,
-  FeedbackIcon,
-  ScreenfullIcon,
 } from './ProjectHeaderChipIcons';
 
 interface Props {
@@ -43,8 +38,6 @@ interface Props {
 
 export function ProjectHeaderChip({ projectKey }: Props) {
   const navigate = useNavigate();
-  const [fullscreen, setFullscreen] = useState(false);
-
   // Three-dots menu: bespoke portal popup (replaces @atlaskit/dropdown-menu
   // which has the known @atlaskit/popup v4.16 empty-portal positioning bug).
   const meatballRef = useRef<HTMLButtonElement>(null);
@@ -52,11 +45,8 @@ export function ProjectHeaderChip({ projectKey }: Props) {
 
   // Modal states (Add people / Automation / Feedback)
   const [addPeopleOpen, setAddPeopleOpen] = useState(false);
-  const [automationOpen, setAutomationOpen] = useState(false);
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [invitedEmails, setInvitedEmails] = useState<string[]>([]);
   const [inviteEmail, setInviteEmail] = useState('');
-  const [feedbackText, setFeedbackText] = useState('');
 
   const toggleStarMutation = useToggleStar();
   const { data: starredIds } = useStarredItemIds();
@@ -88,14 +78,7 @@ export function ProjectHeaderChip({ projectKey }: Props) {
 
   const projectName = project?.name ?? projectKey;
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-    toast.success('Link copied');
-  };
-
   const handleAddPeople = () => { setMenuAnchor(null); setAddPeopleOpen(true); };
-  const handleAutomation = () => { setMenuAnchor(null); setAutomationOpen(true); };
-  const handleFeedback = () => { setMenuAnchor(null); setFeedbackOpen(true); };
 
   const isValidEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
   const submitInvite = () => {
@@ -107,24 +90,6 @@ export function ProjectHeaderChip({ projectKey }: Props) {
     toast.success(`Invitation queued for ${e}`);
   };
   const closeAddPeople = () => { setAddPeopleOpen(false); setInviteEmail(''); setInvitedEmails([]); };
-
-  const submitFeedback = () => {
-    const t = feedbackText.trim();
-    if (t.length < 5) { toast.error('Feedback must be at least 5 characters'); return; }
-    toast.success('Thanks for the feedback');
-    setFeedbackText('');
-    setFeedbackOpen(false);
-  };
-
-  const handleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.();
-      setFullscreen(true);
-    } else {
-      document.exitFullscreen?.();
-      setFullscreen(false);
-    }
-  };
 
   const toggleMenu = () => {
     if (menuAnchor) {
@@ -241,17 +206,6 @@ export function ProjectHeaderChip({ projectKey }: Props) {
         </span>
 
         <span style={{ flex: 1 }} />
-
-        <IconButton icon={ShareIcon} label="Share" appearance="subtle" onClick={handleShare} testId="catalyst-project-header.share" />
-        <IconButton icon={LightbulbIcon} label="Automation" appearance="subtle" onClick={handleAutomation} testId="catalyst-project-header.automation" />
-        <IconButton icon={FeedbackIcon} label="Give feedback" appearance="subtle" onClick={handleFeedback} testId="catalyst-project-header.feedback" />
-        <IconButton
-          icon={ScreenfullIcon}
-          label={fullscreen ? 'Exit full screen' : 'Enter full screen'}
-          appearance="subtle"
-          onClick={handleFullscreen}
-          testId="catalyst-project-header.fullscreen"
-        />
       </div>
 
       {/* ── Three-dots portal menu ───────────────────────────────────────── */}
@@ -378,76 +332,6 @@ export function ProjectHeaderChip({ projectKey }: Props) {
         document.body,
       )}
 
-      {/* ── Automation portal modal ──────────────────────────────────────── */}
-      {automationOpen && ReactDOM.createPortal(
-        <div
-          role="dialog" aria-modal="true" aria-labelledby="phc-automation-title"
-          data-testid="phc-automation-modal"
-          style={overlayStyle}
-          onKeyDown={(e) => { if (e.key === 'Escape') setAutomationOpen(false); }}
-          onClick={() => setAutomationOpen(false)}
-        >
-          <div style={dialogStyle} onClick={(e) => e.stopPropagation()}>
-            <div style={modalHeaderStyle}>
-              <h2 id="phc-automation-title" style={modalTitleStyle}>Automation rules for {projectName}</h2>
-            </div>
-            <div style={{ padding: '16px 24px' }}>
-              <div style={{
-                background: token('color.background.neutral.subtle', '#F8F9FA'),
-                border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-                borderRadius: 6, padding: '20px 24px', textAlign: 'center',
-              }}>
-                <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 6 }}>No rules yet</div>
-                <div style={{ fontSize: 13, color: token('color.text.subtle', '#626F86'), marginBottom: 16, lineHeight: 1.5 }}>
-                  Automate repetitive work — auto-assign issues, transition statuses,
-                  notify channels, sync linked items.
-                </div>
-                <Button appearance="primary" onClick={() => { toast.success('Rule scaffolded — open Automation Hub to configure'); setAutomationOpen(false); }} testId="phc-automation.create-rule">
-                  Create your first rule
-                </Button>
-              </div>
-            </div>
-            <div style={modalFooterStyle}>
-              <Button appearance="subtle" onClick={() => setAutomationOpen(false)}>Close</Button>
-            </div>
-          </div>
-        </div>,
-        document.body,
-      )}
-
-      {/* ── Feedback portal modal ────────────────────────────────────────── */}
-      {feedbackOpen && ReactDOM.createPortal(
-        <div
-          role="dialog" aria-modal="true" aria-labelledby="phc-feedback-title"
-          data-testid="phc-feedback-modal"
-          style={overlayStyle}
-          onKeyDown={(e) => { if (e.key === 'Escape') setFeedbackOpen(false); }}
-          onClick={() => setFeedbackOpen(false)}
-        >
-          <div style={dialogStyle} onClick={(e) => e.stopPropagation()}>
-            <div style={modalHeaderStyle}>
-              <h2 id="phc-feedback-title" style={modalTitleStyle}>Give feedback</h2>
-            </div>
-            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div style={{ fontSize: 13, color: token('color.text.subtle', '#626F86') }}>
-                Tell us what's working, what isn't, or what you'd like to see next.
-              </div>
-              <TextArea
-                placeholder="Your feedback..."
-                value={feedbackText}
-                onChange={(e) => setFeedbackText((e.target as HTMLTextAreaElement).value)}
-                minimumRows={4}
-                testId="phc-feedback.textarea"
-              />
-            </div>
-            <div style={modalFooterStyle}>
-              <Button appearance="subtle" onClick={() => setFeedbackOpen(false)}>Cancel</Button>
-              <Button appearance="primary" onClick={submitFeedback} testId="phc-feedback.submit">Submit</Button>
-            </div>
-          </div>
-        </div>,
-        document.body,
-      )}
     </>
   );
 }

@@ -76,6 +76,32 @@ serve(async (req) => {
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
     const headers = { 'Authorization': authHeader, 'Accept': 'application/json' }
 
+    // ── Strategy 2: Load per-project sync state for smart incremental JQL ──────
+    // Replaces the fixed updated >= "-30m" window with the actual last_synced_at
+    // per project. If a sync was late or failed, the next run covers the full gap.
+    const { data: syncStates } = await supabase
+      .from('ph_project_sync_state')
+      .select('project_key, last_synced_at, consecutive_failures')
+    const syncStateMap = new Map<string, { last_synced_at: string | null; consecutive_failures: number }>(
+      (syncStates || []).map((s: any) => [s.project_key, s])
+    )
+
+    // ── Pre-sync authentication check (2026-05-24) ──
+    // A 401 here means the token is expired or revoked. Throwing early prevents
+    // the search call from silently returning 200+0 results (Jira's anonymous
+    // fallback), which would trigger the prune and delete all synced data.
+    const myselfRes = await fetch(`${base}/rest/api/3/myself`, { headers })
+    if (!myselfRes.ok) {
+      throw new Error(
+        `Jira authentication failed (HTTP ${myselfRes.status}). ` +
+        `The API token stored in ph_jira_connection may be expired or revoked. ` +
+        `Go to admin → Jira Connection and update the API token from ` +
+        `https://id.atlassian.com/manage-profile/security/api-tokens`
+      )
+    }
+    const myselfData = await myselfRes.json().catch(() => ({}))
+    console.log(`[sync] Authenticated as ${myselfData.displayName || 'unknown'} (${myselfData.emailAddress || conn.auth_email})`)
+
     // 3. Discover project keys
     let allProjectKeys: string[] = []
     const projectNameLookup: Record<string, string> = {}
@@ -255,6 +281,28 @@ serve(async (req) => {
         jqlParts.push(`fixVersion is EMPTY`)
       } else if (syncFixVersions.length > 0) {
         jqlParts.push(`fixVersion in (${syncFixVersions.map(v => `"${v}"`).join(',')})`)
+      }
+
+      // ── Strategy 2: Smart incremental — per-project timestamp, not fixed window ──
+      // Full sync skips this clause and fetches everything (for recovery / backfill).
+      // Incremental sync uses the actual last_synced_at from ph_project_sync_state
+      // with a 2-minute buffer to handle Jira clock skew and boundary misses.
+      // Falls back to a configurable lookback window for projects with no prior state.
+      if (syncType === 'incremental') {
+        const state = syncStateMap.get(projectKey)
+        if (state?.last_synced_at) {
+          const bufferMs = 2 * 60 * 1000 // 2-min boundary buffer
+          const since = new Date(new Date(state.last_synced_at).getTime() - bufferMs)
+          // Jira JQL timestamp format: "YYYY/MM/DD HH:mm"
+          const jiraTs = since.toISOString().replace('T', ' ').substring(0, 16).replace(/-/g, '/')
+          jqlParts.push(`updated >= "${jiraTs}"`)
+          console.log(`[sync] ${projectKey}: smart-incremental since ${jiraTs} (prev state: ${state.last_synced_at})`)
+        } else {
+          // Bootstrap: no prior state for this project → use lookback_minutes
+          const lookbackMinutes: number = (body.lookback_minutes as number) || 30
+          jqlParts.push(`updated >= "-${lookbackMinutes}m"`)
+          console.log(`[sync] ${projectKey}: bootstrap incremental -${lookbackMinutes}m (no prior state)`)
+        }
       }
 
       const jql = `${jqlParts.join(' AND ')} ORDER BY updated DESC`
@@ -600,19 +648,33 @@ serve(async (req) => {
       completedProjects.push(projectKey)
 
       // ── Per-project prune ──
-      if (syncType === 'full' && !projectError) {
-        const { data: existingIssues } = await supabase
-          .from('ph_issues')
-          .select('issue_key')
-          .eq('project_key', projectKey)
+      // SAFETY GUARD: never prune when 0 issues fetched (2026-05-24 RCA).
+      // A 0-result response almost always means a Jira auth/network failure that
+      // returned HTTP 200 + empty list. Pruning on 0 would silently wipe all data.
+      if (syncType === 'full' && !projectError && projectIssueCount > 0) {
+        // Paginate the existing-issues select to avoid the implicit 1000-row cap.
+        // Without pagination, a project with >1000 issues would only read the
+        // first 1000, compute a partial toDelete set, and leave stale rows behind.
+        const allExistingKeys: string[] = []
+        let page = 0
+        const PAGE = 1000
+        while (true) {
+          const { data: batch } = await supabase
+            .from('ph_issues')
+            .select('issue_key')
+            .eq('project_key', projectKey)
+            .range(page * PAGE, (page + 1) * PAGE - 1)
+          if (!batch || batch.length === 0) break
+          for (const r of batch) allExistingKeys.push(r.issue_key)
+          if (batch.length < PAGE) break
+          page++
+        }
 
-        if (existingIssues && existingIssues.length > 0) {
+        if (allExistingKeys.length > 0) {
           const projectFetchedKeys = new Set(
             [...allFetchedKeys].filter(k => k.startsWith(projectKey + '-'))
           )
-          const toDelete = existingIssues
-            .map((i: any) => i.issue_key)
-            .filter((k: string) => !projectFetchedKeys.has(k))
+          const toDelete = allExistingKeys.filter((k: string) => !projectFetchedKeys.has(k))
 
           if (toDelete.length > 0) {
             for (let i = 0; i < toDelete.length; i += 500) {
@@ -622,6 +684,25 @@ serve(async (req) => {
             console.log(`[sync] Pruned ${toDelete.length} issues from ${projectKey}`)
           }
         }
+      }
+
+      // ── Strategy 2: Update per-project sync state ──────────────────────────────
+      // On success: advance last_synced_at to now so next incremental starts here.
+      // On error:   preserve last_synced_at so next run covers the full gap.
+      // consecutive_failures resets to 0 on any non-error outcome.
+      {
+        const syncNow = new Date().toISOString()
+        const prevState = syncStateMap.get(projectKey)
+        const prevFailures = prevState?.consecutive_failures ?? 0
+        await supabase.from('ph_project_sync_state').upsert({
+          project_key:             projectKey,
+          last_synced_at:          projectError ? (prevState?.last_synced_at ?? null) : syncNow,
+          last_successful_sync_at: projectError ? undefined : syncNow,
+          last_sync_status:        projectError ? 'error' : 'success',
+          issues_synced:           projectIssueCount,
+          consecutive_failures:    projectError ? prevFailures + 1 : 0,
+          updated_at:              syncNow,
+        }, { onConflict: 'project_key', ignoreDuplicates: false })
       }
 
       // ── Progressive log update after EACH project (prevents stale "15 hours ago") ──

@@ -11,6 +11,7 @@
  */
 
 import React from 'react';
+import { token } from '@atlaskit/tokens';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { hubAccentToken } from '@/lib/hub-tone';
 import { PanelLeftClose, PanelLeftOpen, Star, LucideIcon } from '@/lib/atlaskit-icons';
@@ -37,16 +38,16 @@ import { useTheme } from '@/hooks/useTheme';
 // Block A rule 7 (2026-05-01): canonical hub label casing matches HubSwitcher.
 // Block A rule 1 (2026-05-01): canonical URL prefix '/product-hub' (not /producthub).
 const HUB_ITEMS = [
-  { label: 'Home',         href: '/for-you',                    Icon: HomeIcon,            tone: '#42526E' },
-  { label: 'Strategy Hub', href: '/strategyhub',                Icon: OfficeBuildingIcon,  tone: '#8270DB' },
-  { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: 'var(--cp-primary-60, #0052CC)' },
-  { label: 'Project Hub',  href: '/project-hub',                Icon: FolderIcon,          tone: '#00A3BF' },
-  { label: 'Release Hub',  href: '/release-hub/command-center', Icon: ShipIcon,            tone: '#FF8B00' },
-  { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: '#36B37E' },
-  { label: 'Incident Hub', href: '/incident-hub',               Icon: WarningIcon,         tone: '#DE350B' },
-  { label: 'Task Hub',     href: '/taskhub/boards',             Icon: TaskIcon,            tone: '#FFAB00' },
-  { label: 'Plan Hub',     href: '/planhub',                    Icon: CalendarIcon,        tone: '#E774BB' },
-  { label: 'Wiki Hub',     href: '/wiki',                       Icon: BookIcon,            tone: '#65BA43' },
+  { label: 'Home',         href: '/for-you',                    Icon: HomeIcon,            tone: 'var(--ds-icon-subtle, #42526E)' },
+  { label: 'Strategy Hub', href: '/strategyhub',                Icon: OfficeBuildingIcon,  tone: 'var(--ds-icon-accent-purple, #8270DB)' },
+  { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: 'var(--ds-icon-brand, #0052CC)' },
+  { label: 'Project Hub',  href: '/project-hub',                Icon: FolderIcon,          tone: 'var(--ds-icon-accent-teal, #00A3BF)' },
+  { label: 'Release Hub',  href: '/release-hub/command-center', Icon: ShipIcon,            tone: 'var(--ds-icon-accent-orange, #FF8B00)' },
+  { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: 'var(--ds-icon-accent-green, #36B37E)' },
+  { label: 'Incident Hub', href: '/incident-hub',               Icon: WarningIcon,         tone: 'var(--ds-icon-accent-red, #DE350B)' },
+  { label: 'Task Hub',     href: '/taskhub/boards',             Icon: TaskIcon,            tone: 'var(--ds-icon-accent-yellow, #FFAB00)' },
+  { label: 'Plan Hub',     href: '/planhub',                    Icon: CalendarIcon,        tone: 'var(--ds-icon-accent-magenta, #E774BB)' },
+  { label: 'Wiki Hub',     href: '/wiki',                       Icon: BookIcon,            tone: 'var(--ds-icon-accent-lime, #65BA43)' },
 ] as const;
 
 /**
@@ -108,6 +109,15 @@ export interface SidebarMenuItem {
    * behaviour.
    */
   onStarClick?: () => void;
+  /**
+   * Optional project/hub accent color for the persistent left identity bar.
+   * When set, a 3px colored bar renders on the left edge of the row at all
+   * times (not just active state) — giving each Recent item a distinct
+   * project identity. Value comes from ph_projects.color (data-driven,
+   * not a hardcoded design token). Falls back to transparent when null.
+   * Added 2026-05-28: HomeSidebar Recent items identity redesign.
+   */
+  accentColor?: string;
 }
 
 export interface SidebarSection {
@@ -173,10 +183,10 @@ export function SidebarBase({
     isDark,
     itemText: 'var(--cp-text-secondary, #42526E)',
     activeText: 'var(--cp-text-link, var(--cp-primary-60, #0052CC))',
-    activeBg: isDark ? 'var(--ds-background-selected, #1C2B41)' : '#E9F2FF',
+    activeBg: isDark ? 'var(--ds-background-selected, #1C2B41)' : 'var(--ds-background-selected, #E9F2FF)',
     hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
     iconOpacityInactive: isDark ? 0.85 : 0.75,
-    badgeBg: isDark ? 'var(--ds-background-neutral-subtle, #22272B)' : '#EBECF0',
+    badgeBg: isDark ? 'var(--ds-background-neutral-subtle, #22272B)' : 'var(--ds-background-neutral, #EBECF0)',
     badgeText: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))',
   };
 
@@ -187,12 +197,12 @@ export function SidebarBase({
   // affordance pop without reintroducing brand colour.
   const chevronColor = 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))';
   const chevronHoverColor = 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))';
-  // ADS canonical: side-nav uses --ds-surface (rail surface lifts above
+  // ADS canonical: side-nav uses --ds-surface-raised (rail surface lifts above
   // page bg --ds-background-neutral). Was incorrectly using page bg token.
-  const sidebarBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+  const sidebarBg = 'var(--ds-surface-raised, var(--cp-bg-elevated, #ffffff))';
   // ADS canonical: --ds-border is translucent (#a6c5e229 dark / #0b120e24 light)
-  const sidebarBorder = 'var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
-  const dividerColor = 'var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
+  const sidebarBorder = 'var(--ds-border, var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))))';
+  const dividerColor = 'var(--ds-border, var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))))';
   const sectionLabel = 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))';
   const hubLabel = 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))';
 
@@ -246,7 +256,7 @@ export function SidebarBase({
           willChange: 'width',
           contain: 'layout style',
           scrollbarWidth: 'thin' as any,
-          scrollbarColor: isDark ? '#454545 transparent' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)) transparent',
+          scrollbarColor: isDark ? 'var(--ds-border, #454545) transparent' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)) transparent',
         }}
       >
         {/* Header — hub badge + label only. The collapse toggle now lives
@@ -291,7 +301,7 @@ export function SidebarBase({
                   className="truncate"
                   style={{
                     fontFamily: 'var(--cp-font-heading)',
-                    fontSize: '14px',
+                    fontSize: token('font.size.100', '14px'),
                     fontWeight: 600,
                     color: 'var(--ds-text, #292A2E)',
                     letterSpacing: '-0.3px',
@@ -310,7 +320,7 @@ export function SidebarBase({
                   className="truncate"
                   style={{
                     fontFamily: 'var(--cp-font-heading)',
-                    fontSize: '14px',
+                    fontSize: token('font.size.100', '14px'),
                     fontWeight: 600,
                     color: 'var(--ds-text, #292A2E)',
                     letterSpacing: '-0.3px',
@@ -331,13 +341,13 @@ export function SidebarBase({
           {/* Favorites Section */}
           {config.showFavorites !== false && favoritedItems.length > 0 && !expanded && null}
           {config.showFavorites !== false && favoritedItems.length > 0 && expanded && (
-            <div className="mb-3">
+            <div style={{ marginBottom: '12px' }}>
               <div style={{ padding: '12px 12px 4px' }}>
                 <span
                   style={{
                     fontFamily: 'var(--cp-font-body)',
                     color: 'var(--ds-text-subtlest, #626F86)',
-                    fontSize: '11px',
+                    fontSize: token('font.size.050', '11px'),
                     fontWeight: 600,
                     letterSpacing: '0',
                     textTransform: 'none' as const,
@@ -365,24 +375,27 @@ export function SidebarBase({
                   {sectionIndex > 0 && (
                     <div style={{ borderTop: `1px solid ${dividerColor}`, margin: '8px 12px' }} />
                   )}
-                  {/* Section header — ADS sentence case, --ds-text-subtlest */}
+                  {/* Section header — ADS rail micro-label spec:
+                      11px/600/color.text.subtlest — matches Jira admin
+                      sidebar section headers (probed 2026-05-19).
+                      Previously 14px/400/color.text — no hierarchy vs items.
+                      Source: https://atlassian.design/foundations/typography */}
                   {expanded && section.title && (
                     <div
                       style={{
-                        padding: '8px 12px 0 12px',
-                        marginBottom: '4px',
+                        padding: '8px 12px 4px 12px',
                         lineHeight: 1,
                       }}
                     >
                       <span
                         style={{
                           fontFamily: 'var(--cp-font-body)',
-                          color: 'var(--ds-text, #292A2E)',
-                          fontSize: '14px',
-                          fontWeight: 400,
+                          color: 'var(--ds-text-subtlest, #626F86)',
+                          fontSize: token('font.size.050', '11px'),
+                          fontWeight: 600,
                           letterSpacing: '0',
                           textTransform: 'none' as const,
-                          lineHeight: '20px',
+                          lineHeight: '16px',
                         }}
                       >
                         {section.title}
@@ -448,11 +461,14 @@ function renderMenuItem(
       aria-current={active ? 'page' : undefined}
       className="group w-full flex items-center border-none cursor-pointer transition-all relative"
       style={{
-        height: '32px',
-        padding: expanded ? '0 12px' : '0',
+        // minHeight instead of height so 2-line titles (HomeSidebar Recent)
+        // expand naturally without clipping. ADS interactive row: 40px min.
+        // Single-line items visually sit at ~32px with 4px v-padding.
+        minHeight: '40px',
+        padding: expanded ? '4px 12px 4px 12px' : '4px 0',
         gap: '8px',
         marginBottom: '0',
-        fontSize: '14px',
+        fontSize: token('font.size.100', '14px'),
         fontWeight: active ? 600 : 500,
         color: active ? tk.activeText : tk.itemText,
         fontFamily: 'var(--cp-font-body)',
@@ -462,6 +478,9 @@ function renderMenuItem(
         lineHeight: 1,
         borderRadius: '4px',
         letterSpacing: '0',
+        // ADS hover motion: cubic-bezier(0.15,1,0.3,1) 150ms
+        // Source: https://atlassian.design/foundations/motion
+        transition: 'background 150ms cubic-bezier(0.15,1,0.3,1)',
       }}
       onMouseEnter={(e) => {
         prefetchRoute(item.path);
@@ -495,21 +514,30 @@ function renderMenuItem(
           }}
         />
       )}
-      {/* Icon container */}
+      {/* Icon container — ADS icon color tokens:
+          active  → color.icon.brand (#0052CC) — council-approved 2026-05-28
+          inactive → color.icon.subtle (#6B778C)
+          Source: https://atlassian.design/foundations/color */}
       <span
         className="flex items-center justify-center flex-shrink-0"
         style={{
-          width: '16px',
-          height: '16px',
-          opacity: active ? 1.0 : tk.iconOpacityInactive,
-          transition: 'opacity 150ms ease',
+          width: '20px',
+          height: '20px',
+          opacity: 1,
+          flexShrink: 0,
+          transition: 'color 150ms cubic-bezier(0.15,1,0.3,1)',
         }}
       >
         {CustomIcon && (
           <CustomIcon
             className="h-[16px] w-[16px]"
             style={{
-              color: active ? tk.activeText : tk.itemText,
+              // ADS canonical: color.icon.brand for active, color.icon.subtle
+              // for inactive. Raw hex used as token() not available in this
+              // file — values match ADS light-mode token resolution.
+              color: active
+                ? 'var(--ds-icon-brand, #0052CC)'
+                : 'var(--ds-icon-subtle, #6B778C)',
               strokeWidth: active ? 2 : 1.5,
             }}
           />
@@ -576,7 +604,7 @@ function renderMenuItem(
           onMouseEnter={(e) => {
             if (!starred) {
               e.currentTarget.style.color = 'var(--ds-text-warning, #f59e0b)';
-              e.currentTarget.style.background = 'rgba(245, 158, 11, 0.1)';
+              e.currentTarget.style.background = 'var(--ds-background-warning-subtle, rgba(245,158,11,0.1))';
             }
           }}
           onMouseLeave={(e) => {
@@ -591,30 +619,38 @@ function renderMenuItem(
       )}
       {/* Text Badge (AI, NEW, BETA, etc.) */}
       {item.textBadge && (
-        <span 
+        <span
           style={{
-            fontSize: '9px',
+            // ADS font.size.050 = 11px — smallest rail label token
+            // Source: https://atlassian.design/foundations/typography
+            fontSize: token('font.size.050', '11px'),
             fontWeight: 600,
-            padding: '1px 6px',
+            // ADS 4/8dp spacing grid — 0 vertical, 4px horizontal
+            padding: '0 4px',
             borderRadius: '12px',
             letterSpacing: '0.3px',
-            textTransform: 'uppercase',
+            // UPPERCASE_LABEL banned (CLAUDE.md) — sentence case only
+            textTransform: 'none' as const,
             fontFamily: item.textBadge === 'AI' ? 'var(--cp-font-heading)' : 'var(--cp-font-body)',
-            background: item.textBadge === 'AI' 
-              ? 'rgba(124, 58, 237, 0.06)'
-              : item.textBadgeVariant === 'new' 
-              ? 'linear-gradient(135deg, #10b981 0%, var(--quality-high, #059669) 100%)'
+            background: item.textBadge === 'AI'
+              // ADS color.background.accent.purple.subtlest
+              ? 'var(--ds-background-accent-purple-subtlest, rgba(124,58,237,0.06))'
+              : item.textBadgeVariant === 'new'
+              // ADS color.background.success.bold
+              ? 'var(--ds-background-success-bold, #1F845A)'
               : item.textBadgeVariant === 'beta'
               ? 'linear-gradient(135deg, var(--ds-text-warning, #f59e0b) 0%, var(--ds-text-warning, #d97706) 100%)'
               : 'hsl(var(--brand-primary))',
             color: item.textBadge === 'AI'
               ? 'var(--cp-purple-60, #7C3AED)'
               : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-            border: item.textBadge === 'AI' ? '1px solid rgba(124, 58, 237, 0.12)' : 'none',
+            // ADS color.border.accent.purple
+            border: item.textBadge === 'AI' ? '1px solid var(--ds-border-accent-purple, rgba(124,58,237,0.12))' : 'none',
             position: expanded ? 'relative' : 'absolute',
             top: expanded ? 'auto' : '4px',
             right: expanded ? 'auto' : '4px',
-            boxShadow: item.textBadge === 'AI' ? 'none' : '0 1px 2px rgba(0,0,0,0.1)',
+            // ADS elevation.shadow.raised
+            boxShadow: item.textBadge === 'AI' ? 'none' : 'var(--ds-shadow-raised, 0 1px 2px rgba(0,0,0,0.1))',
             opacity: expanded ? 1 : 0,
             width: expanded ? 'auto' : '0',
             overflow: 'hidden',

@@ -9,6 +9,17 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "mcp__Claude_in_Chrome__",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/chrome-mcp-health-check.sh"
+          }
+        ]
+      }
     ]
   },
   "permissions": {

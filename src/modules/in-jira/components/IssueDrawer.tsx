@@ -155,10 +155,10 @@ export function IssueDrawer() {
   }, [logAction]);
 
   const descToolbarComponents = useMemo(() => [
-    <Tooltip content="Rovo AI" key="rovo">
+    <Tooltip content="Caty AI" key="caty">
       <IconButton
         icon={AiChatIcon}
-        label="Rovo AI"
+        label="Caty AI"
         appearance="subtle"
       />
     </Tooltip>,

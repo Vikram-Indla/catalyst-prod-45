@@ -1,43 +1,85 @@
 /**
- * Catalyst V5 Toast / Notifications Styling
- * - Success: Light teal background (#f0fdfa) with teal text (#0d9488)
- * - Error: Light red background (var(--ds-background-danger, #fef2f2)) with red text (var(--ds-text-danger, #dc2626))
- * - Warning: Light amber background (#fffbeb) with amber text (var(--ds-text-warning, #d97706))
- * - Info: Light blue background (var(--ds-background-selected, #eff6ff)) with blue text (var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)))
+ * ADS notification shim — replaces Sonner with @atlaskit/flag.
+ *
+ * All 600 files that `import { toast } from '@/components/ui/sonner'`
+ * continue to work unchanged. The API surface is drop-in compatible:
+ *   toast("message")                    → info flag (auto-dismiss 8s)
+ *   toast.success("message")            → success flag (auto-dismiss 8s)
+ *   toast.error("message")              → error flag (persistent — user dismisses)
+ *   toast.info("message")               → info flag (auto-dismiss 8s)
+ *   toast.warning("message")            → warning flag (persistent — user dismisses)
+ *   toast.success("msg", { action })    → success flag with action button
+ *   toast.loading("msg")                → info flag (Phase 3: migrate to button spinner)
+ *   toast.dismiss()                     → no-op (flags auto-dismiss or user X)
+ *
+ * Toaster export is a null component — FlagsHost is mounted in App.tsx instead.
  */
-import { useTheme } from "next-themes";
-import { Toaster as Sonner, toast } from "sonner";
+import { showFlag, flag as flagHelpers } from '@/components/shared/JiraTable/flags';
+import type { FlagAction } from '@/components/shared/JiraTable/flags';
 
-type ToasterProps = React.ComponentProps<typeof Sonner>;
+interface SonnerOptions {
+  description?: string;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+}
 
-const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme();
+/**
+ * Drop-in replacement for sonner's `toast` function + method namespace.
+ * Exported as `toast` so all existing callsites require zero edits.
+ */
+export const toast = Object.assign(
+  // Default call: toast("message") or toast("title", { description })
+  (title: string, opts?: SonnerOptions) => {
+    const actions: FlagAction[] | undefined = opts?.action
+      ? [{ content: opts.action.label, onClick: opts.action.onClick }]
+      : undefined;
+    showFlag({ title, description: opts?.description, appearance: 'info', actions });
+  },
+  {
+    success: (title: string, opts?: SonnerOptions) => {
+      const actions: FlagAction[] | undefined = opts?.action
+        ? [{ content: opts.action.label, onClick: opts.action.onClick }]
+        : undefined;
+      showFlag({ title, description: opts?.description, appearance: 'success', actions });
+    },
+    error: (title: string, opts?: SonnerOptions) =>
+      showFlag({ title, description: opts?.description, appearance: 'error' }),
 
-  return (
-    <Sonner
-      theme={theme as ToasterProps["theme"]}
-      className="toaster group"
-      position="top-right"
-      duration={5000}
-      expand={true}
-      richColors={false}
-      toastOptions={{
-        classNames: {
-          toast:
-            "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg group-[.toaster]:rounded-lg",
-          description: "group-[.toast]:text-muted-foreground",
-          actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
-          cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
-          // Catalyst V5: Light semantic backgrounds with matching text
-          success: "group-[.toast]:!bg-[#f0fdfa] group-[.toast]:!text-[#0d9488] group-[.toast]:!border-[#99f6e4]",
-          error: "group-[.toast]:!bg-[var(--ds-background-danger,#fef2f2)] group-[.toast]:!text-[var(--ds-text-danger,#dc2626)] group-[.toast]:!border-[#fecaca]",
-          warning: "group-[.toast]:!bg-[#fffbeb] group-[.toast]:!text-[var(--ds-text-warning,#d97706)] group-[.toast]:!border-[#fde68a]",
-          info: "group-[.toast]:!bg-[var(--ds-background-selected,#eff6ff)] group-[.toast]:!text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] group-[.toast]:!border-[#bfdbfe]",
-        },
-      }}
-      {...props}
-    />
-  );
-};
+    info: (title: string, opts?: SonnerOptions) =>
+      showFlag({ title, description: opts?.description, appearance: 'info' }),
 
-export { Toaster, toast };
+    warning: (title: string, opts?: SonnerOptions) =>
+      showFlag({ title, description: opts?.description, appearance: 'warning' }),
+
+    // Loading: show an info flag. Phase 3 will migrate these 4 sites to
+    // button-spinner + deferred success/error flag pattern.
+    loading: (title: string, _opts?: SonnerOptions) =>
+      showFlag({ title, appearance: 'info' }),
+
+    // dismiss: no-op — ADS flags dismiss themselves (auto or user X)
+    dismiss: (_id?: string | number) => { /* no-op */ },
+
+    // promise: not used in codebase; kept for API compatibility
+    promise: <T,>(
+      _promise: Promise<T>,
+      _msgs?: { loading?: string; success?: string; error?: string },
+    ) => { /* no-op */ },
+  },
+);
+
+/**
+ * Toaster is now a no-op — FlagsHost in App.tsx is the ADS provider.
+ * Kept as a named export so App.tsx import doesn't break before it's updated.
+ */
+export const Toaster = () => null;
+
+/**
+ * Default export for react-hot-toast compatibility.
+ * 12 files use `import toast from 'react-hot-toast'` (default import pattern).
+ * The Vite alias `"react-hot-toast" → sonner.tsx` intercepts those imports at
+ * bundle time. Since react-hot-toast exports a default, we need this line.
+ * Zero callsite edits required.
+ */
+export default toast;

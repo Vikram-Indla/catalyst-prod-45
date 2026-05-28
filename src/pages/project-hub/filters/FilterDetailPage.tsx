@@ -5,7 +5,6 @@ import Button from '@atlaskit/button/new';
 import AkAvatar from '@atlaskit/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { FilterHealthBadge } from '@/components/filters/FilterHealthBadge';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { FilterVersionHistory } from '@/components/filters/FilterVersionHistory';
 import { FilterUsageSparkline } from '@/components/filters/FilterUsageSparkline';
@@ -41,8 +40,8 @@ export default function FilterDetailPage() {
     queryKey: ['filter-boards', filter?.used_by_board_ids],
     queryFn: async () => {
       if (!filter?.used_by_board_ids?.length) return [];
-      const { data, error } = await (supabase as any)
-        .from('boards')
+      const { data, error } = await supabase
+        .from('boards' as any)
         .select('id, name')
         .in('id', filter.used_by_board_ids);
       if (error) throw new Error(error.message);
@@ -177,15 +176,26 @@ export default function FilterDetailPage() {
             >
               Edit filter
             </Button>
-            {filter.jql_query && (
+            {filter.jql_query && projectKey && (
+              <>
+                <Button
+                  appearance="subtle"
+                  onClick={() => navigate(`/project-hub/${projectKey}/allwork?filterId=${filter.id}`)}
+                >
+                  Open in all work
+                </Button>
+                <Button
+                  appearance="primary"
+                  onClick={() => navigate(`/project-hub/${projectKey}/backlog?filterId=${filter.id}`)}
+                >
+                  Apply to backlog
+                </Button>
+              </>
+            )}
+            {filter.jql_query && !projectKey && (
               <Button
                 appearance="primary"
-                onClick={() => {
-                  const allWorkHref = projectKey
-                    ? `/project-hub/${projectKey}/allwork?filterId=${filter.id}`
-                    : backHref;
-                  navigate(allWorkHref);
-                }}
+                onClick={() => navigate(backHref)}
               >
                 Apply filter
               </Button>
@@ -203,10 +213,6 @@ export default function FilterDetailPage() {
           borderRadius: 4,
           marginBottom: 24,
         }}>
-          <MetaField label="Health">
-            <FilterHealthBadge health={filter.health_status} />
-          </MetaField>
-
           <MetaField label="Visibility">
             <span style={{
               display: 'inline-flex',
@@ -353,7 +359,6 @@ function MetaField({ label, children }: { label: string; children: React.ReactNo
         fontSize: 11,
         fontWeight: token('font.weight.semibold'),
         color: token('color.text.subtlest'),
-        letterSpacing: '0.06em',
       }}>
         {label}
       </span>

@@ -28,7 +28,7 @@
  * Atlaskit-thin wrappers. No @/components/ui/* (shadcn), no lucide-react
  * (replace with @atlaskit/icon), no bespoke CSS chrome.
  */
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useProductHubBusinessRequest } from './useProductHubBusinessRequest';
@@ -118,8 +118,10 @@ export default function CatalystViewBusinessRequestV2({
     }
   }, [deleteRequest, onClose]);
 
+  // Memoize leftContent / rightContent / moreMenuItems so that any local
+  // state changes do NOT force CatalystViewBase to re-diff the heavy subtree.
   // ── Left rail content (single-scroll, project-hub canonical pattern) ─────
-  const leftContent = (
+  const leftContent = useMemo(() => (
     <>
       <BrTitleSection request={request} onUpdate={updateField} />
       <BrStatusSection request={request} onUpdate={updateField} />
@@ -129,12 +131,14 @@ export default function CatalystViewBusinessRequestV2({
       <BrAttachmentsSection request={request} />
       <BrLinkedItemsSection request={request} />
     </>
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [request, updateField]);
 
   // ── Right rail (sidebar — workflow + assignees + dates + scoring badges) ─
-  const rightContent = (
+  const rightContent = useMemo(() => (
     <BrSidebarDetails request={request} onUpdate={updateField} />
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [request, updateField]);
 
   return (
     <CatalystViewBase
@@ -147,10 +151,11 @@ export default function CatalystViewBusinessRequestV2({
       projectKey="MIM"
       projectName="Product Hub"
       onShare={handlePermalink}
-      moreMenuItems={[
+      moreMenuItems={useMemo(() => [
         { label: 'Clone', onClick: handleClone },
         { label: 'Delete', onClick: handleDelete, danger: true },
-      ]}
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      ], [handleClone, handleDelete])}
       onTogglePanelMode={onTogglePanelMode}
       navigationItems={navigationItems}
       currentItemId={resolvedId ?? undefined}

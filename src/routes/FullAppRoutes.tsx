@@ -69,6 +69,7 @@ const BacklogDetailPageLazy = lazy(() => import("../modules/project-work-hub/pag
 const AllWorkDetailPageLazy = lazy(() => import("../modules/project-work-hub/pages/AllWorkDetailPage"));
 const FiltersListPageLazy = lazy(() => import("../pages/project-hub/filters/FiltersListPage"));
 const CreateFilterPageLazy = lazy(() => import("../pages/project-hub/filters/CreateFilterPage"));
+const FilterDetailPageLazy = lazy(() => import("../pages/project-hub/filters/FilterDetailPage"));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const IssueDetailPageLazy = lazy(() => import("../pages/project-hub/IssueDetailPage"));
 const HierarchyPageLazy = lazy(() => import("../pages/project-hub/HierarchyPage"));
@@ -318,6 +319,7 @@ const FeatureStatuses = lazy(() => import("../pages/admin/FeatureStatuses"));
 const ThemeStatuses = lazy(() => import("../pages/admin/ThemeStatuses"));
 const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
 const DesignSystemAdmin = lazy(() => import("../pages/admin/design-system/DesignSystemAdmin"));
+const AiTranslationsAuditPage = lazy(() => import("../pages/admin/AiTranslationsAuditPage"));
 const CatalystFeaturesBoard = lazy(() => import("../pages/admin/CatalystFeaturesBoard"));
 const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
 // Incident admin routes deleted 2026-05-09 (Vikram decision: delete all 7)
@@ -780,9 +782,9 @@ export default function FullAppRoutes() {
         <Route path="/release-train-calendar" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.3px' }}>Release Calendar</div><p className="text-muted-foreground">Coming soon</p></div>} />
         <Route path="/program-backlog" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.3px' }}>Program Backlog</div><p className="text-muted-foreground">Coming soon</p></div>} />
 
-        <Route path="/projects" element={<S><ProjectDirectory /></S>} />
-        <Route path="/projects/:projectKey" element={<Navigate to={`/projects`} replace />} />
-        <Route path="/projects/:projectKey/summary" element={<Navigate to={`/projects`} replace />} />
+        <Route path="/projects" element={<Navigate to="/project-hub/projects" replace />} />
+        <Route path="/projects/:projectKey" element={<Navigate to="/project-hub/projects" replace />} />
+        <Route path="/projects/:projectKey/summary" element={<Navigate to="/project-hub/projects" replace />} />
         <Route path="/workhub/all-work" element={<S><WorkHubAllWork /></S>} />
         <Route path="/workhub" element={<Navigate to="/project-hub" replace />} />
         <Route path="/projecthub" element={<Navigate to="/project-hub" replace />} />
@@ -905,6 +907,7 @@ export default function FullAppRoutes() {
           <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
           <Route path="catalyst-features" element={<S><CatalystFeaturesBoard /></S>} />
           <Route path="design-system" element={<S><DesignSystemAdmin /></S>} />
+          <Route path="ai-governance/translations" element={<S><AiTranslationsAuditPage /></S>} />
           <Route path="governance" element={<S><GovernanceSettings /></S>} />
           <Route path="storybook" element={<S><AdminStorybookPage /></S>} />
           {/* Design system pocket — preflight 2026-05-17 consolidation. */}
@@ -967,6 +970,8 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />
         <Route path="/project-hub/:key/filters" element={<S><FiltersListPageLazy /></S>} />
         <Route path="/project-hub/:key/filters/create" element={<S><CreateFilterPageLazy hubType="project" /></S>} />
+        <Route path="/project-hub/:key/filters/:filterId" element={<S><FilterDetailPageLazy /></S>} />
+        <Route path="/project-hub/filters" element={<S><FiltersListPageLazy /></S>} />
         <Route path="/project-hub/:key/timeline" element={<PHPlaceholder title="Timeline" phase="Phase 3" />} />
         <Route path="/project-hub/:key/releases" element={<PHPlaceholder title="Releases" phase="Phase 3" />} />
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />

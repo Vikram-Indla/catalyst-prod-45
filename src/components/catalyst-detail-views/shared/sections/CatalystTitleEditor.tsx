@@ -102,7 +102,13 @@ interface CatalystTitleEditorProps {
   onTitleChange: (newTitle: string) => void;
 }
 
-function TranslatableTitleEditView({ fieldProps }: { fieldProps: any }) {
+function TranslatableTitleEditView({
+  fieldProps,
+  issueKey,
+}: {
+  fieldProps: any;
+  issueKey: string;
+}) {
   const [val, setVal] = useState<string>(fieldProps?.value ?? '');
   useEffect(() => {
     setVal(fieldProps?.value ?? '');
@@ -118,6 +124,8 @@ function TranslatableTitleEditView({ fieldProps }: { fieldProps: any }) {
   return (
     <TitleTranslateWrapper
       value={val}
+      issueKey={issueKey}
+      field="summary"
       onValueChange={(next) => {
         setVal(next);
         pushToInlineEdit(next);
@@ -141,6 +149,7 @@ function TranslatableTitleEditView({ fieldProps }: { fieldProps: any }) {
 
 export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEditorProps) {
   const summary = (issue?.summary ?? '').trim(); // jira-compare E-7 (2026-04-28): trim trailing whitespace
+  const issueKey = issue?.issue_key ?? '';
 
   return (
     // Apr 27, 2026 (L55): dropped the duplicate <IssueIcon> prefix that
@@ -181,7 +190,7 @@ export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEdito
             // measurement (2026-04-20). Scoped CSS above locks weight/
             // color/family to the Jira-measured values (653/#292A2E/
             // Atlassian Sans).
-            <TitleTranslateWrapper value={summary} onValueChange={onTitleChange}>
+            <TitleTranslateWrapper value={summary} issueKey={issueKey} field="summary" onValueChange={onTitleChange}>
               {({ dir }) => (
                 <div dir={dir}>
                   <Heading size="large" as="h1">
@@ -191,7 +200,7 @@ export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEdito
               )}
             </TitleTranslateWrapper>
           )}
-          editView={(fieldProps) => <TranslatableTitleEditView fieldProps={fieldProps} />}
+          editView={(fieldProps) => <TranslatableTitleEditView fieldProps={fieldProps} issueKey={issueKey} />}
           onConfirm={(value) => {
             const trimmed = value.trim();
             if (trimmed && trimmed !== summary) {

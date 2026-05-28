@@ -5,7 +5,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 // ads-scanner:ignore-next-line — toast is the approved notification primitive in data-layer hooks
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface SavedFilter {
   id: string;
@@ -34,6 +34,7 @@ export interface SavedFilterFull extends SavedFilter {
   viewers_config: { type: 'private' | 'org' | 'specific'; user_ids?: string[] };
   editors_config: { type: 'owner_only' | 'specific'; user_ids?: string[] };
   starred_by_user_ids: string[];
+  subscriber_ids: string[];
   owner_id: string | null;
   used_by_board_ids: string[];
   hub_scope: HubScope;
@@ -58,17 +59,40 @@ export function useSavedFilters(page?: string) {
   });
 }
 
+export interface CreateSavedFilterParams {
+  name: string;
+  filter_config: Record<string, any>;
+  page?: string;
+  is_shared?: boolean;
+  jql_query?: string | null;
+  description?: string | null;
+  hub_scope?: HubScope;
+  viewers_config?: SavedFilterFull['viewers_config'];
+  editors_config?: SavedFilterFull['editors_config'];
+  owner_id?: string | null;
+  project_key?: string | null;
+}
+
 export function useCreateSavedFilter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (params: { name: string; filter_config: Record<string, any>; page?: string; is_shared?: boolean }) => {
+    mutationFn: async (params: CreateSavedFilterParams) => {
+      const { data: { user } } = await supabase.auth.getUser();
       const { data, error } = await supabase
         .from('ph_saved_filters')
         .insert({
           name: params.name,
           filter_config: params.filter_config,
           page: params.page || 'workitems',
-          is_shared: params.is_shared || false,
+          is_shared: params.is_shared ?? false,
+          jql_query: params.jql_query ?? null,
+          description: params.description ?? null,
+          hub_scope: params.hub_scope ?? 'project',
+          viewers_config: params.viewers_config ?? { type: 'private' },
+          editors_config: params.editors_config ?? { type: 'owner_only' },
+          owner_id: params.owner_id ?? user?.id ?? null,
+          user_id: user?.id ?? null,
+          project_key: params.project_key ?? null,
         } as any)
         .select()
         .single();
@@ -76,17 +100,30 @@ export function useCreateSavedFilter() {
       return data;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['workhub', 'saved-filters'] });
-      toast.success('Filter saved');
+      qc.invalidateQueries({ queryKey: ['filters'] });
+      catalystToast.success('Filter saved');
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
+}
+
+export interface UpdateSavedFilterParams {
+  name?: string;
+  filter_config?: Record<string, any>;
+  is_shared?: boolean;
+  jql_query?: string | null;
+  description?: string | null;
+  hub_scope?: HubScope;
+  viewers_config?: SavedFilterFull['viewers_config'];
+  editors_config?: SavedFilterFull['editors_config'];
+  owner_id?: string | null;
+  project_key?: string | null;
 }
 
 export function useUpdateSavedFilter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: Partial<{ name: string; filter_config: Record<string, any>; is_shared: boolean }> }) => {
+    mutationFn: async ({ id, updates }: { id: string; updates: UpdateSavedFilterParams }) => {
       const { error } = await supabase
         .from('ph_saved_filters')
         .update(updates as any)
@@ -94,10 +131,10 @@ export function useUpdateSavedFilter() {
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['workhub', 'saved-filters'] });
-      toast.success('Filter updated');
+      qc.invalidateQueries({ queryKey: ['filters'] });
+      catalystToast.success('Filter updated');
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 }
 
@@ -112,14 +149,35 @@ export function useDeleteSavedFilter() {
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['workhub', 'saved-filters'] });
-      toast.success('Filter deleted');
+      qc.invalidateQueries({ queryKey: ['filters'] });
+      catalystToast.success('Filter deleted');
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 }
 
 // ─── Filters Module hooks (BAU-filters-01) ───────────────────────────────────
+
+/** P0-38: Derive health_status client-side.
+ *  - broken: has jql_query but it contains a bare field name with no value (= "" or ends with operator)
+ *  - stale:  last_used_at older than 30 days OR never used and created > 7 days ago
+ *  - healthy: everything else
+ */
+export function computeFilterHealth(f: Pick<SavedFilterFull, 'jql_query' | 'last_used_at' | 'use_count' | 'created_at'>): FilterHealth {
+  const now = Date.now();
+  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+  const SEVEN_DAYS  = 7  * 24 * 60 * 60 * 1000;
+
+  if (f.jql_query) {
+    const broken = /\b(=|!=|in|not in)\s*"?"?\s*(AND|OR|ORDER|$)/i.test(f.jql_query);
+    if (broken) return 'broken';
+  }
+
+  if (f.last_used_at && now - new Date(f.last_used_at).getTime() > THIRTY_DAYS) return 'stale';
+  if (!f.last_used_at && f.use_count === 0 && now - new Date(f.created_at).getTime() > SEVEN_DAYS) return 'stale';
+
+  return 'healthy';
+}
 
 const FILTERS_QUERY_KEY = (hubScope?: HubScope, projectKey?: string) =>
   ['filters', 'list', hubScope ?? 'all', projectKey ?? 'global'] as const;
@@ -142,9 +200,17 @@ export function useFiltersForProject(projectKey?: string, hubScope?: HubScope) {
         query = query.in('hub_scope', [hubScope, 'both']);
       }
 
+      // Scope to the specific project when a key is provided.
+      // Includes global filters (project_key IS NULL) so shared/org-level filters
+      // remain visible within a project context.
+      if (projectKey) {
+        query = (query as any).or(`project_key.eq.${projectKey},project_key.is.null`);
+      }
+
       const { data, error } = await query;
       if (error) throw new Error(error.message);
-      return (data ?? []) as unknown as SavedFilterFull[];
+      const rows = (data ?? []) as unknown as SavedFilterFull[];
+      return rows.map(f => ({ ...f, health_status: computeFilterHealth(f) }));
     },
     staleTime: 30_000,
   });
@@ -170,7 +236,35 @@ export function useStarFilter() {
       if (error) throw new Error(error.message);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['filters'] }),
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
+  });
+}
+
+/** Toggle subscription on a filter — subscribers receive change notifications */
+export function useToggleFilterSubscription() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ filterId, currentSubscriberIds, userId }: {
+      filterId: string;
+      currentSubscriberIds: string[];
+      userId: string;
+    }) => {
+      const isSubscribed = currentSubscriberIds.includes(userId);
+      const next = isSubscribed
+        ? currentSubscriberIds.filter(id => id !== userId)
+        : [...currentSubscriberIds, userId];
+      const { error } = await supabase
+        .from('ph_saved_filters')
+        .update({ subscriber_ids: next } as any)
+        .eq('id', filterId);
+      if (error) throw new Error(error.message);
+      return { isSubscribed, next };
+    },
+    onSuccess: (result) => {
+      qc.invalidateQueries({ queryKey: ['filters'] });
+      catalystToast.success(result.isSubscribed ? 'Unsubscribed from filter' : 'Subscribed — you\'ll be notified on changes');
+    },
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 }
 
@@ -200,9 +294,9 @@ export function useCopyFilter() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['filters'] });
-      toast.success('Filter copied');
+      catalystToast.success('Filter copied');
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 }
 
@@ -227,8 +321,8 @@ export function useFilterVersions(filterId: string | undefined) {
     queryKey: ['filters', 'versions', filterId],
     queryFn: async () => {
       if (!filterId) return [] as FilterVersion[];
-      const { data, error } = await (supabase as any)
-        .from('ph_filter_versions')
+      const { data, error } = await supabase
+        .from('ph_filter_versions' as any)
         .select('*, changer:profiles!ph_filter_versions_changed_by_fkey(full_name, avatar_url)')
         .eq('filter_id', filterId)
         .order('changed_at', { ascending: false })
@@ -255,8 +349,8 @@ export function useRecordFilterVersion() {
       resultCount?: number;
     }) => {
       const { data: { user } } = await supabase.auth.getUser();
-      const { error } = await (supabase as any)
-        .from('ph_filter_versions')
+      const { error } = await supabase
+        .from('ph_filter_versions' as any)
         .insert({
           filter_id: filterId,
           jql_query: jqlQuery,
@@ -342,9 +436,38 @@ export function useToggleFilterBoardLink() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['filters'] });
       qc.invalidateQueries({ queryKey: ['project-boards'] });
-      toast.success('Board link updated');
+      catalystToast.success('Board link updated');
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
+  });
+}
+
+/**
+ * P0-37 — Fire-and-forget: bump use_count + last_used_at when a saved filter is applied.
+ * Called from BacklogPage and AllWork after a ?filterId param is consumed.
+ */
+export function useRecordFilterUsage() {
+  return useMutation({
+    mutationFn: async (filterId: string) => {
+      const { error } = await supabase.rpc('increment_filter_use_count' as any, {
+        p_filter_id: filterId,
+      });
+      if (error) {
+        // Fallback: manual increment if RPC doesn't exist yet
+        const { data: current } = await supabase
+          .from('ph_saved_filters')
+          .select('use_count')
+          .eq('id', filterId)
+          .single();
+        await supabase
+          .from('ph_saved_filters')
+          .update({
+            use_count: ((current as any)?.use_count ?? 0) + 1,
+            last_used_at: new Date().toISOString(),
+          } as any)
+          .eq('id', filterId);
+      }
+    },
   });
 }
 
@@ -361,8 +484,8 @@ export function useChangeFilterOwner() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['filters'] });
-      toast.success('Filter owner updated');
+      catalystToast.success('Filter owner updated');
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 }

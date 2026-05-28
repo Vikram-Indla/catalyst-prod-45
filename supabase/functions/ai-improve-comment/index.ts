@@ -63,6 +63,29 @@ Comment to polish:
 ${comment || "(empty)"}`;
 }
 
+// ─── suggest_reply prompt ─────────────────────────────────────────────────
+// Generates a concise, professional reply TO a comment, rather than polishing
+// the comment itself. Uses the parent comment body + issue context as signal.
+
+const SUGGEST_REPLY_SYSTEM =
+  "You write professional, concise replies to comments on work items in an enterprise project-management tool. Output plain text only — no markdown, no bullet points, no greetings, no sign-offs. Maximum 3 sentences.";
+
+function buildSuggestReplyPrompt(parentComment: string, issueSummary: string, issueType: string): string {
+  return `Generate a helpful reply to the following comment on a ${issueType || "work item"} titled "${issueSummary || "(untitled)"}".
+
+COMMENT:
+"${parentComment}"
+
+INSTRUCTIONS:
+- Be professional and direct.
+- If the comment asks a question, answer it or acknowledge it.
+- If the comment is informational, acknowledge and add value where possible.
+- Stay within the scope of what the comment says — do not invent new information.
+- Plain text only. No markdown. No greeting. No sign-off. Under 3 sentences.
+
+Reply:`;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -70,14 +93,6 @@ serve(async (req) => {
 
   try {
     const body = await req.json();
-    const currentComment: string =
-      typeof body?.current_comment === "string"
-        ? body.current_comment
-        : typeof body?.current_description === "string"
-          ? body.current_description
-          : "";
-    const issueSummary: string =
-      typeof body?.issue_summary === "string" ? body.issue_summary : "";
 
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) {
@@ -89,6 +104,134 @@ serve(async (req) => {
         },
       );
     }
+
+    // ── suggest_reply branch ─────────────────────────────────────────────
+    // Separate prompt path: generate a NEW reply to a comment, not polish.
+    if (body?.improve_type === "suggest_reply") {
+      const parentComment: string =
+        typeof body?.parent_comment === "string" ? body.parent_comment : "";
+      const replyIssueSummary: string =
+        typeof body?.issue_summary === "string" ? body.issue_summary : "";
+      const replyIssueType: string =
+        typeof body?.issue_type === "string" ? body.issue_type : "";
+
+      const userPromptText = buildSuggestReplyPrompt(
+        parentComment,
+        replyIssueSummary,
+        replyIssueType,
+      );
+
+      const upstreamAbort = new AbortController();
+      const aiResp = await fetch(AI_GATEWAY_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: DEFAULT_MODEL,
+          reasoning_effort: "none",
+          messages: [
+            { role: "system", content: SUGGEST_REPLY_SYSTEM },
+            { role: "user", content: userPromptText },
+          ],
+          temperature: 0.5,
+          max_tokens: 256,
+          stream: true,
+        }),
+        signal: upstreamAbort.signal,
+      });
+
+      if (!aiResp.ok || !aiResp.body) {
+        const errBody = aiResp.body ? await aiResp.text() : "";
+        console.error("ai-improve-comment suggest_reply gateway error:", aiResp.status, errBody);
+        await logGovernance({ action: "ai_suggest_reply", payload: {}, status: "error", error_message: `gateway_${aiResp.status}` });
+        return new Response(
+          JSON.stringify({ error: "gateway_error", message: "AI gateway error" }),
+          { status: aiResp.status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+
+      const reader = aiResp.body.getReader();
+      const stream = new ReadableStream({
+        async start(controller) {
+          const enc = new TextEncoder();
+          const writeEvent = (obj: Record<string, unknown>) => {
+            controller.enqueue(enc.encode(JSON.stringify(obj) + "\n"));
+          };
+          writeEvent({ type: "start" });
+          const dec = new TextDecoder();
+          let buffer = "";
+          let fullText = "";
+          let upstreamErrored = false;
+          try {
+            while (true) {
+              const { value, done } = await reader.read();
+              if (done) break;
+              buffer += dec.decode(value, { stream: true });
+              let sepIdx;
+              while ((sepIdx = buffer.indexOf("\n\n")) !== -1) {
+                const frame = buffer.slice(0, sepIdx).trim();
+                buffer = buffer.slice(sepIdx + 2);
+                if (!frame) continue;
+                for (const line of frame.split("\n")) {
+                  if (!line.startsWith("data:")) continue;
+                  const payload = line.slice(5).trim();
+                  if (payload === "[DONE]") continue;
+                  try {
+                    const parsed = JSON.parse(payload);
+                    if (parsed?.error) {
+                      writeEvent({ type: "error", message: String(parsed.error?.message ?? parsed.error) });
+                      upstreamErrored = true;
+                      break;
+                    }
+                    const delta: string | undefined = parsed?.choices?.[0]?.delta?.content;
+                    if (typeof delta === "string" && delta.length > 0) {
+                      fullText += delta;
+                      writeEvent({ type: "text", delta });
+                    }
+                  } catch { /* skip malformed chunk */ }
+                }
+                if (upstreamErrored) break;
+              }
+              if (upstreamErrored) break;
+            }
+            if (!upstreamErrored) writeEvent({ type: "done", full_text: fullText });
+          } catch (e) {
+            if ((e as DOMException)?.name !== "AbortError") {
+              writeEvent({ type: "error", message: e instanceof Error ? e.message : "Stream error" });
+            }
+          } finally {
+            try { controller.close(); } catch { /* already closed */ }
+          }
+        },
+        cancel(reason) {
+          try { upstreamAbort.abort(reason); } catch { /* swallow */ }
+          try { reader.cancel(reason); } catch { /* swallow */ }
+        },
+      });
+
+      logGovernance({ action: "ai_suggest_reply", payload: { has_summary: replyIssueSummary.length > 0 }, status: "ok" }).catch(() => {});
+
+      return new Response(stream, {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/x-ndjson; charset=utf-8",
+          "Cache-Control": "no-cache, no-transform",
+          "X-Accel-Buffering": "no",
+        },
+      });
+    }
+
+    // ── original polish branch (existing code below) ─────────────────────
+    const currentComment: string =
+      typeof body?.current_comment === "string"
+        ? body.current_comment
+        : typeof body?.current_description === "string"
+          ? body.current_description
+          : "";
+    const issueSummary: string =
+      typeof body?.issue_summary === "string" ? body.issue_summary : "";
 
     const userPromptText = buildUserPrompt(currentComment, issueSummary);
     const upstreamAbort = new AbortController();

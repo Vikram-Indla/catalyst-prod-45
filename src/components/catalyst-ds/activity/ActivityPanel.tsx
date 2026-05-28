@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronDown, Edit, Trash2 } from '@/lib/atlaskit-icons';
 import type {
@@ -16,6 +16,20 @@ import { Comment } from '../comments/Comment';
 import { CommentAction } from '../comments/CommentAction';
 import { CommentEditor, type CommentImproveContext } from '../comments/CommentEditor';
 import { ActivityItem } from './ActivityItem';
+import { DescriptionTranslateBar } from '@/components/shared/title-translate/DescriptionTranslateBar';
+import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
+
+/** Extract translatable plain text from a comment body (ADF JSON or plain text). */
+function commentToPlainText(content: string): string {
+  const v = content.trim();
+  if (v.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(v);
+      if (parsed?.type === 'doc') return adfToPlainText(parsed);
+    } catch { /* fallthrough */ }
+  }
+  return v;
+}
 
 export type ActivityTabKey = 'all' | 'comments' | 'history' | 'worklog';
 
@@ -49,6 +63,13 @@ export interface ActivityPanelProps {
   /** Context for the "Improve writing" wand in the comment composer. */
   improveContext?: CommentImproveContext;
 
+  /**
+   * Jira issue key (e.g. "BAU-5510") — used to cache comment translations.
+   * When provided, each comment shows a CATY translate affordance.
+   * Pass undefined to disable translation (e.g. surfaces without a canonical key).
+   */
+  issueKey?: string;
+
   className?: string;
 }
 
@@ -72,6 +93,7 @@ function ActivityPanel({
   jiraUserMap,
   workItemId,
   improveContext,
+  issueKey,
   className,
 }: ActivityPanelProps) {
   const [activeTab, setActiveTab] = useState<ActivityTabKey>(defaultTab);
@@ -108,6 +130,19 @@ function ActivityPanel({
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
+
+  // Per-comment translation state. Maps commentId → translated plain text.
+  const [translatedComments, setTranslatedComments] = useState<Record<string, string>>({});
+  const handleCommentTranslated = useCallback((id: string, text: string) => {
+    setTranslatedComments(prev => ({ ...prev, [id]: text }));
+  }, []);
+  const handleCommentRevert = useCallback((id: string) => {
+    setTranslatedComments(prev => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  }, []);
 
   return (
     <div className={cn('flex flex-col', className)}>
@@ -198,6 +233,10 @@ function ActivityPanel({
           isSubmitting={isSubmitting}
           isLoading={isLoadingComments}
           workItemId={workItemId}
+          issueKey={issueKey}
+          translatedComments={translatedComments}
+          onCommentTranslated={handleCommentTranslated}
+          onCommentRevert={handleCommentRevert}
         />
       )}
 
@@ -279,36 +318,54 @@ function ActivityPanel({
                   const canEdit = onEditComment && currentUser && c.author.id === currentUser.id;
                   const canDelete = onDeleteComment && currentUser && c.author.id === currentUser.id;
 
+                  // Show translated content when available.
+                  const displayComment: CdsComment = translatedComments[c.id]
+                    ? { ...c, content: translatedComments[c.id] }
+                    : c;
+                  const commentPlainText = commentToPlainText(c.content);
+
                   return (
-                    <Comment
-                      key={item.id}
-                      comment={c}
-                      actions={
-                        (canEdit || canDelete) && !c.isSystem ? (
-                          <>
-                            {canEdit && (
-                              <CommentAction
-                                onClick={() => {
-                                  setEditingId(c.id);
-                                  setEditValue(c.content);
-                                }}
-                                icon={<Edit />}
-                                aria-label="Edit comment"
-                                title="Edit comment"
-                              />
-                            )}
-                            {canDelete && (
-                              <CommentAction
-                                onClick={() => onDeleteComment!(c.id)}
-                                icon={<Trash2 />}
-                                aria-label="Delete comment"
-                                title="Delete comment"
-                              />
-                            )}
-                          </>
-                        ) : undefined
-                      }
-                    />
+                    <div key={item.id}>
+                      <Comment
+                        comment={displayComment}
+                        actions={
+                          (canEdit || canDelete) && !c.isSystem ? (
+                            <>
+                              {canEdit && (
+                                <CommentAction
+                                  onClick={() => {
+                                    setEditingId(c.id);
+                                    setEditValue(c.content);
+                                  }}
+                                  icon={<Edit />}
+                                  aria-label="Edit comment"
+                                  title="Edit comment"
+                                />
+                              )}
+                              {canDelete && (
+                                <CommentAction
+                                  onClick={() => onDeleteComment!(c.id)}
+                                  icon={<Trash2 />}
+                                  aria-label="Delete comment"
+                                  title="Delete comment"
+                                />
+                              )}
+                            </>
+                          ) : undefined
+                        }
+                      />
+                      {!c.isSystem && commentPlainText.trim() && issueKey && (
+                        <DescriptionTranslateBar
+                          plainText={commentPlainText}
+                          issueKey={issueKey}
+                          field={`comment:${c.id}`}
+                          isTranslated={!!translatedComments[c.id]}
+                          onTranslated={(text) => handleCommentTranslated(c.id, text)}
+                          onRevert={() => handleCommentRevert(c.id)}
+                          style={{ paddingLeft: 44, marginTop: 0, marginBottom: 4 }}
+                        />
+                      )}
+                    </div>
                   );
                 }
 

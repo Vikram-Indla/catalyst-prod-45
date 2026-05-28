@@ -15,48 +15,20 @@ import Button from '@atlaskit/button/new';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { JQLEditor } from '@/components/filters/JQLEditor';
 import {
-  JiraFilterAtlaskit,
   emptyFilterValue,
   type JiraFilterValue,
 } from '@/components/shared/JiraFilterAtlaskit';
+import { BasicFilterBar } from '@/components/filters/BasicFilterBar';
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
 import { FilterTemplateGallery } from '@/components/filters/FilterTemplateGallery';
 import { translate } from '@/lib/jql';
 import type { HubType } from './FiltersListPage';
 import type { HubTemplateScope } from '@/lib/filters/filterTemplates';
+import { useFilterOptionPools } from '@/hooks/workhub/useFilterOptionPools';
+import { basicToJql } from '@/lib/filters/basicToJql';
 
 interface CreateFilterPageProps {
   hubType?: HubType;
-}
-
-// Build a JQL string from the basic filter form value
-function basicToJql(v: JiraFilterValue): string {
-  const clauses: string[] = [];
-
-  if (v.status.length === 1)      clauses.push(`status = "${v.status[0]}"`);
-  else if (v.status.length > 1)   clauses.push(`status in (${v.status.map(s => `"${s}"`).join(', ')})`);
-
-  if (v.assignees.length === 1)   clauses.push(`assignee = "${v.assignees[0]}"`);
-  else if (v.assignees.length > 1) clauses.push(`assignee in (${v.assignees.map(a => `"${a}"`).join(', ')})`);
-
-  if (v.priority.length === 1)    clauses.push(`priority = "${v.priority[0]}"`);
-  else if (v.priority.length > 1) clauses.push(`priority in (${v.priority.map(p => `"${p}"`).join(', ')})`);
-
-  if (v.workType.length === 1)    clauses.push(`issuetype = "${v.workType[0]}"`);
-  else if (v.workType.length > 1) clauses.push(`issuetype in (${v.workType.map(t => `"${t}"`).join(', ')})`);
-
-  if (v.labels.length === 1)      clauses.push(`labels = "${v.labels[0]}"`);
-  else if (v.labels.length > 1)   clauses.push(`labels in (${v.labels.map(l => `"${l}"`).join(', ')})`);
-
-  if (v.fixVersions.length === 1)   clauses.push(`fixVersion = "${v.fixVersions[0]}"`);
-  else if (v.fixVersions.length > 1) clauses.push(`fixVersion in (${v.fixVersions.map(f => `"${f}"`).join(', ')})`);
-
-  if (v.created.from)   clauses.push(`created >= "${v.created.from}"`);
-  if (v.created.to)     clauses.push(`created <= "${v.created.to}"`);
-  if (v.updated.from)   clauses.push(`updated >= "${v.updated.from}"`);
-  if (v.updated.to)     clauses.push(`updated <= "${v.updated.to}"`);
-
-  return clauses.join(' AND ');
 }
 
 export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPageProps) {
@@ -65,15 +37,19 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
 
   const [basicValue, setBasicValue]   = useState<JiraFilterValue>(emptyFilterValue);
   const [jqlValue,   setJqlValue]     = useState('');
+  const [catyJql,    setCatyJql]      = useState('');
   const [activeTabIdx, setActiveTabIdx] = useState(0);
   const [saveModalOpen, setSaveModalOpen] = useState(false);
+
+  const pools = useFilterOptionPools(projectKey);
 
   // Derive the effective JQL from whichever tab is active
   // 0=Basic 1=JQL 2=Templates 3=Ask CATY
   const effectiveJql: string = (() => {
     if (activeTabIdx === 0) return basicToJql(basicValue);
     if (activeTabIdx === 1) return jqlValue;
-    return ''; // Templates / Ask CATY — JQL comes from selection or CATY store
+    if (activeTabIdx === 3) return catyJql;
+    return ''; // Templates — JQL set on selection, switches to tab 1
   })();
 
   const filtersCount = effectiveJql.trim()
@@ -133,11 +109,13 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
             {filtersCount > 0 && (
               <span style={{
                 marginLeft: 8,
-                fontSize: 12,
-                background: `var(--ds-background-neutral, #F1F2F4)`,
-                color: token('color.text.subtle'),
+                fontSize: 11,
+                fontWeight: token('font.weight.semibold'),
+                background: `var(--ds-background-inverse-subtle, rgba(255,255,255,0.24))`,
+                color: token('color.text.inverse', '#FFFFFF'),
                 borderRadius: 8,
-                padding: '4px 8px',
+                padding: '0 8px',
+                lineHeight: '20px',
               }}>
                 {filtersCount}
               </span>
@@ -162,27 +140,84 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
           {/* ── Basic ── */}
           <TabPanel>
             <div style={{ paddingTop: 16 }}>
-              <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle') }}>
-                Select field values to build your filter. Switch to JQL to see the generated query.
-              </p>
-              <JiraFilterAtlaskit
+              <BasicFilterBar
                 value={basicValue}
                 onChange={setBasicValue}
+                assignees={pools.assignees}
+                reporters={pools.reporters}
+                statuses={pools.statuses}
+                workTypes={pools.workTypes}
+                fixVersions={pools.fixVersions}
+                labels={pools.labels}
+                isLoading={pools.isLoading}
               />
+
+              {/* Empty state — shown when no criteria selected yet */}
+              {activeTabIdx === 0 && !effectiveJql.trim() && (
+                <div style={{
+                  marginTop: 32,
+                  padding: '32px 24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 8,
+                  background: `var(--ds-surface-sunken, #F7F8F9)`,
+                  borderRadius: 4,
+                  border: `1px dashed ${token('color.border')}`,
+                  textAlign: 'center',
+                }}>
+                  <span style={{ fontSize: 24, lineHeight: 1 }}>⚙</span>
+                  <p style={{
+                    margin: 0,
+                    fontSize: 14,
+                    fontWeight: token('font.weight.semibold'),
+                    color: token('color.text'),
+                  }}>
+                    No criteria selected
+                  </p>
+                  <p style={{
+                    margin: 0,
+                    fontSize: 13,
+                    color: token('color.text.subtle'),
+                    maxWidth: 360,
+                    lineHeight: 1.5,
+                  }}>
+                    Use the chips above to filter by Assignee, Type, Status, Priority or more.
+                    Your JQL query will appear here as you build it.
+                  </p>
+                </div>
+              )}
+
               {effectiveJql.trim() && (
                 <div style={{
                   marginTop: 16,
                   padding: 12,
                   background: `var(--ds-surface-sunken, #F7F8F9)`,
                   borderRadius: 3,
-                  fontFamily: 'monospace',
+                  fontFamily: 'var(--cp-font-mono, monospace)',
                   fontSize: 12,
                   color: token('color.text.subtle'),
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 8,
                 }}>
-                  <span style={{ fontWeight: token('font.weight.semibold'), color: token('color.text.subtlest') }}>
-                    JQL preview:{' '}
+                  <span>
+                    <span style={{ fontWeight: token('font.weight.semibold'), color: token('color.text.subtlest') }}>
+                      JQL:{' '}
+                    </span>
+                    {effectiveJql}
                   </span>
-                  {effectiveJql}
+                  <Button
+                    appearance="subtle"
+                    spacing="compact"
+                    onClick={() => {
+                      setJqlValue(basicToJql(basicValue));
+                      setActiveTabIdx(1);
+                    }}
+                  >
+                    Edit in JQL
+                  </Button>
                 </div>
               )}
             </div>
@@ -209,6 +244,15 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                 value={jqlValue}
                 onChange={setJqlValue}
                 showFilterCount
+                valuePool={{
+                  status:    (pools.statuses   ?? []).map(s => s.label),
+                  assignee:  (pools.assignees  ?? []).map(a => a.label),
+                  reporter:  (pools.reporters  ?? []).map(r => r.label),
+                  issuetype: (pools.workTypes  ?? []).map(w => w.label),
+                  fixVersion:(pools.fixVersions?? []).map(f => f.label),
+                  labels:    (pools.labels     ?? []).map(l => l.label),
+                  priority:  ['Highest', 'High', 'Medium', 'Low', 'Lowest'],
+                }}
               />
             </div>
           </TabPanel>
@@ -239,14 +283,40 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
               <AskCatyInlineBar
                 projectKey={projectKey ?? null}
                 onClose={() => setActiveTabIdx(1)}
+                onJqlGenerated={(jql) => {
+                  setCatyJql(jql);
+                  setJqlValue(jql);
+                }}
               />
-              <p style={{
-                marginTop: 16,
-                fontSize: 12,
-                color: token('color.text.subtlest'),
-              }}>
-                After CATY generates your filter, switch to the JQL tab to review and save it.
-              </p>
+              {catyJql && (
+                <div style={{
+                  marginTop: 16,
+                  padding: 12,
+                  background: `var(--ds-surface-sunken, #F7F8F9)`,
+                  borderRadius: 3,
+                  fontFamily: 'monospace',
+                  fontSize: 12,
+                  color: token('color.text.subtle'),
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 8,
+                }}>
+                  <span>
+                    <span style={{ fontWeight: token('font.weight.semibold'), color: token('color.text.subtlest') }}>
+                      Generated JQL:{' '}
+                    </span>
+                    {catyJql}
+                  </span>
+                  <Button
+                    appearance="subtle"
+                    spacing="compact"
+                    onClick={() => setActiveTabIdx(1)}
+                  >
+                    Review in JQL
+                  </Button>
+                </div>
+              )}
             </div>
           </TabPanel>
         </Tabs>

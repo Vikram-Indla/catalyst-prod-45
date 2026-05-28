@@ -1,7 +1,7 @@
 /**
  * CatalystViewSubtask — Sub-task detail overlay.
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -17,6 +17,8 @@ import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPan
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
+import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
+import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   IssueIcon, StatusLozenge,
@@ -31,7 +33,22 @@ export default function CatalystViewSubtask({
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
+  const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+
+  const handleClone = React.useCallback(() => {
+    if (!issue?.issue_key) return;
+    cloneIssue(issue.issue_key)
+      .then((newKey) => {
+        toast.success(`Cloned as ${newKey}`, {
+          action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+        });
+      })
+      .catch((e: unknown) => {
+        toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+      });
+  }, [issue?.issue_key, onOpenItem]);
 
   /* ── SUBTASK-UNIQUE: parent issue query ──── */
   const { data: parentIssue } = useQuery({
@@ -47,7 +64,15 @@ export default function CatalystViewSubtask({
     },
   });
 
-  const leftContent = (
+  // Memoize leftContent / rightContent / moreMenuItems so that opening a
+  // confirmation dialog (showDeleteDialog, showCloneDialog, etc.) does NOT
+  // cause the entire CatalystViewBase tree to re-render. Without memos, any
+  // state change in this component creates new JSX/array references, which
+  // forces CatalystViewBase (not React.memo'd) to re-diff SubtasksPanel +
+  // LinkedWorkItemsSection + ActivitySection + AttachmentsPanel + SidebarDetails
+  // synchronously — blocking the main thread for ~150–400ms before the dialog
+  // paint. With memos, the refs stay stable and CatalystViewBase bails out.
+  const leftContent = useMemo(() => (
     <>
       {/* SUBTASK-UNIQUE: Parent story context banner */}
       {parentIssue && (
@@ -91,11 +116,13 @@ export default function CatalystViewSubtask({
       <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [issue, itemId, projectKey, onOpenItem, isOpen, parentIssue]);
 
-  const rightContent = (
+  const rightContent = useMemo(() => (
     <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="sub-task" statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />} improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />} />
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [issue, itemId, projectId, projectKey, onOpenItem, onClose, improveHandlers]);
 
   return (
     <>
@@ -112,28 +139,24 @@ export default function CatalystViewSubtask({
         });
       }}
       /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
-      moreMenuItems={[
-        { label: 'Print', onClick: () => window.print() },
-        { label: 'Clone', onClick: () => {
-          if (!issue?.issue_key) return;
-          cloneIssue(issue.issue_key)
-            .then((newKey) => {
-              toast.success(`Cloned as ${newKey}`, {
-                action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
-              });
-            })
-            .catch((e: unknown) => {
-              toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
-            });
-        } },
+      moreMenuItems={useMemo(() => [
+        { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
         { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
-        { label: 'Delete sub-task', onClick: () => mutations.deleteIssue.mutate(), danger: true },
-      ]}
+        { label: 'Delete sub-task', onClick: () => setShowDeleteDialog(true), danger: true },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      ], [issue?.issue_key])}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />
-    {showMoveDialog && issue?.issue_key && (
+      <ConfirmCloneDialog
+        isOpen={showCloneDialog}
+        onClose={() => setShowCloneDialog(false)}
+        issueKey={issue?.issue_key}
+        issueSummary={issue?.summary}
+        onConfirm={handleClone}
+      />
+      {showMoveDialog && issue?.issue_key && (
       <MoveIssueDialog
         isOpen={showMoveDialog}
         onClose={() => setShowMoveDialog(false)}
@@ -143,6 +166,25 @@ export default function CatalystViewSubtask({
         onMoved={onClose}
       />
     )}
+    <ConfirmArchiveDialog
+      isOpen={showArchiveDialog}
+      onClose={() => setShowArchiveDialog(false)}
+      issueSummary={issue?.summary}
+      onConfirm={() => {
+        if (!issue?.issue_key) return;
+        archiveIssue(issue.issue_key)
+          .then(() => { onClose(); })
+          .catch((e: unknown) => { console.error('Archive failed', e); });
+      }}
+    />
+    <ConfirmDeleteDialog
+      isOpen={showDeleteDialog}
+      onClose={() => setShowDeleteDialog(false)}
+      issueKey={issue?.issue_key}
+      issueSummary={issue?.summary}
+      typeLabel="sub-task"
+      onConfirm={() => mutations.deleteIssue.mutate()}
+    />
     </>
   );
 }

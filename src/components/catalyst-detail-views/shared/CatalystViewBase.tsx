@@ -14,22 +14,17 @@
  * renders its own content into the left/right slots.
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CrossIcon from '@atlaskit/icon/core/close';
-import ShareIcon from '@atlaskit/icon/core/share';
 import MoreIcon from '@atlaskit/icon/core/menu';
-import LinkIcon from '@atlaskit/icon/core/link';
-import AkFlag, { FlagGroup } from '@atlaskit/flag';
-import SuccessIcon from '@atlaskit/icon/glyph/check-circle';
 import Modal from '@atlaskit/modal-dialog';
-import Button, { IconButton } from '@atlaskit/button/new';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import { IconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
 import { Skel } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
-import { WatchersChip } from './WatchersChip';
 
 /* ═══════════════════════════════════════════
    ANIMATIONS — injected once
@@ -170,7 +165,8 @@ export function CatalystViewBase({
   // and was visually clipping at 220px; 260 gives it breathing room without crowding the
   // left content area at typical 1140px AllWork panel widths).
   const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 440 : 480);
-  const [showCopyFlag, setShowCopyFlag] = useState(false);
+  /* Portal-based more-menu (fixes @atlaskit/popup v4.16 top-left positioning bug) */
+  const [moreMenuAnchor, setMoreMenuAnchor] = useState<{ top: number; right: number } | null>(null);
   const isDraggingRef = useRef(false);
 
   /* G4: Track recently visited issues in localStorage (catalyst-recent-issues).
@@ -307,7 +303,11 @@ export function CatalystViewBase({
   } : panelMode ? {
     width: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
-    animation: 'cv-panel-in 200ms ease-out',
+    // 2026-05-24 — anti-dance fix: cv-panel-in slide-in intentionally absent here.
+    // The panel is already on-screen; replaying the entrance animation on every
+    // cross-type ticket remount (QA Bug → Story etc.) made the panel jump 20px
+    // sideways. Modal mode keeps its cv-card-in entrance; panel mode has no
+    // entrance animation because it never "enters" mid-session.
     borderLeft: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
   } : {
     width: 1100, maxWidth: '95vw', minHeight: 600, maxHeight: 'calc(100vh - 80px)',
@@ -317,11 +317,6 @@ export function CatalystViewBase({
     animation: 'cv-card-in 250ms ease-out',
   };
 
-  const hoverBtn: React.CSSProperties = {
-    background: 'none', border: 'none', cursor: 'pointer', padding: '8px',
-    borderRadius: 4, color: 'var(--ds-text-subtle, #42526E)', fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center',
-    gap: 6, transition: 'background 0.15s', fontFamily: 'var(--cp-font-body)',
-  };
 
   /* ── Navigation (full-page back) ─────────── */
   const navigate = useNavigate();
@@ -341,25 +336,23 @@ export function CatalystViewBase({
     }
   }, [fullPageMode, projectKey, navigate, onClose]);
 
-  /* ── Share handler ──────────────────────────────────────────────────
-     2026-05-10 fix: Share must always copy the canonical ticket URL,
-     not the hub URL.  Previously gated on `fullPageMode`, which meant
-     modal mode fell through to `window.location.href` — i.e. the page
-     the modal was opened from (e.g. /project-hub/BAU/allwork), not the
-     ticket itself.  Vikram defect: "When I click Share, it shows the
-     hub URL but not the ticket URL."
-     New contract: whenever itemKey + projectKey are known, the share
-     URL is the canonical permalink, regardless of mode.
+  /* ── More-menu toggle ───────────────────────────────────────────────
+     Portal-based: getBoundingClientRect() positions the menu correctly
+     even inside position:fixed / overflow:hidden ancestors.
+     (Replaces @atlaskit/dropdown-menu which has the v4.16 top-left bug.)
+     Uses e.currentTarget (not a ref) because @atlaskit/button/new's
+     IconButton wraps the button in Emotion and the ref lands on the
+     wrapper, not the <button> — so getBoundingClientRect() on the ref
+     is unreliable. currentTarget is always the actual <button> element.
      ──────────────────────────────────────────────────────────────────── */
-  const handleShare = useCallback(() => {
-    if (onShare) { onShare(); return; }
-    const ticketUrl = (itemKey && projectKey)
-      ? `${window.location.origin}/browse/${itemKey}`
-      : null;
-    navigator.clipboard.writeText(ticketUrl ?? window.location.href);
-    setShowCopyFlag(true);
-    setTimeout(() => setShowCopyFlag(false), 3000);
-  }, [onShare, itemKey, projectKey]);
+  const toggleMoreMenu = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    if (moreMenuAnchor) {
+      setMoreMenuAnchor(null);
+    } else {
+      const r = e?.currentTarget?.getBoundingClientRect?.();
+      if (r) setMoreMenuAnchor({ top: r.bottom + 4, right: window.innerWidth - r.right });
+    }
+  }, [moreMenuAnchor]);
 
   /* ── Card contents ─────────────────────────────────────────────────────
      Top bar + body JSX, extracted as a fragment so all three modes
@@ -475,77 +468,83 @@ export function CatalystViewBase({
             })()}
           </div>
 
-          {/* Right actions */}
+          {/* Right actions — More menu + Open-in-fullpage + Close.
+              WatchersChip / CopyLink / Share text button removed 2026-05-26
+              (Vikram: deprecated, redundant). DropdownMenu replaced with a
+              portal-based implementation to fix the @atlaskit/popup v4.16
+              top-left positioning bug (same pattern as ProjectHeaderChip). */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {/* Watchers eye + count — Jira parity. Lives between the
-                nav chevrons and Share. ph_issue_watchers backs it. */}
-            {itemKey && <WatchersChip issueKey={itemKey} />}
 
-            {/* B10: Link issue button — copies canonical ticket permalink to clipboard. */}
-            <Tooltip content="Copy link">
-              <IconButton
-                appearance="subtle"
-                icon={() => <LinkIcon size="small" />}
-                label="Copy link"
-                onClick={() => {
-                  const url = (itemKey && projectKey)
-                    ? `${window.location.origin}/browse/${itemKey}`
-                    : window.location.href;
-                  navigator.clipboard.writeText(url);
-                  setShowCopyFlag(true);
-                  setTimeout(() => setShowCopyFlag(false), 3000);
-                }}
-              />
-            </Tooltip>
-
-            {/* Phase B (2026-04-18): @atlaskit/button with iconBefore.
-                Hover state + typography owned by Atlaskit tokens. */}
-            <Button
-              appearance="subtle"
-              iconBefore={() => <ShareIcon size="small" />}
-              onClick={handleShare}
-            >
-              Share
-            </Button>
-
+            {/* More actions — portal-based custom menu */}
             {moreMenuItems && moreMenuItems.length > 0 && (
-              <DropdownMenu
-                trigger={({ triggerRef, ...props }) => (
+              <>
+                <Tooltip content="More actions">
                   <IconButton
-                    {...props}
-                    ref={triggerRef}
                     appearance="subtle"
                     icon={() => <MoreIcon size="small" />}
                     label="More actions"
+                    isSelected={!!moreMenuAnchor}
+                    onClick={toggleMoreMenu}
                   />
+                </Tooltip>
+                {moreMenuAnchor && ReactDOM.createPortal(
+                  <>
+                    {/* click-outside backdrop */}
+                    <div
+                      onClick={() => setMoreMenuAnchor(null)}
+                      style={{ position: 'fixed', inset: 0, zIndex: 9000 }}
+                    />
+                    <div
+                      role="menu"
+                      aria-label="More actions"
+                      style={{
+                        position: 'fixed',
+                        top: moreMenuAnchor.top,
+                        right: moreMenuAnchor.right,
+                        zIndex: 9001,
+                        background: 'var(--ds-surface-overlay, #FFFFFF)',
+                        borderRadius: 4,
+                        boxShadow: '0 4px 16px rgba(9, 30, 66, 0.16)',
+                        border: '1px solid var(--ds-border, #DFE1E6)',
+                        minWidth: 180,
+                        padding: '6px 0',
+                      }}
+                    >
+                      {moreMenuItems.filter(item => !item.danger).map((item, i) => (
+                        <button
+                          key={i}
+                          role="menuitem"
+                          onClick={() => { item.onClick(); setMoreMenuAnchor(null); }}
+                          style={{ display: 'block', width: '100%', padding: '8px 16px', border: 'none', background: 'transparent', textAlign: 'left', fontSize: 14, cursor: 'pointer', color: 'var(--ds-text, #292A2E)', fontFamily: 'inherit' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                      {moreMenuItems.some(item => item.danger) && (
+                        <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '6px 0' }} />
+                      )}
+                      {moreMenuItems.filter(item => item.danger).map((item, i) => (
+                        <button
+                          key={i}
+                          role="menuitem"
+                          onClick={() => { item.onClick(); setMoreMenuAnchor(null); }}
+                          style={{ display: 'block', width: '100%', padding: '8px 16px', border: 'none', background: 'transparent', textAlign: 'left', fontSize: 14, cursor: 'pointer', color: 'var(--ds-text-danger, #AE2A19)', fontFamily: 'inherit' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  </>,
+                  document.body
                 )}
-                placement="bottom-end"
-              >
-                {/* Standard items (non-danger) */}
-                <DropdownItemGroup>
-                  {moreMenuItems.filter(item => !item.danger).map((item, i) => (
-                    <DropdownItem key={i} onClick={item.onClick}>
-                      {item.label}
-                    </DropdownItem>
-                  ))}
-                </DropdownItemGroup>
-                {/* Danger items in a separate group (visually separated) */}
-                {moreMenuItems.some(item => item.danger) && (
-                  <DropdownItemGroup>
-                    {moreMenuItems.filter(item => item.danger).map((item, i) => (
-                      <DropdownItem key={i} onClick={item.onClick}>
-                        <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>{item.label}</span>
-                      </DropdownItem>
-                    ))}
-                  </DropdownItemGroup>
-                )}
-              </DropdownMenu>
+              </>
             )}
 
-            {/* Open in full page — panel mode only. Navigates to /browse/:issueKey
-                so the user can view the issue in the full CatalystShell layout
-                with a back button (IssueFullPage). Not shown in fullPageMode or
-                modal mode (Close button already visible there). */}
+            {/* Open in full page — panel mode only */}
             {panelMode && !fullPageMode && itemKey && (
               <Tooltip content="Open in full page">
                 <IconButton
@@ -561,10 +560,7 @@ export function CatalystViewBase({
               </Tooltip>
             )}
 
-            {/* Panel toggle — hidden in full-page mode AND panel mode
-                (outer BacklogPage toolbar has Expand/Fullscreen IconButtons).
-                Phase B (2026-04-18): IconButton + Tooltip. SVG kept inline
-                since this is a custom glyph not in @atlaskit/icon. */}
+            {/* Panel toggle — modal mode only */}
             {onTogglePanelMode && !fullPageMode && !panelMode && (
               <Tooltip content={panelMode ? 'Show as modal' : 'Show as side panel'}>
                 <IconButton
@@ -580,14 +576,7 @@ export function CatalystViewBase({
               </Tooltip>
             )}
 
-            {/* Prev/Next removed from right actions — now rendered inline
-                next to the breadcrumb (Jira parity, 2026-04-19). */}
-
-            {/* Close — hidden in full-page mode (back button replaces it)
-                AND hidden in panel mode (outer toolbar owns Close).
-                Phase B (2026-04-18): IconButton + Tooltip. The hand-rolled
-                danger-red hover tint has been dropped for Atlaskit's token-
-                driven hover, consistent with the rest of the drawer chrome. */}
+            {/* Close — modal mode only */}
             {!fullPageMode && !panelMode && (
               <Tooltip content="Close (Esc)">
                 <IconButton
@@ -727,18 +716,6 @@ export function CatalystViewBase({
           {cardContents}
         </div>
       </div>
-      {showCopyFlag && (
-        <div style={{ position: 'fixed', bottom: 24, left: 24, zIndex: 9999 }}>
-          <FlagGroup onDismissed={() => setShowCopyFlag(false)}>
-            <AkFlag
-              id="cv-copy-link"
-              appearance="success"
-              icon={<SuccessIcon label="" primaryColor="var(--ds-icon-success, #22A06B)" />}
-              title="Link copied to clipboard"
-            />
-          </FlagGroup>
-        </div>
-      )}
     </>
   );
 }

@@ -5,7 +5,7 @@
  * Behavior"), Priority, Activity, Sidebar.
  * Defect-unique: Priority + type badge row in left panel.
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { toast } from 'sonner';
 import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { useQueryClient } from '@tanstack/react-query';
@@ -26,6 +26,8 @@ import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPan
 import { EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
+import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
+import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   PRIORITY_STYLES,
@@ -41,10 +43,26 @@ export default function CatalystViewDefect({
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
+  const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+
+  const handleClone = React.useCallback(() => {
+    if (!issue?.issue_key) return;
+    cloneIssue(issue.issue_key)
+      .then((newKey) => {
+        toast.success(`Cloned as ${newKey}`, {
+          action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+        });
+      })
+      .catch((e: unknown) => {
+        toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+      });
+  }, [issue?.issue_key, onOpenItem]);
   const queryClient = useQueryClient();
 
-  const leftContent = (
+  // Memoize so dialog state changes don't re-render CatalystViewBase tree
+  const leftContent = useMemo(() => (
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch B (Defect) · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails (slot-prop pattern). */}
@@ -136,12 +154,13 @@ export default function CatalystViewDefect({
       <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [issue, itemId, projectKey, onOpenItem, isOpen, queryClient]);
 
   /* jira-compare 2026-05-06: Parent restored to Key details (showParent={true}).
      Right rail Parent picker removed 2026-05-03 per Vikram directive.
      Defect's KeyDetails: Parent / Severity / Found in / Fix in / Root Cause / Resolution / Priority. */
-  const rightContent = (
+  const rightContent = useMemo(() => (
     <CatalystSidebarDetails
       issue={issue ?? null} itemId={itemId} projectId={projectId}
       onStatusChange={(st) => mutations.updateStatus.mutate(st)}
@@ -154,7 +173,8 @@ export default function CatalystViewDefect({
       statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [issue, itemId, projectId, projectKey, onOpenItem, onClose, improveHandlers]);
 
   return (
     <>
@@ -171,28 +191,24 @@ export default function CatalystViewDefect({
         });
       }}
       /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
-      moreMenuItems={[
-        { label: 'Print', onClick: () => window.print() },
-        { label: 'Clone', onClick: () => {
-          if (!issue?.issue_key) return;
-          cloneIssue(issue.issue_key)
-            .then((newKey) => {
-              toast.success(`Cloned as ${newKey}`, {
-                action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
-              });
-            })
-            .catch((e: unknown) => {
-              toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
-            });
-        } },
+      moreMenuItems={useMemo(() => [
+        { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
         { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
-        { label: 'Delete defect', onClick: () => mutations.deleteIssue.mutate(), danger: true },
-      ]}
+        { label: 'Delete defect', onClick: () => setShowDeleteDialog(true), danger: true },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      ], [issue?.issue_key])}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />
-    {showMoveDialog && issue?.issue_key && (
+      <ConfirmCloneDialog
+        isOpen={showCloneDialog}
+        onClose={() => setShowCloneDialog(false)}
+        issueKey={issue?.issue_key}
+        issueSummary={issue?.summary}
+        onConfirm={handleClone}
+      />
+      {showMoveDialog && issue?.issue_key && (
       <MoveIssueDialog
         isOpen={showMoveDialog}
         onClose={() => setShowMoveDialog(false)}
@@ -202,6 +218,25 @@ export default function CatalystViewDefect({
         onMoved={onClose}
       />
     )}
+    <ConfirmArchiveDialog
+      isOpen={showArchiveDialog}
+      onClose={() => setShowArchiveDialog(false)}
+      issueSummary={issue?.summary}
+      onConfirm={() => {
+        if (!issue?.issue_key) return;
+        archiveIssue(issue.issue_key)
+          .then(() => { onClose(); })
+          .catch((e: unknown) => { console.error('Archive failed', e); });
+      }}
+    />
+    <ConfirmDeleteDialog
+      isOpen={showDeleteDialog}
+      onClose={() => setShowDeleteDialog(false)}
+      issueKey={issue?.issue_key}
+      issueSummary={issue?.summary}
+      typeLabel="defect"
+      onConfirm={() => mutations.deleteIssue.mutate()}
+    />
     </>
   );
 }

@@ -8,7 +8,7 @@ export { translate } from './translator';
 export type { JqlFilter, FilterMethod } from './translator';
 
 export { getSuggestions } from './autocomplete';
-export type { Suggestion, SuggestionResult, SuggestionType } from './autocomplete';
+export type { Suggestion, SuggestionResult, SuggestionType, ValuePool } from './autocomplete';
 
 /**
  * Apply an array of JQL filter descriptors to a Supabase query builder.

@@ -798,7 +798,6 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
 
   const handleSyncWithJira = async () => {
     close();
-    const dismissId = toast.loading(`Syncing ${project.project_key} from Jira…`);
     try {
       const { data, error } = await supabase.functions.invoke('jira-sync-projects', {
         body: {
@@ -811,7 +810,6 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
           since: '2026-01-01T00:00:00Z',
         },
       });
-      toast.dismiss(dismissId);
       if (error) throw error;
       toast.success(`${project.project_key} sync started — refreshing…`);
       // Invalidate so the row's issue counts + last-sync timestamp refresh.
@@ -823,7 +821,6 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
         console.info('[Sync with Jira]', data);
       }
     } catch (err) {
-      toast.dismiss(dismissId);
       const msg = err instanceof Error ? err.message : 'Unknown error';
       toast.error(`Sync failed: ${msg}`);
     }

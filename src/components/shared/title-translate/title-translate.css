@@ -99,3 +99,87 @@
 @keyframes ttw-logo-spin {
   to { transform: rotate(360deg); }
 }
+
+/* ─── Phase 0: CATY animation upgrade ─────────────────────────────────────── */
+
+/* Wraps all three action states (idle / translating / done) */
+.ttw-action-row {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+  min-height: 20px;
+}
+
+/* STATE 1: "✦ CATY is translating  〰" */
+.ttw-caty-translating {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ds-link, #0c66e4);
+  user-select: none;
+}
+
+.ttw-sparkle {
+  font-size: 10px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* 5-bar staggered waveform */
+.ttw-waveform {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.ttw-waveform span {
+  display: block;
+  width: 2px;
+  background: currentColor;
+  border-radius: 1px;
+  animation: ttw-wave 0.9s ease-in-out infinite;
+}
+.ttw-waveform span:nth-child(1) { animation-delay: 0s; }
+.ttw-waveform span:nth-child(2) { animation-delay: 0.15s; }
+.ttw-waveform span:nth-child(3) { animation-delay: 0.30s; }
+.ttw-waveform span:nth-child(4) { animation-delay: 0.45s; }
+.ttw-waveform span:nth-child(5) { animation-delay: 0.60s; }
+
+@keyframes ttw-wave {
+  0%, 100% { height: 3px; }
+  50%       { height: 14px; }
+}
+
+/* STATE 2: "✦ CATY translated · ↩ Show original" */
+.ttw-translated-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ds-text-subtle, #44546F);
+  user-select: none;
+}
+
+.ttw-sep {
+  color: var(--ds-text-subtlest, #8590A2);
+}
+
+/* "↩ Show original" revert button */
+.ttw-revert-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ds-link, #0c66e4);
+  cursor: pointer;
+  user-select: none;
+}
+.ttw-revert-btn:hover { text-decoration: underline; }

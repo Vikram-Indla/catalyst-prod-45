@@ -6,6 +6,19 @@ import type { CdsComment, CdsSortOrder, CdsUser, CdsQuickReply } from '../types'
 import { Comment } from './Comment';
 import { CommentAction } from './CommentAction';
 import { CommentEditor } from './CommentEditor';
+import { DescriptionTranslateBar } from '@/components/shared/title-translate/DescriptionTranslateBar';
+import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
+
+function commentToPlainText(content: string): string {
+  const v = content.trim();
+  if (v.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(v);
+      if (parsed?.type === 'doc') return adfToPlainText(parsed);
+    } catch { /* fallthrough */ }
+  }
+  return v;
+}
 
 export interface CommentThreadProps {
   comments: CdsComment[];
@@ -22,6 +35,12 @@ export interface CommentThreadProps {
   emptyMessage?: string;
   className?: string;
   workItemId?: string;
+  /** Jira issue key for comment translation caching. Omit to disable translate bars. */
+  issueKey?: string;
+  /** Shared translation state from parent (ActivityPanel). commentId → translated text. */
+  translatedComments?: Record<string, string>;
+  onCommentTranslated?: (id: string, text: string) => void;
+  onCommentRevert?: (id: string) => void;
 }
 
 function CommentThread({
@@ -39,6 +58,10 @@ function CommentThread({
   emptyMessage = 'No comments yet. Start the conversation.',
   className,
   workItemId,
+  issueKey,
+  translatedComments = {},
+  onCommentTranslated,
+  onCommentRevert,
 }: CommentThreadProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
@@ -133,39 +156,56 @@ function CommentThread({
                 }, 50);
               };
 
+              const displayComment: CdsComment = translatedComments[comment.id]
+                ? { ...comment, content: translatedComments[comment.id] }
+                : comment;
+              const commentPlainText = commentToPlainText(comment.content);
+
               return (
-                <Comment
-                  key={comment.id}
-                  comment={comment}
-                  actions={
-                    !comment.isSystem ? (
-                      <>
-                        <CommentAction
-                          onClick={handleQuote}
-                          icon={<Quote />}
-                          aria-label="Quote reply"
-                          title="Quote reply"
-                        />
-                        {canEdit && (
+                <div key={comment.id}>
+                  <Comment
+                    comment={displayComment}
+                    actions={
+                      !comment.isSystem ? (
+                        <>
                           <CommentAction
-                            onClick={() => startEdit(comment)}
-                            icon={<Edit />}
-                            aria-label="Edit comment"
-                            title="Edit comment"
+                            onClick={handleQuote}
+                            icon={<Quote />}
+                            aria-label="Quote reply"
+                            title="Quote reply"
                           />
-                        )}
-                        {canDelete && (
-                          <CommentAction
-                            onClick={() => onDeleteComment!(comment.id)}
-                            icon={<Trash2 />}
-                            aria-label="Delete comment"
-                            title="Delete comment"
-                          />
-                        )}
-                      </>
-                    ) : undefined
-                  }
-                />
+                          {canEdit && (
+                            <CommentAction
+                              onClick={() => startEdit(comment)}
+                              icon={<Edit />}
+                              aria-label="Edit comment"
+                              title="Edit comment"
+                            />
+                          )}
+                          {canDelete && (
+                            <CommentAction
+                              onClick={() => onDeleteComment!(comment.id)}
+                              icon={<Trash2 />}
+                              aria-label="Delete comment"
+                              title="Delete comment"
+                            />
+                          )}
+                        </>
+                      ) : undefined
+                    }
+                  />
+                  {!comment.isSystem && commentPlainText.trim() && issueKey && onCommentTranslated && onCommentRevert && (
+                    <DescriptionTranslateBar
+                      plainText={commentPlainText}
+                      issueKey={issueKey}
+                      field={`comment:${comment.id}`}
+                      isTranslated={!!translatedComments[comment.id]}
+                      onTranslated={(text) => onCommentTranslated(comment.id, text)}
+                      onRevert={() => onCommentRevert(comment.id)}
+                      style={{ paddingLeft: 44, marginTop: 0, marginBottom: 4 }}
+                    />
+                  )}
+                </div>
               );
             })}
           </div>

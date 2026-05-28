@@ -69,6 +69,7 @@ export function FilterSaveModal({
 
   const [name, setName] = useState(filter?.name ?? '');
   const [description, setDescription] = useState(filter?.description ?? '');
+  const [jql, setJql] = useState(filter?.jql_query ?? (initialJql ?? ''));
   const [viewersType, setViewersType] = useState<string>(filter?.viewers_config?.type ?? 'private');
   const [editorsType, setEditorsType] = useState<string>(filter?.editors_config?.type ?? 'owner_only');
   const [crossHub, setCrossHub] = useState<boolean>(filter?.hub_scope === 'both');
@@ -131,11 +132,12 @@ export function FilterSaveModal({
           updates: {
             name: name.trim(),
             description: description.trim() || null,
+            jql_query: jql.trim() || null,
             is_shared: isShared,
             hub_scope: resolvedHubScope,
             viewers_config: viewersConfig,
             editors_config: editorsConfig,
-          } as any,
+          },
         },
         { onSuccess: () => { onSaved?.(filter.id); onClose(); } }
       );
@@ -143,15 +145,15 @@ export function FilterSaveModal({
       createFilter.mutate(
         {
           name: name.trim(),
-          filter_config: { jql_query: initialJql ?? null },
-          jql_query: initialJql ?? null,
+          filter_config: { jql_query: jql.trim() || null },
+          jql_query: jql.trim() || null,
           page: 'filters',
           is_shared: isShared,
           hub_scope: resolvedHubScope,
           viewers_config: viewersConfig,
           editors_config: editorsConfig,
           description: description.trim() || null,
-        } as any,
+        },
         { onSuccess: (data: any) => { onSaved?.(data?.id); onClose(); } }
       );
     }
@@ -165,6 +167,20 @@ export function FilterSaveModal({
 
       <ModalBody>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* JQL query — always editable */}
+          <div>
+            <FieldLabel>JQL query</FieldLabel>
+            <TextArea
+              value={jql}
+              onChange={e => setJql((e.target as HTMLTextAreaElement).value)}
+              placeholder="e.g. project = BAU AND status != Done ORDER BY priority DESC"
+              minimumRows={3}
+              maxHeight="120px"
+              spellCheck={false}
+              style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12 }}
+            />
+          </div>
 
           {/* Name */}
           <div>
@@ -215,6 +231,10 @@ export function FilterSaveModal({
           {viewersType !== 'private' && (
             <div>
               <FieldLabel>Hub visibility</FieldLabel>
+              <p style={{ margin: '0 0 8px', fontSize: 12, color: token('color.text.subtlest') }}>
+                "This hub only" keeps the filter within the current project or product hub.
+                "Both hubs" makes it available as a shared filter across Project Hub and Product Hub.
+              </p>
               <RadioGroup
                 options={HUB_SCOPE_OPTIONS}
                 value={crossHub ? 'both' : 'current'}

@@ -8,6 +8,12 @@
 import React, { useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import Button from '@atlaskit/button/new';
+import PersonIcon         from '@atlaskit/icon/core/person';
+import PeopleGroupIcon    from '@atlaskit/icon/core/people-group';
+import PriorityHighestIcon from '@atlaskit/icon/core/priority-highest';
+import CalendarIcon       from '@atlaskit/icon/core/calendar';
+import BugIcon            from '@atlaskit/icon/core/bug';
+import FilterIcon         from '@atlaskit/icon/core/filter';
 import {
   getFilterTemplates,
   TEMPLATE_CATEGORIES,
@@ -21,16 +27,28 @@ interface Props {
   onSelect: (jql: string, templateName: string) => void;
 }
 
-const CATEGORY_ICONS: Record<FilterTemplate['category'], string> = {
-  'my-work':  '👤',
-  'team':     '👥',
-  'priority': '🔴',
-  'dates':    '📅',
-  'quality':  '🐛',
+/** Atlaskit icon per category — no emoji */
+const CATEGORY_ICON: Record<FilterTemplate['category'], React.ReactNode> = {
+  'my-work':  <PersonIcon          label="" size="small" />,
+  'team':     <PeopleGroupIcon     label="" size="small" />,
+  'priority': <PriorityHighestIcon label="" size="small" />,
+  'dates':    <CalendarIcon        label="" size="small" />,
+  'quality':  <BugIcon             label="" size="small" />,
 };
 
+/** Accent color swatch per category (ADS tokens) */
+const CATEGORY_COLOR: Record<FilterTemplate['category'], string> = {
+  'my-work':  token('color.icon.brand',    '#0C66E4'),
+  'team':     token('color.icon.success',  '#22A06B'),
+  'priority': token('color.icon.danger',   '#AE2A19'),
+  'dates':    token('color.icon.warning',  '#974F0C'),
+  'quality':  token('color.icon.accent.purple', '#6E5DC6'),
+};
+
+type Cat = FilterTemplate['category'] | 'all';
+
 export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props) {
-  const [activeCategory, setActiveCategory] = useState<FilterTemplate['category'] | 'all'>('all');
+  const [activeCategory, setActiveCategory] = useState<Cat>('all');
 
   const templates = getFilterTemplates(
     hubScope,
@@ -40,7 +58,7 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
 
   return (
     <div>
-      {/* Category filter chips */}
+      {/* Category pills — Atlaskit-styled, no emoji */}
       <div style={{
         display: 'flex',
         gap: 8,
@@ -49,25 +67,42 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
       }}>
         {(['all', ...TEMPLATE_CATEGORIES.map(c => c.id)] as const).map(cat => {
           const label = cat === 'all'
-            ? 'All'
+            ? 'All templates'
             : TEMPLATE_CATEGORIES.find(c => c.id === cat)?.label ?? cat;
           const isActive = cat === activeCategory;
           return (
             <button
               key={cat}
-              onClick={() => setActiveCategory(cat as FilterTemplate['category'] | 'all')}
+              type="button"
+              aria-pressed={isActive}
+              onClick={() => setActiveCategory(cat as Cat)}
               style={{
-                padding: '4px 12px',
-                borderRadius: 16,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                height: 28,
+                padding: '0 8px',
+                borderRadius: 4,
                 border: `1px solid ${isActive ? token('color.border.selected') : token('color.border')}`,
                 background: isActive ? `var(--ds-background-selected, #E9F2FE)` : `var(--ds-surface, #FFFFFF)`,
                 color: isActive ? token('color.text.selected') : token('color.text.subtle'),
                 fontSize: 12,
                 fontWeight: isActive ? token('font.weight.semibold') : token('font.weight.regular'),
                 cursor: 'pointer',
+                fontFamily: 'inherit',
+                transition: 'background 80ms, border-color 80ms',
               }}
             >
-              {cat !== 'all' && CATEGORY_ICONS[cat as FilterTemplate['category']] + ' '}
+              {cat !== 'all' && (
+                <span style={{ color: CATEGORY_COLOR[cat as FilterTemplate['category']] }}>
+                  {CATEGORY_ICON[cat as FilterTemplate['category']]}
+                </span>
+              )}
+              {cat === 'all' && (
+                <span style={{ color: token('color.icon') }}>
+                  <FilterIcon label="" size="small" />
+                </span>
+              )}
               {label}
             </button>
           );
@@ -76,9 +111,14 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
 
       {/* Template cards grid */}
       {templates.length === 0 ? (
-        <p style={{ fontSize: 13, color: token('color.text.subtlest'), padding: '16px 0' }}>
+        <div style={{
+          padding: '32px 24px',
+          textAlign: 'center',
+          color: token('color.text.subtlest'),
+          fontSize: 13,
+        }}>
           No templates in this category.
-        </p>
+        </div>
       ) : (
         <div style={{
           display: 'grid',
@@ -96,14 +136,34 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 8,
+                transition: 'box-shadow 120ms',
               }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = `var(--ds-shadow-raised, 0 1px 4px rgba(9,30,66,0.13))`; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}
             >
-              <div style={{
-                fontSize: 13,
-                fontWeight: token('font.weight.semibold'),
-                color: token('color.text'),
-              }}>
-                {CATEGORY_ICONS[t.category]} {t.name}
+              {/* Card header: category icon + name */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 28,
+                  height: 28,
+                  borderRadius: 4,
+                  background: `var(--ds-background-neutral, #F1F2F4)`,
+                  color: CATEGORY_COLOR[t.category],
+                  flexShrink: 0,
+                }}>
+                  {CATEGORY_ICON[t.category]}
+                </span>
+                <span style={{
+                  fontSize: 13,
+                  fontWeight: token('font.weight.semibold'),
+                  color: token('color.text'),
+                  lineHeight: 1.3,
+                }}>
+                  {t.name}
+                </span>
               </div>
 
               <p style={{
@@ -115,6 +175,7 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
                 {t.description}
               </p>
 
+              {/* JQL preview — monospace, sunken */}
               <div style={{
                 fontSize: 11,
                 fontFamily: 'monospace',

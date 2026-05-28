@@ -54,4 +54,19 @@ describe('RecommendedProjectsStrip — View all projects route', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/project-hub/projects');
     expect(mockNavigate).not.toHaveBeenCalledWith('/projects');
   });
+
+  it('navigates to /project-hub/:key when a project card is clicked', () => {
+    render(
+      <MemoryRouter>
+        <RecommendedProjectsStrip projects={PROJECTS} />
+      </MemoryRouter>
+    );
+
+    const bauCard = screen.getByRole('button', { name: /Senaei BAU/i });
+    fireEvent.click(bauCard);
+
+    expect(mockNavigate).toHaveBeenCalledWith('/project-hub/BAU');
+    expect(mockNavigate).not.toHaveBeenCalledWith('/projects/proj-1');
+    expect(mockNavigate).not.toHaveBeenCalledWith('/projects');
+  });
 });

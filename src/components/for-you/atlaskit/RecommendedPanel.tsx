@@ -43,9 +43,12 @@
  * body for "@<First Last>" tokens (as produced by our adfToPlainText fix)
  * and wrapping them in a styled <span>.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
+import Lozenge from '@atlaskit/lozenge';
+import Spinner from '@atlaskit/spinner';
+
 import Tooltip from '@atlaskit/tooltip';
 import TextArea from '@atlaskit/textarea';
 import EditIcon from '@atlaskit/icon/glyph/edit';
@@ -59,6 +62,8 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 import { useWorkItemComments } from '@/hooks/useWorkItemComments';
 import { useCommentReactions } from '@/hooks/useCommentReactions';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import { fetchFunction } from '@/integrations/supabase/functionsRouter';
+import { supabase } from '@/integrations/supabase/client';
 import type { WorkItem, RecommendedMention, RecommendedComment, TabType } from '@/hooks/useForYouData';
 
 interface RecommendedPanelProps {
@@ -117,7 +122,7 @@ function SkeletonLine({ width = '100%', height = 12 }: { width?: string | number
         width,
         height,
         borderRadius: 4,
-        background: 'linear-gradient(90deg, #F0F1F2 25%, #E4E5E7 50%, #F0F1F2 75%)',
+        background: `linear-gradient(90deg, ${token('color.background.neutral', '#F1F2F4')} 25%, ${token('color.background.neutral.subtle', '#F7F8F9')} 50%, ${token('color.background.neutral', '#F1F2F4')} 75%)`,
         backgroundSize: '200% 100%',
         animation: 'catalyst-shimmer 1.4s infinite',
       }}
@@ -149,14 +154,14 @@ function RecommendedPanelSkeleton() {
           >
             {/* Header row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 6, background: '#E4E5E7', flexShrink: 0 }} />
+              <div style={{ width: 32, height: 32, borderRadius: 6, background: token('color.background.neutral', '#F1F2F4'), flexShrink: 0 }} />
               <SkeletonLine width={160} height={14} />
             </div>
             <SkeletonLine width="70%" height={11} />
             {/* Two card rows */}
             {[0, 1].map(j => (
               <div key={j} style={{ display: 'flex', gap: 12, paddingTop: 4 }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#E4E5E7', flexShrink: 0 }} />
+                <div style={{ width: 32, height: 32, borderRadius: '50%', background: token('color.background.neutral', '#F1F2F4'), flexShrink: 0 }} />
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <SkeletonLine width="85%" height={12} />
                   <SkeletonLine width="45%" height={10} />
@@ -280,7 +285,7 @@ export default function RecommendedPanel({
                       visibly bolder than the "mentioned you on" connector. */}
                   <span style={{ color: token('color.text', '#292A2E'), fontWeight: 600 }}>{m.mentionerName}</span>
                   <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), fontWeight: 400 }}>{' '}mentioned you on{' '}</span>
-                  <HeadlineIssueTitle issueType={m.issueType} issueSummary={m.issueSummary} />
+                  <HeadlineIssueTitle issueType={m.issueType} issueSummary={m.issueSummary} issueKey={m.issueKey} issueStatus={m.issueStatus} />
                 </>
               ),
               authorName: m.mentionerName,
@@ -289,6 +294,8 @@ export default function RecommendedPanel({
               issueKey: m.issueKey,
               issueId: m.issueId,
               issueType: m.issueType,
+              issueSummary: m.issueSummary,
+              issueStatus: m.issueStatus,
               projectKey: m.projectKey,
               commentBody: m.commentBody,
               commentCreatedAt: m.commentCreatedAt,
@@ -309,7 +316,7 @@ export default function RecommendedPanel({
                 <>
                   <span style={{ color: token('color.text', '#292A2E'), fontWeight: 600 }}>{c.authorName}</span>
                   <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), fontWeight: 400 }}>{' '}commented on{' '}</span>
-                  <HeadlineIssueTitle issueType={c.issueType} issueSummary={c.issueSummary} />
+                  <HeadlineIssueTitle issueType={c.issueType} issueSummary={c.issueSummary} issueKey={c.issueKey} issueStatus={c.issueStatus} />
                 </>
               ),
               authorName: c.authorName,
@@ -318,6 +325,8 @@ export default function RecommendedPanel({
               issueKey: c.issueKey,
               issueId: c.issueId,
               issueType: c.issueType,
+              issueSummary: c.issueSummary,
+              issueStatus: c.issueStatus,
               projectKey: c.projectKey,
               commentBody: c.commentBody,
               commentCreatedAt: c.commentCreatedAt,
@@ -365,6 +374,8 @@ interface FeedRow {
   issueKey: string;
   issueId: string;
   issueType: string;
+  issueSummary: string;
+  issueStatus?: string;
   projectKey: string;
   commentBody: string;
   commentCreatedAt: string;
@@ -482,7 +493,7 @@ function PurpleCategoryTile() {
         // mode, blowing out next to a dark surface. `color.background.accent.purple.subtler`
         // is the closest ADS token to Jira's home-recommended tile in light
         // mode and flips automatically in dark.
-        background: token('color.background.accent.purple.subtler', 'rgb(201, 124, 244)'),
+        background: token('color.background.accent.purple.subtle', '#C97CF4'),
         flexShrink: 0,
         color: token('color.icon.accent.purple', 'rgb(41, 42, 46)'),
       }}
@@ -519,7 +530,9 @@ function FeedCard({
 }) {
   const [hover, setHover] = React.useState(false);
   const [dismissFocused, setDismissFocused] = React.useState(false);
-  const avatarSrc = row.authorAvatarUrl || resolveAvatarUrl(row.authorName) || undefined;
+  // Local avatar files only — Jira/Gravatar CDN URLs are banned (CLAUDE.md §19)
+  // and fail to load due to CORS. Priority: local slug match → Atlaskit initials fallback.
+  const avatarSrc = resolveAvatarUrl(row.authorName) || undefined;
   const relative = formatRelativeTimestamp(row.commentCreatedAt);
 
   return (
@@ -645,13 +658,16 @@ function FeedCard({
 
         {/* Emoji reactions — Jira parity (DOM probe: data-testid="render-reactions").
             Each chip is 37×24 with a 0.556px border and radius 4. Persisted
-            against `ph_comment_reactions.comment_id` — which is a UUID FK to
-            `ph_comments.id`. We pass `phCommentId` (the resolved UUID), NOT
-            `commentId` (the Jira-side text id). When phCommentId is null —
-            no Catalyst-side row exists yet — the strip renders a disabled
-            placeholder so users see the affordance but can't fire an insert
-            that would silently fail the FK constraint. */}
-        <ReactionStrip phCommentId={row.phCommentId} />
+            against `ph_comment_reactions.comment_id` → `ph_comments.id` UUID.
+            When phCommentId is null (no ph_comments row yet), ReactionStrip
+            creates the row on first click via on-demand upsert so the chips
+            are always interactive. */}
+        <ReactionStrip
+          phCommentId={row.phCommentId}
+          jiraCommentId={row.commentId}
+          issueId={row.issueId}
+          commentBody={row.commentBody}
+        />
 
         {/* Reply composer — Jira parity:
              Row 1: 32px viewer avatar + a bordered textarea wrapper with
@@ -662,7 +678,10 @@ function FeedCard({
         <ReplyComposer
           issueId={row.issueId}
           currentUserName={currentUserName}
-          onSuggest={onOpen}
+          commentBody={row.commentBody}
+          issueSummary={row.issueSummary}
+          issueType={row.issueType}
+          commenterName={row.authorName}
         />
       </div>
     </div>
@@ -682,18 +701,92 @@ function FeedCard({
 //   wrap:   flex:1, border 0.556px solid rgba(11,18,14,0.14), radius 6
 //   inner:  textarea + Reply button (inline-end)
 // The "Suggest a reply" button sits BELOW the bordered wrapper, not inside.
+type SuggestionPhase = 'idle' | 'loading' | 'done' | 'error';
+
 function ReplyComposer({
   issueId,
   currentUserName,
-  onSuggest,
+  commentBody,
+  issueSummary,
+  issueType,
+  commenterName,
 }: {
   issueId: string;
   currentUserName?: string;
-  onSuggest: () => void;
+  commentBody: string;
+  issueSummary: string;
+  issueType: string;
+  /** Name of the person whose comment we are replying to — shown in "Replying to …" header (Jira parity). */
+  commenterName?: string;
 }) {
   const [value, setValue] = useState('');
   const [focused, setFocused] = useState(false);
+  const [suggestionPhase, setSuggestionPhase] = useState<SuggestionPhase>('idle');
+  const abortRef = useRef<AbortController | null>(null);
   const { createCommentAsync, isCreating } = useWorkItemComments('ph_issue', issueId);
+
+  const handleSuggestReply = async () => {
+    if (suggestionPhase === 'loading') return;
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setSuggestionPhase('loading');
+    setValue('');
+    try {
+      const res = await fetchFunction('ai-improve-comment', {
+        method: 'POST',
+        body: JSON.stringify({
+          improve_type: 'suggest_reply',
+          parent_comment: commentBody,
+          issue_summary: issueSummary,
+          issue_type: issueType,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+      });
+      if (!res.ok || !res.body) {
+        setSuggestionPhase('error');
+        toast.error('Could not generate a suggestion. Try again.');
+        return;
+      }
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let buffer = '';
+      let accum = '';
+      while (true) {
+        const { value: chunk, done } = await reader.read();
+        if (done) break;
+        buffer += dec.decode(chunk, { stream: true });
+        let nl;
+        while ((nl = buffer.indexOf('\n')) !== -1) {
+          const line = buffer.slice(0, nl).trim();
+          buffer = buffer.slice(nl + 1);
+          if (!line) continue;
+          try {
+            const ev = JSON.parse(line);
+            if (ev.type === 'text' && typeof ev.delta === 'string') {
+              accum += ev.delta;
+              setValue(accum);
+            } else if (ev.type === 'done') {
+              setSuggestionPhase('done');
+            } else if (ev.type === 'error') {
+              setSuggestionPhase('error');
+              toast.error('AI suggestion failed. Try again.');
+            }
+          } catch { /* skip malformed line */ }
+        }
+      }
+      if (accum.length > 0) {
+        setSuggestionPhase('done');
+        setFocused(true);
+      }
+    } catch (err) {
+      if ((err as DOMException)?.name !== 'AbortError') {
+        setSuggestionPhase('error');
+        toast.error('AI suggestion failed. Try again.');
+      }
+    }
+  };
 
   const userAvatarSrc =
     currentUserName ? resolveAvatarUrl(currentUserName) || undefined : undefined;
@@ -721,8 +814,45 @@ function ReplyComposer({
     }
   };
 
+  // Derived states
+  const isAiActive = suggestionPhase === 'loading' || suggestionPhase === 'done';
+
+  // Gradient ring colours — ADS tokens so they flip with the theme.
+  const gradientColors = [
+    token('color.background.discovery.bold', '#8270DB'),
+    token('color.background.information.bold', '#1D7AFC'),
+    token('color.background.warning.bold', '#E2B203'),
+    token('color.background.discovery.bold', '#8270DB'),
+  ].join(', ');
+
   return (
     <div style={{ marginBlockStart: 8 }}>
+
+      {/* ── "Replying to [Name]" header (Jira parity) ──────────────────────
+          Appears in loading + done states only. Located above the composer
+          row, aligned with the right of the user avatar (marginInlineStart=36).
+          Font: 12/16/400 color.text.subtle per Jira DOM probe 2026-05-28. */}
+      {isAiActive && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            marginBlockEnd: 4,
+            marginInlineStart: 36,
+          }}
+        >
+          <span
+            style={{
+              font: `400 12px/16px "Inter", system-ui, sans-serif`,
+              color: token('color.text.subtle', '#505258'),
+            }}
+          >
+            Replying to {commenterName || 'comment'}
+          </span>
+        </div>
+      )}
+
       <div
         style={{
           display: 'flex',
@@ -730,142 +860,332 @@ function ReplyComposer({
           gap: 4,
         }}
       >
-        {/* Viewer avatar — 32px round. Resolved through the single avatar
-            chokepoint (src/lib/avatars.ts) so it follows the same fallback
-            behaviour (local asset → Atlaskit initials) as every other
-            avatar in the app. */}
+        {/* Viewer avatar — 32px round. */}
         <Tooltip content={userDisplayName}>
           <span style={{ flexShrink: 0, paddingBlockStart: 2 }}>
             <Avatar size="medium" name={userDisplayName} src={userAvatarSrc} />
           </span>
         </Tooltip>
 
-        {/* Bordered composer wrapper.
-            ────────────────────────────
-            Jira parity upgrade: the inner input is now `@atlaskit/textarea`
-            (appearance="none") instead of a raw `<textarea>`. TextArea is the
-            canonical Atlaskit primitive for multi-line text input — it ships
-            with Atlaskit's autosize logic, token-resolved focus + disabled
-            states, RTL support, and the exact 14/20 typography and 8/12 pad
-            the design system mandates.
-            We keep appearance="none" so the OUTER wrapper owns the border
-            + focus ring (Jira's pattern — focus highlights the whole tile,
-            not just the input); the TextArea gives us correct auto-grow
-            and paste/newline handling without the raw-HTML drift. */}
-        <div
-          style={{
-            flex: 1,
-            minWidth: 0,
-            border: `1px solid ${
-              focused
-                ? token('color.border.focused', '#388BFF')
-                : token('color.border', 'rgba(11, 18, 14, 0.14)')
-            }`,
-            borderRadius: 6,
-            background: token('elevation.surface', '#FFFFFF'),
-            transition: 'border-color 150ms ease',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <TextArea
-            appearance="none"
-            value={value}
-            onChange={e => setValue((e.target as HTMLTextAreaElement).value)}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            onKeyDown={e => {
-              // Cmd/Ctrl+Enter submits — mirrors Jira's comment composer.
-              if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-                e.preventDefault();
-                handleSubmit();
-              }
+        {/* ── LOADING state — animated rotating gradient border ────────────
+            Outer div clips the oversized rotating child.
+            Technique: child is inset:-100% + rotates via .catalyst-ai-gradient-spinner.
+            Parent overflow:hidden + border-radius clips it to the pill shape.
+            Inner div is the white surface with radius 6 (outer 8 - padding 2). */}
+        {suggestionPhase === 'loading' && (
+          /* Animated gradient ring — outer div clips; child rotates continuously.
+             Jira parity: the coloured border spins while AI is generating. */
+          <div
+            style={{
+              position: 'relative',
+              flex: 1,
+              minWidth: 0,
+              borderRadius: 8,
+              overflow: 'hidden',
             }}
-            placeholder="Leave a reply"
-            minimumRows={focused || value.length > 0 ? 3 : 1}
-            maxHeight="240px"
-            resize="vertical"
-          />
-          {(focused || value.length > 0) && (
+          >
+            {/* Rotating gradient — oversized so corners are always covered */}
+            <div
+              className="catalyst-ai-gradient-spinner"
+              style={{
+                position: 'absolute',
+                inset: '-100%',
+                background: `conic-gradient(${gradientColors})`,
+              }}
+            />
+            {/* White inner surface — sits above the spinner via z-index */}
             <div
               style={{
+                position: 'relative',
+                // DOM-probed Jira 2026-05-28: gradient ring gap = 4px (CLAUDE.md lesson).
+                // 2→4 also satisfies the 4px spacing grid.
+                margin: 4,
+                background: token('elevation.surface', '#FFFFFF'),
+                borderRadius: 6,
+                zIndex: 1,
                 display: 'flex',
-                justifyContent: 'flex-end',
-                gap: 8,
-                padding: '4px 8px 8px 8px',
-                borderBlockStart: `1px solid ${token(
-                  'color.border',
-                  'rgba(11, 18, 14, 0.08)'
-                )}`,
+                flexDirection: 'column',
               }}
             >
-              <button
-                type="button"
-                onMouseDown={e => e.preventDefault()}
-                onClick={() => {
-                  setValue('');
-                  setFocused(false);
-                }}
+              <TextArea
+                appearance="none"
+                value={value}
+                onChange={e => setValue((e.target as HTMLTextAreaElement).value)}
+                placeholder="Leave a reply"
+                minimumRows={3}
+                maxHeight="240px"
+                resize="vertical"
+                isDisabled
+              />
+              {/* Loading action row: animated dots + Cancel */}
+              <div
                 style={{
-                  all: 'unset',
-                  cursor: 'pointer',
-                  padding: '4px 10px',
-                  borderRadius: 3,
-                  font: `500 14px/20px "Inter", system-ui, sans-serif`,
-                  color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '4px 8px 8px',
+                  borderBlockStart: `1px solid ${token('color.border', '#DFE1E6')}`,
                 }}
               >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onMouseDown={e => e.preventDefault()}
-                onClick={handleSubmit}
-                disabled={!canSubmit}
-                style={{
-                  all: 'unset',
-                  cursor: canSubmit ? 'pointer' : 'not-allowed',
-                  padding: '4px 12px',
-                  borderRadius: 3,
-                  font: `500 14px/20px "Inter", system-ui, sans-serif`,
-                  color: canSubmit
-                    ? token('color.text.inverse', '#FFFFFF')
-                    : token('color.text.disabled', '#B3B9C4'),
-                  background: canSubmit
-                    ? token('color.background.brand.bold', '#0C66E4')
-                    : token('color.background.disabled', '#F1F2F4'),
-                }}
-              >
-                {isCreating ? 'Posting…' : 'Reply'}
-              </button>
+                {/* Animated ellipsis + "Generating" label — Jira parity */}
+                <span
+                  style={{
+                    flex: 1,
+                    font: `400 14px/20px "Inter", system-ui, sans-serif`,
+                    color: token('color.text.subtlest', '#6B778C'),
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                >
+                  <span className="catalyst-ai-dot">·</span>
+                  <span className="catalyst-ai-dot">·</span>
+                  <span className="catalyst-ai-dot">·</span>
+                  <span style={{ marginInlineStart: 4 }}>Generating</span>
+                </span>
+                <button
+                  type="button"
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={() => {
+                    abortRef.current?.abort();
+                    setSuggestionPhase('idle');
+                    setValue('');
+                    setFocused(false);
+                  }}
+                  style={{
+                    all: 'unset',
+                    cursor: 'pointer',
+                    padding: '4px 8px',
+                    borderRadius: 3,
+                    font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                    color: token('color.text.subtle', '#505258'),
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* ── IDLE + DONE state — standard bordered composer ───────────────
+            In the DONE state, labels change: Cancel→Discard, Reply→Insert.
+            The BETA footer only appears in the DONE state. */}
+        {(suggestionPhase === 'idle' || suggestionPhase === 'done' || suggestionPhase === 'error') && (
+          <div
+            style={{
+              flex: 1,
+              minWidth: 0,
+              border: `1px solid ${
+                focused
+                  ? token('color.border.focused', '#388BFF')
+                  : token('color.border', 'rgba(11, 18, 14, 0.14)')
+              }`,
+              borderRadius: 6,
+              background: token('elevation.surface', '#FFFFFF'),
+              transition: 'border-color 150ms ease',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <TextArea
+              appearance="none"
+              value={value}
+              onChange={e => setValue((e.target as HTMLTextAreaElement).value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              onKeyDown={e => {
+                if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
+              placeholder="Leave a reply"
+              minimumRows={focused || value.length > 0 ? 3 : 1}
+              maxHeight="240px"
+              resize="vertical"
+            />
+
+            {/* Button row — visible when focused or has text */}
+            {(focused || value.length > 0) && (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: 8,
+                  padding: '4px 8px 8px 8px',
+                  borderBlockStart: `1px solid ${token('color.border', '#DFE1E6')}`,
+                }}
+              >
+                {/* Cancel (idle) / Discard (done) */}
+                <button
+                  type="button"
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={() => {
+                    setValue('');
+                    setFocused(false);
+                    setSuggestionPhase('idle');
+                  }}
+                  style={{
+                    all: 'unset',
+                    cursor: 'pointer',
+                    padding: '4px 8px',
+                    borderRadius: 3,
+                    font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                    color: token('color.text.subtle', '#505258'),
+                  }}
+                >
+                  {suggestionPhase === 'done' ? 'Discard' : 'Cancel'}
+                </button>
+
+                {/* Reply (idle) / Insert (done) */}
+                {suggestionPhase === 'done' ? (
+                  // "Insert" — collapses the AI result view; user reviews text and hits Reply
+                  <button
+                    type="button"
+                    onMouseDown={e => e.preventDefault()}
+                    onClick={() => setSuggestionPhase('idle')}
+                    style={{
+                      all: 'unset',
+                      cursor: 'pointer',
+                      padding: '4px 12px',
+                      borderRadius: 3,
+                      font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                      color: token('color.text.inverse', '#FFFFFF'),
+                      background: token('color.background.brand.bold', '#0C66E4'),
+                    }}
+                  >
+                    Insert
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onMouseDown={e => e.preventDefault()}
+                    onClick={handleSubmit}
+                    disabled={!canSubmit}
+                    style={{
+                      all: 'unset',
+                      cursor: canSubmit ? 'pointer' : 'not-allowed',
+                      padding: '4px 12px',
+                      borderRadius: 3,
+                      font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                      color: canSubmit
+                        ? token('color.text.inverse', '#FFFFFF')
+                        : token('color.text.disabled', '#B3B9C4'),
+                      background: canSubmit
+                        ? token('color.background.brand.bold', '#0C66E4')
+                        : token('color.background.disabled', '#F1F2F4'),
+                    }}
+                  >
+                    {isCreating ? 'Posting…' : 'Reply'}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* ── BETA disclaimer footer (done state only) ─────────────────
+                Jira parity: border-top separator + flex row with:
+                  Left:  [BETA] pill · ℹ︎ icon · "Uses AI. Verify results."
+                  Right: Caty logo + "Caty" text (replaces Rovo branding)
+                Font/color/padding from Jira DOM probe 2026-05-28:
+                  footer border-top: 0.556px solid rgba(11,18,14,0.14)
+                  footer padding:    4px 12px  ·  height: ~40px
+                  text color:        rgb(41,42,46)  14px/400 */}
+            {suggestionPhase === 'done' && (
+              <div
+                style={{
+                  borderBlockStart: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+                  padding: '4px 12px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  minHeight: 32,
+                }}
+              >
+                {/* Left: BETA pill + info icon + disclaimer */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span
+                    style={{
+                      font: `500 11px/14px "Inter", system-ui, sans-serif`,
+                      color: token('color.text', '#292A2E'),
+                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      borderRadius: 2,
+                      padding: '0 4px',
+                      letterSpacing: '0.04em',
+                    }}
+                  >
+                    BETA
+                  </span>
+                  {/* ℹ︎ info icon — inline SVG, no external dep */}
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <circle cx="8" cy="8" r="7.5" stroke={token('color.text.subtlest', '#6B778C')} />
+                    <path d="M8 7v5" stroke={token('color.text.subtlest', '#6B778C')} strokeWidth="1.5" strokeLinecap="round" />
+                    <circle cx="8" cy="5" r="0.75" fill={token('color.text.subtlest', '#6B778C')} />
+                  </svg>
+                  <span
+                    style={{
+                      font: `400 13px/20px "Inter", system-ui, sans-serif`,
+                      color: token('color.text.subtle', '#505258'),
+                    }}
+                  >
+                    Uses AI. Verify results.
+                  </span>
+                </div>
+
+                {/* Right: Caty branding (replaces Rovo per mandate) */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span
+                    style={{
+                      font: `500 13px/20px "Inter", system-ui, sans-serif`,
+                      color: token('color.text.subtle', '#505258'),
+                    }}
+                  >
+                    Caty
+                  </span>
+                  {/* Catalyst favicon — the correct blue "C" brand mark.
+                      Source: /public/favicon.svg (512×512 blue rounded rect + white C path).
+                      RCA: prior SVG was a hand-rolled purple star — not the Catalyst brand. */}
+                  <img
+                    src="/favicon.svg"
+                    alt="Catalyst"
+                    width="18"
+                    height="18"
+                    style={{ borderRadius: 4, verticalAlign: 'middle', flexShrink: 0 }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* "Suggest a reply" — Jira parity: separate button BELOW the bordered
-          wrapper (not inside). Jira's DOM puts a 6px-padded parent container
-          around the button; on hover Jira reveals a `color.background.neutral.subtle.hovered`
-          tile — which is what Vikram read as "a border" on the button itself.
-          We replicate that: transparent button + 6px-padded parent + soft
-          hover tile on the parent, not the button. */}
-      <SuggestReplyTile onSuggest={onSuggest} />
+      {/* ── "Suggest a reply" tile — HIDDEN in loading/done states ──────────
+          Jira parity: tile disappears once the AI flow is active.
+          Only shown in idle (and error) states.
+          Button: 2px 12px padding, gap 6px per Jira DOM probe 2026-05-28. */}
+      {(suggestionPhase === 'idle' || suggestionPhase === 'error') && (
+        <SuggestReplyTile onSuggest={handleSuggestReply} />
+      )}
     </div>
   );
 }
 
-// Suggest-a-reply hover tile — Jira puts the pencil-button inside a 6px
-// padded container and reveals the neutral hover tile on the container, not
-// the button. That's the "border" Vikram was seeing on the child button.
+// Suggest-a-reply hover tile — Jira parity measurements (DOM probe 2026-05-28):
+//   Button padding snapped to grid: 4px 12px (Jira raw was off-grid, nearest = 4px)
+//   Button gap: 8px (nearest on-grid to Jira's 6px raw)
+//   Button color: rgb(80,82,88) = color.text.subtle
+//   Tile padding: 8px (on-grid, nearest to Jira's raw 6px)
+//   On hover tile bg: color.background.neutral.subtle.hovered
 function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
   const [hover, setHover] = useState(false);
   return (
     <div
       style={{
         marginBlockStart: 8,
-        marginInlineStart: 34 /* 32 avatar + 2 nudge */,
+        marginInlineStart: 34, /* 32 avatar + 2 nudge */
         display: 'inline-flex',
-        padding: 6,
+        padding: 8,
         borderRadius: 3,
         background: hover
           ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.04)')
@@ -879,18 +1199,19 @@ function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
       <button
         type="button"
         onClick={onSuggest}
+        aria-label="Suggest a reply using AI"
         style={{
           all: 'unset',
           cursor: 'pointer',
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
-          padding: '2px 12px',
+          gap: 8,
+          padding: '4px 12px',
           borderRadius: 3,
           font: `500 14px/20px "Inter", system-ui, sans-serif`,
           color: token('color.text.subtle', '#505258'),
           background: 'transparent',
-          border: 'none',
+          border: `1px solid ${token('color.border', '#DFE1E6')}`,
         }}
       >
         <EditIcon label="" size="small" primaryColor="currentColor" />
@@ -927,13 +1248,92 @@ const EMOJI_CHAR: Record<string, string> = Object.fromEntries(
   DEFAULT_REACTIONS.map(r => [r.key, r.char])
 );
 
-function ReactionStrip({ phCommentId }: { phCommentId: string | null }) {
-  // Supabase-backed reactions for this specific ph_comments row. The hook
-  // is null-safe — when phCommentId is null we still render the affordance
-  // (with the buttons disabled) so the user knows reactions exist on the
-  // surface but their write would silently fail the FK.
-  const { reactions, toggleReaction } = useCommentReactions(phCommentId);
-  const isAvailable = phCommentId !== null;
+function ReactionStrip({
+  phCommentId,
+  jiraCommentId,
+  issueId,
+  commentBody,
+}: {
+  phCommentId: string | null;
+  /** Jira-side comment ID (text). Used to upsert ph_comments on first reaction. */
+  jiraCommentId: string;
+  /** ph_issues.id UUID — required for ph_comments.work_item_id FK. */
+  issueId: string;
+  /** Comment body — stored in ph_comments.body on upsert. */
+  commentBody: string;
+}) {
+  // UUID regex — issueId is sometimes a Jira key fallback (e.g. "BAU-123");
+  // only attempt ph_comments upsert when we have a real UUID.
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const issueUuid = UUID_RE.test(issueId) ? issueId : null;
+
+  // resolvedId starts from the pre-fetched phCommentId (may be null when
+  // ph_comments has no row yet). We set it after on-demand upsert.
+  const [resolvedId, setResolvedId] = useState<string | null>(phCommentId);
+
+  // H1: show a spinner in the strip while the on-demand upsert is in-flight
+  // so the user knows their click was registered (P1 from design-critique 2026-05-29).
+  const [isUpserting, setIsUpserting] = useState(false);
+
+  // If phCommentId arrives non-null on a later render (e.g. after a refetch
+  // that found the row), sync it in so we don't create a duplicate.
+  React.useEffect(() => {
+    if (phCommentId && !resolvedId) setResolvedId(phCommentId);
+  }, [phCommentId, resolvedId]);
+
+  const { reactions, toggleReaction } = useCommentReactions(resolvedId);
+
+  // After resolvedId is set (on-demand upsert complete), fire any queued emoji.
+  const pendingEmojiRef = useRef<string | null>(null);
+  React.useEffect(() => {
+    if (resolvedId && pendingEmojiRef.current) {
+      const emoji = pendingEmojiRef.current;
+      pendingEmojiRef.current = null;
+      toggleReaction(emoji);
+    }
+  }, [resolvedId, toggleReaction]);
+
+  // Chips are interactive when issueId is a valid UUID. Also blocked while
+  // the on-demand upsert is in-flight (isUpserting) to prevent double-fires.
+  const isAvailable = issueUuid !== null && !isUpserting;
+
+  /** Ensure a ph_comments row exists, returning its UUID. */
+  const ensurePhComment = async (): Promise<string | null> => {
+    if (resolvedId) return resolvedId;
+    if (!issueUuid) return null;
+    setIsUpserting(true);
+    try {
+      const { data, error } = await (supabase as any)
+        .from('ph_comments')
+        .upsert(
+          { work_item_id: issueUuid, body: commentBody || '', jira_comment_id: jiraCommentId },
+          { onConflict: 'jira_comment_id', ignoreDuplicates: false }
+        )
+        .select('id')
+        .single();
+      if (error) throw error;
+      setResolvedId(data.id);
+      return data.id as string;
+    } catch (err) {
+      console.warn('[ReactionStrip] ensurePhComment failed', err);
+      toast.error('Could not save reaction');
+      return null;
+    } finally {
+      setIsUpserting(false);
+    }
+  };
+
+  /** Toggle a reaction, creating the ph_comments row first if needed. */
+  const handleReact = async (key: string) => {
+    if (resolvedId) {
+      toggleReaction(key);
+      return;
+    }
+    // Queue the emoji and trigger on-demand ph_comments creation.
+    // The pendingEmojiRef useEffect fires the toggle after resolvedId is set.
+    pendingEmojiRef.current = key;
+    await ensurePhComment();
+  };
 
   // Build a lookup map so we can decorate each default chip with its live
   // count + self-reacted state. Extra emojis in `reactions` (outside the
@@ -950,9 +1350,6 @@ function ReactionStrip({ phCommentId }: { phCommentId: string | null }) {
   //   chip bg:       transparent (rest), `color.background.selected` when self-reacted
   //   trigger chip:  32 × 24 with emoji-add glyph (NOT a bare "+")
   //   gap:           4
-  // We route the chip border through ADS `color.border` so dark mode flips
-  // the hairline — previously a hardcoded `rgba(11,18,14,0.14)` literal
-  // disappeared on dark backgrounds.
   const chipBorder = token('color.border', 'rgba(11, 18, 14, 0.14)');
 
   return (
@@ -972,10 +1369,6 @@ function ReactionStrip({ phCommentId }: { phCommentId: string | null }) {
         const live = byEmoji.get(r.key);
         const count = live?.count ?? 0;
         const isActive = !!live?.reactedByMe;
-        // Jira parity: render the full starter strip always so the
-        // affordance is discoverable. Chips with zero count render in a
-        // muted state until someone reacts. Earlier the strip suppressed
-        // unused chips, hiding the reaction surface from new users.
         return (
           <ReactionChip
             key={r.key}
@@ -984,7 +1377,7 @@ function ReactionStrip({ phCommentId }: { phCommentId: string | null }) {
             count={count}
             isActive={isActive}
             disabled={!isAvailable}
-            onClick={() => isAvailable && toggleReaction(r.key)}
+            onClick={() => handleReact(r.key)}
             chipBorder={chipBorder}
           />
         );
@@ -999,17 +1392,21 @@ function ReactionStrip({ phCommentId }: { phCommentId: string | null }) {
           count={r.count}
           isActive={r.reactedByMe}
           disabled={!isAvailable}
-          onClick={() => isAvailable && toggleReaction(r.emoji)}
+          onClick={() => handleReact(r.emoji)}
           chipBorder={chipBorder}
         />
       ))}
-      {/* Trigger chip — Jira parity: 32×24 with emoji-add glyph. A full
-          emoji picker is tracked separately; for now clicking falls back to
-          adding a 🎉 ("party") reaction so the chip is still useful. */}
+      {/* H1: inline spinner while the first-click ph_comments upsert is in-flight */}
+      {isUpserting && (
+        <span style={{ display: 'inline-flex', alignItems: 'center', width: 24, height: 24 }}>
+          <Spinner size="small" />
+        </span>
+      )}
+      {/* Trigger chip — Jira parity: 32×24 with emoji-add glyph. */}
       <button
         type="button"
-        aria-label={isAvailable ? 'Add reaction' : 'Reactions unavailable for this comment'}
-        onClick={() => isAvailable && toggleReaction('party')}
+        aria-label="Add reaction"
+        onClick={() => handleReact('party')}
         disabled={!isAvailable}
         style={{
           all: 'unset',
@@ -1024,7 +1421,7 @@ function ReactionStrip({ phCommentId }: { phCommentId: string | null }) {
           color: token('color.text.subtle', '#626F86'),
           background: 'transparent',
           transition: 'background-color 120ms ease',
-          opacity: isAvailable ? 1 : 0.4,
+          opacity: 1,
         }}
       >
         <EmojiAddIcon label="" size="small" primaryColor="currentColor" />
@@ -1052,7 +1449,8 @@ function ReactionChip({
       onClick={onClick}
       disabled={disabled}
       aria-pressed={isActive}
-      aria-label={disabled ? `${label} (unavailable)` : label}
+      // Jira pattern: "React with fire emoji" (more descriptive than bare "Fire")
+      aria-label={disabled ? `${label} (unavailable)` : `React with ${label.toLowerCase()} emoji`}
       style={{
         all: 'unset',
         cursor: disabled ? 'not-allowed' : 'pointer',
@@ -1073,9 +1471,12 @@ function ReactionChip({
           : 'transparent',
         borderRadius: 4,
         fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
-        fontSize: 16,
+        // DOM-probed Jira 2026-05-29: emoji chip font-size = 13.3px (≈13). 16 was Catalyst opinion.
+        fontSize: 13,
         lineHeight: 1,
-        opacity: disabled ? 0.4 : count === 0 && !isActive ? 0.6 : 1,
+        // DOM-probed Jira 2026-05-29: idle chips are opacity:1 — dimming to 0.6 when
+        // count===0 made chips look disabled. Only truly-disabled chips get 0.4.
+        opacity: disabled ? 0.4 : 1,
         transition: 'background-color 120ms ease, border-color 120ms ease, opacity 120ms ease',
       }}
     >
@@ -1105,18 +1506,45 @@ function ReactionChip({
 function HeadlineIssueTitle({
   issueType,
   issueSummary,
+  issueKey,
+  issueStatus,
 }: {
   issueType: string;
   issueSummary: string;
+  issueKey?: string;
+  issueStatus?: string;
 }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, verticalAlign: 'middle' }}>
+    // Jira parity: issue reference renders as an Atlaskit `inline-card-resolved-view`
+    // DOM probe 2026-05-29 on digital-transformation.atlassian.net/jira/for-you:
+    //   hairline border (color.border token), borderRadius 4, white surface bg.
+    // The bordered pill is the "grey border on the ticket" the user sees in Jira.
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 6,
+      verticalAlign: 'middle',
+      flexWrap: 'wrap',
+      border: `1px solid ${token('color.border', 'rgba(11, 18, 14, 0.14)')}`,
+      borderRadius: 4,
+      backgroundColor: token('elevation.surface', '#FFFFFF'),
+      padding: '0px 4px',
+    }}>
       <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
         <WorkItemIcon type={normalizeIconType(issueType)} size={16} />
       </span>
-      <span style={{ fontWeight: 400, color: token('color.text', '#292A2E') }}>
-        {issueSummary}
+      {/* Jira parity: entity title renders as a blue link with KEY prefix.
+          DOM probe 2026-05-28: Jira shows "KEY: TITLE" in link color. */}
+      <span style={{ fontWeight: 400, color: token('color.link', '#0052CC') }}>
+        {issueKey ? `${issueKey}: ` : ''}{issueSummary}
       </span>
+      {/* Jira parity: status lozenge displayed inline after the entity title.
+          Renders as a default grey pill (DOM probe: bg rgb(221,222,225)). */}
+      {issueStatus && (
+        <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <Lozenge appearance="default">{issueStatus}</Lozenge>
+        </span>
+      )}
     </span>
   );
 }
@@ -1249,23 +1677,14 @@ function renderInlineAtMentions(text: string): React.ReactNode[] {
 }
 
 function MentionChip({ label }: { label: string }) {
-  // Jira parity (DOM probe 2026-04-24 — Atlaskit Lozenge-style @-mention):
-  //   padding:      0px 4.2px 2px 3.22px (from pf-editor ADF-mention span)
-  //   line-height:  20px (matches parent comment body line-height — earlier
-  //                 24px bumped the line rhythm of a 20px paragraph)
-  //   font:         400 14/20 Atlassian Sans
-  //   radius:       20
-  //   bg:           color.background.neutral — was `rgba(5,21,36,0.06)`
-  //                 literal which stays near-black in dark mode and disappears
-  //                 against the dark surface (CLAUDE.md ADS token rule).
-  //   color:        color.text.subtle
-  // Display-only — the chip is non-interactive in the feed (unlike Jira's
-  // hover-card trigger, which we haven't built yet).
+  // Jira parity — Atlaskit Lozenge-style @-mention chip.
+  // Compact horizontal padding, 20px line-height to match parent comment body.
+  // bg: color.background.neutral. Display-only (no hover-card yet).
   return (
     <span
       style={{
         display: 'inline-block',
-        padding: '0 4.2px 2px 3.22px',
+        padding: '0 4px',
         borderRadius: 20,
         background: token('color.background.neutral', 'rgba(5, 21, 36, 0.06)'),
         color: token('color.text.subtle', '#505258'),

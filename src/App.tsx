@@ -4,7 +4,7 @@ import { ENABLE_FULL_APP } from './lib/featureFlags';
 
 
 // ─── Core infrastructure (always loaded) ────────────────────────────
-import { Toaster } from "@/components/ui/sonner";
+import { FlagsHost } from '@/components/shared/JiraTable';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
@@ -14,9 +14,9 @@ import { AdsThemeProvider } from "@/theme/ads";
 import { AuthProvider } from "./lib/auth";
 import { NavigationProvider } from "./contexts/NavigationContext";
 import { ProcessStepsProvider } from "./contexts/ProcessStepsContext";
-import { CatalystToastProvider } from "./contexts/CatalystToastContext";
 import { FeatureFlagProvider } from "./contexts/FeatureFlagContext";
 import { WorkflowProvider } from "./lib/workflows";
+import { LanguageProvider } from "./contexts/LanguageContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { PreviewRecoveryBanner } from "./components/PreviewRecoveryBanner";
@@ -25,7 +25,7 @@ import { UWVProvider } from "@/components/universal-work-view/UWVContext";
 
 const CatalystLoginPageLazy = lazy(() => import("./components/auth/login").then(m => ({ default: m.CatalystLoginPage })));
 const CatalystShell = lazy(() => import("./components/layout/CatalystShell").then(m => ({ default: m.CatalystShell })));
-const HotToaster = lazy(() => import('react-hot-toast').then(m => ({ default: m.Toaster })));
+// HotToaster removed — replaced by FlagsHost (@atlaskit/flag) below
 // For You surface — Atlaskit/Jira-parity rebuild (Apr 2026).
 // Legacy `./pages/ForYouPage` remains in the tree for reference but is no
 // longer mounted on any route. Safe to delete once QA signs off on the new
@@ -133,16 +133,15 @@ function App() {
        * defaults; the provider only supplies overrides.
        */}
       <IntlProvider locale="en" messages={{}}>
-      <Toaster />
-      <Suspense fallback={null}><HotToaster position="bottom-right" /></Suspense>
+      <FlagsHost />
       <UWVProvider>
       <AuthProvider>
         
+        <LanguageProvider>
         <FeatureFlagProvider>
         <WorkflowProvider>
         <NavigationProvider>
           <ProcessStepsProvider>
-          <CatalystToastProvider position="top-right" maxToasts={5}>
               <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
               <Routes>
                 <Route path="/auth" element={<S><CatalystLoginPageLazy /></S>} />
@@ -209,11 +208,11 @@ function App() {
                 <Route path="*" element={<S><NotFound /></S>} />
               </Routes>
               </BrowserRouter>
-          </CatalystToastProvider>
           </ProcessStepsProvider>
         </NavigationProvider>
         </WorkflowProvider>
         </FeatureFlagProvider>
+        </LanguageProvider>
       </AuthProvider>
       </UWVProvider>
       </IntlProvider>

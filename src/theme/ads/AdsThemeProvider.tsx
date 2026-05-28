@@ -105,6 +105,10 @@ export function AdsThemeProvider({ children }: AdsThemeProviderProps) {
       dark: 'dark',
       spacing: 'spacing',
       typography: 'typography',
+      // shape: 'shape' activates --ds-radius-* CSS variables (border-radius tokens).
+      // Without this, @atlaskit/flag and other ADS components fall back to 3px
+      // static values and the ADS card/flag shape looks blocky (not rounded).
+      shape: 'shape',
       customColors: atlaskitCustomColors(mode) as unknown as Record<string, string>,
     } as Parameters<typeof setGlobalTheme>[0]);
   }, [isDark]);

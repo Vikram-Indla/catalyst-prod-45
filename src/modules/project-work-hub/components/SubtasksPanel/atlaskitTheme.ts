@@ -22,6 +22,16 @@ import { useTheme } from '@/hooks/useTheme';
 export function useAtlaskitThemeSync(): void {
   const { isDark } = useTheme();
   useEffect(() => {
-    setGlobalTheme({ colorMode: isDark ? 'dark' : 'light' });
+    // Must mirror ALL parameters that AdsThemeProvider.tsx passes to setGlobalTheme.
+    // Passing only `colorMode` resets data-theme and strips tokens set by the root
+    // provider (e.g. `shape:shape` → --ds-radius-* for @atlaskit/flag corners).
+    void setGlobalTheme({
+      colorMode: isDark ? 'dark' : 'light',
+      light: 'light',
+      dark: 'dark',
+      spacing: 'spacing',
+      typography: 'typography',
+      shape: 'shape',
+    } as Parameters<typeof setGlobalTheme>[0]);
   }, [isDark]);
 }

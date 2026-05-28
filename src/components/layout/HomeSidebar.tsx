@@ -26,18 +26,10 @@
  *     not a project, surfacing it was misleading).
  */
 import React, { useMemo } from 'react';
+import { token } from '@atlaskit/tokens';
 import ClockIcon from '@atlaskit/icon/core/clock';
 import FolderOpenIcon from '@atlaskit/icon/core/folder-open';
-import GridIcon from '@atlaskit/icon/core/grid';
-import BranchIcon from '@atlaskit/icon/core/branch';
-import DashboardIcon from '@atlaskit/icon/core/dashboard';
-import SpreadsheetIcon from '@atlaskit/icon/core/spreadsheet';
-import GoalIcon from '@atlaskit/icon/core/goal';
-import BoardIcon from '@atlaskit/icon/core/board';
-import LocationIcon from '@atlaskit/icon/core/location';
-import ChartBarIcon from '@atlaskit/icon/core/chart-bar';
-import SettingsIcon from '@atlaskit/icon/core/settings';
-import CalendarIcon from '@atlaskit/icon/core/calendar';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
 
@@ -89,8 +81,28 @@ function formatTimestamp(visitedAtMs: number): string {
 }
 
 /**
- * Title renderer — "Project Name › Section" on line 1, timestamp on line 2.
- * Uses ADS tokens so it themes correctly in dark mode.
+ * Title renderer — ADS split-hierarchy layout (2026-05-28 identity redesign).
+ *
+ * Two-line structure with clear typographic weight separation:
+ *   Line 1: Section name — dominant (14px/500/color.text)
+ *   Line 2: Project key (left) + Timestamp (right) — subordinate meta
+ *
+ * Design rationale:
+ * - "All work" is what you want to jump back to — it's the PRIMARY identifier
+ * - "BAU" is WHICH project — already implied by context, shown as quiet meta
+ * - "7h ago" is WHEN — useful for recency scanning, pushed right so it
+ *    doesn't compete with the destination name
+ * - No "›" separator — the two-line vertical split IS the hierarchy;
+ *   symbols that encode structure Tufte-style add zero data-ink value
+ *
+ * ADS tokens used:
+ *   color.text          (#292A2E)  — section name (primary)
+ *   color.text.subtle   (#44546F)  — project key (secondary)
+ *   color.text.subtlest (#626F86)  — timestamp (tertiary)
+ *   font.size.100       (14px)     — body
+ *   font.size.050       (11px)     — micro/labels
+ * Source: https://atlassian.design/foundations/typography
+ *         https://atlassian.design/foundations/color
  */
 function LocationRowTitle({ location }: { location: RecentLocation }) {
   return (
@@ -99,94 +111,122 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
-        gap: 2,
+        gap: 0,
         minWidth: 0,
-        maxWidth: '100%',
+        width: '100%',
       }}
     >
-      {/* Project Key › Section — primary */}
+      {/* Line 1: Section name — the destination, primary weight */}
       <span
         style={{
-          color: 'var(--ds-text, #292A2E)',
+          color: token('color.text', '#292A2E'),
           fontWeight: 500,
-          fontSize: '13px',
+          // ADS font.size.100 = 14px body
+          // Source: https://atlassian.design/foundations/typography
+          fontSize: token('font.size.100', '14px'),
           lineHeight: '18px',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
-          flex: 1,
+          width: '100%',
         }}
       >
-        {location.projectKey} › {location.sectionLabel}
+        {location.sectionLabel}
       </span>
 
-      {/* Timestamp — secondary */}
+      {/* Line 2: Project key (left) + Timestamp (right) — context meta */}
       <span
         style={{
-          color: 'var(--ds-text-subtlest, #626F86)',
-          fontWeight: 400,
-          fontSize: '11px',
-          lineHeight: '16px',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
+          display: 'flex',
+          alignItems: 'center',
+          width: '100%',
+          gap: 0,
+          marginTop: 0,
         }}
       >
-        {formatTimestamp(location.visitedAt)}
+        {/* Project key — subtle, secondary context */}
+        <span
+          style={{
+            color: token('color.text.subtle', '#44546F'),
+            fontWeight: 400,
+            // ADS font.size.050 = 11px micro/rail labels
+            // Source: https://atlassian.design/foundations/typography
+            fontSize: token('font.size.050', '11px'),
+            lineHeight: '16px',
+            flex: 1,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {location.projectKey}
+        </span>
+
+        {/* Timestamp — subtlest, pushed to right edge */}
+        <span
+          style={{
+            color: token('color.text.subtlest', '#626F86'),
+            fontWeight: 400,
+            // ADS font.size.050 = 11px
+            fontSize: token('font.size.050', '11px'),
+            lineHeight: '16px',
+            flexShrink: 0,
+            paddingLeft: token('space.050', '4px'),
+          }}
+        >
+          {formatTimestamp(location.visitedAt)}
+        </span>
       </span>
     </span>
   );
 }
 
-// ─── Section-type icon map ────────────────────────────────────────────────────
-// Maps sectionLabel → Lucide icon component. This replaces the repeated
-// project avatar so each recent row communicates WHERE you're going (view type)
-// rather than WHICH project — the project key text already covers that.
-// Matching is case-insensitive substring so "All work", "all-work" etc. all hit.
-type LucideIcon = React.FC<{ size?: number; strokeWidth?: number; style?: React.CSSProperties }>;
+// ─── Project icon factory ─────────────────────────────────────────────────────
+// Each Recent row uses ProjectIcon — the canonical single-source-of-truth
+// project tile (src/components/shared/ProjectIcon.tsx).
+//
+// Resolution order (handled inside ProjectIcon):
+//   0. Admin override (/admin/icons upload) — wins for ANY project key
+//   1. PROJECT_AVATAR_REGISTRY — 18 bundled PNGs keyed by project key
+//   2. avatarUrl — Jira-uploaded project image
+//   3. iconName + color — Lucide icon on tinted square (ph_projects fields)
+//   4. Grey Folder fallback — NEVER a letter tile
+//
+// RCA (2026-05-29): Prior implementation used a hand-rolled letter badge
+// that violated mem://constraints/canonical-project-icons rule ("NEVER
+// from a single-letter initial tile") and bypassed the admin icon override
+// system entirely. ProjectIcon is the correct primitive.
+//
+// Component cache keyed by projectKey so React reconciles correctly.
+const PROJECT_ICON_COMPONENTS = new Map<
+  string,
+  React.FC<{ className?: string; style?: React.CSSProperties }>
+>();
 
-// Icons MUST match ProjectHubSidebar.tsx exactly — same section, same icon.
-// dashboard→DashboardIcon, boards→GridIcon, backlog→BoardIcon, allwork→BranchIcon
-const SECTION_ICON_MAP: Array<[RegExp, LucideIcon]> = [
-  [/all.?work/i,  BranchIcon],      // allwork → BranchIcon
-  [/backlog/i,    BoardIcon],       // backlog → BoardIcon
-  [/\bboard/i,    GridIcon],        // boards → GridIcon (\b prevents matching "dashboard")
-  [/dashboard/i,  DashboardIcon],
-  [/report/i,     ChartBarIcon],
-  [/setting/i,    SettingsIcon],
-  [/calendar/i,   CalendarIcon],
-  [/roadmap/i,    LocationIcon],
-  [/list/i,       SpreadsheetIcon],
-  [/issue/i,      GoalIcon],
-];
+function getProjectIconComponent(location: RecentLocation) {
+  const cached = PROJECT_ICON_COMPONENTS.get(location.projectKey);
+  if (cached) return cached;
 
-function iconForSection(label: string): LucideIcon {
-  for (const [pattern, Icon] of SECTION_ICON_MAP) {
-    if (pattern.test(label)) return Icon;
-  }
-  return FolderOpenIcon;
-}
-
-// Stable component cache keyed by section label so React reconciles correctly.
-const SECTION_ICON_COMPONENTS = new Map<string, React.FC<{ className?: string; style?: React.CSSProperties }>>();
-
-function getSectionIconComponent(label: string) {
-  let cached = SECTION_ICON_COMPONENTS.get(label);
-  if (!cached) {
-    const Icon = iconForSection(label);
-    const Component: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
-      <span
-        className={className}
-        style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--ds-icon-subtle, var(--cp-text-secondary, #6B778C))', ...style }}
-      >
-        <Icon size={16} strokeWidth={1.75} />
-      </span>
-    );
-    Component.displayName = `SectionIcon(${label})`;
-    SECTION_ICON_COMPONENTS.set(label, Component);
-    cached = Component;
-  }
-  return cached;
+  const { projectKey, projectName, iconName, color } = location;
+  // size="small" = 20px — matches the 20px icon slot in SidebarBase.
+  // variant="solid" = filled tile matching Jira's project-card style.
+  // Source: https://atlassian.design/components/avatar (square pattern)
+  const Component: React.FC<{ className?: string; style?: React.CSSProperties }> = ({
+    className,
+  }) => (
+    <ProjectIcon
+      projectKey={projectKey}
+      iconName={iconName}
+      color={color}
+      name={projectName}
+      size="small"
+      variant="solid"
+      className={className}
+    />
+  );
+  Component.displayName = `ProjectIconWrapper(${projectKey})`;
+  PROJECT_ICON_COMPONENTS.set(projectKey, Component);
+  return Component;
 }
 
 export default function HomeSidebar({
@@ -233,7 +273,7 @@ export default function HomeSidebar({
           id: `recent-${loc.path}`,
           title: <LocationRowTitle location={loc} />,
           path: loc.path,
-          icon: getSectionIconComponent(loc.sectionLabel),
+          icon: getProjectIconComponent(loc),
         }));
 
     return {

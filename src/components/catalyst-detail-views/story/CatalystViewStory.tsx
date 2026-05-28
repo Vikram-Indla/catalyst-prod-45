@@ -13,7 +13,7 @@
  * types, shared-components and the section files are still consumed
  * across the Catalyst views.
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -39,6 +39,8 @@ import {
 import type { PhAttachment } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
+import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
+import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewStory({
@@ -51,7 +53,22 @@ export default function CatalystViewStory({
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const { user } = useAuth();
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
+  const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+
+  const handleClone = React.useCallback(() => {
+    if (!issue?.issue_key) return;
+    cloneIssue(issue.issue_key)
+      .then((newKey) => {
+        toast.success(`Cloned as ${newKey}`, {
+          action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+        });
+      })
+      .catch((e: unknown) => {
+        toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+      });
+  }, [issue?.issue_key, onOpenItem]);
 
   /* ── Catalyst-vs-Jira source split ─────────
      Mirrors StoryDetailModal line 291. When ph_issues row carries the
@@ -96,7 +113,8 @@ export default function CatalystViewStory({
     });
   }, [isOpen, issue?.id, issue?.summary, issue?.issue_key, issue?.project_key, issue?.project_name, projectId, projectKey, trackRecent]);
 
-  const leftContent = (
+  // Memoize so dialog state changes (showDeleteDialog etc.) don't re-render CatalystViewBase tree
+  const leftContent = useMemo(() => (
     <>
       <CatalystTitleEditor
         issue={issue ?? null}
@@ -165,9 +183,10 @@ export default function CatalystViewStory({
 
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [issue, itemId, projectKey, onOpenItem, isOpen, attachments, workItemSource, user, projectId]);
 
-  const rightContent = (
+  const rightContent = useMemo(() => (
     <CatalystSidebarDetails
       issue={issue ?? null}
       itemId={itemId}
@@ -187,7 +206,8 @@ export default function CatalystViewStory({
       statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [issue, itemId, projectId, projectKey, onOpenItem, onClose, improveHandlers]);
 
   return (
     <>
@@ -211,24 +231,13 @@ export default function CatalystViewStory({
           });
         }}
         /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
-        moreMenuItems={[
-          { label: 'Print', onClick: () => window.print() },
-          { label: 'Clone', onClick: () => {
-            if (!issue?.issue_key) return;
-            cloneIssue(issue.issue_key)
-              .then((newKey) => {
-                toast.success(`Cloned as ${newKey}`, {
-                  action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
-                });
-              })
-              .catch((e: unknown) => {
-                toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
-              });
-          } },
+        moreMenuItems={useMemo(() => [
+          { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
           { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
           { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
-          { label: 'Delete story', onClick: () => mutations.deleteIssue.mutate(), danger: true },
-        ]}
+          { label: 'Delete story', onClick: () => setShowDeleteDialog(true), danger: true },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        ], [issue?.issue_key])}
         onTogglePanelMode={onTogglePanelMode}
         navigationItems={navigationItems}
         currentItemId={itemId}
@@ -237,6 +246,13 @@ export default function CatalystViewStory({
         rightContent={rightContent}
         isLoading={isLoading}
         isNotFound={!isLoading && issue === null}
+      />
+      <ConfirmCloneDialog
+        isOpen={showCloneDialog}
+        onClose={() => setShowCloneDialog(false)}
+        issueKey={issue?.issue_key}
+        issueSummary={issue?.summary}
+        onConfirm={handleClone}
       />
       {showMoveDialog && issue?.issue_key && (
         <MoveIssueDialog
@@ -258,6 +274,14 @@ export default function CatalystViewStory({
             .then(() => { toast.success('Issue archived'); onClose(); })
             .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
         }}
+      />
+      <ConfirmDeleteDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        issueKey={issue?.issue_key}
+        issueSummary={issue?.summary}
+        typeLabel="story"
+        onConfirm={() => mutations.deleteIssue.mutate()}
       />
     </>
   );

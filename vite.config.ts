@@ -477,6 +477,16 @@ export default defineConfig(({ mode, command }) => {
       "@atlaskit/editor-prosemirror/commands": path.resolve(__dirname, "./node_modules/prosemirror-commands"),
       "@atlaskit/editor-prosemirror/utils": path.resolve(__dirname, "./node_modules/prosemirror-utils"),
       "@atlaskit/editor-prosemirror/markdown": path.resolve(__dirname, "./node_modules/prosemirror-markdown"),
+      // ADS migration (Phase 1, 2026-05-26): redirect every `import { toast }
+      // from 'sonner'` (620 files) to the ADS shim at @/components/ui/sonner.
+      // The shim routes all toast.* calls to @atlaskit/flag (showFlag).
+      // Zero callsite edits required — the alias intercepts at bundle time.
+      "sonner": path.resolve(__dirname, "./src/components/ui/sonner.tsx"),
+      // ADS migration (Phase 5, 2026-05-26): redirect every `import toast from
+      // 'react-hot-toast'` (12 files, default import) to the same ADS shim.
+      // sonner.tsx exports `export default toast` for this pattern.
+      // Zero callsite edits required — the alias intercepts at bundle time.
+      "react-hot-toast": path.resolve(__dirname, "./src/components/ui/sonner.tsx"),
     },
     // Dedupe prosemirror — belt-and-suspenders alongside the alias above.
     dedupe: [

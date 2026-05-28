@@ -36,8 +36,10 @@ export function deriveWorkspaceType(pathname: string): WorkspaceType {
     return 'taskhub';
   }
   
-  // Home - includes /for-you which is the main home route
-  if (pathname === '/' || pathname === '/home' || pathname === '/for-you') {
+  // Home - includes /for-you and any /for-you/:tab sub-route.
+  // Use exact match OR /for-you/ prefix (not bare startsWith to avoid
+  // matching hypothetical /for-you-extra routes).
+  if (pathname === '/' || pathname === '/home' || pathname === '/for-you' || pathname.startsWith('/for-you/')) {
     return 'home';
   }
   

@@ -23,6 +23,7 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
+import { DescriptionTranslateBar } from "@/components/shared/title-translate/DescriptionTranslateBar";
 import { useAuth } from "@/hooks/useAuth";
 import type { AttachmentUploadMeta } from "@/components/shared/rich-text/atlaskit/AdfDescriptionField";
 /* jira-compare 2026-05-03 (Council P3.2): lucide ChevronRight + Pencil
@@ -585,6 +586,11 @@ export function CatalystDescriptionSection({
   label = "Description",
 }: CatalystDescriptionSectionProps) {
   const [editing, setEditing] = useState(false);
+  // Translation state — ephemeral, not persisted to DB.
+  // translatedDesc holds plain-text result from CATY; when set the read-view
+  // swaps ADF renderer for a plain-text display with a "Show original" revert.
+  const [translatedDesc, setTranslatedDesc] = useState<string | null>(null);
+  const isShowingTranslation = translatedDesc !== null;
   // Hover affordance moved to pure CSS (`.cv-desc-header:hover .cv-desc-edit-btn`).
   // Keeping a `useState(hovered)` here forced the whole section to
   // reconcile on every mouse twitch over the header band.
@@ -948,49 +954,81 @@ export function CatalystDescriptionSection({
           Add a description...
         </div>
       ) : (
-        <div
-          role="button"
-          tabIndex={0}
-          style={{
-            minHeight: 40,
-            cursor: "text",
-            borderRadius: 4,
-            position: "relative",
-            transition: "background 150ms cubic-bezier(0.15,1,0.3,1)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background =
-              "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
-            prefetchEpicEditor();
-          }}
-          onPointerDown={() => {
-            if (issue) prefetchEpicEditor();
-          }}
-          onClick={() => {
-            if (issue) startTransition(() => setEditing(true));
-          }}
-          onKeyDown={(e) => {
-            if ((e.key === "Enter" || e.key === " ") && issue) {
-              e.preventDefault();
-              startTransition(() => setEditing(true));
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "transparent";
-          }}
-          title="Click to edit"
-        >
-          {isComplex ? (
-            <Suspense
-              fallback={<AtlaskitRendererPlaceholder plain={plainText} />}
-            >
-              <EpicDescriptionRenderer
-                content={descSource}
-                issueKey={issue?.issue_key}
-              />
-            </Suspense>
-          ) : (
-            <AdfLightRenderer adf={descSource} />
+        <div>
+          {/* Clickable read-view — click enters edit mode */}
+          <div
+            role="button"
+            tabIndex={0}
+            style={{
+              minHeight: 40,
+              cursor: "text",
+              borderRadius: 4,
+              position: "relative",
+              transition: "background 150ms cubic-bezier(0.15,1,0.3,1)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background =
+                "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+              prefetchEpicEditor();
+            }}
+            onPointerDown={() => {
+              if (issue) prefetchEpicEditor();
+            }}
+            onClick={() => {
+              if (issue) startTransition(() => setEditing(true));
+            }}
+            onKeyDown={(e) => {
+              if ((e.key === "Enter" || e.key === " ") && issue) {
+                e.preventDefault();
+                startTransition(() => setEditing(true));
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+            }}
+            title="Click to edit"
+          >
+            {isShowingTranslation ? (
+              /* Translated view — plain text with bidi auto-detection */
+              <div
+                className="cv-desc-body"
+                dir="auto"
+                style={{
+                  fontSize: 14,
+                  fontWeight: 400,
+                  color: "var(--ds-text, #292A2E)",
+                  lineHeight: "24px",
+                  fontFamily:
+                    '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
+                  whiteSpace: "pre-wrap",
+                  padding: "4px 16px",
+                }}
+              >
+                {translatedDesc}
+              </div>
+            ) : isComplex ? (
+              <Suspense
+                fallback={<AtlaskitRendererPlaceholder plain={plainText} />}
+              >
+                <EpicDescriptionRenderer
+                  content={descSource}
+                  issueKey={issue?.issue_key}
+                />
+              </Suspense>
+            ) : (
+              <AdfLightRenderer adf={descSource} />
+            )}
+          </div>
+
+          {/* Translate bar — only in read mode, only when not editing */}
+          {issue && !editing && (
+            <DescriptionTranslateBar
+              plainText={plainText}
+              issueKey={issue.issue_key}
+              isTranslated={isShowingTranslation}
+              onTranslated={(text) => setTranslatedDesc(text)}
+              onRevert={() => setTranslatedDesc(null)}
+            />
           )}
         </div>
       )}

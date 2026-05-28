@@ -1,17 +1,27 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import { fetchFunction } from '@/integrations/supabase/functionsRouter';
-import { containsArabic } from '@/lib/detectArabic';
-import './title-translate.css';
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { containsArabic } from "@/lib/detectArabic";
+import { useTranslation } from "@/hooks/useTranslation";
+import "./title-translate.css";
 
 export interface TitleTranslateWrapperProps {
   value: string;
   onValueChange: (next: string) => void;
-  children: (helpers: { dir: 'rtl' | 'ltr' }) => React.ReactNode;
+  children: (helpers: { dir: "rtl" | "ltr" }) => React.ReactNode;
   className?: string;
   buttonClassName?: string;
+  /**
+   * Jira issue key (e.g. "BAU-5510"). When provided, translations are
+   * cached in ph_issue_translations so repeat opens return instantly.
+   * Omit (or pass '') for create-form surfaces that have no issue key yet.
+   */
+  issueKey?: string;
+  /**
+   * Which field is being translated — used as the cache key discriminator.
+   * Defaults to 'summary'. Use 'description' or 'comment:<id>' for other fields.
+   */
+  field?: string;
 }
 
 export function TitleTranslateWrapper({
@@ -20,97 +30,106 @@ export function TitleTranslateWrapper({
   children,
   className,
   buttonClassName,
+  issueKey = "",
+  field = "summary",
 }: TitleTranslateWrapperProps) {
-  const [isTranslating, setIsTranslating] = useState(false);
+  const [showingTranslation, setShowingTranslation] = useState(false);
+  const originalRef = useRef<string>("");
+
+  const { translate, isTranslating } = useTranslation();
 
   const isArabic = useMemo(() => containsArabic(value), [value]);
-  const dir: 'rtl' | 'ltr' = isArabic ? 'rtl' : 'ltr';
-  const target: 'ar' | 'en' = isArabic ? 'en' : 'ar';
+  const dir: "rtl" | "ltr" = isArabic ? "rtl" : "ltr";
+  const target: "ar" | "en" = isArabic ? "en" : "ar";
 
   const handleTranslate = useCallback(async () => {
     const text = value.trim();
     if (!text || isTranslating) return;
-    setIsTranslating(true);
-    try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const accessToken = sessionData?.session?.access_token ?? null;
-      const res = await fetchFunction('ai-translate-title', {
-        method: 'POST',
-        accessToken,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, target }),
-      });
-      if (!res.ok) {
-        let message = `Translation failed (${res.status})`;
-        try {
-          const errJson = await res.json();
-          if (errJson?.message) message = errJson.message;
-        } catch {
-          /* not JSON */
-        }
-        toast.error(message);
-        return;
-      }
-      const json = (await res.json()) as { translated?: string };
-      if (json.translated && json.translated.trim()) {
-        onValueChange(json.translated.trim());
-      } else {
-        toast.error('Translation returned empty text');
-      }
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Translation failed');
-    } finally {
-      setIsTranslating(false);
+    originalRef.current = text;
+    const result = await translate(text, { issueKey, field, target });
+    if (result) {
+      onValueChange(result);
+      setShowingTranslation(true);
+    } else {
+      toast.error("Translation failed");
     }
-  }, [value, target, isTranslating, onValueChange]);
+  }, [value, target, isTranslating, translate, issueKey, field, onValueChange]);
+
+  const handleShowOriginal = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (originalRef.current) {
+        onValueChange(originalRef.current);
+      }
+      setShowingTranslation(false);
+    },
+    [onValueChange],
+  );
 
   const hasText = value.trim().length > 0;
 
   return (
     <div
-      className={cn('ttw-root', isTranslating && 'ttw-translating', className)}
+      className={cn("ttw-root", isTranslating && "ttw-translating", className)}
       data-dir={dir}
     >
       {children({ dir })}
       {hasText && (
-        <div className="ttw-btn-row">
-          <button
-            type="button"
-            className={cn('ttw-translate-btn', buttonClassName)}
-            onMouseDown={(e) => e.stopPropagation()}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleTranslate();
-            }}
-            disabled={isTranslating}
-            dir={isArabic ? 'rtl' : 'ltr'}
-            aria-label={
-              isTranslating
-                ? 'Caty is translating'
-                : target === 'ar'
-                  ? 'Translate to Arabic'
-                  : 'Translate to English'
-            }
-          >
-            {isTranslating ? (
-              <>
-                <img
-                  src="/caty.svg"
-                  alt=""
-                  width={14}
-                  height={14}
-                  className="ttw-translate-btn__logo"
-                />
-                <span>
-                  {isArabic ? 'كاتي تترجم…' : 'Caty is translating…'}
-                </span>
-              </>
-            ) : target === 'ar' ? (
-              'Translate to Arabic'
-            ) : (
-              'ترجم إلى الإنجليزية'
-            )}
-          </button>
+        <div className="ttw-action-row">
+          {isTranslating ? (
+            <span
+              className="ttw-caty-translating"
+              aria-live="polite"
+              aria-label="CATY is translating"
+            >
+              <span className="ttw-sparkle" aria-hidden="true">
+                ✦
+              </span>
+              <span>CATY is translating</span>
+              <span className="ttw-waveform" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+              </span>
+            </span>
+          ) : showingTranslation ? (
+            <span className="ttw-translated-state">
+              <span className="ttw-sparkle" aria-hidden="true">
+                ✦
+              </span>
+              <span>CATY translated</span>
+              <span className="ttw-sep" aria-hidden="true">
+                ·
+              </span>
+              <button
+                type="button"
+                className={cn("ttw-revert-btn", buttonClassName)}
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={handleShowOriginal}
+                aria-label="Show original text"
+              >
+                ↩ Show original
+              </button>
+            </span>
+          ) : (
+            <button
+              type="button"
+              className={cn("ttw-translate-btn", buttonClassName)}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleTranslate();
+              }}
+              disabled={isTranslating}
+              aria-label={
+                target === "ar" ? "Translate to Arabic" : "Translate to English"
+              }
+            >
+              {target === "ar" ? "Translate to Arabic" : "Translate to English"}
+            </button>
+          )}
         </div>
       )}
     </div>

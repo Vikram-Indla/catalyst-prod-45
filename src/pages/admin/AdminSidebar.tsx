@@ -8,6 +8,7 @@ import HomeIcon from '@atlaskit/icon/core/home';
 import DatabaseIcon from '@atlaskit/icon/core/database';
 import ShieldIcon from '@atlaskit/icon/core/shield';
 import PaintPaletteIcon from '@atlaskit/icon/core/paint-palette';
+import StarIcon from '@atlaskit/icon/core/star-starred';
 
 const T = {
   text:          'var(--ds-text, #172B4D)',
@@ -44,6 +45,14 @@ const navItems: NavItem[] = [
 
 const collapsibleSections: CollapsibleSection[] = [
   {
+    id: 'ai-governance',
+    label: 'AI Governance',
+    icon: StarIcon,
+    items: [
+      { id: 'ai-translations', label: 'Translation logs', path: '/admin/ai-governance/translations', icon: StarIcon },
+    ],
+  },
+  {
     id: 'design-system',
     label: 'Design System',
     icon: PaintPaletteIcon,
@@ -68,7 +77,8 @@ const collapsibleSections: CollapsibleSection[] = [
 export function AdminSidebar() {
   const location = useLocation();
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    'design-system': true, // Design System expanded by default
+    'ai-governance': true,  // AI Governance expanded by default
+    'design-system': true,  // Design System expanded by default
   });
 
   const toggleSection = (sectionId: string) => {

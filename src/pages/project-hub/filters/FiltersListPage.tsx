@@ -1,15 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import AkDynamicTable from '@atlaskit/dynamic-table';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import AkAvatar from '@atlaskit/avatar';
+import Lozenge from '@atlaskit/lozenge';
+import SectionMessage from '@atlaskit/section-message';
 import { useFiltersForProject, useStarFilter, useDeleteSavedFilter, type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
-import { FilterHealthBadge } from '@/components/filters/FilterHealthBadge';
 import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
-import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { Star, StarOff, Plus, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -19,69 +19,46 @@ interface FiltersListPageProps {
   hubType?: HubType;
 }
 
-type TabId = 'my' | 'starred' | 'recent';
+type TabId = 'my' | 'starred' | 'shared' | 'recent';
 
 const TABLE_HEAD = {
   cells: [
     { key: 'star',      content: '',                   width: 4,  isSortable: false },
-    { key: 'name',      content: 'Name',               width: 36, isSortable: true  },
-    { key: 'owner',     content: 'Owner',              width: 18, isSortable: false },
-    { key: 'viewers',   content: 'Viewers',            width: 12, isSortable: false },
-    { key: 'starred',   content: 'Starred by',         width: 8,  isSortable: true  },
-    { key: 'boards',    content: 'Boards',             width: 8,  isSortable: true  },
-    { key: 'health',    content: 'Health',             width: 10, isSortable: false },
+    { key: 'name',      content: 'Name',               width: 32, isSortable: true  },
+    { key: 'owner',     content: 'Owner',              width: 16, isSortable: false },
+    { key: 'viewers',   content: 'Viewers',            width: 10, isSortable: false },
+    { key: 'editors',   content: 'Editors',            width: 10, isSortable: false },
+    { key: 'starred',   content: 'Starred by',         width: 10, isSortable: true  },
+    { key: 'lastUsed',  content: 'Last used',          width: 14, isSortable: true  },
     { key: 'actions',   content: '',                   width: 4,  isSortable: false },
   ],
 };
 
 function ViewersChip({ config }: { config: SavedFilterFull['viewers_config'] }) {
-  const label =
-    config.type === 'private' ? 'Private' :
-    config.type === 'org'     ? 'Organisation' :
-    `${config.user_ids?.length ?? 0} people`;
-
-  return (
-    <span style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      padding: '4px 8px',
-      borderRadius: 3,
-      background: token('color.background.neutral'),
-      color: token('color.text.subtle'),
-      fontSize: 12,
-      fontWeight: token('font.weight.medium'),
-      whiteSpace: 'nowrap',
-    }}>
-      {label}
-    </span>
-  );
+  if (config.type === 'private') {
+    return <Lozenge>Private</Lozenge>;
+  }
+  if (config.type === 'org') {
+    return <Lozenge appearance="inprogress">Organisation</Lozenge>;
+  }
+  return <Lozenge>{config.user_ids?.length ?? 0} people</Lozenge>;
 }
 
-function BoardsBadge({ count }: { count: number }) {
-  if (count === 0) return <span style={{ color: token('color.text.subtlest'), fontSize: 13 }}>—</span>;
-  return (
-    <span style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      padding: '4px 8px',
-      borderRadius: 3,
-      background: token('color.background.information'),
-      color: token('color.text.information'),
-      fontSize: 12,
-      fontWeight: token('font.weight.medium'),
-    }}>
-      {count}
-    </span>
-  );
+function EditorsChip({ config }: { config: SavedFilterFull['editors_config'] }) {
+  const label = config?.type === 'owner_only' ? 'Owner only' : `${config?.user_ids?.length ?? 0} people`;
+  return <Lozenge>{label}</Lozenge>;
 }
 
 export default function FiltersListPage({ hubType = 'project' }: FiltersListPageProps) {
   const { key: projectKey } = useParams<{ key: string }>();
 
+  const navigate = useNavigate();
+
   const [activeTab, setActiveTab] = useState<TabId>('my');
   const [search, setSearch] = useState('');
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [sortKey, setSortKey] = useState<string>('name');
+  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
 
   // Resolve current user id once on mount
   React.useEffect(() => {
@@ -90,8 +67,25 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     });
   }, []);
 
+  // H7 P2 — keyboard shortcut: press N to open Create filter (Jira pattern)
+  React.useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (
+        e.key === 'n' &&
+        !e.ctrlKey && !e.metaKey && !e.altKey &&
+        !(e.target as HTMLElement).matches('input, textarea, [contenteditable]')
+      ) {
+        navigate(projectKey
+          ? `/project-hub/${projectKey}/filters/create`
+          : `/project-hub/filters/create`);
+      }
+    }
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [navigate, projectKey]);
+
   const hubScope = hubType === 'product' ? 'product' as const : 'project' as const;
-  const { data: filters = [], isLoading } = useFiltersForProject(projectKey, hubScope);
+  const { data: filters = [], isLoading, error } = useFiltersForProject(projectKey, hubScope);
 
   const starFilter = useStarFilter();
   const deleteFilter = useDeleteSavedFilter();
@@ -103,6 +97,12 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       list = list.filter(f => f.user_id === currentUserId || f.owner_id === currentUserId);
     } else if (activeTab === 'starred') {
       list = list.filter(f => currentUserId && f.starred_by_user_ids.includes(currentUserId));
+    } else if (activeTab === 'shared') {
+      list = list.filter(f =>
+        f.viewers_config?.type !== 'private' &&
+        f.user_id !== currentUserId &&
+        f.owner_id !== currentUserId
+      );
     } else {
       // recent — show all, sorted by last_used_at desc
       list = [...list].sort((a, b) => {
@@ -162,32 +162,35 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           {
             key: 'name',
             content: (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <a
-                  href={projectKey
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <Link
+                  to={projectKey
                     ? `/project-hub/${projectKey}/filters/${f.id}`
                     : `/product-hub/filters/${f.id}`}
                   style={{
                     color: token('color.link'),
                     fontWeight: token('font.weight.medium'),
-                    fontSize: 13,
+                    fontSize: 14,
                     textDecoration: 'none',
                   }}
                   onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
                   onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
                 >
                   {f.name}
-                </a>
+                </Link>
                 {f.jql_query && (
-                  <span style={{
-                    fontSize: 11,
-                    color: token('color.text.subtlest'),
-                    fontFamily: 'monospace',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    maxWidth: 360,
-                  }}>
+                  <span
+                    title={f.jql_query}
+                    style={{
+                      fontSize: 11,
+                      color: token('color.text.subtlest'),
+                      fontFamily: 'var(--cp-font-mono, monospace)',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      maxWidth: 360,
+                    }}
+                  >
                     {f.jql_query}
                   </span>
                 )}
@@ -203,33 +206,61 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                   name={f.owner.full_name ?? 'Unknown'}
                   size="xsmall"
                 />
-                <span style={{ fontSize: 13, color: token('color.text') }}>
+                <span style={{ fontSize: 14, color: token('color.text') }}>
                   {f.owner.full_name ?? 'Unknown'}
                 </span>
               </div>
             ) : (
-              <span style={{ fontSize: 13, color: token('color.text.subtlest') }}>—</span>
+              <span style={{ fontSize: 14, color: token('color.text.subtlest') }}>—</span>
             ),
           },
           {
             key: 'viewers',
-            content: <ViewersChip config={f.viewers_config} />,
-          },
-          {
-            key: 'starred',
             content: (
-              <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
-                {f.starred_by_user_ids.length}
+              <span title={
+                f.viewers_config.type === 'private' ? 'Only the owner can view' :
+                f.viewers_config.type === 'org'     ? 'Everyone in the organisation can view' :
+                `${f.viewers_config.user_ids?.length ?? 0} specific people can view`
+              }>
+                <ViewersChip config={f.viewers_config} />
               </span>
             ),
           },
           {
-            key: 'boards',
-            content: <BoardsBadge count={f.used_by_board_ids.length} />,
+            key: 'editors',
+            content: (
+              <span title={
+                f.editors_config?.type === 'owner_only'
+                  ? 'Only the owner can edit'
+                  : `${f.editors_config?.user_ids?.length ?? 0} specific people can edit`
+              }>
+                <EditorsChip config={f.editors_config} />
+              </span>
+            ),
           },
           {
-            key: 'health',
-            content: <FilterHealthBadge health={f.health_status} />,
+            key: 'starred',
+            content: (() => {
+              const n = f.starred_by_user_ids.length;
+              return (
+                <span style={{ fontSize: 14, color: token('color.text.subtle') }}>
+                  {n === 0 ? '0 people' : `${n} ${n === 1 ? 'person' : 'people'}`}
+                </span>
+              );
+            })(),
+          },
+          {
+            key: 'lastUsed',
+            content: (
+              <span style={{ fontSize: 14, color: token('color.text.subtle') }}>
+                {f.last_used_at
+                  ? new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
+                      Math.round((new Date(f.last_used_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
+                      'day'
+                    )
+                  : '—'}
+              </span>
+            ),
           },
           {
             key: 'actions',
@@ -280,7 +311,9 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         <Button
           appearance="primary"
           iconBefore={() => <Plus size="small" />}
-          onClick={() => setCreateModalOpen(true)}
+          onClick={() => navigate(projectKey
+            ? `/project-hub/${projectKey}/filters/create`
+            : `/project-hub/filters/create`)}
         >
           Create filter
         </Button>
@@ -297,11 +330,12 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       }}>
         <Tabs
           id="filters-tabs"
-          onChange={idx => setActiveTab((['my', 'starred', 'recent'] as TabId[])[idx])}
+          onChange={idx => setActiveTab((['my', 'starred', 'shared', 'recent'] as TabId[])[idx])}
         >
           <TabList>
             <Tab>My filters</Tab>
             <Tab>Starred</Tab>
+            <Tab>Shared</Tab>
             <Tab>Recent</Tab>
           </TabList>
         </Tabs>
@@ -321,7 +355,19 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       </div>
 
       {/* Table */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '0 32px 32px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 32px 32px', fontSize: 14 }}>
+        {error && (
+          <div style={{ padding: '16px 0' }}>
+            <SectionMessage appearance="error" title="Couldn't load filters">
+              Check your connection and refresh the page.
+            </SectionMessage>
+          </div>
+        )}
+        {!isLoading && !error && (
+          <div style={{ padding: '12px 0 4px', fontSize: 12, color: token('color.text.subtlest') }}>
+            {visibleFilters.length} {visibleFilters.length === 1 ? 'filter' : 'filters'}
+          </div>
+        )}
         <AkDynamicTable
           head={TABLE_HEAD}
           rows={buildRows()}
@@ -339,25 +385,26 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                 {search ? 'No filters match your search' : 'No filters yet'}
               </span>
               {!search && (
-                <Button appearance="primary" onClick={() => setCreateModalOpen(true)}>
+                <Button
+                  appearance="primary"
+                  onClick={() => navigate(projectKey
+                    ? `/project-hub/${projectKey}/filters/create`
+                    : `/project-hub/filters/create`)}
+                >
                   Create your first filter
                 </Button>
               )}
             </div>
           }
-          defaultSortKey="name"
-          defaultSortOrder="ASC"
+          sortKey={sortKey}
+          sortOrder={sortOrder}
+          onSort={({ key, sortOrder: order }: { key: string; sortOrder: 'ASC' | 'DESC' }) => {
+            setSortKey(key);
+            setSortOrder(order);
+          }}
         />
       </div>
 
-      {/* Create filter modal */}
-      {createModalOpen && (
-        <FilterSaveModal
-          hubScope={hubType === 'product' ? 'product' : 'project'}
-          onClose={() => setCreateModalOpen(false)}
-          onSaved={() => setCreateModalOpen(false)}
-        />
-      )}
     </div>
   );
 }
