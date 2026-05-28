@@ -8,11 +8,13 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { NodeSelection } from '@tiptap/pm/state';
 import { supabase } from '@/integrations/supabase/client';
 import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { useAuth } from '@/hooks/useAuth';
 import { useCatyImprove } from '@/components/catalyst-detail-views/improve/catyImproveStore';
 import { CatyStreamingOverlay } from '@/components/catalyst-detail-views/improve/CatyStreamingOverlay';
+import { uploadDescriptionImage } from '@/components/shared/rich-text/atlaskit/supabaseImageUpload';
 import type { PhIssue } from './types';
 
 import { useTiptapEditor } from './hooks/useTiptapEditor';
@@ -24,6 +26,9 @@ import { MentionPicker } from './_components/MentionPicker/MentionPicker';
 import { EmojiPicker } from './_components/EmojiPicker/EmojiPicker';
 import { SlashMenu } from './_components/SlashMenu/SlashMenu';
 import { ViewMoreModal } from './_components/SlashMenu/ViewMoreModal';
+import { ImageToolbar } from './_components/ImageToolbar/ImageToolbar';
+import { ImageResizeHandles } from './_components/ImageToolbar/ImageResizeHandles';
+import type { BorderColor, BorderSize, ImageAlignment } from './extensions/CatalystImage';
 import { type AdfDoc, type TiptapDoc } from './utils/adfToTiptap';
 import { tiptapToAdf } from './utils/tiptapToAdf';
 import { catyMarkdownToAdf } from './utils/catyMarkdownToAdf';
@@ -88,6 +93,61 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
 
   const { trigger, dismiss: dismissTrigger, commit: commitTrigger } = useInlineTriggers(editor);
 
+  // ── Image selection → ImageToolbar ──
+  // Tracks the doc position of the selected image. The ImageToolbar itself
+  // re-measures the image's DOM rect on scroll/resize, so we only need to
+  // hand it the position + current attrs here.
+  const [imageState, setImageState] = useState<{
+    pos: number;
+    alignment: ImageAlignment;
+    borderColor: BorderColor | null;
+    borderSize: BorderSize;
+    src: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!editor) return;
+    const update = () => {
+      // Only show the toolbar/handles when the editor is actually focused —
+      // otherwise an image at the start of the doc gets auto-selected on
+      // mount (Tiptap places the initial selection on the first atom),
+      // and the toolbar pops up before the user has even clicked anything.
+      if (!editor.isFocused) {
+        setImageState(null);
+        return;
+      }
+      const { selection } = editor.state;
+      if (!(selection instanceof NodeSelection) || selection.node.type.name !== 'image') {
+        setImageState(null);
+        return;
+      }
+      const node = selection.node;
+      setImageState({
+        pos: selection.from,
+        alignment: (node.attrs.alignment as ImageAlignment) ?? 'center',
+        borderColor: (node.attrs.borderColor as BorderColor | null) ?? null,
+        borderSize: (node.attrs.borderSize as BorderSize) ?? 'medium',
+        src: (node.attrs.src as string) ?? '',
+      });
+    };
+    editor.on('selectionUpdate', update);
+    editor.on('transaction', update);
+    editor.on('focus', update);
+    editor.on('blur', update);
+    return () => {
+      editor.off('selectionUpdate', update);
+      editor.off('transaction', update);
+      editor.off('focus', update);
+      editor.off('blur', update);
+    };
+  }, [editor]);
+
+  // Counts uploads currently in flight. Save button is disabled while > 0.
+  // We rely on this counter alone — no blob-URL inspection of doc content,
+  // which would block saves on tickets that have legacy blob URLs from
+  // older corrupted saves.
+  const [pendingUploads, setPendingUploads] = useState(0);
+
   const saveMutation = useMutation({
     mutationFn: async () => {
       if (!issue?.issue_key) return;
@@ -103,42 +163,45 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
       queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', issue?.issue_key] });
       setEditing(false);
     },
+    onError: (err) => {
+      // Log only — no inline alert. Errors propagate to the surrounding
+      // ErrorBoundary which renders the recoverable error UI.
+      console.error('[Description] save failed', err);
+    },
   });
 
-  // Image upload pipeline — mirrors the existing
-  // handleInlineAttachmentUploaded pattern in CatalystDescriptionSection.
+  // Image upload pipeline — delegates to the canonical Catalyst helper
+  // (bucket "attachments", path "description-images/{workItemId}/...")
+  // so the new editor stores images in the SAME bucket as the legacy
+  // CatalystDescriptionSection. The previous custom code targeted the
+  // wrong bucket name and its public URLs never resolved.
   const handleImageUpload = useCallback(
     async (file: File): Promise<string> => {
       if (!issue?.id || !user?.id) throw new Error('Missing issue or user context');
-      const ext = file.name.split('.').pop() ?? 'png';
-      const storagePath = `${issue.id}/${Date.now()}-${Math.random()
-        .toString(36)
-        .slice(2, 8)}.${ext}`;
+      setPendingUploads((n) => n + 1);
+      try {
+        const uploaded = await uploadDescriptionImage(file, { workItemId: issue.id });
+        if (!uploaded) throw new Error('Upload returned no result');
 
-      const { error: uploadErr } = await supabase.storage
-        .from('description-images')
-        .upload(storagePath, file, { upsert: false, contentType: file.type });
-      if (uploadErr) throw uploadErr;
-
-      const { data: pub } = supabase.storage
-        .from('description-images')
-        .getPublicUrl(storagePath);
-      const url = pub?.publicUrl ?? '';
-
-      const { error: insertErr } = await supabase.from('ph_attachments').insert({
-        work_item_id: issue.id,
-        file_name: file.name,
-        file_size: file.size,
-        mime_type: file.type,
-        storage_path: storagePath,
-        uploaded_by: user.id,
-      });
-      if (insertErr) {
-        console.error('[Description] ph_attachments insert failed', insertErr);
-      } else {
-        queryClient.invalidateQueries({ queryKey: ['ph-attachments', issue.id] });
+        // Mirror the legacy section: register the upload in ph_attachments
+        // so the attachments rail can find it.
+        const { error: insertErr } = await supabase.from('ph_attachments').insert({
+          work_item_id: issue.id,
+          file_name: uploaded.filename,
+          file_size: file.size,
+          mime_type: file.type,
+          storage_path: uploaded.storagePath,
+          uploaded_by: user.id,
+        });
+        if (insertErr) {
+          console.error('[Description] ph_attachments insert failed', insertErr);
+        } else {
+          queryClient.invalidateQueries({ queryKey: ['ph-attachments', issue.id] });
+        }
+        return uploaded.url;
+      } finally {
+        setPendingUploads((n) => Math.max(0, n - 1));
       }
-      return url;
     },
     [issue?.id, user?.id, queryClient],
   );
@@ -209,9 +272,13 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
   const handleSlashPick = useCallback(
     (c: SlashCommand) => {
       dismissTrigger();
+      if (c.externalAction === 'ask-caty') {
+        handleImproveFromToolbar();
+        return;
+      }
       if (c.apply && editor) c.apply(editor);
     },
-    [editor, dismissTrigger],
+    [editor, dismissTrigger, handleImproveFromToolbar],
   );
 
   return (
@@ -291,7 +358,12 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
               <button
                 type="button"
                 onClick={() => saveMutation.mutate()}
-                disabled={saveMutation.isPending}
+                disabled={saveMutation.isPending || pendingUploads > 0}
+                title={
+                  pendingUploads > 0
+                    ? `Waiting for ${pendingUploads} image upload${pendingUploads === 1 ? '' : 's'} to finish…`
+                    : undefined
+                }
                 style={{
                   padding: '6px 12px',
                   fontSize: 14,
@@ -300,11 +372,17 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
                   borderRadius: 3,
                   background: 'var(--ds-background-brand-bold, #0C66E4)',
                   color: 'var(--ds-text-inverse, #FFFFFF)',
-                  cursor: saveMutation.isPending ? 'not-allowed' : 'pointer',
-                  opacity: saveMutation.isPending ? 0.5 : 1,
+                  cursor:
+                    saveMutation.isPending || pendingUploads > 0
+                      ? 'not-allowed'
+                      : 'pointer',
+                  opacity:
+                    saveMutation.isPending || pendingUploads > 0 ? 0.5 : 1,
                 }}
               >
-                Save
+                {pendingUploads > 0
+                  ? `Uploading… (${pendingUploads})`
+                  : 'Save'}
               </button>
               <button
                 type="button"
@@ -396,6 +474,24 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
               // help / attachments / confluence / create-page are no-ops in v1.
             }}
           />
+
+          {/* Image toolbar — opens whenever an image is selected. Tracks
+              the image's position automatically; portal-rendered so it
+              floats above any content. Layout matches Jira's editor
+              exactly: border + chevron | align/wrap | ellipsis menu. */}
+          {imageState && editor && (
+            <>
+              <ImageToolbar
+                editor={editor}
+                imagePos={imageState.pos}
+                alignment={imageState.alignment}
+                borderColor={imageState.borderColor}
+                borderSize={imageState.borderSize}
+                src={imageState.src}
+              />
+              <ImageResizeHandles editor={editor} imagePos={imageState.pos} />
+            </>
+          )}
         </div>
       ) : isEmpty ? (
         /* Read-mode empty state — subtle CTA only. The full

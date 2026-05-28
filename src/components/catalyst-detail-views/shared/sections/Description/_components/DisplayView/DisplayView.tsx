@@ -1,10 +1,14 @@
 /**
  * DisplayView — read-mode renderer for the Description.
  *
- * Reuses the canonical Catalyst ADF renderers (AdfLightRenderer for prose,
- * Atlaskit Renderer for complex docs with media / tables / panels). Visual
- * parity with the existing CatalystDescriptionSection is intentional — only
- * the edit experience changes in v1.
+ * Mirrors CatalystDescriptionSection's read path 1:1:
+ *   - hasComplexAdfNodes → EpicDescriptionRenderer (Atlaskit + Catalyst
+ *     mediaNodeComponents that natively render external image URLs).
+ *   - prose-only → AdfLightRenderer.
+ *
+ * No DOM injection layer here. EpicDescriptionRenderer's mediaNodeComponents
+ * already handle external images (they call useMediaUrl to read the URL
+ * from the media node attrs and render a plain <img src={url}/>).
  */
 import { Suspense } from 'react';
 import {

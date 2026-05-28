@@ -184,7 +184,18 @@ function convertNode(adfNode: AdfNode): TiptapNode | null {
         width?: number;
         height?: number;
       };
-      const attrs: Record<string, unknown> = { src: a.url ?? '', alt: a.alt ?? '' };
+      const ms = (adfNode.attrs ?? {}) as {
+        layout?: string;
+        borderColor?: string;
+        borderSize?: string;
+      };
+      const attrs: Record<string, unknown> = {
+        src: a.url ?? '',
+        alt: a.alt ?? '',
+        alignment: ms.layout ?? 'center',
+        borderColor: ms.borderColor ?? null,
+        borderSize: ms.borderSize ?? 'medium',
+      };
       if (typeof a.width === 'number') attrs.width = a.width;
       if (typeof a.height === 'number') attrs.height = a.height;
       return { type: 'image', attrs };

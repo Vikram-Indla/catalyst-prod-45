@@ -35,6 +35,7 @@ import DateIcon from '@atlaskit/icon/glyph/editor/date';
 import StatusIcon from '@atlaskit/icon/glyph/status';
 // eslint-disable-next-line no-restricted-imports
 import AttachmentIcon from '@atlaskit/icon/glyph/editor/attachment';
+import catyLogo from '@/assets/logo-mark-dark.svg';
 import {
   filterSlashCommands,
   type SlashCommand,
@@ -60,9 +61,13 @@ const COLOR_TO_HEX: Record<SlashIconColor, string> = {
   purple: '#8270DB',
   red: '#C9372C',
   gray: '#626F86',
+  brand: '#1868DB',
 };
 
 function renderIcon(iconId: SlashIconId, color: SlashIconColor) {
+  if (iconId === 'caty') {
+    return <img src={catyLogo} alt="" width={18} height={18} />;
+  }
   const primaryColor = COLOR_TO_HEX[color];
   const props = { label: '', primaryColor } as const;
   switch (iconId) {

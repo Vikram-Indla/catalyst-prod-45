@@ -23,7 +23,7 @@ import Superscript from '@tiptap/extension-superscript';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
 import Link from '@tiptap/extension-link';
-import Image from '@tiptap/extension-image';
+import { CatalystImage } from '../extensions/CatalystImage';
 import { TaskList } from '@tiptap/extension-task-list';
 import { TaskItem } from '@tiptap/extension-task-item';
 import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table';
@@ -69,7 +69,7 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
             target: '_blank',
           },
         }),
-        Image.configure({ inline: false, allowBase64: false }),
+        CatalystImage.configure({ inline: false, allowBase64: false }),
         TaskList,
         TaskItem.configure({ nested: true }),
         // Tables — full Jira parity via Tiptap's official Table suite.

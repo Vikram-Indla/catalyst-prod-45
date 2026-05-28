@@ -22,10 +22,13 @@ export type SlashIconId =
   | 'expand'
   | 'date'
   | 'status'
-  | 'attachment';
+  | 'attachment'
+  | 'caty';
 
 export type SlashIconColor =
-  | 'green' | 'blue' | 'orange' | 'purple' | 'red' | 'gray';
+  | 'green' | 'blue' | 'orange' | 'purple' | 'red' | 'gray' | 'brand';
+
+export type SlashExternalAction = 'ask-caty';
 
 export interface SlashCommand {
   id: string;
@@ -35,8 +38,21 @@ export interface SlashCommand {
   iconId: SlashIconId;
   iconColor: SlashIconColor;
   keywords?: string[];
+  /** Editor-only inline action. */
   apply?: (editor: Editor) => void;
+  /** Parent-handled action (Ask Caty etc.) that needs context outside the editor. */
+  externalAction?: SlashExternalAction;
 }
+
+const ASK_CATY: SlashCommand = {
+  id: 'ask-caty',
+  label: 'Ask Caty',
+  description: 'Draft or improve with AI',
+  iconId: 'caty',
+  iconColor: 'brand',
+  keywords: ['ai', 'caty', 'improve'],
+  externalAction: 'ask-caty',
+};
 
 function generateId(): string {
   try {
@@ -204,11 +220,28 @@ export const SLASH_COMMANDS: SlashCommand[] = [
 
 export function filterSlashCommands(query: string): SlashCommand[] {
   const q = query.trim().toLowerCase();
-  if (!q) return SLASH_COMMANDS;
-  return SLASH_COMMANDS.filter((c) => {
+  // `/ai` (or anything starting with "ai") promotes Ask Caty to the top
+  // of the list. Ask Caty is NOT in the default list when query is empty.
+  const promoteCaty = q.length > 0 && 'ai'.startsWith(q.slice(0, 2)) === false
+    ? q.startsWith('ai')
+    : q.startsWith('a');
+  // Simplified: just show Ask Caty whenever the typed query is a prefix
+  // of 'ai' / 'ask' / 'caty' (so a single `a`, `ai`, `as`, `c`, etc.
+  // all surface it).
+  const surfaceCaty =
+    q.length > 0 &&
+    ('ai'.startsWith(q) || 'ask'.startsWith(q) || 'caty'.startsWith(q));
+
+  const base = SLASH_COMMANDS.filter((c) => {
+    if (!q) return true;
     const hay = [c.label, c.description ?? '', ...(c.keywords ?? [])]
       .join(' ')
       .toLowerCase();
     return hay.includes(q);
   });
+
+  // Silence the unused vars from the experiment branch above.
+  void promoteCaty;
+
+  return surfaceCaty ? [ASK_CATY, ...base] : base;
 }

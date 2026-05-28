@@ -13,7 +13,7 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = 'catalyst-tiptap-editor-styles-v04';
+const STYLE_ID = 'catalyst-tiptap-editor-styles-v07';
 
 export function injectEditorStyles(): void {
   if (typeof document === 'undefined') return;
@@ -82,9 +82,46 @@ export function injectEditorStyles(): void {
       margin: 16px 0;
     }
     .catalyst-tiptap-editor img {
-      max-width: 100%;
+      max-width: 95%;
       border-radius: 4px;
+      display: block;
     }
+    /* Image alignment — driven by data-alignment attr set by CatalystImage.
+       'wide' / 'full-width' are read but visually identical to center for v1. */
+    .catalyst-tiptap-editor img[data-alignment="center"] {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .catalyst-tiptap-editor img[data-alignment="align-start"] {
+      margin-right: auto;
+      margin-left: 0;
+    }
+    .catalyst-tiptap-editor img[data-alignment="align-end"] {
+      margin-left: auto;
+      margin-right: 0;
+    }
+    .catalyst-tiptap-editor img[data-alignment="wrap-left"] {
+      float: left;
+      margin: 0 16px 8px 0;
+    }
+    .catalyst-tiptap-editor img[data-alignment="wrap-right"] {
+      float: right;
+      margin: 0 0 8px 16px;
+    }
+    /* When the user has explicitly resized the image (width attr present),
+       it should win over the default max-width:100% so the user can
+       intentionally make it wider than the natural fit. */
+    .catalyst-tiptap-editor img[width] {
+      max-width: none;
+    }
+    .catalyst-tiptap-editor img[data-alignment="wide"],
+    .catalyst-tiptap-editor img[data-alignment="full-width"] {
+      width: 100%;
+      max-width: 100%;
+      margin: 8px auto;
+    }
+    /* Selected image gets a clear blue halo — comes from
+       .ProseMirror-selectednode rule above. */
     .catalyst-tiptap-editor ul[data-type="taskList"] {
       list-style: none;
       padding-left: 8px;

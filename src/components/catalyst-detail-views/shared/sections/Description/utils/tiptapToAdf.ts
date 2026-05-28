@@ -137,6 +137,9 @@ function convertNode(tiptapNode: TiptapNode): AdfNode | null {
         alt?: string;
         width?: number;
         height?: number;
+        alignment?: string;
+        borderColor?: string | null;
+        borderSize?: string;
       };
       const mediaAttrs: Record<string, unknown> = {
         type: 'external',
@@ -145,9 +148,16 @@ function convertNode(tiptapNode: TiptapNode): AdfNode | null {
       if (a.alt) mediaAttrs.alt = a.alt;
       if (typeof a.width === 'number') mediaAttrs.width = a.width;
       if (typeof a.height === 'number') mediaAttrs.height = a.height;
+      const msAttrs: Record<string, unknown> = {
+        layout: a.alignment ?? 'center',
+      };
+      if (a.borderColor) {
+        msAttrs.borderColor = a.borderColor;
+        msAttrs.borderSize = a.borderSize ?? 'medium';
+      }
       return {
         type: 'mediaSingle',
-        attrs: { layout: 'center' },
+        attrs: msAttrs,
         content: [{ type: 'media', attrs: mediaAttrs }],
       };
     }
