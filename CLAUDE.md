@@ -1252,3 +1252,42 @@ Two compounding bugs:
 4. Before writing `issue?.X`, grep where `issue` was set — if it came from `.forEach((r: any) => map.set(key, r))` it is a raw DB row (snake_case), not a WorkItem (camelCase)
 
 **Severity:** P1 (status chip always showed grey fallback — the feature worked visually but carried wrong semantic color for all done-category statuses)
+
+---
+
+## 2026-05-29 — ph_comments SELECT RLS must include `author_id = auth.uid()` for INSERT+RETURNING to succeed on non-ph_projects issues
+
+**Surface:** RecommendedPanel.tsx — `ensurePhComment` / `ReactionStrip` (For You / Recommended tab)
+**Pattern:** Clicking an emoji reaction on a mention card for an issue whose `project_key` is NOT in `ph_projects` (e.g. MWR project, INV project) returned HTTP 403 with code `42501` on the `POST /rest/v1/ph_comments?select=id` request, causing a "Could not save reaction" error toast on every click.
+
+Root cause — PostgREST v12 INSERT+RETURNING behavior: when `ensurePhComment` does `.insert({...}).select('id').single()`, PostgREST checks the SELECT USING policy AFTER the insert. The existing `"Members can view comments"` policy used only:
+```sql
+USING (EXISTS (
+  SELECT 1 FROM ph_issues i
+  JOIN ph_projects p ON p.key = i.project_key
+  JOIN ph_project_members m ON m.project_id = p.id
+  WHERE i.id = ph_comments.work_item_id AND m.user_id = auth.uid()
+))
+```
+For MWR issues (`project_key = 'MWR'`), `ph_projects` had no MWR entry → JOIN produced no rows → EXISTS = false → PostgREST rolled back the INSERT and returned 403. The error appeared ONLY for issues in projects not registered in `ph_projects`.
+
+**Fix (migration `fix_ph_comments_select_rls_allow_own_comments`):**
+```sql
+DROP POLICY IF EXISTS "Members can view comments" ON ph_comments;
+CREATE POLICY "Members can view comments" ON ph_comments
+  FOR SELECT TO authenticated
+  USING (
+    author_id = auth.uid()
+    OR EXISTS (
+      SELECT 1 FROM ph_issues i
+      JOIN ph_projects p ON p.key = i.project_key
+      JOIN ph_project_members m ON m.project_id = p.id
+      WHERE i.id = ph_comments.work_item_id AND m.user_id = auth.uid()
+    )
+  );
+```
+The `author_id = auth.uid()` short-circuit means a user can always see their own freshly-inserted `ph_comments` row, even for issues in projects absent from `ph_projects`. Verified: `POST /ph_comment_reactions` → 201, 🔥1 chip renders on MWR-947 card, zero error toasts.
+
+**Rule:** Any RLS SELECT USING policy on a table that is both read AND written by users must include an ownership clause (`author_id = auth.uid()` or `created_by = auth.uid()`) as a short-circuit OR branch, BEFORE the JOIN chain that checks membership. Without it, PostgREST v12's INSERT+RETURNING check will 403 any row whose JOIN chain returns empty — silently rolling back the insert and showing a generic error to the user. This is especially critical for `ph_comments` which can be created for any Jira-synced issue regardless of whether its project is in `ph_projects`.
+
+**Severity:** P1 (reactions silently failed for all non-BAU/non-INV project mentions; the error was visible to the user as a red toast on every click)
