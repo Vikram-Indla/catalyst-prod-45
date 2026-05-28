@@ -8,7 +8,7 @@ import HomeIcon from '@atlaskit/icon/core/home';
 import DatabaseIcon from '@atlaskit/icon/core/database';
 import ShieldIcon from '@atlaskit/icon/core/shield';
 import PaintPaletteIcon from '@atlaskit/icon/core/paint-palette';
-import StarIcon from '@atlaskit/icon/core/star';
+import StarIcon from '@atlaskit/icon/core/star-starred';
 
 const T = {
   text:          'var(--ds-text, #172B4D)',
