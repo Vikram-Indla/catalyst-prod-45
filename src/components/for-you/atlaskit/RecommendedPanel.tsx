@@ -46,6 +46,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
+import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
 import Tooltip from '@atlaskit/tooltip';
 import TextArea from '@atlaskit/textarea';
@@ -119,7 +120,7 @@ function SkeletonLine({ width = '100%', height = 12 }: { width?: string | number
         width,
         height,
         borderRadius: 4,
-        background: 'linear-gradient(90deg, #F0F1F2 25%, #E4E5E7 50%, #F0F1F2 75%)',
+        background: `linear-gradient(90deg, ${token('color.background.neutral', '#F1F2F4')} 25%, ${token('color.background.neutral.subtle', '#F7F8F9')} 50%, ${token('color.background.neutral', '#F1F2F4')} 75%)`,
         backgroundSize: '200% 100%',
         animation: 'catalyst-shimmer 1.4s infinite',
       }}
@@ -151,14 +152,14 @@ function RecommendedPanelSkeleton() {
           >
             {/* Header row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 6, background: '#E4E5E7', flexShrink: 0 }} />
+              <div style={{ width: 32, height: 32, borderRadius: 6, background: token('color.background.neutral', '#F1F2F4'), flexShrink: 0 }} />
               <SkeletonLine width={160} height={14} />
             </div>
             <SkeletonLine width="70%" height={11} />
             {/* Two card rows */}
             {[0, 1].map(j => (
               <div key={j} style={{ display: 'flex', gap: 12, paddingTop: 4 }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#E4E5E7', flexShrink: 0 }} />
+                <div style={{ width: 32, height: 32, borderRadius: '50%', background: token('color.background.neutral', '#F1F2F4'), flexShrink: 0 }} />
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <SkeletonLine width="85%" height={12} />
                   <SkeletonLine width="45%" height={10} />
@@ -282,7 +283,7 @@ export default function RecommendedPanel({
                       visibly bolder than the "mentioned you on" connector. */}
                   <span style={{ color: token('color.text', '#292A2E'), fontWeight: 600 }}>{m.mentionerName}</span>
                   <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), fontWeight: 400 }}>{' '}mentioned you on{' '}</span>
-                  <HeadlineIssueTitle issueType={m.issueType} issueSummary={m.issueSummary} />
+                  <HeadlineIssueTitle issueType={m.issueType} issueSummary={m.issueSummary} issueKey={m.issueKey} issueStatus={m.issueStatus} />
                 </>
               ),
               authorName: m.mentionerName,
@@ -292,6 +293,7 @@ export default function RecommendedPanel({
               issueId: m.issueId,
               issueType: m.issueType,
               issueSummary: m.issueSummary,
+              issueStatus: m.issueStatus,
               projectKey: m.projectKey,
               commentBody: m.commentBody,
               commentCreatedAt: m.commentCreatedAt,
@@ -312,7 +314,7 @@ export default function RecommendedPanel({
                 <>
                   <span style={{ color: token('color.text', '#292A2E'), fontWeight: 600 }}>{c.authorName}</span>
                   <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), fontWeight: 400 }}>{' '}commented on{' '}</span>
-                  <HeadlineIssueTitle issueType={c.issueType} issueSummary={c.issueSummary} />
+                  <HeadlineIssueTitle issueType={c.issueType} issueSummary={c.issueSummary} issueKey={c.issueKey} issueStatus={c.issueStatus} />
                 </>
               ),
               authorName: c.authorName,
@@ -322,6 +324,7 @@ export default function RecommendedPanel({
               issueId: c.issueId,
               issueType: c.issueType,
               issueSummary: c.issueSummary,
+              issueStatus: c.issueStatus,
               projectKey: c.projectKey,
               commentBody: c.commentBody,
               commentCreatedAt: c.commentCreatedAt,
@@ -370,6 +373,7 @@ interface FeedRow {
   issueId: string;
   issueType: string;
   issueSummary: string;
+  issueStatus?: string;
   projectKey: string;
   commentBody: string;
   commentCreatedAt: string;
@@ -487,7 +491,7 @@ function PurpleCategoryTile() {
         // mode, blowing out next to a dark surface. `color.background.accent.purple.subtler`
         // is the closest ADS token to Jira's home-recommended tile in light
         // mode and flips automatically in dark.
-        background: token('color.background.accent.purple.subtler', 'rgb(201, 124, 244)'),
+        background: token('color.background.accent.purple.subtle', '#C97CF4'),
         flexShrink: 0,
         color: token('color.icon.accent.purple', 'rgb(41, 42, 46)'),
       }}
@@ -871,10 +875,7 @@ function ReplyComposer({
                 justifyContent: 'flex-end',
                 gap: 8,
                 padding: '4px 8px 8px 8px',
-                borderBlockStart: `1px solid ${token(
-                  'color.border',
-                  'rgba(11, 18, 14, 0.08)'
-                )}`,
+                borderBlockStart: `1px solid ${token('color.border', '#DFE1E6')}`,
               }}
             >
               <button
@@ -887,7 +888,7 @@ function ReplyComposer({
                 style={{
                   all: 'unset',
                   cursor: 'pointer',
-                  padding: '4px 10px',
+                  padding: '4px 8px',
                   borderRadius: 3,
                   font: `500 14px/20px "Inter", system-ui, sans-serif`,
                   color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
@@ -943,7 +944,7 @@ function SuggestReplyTile({ onSuggest, isLoading }: { onSuggest: () => void; isL
         marginBlockStart: 8,
         marginInlineStart: 34 /* 32 avatar + 2 nudge */,
         display: 'inline-flex',
-        padding: 6,
+        padding: 8,
         borderRadius: 3,
         background: hover && !isLoading
           ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.04)')
@@ -965,8 +966,8 @@ function SuggestReplyTile({ onSuggest, isLoading }: { onSuggest: () => void; isL
           cursor: isLoading ? 'wait' : 'pointer',
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
-          padding: '2px 12px',
+          gap: 4,
+          padding: '4px 12px',
           borderRadius: 3,
           font: `500 14px/20px "Inter", system-ui, sans-serif`,
           color: token('color.text.subtle', '#505258'),
@@ -1190,18 +1191,31 @@ function ReactionChip({
 function HeadlineIssueTitle({
   issueType,
   issueSummary,
+  issueKey,
+  issueStatus,
 }: {
   issueType: string;
   issueSummary: string;
+  issueKey?: string;
+  issueStatus?: string;
 }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, verticalAlign: 'middle' }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, verticalAlign: 'middle', flexWrap: 'wrap' }}>
       <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
         <WorkItemIcon type={normalizeIconType(issueType)} size={16} />
       </span>
-      <span style={{ fontWeight: 400, color: token('color.text', '#292A2E') }}>
-        {issueSummary}
+      {/* Jira parity: entity title renders as a blue link with KEY prefix.
+          DOM probe 2026-05-28: Jira shows "KEY: TITLE" in link color. */}
+      <span style={{ fontWeight: 400, color: token('color.link', '#0052CC') }}>
+        {issueKey ? `${issueKey}: ` : ''}{issueSummary}
       </span>
+      {/* Jira parity: status lozenge displayed inline after the entity title.
+          Renders as a default grey pill (DOM probe: bg rgb(221,222,225)). */}
+      {issueStatus && (
+        <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <Lozenge appearance="default">{issueStatus}</Lozenge>
+        </span>
+      )}
     </span>
   );
 }
@@ -1334,23 +1348,14 @@ function renderInlineAtMentions(text: string): React.ReactNode[] {
 }
 
 function MentionChip({ label }: { label: string }) {
-  // Jira parity (DOM probe 2026-04-24 — Atlaskit Lozenge-style @-mention):
-  //   padding:      0px 4.2px 2px 3.22px (from pf-editor ADF-mention span)
-  //   line-height:  20px (matches parent comment body line-height — earlier
-  //                 24px bumped the line rhythm of a 20px paragraph)
-  //   font:         400 14/20 Atlassian Sans
-  //   radius:       20
-  //   bg:           color.background.neutral — was `rgba(5,21,36,0.06)`
-  //                 literal which stays near-black in dark mode and disappears
-  //                 against the dark surface (CLAUDE.md ADS token rule).
-  //   color:        color.text.subtle
-  // Display-only — the chip is non-interactive in the feed (unlike Jira's
-  // hover-card trigger, which we haven't built yet).
+  // Jira parity — Atlaskit Lozenge-style @-mention chip.
+  // Compact horizontal padding, 20px line-height to match parent comment body.
+  // bg: color.background.neutral. Display-only (no hover-card yet).
   return (
     <span
       style={{
         display: 'inline-block',
-        padding: '0 4.2px 2px 3.22px',
+        padding: '0 4px',
         borderRadius: 20,
         background: token('color.background.neutral', 'rgba(5, 21, 36, 0.06)'),
         color: token('color.text.subtle', '#505258'),
