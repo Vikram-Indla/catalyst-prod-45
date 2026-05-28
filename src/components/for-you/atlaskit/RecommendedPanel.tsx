@@ -529,7 +529,9 @@ function FeedCard({
 }) {
   const [hover, setHover] = React.useState(false);
   const [dismissFocused, setDismissFocused] = React.useState(false);
-  const avatarSrc = row.authorAvatarUrl || resolveAvatarUrl(row.authorName) || undefined;
+  // Local avatar files only — Jira/Gravatar CDN URLs are banned (CLAUDE.md §19)
+  // and fail to load due to CORS. Priority: local slug match → Atlaskit initials fallback.
+  const avatarSrc = resolveAvatarUrl(row.authorName) || undefined;
   const relative = formatRelativeTimestamp(row.commentCreatedAt);
 
   return (
@@ -814,24 +816,13 @@ function ReplyComposer({
   // Derived states
   const isAiActive = suggestionPhase === 'loading' || suggestionPhase === 'done';
 
-  // Gradient border technique: transparent border + conic-gradient as background-image
-  // covers padding-box (white surface) and border-box (gradient ring).
-  // Uses ADS discovery/information/warning tokens so the palette flips with the theme.
-  const gradientBorderStyle: React.CSSProperties = {
-    flex: 1,
-    minWidth: 0,
-    borderRadius: 8,
-    padding: 4, // gradient ring thickness (on-grid; Jira uses 2px but 4 is nearest grid value)
-    background: `conic-gradient(from 0deg, ${
-      token('color.background.discovery.bold', '#8270DB')
-    }, ${
-      token('color.background.information.bold', '#1D7AFC')
-    }, ${
-      token('color.background.warning.bold', '#E2B203')
-    }, ${
-      token('color.background.discovery.bold', '#8270DB')
-    })`,
-  };
+  // Gradient ring colours — ADS tokens so they flip with the theme.
+  const gradientColors = [
+    token('color.background.discovery.bold', '#8270DB'),
+    token('color.background.information.bold', '#1D7AFC'),
+    token('color.background.warning.bold', '#E2B203'),
+    token('color.background.discovery.bold', '#8270DB'),
+  ].join(', ');
 
   return (
     <div style={{ marginBlockStart: 8 }}>
@@ -875,15 +866,42 @@ function ReplyComposer({
           </span>
         </Tooltip>
 
-        {/* ── LOADING state — gradient border wrapper ─────────────────────
-            Outer div provides the visible gradient ring (2px).
+        {/* ── LOADING state — animated rotating gradient border ────────────
+            Outer div clips the oversized rotating child.
+            Technique: child is inset:-100% + rotates via .catalyst-ai-gradient-spinner.
+            Parent overflow:hidden + border-radius clips it to the pill shape.
             Inner div is the white surface with radius 6 (outer 8 - padding 2). */}
         {suggestionPhase === 'loading' && (
-          <div style={gradientBorderStyle}>
+          /* Animated gradient ring — outer div clips; child rotates continuously.
+             Jira parity: the coloured border spins while AI is generating. */
+          <div
+            style={{
+              position: 'relative',
+              flex: 1,
+              minWidth: 0,
+              borderRadius: 8,
+              overflow: 'hidden',
+            }}
+          >
+            {/* Rotating gradient — oversized so corners are always covered */}
+            <div
+              className="catalyst-ai-gradient-spinner"
+              style={{
+                position: 'absolute',
+                inset: '-100%',
+                background: `conic-gradient(${gradientColors})`,
+              }}
+            />
+            {/* White inner surface — sits above the spinner via z-index */}
             <div
               style={{
+                position: 'relative',
+                // DOM-probed Jira 2026-05-28: gradient ring gap = 4px (CLAUDE.md lesson).
+                // 2→4 also satisfies the 4px spacing grid.
+                margin: 4,
                 background: token('elevation.surface', '#FFFFFF'),
                 borderRadius: 6,
+                zIndex: 1,
                 display: 'flex',
                 flexDirection: 'column',
               }}
@@ -898,7 +916,7 @@ function ReplyComposer({
                 resize="vertical"
                 isDisabled
               />
-              {/* Loading action row: only Cancel to abort */}
+              {/* Loading action row: animated dots + Cancel */}
               <div
                 style={{
                   display: 'flex',
@@ -909,15 +927,21 @@ function ReplyComposer({
                   borderBlockStart: `1px solid ${token('color.border', '#DFE1E6')}`,
                 }}
               >
-                {/* "... Generating" — Jira parity: dots precede the label */}
+                {/* Animated ellipsis + "Generating" label — Jira parity */}
                 <span
                   style={{
                     flex: 1,
                     font: `400 14px/20px "Inter", system-ui, sans-serif`,
                     color: token('color.text.subtlest', '#6B778C'),
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
                   }}
                 >
-                  ... Generating
+                  <span className="catalyst-ai-dot">·</span>
+                  <span className="catalyst-ai-dot">·</span>
+                  <span className="catalyst-ai-dot">·</span>
+                  <span style={{ marginInlineStart: 4 }}>Generating</span>
                 </span>
                 <button
                   type="button"
@@ -1118,14 +1142,16 @@ function ReplyComposer({
                   >
                     Caty
                   </span>
-                  {/* Caty sparkle mark — minimal SVG, themed with discovery token */}
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-label="Caty AI">
-                    <circle cx="9" cy="9" r="8.5" fill={token('color.background.discovery.bold', '#8270DB')} />
-                    <path
-                      d="M9 4.5L10.2 7.8L13.5 9L10.2 10.2L9 13.5L7.8 10.2L4.5 9L7.8 7.8Z"
-                      fill="white"
-                    />
-                  </svg>
+                  {/* Catalyst favicon — the correct blue "C" brand mark.
+                      Source: /public/favicon.svg (512×512 blue rounded rect + white C path).
+                      RCA: prior SVG was a hand-rolled purple star — not the Catalyst brand. */}
+                  <img
+                    src="/favicon.svg"
+                    alt="Catalyst"
+                    width="18"
+                    height="18"
+                    style={{ borderRadius: 4, verticalAlign: 'middle', flexShrink: 0 }}
+                  />
                 </div>
               </div>
             )}
@@ -1184,7 +1210,7 @@ function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
           font: `500 14px/20px "Inter", system-ui, sans-serif`,
           color: token('color.text.subtle', '#505258'),
           background: 'transparent',
-          border: 'none',
+          border: `1px solid ${token('color.border', '#DFE1E6')}`,
         }}
       >
         <EditIcon label="" size="small" primaryColor="currentColor" />
@@ -1409,7 +1435,8 @@ function ReactionChip({
       onClick={onClick}
       disabled={disabled}
       aria-pressed={isActive}
-      aria-label={disabled ? `${label} (unavailable)` : label}
+      // Jira pattern: "React with fire emoji" (more descriptive than bare "Fire")
+      aria-label={disabled ? `${label} (unavailable)` : `React with ${label.toLowerCase()} emoji`}
       style={{
         all: 'unset',
         cursor: disabled ? 'not-allowed' : 'pointer',
@@ -1430,9 +1457,12 @@ function ReactionChip({
           : 'transparent',
         borderRadius: 4,
         fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
-        fontSize: 16,
+        // DOM-probed Jira 2026-05-29: emoji chip font-size = 13.3px (≈13). 16 was Catalyst opinion.
+        fontSize: 13,
         lineHeight: 1,
-        opacity: disabled ? 0.4 : count === 0 && !isActive ? 0.6 : 1,
+        // DOM-probed Jira 2026-05-29: idle chips are opacity:1 — dimming to 0.6 when
+        // count===0 made chips look disabled. Only truly-disabled chips get 0.4.
+        opacity: disabled ? 0.4 : 1,
         transition: 'background-color 120ms ease, border-color 120ms ease, opacity 120ms ease',
       }}
     >
