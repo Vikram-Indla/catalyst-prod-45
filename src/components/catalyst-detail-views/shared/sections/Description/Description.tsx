@@ -15,6 +15,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCatyImprove } from '@/components/catalyst-detail-views/improve/catyImproveStore';
 import { CatyStreamingOverlay } from '@/components/catalyst-detail-views/improve/CatyStreamingOverlay';
 import { uploadDescriptionImage } from '@/components/shared/rich-text/atlaskit/supabaseImageUpload';
+import { useVoiceToText } from '@/lib/voiceToText/useVoiceToText';
+import { useMicVoiceRecorder } from './hooks/useMicVoiceRecorder';
+import { MicRecordingBar } from './_components/MicRecordingBar/MicRecordingBar';
 import type { PhIssue } from './types';
 
 import { useTiptapEditor } from './hooks/useTiptapEditor';
@@ -92,6 +95,81 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
   }, [issueKey]);
 
   const { trigger, dismiss: dismissTrigger, commit: commitTrigger } = useInlineTriggers(editor);
+
+  // ── Voice-to-text (hold Ctrl) ──
+  // Reuses the canonical Catalyst hook. While the description is in
+  // edit mode, holding Ctrl ≥250ms starts the SpeechRecognition stream;
+  // releasing Ctrl (or pressing any other key while held → treated as
+  // a keyboard shortcut, not a hold) stops it and flushes the transcript.
+  // Insert position: at the cursor if the editor is focused, otherwise
+  // appended to the end of the doc.
+  const editorRootRef = useRef<HTMLDivElement | null>(null);
+  // Voice-to-text language. Three modes:
+  //   - 'auto' : derive from doc content (Arabic chars vs Latin); good
+  //              for mixed Arabic prose with English loanwords like
+  //              "Production", "Beta", "Staging" — chooses Arabic if
+  //              Arabic chars dominate.
+  //   - 'en'   : force English (en-US).
+  //   - 'ar'   : force Arabic (ar-SA).
+  type VoiceMode = 'auto' | 'en' | 'ar';
+  const [voiceMode, setVoiceMode] = useState<VoiceMode>('auto');
+
+  // Tracks the auto-detected language so the engine knows what to use
+  // when in 'auto' mode. Recomputed live as the user types.
+  const [autoLang, setAutoLang] = useState<'en-US' | 'ar-SA'>(() => {
+    const nav = typeof navigator !== 'undefined' ? navigator.language : 'en-US';
+    return nav.toLowerCase().startsWith('ar') ? 'ar-SA' : 'en-US';
+  });
+  useEffect(() => {
+    if (!editor) return;
+    const recompute = () => {
+      const text = editor.getText();
+      const arabic = (text.match(/[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/g) || []).length;
+      const latin = (text.match(/[A-Za-z]/g) || []).length;
+      const nav = typeof navigator !== 'undefined' ? navigator.language : 'en-US';
+      const browserDefault: 'en-US' | 'ar-SA' = nav.toLowerCase().startsWith('ar')
+        ? 'ar-SA'
+        : 'en-US';
+      let next: 'en-US' | 'ar-SA';
+      if (arabic > latin) next = 'ar-SA';
+      else if (latin > arabic) next = 'en-US';
+      else next = browserDefault;
+      setAutoLang((prev) => (prev === next ? prev : next));
+    };
+    recompute();
+    editor.on('update', recompute);
+    return () => {
+      editor.off('update', recompute);
+    };
+  }, [editor]);
+
+  const effectiveLang: 'en-US' | 'ar-SA' =
+    voiceMode === 'en' ? 'en-US' : voiceMode === 'ar' ? 'ar-SA' : autoLang;
+
+  const voice = useVoiceToText({
+    editorRootRef,
+    getEditorView: () => (editor ? editor.view : null),
+    // Disable the Ctrl-hold path while the mic-button session is active —
+    // they can't safely share the mic.
+    enabled: editing && !catyActiveForThisIssue,
+    lang: effectiveLang,
+  });
+
+  // Mic-button driven recording (buffered, finalised on Stop).
+  const mic = useMicVoiceRecorder({
+    editorRootRef,
+    getEditorView: () => (editor ? editor.view : null),
+    lang: effectiveLang,
+  });
+
+  const handleMicToggle = useCallback(() => {
+    if (mic.isActive) {
+      // Toolbar click while active → treat as "Stop and insert".
+      mic.stop();
+    } else {
+      mic.start();
+    }
+  }, [mic]);
 
   // ── Image selection → ImageToolbar ──
   // Tracks the doc position of the selected image. The ImageToolbar itself
@@ -312,7 +390,7 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
       </div>
 
       {(editing || catyActiveForThisIssue) && issue ? (
-        <div style={{ padding: '0 16px' }}>
+        <div ref={editorRootRef} style={{ padding: '0 16px' }}>
           <EditorView
             editor={editor}
             toolbar={
@@ -323,6 +401,9 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
                 onOpenEmojiPanel={(anchor) => setEmojiPanelAnchor(anchor)}
                 onOpenSlashMenu={(anchor) => setSlashAnchor(anchor)}
                 historyAvailable={false}
+                onMicToggle={handleMicToggle}
+                micActive={mic.isActive}
+                micSupported={mic.isSupported}
               />
             }
             bodyOverlay={
@@ -343,16 +424,16 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
             }
           />
 
-          {/* Save / Cancel — OUTSIDE the editor shell, aligned to the
-              start, mirrors Jira's description editor pattern. Hidden
-              while Caty is streaming (the overlay owns the apply/cancel). */}
+          {/* Save / Cancel + voice indicator — OUTSIDE the editor shell.
+              Save+Cancel on the left, voice tip / live transcript on the
+              right. Hidden while Caty is streaming (overlay owns apply/cancel). */}
           {!catyActiveForThisIssue && (
             <div
               style={{
                 display: 'flex',
                 gap: 8,
                 marginTop: 8,
-                justifyContent: 'flex-start',
+                alignItems: 'center',
               }}
             >
               <button
@@ -400,6 +481,147 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
               >
                 Cancel
               </button>
+
+              {/* If the mic-button session is active, render the dedicated
+                  recording bar. Otherwise show the Ctrl-hold tip / status. */}
+              {mic.isActive ? (
+                <MicRecordingBar
+                  isRecording={!mic.isPaused}
+                  isPaused={mic.isPaused}
+                  recordedText={mic.recordedText}
+                  interimText={mic.interimText}
+                  onPauseResume={() => (mic.isPaused ? mic.resume() : mic.pause())}
+                  onStop={mic.stop}
+                  onCancel={mic.cancel}
+                />
+              ) : voice.isSupported && (
+                <div
+                  style={{
+                    marginLeft: 'auto',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontSize: 12,
+                    color: voice.isRecording
+                      ? 'var(--ds-text-information, #0C66E4)'
+                      : 'var(--ds-text-subtlest, #6B778C)',
+                    fontWeight: voice.isRecording ? 600 : 400,
+                    maxWidth: '50%',
+                    minWidth: 0,
+                  }}
+                >
+                  {voice.isRecording ? (
+                    <>
+                      <span
+                        aria-hidden
+                        style={{
+                          flexShrink: 0,
+                          display: 'inline-block',
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          background: 'var(--ds-background-brand-bold, #0C66E4)',
+                          animation: 'catalyst-voice-pulse 1s ease-in-out infinite',
+                        }}
+                      />
+                      <span style={{ flexShrink: 0 }}>Catalyst is listening</span>
+                      {voice.interimText && (
+                        <span
+                          style={{
+                            color: 'var(--ds-text-subtle, #44546F)',
+                            fontStyle: 'italic',
+                            fontWeight: 400,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            minWidth: 0,
+                          }}
+                          title={voice.interimText}
+                        >
+                          "{voice.interimText}"
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <span>💡 Hold Ctrl or click the mic to dictate</span>
+                      {/* Segmented language toggle — Auto / EN / AR.
+                          Auto uses text content to pick the language;
+                          EN / AR force it explicitly. */}
+                      <span
+                        role="group"
+                        aria-label="Voice language mode"
+                        style={{
+                          display: 'inline-flex',
+                          marginLeft: 8,
+                          padding: 2,
+                          background: 'var(--ds-background-neutral, #F1F2F4)',
+                          borderRadius: 999,
+                          gap: 0,
+                        }}
+                      >
+                        {(
+                          [
+                            { id: 'auto', label: 'Auto' },
+                            { id: 'en', label: 'EN' },
+                            { id: 'ar', label: 'AR' },
+                          ] as Array<{ id: VoiceMode; label: string }>
+                        ).map(({ id, label }) => {
+                          const active = voiceMode === id;
+                          const titleSuffix =
+                            id === 'auto'
+                              ? ` — currently using ${effectiveLang === 'ar-SA' ? 'Arabic' : 'English'}`
+                              : '';
+                          return (
+                            <button
+                              key={id}
+                              type="button"
+                              onClick={() => setVoiceMode(id)}
+                              aria-pressed={active}
+                              title={`${
+                                id === 'auto'
+                                  ? 'Auto-detect from text'
+                                  : id === 'en'
+                                    ? 'English (US)'
+                                    : 'Arabic'
+                              }${titleSuffix}`}
+                              style={{
+                                padding: '2px 10px',
+                                border: 'none',
+                                borderRadius: 999,
+                                fontSize: 11,
+                                lineHeight: '16px',
+                                fontWeight: active ? 600 : 500,
+                                background: active
+                                  ? 'var(--ds-background-selected, #E9F2FE)'
+                                  : 'transparent',
+                                color: active
+                                  ? 'var(--ds-text-selected, #0C66E4)'
+                                  : 'var(--ds-text-subtle, #6B778C)',
+                                cursor: 'pointer',
+                                transition:
+                                  'background 120ms ease, color 120ms ease',
+                              }}
+                              onMouseEnter={(e) => {
+                                if (active) return;
+                                e.currentTarget.style.color =
+                                  'var(--ds-text, #292A2E)';
+                              }}
+                              onMouseLeave={(e) => {
+                                if (active) return;
+                                e.currentTarget.style.color =
+                                  'var(--ds-text-subtle, #6B778C)';
+                              }}
+                            >
+                              {label}
+                            </button>
+                          );
+                        })}
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           )}
 

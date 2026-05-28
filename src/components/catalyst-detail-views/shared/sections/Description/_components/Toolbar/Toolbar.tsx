@@ -25,6 +25,7 @@ import { LinkButton } from './buttons/LinkButton';
 import { UndoButton } from './buttons/UndoButton';
 import { RedoButton } from './buttons/RedoButton';
 import { HistoryButton } from './buttons/HistoryButton';
+import { MicButton } from './buttons/MicButton';
 
 export interface ToolbarProps {
   editor: Editor | null;
@@ -33,6 +34,10 @@ export interface ToolbarProps {
   historyAvailable?: boolean;
   onOpenSlashMenu?: (anchor: HTMLElement) => void;
   onOpenEmojiPanel?: (anchor: HTMLElement) => void;
+  /** Toggle mic-driven voice recording. */
+  onMicToggle?: () => void;
+  micActive?: boolean;
+  micSupported?: boolean;
 }
 
 export function Toolbar({
@@ -42,6 +47,9 @@ export function Toolbar({
   historyAvailable = false,
   onOpenSlashMenu,
   onOpenEmojiPanel,
+  onMicToggle,
+  micActive = false,
+  micSupported = true,
 }: ToolbarProps) {
   if (!editor) return null;
 
@@ -77,6 +85,9 @@ export function Toolbar({
       <UndoButton editor={editor} />
       <RedoButton editor={editor} />
       <HistoryButton available={historyAvailable} />
+      {micSupported && (
+        <MicButton active={micActive} onClick={onMicToggle} />
+      )}
     </div>
   );
 }

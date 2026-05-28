@@ -13,7 +13,7 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = 'catalyst-tiptap-editor-styles-v07';
+const STYLE_ID = 'catalyst-tiptap-editor-styles-v08';
 
 export function injectEditorStyles(): void {
   if (typeof document === 'undefined') return;
@@ -177,6 +177,12 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor .ProseMirror-selectednode {
       outline: 2px solid var(--ds-border-selected, #0C66E4);
       outline-offset: 2px;
+    }
+
+    /* Voice-to-text recording dot pulse. */
+    @keyframes catalyst-voice-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
     }
 
     /* ── Tables ── */
