@@ -43,9 +43,10 @@
  * body for "@<First Last>" tokens (as produced by our adfToPlainText fix)
  * and wrapping them in a styled <span>.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
+import Spinner from '@atlaskit/spinner';
 import Tooltip from '@atlaskit/tooltip';
 import TextArea from '@atlaskit/textarea';
 import EditIcon from '@atlaskit/icon/glyph/edit';
@@ -59,6 +60,7 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 import { useWorkItemComments } from '@/hooks/useWorkItemComments';
 import { useCommentReactions } from '@/hooks/useCommentReactions';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import { fetchFunction } from '@/integrations/supabase/functionsRouter';
 import type { WorkItem, RecommendedMention, RecommendedComment, TabType } from '@/hooks/useForYouData';
 
 interface RecommendedPanelProps {
@@ -289,6 +291,7 @@ export default function RecommendedPanel({
               issueKey: m.issueKey,
               issueId: m.issueId,
               issueType: m.issueType,
+              issueSummary: m.issueSummary,
               projectKey: m.projectKey,
               commentBody: m.commentBody,
               commentCreatedAt: m.commentCreatedAt,
@@ -318,6 +321,7 @@ export default function RecommendedPanel({
               issueKey: c.issueKey,
               issueId: c.issueId,
               issueType: c.issueType,
+              issueSummary: c.issueSummary,
               projectKey: c.projectKey,
               commentBody: c.commentBody,
               commentCreatedAt: c.commentCreatedAt,
@@ -365,6 +369,7 @@ interface FeedRow {
   issueKey: string;
   issueId: string;
   issueType: string;
+  issueSummary: string;
   projectKey: string;
   commentBody: string;
   commentCreatedAt: string;
@@ -662,7 +667,9 @@ function FeedCard({
         <ReplyComposer
           issueId={row.issueId}
           currentUserName={currentUserName}
-          onSuggest={onOpen}
+          commentBody={row.commentBody}
+          issueSummary={row.issueSummary}
+          issueType={row.issueType}
         />
       </div>
     </div>
@@ -682,18 +689,89 @@ function FeedCard({
 //   wrap:   flex:1, border 0.556px solid rgba(11,18,14,0.14), radius 6
 //   inner:  textarea + Reply button (inline-end)
 // The "Suggest a reply" button sits BELOW the bordered wrapper, not inside.
+type SuggestionPhase = 'idle' | 'loading' | 'done' | 'error';
+
 function ReplyComposer({
   issueId,
   currentUserName,
-  onSuggest,
+  commentBody,
+  issueSummary,
+  issueType,
 }: {
   issueId: string;
   currentUserName?: string;
-  onSuggest: () => void;
+  commentBody: string;
+  issueSummary: string;
+  issueType: string;
 }) {
   const [value, setValue] = useState('');
   const [focused, setFocused] = useState(false);
+  const [suggestionPhase, setSuggestionPhase] = useState<SuggestionPhase>('idle');
+  const abortRef = useRef<AbortController | null>(null);
   const { createCommentAsync, isCreating } = useWorkItemComments('ph_issue', issueId);
+
+  const handleSuggestReply = async () => {
+    if (suggestionPhase === 'loading') return;
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setSuggestionPhase('loading');
+    setValue('');
+    try {
+      const res = await fetchFunction('ai-improve-comment', {
+        method: 'POST',
+        body: JSON.stringify({
+          improve_type: 'suggest_reply',
+          parent_comment: commentBody,
+          issue_summary: issueSummary,
+          issue_type: issueType,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+      });
+      if (!res.ok || !res.body) {
+        setSuggestionPhase('error');
+        toast.error('Could not generate a suggestion. Try again.');
+        return;
+      }
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let buffer = '';
+      let accum = '';
+      while (true) {
+        const { value: chunk, done } = await reader.read();
+        if (done) break;
+        buffer += dec.decode(chunk, { stream: true });
+        let nl;
+        while ((nl = buffer.indexOf('\n')) !== -1) {
+          const line = buffer.slice(0, nl).trim();
+          buffer = buffer.slice(nl + 1);
+          if (!line) continue;
+          try {
+            const ev = JSON.parse(line);
+            if (ev.type === 'text' && typeof ev.delta === 'string') {
+              accum += ev.delta;
+              setValue(accum);
+            } else if (ev.type === 'done') {
+              setSuggestionPhase('done');
+            } else if (ev.type === 'error') {
+              setSuggestionPhase('error');
+              toast.error('AI suggestion failed. Try again.');
+            }
+          } catch { /* skip malformed line */ }
+        }
+      }
+      if (accum.length > 0) {
+        setSuggestionPhase('done');
+        setFocused(true);
+      }
+    } catch (err) {
+      if ((err as DOMException)?.name !== 'AbortError') {
+        setSuggestionPhase('error');
+        toast.error('AI suggestion failed. Try again.');
+      }
+    }
+  };
 
   const userAvatarSrc =
     currentUserName ? resolveAvatarUrl(currentUserName) || undefined : undefined;
@@ -849,7 +927,7 @@ function ReplyComposer({
           tile — which is what Vikram read as "a border" on the button itself.
           We replicate that: transparent button + 6px-padded parent + soft
           hover tile on the parent, not the button. */}
-      <SuggestReplyTile onSuggest={onSuggest} />
+      <SuggestReplyTile onSuggest={handleSuggestReply} isLoading={suggestionPhase === 'loading'} />
     </div>
   );
 }
@@ -857,7 +935,7 @@ function ReplyComposer({
 // Suggest-a-reply hover tile — Jira puts the pencil-button inside a 6px
 // padded container and reveals the neutral hover tile on the container, not
 // the button. That's the "border" Vikram was seeing on the child button.
-function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
+function SuggestReplyTile({ onSuggest, isLoading }: { onSuggest: () => void; isLoading?: boolean }) {
   const [hover, setHover] = useState(false);
   return (
     <div
@@ -867,7 +945,7 @@ function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
         display: 'inline-flex',
         padding: 6,
         borderRadius: 3,
-        background: hover
+        background: hover && !isLoading
           ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.04)')
           : 'transparent',
         transition: 'background-color 120ms ease',
@@ -879,9 +957,12 @@ function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
       <button
         type="button"
         onClick={onSuggest}
+        disabled={isLoading}
+        aria-label={isLoading ? 'Generating reply suggestion' : 'Suggest a reply using AI'}
+        aria-busy={isLoading}
         style={{
           all: 'unset',
-          cursor: 'pointer',
+          cursor: isLoading ? 'wait' : 'pointer',
           display: 'inline-flex',
           alignItems: 'center',
           gap: 6,
@@ -891,10 +972,14 @@ function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
           color: token('color.text.subtle', '#505258'),
           background: 'transparent',
           border: 'none',
+          opacity: isLoading ? 0.7 : 1,
+          transition: 'opacity 120ms ease',
         }}
       >
-        <EditIcon label="" size="small" primaryColor="currentColor" />
-        Suggest a reply
+        {isLoading
+          ? <Spinner size="small" />
+          : <EditIcon label="" size="small" primaryColor="currentColor" />}
+        {isLoading ? 'Generating…' : 'Suggest a reply'}
       </button>
     </div>
   );
