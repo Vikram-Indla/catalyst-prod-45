@@ -1,9 +1,8 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import { fetchFunction } from '@/integrations/supabase/functionsRouter';
 import { containsArabic } from '@/lib/detectArabic';
+import { useTranslation } from '@/hooks/useTranslation';
 import './title-translate.css';
 
 export interface TitleTranslateWrapperProps {
@@ -12,6 +11,17 @@ export interface TitleTranslateWrapperProps {
   children: (helpers: { dir: 'rtl' | 'ltr' }) => React.ReactNode;
   className?: string;
   buttonClassName?: string;
+  /**
+   * Jira issue key (e.g. "BAU-5510"). When provided, translations are
+   * cached in ph_issue_translations so repeat opens return instantly.
+   * Omit (or pass '') for create-form surfaces that have no issue key yet.
+   */
+  issueKey?: string;
+  /**
+   * Which field is being translated — used as the cache key discriminator.
+   * Defaults to 'summary'. Use 'description' or 'comment:<id>' for other fields.
+   */
+  field?: string;
 }
 
 export function TitleTranslateWrapper({
@@ -20,10 +30,13 @@ export function TitleTranslateWrapper({
   children,
   className,
   buttonClassName,
+  issueKey = '',
+  field = 'summary',
 }: TitleTranslateWrapperProps) {
-  const [isTranslating, setIsTranslating] = useState(false);
   const [showingTranslation, setShowingTranslation] = useState(false);
   const originalRef = useRef<string>('');
+
+  const { translate, isTranslating } = useTranslation();
 
   const isArabic = useMemo(() => containsArabic(value), [value]);
   const dir: 'rtl' | 'ltr' = isArabic ? 'rtl' : 'ltr';
@@ -33,48 +46,25 @@ export function TitleTranslateWrapper({
     const text = value.trim();
     if (!text || isTranslating) return;
     originalRef.current = text;
-    setIsTranslating(true);
-    try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const accessToken = sessionData?.session?.access_token ?? null;
-      const res = await fetchFunction('ai-translate-title', {
-        method: 'POST',
-        accessToken,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, target }),
-      });
-      if (!res.ok) {
-        let message = `Translation failed (${res.status})`;
-        try {
-          const errJson = await res.json();
-          if (errJson?.message) message = errJson.message;
-        } catch {
-          /* not JSON */
-        }
-        toast.error(message);
-        return;
-      }
-      const json = (await res.json()) as { translated?: string };
-      if (json.translated && json.translated.trim()) {
-        onValueChange(json.translated.trim());
-        setShowingTranslation(true);
-      } else {
-        toast.error('Translation returned empty text');
-      }
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Translation failed');
-    } finally {
-      setIsTranslating(false);
+    const result = await translate(text, { issueKey, field, target });
+    if (result) {
+      onValueChange(result);
+      setShowingTranslation(true);
+    } else {
+      toast.error('Translation failed');
     }
-  }, [value, target, isTranslating, onValueChange]);
+  }, [value, target, isTranslating, translate, issueKey, field, onValueChange]);
 
-  const handleShowOriginal = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (originalRef.current) {
-      onValueChange(originalRef.current);
-    }
-    setShowingTranslation(false);
-  }, [onValueChange]);
+  const handleShowOriginal = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (originalRef.current) {
+        onValueChange(originalRef.current);
+      }
+      setShowingTranslation(false);
+    },
+    [onValueChange],
+  );
 
   const hasText = value.trim().length > 0;
 
@@ -87,7 +77,11 @@ export function TitleTranslateWrapper({
       {hasText && (
         <div className="ttw-action-row">
           {isTranslating ? (
-            <span className="ttw-caty-translating" aria-live="polite" aria-label="CATY is translating">
+            <span
+              className="ttw-caty-translating"
+              aria-live="polite"
+              aria-label="CATY is translating"
+            >
               <span className="ttw-sparkle" aria-hidden="true">✦</span>
               <span>CATY is translating</span>
               <span className="ttw-waveform" aria-hidden="true">

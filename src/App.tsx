@@ -16,6 +16,7 @@ import { NavigationProvider } from "./contexts/NavigationContext";
 import { ProcessStepsProvider } from "./contexts/ProcessStepsContext";
 import { FeatureFlagProvider } from "./contexts/FeatureFlagContext";
 import { WorkflowProvider } from "./lib/workflows";
+import { LanguageProvider } from "./contexts/LanguageContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { PreviewRecoveryBanner } from "./components/PreviewRecoveryBanner";
@@ -136,6 +137,7 @@ function App() {
       <UWVProvider>
       <AuthProvider>
         
+        <LanguageProvider>
         <FeatureFlagProvider>
         <WorkflowProvider>
         <NavigationProvider>
@@ -210,6 +212,7 @@ function App() {
         </NavigationProvider>
         </WorkflowProvider>
         </FeatureFlagProvider>
+        </LanguageProvider>
       </AuthProvider>
       </UWVProvider>
       </IntlProvider>
