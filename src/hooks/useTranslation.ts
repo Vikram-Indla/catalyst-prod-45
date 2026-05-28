@@ -83,7 +83,11 @@ export function useTranslation(): UseTranslationResult {
         const { data: sessionData } = await supabase.auth.getSession();
         const accessToken = sessionData?.session?.access_token ?? null;
 
-        const res = await fetchFunction('ai-translate-title', {
+        // Route to the right edge function:
+        // - 'summary' → ai-translate-title (title-tuned prompt, 400 tokens)
+        // - everything else → ai-translate-field (prose-preserving, 4000 tokens)
+        const edgeFn = field === 'summary' ? 'ai-translate-title' : 'ai-translate-field';
+        const res = await fetchFunction(edgeFn, {
           method: 'POST',
           accessToken,
           headers: { 'Content-Type': 'application/json' },
