@@ -389,6 +389,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
         jiraUserMap={jiraUserMap}
         workItemId={resolvedWorkItemId ?? undefined}
         improveContext={improveContext}
+        issueKey={resolvedIssueKey ?? undefined}
       />
     </div>
   );

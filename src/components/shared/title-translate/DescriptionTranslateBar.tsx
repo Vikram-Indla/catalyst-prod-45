@@ -19,6 +19,11 @@ export interface DescriptionTranslateBarProps {
   plainText: string;
   /** Jira issue key — used for cache. Pass '' to skip caching. */
   issueKey: string;
+  /**
+   * Cache/routing field name.
+   * Defaults to 'description'. Pass 'comment:<id>' for comment translation.
+   */
+  field?: string;
   /** Whether we are currently showing a translated version. */
   isTranslated: boolean;
   /** Called with the translated string when translation succeeds. */
@@ -26,15 +31,18 @@ export interface DescriptionTranslateBarProps {
   /** Called when the user clicks "Show original". */
   onRevert: () => void;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export function DescriptionTranslateBar({
   plainText,
   issueKey,
+  field = 'description',
   isTranslated,
   onTranslated,
   onRevert,
   className,
+  style,
 }: DescriptionTranslateBarProps) {
   const { translate, isTranslating } = useTranslation();
 
@@ -47,7 +55,7 @@ export function DescriptionTranslateBar({
       if (!plainText.trim() || isTranslating) return;
       const result = await translate(plainText, {
         issueKey,
-        field: 'description',
+        field,
         target,
       });
       if (result) {
@@ -56,7 +64,7 @@ export function DescriptionTranslateBar({
         toast.error('Translation failed');
       }
     },
-    [plainText, isTranslating, translate, issueKey, target, onTranslated],
+    [plainText, isTranslating, translate, issueKey, field, target, onTranslated],
   );
 
   const handleRevert = useCallback(
@@ -70,7 +78,7 @@ export function DescriptionTranslateBar({
   if (!plainText.trim()) return null;
 
   return (
-    <div className={cn('ttw-action-row', className)} style={{ marginTop: 8 }}>
+    <div className={cn('ttw-action-row', className)} style={{ marginTop: 8, ...style }}>
       {isTranslating ? (
         <span
           className="ttw-caty-translating"
