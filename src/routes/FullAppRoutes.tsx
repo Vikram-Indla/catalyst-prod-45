@@ -319,6 +319,7 @@ const FeatureStatuses = lazy(() => import("../pages/admin/FeatureStatuses"));
 const ThemeStatuses = lazy(() => import("../pages/admin/ThemeStatuses"));
 const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
 const DesignSystemAdmin = lazy(() => import("../pages/admin/design-system/DesignSystemAdmin"));
+const AiTranslationsAuditPage = lazy(() => import("../pages/admin/AiTranslationsAuditPage"));
 const CatalystFeaturesBoard = lazy(() => import("../pages/admin/CatalystFeaturesBoard"));
 const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
 // Incident admin routes deleted 2026-05-09 (Vikram decision: delete all 7)
@@ -906,6 +907,7 @@ export default function FullAppRoutes() {
           <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
           <Route path="catalyst-features" element={<S><CatalystFeaturesBoard /></S>} />
           <Route path="design-system" element={<S><DesignSystemAdmin /></S>} />
+          <Route path="ai-governance/translations" element={<S><AiTranslationsAuditPage /></S>} />
           <Route path="governance" element={<S><GovernanceSettings /></S>} />
           <Route path="storybook" element={<S><AdminStorybookPage /></S>} />
           {/* Design system pocket — preflight 2026-05-17 consolidation. */}
