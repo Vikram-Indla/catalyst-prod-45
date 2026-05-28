@@ -23,9 +23,13 @@ import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
-  CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
+  CatalystTitleEditor, CatalystQuickActions, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails, CatalystStatusPill, CatalystKeyDetails,
 } from '../shared/sections';
+/* v1 Tiptap description — Story-only swap. All other CatalystView* still use
+   the legacy CatalystDescriptionSection. Promotion to canonical pending PO
+   review per BAU-story-description-01 plan. */
+import { Description } from '../shared/sections/Description';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
@@ -125,7 +129,7 @@ export default function CatalystViewStory({
           showPriority
         />
       )}
-      <CatalystDescriptionSection issue={issue ?? null} />
+      <Description issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 
       {/* STORY-UNIQUE: Attachments — Jira-parity table with full CRUD. */}

@@ -115,6 +115,110 @@ function editorTablesCellSelectionDedup(): Plugin {
   };
 }
 
+/**
+ * PROSEMIRROR-GAPCURSOR IDEMPOTENT REGISTRATION
+ *
+ * prosemirror-gapcursor calls `Selection.jsonID("gapcursor", GapCursor)` at
+ * module top-level. When the module gets evaluated twice — Vite HMR
+ * re-eval, or the rare CJS+ESM dual-resolution that Atlaskit's editor
+ * chunk can trigger — the second call throws:
+ *   RangeError: Duplicate use of selection JSON ID gapcursor
+ *
+ * Fix: wrap the registration in a try/catch so re-evaluation is a no-op
+ * instead of a hard error. The registry already holds the right entry from
+ * the first call, so swallowing the second is safe.
+ *
+ * Same pattern as editorTablesCellSelectionDedup for the 'cell' ID.
+ */
+function prosemirrorGapcursorIdempotent(): Plugin {
+  return {
+    name: 'prosemirror-gapcursor-idempotent',
+    enforce: 'pre',
+    transform(code, id) {
+      if (!id.includes('prosemirror-gapcursor')) return;
+      if (!/dist[/\\]index\.(c?js|mjs)/.test(id)) return;
+      // ESM source:  Selection.jsonID("gapcursor", GapCursor);
+      // CJS source:  prosemirrorState.Selection.jsonID("gapcursor", GapCursor);
+      return code.replace(
+        /^(\s*)((?:[\w.]+\.)?Selection\.jsonID\s*\(\s*['"]gapcursor['"]\s*,\s*GapCursor\s*\))\s*;?\s*$/m,
+        '$1try { $2; } catch (_) { /* gapcursor already registered — second eval (HMR / dual-resolve) is a no-op */ }',
+      );
+    },
+  };
+}
+
+/**
+ * PROSEMIRROR-TABLES IDEMPOTENT REGISTRATION
+ *
+ * Same failure shape as gapcursor: prosemirror-tables' top-level
+ * `Selection.jsonID("cell", CellSelection)` throws on re-evaluation under
+ * HMR or when both Tiptap's table extension AND @atlaskit/editor-tables
+ * import it through different bundle paths.
+ *
+ * editorTablesCellSelectionDedup handles the Atlaskit side; this plugin
+ * handles the prosemirror-tables side. Both layers need it because
+ * either module can be the "second" registration.
+ */
+function prosemirrorTablesIdempotent(): Plugin {
+  return {
+    name: 'prosemirror-tables-idempotent',
+    enforce: 'pre',
+    transform(code, id) {
+      if (!id.includes('prosemirror-tables')) return;
+      if (!/dist[/\\]index\.(c?js|mjs)/.test(id)) return;
+      return code.replace(
+        /^(\s*)((?:[\w.]+\.)?Selection\.jsonID\s*\(\s*['"]cell['"]\s*,\s*CellSelection\s*\))\s*;?\s*$/m,
+        '$1try { $2; } catch (_) { /* cell selection already registered — second eval is a no-op */ }',
+      );
+    },
+  };
+}
+
+/**
+ * PROSEMIRROR-STATE IDEMPOTENT Selection.jsonID — root-cause fix.
+ *
+ * Patches prosemirror-state's Selection.jsonID method so duplicate
+ * registrations return the already-registered class instead of throwing.
+ *
+ * The per-package shims above (gapcursor, tables, editor-tables) handle
+ * one specific call site each. This patch fixes the underlying registry
+ * function — covering every current AND future duplicate-jsonID case
+ * (e.g. if a future package starts colliding on "node" / "text" / "all"
+ * or any custom selection ID).
+ *
+ * Before:
+ *   if (id in classesById)
+ *       throw new RangeError("Duplicate use of selection JSON ID " + id);
+ *
+ * After:
+ *   if (id in classesById) {
+ *     selectionClass.prototype.jsonID = id;
+ *     return classesById[id];
+ *   }
+ *
+ * The replacement still sets the prototype tag on the duplicate class so
+ * its instances serialize with the right ID, while keeping the first
+ * registered class as the canonical one in the registry.
+ */
+function prosemirrorStateIdempotentJsonID(): Plugin {
+  const REPLACEMENT =
+    'if (id in classesById) { selectionClass.prototype.jsonID = id; return classesById[id]; }';
+  // Matches both the ESM multi-line form and the CJS single-line form.
+  const PATTERN =
+    /if\s*\(\s*id\s+in\s+classesById\s*\)\s*\{?\s*throw\s+new\s+RangeError\s*\(\s*["']Duplicate use of selection JSON ID ?["']\s*\+\s*id\s*\)\s*;?\s*\}?/;
+
+  return {
+    name: 'prosemirror-state-idempotent-jsonid',
+    enforce: 'pre',
+    transform(code, id) {
+      if (!id.includes('prosemirror-state')) return;
+      if (!/dist[/\\]index\.(c?js|mjs)/.test(id)) return;
+      if (!PATTERN.test(code)) return;
+      return code.replace(PATTERN, REPLACEMENT);
+    },
+  };
+}
+
 function adfSchemaStagePatcher(): Plugin {
   const adfSchemaPath = path.resolve(__dirname, 'node_modules/@atlaskit/adf-schema/dist/esm/index.js');
 
@@ -279,6 +383,9 @@ export default defineConfig(({ mode, command }) => {
   },
   plugins: [
     editorTablesCellSelectionDedup(),
+    prosemirrorGapcursorIdempotent(),
+    prosemirrorTablesIdempotent(),
+    prosemirrorStateIdempotentJsonID(),
     adfSchemaStagePatcher(),
     atlaskitSubpathResolver(),
     isBuild ? skipHeavyModules() : null,
@@ -521,6 +628,75 @@ export default defineConfig(({ mode, command }) => {
                     'export const taskListWithFlexibleFirstChildStage0 = undefined;\n',
                   loader: 'js',
                 };
+              },
+            );
+          },
+        },
+        {
+          // Mirror of prosemirrorGapcursorIdempotent for the esbuild
+          // dep-bundling pass. The Vite transform plugin runs after
+          // pre-bundling, so for packages in optimizeDeps.include
+          // (prosemirror-gapcursor IS) the patch must also be applied here
+          // or the pre-bundled chunk ships the unpatched top-level
+          // Selection.jsonID call and HMR re-eval still throws.
+          name: 'prosemirror-gapcursor-idempotent-esbuild',
+          setup(build: any) {
+            build.onLoad(
+              { filter: /prosemirror-gapcursor[/\\]dist[/\\]index\.(c?js|mjs)$/ },
+              (args: any) => {
+                if (!fs.existsSync(args.path)) return null;
+                const original = fs.readFileSync(args.path, 'utf-8');
+                const patched = original.replace(
+                  /^(\s*)((?:[\w.]+\.)?Selection\.jsonID\s*\(\s*['"]gapcursor['"]\s*,\s*GapCursor\s*\))\s*;?\s*$/m,
+                  '$1try { $2; } catch (_) { /* gapcursor already registered — second eval (HMR / dual-resolve) is a no-op */ }',
+                );
+                return { contents: patched, loader: 'js' };
+              },
+            );
+          },
+        },
+        {
+          // Mirror of prosemirrorTablesIdempotent for the esbuild
+          // dep-bundling pass. prosemirror-tables IS in optimizeDeps.include
+          // and registers Selection.jsonID("cell", CellSelection) at module
+          // load — patching both passes makes the registration idempotent
+          // regardless of which loader path runs first.
+          name: 'prosemirror-tables-idempotent-esbuild',
+          setup(build: any) {
+            build.onLoad(
+              { filter: /prosemirror-tables[/\\]dist[/\\]index\.(c?js|mjs)$/ },
+              (args: any) => {
+                if (!fs.existsSync(args.path)) return null;
+                const original = fs.readFileSync(args.path, 'utf-8');
+                const patched = original.replace(
+                  /^(\s*)((?:[\w.]+\.)?Selection\.jsonID\s*\(\s*['"]cell['"]\s*,\s*CellSelection\s*\))\s*;?\s*$/m,
+                  '$1try { $2; } catch (_) { /* cell selection already registered — second eval is a no-op */ }',
+                );
+                return { contents: patched, loader: 'js' };
+              },
+            );
+          },
+        },
+        {
+          // Root-cause fix at the prosemirror-state level — patches
+          // Selection.jsonID to be idempotent. Covers every current and
+          // future duplicate-selection-ID error, not just gapcursor / cell.
+          // Must be applied at the esbuild pass too because
+          // prosemirror-state is in optimizeDeps.include and gets
+          // pre-bundled before the Vite serve-transform plugin runs.
+          name: 'prosemirror-state-idempotent-jsonid-esbuild',
+          setup(build: any) {
+            const PATTERN =
+              /if\s*\(\s*id\s+in\s+classesById\s*\)\s*\{?\s*throw\s+new\s+RangeError\s*\(\s*["']Duplicate use of selection JSON ID ?["']\s*\+\s*id\s*\)\s*;?\s*\}?/;
+            const REPLACEMENT =
+              'if (id in classesById) { selectionClass.prototype.jsonID = id; return classesById[id]; }';
+            build.onLoad(
+              { filter: /prosemirror-state[/\\]dist[/\\]index\.(c?js|mjs)$/ },
+              (args: any) => {
+                if (!fs.existsSync(args.path)) return null;
+                const original = fs.readFileSync(args.path, 'utf-8');
+                if (!PATTERN.test(original)) return null;
+                return { contents: original.replace(PATTERN, REPLACEMENT), loader: 'js' };
               },
             );
           },
