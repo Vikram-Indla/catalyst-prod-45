@@ -27,18 +27,9 @@
  */
 import React, { useMemo } from 'react';
 import { token } from '@atlaskit/tokens';
+import Avatar from '@atlaskit/avatar';
 import ClockIcon from '@atlaskit/icon/core/clock';
 import FolderOpenIcon from '@atlaskit/icon/core/folder-open';
-import GridIcon from '@atlaskit/icon/core/grid';
-import BranchIcon from '@atlaskit/icon/core/branch';
-import DashboardIcon from '@atlaskit/icon/core/dashboard';
-import SpreadsheetIcon from '@atlaskit/icon/core/spreadsheet';
-import GoalIcon from '@atlaskit/icon/core/goal';
-import BoardIcon from '@atlaskit/icon/core/board';
-import LocationIcon from '@atlaskit/icon/core/location';
-import ChartBarIcon from '@atlaskit/icon/core/chart-bar';
-import SettingsIcon from '@atlaskit/icon/core/settings';
-import CalendarIcon from '@atlaskit/icon/core/calendar';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
 
@@ -190,55 +181,52 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
   );
 }
 
-// ─── Section-type icon map ────────────────────────────────────────────────────
-// Maps sectionLabel → Lucide icon component. This replaces the repeated
-// project avatar so each recent row communicates WHERE you're going (view type)
-// rather than WHICH project — the project key text already covers that.
-// Matching is case-insensitive substring so "All work", "all-work" etc. all hit.
-type LucideIcon = React.FC<{ size?: number; strokeWidth?: number; style?: React.CSSProperties }>;
+// ─── Project avatar factory ───────────────────────────────────────────────────
+// Each Recent row shows the PROJECT avatar (@atlaskit/avatar appearance="square"
+// size="xsmall") instead of a section-type icon. This matches Jira's sidebar
+// pattern: the project avatar IS the leading visual identifier, and the section
+// name ("All work", "Backlog") is the row's primary text.
+//
+// Design rationale (council verdict 2026-05-28):
+//   Section icons communicated WHERE (view type) — useful but project key text
+//   already covers "which project". In multi-project workspaces, an avatar is
+//   faster to visually scan across rows than reading keys. The accent bar
+//   handles the color identity layer; the avatar handles the shape/initial layer.
+//
+// Component cache keyed by projectKey so React reconciles correctly across
+// renders. Cache entries are stable for the session lifetime — project names
+// don't change intra-session.
+const PROJECT_AVATAR_COMPONENTS = new Map<
+  string,
+  React.FC<{ className?: string; style?: React.CSSProperties }>
+>();
 
-// Icons MUST match ProjectHubSidebar.tsx exactly — same section, same icon.
-// dashboard→DashboardIcon, boards→GridIcon, backlog→BoardIcon, allwork→BranchIcon
-const SECTION_ICON_MAP: Array<[RegExp, LucideIcon]> = [
-  [/all.?work/i,  BranchIcon],      // allwork → BranchIcon
-  [/backlog/i,    BoardIcon],       // backlog → BoardIcon
-  [/\bboard/i,    GridIcon],        // boards → GridIcon (\b prevents matching "dashboard")
-  [/dashboard/i,  DashboardIcon],
-  [/report/i,     ChartBarIcon],
-  [/setting/i,    SettingsIcon],
-  [/calendar/i,   CalendarIcon],
-  [/roadmap/i,    LocationIcon],
-  [/list/i,       SpreadsheetIcon],
-  [/issue/i,      GoalIcon],
-];
+function getProjectAvatarComponent(location: RecentLocation) {
+  const key = location.projectKey;
+  const cached = PROJECT_AVATAR_COMPONENTS.get(key);
+  if (cached) return cached;
 
-function iconForSection(label: string): LucideIcon {
-  for (const [pattern, Icon] of SECTION_ICON_MAP) {
-    if (pattern.test(label)) return Icon;
-  }
-  return FolderOpenIcon;
-}
-
-// Stable component cache keyed by section label so React reconciles correctly.
-const SECTION_ICON_COMPONENTS = new Map<string, React.FC<{ className?: string; style?: React.CSSProperties }>>();
-
-function getSectionIconComponent(label: string) {
-  let cached = SECTION_ICON_COMPONENTS.get(label);
-  if (!cached) {
-    const Icon = iconForSection(label);
-    const Component: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
-      <span
-        className={className}
-        style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--ds-icon-subtle, var(--cp-text-secondary, #6B778C))', ...style }}
-      >
-        <Icon size={16} strokeWidth={1.75} />
-      </span>
-    );
-    Component.displayName = `SectionIcon(${label})`;
-    SECTION_ICON_COMPONENTS.set(label, Component);
-    cached = Component;
-  }
-  return cached;
+  const { projectName } = location;
+  // Wrap in a span so SidebarBase's style injection (color, display) is
+  // applied to the wrapper, not the avatar element itself.
+  const Component: React.FC<{ className?: string; style?: React.CSSProperties }> = ({
+    className,
+    style,
+  }) => (
+    <span
+      className={className}
+      style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0, ...style }}
+    >
+      {/* ADS Avatar — square appearance for project/space identity.
+          name prop: drives initials fallback when no src is available.
+          xsmall = 16px — matches existing icon slot width in SidebarBase.
+          Source: https://atlassian.design/components/avatar */}
+      <Avatar appearance="square" name={projectName} size="xsmall" />
+    </span>
+  );
+  Component.displayName = `ProjectAvatar(${key})`;
+  PROJECT_AVATAR_COMPONENTS.set(key, Component);
+  return Component;
 }
 
 export default function HomeSidebar({
@@ -285,7 +273,7 @@ export default function HomeSidebar({
           id: `recent-${loc.path}`,
           title: <LocationRowTitle location={loc} />,
           path: loc.path,
-          icon: getSectionIconComponent(loc.sectionLabel),
+          icon: getProjectAvatarComponent(loc),
           // Project identity bar: data-driven from ph_projects.color.
           // Each row carries its project's brand color as a persistent 3px
           // left spine — instant visual differentiation between projects.
