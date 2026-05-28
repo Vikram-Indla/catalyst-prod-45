@@ -1,14 +1,14 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
-import { containsArabic } from '@/lib/detectArabic';
-import { useTranslation } from '@/hooks/useTranslation';
-import './title-translate.css';
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { containsArabic } from "@/lib/detectArabic";
+import { useTranslation } from "@/hooks/useTranslation";
+import "./title-translate.css";
 
 export interface TitleTranslateWrapperProps {
   value: string;
   onValueChange: (next: string) => void;
-  children: (helpers: { dir: 'rtl' | 'ltr' }) => React.ReactNode;
+  children: (helpers: { dir: "rtl" | "ltr" }) => React.ReactNode;
   className?: string;
   buttonClassName?: string;
   /**
@@ -30,17 +30,17 @@ export function TitleTranslateWrapper({
   children,
   className,
   buttonClassName,
-  issueKey = '',
-  field = 'summary',
+  issueKey = "",
+  field = "summary",
 }: TitleTranslateWrapperProps) {
   const [showingTranslation, setShowingTranslation] = useState(false);
-  const originalRef = useRef<string>('');
+  const originalRef = useRef<string>("");
 
   const { translate, isTranslating } = useTranslation();
 
   const isArabic = useMemo(() => containsArabic(value), [value]);
-  const dir: 'rtl' | 'ltr' = isArabic ? 'rtl' : 'ltr';
-  const target: 'ar' | 'en' = isArabic ? 'en' : 'ar';
+  const dir: "rtl" | "ltr" = isArabic ? "rtl" : "ltr";
+  const target: "ar" | "en" = isArabic ? "en" : "ar";
 
   const handleTranslate = useCallback(async () => {
     const text = value.trim();
@@ -51,7 +51,7 @@ export function TitleTranslateWrapper({
       onValueChange(result);
       setShowingTranslation(true);
     } else {
-      toast.error('Translation failed');
+      toast.error("Translation failed");
     }
   }, [value, target, isTranslating, translate, issueKey, field, onValueChange]);
 
@@ -70,7 +70,7 @@ export function TitleTranslateWrapper({
 
   return (
     <div
-      className={cn('ttw-root', isTranslating && 'ttw-translating', className)}
+      className={cn("ttw-root", isTranslating && "ttw-translating", className)}
       data-dir={dir}
     >
       {children({ dir })}
@@ -82,20 +82,30 @@ export function TitleTranslateWrapper({
               aria-live="polite"
               aria-label="CATY is translating"
             >
-              <span className="ttw-sparkle" aria-hidden="true">✦</span>
+              <span className="ttw-sparkle" aria-hidden="true">
+                ✦
+              </span>
               <span>CATY is translating</span>
               <span className="ttw-waveform" aria-hidden="true">
-                <span /><span /><span /><span /><span />
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
               </span>
             </span>
           ) : showingTranslation ? (
             <span className="ttw-translated-state">
-              <span className="ttw-sparkle" aria-hidden="true">✦</span>
+              <span className="ttw-sparkle" aria-hidden="true">
+                ✦
+              </span>
               <span>CATY translated</span>
-              <span className="ttw-sep" aria-hidden="true">·</span>
+              <span className="ttw-sep" aria-hidden="true">
+                ·
+              </span>
               <button
                 type="button"
-                className={cn('ttw-revert-btn', buttonClassName)}
+                className={cn("ttw-revert-btn", buttonClassName)}
                 onMouseDown={(e) => e.stopPropagation()}
                 onClick={handleShowOriginal}
                 aria-label="Show original text"
@@ -106,7 +116,7 @@ export function TitleTranslateWrapper({
           ) : (
             <button
               type="button"
-              className={cn('ttw-translate-btn', buttonClassName)}
+              className={cn("ttw-translate-btn", buttonClassName)}
               onMouseDown={(e) => e.stopPropagation()}
               onClick={(e) => {
                 e.stopPropagation();
@@ -114,10 +124,10 @@ export function TitleTranslateWrapper({
               }}
               disabled={isTranslating}
               aria-label={
-                target === 'ar' ? 'Translate to Arabic' : 'Translate to English'
+                target === "ar" ? "Translate to Arabic" : "Translate to English"
               }
             >
-              {target === 'ar' ? 'Translate to Arabic' : 'Translate to English'}
+              {target === "ar" ? "Translate to Arabic" : "Translate to English"}
             </button>
           )}
         </div>

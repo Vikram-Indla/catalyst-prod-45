@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.ai-improve-comment]
 verify_jwt = false
+
+[functions.ai-suggest-children]
+verify_jwt = false

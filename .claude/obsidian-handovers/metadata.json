@@ -13,7 +13,21 @@
       "local_commits": 0,
       "uncommitted_files": 0,
       "description": "Complete Filters module — Project Hub + Product Hub. 6 screens designed, ADS tokens probed, JQL architecture specced, 10 outliers defined."
+    },
+    "02": {
+      "name": "BAU-story-description-01",
+      "project": "BAU",
+      "menu": "detail",
+      "component": "description",
+      "status": "planning_complete",
+      "progress": 0,
+      "phase": "ready_for_execution",
+      "created": "2026-05-28T00:00:00Z",
+      "last_saved": "2026-05-28T00:00:00Z",
+      "local_commits": 0,
+      "uncommitted_files": 0,
+      "description": "Build new Tiptap-based Description editor to replace ~2MB Atlaskit editor. Mount on Story ticket type only in v1. Reuse useCatyImprove + CatyStreamingOverlay + ph_issues.description_adf storage. 15-button bubble toolbar, @ / : / / inline triggers, View More modal with 5 tabs (4 show 'Coming soon' in v1). History disabled in v1 (no revisions table). PO approval gate before making canonical."
     }
   },
-  "last_updated": "2026-05-21T19:57:00Z"
+  "last_updated": "2026-05-28T00:00:00Z"
 }

@@ -70,7 +70,7 @@ export function LinkedWorkItems({
   const { data: links = [], isLoading, isError } = useLinkedWorkItems(issueKey);
   const { linkMutation, unlinkMutation } = useLinkMutations(issueKey);
 
-  const [expanded, setExpanded] = useState<boolean>(true);
+  const [expanded, setExpanded] = useState<boolean>(false);
   const [showToolbar, setShowToolbar] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const [createLinkType, setCreateLinkType] = useState<string>('relates to');
@@ -104,10 +104,9 @@ export function LinkedWorkItems({
     [links],
   );
 
-  // Auto-open the disclosure when links exist; preserves legacy behaviour.
-  React.useEffect(() => {
-    if (links.length > 0) setExpanded(true);
-  }, [links.length]);
+  // Section is collapsed by default — user clicks the chevron to open it.
+  // (Legacy auto-expand-when-links-exist removed per UX request to match
+  // the Subtasks panel default.)
 
   // Open the inline link toolbar in response to a window event dispatched
   // by the right-rail Improve dropdown ("Link similar work items"). Mirrors
@@ -231,6 +230,23 @@ export function LinkedWorkItems({
         }}
         bodyId={bodyId}
       />
+
+      {/* Empty-state inline "Add linked work item" link — gray, aligned
+          with the header title. Sits outside the collapse gate so the
+          user sees it even when the section is collapsed. Mirrors the
+          SubtasksPanel "Add subtask" pattern. */}
+      {!isLoading && links.length === 0 && !showToolbar && (
+        <button
+          type="button"
+          className="lwi-add-link"
+          onClick={() => {
+            setExpanded(true);
+            setShowToolbar(true);
+          }}
+        >
+          Add linked work item
+        </button>
+      )}
 
       {expanded && (
         <>
