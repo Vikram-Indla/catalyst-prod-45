@@ -47,6 +47,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
 import Lozenge from '@atlaskit/lozenge';
+import Spinner from '@atlaskit/spinner';
 
 import Tooltip from '@atlaskit/tooltip';
 import TextArea from '@atlaskit/textarea';
@@ -1270,6 +1271,10 @@ function ReactionStrip({
   // ph_comments has no row yet). We set it after on-demand upsert.
   const [resolvedId, setResolvedId] = useState<string | null>(phCommentId);
 
+  // H1: show a spinner in the strip while the on-demand upsert is in-flight
+  // so the user knows their click was registered (P1 from design-critique 2026-05-29).
+  const [isUpserting, setIsUpserting] = useState(false);
+
   // If phCommentId arrives non-null on a later render (e.g. after a refetch
   // that found the row), sync it in so we don't create a duplicate.
   React.useEffect(() => {
@@ -1288,14 +1293,15 @@ function ReactionStrip({
     }
   }, [resolvedId, toggleReaction]);
 
-  // Always available when we can create a ph_comments row on demand.
-  // Only disable if issueId is not a UUID (rare fallback — Jira key string).
-  const isAvailable = issueUuid !== null;
+  // Chips are interactive when issueId is a valid UUID. Also blocked while
+  // the on-demand upsert is in-flight (isUpserting) to prevent double-fires.
+  const isAvailable = issueUuid !== null && !isUpserting;
 
   /** Ensure a ph_comments row exists, returning its UUID. */
   const ensurePhComment = async (): Promise<string | null> => {
     if (resolvedId) return resolvedId;
     if (!issueUuid) return null;
+    setIsUpserting(true);
     try {
       const { data, error } = await (supabase as any)
         .from('ph_comments')
@@ -1312,6 +1318,8 @@ function ReactionStrip({
       console.warn('[ReactionStrip] ensurePhComment failed', err);
       toast.error('Could not save reaction');
       return null;
+    } finally {
+      setIsUpserting(false);
     }
   };
 
@@ -1388,6 +1396,12 @@ function ReactionStrip({
           chipBorder={chipBorder}
         />
       ))}
+      {/* H1: inline spinner while the first-click ph_comments upsert is in-flight */}
+      {isUpserting && (
+        <span style={{ display: 'inline-flex', alignItems: 'center', width: 24, height: 24 }}>
+          <Spinner size="small" />
+        </span>
+      )}
       {/* Trigger chip — Jira parity: 32×24 with emoji-add glyph. */}
       <button
         type="button"
