@@ -17,6 +17,7 @@ import { injectEditorStyles } from './editorStyles';
 import { BlockDragHandle } from '../BlockDragHandle/BlockDragHandle';
 import { SelectionTranslate } from '../SelectionTranslate/SelectionTranslate';
 import { TableResizeBar } from '../TableResizeBar/TableResizeBar';
+import { TableToolbar } from '../TableToolbar/TableToolbar';
 
 interface EditorViewProps {
   editor: Editor | null;
@@ -76,6 +77,7 @@ export function EditorView({ editor, toolbar, bodyOverlay }: EditorViewProps) {
             onTranslatingChange={setIsTranslating}
           />
           <TableResizeBar editor={editor} containerRef={bodyRef} />
+          <TableToolbar editor={editor} containerRef={bodyRef} />
         </div>
         {overlayActive && bodyOverlay}
       </div>

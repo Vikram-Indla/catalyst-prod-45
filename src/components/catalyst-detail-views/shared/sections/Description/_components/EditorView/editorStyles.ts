@@ -13,7 +13,7 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = 'catalyst-tiptap-editor-styles-v20';
+const STYLE_ID = 'catalyst-tiptap-editor-styles-v30';
 
 export function injectEditorStyles(): void {
   if (typeof document === 'undefined') return;
@@ -264,6 +264,97 @@ export function injectEditorStyles(): void {
       background: var(--ds-surface-sunken, #F7F8F9);
       font-weight: 600;
       text-align: start;
+    }
+
+    /* ─── Table toolbar-driven attributes ─── */
+
+    /* Header Row ON: first <tr>'s cells get sunken gray + bold. */
+    .catalyst-tiptap-editor table[data-header-row="true"] tbody > tr:first-child > td,
+    .catalyst-tiptap-editor table[data-header-row="true"] tbody > tr:first-child > th {
+      background: var(--ds-surface-sunken, #F7F8F9);
+      font-weight: 600;
+    }
+    /* Header Row OFF: the <th> elements in the first row would still
+       render with the global th styling (bg + bold). Force them to
+       look like regular cells. */
+    .catalyst-tiptap-editor table[data-header-row="false"] tbody > tr:first-child > th {
+      background: transparent;
+      font-weight: 400;
+    }
+
+    /* Header Column ON: first cell of every row gets sunken gray + bold. */
+    .catalyst-tiptap-editor table[data-header-column="true"] tbody > tr > td:first-child,
+    .catalyst-tiptap-editor table[data-header-column="true"] tbody > tr > th:first-child {
+      background: var(--ds-surface-sunken, #F7F8F9);
+      font-weight: 600;
+    }
+
+    /* Numbered Rows — rendered as a ::before INSIDE the first cell of
+       each row. Because it's part of the cell, the browser's table
+       layout aligns it perfectly with the row — no JS measurement, no
+       fight with PM. The first cell gets extra padding-inline-start
+       to reserve space for the number, and the ::before is absolutely
+       positioned inside the cell to fill that reserved space. */
+    .catalyst-tiptap-editor table[data-numbered-rows="true"] {
+      counter-reset: catalyst-row;
+    }
+    .catalyst-tiptap-editor table[data-numbered-rows="true"] tbody > tr {
+      counter-increment: catalyst-row;
+    }
+    .catalyst-tiptap-editor table[data-numbered-rows="true"] tbody > tr > td:first-child,
+    .catalyst-tiptap-editor table[data-numbered-rows="true"] tbody > tr > th:first-child {
+      position: relative;
+      padding-inline-start: 40px !important;
+    }
+    .catalyst-tiptap-editor table[data-numbered-rows="true"] tbody > tr > td:first-child::before,
+    .catalyst-tiptap-editor table[data-numbered-rows="true"] tbody > tr > th:first-child::before {
+      content: counter(catalyst-row);
+      position: absolute;
+      inset-inline-start: 0;
+      top: 0;
+      bottom: 0;
+      width: 32px;
+      background: var(--ds-surface-sunken, #F7F8F9);
+      border-inline-end: 1px solid var(--ds-border, #DFE1E6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--ds-text, #292A2E);
+      font-weight: 500;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    /* Header row + numbered: blank out the header's number and shift
+       the counter so row right after the header is "1". */
+    .catalyst-tiptap-editor table[data-numbered-rows="true"][data-header-row="true"] {
+      counter-reset: catalyst-row -1;
+    }
+    .catalyst-tiptap-editor table[data-numbered-rows="true"][data-header-row="true"] tbody > tr:first-child > td:first-child::before,
+    .catalyst-tiptap-editor table[data-numbered-rows="true"][data-header-row="true"] tbody > tr:first-child > th:first-child::before {
+      content: '';
+    }
+    .catalyst-tiptap-editor .tableWrapper {
+      position: relative;
+    }
+
+    /* Table alignment — apply margin auto rules to the TABLE itself
+       (not the wrapper). Wrapper is full-width block; the table
+       inside may be narrower after a resize, and only inline auto
+       margins on the table will shift it within the wrapper. Default
+       (left) keeps margin-inline-start: 0 explicitly so it overrides
+       any inherited rules. */
+    .catalyst-tiptap-editor table[data-alignment="left"] {
+      margin-inline-start: 0 !important;
+      margin-inline-end: auto !important;
+    }
+    .catalyst-tiptap-editor table[data-alignment="center"] {
+      margin-inline-start: auto !important;
+      margin-inline-end: auto !important;
+    }
+    .catalyst-tiptap-editor table[data-alignment="right"] {
+      margin-inline-start: auto !important;
+      margin-inline-end: 0 !important;
     }
     .catalyst-tiptap-editor table .selectedCell {
       background: var(--ds-background-selected, #E9F2FE);

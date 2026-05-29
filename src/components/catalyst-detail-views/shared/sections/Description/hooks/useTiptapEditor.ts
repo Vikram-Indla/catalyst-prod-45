@@ -39,6 +39,14 @@ import {
 // on every attribute change and strips our inline width. By owning
 // the DOM we apply `width: Npx !important` directly on every update,
 // so the user's resize survives every PM transaction and round-trip.
+type TableViewAttrs = {
+  width?: number | null;
+  headerRow?: boolean;
+  headerColumn?: boolean;
+  numberedRows?: boolean;
+  alignment?: 'left' | 'center' | 'right';
+};
+
 const Table = BaseTable.extend({
   addAttributes() {
     const parent = this.parent?.() ?? {};
@@ -64,6 +72,36 @@ const Table = BaseTable.extend({
           return { style: `width: ${attrs.width}px !important` };
         },
       },
+      // Toolbar toggles. CSS in editorStyles keys off the data-*
+      // attributes set by the NodeView for visual rendering (gray
+      // header bg, numbered column, alignment shift).
+      headerRow: {
+        default: true,
+        parseHTML: (el) =>
+          (el as HTMLElement).getAttribute('data-header-row') !== 'false',
+        renderHTML: () => ({}),
+      },
+      headerColumn: {
+        default: false,
+        parseHTML: (el) =>
+          (el as HTMLElement).getAttribute('data-header-column') === 'true',
+        renderHTML: () => ({}),
+      },
+      numberedRows: {
+        default: false,
+        parseHTML: (el) =>
+          (el as HTMLElement).getAttribute('data-numbered-rows') === 'true',
+        renderHTML: () => ({}),
+      },
+      alignment: {
+        default: 'left' as 'left' | 'center' | 'right',
+        parseHTML: (el) =>
+          ((el as HTMLElement).getAttribute('data-alignment') as
+            | 'left'
+            | 'center'
+            | 'right') ?? 'left',
+        renderHTML: () => ({}),
+      },
     };
   },
 
@@ -71,41 +109,48 @@ const Table = BaseTable.extend({
     return ({ node, HTMLAttributes }) => {
       const wrapper = document.createElement('div');
       wrapper.className = 'tableWrapper';
+
       const table = document.createElement('table');
-      // Apply the configured HTMLAttributes (dir="auto" etc.) once on
-      // creation so the schema-level attrs land on the table tag.
       Object.entries(HTMLAttributes).forEach(([k, v]) => {
         if (k === 'style' || v == null) return;
         table.setAttribute(k, String(v));
       });
-
-      const applyWidth = (n: { attrs: { width?: number | null } }) => {
-        const w = n.attrs.width;
-        if (typeof w === 'number' && w > 0) {
-          table.style.setProperty('width', `${w}px`, 'important');
-        } else {
-          table.style.removeProperty('width');
-        }
-      };
-      applyWidth(node);
-
       const tbody = document.createElement('tbody');
       table.appendChild(tbody);
       wrapper.appendChild(table);
+
+      const applyAttrs = (n: { attrs: TableViewAttrs }) => {
+        const a = n.attrs;
+        if (typeof a.width === 'number' && a.width > 0) {
+          table.style.setProperty('width', `${a.width}px`, 'important');
+        } else {
+          table.style.removeProperty('width');
+        }
+        table.setAttribute('data-header-row', a.headerRow ? 'true' : 'false');
+        table.setAttribute(
+          'data-header-column',
+          a.headerColumn ? 'true' : 'false',
+        );
+        table.setAttribute(
+          'data-numbered-rows',
+          a.numberedRows ? 'true' : 'false',
+        );
+        table.setAttribute('data-alignment', a.alignment || 'left');
+      };
+      applyAttrs(node);
 
       return {
         dom: wrapper,
         contentDOM: tbody,
         update(updatedNode) {
           if (updatedNode.type.name !== node.type.name) return false;
-          applyWidth(updatedNode);
+          applyAttrs(updatedNode);
           return true;
         },
         ignoreMutation(mutation) {
-          // Don't let PM see our width style mutations — we own them.
           return (
             mutation.type === 'attributes' &&
-            (mutation.target === table || table.contains(mutation.target))
+            (mutation.target === table || mutation.target === wrapper)
           );
         },
       };
