@@ -47,7 +47,8 @@ import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
-import { StatusLozenge, toStatusCategory } from '@/components/ads';
+import { StatusPill } from '@/components/shared/JiraTable/cells';
+import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import Spinner from '@atlaskit/spinner';
 
 import Tooltip from '@atlaskit/tooltip';
@@ -1980,7 +1981,7 @@ function ReactionChip({
 
 // ─── Headline helpers ───────────────────────────────────────────────────────
 
-// StatusCategory mapping delegated to toStatusCategory() from @/components/ads.
+// Status chip uses StatusPill (JiraTable/cells) + statusToLozenge for Jira-parity colors.
 // Handles both DB variants: "Done" / "In Progress" / "To Do" (wh-jira-sync names)
 // and "done" / "indeterminate" / "new" (jira-bau-reload keys).
 
@@ -2023,14 +2024,15 @@ function HeadlineIssueTitle({
         {issueKey ? `${issueKey}: ` : ''}{issueSummary}
       </span>
       {/* Jira parity: status chip after entity title.
-          DOM probe 2026-05-29: bg = category color (lime green for done,
-          grey for todo), text always rgb(24,104,219) (blue link color).
-          Uses StatusLozenge (ADS guardrail) + toStatusCategory to normalise
-          both DB variants ("done"/"Done"/"In Progress"/"indeterminate"). */}
+          Uses StatusPill (same component as JiraTable backlog) for exact
+          Jira-probed colors: done → #B3DF72, inprogress → #8FB8F6,
+          default → #DDDEE1. 11px/653/uppercase matching backlog/Jira list.
+          jira-compare 2026-05-29: ADS subtle Lozenge resolved to #EFFFD6
+          (too pale, wrong appearance) — replaced with StatusPill. */}
       {issueStatus && (
-        <StatusLozenge status={toStatusCategory(issueStatusCategory)}>
+        <StatusPill appearance={statusToLozenge(issueStatus, issueStatusCategory)}>
           {issueStatus}
-        </StatusLozenge>
+        </StatusPill>
       )}
     </span>
   );
