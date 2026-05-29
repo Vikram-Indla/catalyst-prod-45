@@ -87,14 +87,25 @@ export function useTranslation(): UseTranslationResult {
         // - 'summary' → ai-translate-title (title-tuned prompt, 400 tokens)
         // - everything else → ai-translate-field (prose-preserving, 4000 tokens)
         const edgeFn = field === 'summary' ? 'ai-translate-title' : 'ai-translate-field';
-        const res = await fetchFunction(edgeFn, {
-          method: 'POST',
-          accessToken,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: trimmed, target }),
-        });
 
-        if (!res.ok) return null;
+        // Retry up to 3 times on 429 (Gemini rate limit) with exponential backoff.
+        // 429s are transient — Gemini resets within seconds.
+        let res: Response | null = null;
+        const RETRY_DELAYS = [600, 1200, 2400];
+        for (let attempt = 0; attempt <= RETRY_DELAYS.length; attempt++) {
+          res = await fetchFunction(edgeFn, {
+            method: 'POST',
+            accessToken,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: trimmed, target }),
+          });
+          if (res.status !== 429) break;
+          if (attempt < RETRY_DELAYS.length) {
+            await new Promise((r) => setTimeout(r, RETRY_DELAYS[attempt]));
+          }
+        }
+
+        if (!res || !res.ok) return null;
 
         const json = (await res.json()) as { translated?: string };
         const translated = json.translated?.trim();
