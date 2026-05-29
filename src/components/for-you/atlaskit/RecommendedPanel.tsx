@@ -2108,30 +2108,42 @@ function renderCommentWithMentions(body: string): React.ReactNode {
 
   const lines = cleaned.split(/\n/);
 
-  return lines.map((line, lineIdx) => {
-    // cc: detector — find the FIRST "cc:" / "CC:" with a word-boundary
-    // (non-word char or start of string before "cc"). Everything up to the
-    // marker is pre-text; everything after is assumed to be a name list.
+  // Detect trailing pure-@mention lines — lines whose ENTIRE content is a
+  // single @Name token (common Jira pattern: each CC'd person on their own line).
+  // Collapse 1+ consecutive trailing mention-only lines into one compact inline
+  // "cc: @A  @B  @C" row so they don't each consume a full block line and inflate
+  // card height. A line qualifies when, after trimming, it starts with "@" and
+  // contains no message text before the "@".
+  const isMentionOnly = (line: string) => /^\s*@\S/.test(line) && !/\bcc\s*:/i.test(line);
+
+  let tailStart = lines.length;
+  for (let i = lines.length - 1; i >= 0; i--) {
+    if (isMentionOnly(lines[i])) tailStart = i;
+    else break;
+  }
+
+  const bodyLines = lines.slice(0, tailStart);
+  const trailingMentions = lines.slice(tailStart);
+
+  const renderBodyLine = (line: string, lineIdx: number): React.ReactNode => {
+    // cc: detector — find the FIRST "cc:" / "CC:" with a word-boundary.
     const ccMatch = line.match(/^(.*?)\b(cc|CC)\s*:\s*(.*)$/);
     if (ccMatch && ccMatch[3]) {
       const [, preText, ccLiteral, namesPart] = ccMatch;
-      // Split the tail on commas, semicolons, or " and " — NOT on single
-      // spaces, because display names like "vikram indla" contain a space.
       const nameTokens = namesPart
         .split(/\s*[,;]\s*|\s+and\s+/)
         .map(s => s.trim())
         .filter(Boolean);
-
       return (
         <React.Fragment key={`l${lineIdx}`}>
           {lineIdx > 0 ? '\n' : null}
           {preText ? renderInlineAtMentions(preText) : null}
-          <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>{`${ccLiteral}: `}</span>
+          <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)') }}>{`${ccLiteral}: `}</span>
           {nameTokens.map((tok, j) => {
             const normalized = tok.startsWith('@') ? tok : `@${tok}`;
             return (
               <React.Fragment key={`cc-${lineIdx}-${j}`}>
-                {j > 0 ? ' ' : null}
+                {j > 0 ? '  ' : null}
                 <MentionChip label={normalized} />
               </React.Fragment>
             );
@@ -2139,15 +2151,43 @@ function renderCommentWithMentions(body: string): React.ReactNode {
         </React.Fragment>
       );
     }
-
-    // Default path — split on explicit "@Name" tokens.
     return (
       <React.Fragment key={`l${lineIdx}`}>
         {lineIdx > 0 ? '\n' : null}
         {renderInlineAtMentions(line)}
       </React.Fragment>
     );
+  };
+
+  const bodyNodes = bodyLines.map((line, i) => renderBodyLine(line, i));
+
+  if (trailingMentions.length === 0) return bodyNodes;
+
+  // Build the collapsed inline cc row from all trailing mention lines.
+  const mentionLabels = trailingMentions.map(l => {
+    const t = l.trim();
+    return t.startsWith('@') ? t : `@${t}`;
   });
+
+  const ccRow = (
+    <React.Fragment key="trailing-cc">
+      {bodyLines.length > 0 ? '\n' : null}
+      <span style={{
+        color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+        fontSize: 12,
+        fontWeight: 500,
+        marginInlineEnd: 2,
+      }}>cc: </span>
+      {mentionLabels.map((chip, i) => (
+        <React.Fragment key={`tc-${i}`}>
+          {i > 0 ? '  ' : null}
+          <MentionChip label={chip} />
+        </React.Fragment>
+      ))}
+    </React.Fragment>
+  );
+
+  return [...bodyNodes, ccRow];
 }
 
 /**
