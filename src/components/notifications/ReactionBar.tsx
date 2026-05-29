@@ -36,36 +36,43 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 2,
               padding: '4px 8px',
-              border: `0.5px solid ${isHov ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'rgba(15,23,42,.08)'}`,
+              border: `0.5px solid ${isHov ? 'var(--ds-link, #0052CC)' : 'var(--ds-border, #DFE1E6)'}`,
               borderRadius: 20,
-              background: isHov ? 'rgba(15,23,42,.04)' : 'transparent',
+              background: isHov ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))' : 'transparent',
               cursor: 'pointer',
               fontSize: 13,
               transition: 'all 150ms ease',
               outline: 'none',
-              // m-01: scale on active/press
               transform: isPressed ? 'scale(0.95)' : 'scale(1)',
             }}
           >
             <span>{emoji}</span>
-            {count > 0 && <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #475569)', fontWeight: 500 }}>{count}</span>}
+            {count > 0 && <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)', fontWeight: 500 }}>{count}</span>}
           </button>
         );
       })}
       <button
+        aria-label="Add a reaction"
         onClick={(e) => { e.stopPropagation(); onReact?.('add'); }}
         style={{
-          display: 'inline-flex', alignItems: 'center',
-          padding: '4px 8px',
-          border: '0.5px solid rgba(15,23,42,.08)',
-          borderRadius: 20,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: 28, height: 28,
+          padding: 0,
+          border: 'var(--ds-border, #DFE1E6) 1px solid',
+          borderRadius: '50%',
           background: 'transparent',
           cursor: 'pointer',
-          fontSize: 13,
-          color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+          color: 'var(--ds-text-subtlest, #6B778C)',
         }}
       >
-        +
+        {/* smiley-add glyph — @atlaskit/icon path for emoji-add */}
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
+          <circle cx="9" cy="10" r="1" fill="currentColor"/>
+          <circle cx="15" cy="10" r="1" fill="currentColor"/>
+          <path d="M8 15s1.5 2 4 2 4-2 4-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          <path d="M17 5h4M19 3v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
       </button>
 
       <div style={{ flex: 1 }} />

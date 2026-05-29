@@ -7,6 +7,7 @@ import type { Notification, WorkItemIconType, StatusType } from '@/types/notific
 import type { DirectNotification, DirectVerb, DirectWorkItemIconType } from './types';
 import { groupByDate } from './utils/date';
 import DirectNotificationRow from './components/DirectNotificationRow';
+import MentionActivityCard from '@/components/notifications/MentionActivityCard';
 
 interface DirectPanelProps {
   unreadOnly: boolean;
@@ -307,15 +308,28 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
             />
           )}
           <SectionLabel label={group.label} isDark={isDark} />
-          {group.items.map(n => (
-            <DirectNotificationRow
-              key={n.id}
-              notification={n}
-              isRead={resolvedReadIds.has(n.id)}
-              onMarkRead={handleMarkRead}
-              isDark={isDark}
-            />
-          ))}
+          {group.items.map(n =>
+            n.verb === 'mentioned' ? (
+              // Mention notifications render as full activity cards per spec
+              <div key={n.id} style={{ padding: '8px 16px' }}>
+                <MentionActivityCard
+                  notification={n}
+                  isDark={isDark}
+                  onReact={(id, emoji) => console.debug('react', id, emoji)}
+                  onReply={(id, text) => console.debug('reply', id, text)}
+                  onViewThread={(id) => console.debug('view-thread', id)}
+                />
+              </div>
+            ) : (
+              <DirectNotificationRow
+                key={n.id}
+                notification={n}
+                isRead={resolvedReadIds.has(n.id)}
+                onMarkRead={handleMarkRead}
+                isDark={isDark}
+              />
+            ),
+          )}
         </Box>
       ))}
     </Box>

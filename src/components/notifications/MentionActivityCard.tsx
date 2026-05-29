@@ -1,0 +1,392 @@
+import { useState, useCallback } from 'react';
+import Lozenge from '@atlaskit/lozenge';
+import { token } from '@atlaskit/tokens';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import ReactionBar from './ReactionBar';
+import ReplyComposer from './ReplyComposer';
+import type { DirectNotification } from '@/features/notifications/types';
+import { formatRelativeTime } from '@/features/notifications/utils/date';
+
+// ─── Section header icon ─────────────────────────────────────────────────────
+
+function MentionSectionIcon() {
+  return (
+    <div
+      style={{
+        flexShrink: 0,
+        width: 24,
+        height: 24,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'var(--ds-background-discovery, #EAE6FF)',
+        borderRadius: 4,
+      }}
+    >
+      {/* @atlaskit/icon equivalent: comment-icon or mention glyph */}
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="2" y="3" width="20" height="14" rx="2" stroke="var(--ds-icon-discovery, #6554C0)" strokeWidth="1.8"/>
+        <path d="M8 8h8M8 11.5h5" stroke="var(--ds-icon-discovery, #6554C0)" strokeWidth="1.8" strokeLinecap="round"/>
+        <path d="M6 17l3-3H20a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2Z" fill="var(--ds-background-discovery, #EAE6FF)"/>
+      </svg>
+    </div>
+  );
+}
+
+// ─── Work item type icon (inline, 16px) ──────────────────────────────────────
+
+function EntityTypeIcon({ type }: { type: string }) {
+  const t = (type ?? '').toLowerCase();
+  // bookmark / page style — the spec shows a green bookmark
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+      {t === 'bug' || t === 'qa bug' ? (
+        <><rect width="16" height="16" rx="2" fill="var(--ds-background-danger-bold, #AE2A19)"/><path d="M4 8.5l2 2 5-5" stroke="var(--ds-text-inverse, #FFFFFF)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none"/></>
+      ) : t === 'epic' ? (
+        <><rect width="16" height="16" rx="2" fill="var(--ds-background-discovery-bold, #6554C0)"/><path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="var(--ds-text-inverse, #FFFFFF)"/></>
+      ) : (
+        /* default: page/bookmark = green */
+        <><rect width="16" height="16" rx="2" fill="var(--ds-background-success-bold, #1F845A)"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="var(--ds-text-inverse, #FFFFFF)"/></>
+      )}
+    </svg>
+  );
+}
+
+// ─── @mention inline span ────────────────────────────────────────────────────
+
+function MentionSpan({ name }: { name: string }) {
+  return (
+    <span
+      style={{
+        fontWeight: 600,
+        color: 'var(--ds-text, #172B4D)',
+        padding: '0 4px',
+        borderRadius: 3,
+        cursor: 'default',
+      }}
+      aria-label={`Mention: ${name}`}
+    >
+      @{name}
+    </span>
+  );
+}
+
+// ─── Metadata line (Project · Key · Timestamp) ───────────────────────────────
+
+function MetadataLine({
+  projectName,
+  issueKey,
+  timestamp,
+  isDark,
+}: {
+  projectName?: string;
+  issueKey: string;
+  timestamp: string;
+  isDark: boolean;
+}) {
+  const color = isDark ? 'var(--ds-text-subtlest, #8C9CB5)' : token('color.text.subtlest', '#6B778C');
+  const items = [projectName, issueKey, formatRelativeTime(timestamp)].filter(Boolean) as string[];
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        marginTop: 0,
+        paddingInlineStart: 44, // 32px avatar + 12px gap
+        fontFamily: 'var(--cp-font-body, inherit)',
+        fontSize: 12,
+        lineHeight: '16px',
+        color,
+      }}
+    >
+      {items.map((item, i) => (
+        <span key={i} style={{ display: 'inline-flex', alignItems: 'center' }}>
+          {i > 0 && (
+            <span style={{ margin: '0 8px', userSelect: 'none' }} aria-hidden="true">·</span>
+          )}
+          {item}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// ─── Lozenge appearance mapping ───────────────────────────────────────────────
+
+type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'moved' | 'new' | 'removed';
+
+function mapStatusAppearance(statusAppearance: string): LozengeAppearance {
+  switch (statusAppearance) {
+    case 'inprogress': return 'inprogress';
+    case 'success':    return 'success';
+    case 'moved':      return 'moved';
+    case 'new':        return 'new';
+    case 'removed':    return 'removed';
+    default:           return 'default';
+  }
+}
+
+// ─── Comment body with @mention parsing ──────────────────────────────────────
+
+function CommentBody({ text, isDark }: { text: string; isDark: boolean }) {
+  const color = isDark ? 'var(--ds-text, #E6EDFA)' : token('color.text', '#172B4D');
+
+  // Parse @mention tokens — e.g. "@vikram indla"
+  const parts = text.split(/(@[\w][\w\s]*[\w]|@\w+)/g);
+
+  return (
+    <p
+      style={{
+        margin: 0,
+        fontFamily: 'var(--cp-font-body, inherit)',
+        fontSize: 14,
+        lineHeight: '20px',
+        color,
+      }}
+    >
+      {parts.map((part, i) =>
+        part.startsWith('@') ? (
+          <MentionSpan key={i} name={part.slice(1)} />
+        ) : (
+          <span key={i}>{part}</span>
+        ),
+      )}
+    </p>
+  );
+}
+
+// ─── Props ───────────────────────────────────────────────────────────────────
+
+export interface MentionActivityCardProps {
+  notification: DirectNotification;
+  /** Project name shown in metadata line */
+  projectName?: string;
+  /** Current user's name/avatar for reply composer */
+  currentUserName?: string;
+  currentUserAvatarSrc?: string;
+  onReact?: (notificationId: string, emoji: string) => void;
+  onReply?: (notificationId: string, text: string) => void;
+  onViewThread?: (notificationId: string) => void;
+  onAiSuggest?: (notificationId: string) => void;
+  onEntityClick?: (key: string) => void;
+  isDark?: boolean;
+}
+
+// ─── Main card component ──────────────────────────────────────────────────────
+
+export default function MentionActivityCard({
+  notification,
+  projectName,
+  currentUserName = 'Me',
+  currentUserAvatarSrc,
+  onReact,
+  onReply,
+  onViewThread,
+  onAiSuggest,
+  onEntityClick,
+  isDark = false,
+}: MentionActivityCardProps) {
+  const [showComposer, setShowComposer] = useState(false);
+
+  const { actor, verb, target, thread, createdAt } = notification;
+
+  const actorName = actor?.displayName ?? 'Someone';
+  const actorAvatarUrl = actor?.avatarUrl ?? undefined;
+
+  // Token-based colors
+  const cardBg        = isDark ? 'var(--ds-surface-overlay, #1F2738)' : token('color.background.card', '#FFFFFF');
+  const cardBorder    = isDark ? 'var(--ds-border, #2C3E50)'          : token('color.border', '#DFE1E6');
+  const primaryText   = isDark ? 'var(--ds-text, #E6EDFA)'            : token('color.text', '#172B4D');
+  const subtleText    = isDark ? 'var(--ds-text-subtle, #8C9CB5)'     : token('color.text.subtle', '#42526E');
+  const linkColor     = isDark ? 'var(--ds-link, #4C9AFF)'            : token('color.link', '#0052CC');
+  const threadBorder  = isDark ? 'var(--ds-border, #2C3E50)'          : 'var(--ds-border, #DFE1E6)';
+
+  const handleReply = useCallback(() => {
+    setShowComposer(true);
+  }, []);
+
+  const handleSubmitReply = useCallback(
+    (text: string) => {
+      onReply?.(notification.id, text);
+      setShowComposer(false);
+    },
+    [notification.id, onReply],
+  );
+
+  return (
+    <div
+      style={{
+        background: cardBg,
+        border: `1px solid ${cardBorder}`,
+        borderRadius: 8,
+        padding: 24,
+        boxShadow: isDark
+          ? 'var(--ds-shadow-raised, 0 2px 4px rgba(0,0,0,0.3))'
+          : 'var(--ds-shadow-raised, 0 1px 1px rgba(9,30,66,0.08), 0 0 1px rgba(9,30,66,0.12))',
+        fontFamily: 'var(--cp-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif)',
+        transition: 'box-shadow 200ms ease',
+      }}
+    >
+      {/* ── Section header ─────────────────────────────────────────── */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 16 }}>
+        <MentionSectionIcon />
+        <div>
+          <h3
+            style={{
+              margin: 0,
+              fontSize: 16,
+              fontWeight: 600,
+              lineHeight: '20px',
+              color: primaryText,
+            }}
+          >
+            Reply to mentions
+          </h3>
+          <p
+            style={{
+              margin: '4px 0 0',
+              fontSize: 14,
+              fontWeight: 400,
+              lineHeight: '20px',
+              color: subtleText,
+            }}
+          >
+            You were mentioned in a comment. See if you need to reply or action something.
+          </p>
+        </div>
+      </div>
+
+      {/* ── Activity row ───────────────────────────────────────────── */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+        {/* Actor avatar */}
+        <div style={{ flexShrink: 0, marginTop: 0 }}>
+          <CatalystAvatar
+            name={actorName}
+            src={actorAvatarUrl}
+            size="medium"
+            appearance="circle"
+          />
+        </div>
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Verb line: "[Actor] mentioned you on [EntityLink] [StatusPill]" */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 6,
+              fontSize: 14,
+              lineHeight: '20px',
+              color: primaryText,
+            }}
+          >
+            <span style={{ fontWeight: 600 }}>{actorName}</span>
+            <span style={{ fontWeight: 400 }}>
+              {verb === 'mentioned' ? 'mentioned you on' : 'commented on'}
+            </span>
+
+            {/* Entity link: icon + title (truncated) + StatusPill */}
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, maxWidth: '100%', minWidth: 0 }}>
+              <EntityTypeIcon type={target.iconType} />
+              <button
+                type="button"
+                onClick={() => onEntityClick?.(target.key)}
+                style={{
+                  fontFamily: 'inherit',
+                  fontSize: 14,
+                  fontWeight: 400,
+                  lineHeight: '20px',
+                  color: linkColor,
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  textDecoration: 'none',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  maxWidth: 320,
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+                title={target.title}
+              >
+                {target.key}: {target.title}
+              </button>
+            </span>
+
+            {/* Status pill — @atlaskit/lozenge */}
+            {target.statusLabel && (
+              <Lozenge
+                appearance={mapStatusAppearance(target.statusAppearance)}
+                isBold={false}
+              >
+                {target.statusLabel}
+              </Lozenge>
+            )}
+          </div>
+
+          {/* Metadata line: Project · Key · Timestamp */}
+          <MetadataLine
+            projectName={projectName}
+            issueKey={target.key}
+            timestamp={createdAt}
+            isDark={isDark}
+          />
+
+          {/* Thread comment body */}
+          {thread && (
+            <div
+              style={{
+                marginTop: 16,
+                paddingInlineStart: 44, // align with text column
+              }}
+            >
+              {/* Comment body with @mention highlighting */}
+              {thread.commentPreview && (
+                <div
+                  style={{
+                    marginBottom: 16,
+                  }}
+                >
+                  <CommentBody text={thread.commentPreview} isDark={isDark} />
+                </div>
+              )}
+
+              {/* Reaction bar */}
+              <div
+                style={{
+                  border: `1px solid ${threadBorder}`,
+                  borderRadius: 4,
+                  padding: 8,
+                  background: 'transparent',
+                }}
+              >
+                <ReactionBar
+                  reactions={thread.reactions}
+                  onReact={(emoji) => onReact?.(notification.id, emoji)}
+                  onReply={handleReply}
+                  onViewThread={() => onViewThread?.(notification.id)}
+                />
+              </div>
+
+              {/* Reply composer — shown after "Reply" is clicked */}
+              {showComposer && (
+                <ReplyComposer
+                  avatarName={currentUserName}
+                  avatarSrc={currentUserAvatarSrc}
+                  onSubmit={handleSubmitReply}
+                  onAiSuggest={onAiSuggest ? () => onAiSuggest(notification.id) : undefined}
+                  isDark={isDark}
+                />
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
