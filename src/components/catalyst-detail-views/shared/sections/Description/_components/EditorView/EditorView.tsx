@@ -16,6 +16,7 @@ import { EditorContent, type Editor } from '@tiptap/react';
 import { injectEditorStyles } from './editorStyles';
 import { BlockDragHandle } from '../BlockDragHandle/BlockDragHandle';
 import { SelectionTranslate } from '../SelectionTranslate/SelectionTranslate';
+import { TableResizeBar } from '../TableResizeBar/TableResizeBar';
 
 interface EditorViewProps {
   editor: Editor | null;
@@ -74,6 +75,7 @@ export function EditorView({ editor, toolbar, bodyOverlay }: EditorViewProps) {
             containerRef={bodyRef}
             onTranslatingChange={setIsTranslating}
           />
+          <TableResizeBar editor={editor} containerRef={bodyRef} />
         </div>
         {overlayActive && bodyOverlay}
       </div>

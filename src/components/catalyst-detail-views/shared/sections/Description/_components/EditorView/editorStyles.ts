@@ -13,7 +13,7 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = 'catalyst-tiptap-editor-styles-v17';
+const STYLE_ID = 'catalyst-tiptap-editor-styles-v20';
 
 export function injectEditorStyles(): void {
   if (typeof document === 'undefined') return;

@@ -26,7 +26,92 @@ import Link from '@tiptap/extension-link';
 import { CatalystImage } from '../extensions/CatalystImage';
 import { TaskList } from '@tiptap/extension-task-list';
 import { TaskItem } from '@tiptap/extension-task-item';
-import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table';
+import {
+  Table as BaseTable,
+  TableRow,
+  TableHeader,
+  TableCell,
+} from '@tiptap/extension-table';
+
+// Table extended with a numeric `width` attribute AND a custom
+// NodeView that owns the table DOM. Without the NodeView, the
+// underlying @tiptap/extension-table machinery rebuilds the <table>
+// on every attribute change and strips our inline width. By owning
+// the DOM we apply `width: Npx !important` directly on every update,
+// so the user's resize survives every PM transaction and round-trip.
+const Table = BaseTable.extend({
+  addAttributes() {
+    const parent = this.parent?.() ?? {};
+    return {
+      ...parent,
+      width: {
+        default: null as number | null,
+        parseHTML: (el) => {
+          const styleW = (el as HTMLElement).style.width;
+          if (styleW) {
+            const m = styleW.match(/(\d+)/);
+            if (m) return parseInt(m[1], 10);
+          }
+          const attrW = (el as HTMLElement).getAttribute('width');
+          if (attrW) {
+            const n = parseInt(attrW, 10);
+            return Number.isFinite(n) ? n : null;
+          }
+          return null;
+        },
+        renderHTML: (attrs) => {
+          if (!attrs.width || typeof attrs.width !== 'number') return {};
+          return { style: `width: ${attrs.width}px !important` };
+        },
+      },
+    };
+  },
+
+  addNodeView() {
+    return ({ node, HTMLAttributes }) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'tableWrapper';
+      const table = document.createElement('table');
+      // Apply the configured HTMLAttributes (dir="auto" etc.) once on
+      // creation so the schema-level attrs land on the table tag.
+      Object.entries(HTMLAttributes).forEach(([k, v]) => {
+        if (k === 'style' || v == null) return;
+        table.setAttribute(k, String(v));
+      });
+
+      const applyWidth = (n: { attrs: { width?: number | null } }) => {
+        const w = n.attrs.width;
+        if (typeof w === 'number' && w > 0) {
+          table.style.setProperty('width', `${w}px`, 'important');
+        } else {
+          table.style.removeProperty('width');
+        }
+      };
+      applyWidth(node);
+
+      const tbody = document.createElement('tbody');
+      table.appendChild(tbody);
+      wrapper.appendChild(table);
+
+      return {
+        dom: wrapper,
+        contentDOM: tbody,
+        update(updatedNode) {
+          if (updatedNode.type.name !== node.type.name) return false;
+          applyWidth(updatedNode);
+          return true;
+        },
+        ignoreMutation(mutation) {
+          // Don't let PM see our width style mutations — we own them.
+          return (
+            mutation.type === 'attributes' &&
+            (mutation.target === table || table.contains(mutation.target))
+          );
+        },
+      };
+    };
+  },
+});
 import Placeholder from '@tiptap/extension-placeholder';
 import { SmallText } from '../extensions/SmallText';
 import { Mention } from '../extensions/Mention';
@@ -103,7 +188,11 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
         // resizable:true enables column-resize handles; the default
         // header-row layout mirrors Jira's "first row is header" behavior.
         Table.configure({
-          resizable: true,
+          // Per-column resize disabled — it runs updateColumnsOnResize
+          // on every transaction and forcibly resets table.style.width,
+          // fighting our whole-table width attribute. Whole-table
+          // resize via TableResizeBar is the supported affordance.
+          resizable: false,
           allowTableNodeSelection: true,
           HTMLAttributes: { dir: 'auto' },
         }),
