@@ -25,7 +25,6 @@ import { token } from '@atlaskit/tokens';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
-import { StatusPill } from '@/components/shared/JiraTable/cells';
 import { WorkflowViewerModal } from './WorkflowViewerModal';
 
 /**
@@ -116,27 +115,28 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
         onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.88)'; }}
         onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
       >
-        {/* Header-scale pill — larger than the table cell variant (24px tall, 13px, sentence-case). */}
+        {/* Header pill — Jira-probed: 32px/14px/500/padding 0 10px/rgb(148,199,72) success */}
         <span style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: 4,
-          height: 24,
-          padding: '0 8px',
+          height: 32,
+          lineHeight: '32px',
+          padding: '0 10px',
           borderRadius: 3,
-          fontSize: 13,
-          fontWeight: 600,
+          fontSize: 14,
+          fontWeight: 500,
           textTransform: 'none',
-          letterSpacing: 0,
+          letterSpacing: 'normal',
           background: ({
-            success:    'rgb(179, 223, 114)',
+            success:    'rgb(148, 199, 72)',
             inprogress: 'rgb(143, 184, 246)',
             moved:      'rgb(243, 214, 100)',
             removed:    'rgb(221, 222, 225)',
             new:        'rgb(184, 172, 246)',
             default:    'rgb(221, 222, 225)',
           } as Record<string, string>)[statusToLozenge(display, statusCategory)] ?? 'rgb(221, 222, 225)',
-          color: 'rgb(23, 43, 77)',
+          color: 'rgb(41, 42, 46)',
         }}>
           {display}
           <ChevronDownIcon size="small" label="" />
@@ -229,11 +229,26 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
                           if (!isActive) e.currentTarget.style.background = 'transparent';
                         }}
                       >
-                        {/* Use canonical JiraTable StatusPill — same Jira-measured hex
-                            colors and 11px/653/uppercase as the backlog table cells. */}
-                        <StatusPill appearance={groupAppearance}>
+                        {/* Dropdown pill — Jira-probed colors, sentence-case, no uppercase */}
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          height: 20,
+                          padding: '0 7px',
+                          borderRadius: 3,
+                          fontSize: 11,
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.06em',
+                          background: ({
+                            success:    'rgb(148, 199, 72)',
+                            inprogress: 'rgb(143, 184, 246)',
+                            default:    'rgb(221, 222, 225)',
+                          } as Record<string, string>)[groupAppearance] ?? 'rgb(221, 222, 225)',
+                          color: 'rgb(41, 42, 46)',
+                        }}>
                           {st}
-                        </StatusPill>
+                        </span>
                         {isActive && (
                           <span style={{ fontSize: 12, color: token('color.text.brand', '#0C66E4'), fontWeight: 600 }}>
                             ✓
