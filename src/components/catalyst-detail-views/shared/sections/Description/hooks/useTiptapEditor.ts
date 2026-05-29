@@ -35,6 +35,7 @@ import { Status } from '../extensions/Status';
 import { DateNode } from '../extensions/DateNode';
 import { InlineCard, BlockCard } from '../extensions/SmartCard';
 import { UnsupportedBlock, UnsupportedInline } from '../extensions/UnsupportedNode';
+import { SelectionDragCursor } from '../extensions/SelectionDragCursor';
 import type { AdfDoc, TiptapDoc } from '../utils/adfToTiptap';
 import { adfToTiptap } from '../utils/adfToTiptap';
 
@@ -55,6 +56,17 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
       extensions: [
         StarterKit.configure({
           link: false,
+          // Drop indicator shown while dragging a block via the
+          // BlockDragHandle. Color/width are applied as INLINE styles
+          // by prosemirror-dropcursor — passing them here is the only
+          // reliable way to override the default black/1px line, since
+          // the cursor element is appended to view.dom.offsetParent
+          // (outside the editor DOM) so CSS scoping is brittle.
+          dropcursor: {
+            color: '#0C66E4',
+            width: 1,
+            class: 'catalyst-drop-line',
+          },
         }),
         Underline,
         Subscript,
@@ -96,6 +108,7 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
         }),
         SmallText,
         Mention,
+        SelectionDragCursor,
       ],
       content: adfToTiptap(options.initialAdf),
       editable: options.editable ?? true,

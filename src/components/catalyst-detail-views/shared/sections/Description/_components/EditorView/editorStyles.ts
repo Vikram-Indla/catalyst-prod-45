@@ -13,7 +13,7 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = 'catalyst-tiptap-editor-styles-v08';
+const STYLE_ID = 'catalyst-tiptap-editor-styles-v15';
 
 export function injectEditorStyles(): void {
   if (typeof document === 'undefined') return;
@@ -172,9 +172,11 @@ export function injectEditorStyles(): void {
       font-style: normal;
     }
 
-    /* Selected node halo (e.g. an image selected for delete) — Tiptap's
-       default is hard to see in light mode; brighten it to ADS link blue. */
-    .catalyst-tiptap-editor .ProseMirror-selectednode {
+    /* Selected node halo — scoped to images only. Block-level node
+       selections set by the drag handle (paragraph, list, table, panel,
+       etc.) intentionally render with NO halo so the drag UX stays
+       clean; images keep the halo so delete-on-select is discoverable. */
+    .catalyst-tiptap-editor img.ProseMirror-selectednode {
       outline: 2px solid var(--ds-border-selected, #0C66E4);
       outline-offset: 2px;
     }
@@ -183,6 +185,31 @@ export function injectEditorStyles(): void {
     @keyframes catalyst-voice-pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* Drop cursor — blue color/width come from the dropcursor config
+       in useTiptapEditor (inline-style, no CSS war). The .catalyst-
+       drop-line class is added via the dropcursor config too — gives
+       us an unambiguous selector for the circle pseudo. Selector is
+       GLOBAL because PM appends the element to view.dom.offsetParent
+       (the editor body), not inside the contenteditable. */
+    .catalyst-drop-line {
+      overflow: visible !important;
+    }
+    .catalyst-drop-line::before {
+      content: '';
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      margin-top: -4px;
+      border: 1px solid #0C66E4;
+      border-radius: 50%;
+      background: transparent;
+      box-sizing: border-box;
+      pointer-events: none;
+      z-index: 1000;
     }
 
     /* ── Tables ── */

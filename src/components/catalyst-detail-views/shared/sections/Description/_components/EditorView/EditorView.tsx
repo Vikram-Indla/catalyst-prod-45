@@ -11,9 +11,10 @@
  * body is hidden (display:none — Tiptap instance stays mounted) and the
  * overlay fills the body region.
  */
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { EditorContent, type Editor } from '@tiptap/react';
 import { injectEditorStyles } from './editorStyles';
+import { BlockDragHandle } from '../BlockDragHandle/BlockDragHandle';
 
 interface EditorViewProps {
   editor: Editor | null;
@@ -22,6 +23,8 @@ interface EditorViewProps {
 }
 
 export function EditorView({ editor, toolbar, bodyOverlay }: EditorViewProps) {
+  const bodyRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     injectEditorStyles();
   }, []);
@@ -49,16 +52,21 @@ export function EditorView({ editor, toolbar, bodyOverlay }: EditorViewProps) {
     >
       {toolbar}
       <div
+        ref={bodyRef}
         className="catalyst-description-editor-body"
         style={{
           flex: 1,
           minHeight: 0,
           overflowY: 'auto',
-          padding: '12px 16px',
+          /* Extra left padding reserves a gutter for the drag handle
+             so content position is stable whether or not it's visible. */
+          padding: '12px 16px 12px 28px',
+          position: 'relative',
         }}
       >
         <div style={{ display: overlayActive ? 'none' : 'block' }}>
           <EditorContent editor={editor} />
+          <BlockDragHandle editor={editor} containerRef={bodyRef} />
         </div>
         {overlayActive && bodyOverlay}
       </div>
