@@ -1291,3 +1291,26 @@ The `author_id = auth.uid()` short-circuit means a user can always see their own
 **Rule:** Any RLS SELECT USING policy on a table that is both read AND written by users must include an ownership clause (`author_id = auth.uid()` or `created_by = auth.uid()`) as a short-circuit OR branch, BEFORE the JOIN chain that checks membership. Without it, PostgREST v12's INSERT+RETURNING check will 403 any row whose JOIN chain returns empty — silently rolling back the insert and showing a generic error to the user. This is especially critical for `ph_comments` which can be created for any Jira-synced issue regardless of whether its project is in `ph_projects`.
 
 **Severity:** P1 (reactions silently failed for all non-BAU/non-INV project mentions; the error was visible to the user as a red toast on every click)
+
+---
+
+## 2026-05-29 — ph_comments SELECT RLS: `author_id` short-circuit is insufficient for multi-user — upgrade to `USING (true)` for non-PII tables
+
+**Surface:** RecommendedPanel.tsx — `ensurePhComment` / `ReactionStrip` (For You / Recommended tab)
+**Pattern (multi-user escalation):** After the `author_id = auth.uid()` short-circuit was added (migration `fix_ph_comments_select_rls_allow_own_comments`, lesson above), User A (the author) could react successfully. But User B visiting the same card still hit the UNIQUE CONSTRAINT VIOLATION:
+- User A's `ensurePhComment` insert lands a row with `jira_comment_id = '42986'`
+- User B clicks a reaction → `ensurePhComment` SELECT returns empty (not the author, MWR not in `ph_projects`) → B tries INSERT → **409 UNIQUE VIOLATION** on `(comment_id, jira_comment_id)` → `catch` shows toast.error
+The `author_id` clause only helps the row author; any other user who wants to react to the same anchor comment is still blocked by the JOIN chain.
+
+**Fix (migration `fix_ph_comments_select_allow_all_authenticated`):**
+```sql
+DROP POLICY IF EXISTS "Members can view comments" ON ph_comments;
+CREATE POLICY "Members can view comments" ON ph_comments
+  FOR SELECT TO authenticated
+  USING (true);
+```
+`ph_comments` rows are Jira comment anchors — they carry no PII and no sensitive business data. Granting all authenticated users SELECT visibility matches the risk profile of `ph_comment_reactions` (which already uses `USING (true)`). The `<AdminGuard>` + Supabase Auth session gate provides the application-layer access boundary; the table-layer only needs to ensure unauthenticated access is blocked (enforced by `TO authenticated`). Verified after migration: reaction save on MWR-947 card → zero network errors, 👏 chip persists, no "Could not save reaction" toast.
+
+**Rule:** When a `ph_comments`-style anchor table is non-PII and its reactions table already uses `USING (true)`, match both policies for consistency — divergent USING clauses between a parent row and its child table create hidden multi-user failure modes. The ownership short-circuit (`author_id = auth.uid()`) is the right first step but is never the final step for tables where multiple users react to the same anchor. Before calling an RLS fix "done", test with a SECOND authenticated user — single-user smoke tests miss the INSERT+RETURNING UNIQUE collision entirely.
+
+**Severity:** P1 (the `author_id` partial fix resolved the author's own reactions but left every other user's reactions silently broken)
