@@ -21,11 +21,11 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import Lozenge from '@atlaskit/lozenge';
 import { token } from '@atlaskit/tokens';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
+import { StatusPill } from '@/components/shared/JiraTable/cells';
 import { WorkflowViewerModal } from './WorkflowViewerModal';
 
 /**
@@ -116,16 +116,14 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
         onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.88)'; }}
         onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
       >
-        {/* data-cp-lozenge-jira-parity: typography overrides (sentence-case,
-            12px/500) from index.css apply inside this scope. */}
-        <span data-cp-lozenge-jira-parity style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <Lozenge isBold appearance={statusToLozenge(display, statusCategory)}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, lineHeight: '20px' }}>
-              {display}
-              <ChevronDownIcon size="small" label="" />
-            </span>
-          </Lozenge>
-        </span>
+        {/* Trigger pill uses the canonical JiraTable StatusPill for color + typography
+            parity with the backlog table (11px/653/uppercase, Jira-measured hex). */}
+        <StatusPill appearance={statusToLozenge(display, statusCategory)}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            {display}
+            <ChevronDownIcon size="small" label="" />
+          </span>
+        </StatusPill>
       </button>
 
       {open && anchor && typeof document !== 'undefined' &&
@@ -214,14 +212,11 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
                           if (!isActive) e.currentTarget.style.background = 'transparent';
                         }}
                       >
-                        <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-                          {/* jira-compare 2026-05-05: isBold removed — Jira uses non-bold
-                              standard Lozenge appearance for all status options in the
-                              picker dropdown. Bold variant is too saturated vs Jira parity. */}
-                          <Lozenge appearance={groupAppearance}>
-                            {st}
-                          </Lozenge>
-                        </span>
+                        {/* Use canonical JiraTable StatusPill — same Jira-measured hex
+                            colors and 11px/653/uppercase as the backlog table cells. */}
+                        <StatusPill appearance={groupAppearance}>
+                          {st}
+                        </StatusPill>
                         {isActive && (
                           <span style={{ fontSize: 12, color: token('color.text.brand', '#0C66E4'), fontWeight: 600 }}>
                             ✓
