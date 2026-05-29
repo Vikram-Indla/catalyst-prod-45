@@ -871,8 +871,14 @@ function ReplyComposer({
         signal: controller.signal,
       });
       if (!res.ok || !res.body) {
+        let userMsg = 'Could not generate a suggestion. Try again.';
+        try {
+          const errJson = await res.clone().json() as { error?: string; message?: string };
+          if (errJson.error === 'rate_limited') userMsg = 'Rate limit reached — please wait a moment and try again.';
+          else if (errJson.message) userMsg = errJson.message;
+        } catch { /* non-JSON body — keep generic message */ }
         setSuggestionPhase('error');
-        toast.error('Could not generate a suggestion. Try again.');
+        toast.error(userMsg);
         return;
       }
       const reader = res.body.getReader();

@@ -143,12 +143,27 @@ serve(async (req) => {
       });
 
       if (!aiResp.ok || !aiResp.body) {
+        const status = aiResp.status;
         const errBody = aiResp.body ? await aiResp.text() : "";
-        console.error("ai-improve-comment suggest_reply gateway error:", aiResp.status, errBody);
-        await logGovernance({ action: "ai_suggest_reply", payload: {}, status: "error", error_message: `gateway_${aiResp.status}` });
+        console.error("ai-improve-comment suggest_reply gateway error:", status, errBody);
+        await logGovernance({ action: "ai_suggest_reply", payload: {}, status: "error", error_message: `gateway_${status}` });
+        const code =
+          status === 429
+            ? "rate_limited"
+            : status === 402
+              ? "payment_required"
+              : "gateway_error";
         return new Response(
-          JSON.stringify({ error: "gateway_error", message: "AI gateway error" }),
-          { status: aiResp.status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          JSON.stringify({
+            error: code,
+            message:
+              status === 429
+                ? "Rate limits exceeded, please try again later."
+                : status === 402
+                  ? "Payment required, please add funds."
+                  : "AI gateway error",
+          }),
+          { status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
 
