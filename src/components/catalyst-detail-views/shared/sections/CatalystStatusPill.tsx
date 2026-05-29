@@ -116,14 +116,31 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
         onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.88)'; }}
         onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
       >
-        {/* Trigger pill uses the canonical JiraTable StatusPill for color + typography
-            parity with the backlog table (11px/653/uppercase, Jira-measured hex). */}
-        <StatusPill appearance={statusToLozenge(display, statusCategory)}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-            {display}
-            <ChevronDownIcon size="small" label="" />
-          </span>
-        </StatusPill>
+        {/* Header-scale pill — larger than the table cell variant (24px tall, 13px, sentence-case). */}
+        <span style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
+          height: 24,
+          padding: '0 8px',
+          borderRadius: 3,
+          fontSize: 13,
+          fontWeight: 600,
+          textTransform: 'none',
+          letterSpacing: 0,
+          background: ({
+            success:    'rgb(179, 223, 114)',
+            inprogress: 'rgb(143, 184, 246)',
+            moved:      'rgb(243, 214, 100)',
+            removed:    'rgb(221, 222, 225)',
+            new:        'rgb(184, 172, 246)',
+            default:    'rgb(221, 222, 225)',
+          } as Record<string, string>)[statusToLozenge(display, statusCategory)] ?? 'rgb(221, 222, 225)',
+          color: 'rgb(23, 43, 77)',
+        }}>
+          {display}
+          <ChevronDownIcon size="small" label="" />
+        </span>
       </button>
 
       {open && anchor && typeof document !== 'undefined' &&
