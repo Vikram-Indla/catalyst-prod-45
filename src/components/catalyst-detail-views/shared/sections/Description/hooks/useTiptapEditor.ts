@@ -26,7 +26,137 @@ import Link from '@tiptap/extension-link';
 import { CatalystImage } from '../extensions/CatalystImage';
 import { TaskList } from '@tiptap/extension-task-list';
 import { TaskItem } from '@tiptap/extension-task-item';
-import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table';
+import {
+  Table as BaseTable,
+  TableRow,
+  TableHeader,
+  TableCell,
+} from '@tiptap/extension-table';
+
+// Table extended with a numeric `width` attribute AND a custom
+// NodeView that owns the table DOM. Without the NodeView, the
+// underlying @tiptap/extension-table machinery rebuilds the <table>
+// on every attribute change and strips our inline width. By owning
+// the DOM we apply `width: Npx !important` directly on every update,
+// so the user's resize survives every PM transaction and round-trip.
+type TableViewAttrs = {
+  width?: number | null;
+  headerRow?: boolean;
+  headerColumn?: boolean;
+  numberedRows?: boolean;
+  alignment?: 'left' | 'center' | 'right';
+};
+
+const Table = BaseTable.extend({
+  addAttributes() {
+    const parent = this.parent?.() ?? {};
+    return {
+      ...parent,
+      width: {
+        default: null as number | null,
+        parseHTML: (el) => {
+          const styleW = (el as HTMLElement).style.width;
+          if (styleW) {
+            const m = styleW.match(/(\d+)/);
+            if (m) return parseInt(m[1], 10);
+          }
+          const attrW = (el as HTMLElement).getAttribute('width');
+          if (attrW) {
+            const n = parseInt(attrW, 10);
+            return Number.isFinite(n) ? n : null;
+          }
+          return null;
+        },
+        renderHTML: (attrs) => {
+          if (!attrs.width || typeof attrs.width !== 'number') return {};
+          return { style: `width: ${attrs.width}px !important` };
+        },
+      },
+      // Toolbar toggles. CSS in editorStyles keys off the data-*
+      // attributes set by the NodeView for visual rendering (gray
+      // header bg, numbered column, alignment shift).
+      headerRow: {
+        default: true,
+        parseHTML: (el) =>
+          (el as HTMLElement).getAttribute('data-header-row') !== 'false',
+        renderHTML: () => ({}),
+      },
+      headerColumn: {
+        default: false,
+        parseHTML: (el) =>
+          (el as HTMLElement).getAttribute('data-header-column') === 'true',
+        renderHTML: () => ({}),
+      },
+      numberedRows: {
+        default: false,
+        parseHTML: (el) =>
+          (el as HTMLElement).getAttribute('data-numbered-rows') === 'true',
+        renderHTML: () => ({}),
+      },
+      alignment: {
+        default: 'left' as 'left' | 'center' | 'right',
+        parseHTML: (el) =>
+          ((el as HTMLElement).getAttribute('data-alignment') as
+            | 'left'
+            | 'center'
+            | 'right') ?? 'left',
+        renderHTML: () => ({}),
+      },
+    };
+  },
+
+  addNodeView() {
+    return ({ node, HTMLAttributes }) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'tableWrapper';
+
+      const table = document.createElement('table');
+      Object.entries(HTMLAttributes).forEach(([k, v]) => {
+        if (k === 'style' || v == null) return;
+        table.setAttribute(k, String(v));
+      });
+      const tbody = document.createElement('tbody');
+      table.appendChild(tbody);
+      wrapper.appendChild(table);
+
+      const applyAttrs = (n: { attrs: TableViewAttrs }) => {
+        const a = n.attrs;
+        if (typeof a.width === 'number' && a.width > 0) {
+          table.style.setProperty('width', `${a.width}px`, 'important');
+        } else {
+          table.style.removeProperty('width');
+        }
+        table.setAttribute('data-header-row', a.headerRow ? 'true' : 'false');
+        table.setAttribute(
+          'data-header-column',
+          a.headerColumn ? 'true' : 'false',
+        );
+        table.setAttribute(
+          'data-numbered-rows',
+          a.numberedRows ? 'true' : 'false',
+        );
+        table.setAttribute('data-alignment', a.alignment || 'left');
+      };
+      applyAttrs(node);
+
+      return {
+        dom: wrapper,
+        contentDOM: tbody,
+        update(updatedNode) {
+          if (updatedNode.type.name !== node.type.name) return false;
+          applyAttrs(updatedNode);
+          return true;
+        },
+        ignoreMutation(mutation) {
+          return (
+            mutation.type === 'attributes' &&
+            (mutation.target === table || mutation.target === wrapper)
+          );
+        },
+      };
+    };
+  },
+});
 import Placeholder from '@tiptap/extension-placeholder';
 import { SmallText } from '../extensions/SmallText';
 import { Mention } from '../extensions/Mention';
@@ -35,6 +165,7 @@ import { Status } from '../extensions/Status';
 import { DateNode } from '../extensions/DateNode';
 import { InlineCard, BlockCard } from '../extensions/SmartCard';
 import { UnsupportedBlock, UnsupportedInline } from '../extensions/UnsupportedNode';
+import { SelectionDragCursor } from '../extensions/SelectionDragCursor';
 import type { AdfDoc, TiptapDoc } from '../utils/adfToTiptap';
 import { adfToTiptap } from '../utils/adfToTiptap';
 
@@ -55,6 +186,29 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
       extensions: [
         StarterKit.configure({
           link: false,
+          // Drop indicator shown while dragging a block via the
+          // BlockDragHandle. Color/width are applied as INLINE styles
+          // by prosemirror-dropcursor — passing them here is the only
+          // reliable way to override the default black/1px line, since
+          // the cursor element is appended to view.dom.offsetParent
+          // (outside the editor DOM) so CSS scoping is brittle.
+          dropcursor: {
+            color: '#0C66E4',
+            width: 1,
+            class: 'catalyst-drop-line',
+          },
+          // dir="auto" on every block makes the browser detect text
+          // direction per-block from its first strong character.
+          // Arabic blocks → RTL flow + right alignment + bullets on
+          // the right. English blocks → LTR flow. Mixed descriptions
+          // (post-translation) render each block correctly.
+          paragraph: { HTMLAttributes: { dir: 'auto' } },
+          heading: { HTMLAttributes: { dir: 'auto' } },
+          blockquote: { HTMLAttributes: { dir: 'auto' } },
+          bulletList: { HTMLAttributes: { dir: 'auto' } },
+          orderedList: { HTMLAttributes: { dir: 'auto' } },
+          listItem: { HTMLAttributes: { dir: 'auto' } },
+          codeBlock: { HTMLAttributes: { dir: 'auto' } },
         }),
         Underline,
         Subscript,
@@ -70,15 +224,26 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
           },
         }),
         CatalystImage.configure({ inline: false, allowBase64: false }),
-        TaskList,
-        TaskItem.configure({ nested: true }),
+        TaskList.configure({ HTMLAttributes: { dir: 'auto' } }),
+        TaskItem.configure({
+          nested: true,
+          HTMLAttributes: { dir: 'auto' },
+        }),
         // Tables — full Jira parity via Tiptap's official Table suite.
         // resizable:true enables column-resize handles; the default
         // header-row layout mirrors Jira's "first row is header" behavior.
-        Table.configure({ resizable: true, allowTableNodeSelection: true }),
+        Table.configure({
+          // Per-column resize disabled — it runs updateColumnsOnResize
+          // on every transaction and forcibly resets table.style.width,
+          // fighting our whole-table width attribute. Whole-table
+          // resize via TableResizeBar is the supported affordance.
+          resizable: false,
+          allowTableNodeSelection: true,
+          HTMLAttributes: { dir: 'auto' },
+        }),
         TableRow,
-        TableHeader,
-        TableCell,
+        TableHeader.configure({ HTMLAttributes: { dir: 'auto' } }),
+        TableCell.configure({ HTMLAttributes: { dir: 'auto' } }),
         // Jira-ADF specific node types.
         Panel,
         Status,
@@ -96,6 +261,7 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
         }),
         SmallText,
         Mention,
+        SelectionDragCursor,
       ],
       content: adfToTiptap(options.initialAdf),
       editable: options.editable ?? true,

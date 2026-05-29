@@ -2,7 +2,9 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ads';
 import type { CdsUser, CdsQuickReply } from '../types';
-import AdfDescriptionField from '@/components/shared/rich-text/atlaskit/EpicDescriptionEditor';
+import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
+import { MentionSuggestionPill } from '@/components/catalyst-detail-views/shared/sections/Description/_components/MentionSuggestionPill/MentionSuggestionPill';
+import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
 import { isAdfEmpty, adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { CatyStreamingOverlay } from '@/components/catalyst-detail-views/improve/CatyStreamingOverlay';
 
@@ -134,10 +136,6 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
     );
     const [improving, setImproving] = React.useState(false);
 
-    const handleEditorChange = React.useCallback((adfJson: string) => {
-      setCurrentAdfJson(adfJson);
-    }, []);
-
     const isCurrentEmpty = React.useMemo(() => {
       if (!currentAdfJson) return true;
       try {
@@ -239,17 +237,34 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
           </span>
         )}
         <div className="flex-1 min-w-0">
-          <AdfDescriptionField
-            initialContent={initialContent}
+          <RichTextEditor
+            initialAdf={(initialContent as AdfDoc | null) ?? null}
             onSave={handleSave}
             onCancel={handleCancel}
-            onChange={handleEditorChange}
-            workItemId={workItemId || 'new-comment'}
-            placeholder={placeholder}
-            appearance="comment"
-            onImprove={improveContext ? handleImproveClick : undefined}
+            onChange={(json) => {
+              try {
+                setCurrentAdfJson(JSON.stringify(json));
+              } catch {
+                /* shouldn't happen — JSON.stringify on a PM JSON */
+              }
+            }}
+            // Intentionally NOT passing `placeholder` here so the editor
+            // falls back to its canonical default
+            // ("Type /ai to Ask Caty or @ to mention and notify someone").
+            // The `placeholder` prop on CommentEditor controls the
+            // COLLAPSED-state button label only.
+            // ~2 rows tall in its initial state so the comment composer
+            // doesn't dominate the page when empty. The Description
+            // editor uses the default (220) for a taller starting box.
+            minHeight={80}
+            onImproveClick={improveContext ? handleImproveClick : undefined}
             improveLabel="Improve writing"
-            improveDisabled={isCurrentEmpty}
+            belowEditor={(editor) => (
+              <MentionSuggestionPill
+                editor={editor}
+                workItemId={workItemId}
+              />
+            )}
             bodyOverlay={
               improving && improveContext ? (
                 <CatyStreamingOverlay

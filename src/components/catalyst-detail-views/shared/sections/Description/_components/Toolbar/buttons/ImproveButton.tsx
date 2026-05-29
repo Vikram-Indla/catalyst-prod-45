@@ -5,9 +5,16 @@ import MagicWandIcon from '@atlaskit/icon/core/magic-wand';
 interface Props {
   editor: Editor | null;
   onImprove?: () => void;
+  /** Button label. Defaults to "Improve description"; comment editor
+   *  uses "Improve writing". */
+  label?: string;
 }
 
-export function ImproveButton({ editor, onImprove }: Props) {
+export function ImproveButton({
+  editor,
+  onImprove,
+  label = 'Improve description',
+}: Props) {
   // Empty when the document is just an empty paragraph and has no image
   // or other atomic node. Tiptap's `isEmpty` already accounts for that.
   const isEmpty = editor?.isEmpty ?? true;
@@ -16,12 +23,8 @@ export function ImproveButton({ editor, onImprove }: Props) {
   return (
     <button
       type="button"
-      title={
-        disabled
-          ? 'Improve description — add content first'
-          : 'Improve description'
-      }
-      aria-label="Improve description"
+      title={disabled ? `${label} — add content first` : label}
+      aria-label={label}
       disabled={disabled}
       onMouseDown={(e) => e.preventDefault()}
       onClick={() => {
@@ -60,7 +63,7 @@ export function ImproveButton({ editor, onImprove }: Props) {
       data-testid="catalyst-desc-toolbar-improve"
     >
       <MagicWandIcon label="" />
-      <span>Improve description</span>
+      <span>{label}</span>
     </button>
   );
 }

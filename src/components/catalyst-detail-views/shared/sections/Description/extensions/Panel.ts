@@ -47,6 +47,9 @@ export const Panel = Node.create({
       'div',
       mergeAttributes(HTMLAttributes, {
         class: `catalyst-panel catalyst-panel-${t}`,
+        // Auto-flip border + icon to the inline-end when the panel's
+        // text resolves to RTL (Arabic content).
+        dir: 'auto',
       }),
       0,
     ];

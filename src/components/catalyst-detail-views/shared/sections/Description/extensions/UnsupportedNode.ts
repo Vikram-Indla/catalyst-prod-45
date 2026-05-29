@@ -41,6 +41,7 @@ export const UnsupportedBlock = Node.create({
       mergeAttributes(HTMLAttributes, {
         'data-unsupported-block': node.attrs.adf,
         contenteditable: 'false',
+        dir: 'auto',
         style:
           'border:1px dashed var(--ds-border,#DFE1E6);border-radius:4px;padding:8px 12px;margin:8px 0;background:var(--ds-background-neutral-subtle,#F7F8F9);color:var(--ds-text-subtle,#44546F);font-size:12px;font-style:italic;',
         title: `Jira ADF node "${nodeType}" — preserved on save (full edit support coming soon)`,
