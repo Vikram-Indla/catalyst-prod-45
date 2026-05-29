@@ -133,8 +133,19 @@ export function statusToLozenge(
     if (c === 'done') return 'success';
     if (c === 'in_progress' || c === 'indeterminate') return 'inprogress';
     if (c === 'removed') return 'removed';
-    // c === 'new' / 'todo' / 'undefined' → fall through so the name
-    // table can still surface semantic specials (Blocked / On Hold).
+    // c === 'to do' / 'todo' / 'new': category wins, EXCEPT for semantic
+    // specials (Blocked → red, On Hold → yellow, Awaiting Info → blue).
+    // This prevents name-table entries like 'in requirements': 'inprogress'
+    // from overriding an explicit "to do" category from Jira.
+    // jira-compare 2026-05-29: "In Requirements" was showing blue (#8FB8F6)
+    // on For You panel despite Jira statusCategory = "to do" (grey expected).
+    if (c === 'to do' || c === 'todo' || c === 'new') {
+      const lowerName = status?.trim().toLowerCase() ?? '';
+      if (lowerName.includes('block') || lowerName === 'cancelled' || lowerName === 'canceled') return 'removed';
+      if (lowerName === 'on hold' || lowerName === 'paused' || lowerName.includes('hold') || lowerName.includes('wait')) return 'moved';
+      if (lowerName === 'awaiting info') return 'inprogress';
+      return 'default';
+    }
   }
 
   if (!status) return 'default';
