@@ -237,7 +237,7 @@ class ADSTokenScanner {
       // e.g. var(--ds-shadow-overlay, 0 4px rgba(9,30,66,0.15)) won't
       // fire because the rgba() is inside the var() fallback chain.
       const strippedForRgb = this.removeVarExpressions(
-        line.replace(/\/\/.*$/, '').replace(/\btoken\([^)]*\)/g, ''),
+        line.replace(/\/\/.*$/, ''),
       );
       if (
         this.rgbHslPattern.test(strippedForRgb) &&

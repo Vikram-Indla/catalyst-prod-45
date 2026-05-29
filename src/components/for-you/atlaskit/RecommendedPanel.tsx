@@ -331,6 +331,7 @@ export default function RecommendedPanel({
               projectKey: c.projectKey,
               commentBody: c.commentBody,
               commentCreatedAt: c.commentCreatedAt,
+              showViewThread: true,
             }))}
             onOpen={resolveSelect}
             onDismiss={handleDismiss}
@@ -380,6 +381,9 @@ interface FeedRow {
   projectKey: string;
   commentBody: string;
   commentCreatedAt: string;
+  /** When true, renders a "View thread" button below the meta row.
+   *  Jira parity: only "Reply to comments" rows carry this affordance. */
+  showViewThread?: boolean;
 }
 
 function FeedSection({
@@ -408,7 +412,7 @@ function FeedSection({
         // 0.555px hairline, 8px radius, 8px padding.
         border: `1px solid ${token('color.border', 'rgba(11, 18, 14, 0.14)')}`,
         borderRadius: 8,
-        padding: 16,
+        padding: 8,
         background: token('elevation.surface', '#FFFFFF'),
       }}
     >
@@ -423,11 +427,13 @@ function FeedSection({
         <PurpleCategoryTile />
         <h4
           style={{
-            // CLAUDE.md 2026-05-12 — Jira section headers measure 16/20 with
-            // weight 600 and `letter-spacing: normal`. The previous
-            // `-0.003em` came from an out-of-spec H1 sweep and broke the
-            // x-height alignment on the section row.
-            font: `600 16px/20px "Inter", system-ui, sans-serif`,
+            // CLAUDE.md 2026-05-12 — Jira section headers measure 16/20.
+            // DOM probe 2026-05-29 confirmed fontWeight 653 (not 600) on
+            // the H4 heading element. 653 is in the ADS allowed-weights list.
+            fontSize: 16,
+            lineHeight: '20px',
+            fontFamily: '"Inter", system-ui, sans-serif',
+            fontWeight: 653,
             color: token('color.text', '#292A2E'),
             margin: 0,
             letterSpacing: 'normal',
@@ -531,10 +537,38 @@ function FeedCard({
 }) {
   const [hover, setHover] = React.useState(false);
   const [dismissFocused, setDismissFocused] = React.useState(false);
+  // G-03 — Summarize comments AI button (Jira parity: 24×24 AI icon button alongside dismiss).
+  const [summaryPhase, setSummaryPhase] = React.useState<'idle' | 'loading' | 'error'>('idle');
   // Local avatar files only — Jira/Gravatar CDN URLs are banned (CLAUDE.md §19)
   // and fail to load due to CORS. Priority: local slug match → Atlaskit initials fallback.
   const avatarSrc = resolveAvatarUrl(row.authorName) || undefined;
   const relative = formatRelativeTimestamp(row.commentCreatedAt);
+  // G-04 — Absolute timestamp shown as title attribute (Jira parity: "May 17, 2026 at 3:43 PM").
+  const absolute = formatAbsoluteTimestamp(row.commentCreatedAt);
+
+  const handleSummarize = async () => {
+    if (summaryPhase === 'loading') return;
+    setSummaryPhase('loading');
+    try {
+      const res = await fetchFunction('ai-improve-comment', {
+        method: 'POST',
+        body: JSON.stringify({
+          mode: 'summarize',
+          commentBody: row.commentBody,
+          issueSummary: row.issueSummary,
+          issueType: row.issueType,
+        }),
+      });
+      const data = await res.json();
+      const summary = data.suggestion ?? data.content ?? data.result ?? row.commentBody;
+      setSummaryPhase('idle');
+      toast.message('Comment summary', { description: summary, duration: 12_000 });
+    } catch {
+      setSummaryPhase('error');
+      toast.error('Failed to summarize');
+      setTimeout(() => setSummaryPhase('idle'), 3_000);
+    }
+  };
 
   return (
     <div
@@ -560,12 +594,50 @@ function FeedCard({
         </span>
       </Tooltip>
 
-      {/* Dismiss (X) — Jira parity: top-right of every feed row.
-          24×24 subtle icon button that clears the row from the feed and
-          persists the dismissal to localStorage. Resting state stays
-          hidden; becomes visible on row hover OR keyboard focus on the
-          button itself (WCAG 2.4.7 — opacity:0 elements that remain in
-          the tab order are inaccessible). */}
+      {/* Summarize comments — G-03 (Jira parity: 24×24 AI icon button alongside dismiss).
+          DOM probe 2026-05-29: always visible at top-right, offset left of the dismiss button.
+          Calls ai-improve-comment with mode:'summarize' and shows result in a toast. */}
+      <Tooltip content="Summarize comments">
+        <button
+          type="button"
+          aria-label="Summarize comments"
+          onClick={e => { e.stopPropagation(); handleSummarize(); }}
+          style={{
+            position: 'absolute',
+            top: 8,
+            right: 32,
+            width: 24,
+            height: 24,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: 'none',
+            background: 'transparent',
+            borderRadius: 3,
+            cursor: summaryPhase === 'loading' ? 'wait' : 'pointer',
+            color: summaryPhase === 'error'
+              ? token('color.text.danger', '#AE2E24')
+              : token('color.text.subtle', '#626F86'),
+            opacity: 1,
+            padding: 0,
+            outline: 'none',
+          }}
+        >
+          {summaryPhase === 'loading'
+            ? <Spinner size="xsmall" />
+            : (
+              // 4-point sparkle — generic AI summarize icon (not Caty branding)
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
+                <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" />
+              </svg>
+            )
+          }
+        </button>
+      </Tooltip>
+
+      {/* Dismiss (X) — G-01 Jira parity: always visible (opacity:1), top-right of every feed row.
+          DOM probe 2026-05-29: Jira renders dismiss at opacity:1 at all times — no hover gate.
+          24×24 subtle icon button that clears the row and persists dismissal to localStorage. */}
       <Tooltip content="Dismiss">
         <button
           type="button"
@@ -590,8 +662,8 @@ function FeedCard({
             borderRadius: 3,
             cursor: 'pointer',
             color: token('color.text.subtle', '#626F86'),
-            opacity: hover || dismissFocused ? 1 : 0,
-            transition: 'opacity 120ms ease, background-color 120ms ease, box-shadow 120ms ease',
+            opacity: 1,
+            transition: 'background-color 120ms ease, box-shadow 120ms ease',
             padding: 0,
             outline: 'none',
             boxShadow: dismissFocused
@@ -604,8 +676,9 @@ function FeedCard({
         </button>
       </Tooltip>
 
-      {/* Text column takes the full remaining width. */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2, paddingInlineEnd: 28 }}>
+      {/* Text column takes the full remaining width.
+          paddingInlineEnd: 56 = dismiss (24) + summarize (24) + 4px gap each */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2, paddingInlineEnd: 56 }}>
         {/* Clickable headline: opens the detail modal. */}
         <button
           type="button"
@@ -639,8 +712,30 @@ function FeedCard({
           {row.projectName ? <span aria-hidden="true">·</span> : null}
           <span>{row.issueKey}</span>
           <span aria-hidden="true">·</span>
-          <span>{relative}</span>
+          {/* G-04: full relative text ("4 days ago") + absolute tooltip ("May 17, 2026 at 3:43 PM"). */}
+          <span title={absolute}>{relative}</span>
         </div>
+
+        {/* G-02: View thread — Jira parity, "Reply to comments" rows only.
+            DOM probe 2026-05-29: BUTTON element, 13px/500/link-blue, below the meta row. */}
+        {row.showViewThread && (
+          <button
+            type="button"
+            onClick={onOpen}
+            style={{
+              all: 'unset',
+              cursor: 'pointer',
+              display: 'inline-block',
+              fontSize: 13,
+              fontWeight: 500,
+              lineHeight: '16px',
+              color: token('color.link', '#1868DB'),
+              paddingBlockStart: 2,
+            }}
+          >
+            View thread
+          </button>
+        )}
 
         {/* Comment body — full text with @-chips rendered inline.
             Bumped from 13/18 to 14/20 to match Jira's For You card body
@@ -1308,22 +1403,42 @@ function EmojiPickerPopover({
   const portalRef = useRef<HTMLDivElement>(null);
 
   // Position the picker relative to the trigger button.
-  // Floor clamp: never let the picker overlap the For You tab navigation
-  // (role="tablist"). Measured dynamically so it works at any viewport height.
-  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  // Strategy: always prefer opening BELOW the trigger so the picker is visually
+  // adjacent to the button that opened it. Only fall back to "above" when there
+  // is genuinely insufficient space below. Never clip through the tab-nav bar.
+  const [pos, setPos] = useState<{ top: number; left: number; maxHeight: number } | null>(null);
   useEffect(() => {
     if (!anchorRef.current) return;
     const r = anchorRef.current.getBoundingClientRect();
     const PICKER_W = 320;
-    const PICKER_H = 340;
-    const spaceBelow = window.innerHeight - r.bottom;
-    const rawTop = spaceBelow >= PICKER_H ? r.bottom + 4 : r.top - PICKER_H - 4;
-    // Clamp so the picker never slides above the For You tab-nav bar.
+    const PICKER_H_IDEAL = 340; // cap; grid is already overflowY:auto
+    const PICKER_H_MIN = 160;   // below this the picker is too cramped to be useful
+
     const navEl = document.querySelector('[role="tablist"]');
     const navFloor = navEl ? navEl.getBoundingClientRect().bottom + 8 : 80;
-    const top = Math.max(rawTop, navFloor);
+
+    const spaceBelow = window.innerHeight - r.bottom - 8;
+    const spaceAbove = r.top - navFloor - 4;
+
+    let top: number;
+    let maxHeight: number;
+
+    if (spaceBelow >= PICKER_H_MIN) {
+      // Open below — always prefer; keeps picker anchored to the trigger
+      top = r.bottom + 4;
+      maxHeight = Math.min(PICKER_H_IDEAL, spaceBelow);
+    } else if (spaceAbove >= PICKER_H_MIN) {
+      // Above mode — only when below has too little room
+      maxHeight = Math.min(PICKER_H_IDEAL, spaceAbove);
+      top = r.top - maxHeight - 4;
+    } else {
+      // Last resort: anchor below nav, fill remaining viewport space
+      top = navFloor;
+      maxHeight = window.innerHeight - navFloor - 16;
+    }
+
     const left = Math.min(r.left, window.innerWidth - PICKER_W - 8);
-    setPos({ top, left });
+    setPos({ top, left, maxHeight });
   }, [anchorRef]);
 
   // Close on Escape (capture phase beats parent modal's bubble handler).
@@ -1368,7 +1483,7 @@ function EmojiPickerPopover({
         left: pos.left,
         zIndex: 10000,
         width: 320,
-        maxHeight: 340,
+        maxHeight: pos.maxHeight,
         background: token('elevation.surface.overlay', '#FFFFFF'),
         border: `1px solid ${token('color.border', '#DFE1E6')}`,
         borderRadius: 8,
@@ -2060,12 +2175,9 @@ function MentionChip({ label }: { label: string }) {
 // ─── Utilities ──────────────────────────────────────────────────────────────
 
 /**
- * Compact relative-time formatter matching Jira's For You meta row:
- *   "just now" | "Xm" | "Xh" | "yesterday" | "Xd" | "Xw" | "Xmo" | "Xy"
- *
- * Replaces the previous verbose "X minutes ago / X hours ago" output, which
- * wasted meta-row width and forced wraps on long author names + project
- * names. "yesterday" stays spelled out because Jira renders it that way too.
+ * Full relative-time formatter — G-04 Jira parity (DOM probe 2026-05-29).
+ * Jira shows "4 days ago", "2 hours ago" etc., NOT the abbreviated "4d"/"2h".
+ * "yesterday" is kept as Jira renders it that way for the day-1 bucket.
  * Returns "earlier" on any parse failure — never throws in the render path.
  */
 function formatRelativeTimestamp(iso: string): string {
@@ -2074,16 +2186,39 @@ function formatRelativeTimestamp(iso: string): string {
   const diffMs = Date.now() - then;
   const diffMin = Math.floor(diffMs / 60_000);
   if (diffMin < 1) return 'just now';
-  if (diffMin < 60) return `${diffMin}m`;
+  if (diffMin === 1) return '1 minute ago';
+  if (diffMin < 60) return `${diffMin} minutes ago`;
   const diffH = Math.floor(diffMin / 60);
-  if (diffH < 24) return `${diffH}h`;
+  if (diffH === 1) return '1 hour ago';
+  if (diffH < 24) return `${diffH} hours ago`;
   const diffD = Math.floor(diffH / 24);
   if (diffD === 1) return 'yesterday';
-  if (diffD < 7) return `${diffD}d`;
+  if (diffD < 7) return `${diffD} days ago`;
   const diffW = Math.floor(diffD / 7);
-  if (diffW < 5) return `${diffW}w`;
+  if (diffW === 1) return '1 week ago';
+  if (diffW < 5) return `${diffW} weeks ago`;
   const diffMo = Math.floor(diffD / 30);
-  if (diffMo < 12) return `${diffMo}mo`;
+  if (diffMo === 1) return '1 month ago';
+  if (diffMo < 12) return `${diffMo} months ago`;
   const diffY = Math.floor(diffD / 365);
-  return `${diffY}y`;
+  return diffY === 1 ? '1 year ago' : `${diffY} years ago`;
+}
+
+/**
+ * Absolute timestamp for the meta row `title` attribute.
+ * Jira parity: "May 17, 2026 at 3:43 PM" (hover tooltip on the relative time).
+ */
+function formatAbsoluteTimestamp(iso: string): string {
+  try {
+    return new Date(iso).toLocaleString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  } catch {
+    return '';
+  }
 }

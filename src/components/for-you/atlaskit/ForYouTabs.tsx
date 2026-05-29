@@ -116,9 +116,11 @@ function TabButton({
   const showCounter = tab.showCount && count > 0;
   const showSparkle = tab.id === 'ai-theme';
   // Ageing uses a red-tinted counter to signal SLA risk, matching the
-  // AMBER/RED governance language the panel itself renders. All other
-  // counters keep the neutral Atlaskit treatment.
+  // AMBER/RED governance language the panel itself renders.
+  // Assigned uses a blue-tinted counter matching Jira's probed badge:
+  //   DOM probe 2026-05-29: bg rgb(143,184,246), borderRadius 2px (square).
   const isAgeingBadge = tab.id === 'ageing' && showCounter;
+  const isAssignedBadge = tab.id === 'assigned' && showCounter;
 
   // Selected: elevated-white pill. Hover (only when not selected): faint
   // neutral bg. Rest: transparent.
@@ -161,7 +163,7 @@ function TabButton({
         // Only the selected pill gets a shadow — the visual lift that
         // distinguishes it inside the neutral container.
         boxShadow: isActive
-          ? '0 1px 1px rgba(9,30,66,0.12), 0 0 1px rgba(9,30,66,0.16)'
+          ? token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.12), 0 0 1px rgba(9,30,66,0.16)')
           : 'none',
         transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.15, 1, 0.3, 1)',
       }}
@@ -189,7 +191,6 @@ function TabButton({
             minWidth: 16,
             height: 16,
             padding: `0 ${token('space.050', '4px')}`,
-            borderRadius: 999,
             // Ageing badge keeps the danger-red treatment regardless of
             // whether its parent tab is selected — the SLA-risk signal
             // must not disappear when the user clicks the Ageing pill.
@@ -198,12 +199,21 @@ function TabButton({
             // user landed on the tab.
             background: isAgeingBadge
               ? token('color.background.danger', '#FFECEB')
-              : isActive
-                ? token('color.background.neutral', 'rgba(5,21,36,0.06)')
-                : token('color.background.neutral.subtle', 'transparent'),
+              : isAssignedBadge
+                // Jira parity (probe 2026-05-29): blue badge bg on assigned tab.
+                // token('color.background.accent.blue.subtle') → closest ADS match.
+                ? token('color.background.accent.blue.subtle', 'rgb(143, 184, 246)')
+                : isActive
+                  ? token('color.background.neutral', 'rgba(5,21,36,0.06)')
+                  : token('color.background.neutral.subtle', 'transparent'),
             color: isAgeingBadge
               ? token('color.text.danger', '#AE2E24')
-              : token('color.text.subtle', '#505258'),
+              : isAssignedBadge
+                ? token('color.text', '#292A2E')
+                : token('color.text.subtle', '#505258'),
+            // Jira parity: ageing + assigned use square badges (borderRadius 2px),
+            // all others use the pill treatment (borderRadius 999).
+            borderRadius: isAgeingBadge || isAssignedBadge ? 2 : 999,
             font: `600 11px/14px "Inter", system-ui, sans-serif`,
           }}
         >
