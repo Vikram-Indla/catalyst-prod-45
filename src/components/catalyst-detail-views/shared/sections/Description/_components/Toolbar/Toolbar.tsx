@@ -30,6 +30,8 @@ import { MicButton } from './buttons/MicButton';
 export interface ToolbarProps {
   editor: Editor | null;
   onImprove?: () => void;
+  /** Improve-button label. Defaults to "Improve description". */
+  improveLabel?: string;
   onImageUpload?: (file: File) => Promise<string>;
   historyAvailable?: boolean;
   onOpenSlashMenu?: (anchor: HTMLElement) => void;
@@ -43,6 +45,7 @@ export interface ToolbarProps {
 export function Toolbar({
   editor,
   onImprove,
+  improveLabel,
   onImageUpload,
   historyAvailable = false,
   onOpenSlashMenu,
@@ -70,7 +73,11 @@ export function Toolbar({
         flexShrink: 0,
       }}
     >
-      <ImproveButton editor={editor} onImprove={onImprove} />
+      <ImproveButton
+        editor={editor}
+        onImprove={onImprove}
+        label={improveLabel}
+      />
       <TextStylesDropdown editor={editor} />
       <BoldButton editor={editor} />
       <InlineFormattingDropdown editor={editor} />

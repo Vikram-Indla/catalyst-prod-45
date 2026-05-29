@@ -23,9 +23,17 @@ interface EditorViewProps {
   editor: Editor | null;
   toolbar?: ReactNode;
   bodyOverlay?: ReactNode;
+  /** Minimum body height in px. Default 220 (description default). Comments
+   *  pass a smaller value (~80) for a compact 2-row starting height. */
+  minHeight?: number;
 }
 
-export function EditorView({ editor, toolbar, bodyOverlay }: EditorViewProps) {
+export function EditorView({
+  editor,
+  toolbar,
+  bodyOverlay,
+  minHeight = 220,
+}: EditorViewProps) {
   const bodyRef = useRef<HTMLDivElement | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
 
@@ -50,7 +58,7 @@ export function EditorView({ editor, toolbar, bodyOverlay }: EditorViewProps) {
         /* Caps the editor height; when content exceeds this, the body
            scrolls internally with the toolbar staying pinned in place. */
         maxHeight: '70vh',
-        minHeight: 220,
+        minHeight,
         overflow: 'hidden',
       }}
     >
