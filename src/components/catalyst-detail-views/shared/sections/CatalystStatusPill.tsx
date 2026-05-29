@@ -25,30 +25,16 @@ import Lozenge from '@atlaskit/lozenge';
 import { token } from '@atlaskit/tokens';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
-import { statusToLozenge, type LozengeAppearance } from '@/modules/project-work-hub/utils/statusToLozenge';
+import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import { WorkflowViewerModal } from './WorkflowViewerModal';
 
 /**
- * jira-compare 2026-05-05 (Lane A DOM probe, 3-lane audit, cycle updated):
- *   All status pills use DARK text #292A2E and fontWeight 500 — not white.
- *   Background colours are Jira's own (NOT ADS bold tokens):
- *     In QA / Done (success):    rgb(148,199,72)  = #94C748  (lime green)
- *     In Progress (inprogress):  rgb(102,157,241) = #669DF1  (medium blue)
- *     To Do / Backlog (default): rgba(5,21,36,0.06) ≈ near-transparent grey
- *   Jira jira-compare bypass: Jira parity overrides ADS-token preference here
- *   because no ADS token matches the Jira status category colours exactly.
+ * 2026-05-29 — ADS spec implementation.
+ *   CatalystStatusPill now uses @atlaskit/lozenge isBold appearance, delegating
+ *   all colour logic to ADS design tokens (--ds-background-*-bold, --ds-text-inverse).
+ *   The previous hand-rolled statusBg() using Jira-probed hex values is removed;
+ *   the ADS token system handles light + dark theme correctly out of the box.
  */
-function statusBg(appearance: LozengeAppearance): { bg: string; fg: string } {
-  const fg = 'var(--ds-text, #292A2E)'; // universal dark text — same for all Jira status pills
-  switch (appearance) {
-    case 'success':    return { bg: '#94C748',                fg };  // Done/In QA — lime green
-    case 'inprogress': return { bg: '#669DF1',                fg };  // In Progress — medium blue
-    case 'moved':      return { bg: '#F7C243',                fg };  // Warning — amber
-    case 'removed':    return { bg: '#F87168',                fg };  // Danger — soft red
-    case 'new':        return { bg: '#9F8FEF',                fg };  // Discovery — purple
-    default:           return { bg: 'rgba(5, 21, 36, 0.06)', fg };  // To Do/Backlog — near-transparent
-  }
-}
 
 interface CatalystStatusPillProps {
   /** Current status name (e.g. "To Do", "In Progress", "Ready for QA"). */
@@ -107,10 +93,8 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
 
   return (
     <>
-      {/* jira-compare 2026-05-05: removed sticky wrapper — pill lives in the
-          right-rail flex header managed by CatalystSidebarDetails. The button
-          is the direct render target; getBoundingClientRect in toggle() still
-          works because the triggerRef points directly to the button. */}
+      {/* 2026-05-29: button is a transparent click-target; Lozenge isBold
+          provides all visual styling via ADS --ds-background-*-bold tokens. */}
       <button
         ref={triggerRef}
         type="button"
@@ -122,36 +106,26 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
-          /* jira-compare 2026-05-08: set font-size/weight on button element
-             so getComputedStyle(button) matches Jira's 14px/500 exactly —
-             previously only the inner span had these set, so the button's
-             inherited values (16px/400) diverged from the live Jira probe. */
-          height: 32,
-          padding: '0 10px',
+          padding: 0,
           border: 'none',
-          borderRadius: 3,
-          background: statusBg(statusToLozenge(display, statusCategory)).bg,
+          background: 'transparent',
           cursor: 'pointer',
           fontFamily: 'inherit',
-          fontSize: 14,
-          fontWeight: 500,
-          color: statusBg(statusToLozenge(display, statusCategory)).fg,
           transition: 'filter 0.1s',
         }}
         onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.88)'; }}
         onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
       >
-        <span style={{
-          fontSize: 14,
-          fontWeight: 500,
-          lineHeight: '20px',
-          color: statusBg(statusToLozenge(display, statusCategory)).fg,
-          letterSpacing: '0',
-        }}>
-          {display}
+        {/* data-cp-lozenge-jira-parity: typography overrides (sentence-case,
+            12px/500) from index.css apply inside this scope. */}
+        <span data-cp-lozenge-jira-parity style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <Lozenge isBold appearance={statusToLozenge(display, statusCategory)}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, lineHeight: '20px' }}>
+              {display}
+              <ChevronDownIcon size="small" label="" />
+            </span>
+          </Lozenge>
         </span>
-        <ChevronDownIcon size="small" primaryColor={statusBg(statusToLozenge(display, statusCategory)).fg} />
       </button>
 
       {open && anchor && typeof document !== 'undefined' &&
