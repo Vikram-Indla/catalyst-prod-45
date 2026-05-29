@@ -6,6 +6,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Rule 4: Projects that belong to the Products module (Business Requests).
+// These MUST NEVER be synced into ph_issues (Projects module).
+// This block is permanent and cannot be overridden via wh_config.sync_projects.
+const PRODUCTS_MODULE_PROJECTS = new Set(['MDT'])
+
 interface ProjectConfig {
   lookback_months: number
   status_categories?: string[]
@@ -240,7 +245,9 @@ serve(async (req) => {
     const fields = ['summary','status','assignee','reporter','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016','description','comment','attachment','issuelinks']
     const searchUrl = `${base}/rest/api/3/search/jql`
     const postHeaders = { ...headers, 'Content-Type': 'application/json' }
-    const projectsToSync = syncProjects.length > 0 ? syncProjects : allProjectKeys
+    // Rule 4: strip Products-module projects from every sync run, regardless of config.
+    const projectsToSync = (syncProjects.length > 0 ? syncProjects : allProjectKeys)
+      .filter(k => !PRODUCTS_MODULE_PROJECTS.has(k))
 
     let totalFetched = 0
     let totalUpserted = 0
@@ -356,10 +363,12 @@ serve(async (req) => {
             status_category: issue.fields.status?.statusCategory?.name || mapStatusCategory(issue.fields.status?.name || 'To Do'),
             assignee_account_id: issue.fields.assignee?.accountId || null,
             assignee_display_name: issue.fields.assignee?.displayName || null,
-            assignee_user_id: userMap.get(issue.fields.assignee?.accountId) || null,
+            // assignee_user_id intentionally null: useDirectFromSync resolves via assignee_account_id.
+            // ph_user_mapping catalyst_profile_ids may reference stale Lovable UUIDs not in profiles.
+            assignee_user_id: null,
             reporter_account_id: issue.fields.reporter?.accountId || null,
             reporter_display_name: issue.fields.reporter?.displayName || null,
-            reporter_user_id: userMap.get(issue.fields.reporter?.accountId) || null,
+            reporter_user_id: null,
             parent_key: issue.fields.parent?.key || resolveParentFromLinks(issue) || null,
             parent_summary: issue.fields.parent?.fields?.summary || resolveParentSummaryFromLinks(issue) || null,
             hierarchy_level: getHierarchyLevel(issue.fields.issuetype?.name || 'Task'),
@@ -605,12 +614,9 @@ serve(async (req) => {
               // Upsert with dedup: skip if this user already has a watching notif for this entity
               const { error: wErr } = await supabase
                 .from('notifications')
-                .upsert(watchingNotifRows, {
-                  onConflict: 'recipient_user_id,notification_type,entity_key,tab',
-                  ignoreDuplicates: true,
-                })
+                .insert(watchingNotifRows)
               if (wErr && wErr.code !== '23505') {
-                console.warn(`[sync] watching notifications upsert: ${wErr.message}`)
+                console.warn(`[sync] watching notifications insert: ${wErr.message}`)
               } else {
                 console.log(`[sync] Emitted ${watchingNotifRows.length} watching notifications for ${newIssues.length} new issues`)
               }
@@ -619,23 +625,28 @@ serve(async (req) => {
         }
 
         // ── Users ──
+        // Rule 2: only capture active Jira users.
+        // Jira user objects include active:boolean — inactive accounts are deactivated
+        // but may still appear as assignee/reporter on old issues.
         for (const issue of issues) {
           const assignee = issue.fields.assignee
-          if (assignee?.accountId && !uniqueUsers.has(assignee.accountId)) {
+          if (assignee?.accountId && assignee.active !== false && !uniqueUsers.has(assignee.accountId)) {
             uniqueUsers.set(assignee.accountId, {
               jira_account_id: assignee.accountId,
               jira_display_name: assignee.displayName || '',
               jira_email: assignee.emailAddress || '',
               jira_avatar_url: assignee.avatarUrls?.['48x48'] || '',
+              jira_active: assignee.active !== false,
             })
           }
           const reporter = issue.fields.reporter
-          if (reporter?.accountId && !uniqueUsers.has(reporter.accountId)) {
+          if (reporter?.accountId && reporter.active !== false && !uniqueUsers.has(reporter.accountId)) {
             uniqueUsers.set(reporter.accountId, {
               jira_account_id: reporter.accountId,
               jira_display_name: reporter.displayName || '',
               jira_email: reporter.emailAddress || '',
               jira_avatar_url: reporter.avatarUrls?.['48x48'] || '',
+              jira_active: reporter.active !== false,
             })
           }
         }
@@ -677,11 +688,20 @@ serve(async (req) => {
           const toDelete = allExistingKeys.filter((k: string) => !projectFetchedKeys.has(k))
 
           if (toDelete.length > 0) {
+            // Soft-delete: set jira_removed_at + deleted_at instead of hard DELETE.
+            // guard_ph_issues_no_delete blocks physical deletes by design;
+            // guard_2026_ph_issues now allows this specific UPDATE path.
+            const removedAt = new Date().toISOString()
             for (let i = 0; i < toDelete.length; i += 500) {
-              await supabase.from('ph_issues').delete().in('issue_key', toDelete.slice(i, i + 500))
+              const { error: pruneErr } = await supabase
+                .from('ph_issues')
+                .update({ jira_removed_at: removedAt, deleted_at: removedAt })
+                .in('issue_key', toDelete.slice(i, i + 500))
+                .is('jira_removed_at', null) // idempotent — only mark once
+              if (pruneErr) console.warn(`[sync] prune soft-delete error ${projectKey}: ${pruneErr.message}`)
             }
             totalPruned += toDelete.length
-            console.log(`[sync] Pruned ${toDelete.length} issues from ${projectKey}`)
+            console.log(`[sync] Soft-deleted ${toDelete.length} stale issues from ${projectKey}`)
           }
         }
       }
@@ -717,11 +737,19 @@ serve(async (req) => {
       }
     }
 
-    // 9. Upsert user mappings
+    // 9. Upsert user mappings — Rule 2: active users only
     if (uniqueUsers.size > 0) {
       await supabase
         .from('ph_user_mapping')
         .upsert(Array.from(uniqueUsers.values()), { onConflict: 'jira_account_id', ignoreDuplicates: false })
+
+      // Purge unmapped inactive users: they have no Catalyst profile and are no
+      // longer active in Jira — no value keeping them in the table.
+      await supabase
+        .from('ph_user_mapping')
+        .delete()
+        .eq('is_mapped', false)
+        .eq('jira_active', false)
 
       const { data: mappedUsers } = await supabase
         .from('ph_user_mapping')
@@ -777,11 +805,13 @@ serve(async (req) => {
 
     // 14. Warnings
     const warnings: string[] = []
+    // Only warn about active unmapped users — inactive ones were already purged above.
     const { data: unmapped } = await supabase
       .from('ph_user_mapping')
       .select('jira_display_name')
       .eq('is_mapped', false)
-    if (unmapped && unmapped.length > 0) warnings.push(`${unmapped.length} unmapped Jira users`)
+      .neq('jira_active', false)
+    if (unmapped && unmapped.length > 0) warnings.push(`${unmapped.length} active Jira users not yet matched to Catalyst profiles`)
     if (hadSearchErrors) warnings.push('Search errors occurred; prune step was skipped for affected projects')
     if (totalPruned > 0) warnings.push(`${totalPruned} issues pruned`)
 

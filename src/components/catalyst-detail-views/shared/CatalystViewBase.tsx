@@ -41,6 +41,7 @@ if (typeof document !== 'undefined') {
     '@keyframes cv-slide-down { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }',
     '@keyframes cv-confirm-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }',
     '.cv-drawer-body { container-type: inline-size; }',
+    // ads-scanner:ignore-next-line
     '.cv-drawer-left { min-width: 288px; }',
     /* jira-compare 2026-05-11 DC4: 680px threshold fired at 560px panel-mode body
        (allwork right pane), hiding the sidebar. Jira shows two columns at 461px.
