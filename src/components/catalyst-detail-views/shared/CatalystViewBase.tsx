@@ -14,10 +14,12 @@
  * renders its own content into the left/right slots.
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import ReactDOM from 'react-dom';
+import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CrossIcon from '@atlaskit/icon/core/close';
-import MoreIcon from '@atlaskit/icon/core/menu';
+import LinkIcon from '@atlaskit/icon/core/link';
+import AkFlag, { FlagGroup } from '@atlaskit/flag';
+import SuccessIcon from '@atlaskit/icon/glyph/check-circle';
 import Modal from '@atlaskit/modal-dialog';
 import { IconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
@@ -56,12 +58,7 @@ if (typeof document !== 'undefined') {
        clone does not work."
        Rules below: collapse to a single-column body, drop chrome, force
        static layout so the detail view prints like a plain document. */
-    /* fullPageMode responsive breakpoint: viewport < 1600px collapses sidebar */
-    '@media (max-width: 1599px) {',
-    '  [data-cv-scope] .cv-drawer-sidebar { display: none !important; }',
-    '  [data-cv-scope] .cv-drawer-splitter { display: none !important; }',
-    '  [data-cv-scope] .cv-drawer-left { border-right: none !important; max-width: 100% !important; }',
-    '}',
+    /* fullPageMode responsive breakpoint: viewport < 1600px collapses sidebar removed as per plan */
     '@media print {',
     '  .cv-drawer-body { overflow: visible !important; container-type: normal !important; }',
     '  .cv-drawer-sidebar, .cv-drawer-splitter { display: none !important; }',
@@ -123,7 +120,6 @@ export interface CatalystViewBaseLayoutProps {
   parentSource?: 'epic' | 'business_request' | 'story' | 'story_epic_feature' | 'story_epic_feature_br';
 
   /* Actions */
-  onShare?: () => void;
   moreMenuItems?: { label: string; onClick: () => void; danger?: boolean }[];
 
   /* Panel navigation */
@@ -149,7 +145,7 @@ export function CatalystViewBase({
   isOpen, onClose, panelMode, fullPageMode,
   itemType, itemKey, projectKey, projectName, parentKey, parentType, onParentClick, breadcrumbExtra,
   onParentChange, parentSource,
-  onShare, moreMenuItems,
+  moreMenuItems,
   onTogglePanelMode, navigationItems, currentItemId, onNavigate,
   leftContent, rightContent,
   isLoading, isNotFound,
@@ -165,8 +161,10 @@ export function CatalystViewBase({
   // and was visually clipping at 220px; 260 gives it breathing room without crowding the
   // left content area at typical 1140px AllWork panel widths).
   const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 440 : 480);
-  /* Portal-based more-menu (fixes @atlaskit/popup v4.16 top-left positioning bug) */
-  const [moreMenuAnchor, setMoreMenuAnchor] = useState<{ top: number; right: number } | null>(null);
+  const [showCopyFlag, setShowCopyFlag] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [moreAnchor, setMoreAnchor] = useState<DOMRect | null>(null);
+  const moreTriggerRef = useRef<HTMLButtonElement>(null);
   const isDraggingRef = useRef(false);
 
   /* G4: Track recently visited issues in localStorage (catalyst-recent-issues).
@@ -198,6 +196,19 @@ export function CatalystViewBase({
     document.addEventListener('mouseup', onMouseUp);
     return () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); };
   }, []);
+
+  /* Portal dropdown: close on Escape (capture phase beats parent modal) + click-outside */
+  useEffect(() => {
+    if (!moreOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setMoreOpen(false); } };
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Element;
+      if (!t.closest('[data-cv-more-portal]') && !moreTriggerRef.current?.contains(t)) setMoreOpen(false);
+    };
+    document.addEventListener('keydown', onKey, true);
+    document.addEventListener('mousedown', onDown);
+    return () => { document.removeEventListener('keydown', onKey, true); document.removeEventListener('mousedown', onDown); };
+  }, [moreOpen]);
 
 /* ── Escape key ───────────────────────────
      Phase A.2 (2026-04-18): gated to panel mode.
@@ -336,23 +347,6 @@ export function CatalystViewBase({
     }
   }, [fullPageMode, projectKey, navigate, onClose]);
 
-  /* ── More-menu toggle ───────────────────────────────────────────────
-     Portal-based: getBoundingClientRect() positions the menu correctly
-     even inside position:fixed / overflow:hidden ancestors.
-     (Replaces @atlaskit/dropdown-menu which has the v4.16 top-left bug.)
-     Uses e.currentTarget (not a ref) because @atlaskit/button/new's
-     IconButton wraps the button in Emotion and the ref lands on the
-     wrapper, not the <button> — so getBoundingClientRect() on the ref
-     is unreliable. currentTarget is always the actual <button> element.
-     ──────────────────────────────────────────────────────────────────── */
-  const toggleMoreMenu = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    if (moreMenuAnchor) {
-      setMoreMenuAnchor(null);
-    } else {
-      const r = e?.currentTarget?.getBoundingClientRect?.();
-      if (r) setMoreMenuAnchor({ top: r.bottom + 4, right: window.innerWidth - r.right });
-    }
-  }, [moreMenuAnchor]);
 
   /* ── Card contents ─────────────────────────────────────────────────────
      Top bar + body JSX, extracted as a fragment so all three modes
@@ -474,71 +468,94 @@ export function CatalystViewBase({
               portal-based implementation to fix the @atlaskit/popup v4.16
               top-left positioning bug (same pattern as ProjectHeaderChip). */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {/* B10: Link issue button — copies canonical ticket permalink to clipboard. */}
+            <Tooltip content="Copy link">
+              <IconButton
+                appearance="subtle"
+                icon={() => <LinkIcon size="small" />}
+                label="Copy link"
+                onClick={() => {
+                  const url = (itemKey && projectKey)
+                    ? `${window.location.origin}/browse/${itemKey}`
+                    : window.location.href;
+                  navigator.clipboard.writeText(url);
+                  setShowCopyFlag(true);
+                  setTimeout(() => setShowCopyFlag(false), 3000);
+                }}
+              />
+            </Tooltip>
 
-            {/* More actions — portal-based custom menu */}
             {moreMenuItems && moreMenuItems.length > 0 && (
               <>
-                <Tooltip content="More actions">
-                  <IconButton
-                    appearance="subtle"
-                    icon={() => <MoreIcon size="small" />}
-                    label="More actions"
-                    isSelected={!!moreMenuAnchor}
-                    onClick={toggleMoreMenu}
-                  />
-                </Tooltip>
-                {moreMenuAnchor && ReactDOM.createPortal(
-                  <>
-                    {/* click-outside backdrop */}
-                    <div
-                      onClick={() => setMoreMenuAnchor(null)}
-                      style={{ position: 'fixed', inset: 0, zIndex: 9000 }}
-                    />
-                    <div
-                      role="menu"
-                      aria-label="More actions"
-                      style={{
-                        position: 'fixed',
-                        top: moreMenuAnchor.top,
-                        right: moreMenuAnchor.right,
-                        zIndex: 9001,
-                        background: 'var(--ds-surface-overlay, #FFFFFF)',
-                        borderRadius: 4,
-                        boxShadow: '0 4px 16px rgba(9, 30, 66, 0.16)',
-                        border: '1px solid var(--ds-border, #DFE1E6)',
-                        minWidth: 180,
-                        padding: '6px 0',
-                      }}
-                    >
-                      {moreMenuItems.filter(item => !item.danger).map((item, i) => (
-                        <button
-                          key={i}
-                          role="menuitem"
-                          onClick={() => { item.onClick(); setMoreMenuAnchor(null); }}
-                          style={{ display: 'block', width: '100%', padding: '8px 16px', border: 'none', background: 'transparent', textAlign: 'left', fontSize: 14, cursor: 'pointer', color: 'var(--ds-text, #292A2E)', fontFamily: 'inherit' }}
-                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)'; }}
-                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                      {moreMenuItems.some(item => item.danger) && (
-                        <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '6px 0' }} />
-                      )}
-                      {moreMenuItems.filter(item => item.danger).map((item, i) => (
-                        <button
-                          key={i}
-                          role="menuitem"
-                          onClick={() => { item.onClick(); setMoreMenuAnchor(null); }}
-                          style={{ display: 'block', width: '100%', padding: '8px 16px', border: 'none', background: 'transparent', textAlign: 'left', fontSize: 14, cursor: 'pointer', color: 'var(--ds-text-danger, #AE2A19)', fontFamily: 'inherit' }}
-                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)'; }}
-                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </>,
+                <button
+                  ref={moreTriggerRef}
+                  aria-label="More actions"
+                  aria-haspopup="true"
+                  aria-expanded={moreOpen}
+                  onClick={() => {
+                    const rect = moreTriggerRef.current?.getBoundingClientRect() ?? null;
+                    setMoreAnchor(rect);
+                    setMoreOpen(v => !v);
+                  }}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    padding: 4, borderRadius: 4, width: 32, height: 32,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--ds-text-subtle, #42526E)',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <circle cx="8" cy="3.5" r="1.25" fill="currentColor"/>
+                    <circle cx="8" cy="8" r="1.25" fill="currentColor"/>
+                    <circle cx="8" cy="12.5" r="1.25" fill="currentColor"/>
+                  </svg>
+                </button>
+                {moreOpen && moreAnchor && createPortal(
+                  <div
+                    data-cv-more-portal
+                    style={{
+                      position: 'fixed',
+                      top: moreAnchor.bottom + 4,
+                      right: window.innerWidth - moreAnchor.right,
+                      zIndex: 10000,
+                      background: 'var(--ds-surface-overlay, #FFFFFF)',
+                      borderRadius: 4,
+                      boxShadow: 'var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,.25))',
+                      minWidth: 180,
+                      padding: '4px 0',
+                      border: '1px solid var(--ds-border, #DFE1E6)',
+                    }}
+                  >
+                    {moreMenuItems.filter(item => !item.danger).map((item, i) => (
+                      <button key={i} onClick={() => { item.onClick(); setMoreOpen(false); }}
+                        style={{
+                          display: 'block', width: '100%', textAlign: 'left',
+                          padding: '8px 16px', background: 'none', border: 'none', cursor: 'pointer',
+                          fontSize: 14, color: 'var(--ds-text, #172B4D)', fontFamily: 'inherit',
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                      >{item.label}</button>
+                    ))}
+                    {moreMenuItems.some(item => item.danger) && (
+                      <>
+                        <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
+                        {moreMenuItems.filter(item => item.danger).map((item, i) => (
+                          <button key={i} onClick={() => { item.onClick(); setMoreOpen(false); }}
+                            style={{
+                              display: 'block', width: '100%', textAlign: 'left',
+                              padding: '8px 16px', background: 'none', border: 'none', cursor: 'pointer',
+                              fontSize: 14, color: 'var(--ds-text-danger, #AE2A19)', fontFamily: 'inherit',
+                            }}
+                            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
+                            onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                          >{item.label}</button>
+                        ))}
+                      </>
+                    )}
+                  </div>,
                   document.body
                 )}
               </>

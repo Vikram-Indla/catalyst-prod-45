@@ -2,7 +2,7 @@
  * CatalystViewIncident — Production Incident detail overlay.
  */
 import React, { useMemo } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
@@ -38,12 +38,10 @@ export default function CatalystViewIncident({
     if (!issue?.issue_key) return;
     cloneIssue(issue.issue_key)
       .then((newKey) => {
-        toast.success(`Cloned as ${newKey}`, {
-          action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
-        });
+        catalystToast.success(`Cloned as ${newKey}`, undefined, { label: 'Open', onClick: () => onOpenItem?.(newKey) });
       })
       .catch((e: unknown) => {
-        toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+        catalystToast.error('Clone failed', e instanceof Error ? e.message : (e as any)?.message ?? 'Unknown error');
       });
   }, [issue?.issue_key, onOpenItem]);
   const queryClient = useQueryClient();
@@ -133,6 +131,7 @@ export default function CatalystViewIncident({
       }}
       /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
       moreMenuItems={useMemo(() => [
+        { label: 'Print', onClick: () => window.print() },
         { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
         { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
@@ -166,8 +165,8 @@ export default function CatalystViewIncident({
       onConfirm={() => {
         if (!issue?.issue_key) return;
         archiveIssue(issue.issue_key)
-          .then(() => { onClose(); })
-          .catch((e: unknown) => { console.error('Archive failed', e); });
+          .then(() => { catalystToast.success('Issue archived'); onClose(); })
+          .catch((e: unknown) => { catalystToast.error('Archive failed', e instanceof Error ? e.message : (e as any)?.message ?? 'Unknown error'); });
       }}
     />
     <ConfirmDeleteDialog

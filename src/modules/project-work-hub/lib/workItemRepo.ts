@@ -301,13 +301,13 @@ export async function moveIssue(
 
 // ─── Archive ─────────────────────────────────────────────────────────────────
 //
-// Soft-archives a ph_issues row by setting is_archived = true.
-// The column already exists in the schema (types.ts confirmed 2026-05-10).
-// No SQL migration required.
+// Soft-archives a ph_issues row by setting archived_at to the current timestamp.
+// ph_issues has no is_archived boolean — archiving is tracked via archived_at (nullable timestamp).
+// A non-null archived_at means the issue is archived.
 export async function archiveIssue(issueKey: string): Promise<void> {
   const { error } = await supabase
     .from('ph_issues')
-    .update({ is_archived: true } as any)
+    .update({ archived_at: new Date().toISOString() } as any)
     .eq('issue_key', issueKey);
   if (error) throw error;
 }
@@ -318,20 +318,24 @@ export async function archiveIssue(issueKey: string): Promise<void> {
 //   - Gets a new sequential issue_key in the same project.
 //   - Summary is prefixed "Copy of <original summary>".
 //   - Status resets to "To Do" / status_category "todo".
-//   - is_archived is always false on the clone.
+//   - archived_at is null on the clone (not archived).
 //   - parent_key is PRESERVED from the original ("with parent" directive 2026-05-10).
 //   - source is set to 'catalyst' (the clone is always a Catalyst-native item).
-//   - description_adf, issue_type, priority, project_key, project_id, reporter_account_id
-//     and acceptance_criteria_adf are carried over from the original.
+//   - description_adf, issue_type, priority, project_key, reporter_account_id
+//     and acceptance_criteria (plain text, not ADF) are carried over from the original.
+//   NOTE: ph_issues has no project_id column — projects link via project_key (text) only.
 //
 // Returns the new issue_key string.
 export async function cloneIssue(issueKey: string): Promise<string> {
-  // 1. Fetch the original
+  // 1. Fetch the original — use actual column names from ph_issues schema.
+  //    acceptance_criteria is plain text (no ADF variant exists in this table).
+  //    project_id does NOT exist in ph_issues; projects link via project_key.
   const { data: original, error: fetchError } = await supabase
     .from('ph_issues')
     .select(
       'issue_key, summary, description_adf, issue_type, priority, parent_key, ' +
-      'project_key, reporter_account_id, status, status_category',
+      'project_key, reporter_account_id, acceptance_criteria, ' +
+      'status, status_category',
     )
     .eq('issue_key', issueKey)
     .single();
@@ -347,12 +351,15 @@ export async function cloneIssue(issueKey: string): Promise<string> {
 
   // 3. Insert the clone — only columns that exist on ph_issues.
   // Removed: acceptance_criteria_adf, project_id, is_archived (non-existent columns).
+  // acceptance_criteria (plain text) is preserved.
+  // archived_at null = not archived.
   const { data: inserted, error: insertError } = await supabase
     .from('ph_issues')
     .insert({
       issue_key: newKey,
       summary: `Copy of ${orig.summary ?? ''}`,
       description_adf: orig.description_adf ?? null,
+      acceptance_criteria: orig.acceptance_criteria ?? null,
       issue_type: orig.issue_type ?? null,
       priority: orig.priority ?? 'Medium',
       parent_key: orig.parent_key ?? null,
@@ -360,6 +367,7 @@ export async function cloneIssue(issueKey: string): Promise<string> {
       reporter_account_id: orig.reporter_account_id ?? null,
       status: 'To Do',
       status_category: 'todo',
+      archived_at: null,
       source: 'catalyst',
       jira_created_at: nowIso,
       jira_updated_at: nowIso,

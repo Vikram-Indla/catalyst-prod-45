@@ -23,13 +23,10 @@ import { supabase } from '@/integrations/supabase/client';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import { token } from '@atlaskit/tokens';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useToggleStar, useStarredItemIds } from '@/hooks/home/useStarredItems';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
-import {
-  PersonAddIcon,
-  EditorMoreIcon,
-} from './ProjectHeaderChipIcons';
+import { PersonAddIcon, EditorMoreIcon } from './ProjectHeaderChipIcons';
 
 interface Props {
   /** ph_jira_projects.project_key — e.g. "BAU". */
@@ -38,12 +35,13 @@ interface Props {
 
 export function ProjectHeaderChip({ projectKey }: Props) {
   const navigate = useNavigate();
+
   // Three-dots menu: bespoke portal popup (replaces @atlaskit/dropdown-menu
   // which has the known @atlaskit/popup v4.16 empty-portal positioning bug).
   const meatballRef = useRef<HTMLButtonElement>(null);
   const [menuAnchor, setMenuAnchor] = useState<{ top: number; left: number } | null>(null);
 
-  // Modal states (Add people / Automation / Feedback)
+  // Modal states
   const [addPeopleOpen, setAddPeopleOpen] = useState(false);
   const [invitedEmails, setInvitedEmails] = useState<string[]>([]);
   const [inviteEmail, setInviteEmail] = useState('');
@@ -83,11 +81,11 @@ export function ProjectHeaderChip({ projectKey }: Props) {
   const isValidEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
   const submitInvite = () => {
     const e = inviteEmail.trim();
-    if (!isValidEmail(e)) { toast.error('Enter a valid email address'); return; }
-    if (invitedEmails.includes(e)) { toast.error('Already invited'); return; }
+    if (!isValidEmail(e)) { catalystToast.error('Enter a valid email address'); return; }
+    if (invitedEmails.includes(e)) { catalystToast.error('Already invited'); return; }
     setInvitedEmails(prev => [...prev, e]);
     setInviteEmail('');
-    toast.success(`Invitation queued for ${e}`);
+    catalystToast.success(`Invitation queued for ${e}`);
   };
   const closeAddPeople = () => { setAddPeopleOpen(false); setInviteEmail(''); setInvitedEmails([]); };
 
@@ -205,7 +203,6 @@ export function ProjectHeaderChip({ projectKey }: Props) {
           />
         </span>
 
-        <span style={{ flex: 1 }} />
       </div>
 
       {/* ── Three-dots portal menu ───────────────────────────────────────── */}
