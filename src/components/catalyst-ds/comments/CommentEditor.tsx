@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ads';
 import type { CdsUser, CdsQuickReply } from '../types';
 import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
+import { MentionSuggestionPill } from '@/components/catalyst-detail-views/shared/sections/Description/_components/MentionSuggestionPill/MentionSuggestionPill';
 import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
 import { isAdfEmpty, adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { CatyStreamingOverlay } from '@/components/catalyst-detail-views/improve/CatyStreamingOverlay';
@@ -258,6 +259,12 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
             minHeight={80}
             onImproveClick={improveContext ? handleImproveClick : undefined}
             improveLabel="Improve writing"
+            belowEditor={(editor) => (
+              <MentionSuggestionPill
+                editor={editor}
+                workItemId={workItemId}
+              />
+            )}
             bodyOverlay={
               improving && improveContext ? (
                 <CatyStreamingOverlay

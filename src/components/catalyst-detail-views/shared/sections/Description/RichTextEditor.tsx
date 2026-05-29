@@ -29,6 +29,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import type { Editor } from '@tiptap/react';
 import { NodeSelection } from '@tiptap/pm/state';
 import { useVoiceToText } from '@/lib/voiceToText/useVoiceToText';
 import { useMicVoiceRecorder } from './hooks/useMicVoiceRecorder';
@@ -85,6 +86,12 @@ export interface RichTextEditorProps {
   isSaving?: boolean;
   /** Save button label. Defaults to "Save". */
   saveLabel?: string;
+
+  /** Render extra content directly below the editor body (above the
+   *  Save/Cancel row). Receives the live editor so the slot can dispatch
+   *  inserts / read selection. Used by the comment editor to render the
+   *  mention-suggestion pill. */
+  belowEditor?: (editor: Editor) => ReactNode;
 }
 
 type VoiceMode = 'auto' | 'en' | 'ar';
@@ -102,6 +109,7 @@ export function RichTextEditor({
   minHeight,
   isSaving = false,
   saveLabel = 'Save',
+  belowEditor,
 }: RichTextEditorProps) {
   const [emojiPanelAnchor, setEmojiPanelAnchor] = useState<HTMLElement | null>(
     null,
@@ -284,6 +292,7 @@ export function RichTextEditor({
           />
         }
         bodyOverlay={bodyOverlay}
+        footer={belowEditor ? belowEditor(editor) : undefined}
       />
 
       {/* Save / Cancel + voice — hidden while a streaming overlay owns

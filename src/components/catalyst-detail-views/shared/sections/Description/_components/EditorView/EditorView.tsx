@@ -26,6 +26,10 @@ interface EditorViewProps {
   /** Minimum body height in px. Default 220 (description default). Comments
    *  pass a smaller value (~80) for a compact 2-row starting height. */
   minHeight?: number;
+  /** Optional content rendered INSIDE the bordered editor shell, below
+   *  the scrolling body. Used by the comment editor for the mention-
+   *  suggestion pill so it visually sits inside the editor frame. */
+  footer?: ReactNode;
 }
 
 export function EditorView({
@@ -33,6 +37,7 @@ export function EditorView({
   toolbar,
   bodyOverlay,
   minHeight = 220,
+  footer,
 }: EditorViewProps) {
   const bodyRef = useRef<HTMLDivElement | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
@@ -89,6 +94,18 @@ export function EditorView({
         </div>
         {overlayActive && bodyOverlay}
       </div>
+      {footer && !overlayActive ? (
+        <div
+          className="catalyst-description-editor-footer"
+          style={{
+            flexShrink: 0,
+            padding: '6px 16px 8px 28px',
+            background: 'var(--ds-surface, #FFFFFF)',
+          }}
+        >
+          {footer}
+        </div>
+      ) : null}
     </div>
   );
 }
