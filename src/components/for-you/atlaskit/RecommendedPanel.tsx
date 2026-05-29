@@ -1308,6 +1308,8 @@ function EmojiPickerPopover({
   const portalRef = useRef<HTMLDivElement>(null);
 
   // Position the picker relative to the trigger button.
+  // Floor clamp: never let the picker overlap the For You tab navigation
+  // (role="tablist"). Measured dynamically so it works at any viewport height.
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   useEffect(() => {
     if (!anchorRef.current) return;
@@ -1315,7 +1317,11 @@ function EmojiPickerPopover({
     const PICKER_W = 320;
     const PICKER_H = 340;
     const spaceBelow = window.innerHeight - r.bottom;
-    const top = spaceBelow >= PICKER_H ? r.bottom + 4 : r.top - PICKER_H - 4;
+    const rawTop = spaceBelow >= PICKER_H ? r.bottom + 4 : r.top - PICKER_H - 4;
+    // Clamp so the picker never slides above the For You tab-nav bar.
+    const navEl = document.querySelector('[role="tablist"]');
+    const navFloor = navEl ? navEl.getBoundingClientRect().bottom + 8 : 80;
+    const top = Math.max(rawTop, navFloor);
     const left = Math.min(r.left, window.innerWidth - PICKER_W - 8);
     setPos({ top, left });
   }, [anchorRef]);
@@ -1521,11 +1527,15 @@ const DEFAULT_REACTIONS: { key: string; char: string; label: string }[] = [
   { key: 'smile',  char: '😀', label: 'Smile' },
 ];
 
-// Which char to render for a given emoji key — falls back to the raw key if
-// a custom reaction shows up that isn't in the default starter set.
-const EMOJI_CHAR: Record<string, string> = Object.fromEntries(
-  DEFAULT_REACTIONS.map(r => [r.key, r.char])
-);
+// Which char to render for a given emoji key — covers every emoji in the
+// full EMOJI_CATALOG (66+ entries) so picker selections always render as
+// the actual unicode character, not the raw shortcode key.
+// DEFAULT_REACTIONS entries are spread last so they can override catalog
+// entries for the five starter emojis (no-op in practice, but defensive).
+const EMOJI_CHAR: Record<string, string> = Object.fromEntries([
+  ...ALL_EMOJIS.map(e => [e.key, e.char]),
+  ...DEFAULT_REACTIONS.map(r => [r.key, r.char]),
+]);
 
 function ReactionStrip({
   phCommentId,
@@ -1821,16 +1831,19 @@ function ReactionChip({
 //   new      → bg rgb(221,222,225) (grey),       text rgb(24,104,219) (blue)
 //   other    → bg rgb(221,222,225) (grey fallback)
 // Lane B (Atlassian MCP 2026-05-29): BAU "Awaiting Info" AND "Closed" both = done category.
-const FOR_YOU_STATUS_CHIP_TEXT = 'rgb(24, 104, 219)';
+// ADS token fallback chains for status chip colors.
+// Fallback values are Jira-probed exact colors (jira-compare bypass per CLAUDE.md 2026-05-05 —
+// Jira parity overrides ADS token preference when no exact ADS match exists).
+const FOR_YOU_STATUS_CHIP_TEXT = 'var(--ds-link, rgb(24, 104, 219))';
 const FOR_YOU_STATUS_CHIP_BG: Record<string, string> = {
-  done:          'rgb(179, 223, 114)',
-  new:           'rgb(221, 222, 225)',
-  indeterminate: 'rgb(205, 229, 255)',
+  done:          'var(--ds-background-success, rgb(179, 223, 114))',
+  new:           'var(--ds-background-neutral, rgb(221, 222, 225))',
+  indeterminate: 'var(--ds-background-information, rgb(205, 229, 255))',
 };
 function forYouStatusBg(categoryKey?: string): string {
   // DB stores "Done" (capitalised); normalise to lowercase before lookup.
   const key = (categoryKey ?? '').toLowerCase();
-  return FOR_YOU_STATUS_CHIP_BG[key] ?? 'rgb(221, 222, 225)';
+  return FOR_YOU_STATUS_CHIP_BG[key] ?? 'var(--ds-background-neutral, rgb(221, 222, 225))';
 }
 
 function HeadlineIssueTitle({
@@ -1882,7 +1895,7 @@ function HeadlineIssueTitle({
           backgroundColor: forYouStatusBg(issueStatusCategory),
           color: FOR_YOU_STATUS_CHIP_TEXT,
           borderRadius: 3,
-          padding: '1px 4px',
+          padding: '0 4px',
           fontSize: 12,
           fontWeight: 400,
           lineHeight: '16px',
