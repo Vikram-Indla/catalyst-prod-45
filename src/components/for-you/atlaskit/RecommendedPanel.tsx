@@ -552,17 +552,47 @@ function FeedCard({
     try {
       const res = await fetchFunction('ai-improve-comment', {
         method: 'POST',
+        // Edge function expects `current_comment` (not `commentBody`) and returns
+        // streaming NDJSON — same format as suggest_reply. Must read line-by-line;
+        // calling res.json() on a streaming response always throws.
         body: JSON.stringify({
-          mode: 'summarize',
-          commentBody: row.commentBody,
-          issueSummary: row.issueSummary,
-          issueType: row.issueType,
+          current_comment: row.commentBody,
+          issue_summary: row.issueSummary,
         }),
+        headers: { 'Content-Type': 'application/json' },
       });
-      const data = await res.json();
-      const summary = data.suggestion ?? data.content ?? data.result ?? row.commentBody;
+      if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let buf = '';
+      let fullText = '';
+      outer: while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, { stream: true });
+        let nl;
+        while ((nl = buf.indexOf('\n')) !== -1) {
+          const line = buf.slice(0, nl).trim();
+          buf = buf.slice(nl + 1);
+          if (!line) continue;
+          try {
+            const ev = JSON.parse(line);
+            if (ev.type === 'text' && typeof ev.delta === 'string') {
+              fullText += ev.delta;
+            } else if (ev.type === 'done') {
+              if (ev.full_text) fullText = ev.full_text;
+              break outer;
+            } else if (ev.type === 'error') {
+              throw new Error(ev.message ?? 'AI error');
+            }
+          } catch (parseErr) {
+            if (parseErr instanceof SyntaxError) continue; // malformed chunk — skip
+            throw parseErr;
+          }
+        }
+      }
       setSummaryPhase('idle');
-      toast.message('Comment summary', { description: summary, duration: 12_000 });
+      toast.message('Comment summary', { description: fullText || row.commentBody, duration: 12_000 });
     } catch {
       setSummaryPhase('error');
       toast.error('Failed to summarize');
@@ -1940,26 +1970,18 @@ function ReactionChip({
 
 // ─── Headline helpers ───────────────────────────────────────────────────────
 
-// Jira For You feed status chip — category-colored background, always blue link text.
-// DOM probe 2026-05-29 on digital-transformation.atlassian.net/jira/for-you:
-//   done     → bg rgb(179,223,114) (lime green), text rgb(24,104,219) (blue)
-//   new      → bg rgb(221,222,225) (grey),       text rgb(24,104,219) (blue)
-//   other    → bg rgb(221,222,225) (grey fallback)
-// Lane B (Atlassian MCP 2026-05-29): BAU "Awaiting Info" AND "Closed" both = done category.
-// ADS token fallback chains for status chip colors.
-// Fallback values are Jira-probed exact colors (jira-compare bypass per CLAUDE.md 2026-05-05 —
-// Jira parity overrides ADS token preference when no exact ADS match exists).
-const FOR_YOU_STATUS_CHIP_TEXT = 'var(--ds-link, rgb(24, 104, 219))';
-const FOR_YOU_STATUS_CHIP_BG: Record<string, string> = {
-  done:          'var(--ds-background-success, rgb(179, 223, 114))',
-  new:           'var(--ds-background-neutral, rgb(221, 222, 225))',
-  indeterminate: 'var(--ds-background-information, rgb(205, 229, 255))',
+// ADS status category → Lozenge appearance mapping.
+// @atlaskit/lozenge is the ADS-canonical component for status labels.
+// The DB stores statusCategory as "Done" / "In Progress" / "To Do" (names from wh-jira-sync)
+// or the key "done" / "indeterminate" / "new" (from jira-bau-reload). Both normalise fine.
+const CATEGORY_TO_LOZENGE: Record<string, 'success' | 'inprogress' | 'default'> = {
+  done:          'success',
+  indeterminate: 'inprogress',
+  new:           'default',
+  // wh-jira-sync name variants (lowercase)
+  'in progress': 'inprogress',
+  'to do':       'default',
 };
-function forYouStatusBg(categoryKey?: string): string {
-  // DB stores "Done" (capitalised); normalise to lowercase before lookup.
-  const key = (categoryKey ?? '').toLowerCase();
-  return FOR_YOU_STATUS_CHIP_BG[key] ?? 'var(--ds-background-neutral, rgb(221, 222, 225))';
-}
 
 function HeadlineIssueTitle({
   issueType,
@@ -2004,21 +2026,9 @@ function HeadlineIssueTitle({
           grey for todo), text always rgb(24,104,219) (blue link color).
           Lane B confirmed BAU "Awaiting Info" + "Closed" = done category. */}
       {issueStatus && (
-        <span style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          backgroundColor: forYouStatusBg(issueStatusCategory),
-          color: FOR_YOU_STATUS_CHIP_TEXT,
-          borderRadius: 3,
-          padding: '0 4px',
-          fontSize: 12,
-          fontWeight: 400,
-          lineHeight: '16px',
-          whiteSpace: 'nowrap',
-          flexShrink: 0,
-        }}>
+        <Lozenge appearance={CATEGORY_TO_LOZENGE[(issueStatusCategory ?? '').toLowerCase()] ?? 'default'}>
           {issueStatus}
-        </span>
+        </Lozenge>
       )}
     </span>
   );
