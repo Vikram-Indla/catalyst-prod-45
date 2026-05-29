@@ -67,6 +67,18 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
             width: 1,
             class: 'catalyst-drop-line',
           },
+          // dir="auto" on every block makes the browser detect text
+          // direction per-block from its first strong character.
+          // Arabic blocks → RTL flow + right alignment + bullets on
+          // the right. English blocks → LTR flow. Mixed descriptions
+          // (post-translation) render each block correctly.
+          paragraph: { HTMLAttributes: { dir: 'auto' } },
+          heading: { HTMLAttributes: { dir: 'auto' } },
+          blockquote: { HTMLAttributes: { dir: 'auto' } },
+          bulletList: { HTMLAttributes: { dir: 'auto' } },
+          orderedList: { HTMLAttributes: { dir: 'auto' } },
+          listItem: { HTMLAttributes: { dir: 'auto' } },
+          codeBlock: { HTMLAttributes: { dir: 'auto' } },
         }),
         Underline,
         Subscript,
@@ -82,15 +94,22 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
           },
         }),
         CatalystImage.configure({ inline: false, allowBase64: false }),
-        TaskList,
-        TaskItem.configure({ nested: true }),
+        TaskList.configure({ HTMLAttributes: { dir: 'auto' } }),
+        TaskItem.configure({
+          nested: true,
+          HTMLAttributes: { dir: 'auto' },
+        }),
         // Tables — full Jira parity via Tiptap's official Table suite.
         // resizable:true enables column-resize handles; the default
         // header-row layout mirrors Jira's "first row is header" behavior.
-        Table.configure({ resizable: true, allowTableNodeSelection: true }),
+        Table.configure({
+          resizable: true,
+          allowTableNodeSelection: true,
+          HTMLAttributes: { dir: 'auto' },
+        }),
         TableRow,
-        TableHeader,
-        TableCell,
+        TableHeader.configure({ HTMLAttributes: { dir: 'auto' } }),
+        TableCell.configure({ HTMLAttributes: { dir: 'auto' } }),
         // Jira-ADF specific node types.
         Panel,
         Status,

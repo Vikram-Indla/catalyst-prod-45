@@ -11,10 +11,11 @@
  * body is hidden (display:none — Tiptap instance stays mounted) and the
  * overlay fills the body region.
  */
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { EditorContent, type Editor } from '@tiptap/react';
 import { injectEditorStyles } from './editorStyles';
 import { BlockDragHandle } from '../BlockDragHandle/BlockDragHandle';
+import { SelectionTranslate } from '../SelectionTranslate/SelectionTranslate';
 
 interface EditorViewProps {
   editor: Editor | null;
@@ -24,6 +25,7 @@ interface EditorViewProps {
 
 export function EditorView({ editor, toolbar, bodyOverlay }: EditorViewProps) {
   const bodyRef = useRef<HTMLDivElement | null>(null);
+  const [isTranslating, setIsTranslating] = useState(false);
 
   useEffect(() => {
     injectEditorStyles();
@@ -35,7 +37,7 @@ export function EditorView({ editor, toolbar, bodyOverlay }: EditorViewProps) {
 
   return (
     <div
-      className="catalyst-description-editor-shell"
+      className={`catalyst-description-editor-shell${isTranslating ? ' is-translating' : ''}`}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -67,6 +69,11 @@ export function EditorView({ editor, toolbar, bodyOverlay }: EditorViewProps) {
         <div style={{ display: overlayActive ? 'none' : 'block' }}>
           <EditorContent editor={editor} />
           <BlockDragHandle editor={editor} containerRef={bodyRef} />
+          <SelectionTranslate
+            editor={editor}
+            containerRef={bodyRef}
+            onTranslatingChange={setIsTranslating}
+          />
         </div>
         {overlayActive && bodyOverlay}
       </div>

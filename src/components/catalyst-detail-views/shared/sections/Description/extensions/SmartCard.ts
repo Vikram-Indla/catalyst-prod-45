@@ -73,6 +73,7 @@ export const BlockCard = Node.create({
       'div',
       mergeAttributes(HTMLAttributes, {
         'data-block-card-url': url,
+        dir: 'auto',
         style:
           'border:1px solid var(--ds-border,#DFE1E6);border-radius:4px;padding:8px 12px;margin:8px 0;background:var(--ds-surface,#FFFFFF);',
       }),

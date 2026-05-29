@@ -13,7 +13,7 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = 'catalyst-tiptap-editor-styles-v15';
+const STYLE_ID = 'catalyst-tiptap-editor-styles-v17';
 
 export function injectEditorStyles(): void {
   if (typeof document === 'undefined') return;
@@ -40,7 +40,7 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor h6 { font-size: 12px; font-weight: 600; margin: 8px 0 4px;
                                  color: var(--ds-text-subtle, #5E6C84); }
     .catalyst-tiptap-editor ul,
-    .catalyst-tiptap-editor ol { margin: 4px 0 8px; padding-left: 24px; }
+    .catalyst-tiptap-editor ol { margin: 4px 0 8px; padding-inline-start: 24px; }
     .catalyst-tiptap-editor ul { list-style-type: disc; }
     .catalyst-tiptap-editor ol { list-style-type: decimal; }
     .catalyst-tiptap-editor ul ul { list-style-type: circle; }
@@ -49,8 +49,9 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor ol ol ol { list-style-type: lower-roman; }
     .catalyst-tiptap-editor li { margin-bottom: 4px; }
     .catalyst-tiptap-editor blockquote {
-      border-left: 2px solid var(--ds-border, #DFE1E6);
-      padding: 8px 12px;
+      border-inline-start: 2px solid var(--ds-border, #DFE1E6);
+      padding-block: 8px;
+      padding-inline: 12px;
       margin: 8px 0;
       color: var(--ds-text-subtle, #5E6C84);
     }
@@ -93,12 +94,12 @@ export function injectEditorStyles(): void {
       margin-right: auto;
     }
     .catalyst-tiptap-editor img[data-alignment="align-start"] {
-      margin-right: auto;
-      margin-left: 0;
+      margin-inline-end: auto;
+      margin-inline-start: 0;
     }
     .catalyst-tiptap-editor img[data-alignment="align-end"] {
-      margin-left: auto;
-      margin-right: 0;
+      margin-inline-start: auto;
+      margin-inline-end: 0;
     }
     .catalyst-tiptap-editor img[data-alignment="wrap-left"] {
       float: left;
@@ -124,7 +125,7 @@ export function injectEditorStyles(): void {
        .ProseMirror-selectednode rule above. */
     .catalyst-tiptap-editor ul[data-type="taskList"] {
       list-style: none;
-      padding-left: 8px;
+      padding-inline-start: 8px;
     }
     .catalyst-tiptap-editor ul[data-type="taskList"] li {
       display: flex;
@@ -187,6 +188,36 @@ export function injectEditorStyles(): void {
       50% { opacity: 0.4; transform: scale(0.85); }
     }
 
+    /* Translating border — cycles through ADS link blue, discovery
+       purple, and accent orange via box-shadow color cycling. Sits
+       OUTSIDE the editor shell so the shell's overflow:hidden doesn't
+       clip it. */
+    .catalyst-description-editor-shell.is-translating {
+      animation: catalyst-translate-border 1.6s ease-in-out infinite;
+    }
+    @keyframes catalyst-translate-border {
+      0% {
+        box-shadow:
+          0 0 0 2px #0C66E4,
+          0 0 14px 3px rgba(12,102,228,0.30);
+      }
+      33% {
+        box-shadow:
+          0 0 0 2px #8270DB,
+          0 0 14px 3px rgba(130,112,219,0.30);
+      }
+      66% {
+        box-shadow:
+          0 0 0 2px #E56910,
+          0 0 14px 3px rgba(229,105,16,0.30);
+      }
+      100% {
+        box-shadow:
+          0 0 0 2px #0C66E4,
+          0 0 14px 3px rgba(12,102,228,0.30);
+      }
+    }
+
     /* Drop cursor — blue color/width come from the dropcursor config
        in useTiptapEditor (inline-style, no CSS war). The .catalyst-
        drop-line class is added via the dropcursor config too — gives
@@ -232,14 +263,14 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor table th {
       background: var(--ds-surface-sunken, #F7F8F9);
       font-weight: 600;
-      text-align: left;
+      text-align: start;
     }
     .catalyst-tiptap-editor table .selectedCell {
       background: var(--ds-background-selected, #E9F2FE);
     }
     .catalyst-tiptap-editor table .column-resize-handle {
       position: absolute;
-      right: -2px;
+      inset-inline-end: -2px;
       top: 0;
       bottom: -2px;
       width: 4px;
@@ -258,16 +289,17 @@ export function injectEditorStyles(): void {
        The icon is a colored SVG (data URI) that matches the panel type.
        padding-left: 40px reserves room for the icon at left.  */
     .catalyst-tiptap-editor .catalyst-panel {
-      border-left: 3px solid;
+      border-inline-start: 3px solid;
       border-radius: 4px;
-      padding: 10px 12px 10px 40px;
+      padding-block: 10px;
+      padding-inline: 40px 12px;
       margin: 12px 0;
       position: relative;
     }
     .catalyst-tiptap-editor .catalyst-panel::before {
       content: '';
       position: absolute;
-      left: 12px;
+      inset-inline-start: 12px;
       top: 12px;
       width: 20px;
       height: 20px;
