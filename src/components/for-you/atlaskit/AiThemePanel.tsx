@@ -353,12 +353,17 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
 
   if (isError) {
     const msg = error?.message ?? '';
-    const title = msg.includes('rate_limited')
+    const isTimeout = msg.includes('ai_timeout') || msg.includes('timeout') || msg.includes('aborted');
+    const title = isTimeout
+      ? 'Theme analysis timed out'
+      : msg.includes('rate_limited')
       ? 'AI Theme Analyzer is rate-limited'
       : msg.includes('credits_exhausted')
       ? 'AI Theme Analyzer is over its credit limit'
       : 'Could not analyse themes right now';
-    const description = msg.includes('rate_limited')
+    const description = isTimeout
+      ? 'The AI took longer than 30 seconds to cluster your issues. This usually happens during peak load. Try Re-analyze — it typically completes faster on a warm server.'
+      : msg.includes('rate_limited')
       ? 'Too many theme analyses in a short window. Wait a minute and try Re-analyze.'
       : msg.includes('credits_exhausted')
       ? 'The AI Gateway credit pool is exhausted. An operator needs to top it up before themes will generate.'

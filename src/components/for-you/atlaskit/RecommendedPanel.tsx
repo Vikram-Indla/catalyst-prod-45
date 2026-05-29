@@ -849,6 +849,12 @@ function ReplyComposer({
   const [focused, setFocused] = useState(false);
   const [suggestionPhase, setSuggestionPhase] = useState<SuggestionPhase>('idle');
   const abortRef = useRef<AbortController | null>(null);
+
+  // comments.entity_id is a UUID column — a Jira-key fallback like "MWR-947"
+  // would cause a Postgres parse error. Mirror ReactionStrip's guard so we
+  // disable the Reply button (and skip the insert) when the id isn't a UUID.
+  const isIssueUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(issueId);
+
   const { createCommentAsync, isCreating } = useWorkItemComments('ph_issue', issueId);
 
   const handleSuggestReply = async () => {
@@ -924,13 +930,11 @@ function ReplyComposer({
     currentUserName ? resolveAvatarUrl(currentUserName) || undefined : undefined;
   const userDisplayName = currentUserName || 'You';
 
-  const canSubmit = value.trim().length > 0 && !isCreating;
+  // isIssueUuid guards against Postgres UUID parse errors when issueId is a
+  // Jira-key fallback. useWorkItemComments.onError already shows a toast on
+  // failure; handleSubmit only logs so there's no double-toast.
+  const canSubmit = value.trim().length > 0 && !isCreating && isIssueUuid;
 
-  // Await the mutation explicitly so a failed insert surfaces to the user
-  // instead of silently clearing the textarea. The previous fire-and-forget
-  // `createComment(value)` swallowed network/permission errors — the user
-  // saw an empty textarea and believed the reply posted. Toast on error,
-  // keep the draft so it can be retried without retyping.
   const handleSubmit = async () => {
     if (!canSubmit) return;
     const draft = value.trim();
@@ -939,9 +943,9 @@ function ReplyComposer({
       setValue('');
       setFocused(false);
     } catch (err) {
-      // Keep draft + focus so the user can retry. createComment's own hook
-      // already logs; here we only need user-facing feedback.
-      toast.error('Could not post your reply. Try again.');
+      // Keep draft + focus so the user can retry.
+      // useWorkItemComments.onError already shows "Failed to add comment" toast;
+      // we only log here to avoid a duplicate toast.
       console.warn('[RecommendedPanel] reply submit failed', err);
     }
   };

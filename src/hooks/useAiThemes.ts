@@ -148,24 +148,51 @@ async function invokeThemes(
     if (cached) return cached;
   }
 
-  const { data, error } = await supabase.functions.invoke<ThemesResponse | ThemesError>(
-    'ai-digest',
-    {
-      method: 'POST',
-      body: {
-        mode: 'themes',
-        scope: args.scope,
-        projectKey: args.scope === 'project' ? args.projectKey : undefined,
-        forceRefresh: opts.forceRefresh,
+  // 30-second hard timeout — Gemini API cold-starts + clustering can take
+  // 10–20s; beyond 30s the user experience is broken regardless. AbortController
+  // cancels the underlying fetch so the edge function slot is freed too.
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+
+  let invokeResult: { data: ThemesResponse | ThemesError | null; error: Error | null };
+  try {
+    invokeResult = await supabase.functions.invoke<ThemesResponse | ThemesError>(
+      'ai-digest',
+      {
+        method: 'POST',
+        body: {
+          mode: 'themes',
+          scope: args.scope,
+          projectKey: args.scope === 'project' ? args.projectKey : undefined,
+          forceRefresh: opts.forceRefresh,
+        },
+        signal: controller.signal,
       },
-    },
-  );
+    );
+  } catch (e: unknown) {
+    clearTimeout(timeoutId);
+    // AbortError fires when our 30s timeout triggers. Rethrow with a
+    // recognisable marker so AiThemePanel can show a specific message.
+    const name = (e as { name?: string })?.name ?? '';
+    const msg = (e as Error)?.message ?? '';
+    if (name === 'AbortError' || msg.toLowerCase().includes('aborted') || controller.signal.aborted) {
+      throw new Error('ai_timeout');
+    }
+    throw e;
+  }
+  clearTimeout(timeoutId);
+
+  const { data, error } = invokeResult;
 
   if (error) {
     // supabase-js wraps non-2xx responses into a FunctionsHttpError whose
     // .message is often opaque. Re-throw with a marker the UI can
     // pattern-match without inspecting the raw error object.
-    const msg = error.message ?? 'themes_unavailable';
+    const msg = (error as Error).message ?? 'themes_unavailable';
+    // Also surface timeout if supabase-js absorbed the AbortError internally.
+    if (controller.signal.aborted || msg.toLowerCase().includes('aborted')) {
+      throw new Error('ai_timeout');
+    }
     throw new Error(msg);
   }
 
