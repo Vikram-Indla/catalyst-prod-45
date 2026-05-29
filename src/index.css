@@ -224,8 +224,11 @@
   --cp-lozenge-grey-text: #42526E;
   --cp-lozenge-blue-bg: #0C66E4;
   --cp-lozenge-blue-text: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
-  --cp-lozenge-green-bg: #1B7F37;
-  --cp-lozenge-green-text: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
+  /* jira-compare bypass 2026-05-29: Jira For You "done" status chip is lime-green bg
+     + blue link text. DOM probe: bg rgb(179,223,114)=#B3DF72, text rgb(24,104,219)=#1868DB.
+     ADS "success" token resolves to pale (#EFF5D6) which doesn't match. Use exact Jira hex. */
+  --cp-lozenge-green-bg: #B3DF72;
+  --cp-lozenge-green-text: #1868DB;
 
   /* ═══ ProjectHub Work Views — Ringfenced tokens ═══ */
   --cp-primary: var(--cp-workstream-catalyst-primary, #2563EB);
@@ -268,9 +271,9 @@
   --cp-lz-gy-t: #42526E;
   --cp-lz-bl-bg: #0C66E4;
   --cp-lz-bl-t: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
-  --cp-lz-gn-bg: var(--cp-lozenge-green-bg, #1B7F37);
-  --cp-lz-gn-t: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
-  --cp-lozenge-green-text: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
+  --cp-lz-gn-bg: var(--cp-lozenge-green-bg, #B3DF72);
+  --cp-lz-gn-t: #1868DB;
+  --cp-lozenge-green-text: #1868DB;
 
   /* ═══ Source Badge Tokens ═══ */
   --src-catalyst-bg: #EFF6FF;
@@ -3300,8 +3303,9 @@ input[type="range"]::-moz-range-thumb {
   --cp-interact-selected: #1C2B41;
   --cp-lozenge-blue-bg: #0C66E4;
   --cp-lozenge-blue-text: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
-  --cp-lozenge-green-bg: var(--cp-lozenge-green-bg, #1B7F37);
-  --cp-lozenge-green-text: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
+  /* dark-mode green: keep lime-green on dark (same as light — status chip is always high-contrast) */
+  --cp-lozenge-green-bg: #B3DF72;
+  --cp-lozenge-green-text: #1868DB;
   --cp-lozenge-grey-bg: var(--cp-ink-1, #292929);
   --cp-lozenge-grey-text: #D4D4D4;
   --cp-lz-bl-bg: #0C66E4;
@@ -5847,6 +5851,22 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
 .cv-status-listbox [data-cp-lozenge-jira-parity] span[class^="css-"] {
   font-size: 14px !important;
   font-weight: 400 !important;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   Light-mode status-category color override (jira-compare 2026-05-29)
+   ────────────────────────────────────────────────────────────────────────
+   ADS Lozenge appearance="success" resolves to --ds-background-success
+   (#EFF5D6 pale green) + --ds-text-success (dark green). Jira For You
+   status chip "done" is lime green bg rgb(179,223,114) + blue text
+   rgb(24,104,219). Override the ADS tokens in scope of our wrapper so
+   Atlaskit picks up the Jira-parity values at runtime.
+   jira-compare bypass: no ADS token maps to lime-green; exact Jira hex used.
+   ────────────────────────────────────────────────────────────────────── */
+[data-cp-lozenge-jira-parity] {
+  --ds-background-success: var(--cp-lozenge-green-bg, #B3DF72);
+  --ds-background-success-bold: var(--cp-lozenge-green-bg, #B3DF72);
+  --ds-text-success: var(--cp-lozenge-green-text, #1868DB);
 }
 
 /* ────────────────────────────────────────────────────────────────────────

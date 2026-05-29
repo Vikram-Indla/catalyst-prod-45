@@ -47,7 +47,7 @@ import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
-import Lozenge from '@atlaskit/lozenge';
+import { StatusLozenge, toStatusCategory } from '@/components/ads';
 import Spinner from '@atlaskit/spinner';
 
 import Tooltip from '@atlaskit/tooltip';
@@ -1980,18 +1980,9 @@ function ReactionChip({
 
 // ─── Headline helpers ───────────────────────────────────────────────────────
 
-// ADS status category → Lozenge appearance mapping.
-// @atlaskit/lozenge is the ADS-canonical component for status labels.
-// The DB stores statusCategory as "Done" / "In Progress" / "To Do" (names from wh-jira-sync)
-// or the key "done" / "indeterminate" / "new" (from jira-bau-reload). Both normalise fine.
-const CATEGORY_TO_LOZENGE: Record<string, 'success' | 'inprogress' | 'default'> = {
-  done:          'success',
-  indeterminate: 'inprogress',
-  new:           'default',
-  // wh-jira-sync name variants (lowercase)
-  'in progress': 'inprogress',
-  'to do':       'default',
-};
+// StatusCategory mapping delegated to toStatusCategory() from @/components/ads.
+// Handles both DB variants: "Done" / "In Progress" / "To Do" (wh-jira-sync names)
+// and "done" / "indeterminate" / "new" (jira-bau-reload keys).
 
 function HeadlineIssueTitle({
   issueType,
@@ -2034,11 +2025,12 @@ function HeadlineIssueTitle({
       {/* Jira parity: status chip after entity title.
           DOM probe 2026-05-29: bg = category color (lime green for done,
           grey for todo), text always rgb(24,104,219) (blue link color).
-          Lane B confirmed BAU "Awaiting Info" + "Closed" = done category. */}
+          Uses StatusLozenge (ADS guardrail) + toStatusCategory to normalise
+          both DB variants ("done"/"Done"/"In Progress"/"indeterminate"). */}
       {issueStatus && (
-        <Lozenge appearance={CATEGORY_TO_LOZENGE[(issueStatusCategory ?? '').toLowerCase()] ?? 'default'}>
+        <StatusLozenge status={toStatusCategory(issueStatusCategory)}>
           {issueStatus}
-        </Lozenge>
+        </StatusLozenge>
       )}
     </span>
   );
