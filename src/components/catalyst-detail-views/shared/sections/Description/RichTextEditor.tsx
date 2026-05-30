@@ -363,6 +363,9 @@ export function RichTextEditor({
               onCancel={mic.cancel}
             />
           )}
+          {!mic.isActive && voice.isSupported && voice.isRecording && (
+            <CtrlVoicePill interimText={voice.interimText} />
+          )}
         </div>
       )}
 
@@ -453,6 +456,74 @@ export function RichTextEditor({
           <ImageResizeHandles editor={editor} imagePos={imageState.pos} />
         </>
       )}
+    </div>
+  );
+}
+
+/** Pill shown while Ctrl-hold voice dictation is active — same visual as MicRecordingBar. */
+function CtrlVoicePill({ interimText }: { interimText: string }) {
+  const catyLogo = '/caty.svg';
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: 8, pointerEvents: 'none' }}>
+      <div
+        className="caty-pill-enter"
+        style={{
+          pointerEvents: 'auto',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '6px 12px',
+          borderRadius: 999,
+          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          boxShadow: '0 4px 16px rgba(9,30,66,0.22), 0 0 0 1px rgba(9,30,66,0.08)',
+          maxWidth: '80%',
+          minWidth: 0,
+        }}
+      >
+        <img
+          src={catyLogo}
+          alt=""
+          width={18}
+          height={18}
+          style={{ flexShrink: 0, animation: 'caty-pulse 1s ease-in-out infinite' }}
+        />
+        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #292A2E)', flexShrink: 0 }}>
+          Caty is listening
+        </span>
+        <span aria-hidden style={{ display: 'inline-flex', gap: 3, alignItems: 'center', flexShrink: 0 }}>
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              style={{
+                width: 4, height: 4, borderRadius: '50%',
+                background: 'var(--ds-background-brand-bold, #0C66E4)',
+                animation: `caty-dot-bounce 1.2s ease-in-out ${i * 0.2}s infinite`,
+              }}
+            />
+          ))}
+        </span>
+        {interimText && (
+          <span
+            style={{
+              fontSize: 12, color: 'var(--ds-text-subtle, #44546F)',
+              fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap', minWidth: 0, maxWidth: 200,
+            }}
+            title={interimText}
+          >
+            {interimText}
+          </span>
+        )}
+        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #8590A2)', flexShrink: 0 }}>
+          Release Ctrl to insert
+        </span>
+      </div>
+      <style>{`
+        @keyframes caty-dot-bounce {
+          0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+          40%            { transform: translateY(-4px); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }
