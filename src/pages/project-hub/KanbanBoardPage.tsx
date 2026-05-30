@@ -655,6 +655,30 @@ export default function KanbanBoardPage() {
 
   const total = groupBy === 'none' ? Object.values(colMap).reduce((a, ids) => a + ids.length, 0) : filtered.length;
 
+  /* When groupBy switches to 'epic', default all swimlane rows to collapsed.
+     Other grouping modes start expanded. Uses a ref to guard against re-firing
+     when only `groups` updates (e.g. new issues loaded with same groupBy). */
+  const prevGroupByRef = useRef<GroupByMode>(groupBy);
+  useEffect(() => {
+    if (prevGroupByRef.current === groupBy) return;
+    prevGroupByRef.current = groupBy;
+    if (groupBy === 'epic') {
+      setCollapsedSwimlanes(new Set(groups.map((g: any) => g.groupKey)));
+    } else {
+      setCollapsedSwimlanes(new Set());
+    }
+  }, [groupBy, groups]);
+
+  /* Expand/collapse availability for View Settings panel */
+  const hasSwimlanes = groupBy !== 'none';
+  const canExpandAll = hasSwimlanes && collapsedSwimlanes.size > 0;
+  const canCollapseAll = hasSwimlanes && groups.length > 0 && collapsedSwimlanes.size < groups.length;
+
+  /* PragmaticBoard (group-by-none) uses denser card padding to avoid visual
+     clutter when all issues pile into columns without swimlane grouping.
+     Swimlane mode keeps the full comfortable 16px padding. */
+  const pragmaticD = useMemo(() => ({ ...d, cardPad: d.cardPad === '16px' ? '8px' : d.cardPad }), [d]);
+
   /* ═══ CARD ACTIONS ═══ */
 
   const handleSaveSummary = useCallback(async (issueId: string, newSummary: string) => {
@@ -1318,6 +1342,9 @@ export default function KanbanBoardPage() {
             return next;
           });
         }}
+        hasSwimlanes={hasSwimlanes}
+        canExpandAll={canExpandAll}
+        canCollapseAll={canCollapseAll}
         enableDensity={ENABLE_KANBAN_V2}
         density={density}
         onDensityChange={onDensityChange}
@@ -1420,7 +1447,7 @@ export default function KanbanBoardPage() {
             issuesById={issuesById}
             avatarsByName={avatarsByName}
             onCardClick={id => setSelIssueId(id)}
-            d={d}
+            d={pragmaticD}
             tk={tk}
             selectedId={selIssueId}
             focusedId={focusedId}
