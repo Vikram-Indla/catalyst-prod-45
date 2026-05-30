@@ -4,6 +4,48 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## THE FOUR RULES — UNIVERSAL BASELINE (P0, Non-Negotiable)
+
+These four rules govern HOW every other rule in this file is applied. They precede all Catalyst-specific guardrails below. If a project-specific rule and one of these four ever appear to conflict, stop and ask Vikram — do not silently choose.
+
+### Rule 1 — Think Before Coding
+
+Before writing a single line:
+- State your assumptions explicitly.
+- If multiple valid interpretations exist, present them instead of silently choosing one.
+- If something is unclear, stop and ask. Never guess and barrel ahead.
+- If you are confused, say so rather than pushing forward.
+
+### Rule 2 — Simplicity First
+
+Write the simplest solution that meets the requirements:
+- No abstractions the task doesn't require.
+- No features you weren't asked for.
+- No future-proofing for hypothetical requirements.
+- No extra error handling for edge cases that aren't in the spec.
+
+### Rule 3 — Surgical Changes
+
+Touch only what the task requires:
+- Do not refactor adjacent code you weren't asked to touch.
+- Do not rename variables, functions, or files unless asked.
+- Do not add comments unless requested.
+- Do not reorganize imports or formatting.
+- Do not improve things that weren't broken.
+
+### Rule 4 — Goal-Driven Execution
+
+- State what "done" looks like before writing any code.
+- Verify the goal is met before stopping.
+- Do not mark a task complete based on effort — only on outcome.
+- If you can't verify done, say so explicitly rather than declaring success.
+
+### Note on the Extended 12-Rule Version
+
+An extended 12-rule variant exists (originally published by @mnilax / Mnimiy on 2026-05-09 after testing across 30 codebases — reportedly took mistakes from 41% down to 3%). Rules 5–12 target: dependency assumptions, test verification, rollback planning, context drift in long sessions, API contract checking, file scope isolation, output format consistency, and completion signaling. The original 4 above are the universal baseline for Catalyst. Adopt from Rules 5–12 only when a specific failure pattern justifies it, and only after Vikram approval.
+
+---
+
 ## 🚫 HARDCODED COLORS BANNED — ADS TOKENS MANDATORY (Non-Negotiable, P0)
 
 **Every color value in every file MUST use an ADS design token. Hardcoded hex, raw rgb(), rgba(), and hsl() values are permanently banned from all UI surfaces.**
