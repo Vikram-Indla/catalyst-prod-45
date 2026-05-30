@@ -297,9 +297,28 @@ export function RichTextEditor({
         footer={belowEditor ? belowEditor(editor) : undefined}
       />
 
-      {/* Save / Cancel + voice — hidden while a streaming overlay owns
-          the body (e.g. Caty), since the overlay provides its own apply/
-          cancel controls. */}
+      {/* Caty voice status pills — centered below the editor body,
+          always visible regardless of editor height or scroll position. */}
+      {!overlayActive && mic.isActive && (
+        <MicRecordingBar
+          isRecording={!mic.isPaused}
+          isPaused={mic.isPaused}
+          phase={mic.phase}
+          recordedText={mic.recordedText}
+          interimText={mic.interimText}
+          onPauseResume={() =>
+            mic.isPaused ? mic.resume() : mic.pause()
+          }
+          onStop={mic.stop}
+          onCancel={mic.cancel}
+        />
+      )}
+      {!overlayActive && !mic.isActive && voice.isSupported && voice.isRecording && (
+        <CtrlVoicePill interimText={voice.interimText} />
+      )}
+
+      {/* Save / Cancel — hidden while a streaming overlay or mic session owns
+          the body (mic provides its own stop/cancel controls). */}
       {!overlayActive && (
         <div
           style={{
@@ -348,24 +367,6 @@ export function RichTextEditor({
           >
             Cancel
           </button>
-
-          {mic.isActive && (
-            <MicRecordingBar
-              isRecording={!mic.isPaused}
-              isPaused={mic.isPaused}
-              phase={mic.phase}
-              recordedText={mic.recordedText}
-              interimText={mic.interimText}
-              onPauseResume={() =>
-                mic.isPaused ? mic.resume() : mic.pause()
-              }
-              onStop={mic.stop}
-              onCancel={mic.cancel}
-            />
-          )}
-          {!mic.isActive && voice.isSupported && voice.isRecording && (
-            <CtrlVoicePill interimText={voice.interimText} />
-          )}
         </div>
       )}
 
