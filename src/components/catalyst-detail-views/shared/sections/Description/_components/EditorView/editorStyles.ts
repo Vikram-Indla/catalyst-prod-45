@@ -13,7 +13,7 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = 'catalyst-tiptap-editor-styles-v36';
+const STYLE_ID = 'catalyst-tiptap-editor-styles-v37';
 
 export function injectEditorStyles(): void {
   if (typeof document === 'undefined') return;
@@ -382,8 +382,12 @@ export function injectEditorStyles(): void {
       margin-inline-start: auto !important;
       margin-inline-end: 0 !important;
     }
+    /* Multi-cell selection (PM's CellSelection class). Matches the
+       grip-selection / chevron-hover blue exactly. */
     .catalyst-tiptap-editor table .selectedCell {
-      background: var(--ds-background-selected, #E9F2FE);
+      background: rgba(135, 184, 255, 0.18) !important;
+      outline: 1px solid #85B8FF !important;
+      outline-offset: -1px !important;
     }
     .catalyst-tiptap-editor table .column-resize-handle {
       position: absolute;

@@ -28,7 +28,7 @@ import TableCellClearIcon from '@atlaskit/icon/core/table-cell-clear';
 import DeleteColumnIcon from '@atlaskit/icon/core/table-column-delete';
 // eslint-disable-next-line no-restricted-imports
 import DeleteRowIcon from '@atlaskit/icon/core/table-row-delete';
-import { TableMap } from '@tiptap/pm/tables';
+import { CellSelection, TableMap } from '@tiptap/pm/tables';
 import {
   canSplitCell,
   cellAt,
@@ -82,10 +82,18 @@ export function CellMenu({
   };
 
   const splitEnabled = canSplitCell(info, row, col);
-  // Merge is always disabled from the chevron menu — merging requires
-  // a multi-cell selection (CellSelection covering 2+ adjacent cells)
-  // and the chevron menu always opens on a single cell.
-  const mergeEnabled = false;
+  // Merge is enabled when the current PM selection is a CellSelection
+  // covering more than one cell — set up by the CellMultiSelect
+  // component when the user drags or Ctrl-clicks across cells.
+  let mergeEnabled = false;
+  const pmSel = editor.state.selection;
+  if (pmSel instanceof CellSelection) {
+    let count = 0;
+    pmSel.forEachCell(() => {
+      count++;
+    });
+    if (count > 1) mergeEnabled = true;
+  }
 
   const run = (fn: () => void) => {
     fn();
@@ -115,6 +123,11 @@ export function CellMenu({
     if (!focusCell(editor, info, row, col)) return;
     editor.chain().focus().splitCell().run();
   };
+  const mergeCells = () => {
+    // Don't disturb the existing CellSelection — the merge command
+    // reads it directly.
+    editor.chain().focus().mergeCells().run();
+  };
 
   // Reference cellAt so TS doesn't complain about unused import — it's
   // here for future Phase 2 (cell-range merge from chevron menu).
@@ -132,7 +145,7 @@ export function CellMenu({
       <MenuItem
         icon={<TableCellMergeIcon label="" />}
         label="Merge cells"
-        onClick={() => {}}
+        onClick={() => run(mergeCells)}
         disabled={!mergeEnabled}
       />
       <MenuItem
