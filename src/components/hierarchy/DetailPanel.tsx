@@ -19,7 +19,7 @@ import { PriorityDropdown } from './PriorityDropdown';
 import { AssigneeDropdown, type AssigneeOption } from './AssigneeDropdown';
 import { InlineEditTitle } from './InlineEditTitle';
 import { useUpdateIssueField } from '@/hooks/useUpdateIssueField';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface DetailPanelProps {
   item: WorkItem | null;
@@ -166,13 +166,13 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
   const handleStatusChange = (newStatus: string) => {
     updateField.mutate({ issueKey: item.key, fields: { status: newStatus } });
     setActiveDropdown(null);
-    toast.success(`Status updated to ${newStatus}`);
+    catalystToast.success(`Status updated to ${newStatus}`);
   };
 
   const handlePriorityChange = (newPriority: string) => {
     updateField.mutate({ issueKey: item.key, fields: { priority: newPriority === 'None' ? null : newPriority } });
     setActiveDropdown(null);
-    toast.success(`Priority updated to ${newPriority}`);
+    catalystToast.success(`Priority updated to ${newPriority}`);
   };
 
   const handleAssigneeChange = (assignee: AssigneeOption | null) => {
@@ -185,12 +185,12 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
       },
     });
     setActiveDropdown(null);
-    toast.success(assignee ? `Assigned to ${assignee.displayName}` : 'Unassigned');
+    catalystToast.success(assignee ? `Assigned to ${assignee.displayName}` : 'Unassigned');
   };
 
   const handleTitleSave = (newTitle: string) => {
     updateField.mutate({ issueKey: item.key, fields: { summary: newTitle } });
-    toast.success('Title updated');
+    catalystToast.success('Title updated');
   };
 
   return (

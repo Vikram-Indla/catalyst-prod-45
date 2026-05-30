@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { 
   ArrowUpDown,
   ArrowUp,
@@ -105,21 +105,21 @@ export function TestCasesTable({
         if (resolvedProjectId) {
           cloneMutation.mutate({ id: caseId, project_id: resolvedProjectId });
         } else {
-          toast.error('Cannot duplicate: No project context');
+          catalystToast.error('Cannot duplicate: No project context');
         }
         break;
       case 'move':
         if (onMoveToFolder) {
           onMoveToFolder(tc);
         } else {
-          toast.info('Move to folder: Open from parent component');
+          catalystToast.info('Move to folder: Open from parent component');
         }
         break;
       case 'delete':
         if (resolvedProjectId) {
           deleteMutation.mutate({ id: caseId, project_id: resolvedProjectId });
         } else {
-          toast.error('Cannot delete: No project context');
+          catalystToast.error('Cannot delete: No project context');
         }
         break;
     }

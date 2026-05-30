@@ -17,7 +17,7 @@ import type { TaskExtended } from './types';
 import { cn } from '@/lib/utils';
 import { ManagerFollowUpNotes } from './ManagerFollowUpNotes';
 import { loadJsPDF } from '@/lib/exportLoaders';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface WorkManagerInsightsProps {
   tasks: TaskExtended[];
@@ -152,10 +152,10 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
         : `insights-${getTeamById(selectedTeamId)?.name?.replace(/\s+/g, '-').toLowerCase() || 'team'}-${today.toISOString().split('T')[0]}.pdf`;
       
       doc.save(filename);
-      toast.success('PDF exported successfully');
+      catalystToast.success('PDF exported successfully');
     } catch (error) {
       console.error('PDF export error:', error);
-      toast.error('Failed to export PDF');
+      catalystToast.error('Failed to export PDF');
     }
   };
 

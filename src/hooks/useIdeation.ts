@@ -4,7 +4,7 @@
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ideationService } from '@/services/ideationService';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ======= QUERY KEYS =======
 export const ideationKeys = {
@@ -134,9 +134,9 @@ export function useAddIdeaComment() {
       ideationService.addComment(ideaId, userId, content),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ideationKeys.comments(vars.ideaId) });
-      toast.success('Comment posted');
+      catalystToast.success('Comment posted');
     },
-    onError: (e: Error) => toast.error('Failed to post comment: ' + e.message),
+    onError: (e: Error) => catalystToast.error('Failed to post comment: ' + e.message),
   });
 }
 
@@ -149,8 +149,8 @@ export function useCastVote() {
       ideationService.castVote(ideaId, userId, value),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['ideas'] });
-      toast.success('Vote recorded');
+      catalystToast.success('Vote recorded');
     },
-    onError: (e: Error) => toast.error('Vote failed: ' + e.message),
+    onError: (e: Error) => catalystToast.error('Vote failed: ' + e.message),
   });
 }

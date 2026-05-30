@@ -14,7 +14,7 @@ import WarningIcon from '@atlaskit/icon/core/warning';
 import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { AIInsight } from '../types';
 
 interface AISummaryCardProps {
@@ -55,7 +55,7 @@ export function AISummaryCard({ insights: staticInsights, releaseData }: AISumma
       }
     } catch (err: any) {
       console.error('AI insights error:', err);
-      toast.error(err?.message || 'Failed to generate AI insights');
+      catalystToast.error(err?.message || 'Failed to generate AI insights');
     } finally {
       setLoading(false);
     }
@@ -63,7 +63,7 @@ export function AISummaryCard({ insights: staticInsights, releaseData }: AISumma
 
   const fetchRecommendations = async () => {
     if (!releaseData) {
-      toast.info('Select a release to get AI recommendations');
+      catalystToast.info('Select a release to get AI recommendations');
       return;
     }
     setLoadingRecs(true);
@@ -85,7 +85,7 @@ export function AISummaryCard({ insights: staticInsights, releaseData }: AISumma
       }
     } catch (err: any) {
       console.error('AI recommendations error:', err);
-      toast.error(err?.message || 'Failed to get recommendations');
+      catalystToast.error(err?.message || 'Failed to get recommendations');
       setShowRecs(false);
     } finally {
       setLoadingRecs(false);

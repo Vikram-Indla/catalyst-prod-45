@@ -5,7 +5,7 @@
 import React, { useState } from 'react';
 import DOMPurify from 'dompurify';
 import { FileSearch, FileText, Loader2, Copy, Check, RefreshCw } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -32,10 +32,10 @@ export const OcrPanel: React.FC<OcrPanelProps> = ({
     setProcessing(true);
     try {
       await onProcess();
-      toast.success('Text extracted successfully');
+      catalystToast.success('Text extracted successfully');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'OCR processing failed';
-      toast.error(message);
+      catalystToast.error(message);
     } finally {
       setProcessing(false);
     }
@@ -45,7 +45,7 @@ export const OcrPanel: React.FC<OcrPanelProps> = ({
     if (!ocrText) return;
     await navigator.clipboard.writeText(ocrText);
     setCopied(true);
-    toast.success('Text copied to clipboard');
+    catalystToast.success('Text copied to clipboard');
     setTimeout(() => setCopied(false), 2000);
   };
 

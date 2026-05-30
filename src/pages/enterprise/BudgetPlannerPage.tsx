@@ -20,7 +20,7 @@ import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { cn } from '@/lib/utils';
 import { useBudgetData, formatCurrency, type BudgetPeriod } from '@/hooks/budget/useBudgetData';
 import { useUserRole } from '@/hooks/useUserRole';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import '@/styles/budget-module.css';
 
 import { BudgetDepartmentTabs } from '@/components/budget/BudgetDepartmentTabs';
@@ -195,9 +195,9 @@ export default function BudgetPlannerPage() {
     setIsRefreshing(true);
     try {
       await refetch();
-      toast.success('Budget data refreshed');
+      catalystToast.success('Budget data refreshed');
     } catch (err) {
-      toast.error('Failed to refresh data');
+      catalystToast.error('Failed to refresh data');
     } finally {
       setIsRefreshing(false);
     }

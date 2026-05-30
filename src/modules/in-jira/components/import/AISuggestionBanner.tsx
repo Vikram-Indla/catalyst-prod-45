@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Sparkles, Check, X, ChevronDown, ChevronUp } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface AISuggestion {
   id: string;
@@ -52,10 +52,10 @@ export function AISuggestionBanner({ suggestions, issueId, onAccept, onReject }:
         .update({ ai_suggestions_pending: false })
         .eq('id', issueId);
 
-      toast.success('Suggestion applied');
+      catalystToast.success('Suggestion applied');
       onAccept?.(suggestion);
     } catch (err) {
-      toast.error('Failed to apply suggestion');
+      catalystToast.error('Failed to apply suggestion');
     } finally {
       setProcessing(null);
     }
@@ -69,10 +69,10 @@ export function AISuggestionBanner({ suggestions, issueId, onAccept, onReject }:
         .update({ is_accepted: false })
         .eq('id', suggestion.id);
 
-      toast.info('Suggestion dismissed');
+      catalystToast.info('Suggestion dismissed');
       onReject?.(suggestion);
     } catch (err) {
-      toast.error('Failed to dismiss suggestion');
+      catalystToast.error('Failed to dismiss suggestion');
     } finally {
       setProcessing(null);
     }

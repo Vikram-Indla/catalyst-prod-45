@@ -39,7 +39,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useInJira } from '../context/InJiraContext';
 import { useBoardData, useBoardColumns, useSprintManagement, type BoardIssue, type DBBoardColumn } from '../hooks/useBoardData';
 import { compareRanks } from '../utils/lexorank';

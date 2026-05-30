@@ -23,7 +23,7 @@ import { suggestFeatureStatus } from '@/hooks/useFeatureProgress';
 import { useProjects } from '@/hooks/useProjects';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface FeatureFormData {
   name: string;
@@ -80,10 +80,10 @@ export function FeatureOverviewTab({ feature, formData, updateField, progress }:
       queryClient.invalidateQueries({ queryKey: ['features'] });
       queryClient.invalidateQueries({ queryKey: ['features-backlog'] });
       queryClient.invalidateQueries({ queryKey: ['feature-detail'] });
-      toast.success('Project updated');
+      catalystToast.success('Project updated');
     },
     onError: () => {
-      toast.error('Failed to update project');
+      catalystToast.error('Failed to update project');
     },
   });
   

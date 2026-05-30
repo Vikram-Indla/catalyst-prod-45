@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Checkbox } from '@/components/ui/checkbox';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Grid columns
 const GRID_COLS = '40px 100px 1fr 160px 100px 80px 100px';
@@ -278,7 +278,7 @@ export default function StarredPage() {
       isCurrentlyStarred: true,
     }, {
       onSuccess: () => {
-        toast.success(`Removed ${item.key} from starred`);
+        catalystToast.success(`Removed ${item.key} from starred`);
       },
     });
   };
@@ -295,7 +295,7 @@ export default function StarredPage() {
       }
     });
     setSelectedItems(new Set());
-    toast.success(`Removed ${selectedItems.size} items from starred`);
+    catalystToast.success(`Removed ${selectedItems.size} items from starred`);
   };
 
   return (

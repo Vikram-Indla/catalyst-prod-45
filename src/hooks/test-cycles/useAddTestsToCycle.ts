@@ -3,7 +3,7 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import type { AddTestsParams } from '@/types/add-tests.types';
 
@@ -76,10 +76,10 @@ export function useAddTestsToCycle() {
       queryClient.invalidateQueries({ queryKey: ['test-repository'] });
       queryClient.invalidateQueries({ queryKey: ['tm_test_cycles'] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycles'] });
-      toast.success(`Added ${data.added} tests to cycle`);
+      catalystToast.success(`Added ${data.added} tests to cycle`);
     },
     onError: (error: Error) => {
-      toast.error('Failed to add tests: ' + error.message);
+      catalystToast.error('Failed to add tests: ' + error.message);
     },
   });
 }

@@ -5,7 +5,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { TaskPriority } from '../../../types';
 
 export interface CreateTaskInput {
@@ -131,10 +131,10 @@ export function useCreateTaskMutation() {
       queryClient.invalidateQueries({ queryKey: ['planner-calendar'] });
       queryClient.invalidateQueries({ queryKey: ['calendar-tasks'] });
       
-      toast.success(`Task ${result.task_key} created successfully`);
+      catalystToast.success(`Task ${result.task_key} created successfully`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create task: ${error.message}`);
+      catalystToast.error(`Failed to create task: ${error.message}`);
     },
   });
 }

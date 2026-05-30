@@ -7,7 +7,7 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { TimelineRequest } from '@/types/producthub/request';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { logRequestAudit } from '@/lib/requestAudit';
 
 interface DetailTabScoreProps {
@@ -140,7 +140,7 @@ export const DetailTabScore: React.FC<DetailTabScoreProps> = ({ request }) => {
       queryClient.invalidateQueries({ queryKey: ['idp-activity', request.id] });
       queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
     } catch {
-      toast.error('Failed to save score');
+      catalystToast.error('Failed to save score');
     } finally {
       setSaving(false);
     }

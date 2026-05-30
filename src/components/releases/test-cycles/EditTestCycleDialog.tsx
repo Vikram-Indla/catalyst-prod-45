@@ -38,7 +38,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   type CycleStatus,
   CYCLE_STATUS_CONFIG,
@@ -197,12 +197,12 @@ export function EditTestCycleDialog({
       queryClient.invalidateQueries({ queryKey: ['cycle-details'] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycles-enhanced'] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycles'] });
-      toast.success('Test cycle updated successfully');
+      catalystToast.success('Test cycle updated successfully');
       onOpenChange(false);
       onSuccess?.();
     },
     onError: (error) => {
-      toast.error(`Failed to update cycle: ${error.message}`);
+      catalystToast.error(`Failed to update cycle: ${error.message}`);
     },
   });
 

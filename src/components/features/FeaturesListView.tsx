@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { GripVertical } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { FeatureContextMenu } from './FeatureContextMenu';
 
@@ -88,13 +88,13 @@ export function FeaturesListView({
 
       await Promise.all(updates);
 
-      toast.success(`Moved "${movedFeature.name}" from rank ${sourceIndex + 1} to rank ${destinationIndex + 1}`, {
+      catalystToast.success(`Moved "${movedFeature.name}" from rank ${sourceIndex + 1} to rank ${destinationIndex + 1}`, {
         position: 'top-center',
         duration: 3000,
       });
     } catch (error) {
       console.error('Error updating feature order:', error);
-      toast.error('Failed to update feature order - reverting changes');
+      catalystToast.error('Failed to update feature order - reverting changes');
       onRefetch(); // Revert by refetching
     }
   };

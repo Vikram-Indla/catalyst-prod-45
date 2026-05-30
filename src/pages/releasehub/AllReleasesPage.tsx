@@ -10,7 +10,7 @@ import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Tooltip } from '@/components/ads';
 
 function mapStatus(status: string) {
@@ -90,12 +90,12 @@ export default function AllReleasesPage() {
       if (rpcErr) throw rpcErr;
       const result = data as any;
       if (result?.queued) {
-        toast.success('Import queued. Jira versions will sync shortly.');
+        catalystToast.success('Import queued. Jira versions will sync shortly.');
       } else {
-        toast.info(result?.reason || 'Import already requested recently.');
+        catalystToast.info(result?.reason || 'Import already requested recently.');
       }
     } catch (err) {
-      toast.error('Failed to queue import: ' + String(err));
+      catalystToast.error('Failed to queue import: ' + String(err));
     } finally {
       setTimeout(() => setImporting(false), 3000);
     }

@@ -4,7 +4,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { RA_KEYS } from '@/hooks/useReqAssist';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import RAPublishEpicsModal from './RAPublishEpicsModal';
 
 interface Epic {
@@ -85,7 +85,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
       .in('publish_status', ['draft', null]);
     await fetchEpics();
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
-    toast.success('All drafts marked as reviewed');
+    catalystToast.success('All drafts marked as reviewed');
     setMarkingReviewed(false);
   };
 
@@ -108,10 +108,10 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
       .update({ title: editTitle, description: editDesc || null })
       .eq('id', editingId);
     if (error) {
-      toast.error('Failed to save: ' + error.message);
+      catalystToast.error('Failed to save: ' + error.message);
     } else {
       setEpics(prev => prev.map(e => e.id === editingId ? { ...e, title: editTitle, description: editDesc || null } : e));
-      toast.success('Epic updated');
+      catalystToast.success('Epic updated');
       cancelEdit();
     }
     setSavingEdit(false);
@@ -123,7 +123,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
       .eq('id', epicId);
     setEpics(prev => prev.filter(e => e.id !== epicId));
     setArchiveConfirmId(null);
-    toast.success('Epic archived');
+    catalystToast.success('Epic archived');
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
   };
 

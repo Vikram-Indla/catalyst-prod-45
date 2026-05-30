@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { STATUS_CONFIG, REQUIRED_COLUMNS, FORBIDDEN_COLUMNS } from '../types';
 import type { IncidentStatus } from '@/types/incident';
 
@@ -91,9 +91,9 @@ export function ManageColumnsDialog({
     if (result.success) {
       setLocalStatuses(prev => [...prev, addStatus as IncidentStatus]);
       setAddStatus('');
-      toast.success(`Added "${STATUS_CONFIG[addStatus as IncidentStatus]?.label || addStatus}" column`);
+      catalystToast.success(`Added "${STATUS_CONFIG[addStatus as IncidentStatus]?.label || addStatus}" column`);
     } else {
-      toast.error(result.error || 'Failed to add column');
+      catalystToast.error(result.error || 'Failed to add column');
     }
   };
 
@@ -102,9 +102,9 @@ export function ManageColumnsDialog({
     const result = onRemove(status);
     if (result.success) {
       setLocalStatuses(prev => prev.filter(s => s !== status));
-      toast.success(`Removed "${STATUS_CONFIG[status]?.label || status}" column`);
+      catalystToast.success(`Removed "${STATUS_CONFIG[status]?.label || status}" column`);
     } else {
-      toast.error(result.error || 'Failed to remove column');
+      catalystToast.error(result.error || 'Failed to remove column');
     }
   };
 
@@ -112,10 +112,10 @@ export function ManageColumnsDialog({
   const handleSave = () => {
     const result = onReorder(localStatuses);
     if (result.success) {
-      toast.success('Column order saved');
+      catalystToast.success('Column order saved');
       onOpenChange(false);
     } else {
-      toast.error(result.error || 'Failed to save column order');
+      catalystToast.error(result.error || 'Failed to save column order');
     }
   };
 
@@ -123,7 +123,7 @@ export function ManageColumnsDialog({
   const handleReset = () => {
     onReset();
     setLocalStatuses([...REQUIRED_COLUMNS]);
-    toast.success('Columns reset to defaults');
+    catalystToast.success('Columns reset to defaults');
   };
 
   return (

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Check if current user is watching an incident
 export function useIsWatching(incidentId: string) {
@@ -72,10 +72,10 @@ export function useToggleWatch(incidentId: string) {
     },
     onSuccess: (isNowWatching) => {
       queryClient.invalidateQueries({ queryKey: ['incident-watchers', incidentId] });
-      toast.success(isNowWatching ? 'Now watching this incident' : 'Stopped watching this incident');
+      catalystToast.success(isNowWatching ? 'Now watching this incident' : 'Stopped watching this incident');
     },
     onError: () => {
-      toast.error('Failed to update watch status');
+      catalystToast.error('Failed to update watch status');
     },
   });
 }

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useCreateReport } from '@/hooks/useReportAnalytics';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface ReportConfig {
   name: string; description: string; reportType: string; metrics: string[];
@@ -77,8 +77,8 @@ export function ReportBuilder({ onClose, existingReport }: ReportBuilderProps) {
   };
 
   const handleSave = async () => {
-    if (!config.name.trim()) { toast.error('Please enter a report name'); return; }
-    if (config.metrics.length === 0) { toast.error('Please select at least one metric'); return; }
+    if (!config.name.trim()) { catalystToast.error('Please enter a report name'); return; }
+    if (config.metrics.length === 0) { catalystToast.error('Please select at least one metric'); return; }
     await createReport.mutateAsync({
       name: config.name, description: config.description, report_type: config.reportType,
       config: { metrics: config.metrics, groupBy: config.groupBy, chartType: config.chartType, filters: config.filters },

@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface DocumentExportProps {
   title: string;
@@ -74,9 +74,9 @@ export function DocumentExport({ title, content }: DocumentExportProps) {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success('Exported as HTML');
+      catalystToast.success('Exported as HTML');
     } catch {
-      toast.error('Export failed');
+      catalystToast.error('Export failed');
     } finally {
       setIsExporting(false);
     }
@@ -124,9 +124,9 @@ export function DocumentExport({ title, content }: DocumentExportProps) {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success('Exported as Markdown');
+      catalystToast.success('Exported as Markdown');
     } catch {
-      toast.error('Export failed');
+      catalystToast.error('Export failed');
     } finally {
       setIsExporting(false);
     }
@@ -147,9 +147,9 @@ export function DocumentExport({ title, content }: DocumentExportProps) {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success('Exported as Text');
+      catalystToast.success('Exported as Text');
     } catch {
-      toast.error('Export failed');
+      catalystToast.error('Export failed');
     } finally {
       setIsExporting(false);
     }

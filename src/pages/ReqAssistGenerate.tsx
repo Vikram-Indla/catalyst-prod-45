@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Sparkles, Check, X, BookOpen, Flag, RefreshCw, Loader2, FileText, AlertTriangle, Eye, RotateCcw } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { RA_KEYS } from '@/hooks/useReqAssist';
 import { syncSingleBrdToKb } from '@/services/reqAssistService';
@@ -148,7 +148,7 @@ export default function ReqAssistGenerate() {
       setGenResult(gData as GenerateResult);
     } catch (err: any) {
       setGenError(sanitiseError(err));
-      toast.error('Generation failed', { description: sanitiseError(err) });
+      catalystToast.error('Generation failed');
     } finally {
       setQualifying(false);
       setGenerating(false);
@@ -184,9 +184,9 @@ export default function ReqAssistGenerate() {
       setDuplicateDoc(null);
       setDupModalOpen(false);
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
-      toast.success('Saved to Library', { description: `"${title}" created successfully` });
+      catalystToast.success('Saved to Library', { description: `"${title}" created successfully` });
     } catch (err: any) {
-      toast.error('Save failed', { description: err.message });
+      catalystToast.error('Save failed');
     } finally {
       setSaving(false);
     }
@@ -215,9 +215,9 @@ export default function ReqAssistGenerate() {
       setDupModalOpen(false);
       setOverwriteConfirmOpen(false);
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
-      toast.success('Overwritten', { description: 'Existing BRD replaced and epics cleared.' });
+      catalystToast.success('Overwritten');
     } catch (err: any) {
-      toast.error('Overwrite failed', { description: err.message });
+      catalystToast.error('Overwrite failed');
     } finally {
       setSaving(false);
     }
@@ -229,11 +229,11 @@ export default function ReqAssistGenerate() {
     try {
       await syncSingleBrdToKb(savedDocId);
       setWikiState('success');
-      toast.success('Indexed for AI search');
+      catalystToast.success('Indexed for AI search');
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
     } catch (err: any) {
       setWikiState('failed');
-      toast.error(sanitiseError(err));
+      catalystToast.error(sanitiseError(err));
     }
   }, [savedDocId, qc]);
 
@@ -507,8 +507,8 @@ export default function ReqAssistGenerate() {
                   setShowSavedBanner(true);
                   setDuplicateDoc(null);
                   qc.invalidateQueries({ queryKey: RA_KEYS.all });
-                  toast.success('Saved as new copy');
-                } catch (err: any) { setGenError(err.message); toast.error('Failed', { description: err.message }); } finally { setGenerating(false); }
+                  catalystToast.success('Saved as new copy');
+                } catch (err: any) { setGenError(err.message); catalystToast.error('Failed'); } finally { setGenerating(false); }
               }}>
                 Save as New Copy
               </BtnPrimary>

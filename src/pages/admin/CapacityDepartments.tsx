@@ -12,7 +12,7 @@ import DragHandlerIcon from '@atlaskit/icon/glyph/drag-handler';
 import WarningIcon from '@atlaskit/icon/core/warning';
 import CopyIcon from '@atlaskit/icon/core/copy';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Tooltip } from '@/components/ads';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 
@@ -52,7 +52,7 @@ export default function CapacityDepartmentsPage() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success(`Copied ${text} to clipboard`);
+    catalystToast.success(`Copied ${text} to clipboard`);
   };
 
   const checkLinkedRecords = async (departmentId: string) => {
@@ -68,7 +68,7 @@ export default function CapacityDepartmentsPage() {
       return profiles || [];
     } catch (error) {
       console.error('Error checking linked records:', error);
-      toast.error('Failed to check linked records');
+      catalystToast.error('Failed to check linked records');
       return [];
     } finally {
       setCheckingLinks(false);

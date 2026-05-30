@@ -19,7 +19,7 @@ import { getDefaultForecastBoundary } from '@/utils/allocation.utils';
 
 import type { ViewType, ResourceMetric, ResourceAllocation, AllocationBookingInput } from '@/modules/capacity-planner';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Resource360Drawer } from '@/components/capacity/resource360/Resource360Drawer';
 import { ResourceWorkDrawer } from '@/components/capacity/ResourceWorkDrawer';
 
@@ -254,7 +254,7 @@ export default function CapacityPlannerPage() {
       period: 'Q1 2025',
       generatedAt: new Date(),
     });
-    toast.success('PDF exported successfully');
+    catalystToast.success('PDF exported successfully');
   };
 
   const handlePrint = () => {
@@ -593,7 +593,7 @@ export default function CapacityPlannerPage() {
             setAllocationModalResource(minimalResource);
             setAllocationModalOpen(true);
           } else {
-            toast.error('Resource not found');
+            catalystToast.error('Resource not found');
           }
         });
       return;
@@ -618,10 +618,10 @@ export default function CapacityPlannerPage() {
       .eq('id', resourceId);
     
     if (error) {
-      toast.error(`Failed to update department: ${error.message}`);
+      catalystToast.error(`Failed to update department: ${error.message}`);
       throw error;
     }
-    toast.success('Department updated');
+    catalystToast.success('Department updated');
   }, []);
 
   // Get allocations for a specific resource - CURRENT MONTH ONLY
@@ -718,9 +718,9 @@ export default function CapacityPlannerPage() {
     setIsRetrying(true);
     try {
       await refetch();
-      toast.success('Data refreshed successfully');
+      catalystToast.success('Data refreshed successfully');
     } catch {
-      toast.error('Failed to refresh data');
+      catalystToast.error('Failed to refresh data');
     } finally {
       setIsRetrying(false);
     }
@@ -894,7 +894,7 @@ export default function CapacityPlannerPage() {
                         setSearchQuery('');
                         setDepartmentFilter('all');
                         setActiveFilter('all');
-                        toast.info('Filters cleared', { description: 'Showing all resources.' });
+                        catalystToast.info('Filters cleared');
                       }}
                       className="transition-transform active:scale-95"
                     >
@@ -1116,14 +1116,14 @@ export default function CapacityPlannerPage() {
                         deleteAssignment.mutate(a.id);
                       });
                     });
-                    toast.success(`${resourcesToDelete.length} resource${resourcesToDelete.length > 1 ? 's' : ''} removed from Capacity Planner`);
+                    catalystToast.success(`${resourcesToDelete.length} resource${resourcesToDelete.length > 1 ? 's' : ''} removed from Capacity Planner`);
                     setResourcesToDelete([]);
                   } else if (resourceToDelete) {
                     // Single delete
                     resourceToDelete.assignments.forEach((a) => {
                       deleteAssignment.mutate(a.id);
                     });
-                    toast.success(`${resourceToDelete.name} removed from Capacity Planner`);
+                    catalystToast.success(`${resourceToDelete.name} removed from Capacity Planner`);
                     setResourceToDelete(null);
                   }
                   setDeleteConfirmOpen(false);

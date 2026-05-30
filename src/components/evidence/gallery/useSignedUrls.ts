@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Attachment } from '../types';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export const useSignedUrls = (attachments: Attachment[]) => {
   const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
@@ -76,10 +76,10 @@ export const downloadFile = async (attachment: Attachment) => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast.success('Download started');
+      catalystToast.success('Download started');
     }
   } catch (error) {
     console.error('Download failed:', error);
-    toast.error('Failed to generate download link');
+    catalystToast.error('Failed to generate download link');
   }
 };

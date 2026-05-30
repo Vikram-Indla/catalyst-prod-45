@@ -5,7 +5,7 @@ import type { SortColumn, ColumnDef, GroupedItems } from '@/hooks/useWorkItemLis
 import { WorkItemTableRow } from './WorkItemTableRow';
 import { BulkActionsBar } from './BulkActionsBar';
 import { TableContextMenu } from './TableContextMenu';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface WorkItemsTableProps {
   items: WorkItemRow[];
@@ -134,7 +134,7 @@ export function WorkItemsTable({
 
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        toast.info('Coming in AI Assist phase');
+        catalystToast.info('Coming in AI Assist phase');
         return;
       }
 
@@ -395,7 +395,7 @@ export function WorkItemsTable({
           isFlagged={contextMenu.item.is_flagged}
           onClose={() => setContextMenu(null)}
           onOpenDetail={() => onRowClick(contextMenu.item.id)}
-          onCopyKey={() => { navigator.clipboard.writeText(contextMenu.item.item_key); toast.success(`Copied ${contextMenu.item.item_key}`); }}
+          onCopyKey={() => { navigator.clipboard.writeText(contextMenu.item.item_key); catalystToast.success(`Copied ${contextMenu.item.item_key}`); }}
           onClone={() => onCloneItem(contextMenu.item.id)}
           onToggleFlag={() => onInlineUpdate(contextMenu.item.id, { is_flagged: !contextMenu.item.is_flagged })}
           onDelete={() => onBulkDelete([contextMenu.item.id])}

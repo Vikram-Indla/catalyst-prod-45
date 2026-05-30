@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { 
   useResourceUtilization, 
   useBulkSaveAllocations, 
@@ -339,9 +339,9 @@ export default function ResourceUtilization() {
             onClick={() => {
               try {
                 exportUtilizationToExcel(resources, selectedYear);
-                toast.success('Excel file downloaded');
+                catalystToast.success('Excel file downloaded');
               } catch (error) {
-                toast.error('No data to export');
+                catalystToast.error('No data to export');
               }
             }}
           >

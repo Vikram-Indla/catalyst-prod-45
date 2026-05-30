@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface DocumentWatchersProps {
   documentId: string;
@@ -70,10 +70,10 @@ export function DocumentWatchers({ documentId }: DocumentWatchersProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kb-watchers', documentId] });
-      toast.success('You are now watching this page');
+      catalystToast.success('You are now watching this page');
     },
     onError: () => {
-      toast.error('Failed to watch page');
+      catalystToast.error('Failed to watch page');
     },
   });
 
@@ -90,10 +90,10 @@ export function DocumentWatchers({ documentId }: DocumentWatchersProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kb-watchers', documentId] });
-      toast.success('You are no longer watching this page');
+      catalystToast.success('You are no longer watching this page');
     },
     onError: () => {
-      toast.error('Failed to unwatch page');
+      catalystToast.error('Failed to unwatch page');
     },
   });
 

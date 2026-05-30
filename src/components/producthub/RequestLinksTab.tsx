@@ -9,7 +9,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Plus, Link as LinkIcon, ExternalLink, Trash2 } from '@/lib/atlaskit-icons';
 import { logRequestAudit } from '@/lib/requestAudit';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface RequestLinksTabProps {
   requestId: string;
@@ -32,7 +32,7 @@ function AddLinkForm({ requestId, onClose }: { requestId: string; onClose: () =>
 
   const handleSubmit = async () => {
     if (!title.trim() || !url.trim()) {
-      toast.error('Title and URL required');
+      catalystToast.error('Title and URL required');
       return;
     }
     setSubmitting(true);
@@ -49,11 +49,11 @@ function AddLinkForm({ requestId, onClose }: { requestId: string; onClose: () =>
         .select();
       if (error) throw error;
       if (!rows || rows.length === 0) {
-        toast.error('Failed to add link — no rows inserted');
+        catalystToast.error('Failed to add link — no rows inserted');
         return;
       }
       queryClient.invalidateQueries({ queryKey: ['ph-links', requestId] });
-      toast.success('Link added');
+      catalystToast.success('Link added');
       logRequestAudit({
         request_id: requestId,
         action: 'link_added',
@@ -63,7 +63,7 @@ function AddLinkForm({ requestId, onClose }: { requestId: string; onClose: () =>
       });
       onClose();
     } catch (err: any) {
-      toast.error('Failed: ' + err.message);
+      catalystToast.error('Failed: ' + err.message);
     } finally {
       setSubmitting(false);
     }
@@ -137,7 +137,7 @@ export function RequestLinksTab({ requestId }: RequestLinksTabProps) {
         .eq('id', id);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['ph-links', requestId] });
-      toast.success('Link removed');
+      catalystToast.success('Link removed');
       logRequestAudit({
         request_id: requestId,
         action: 'link_deleted',
@@ -145,7 +145,7 @@ export function RequestLinksTab({ requestId }: RequestLinksTabProps) {
         entity_id: id,
       });
     } catch (err: any) {
-      toast.error('Delete failed: ' + err.message);
+      catalystToast.error('Delete failed: ' + err.message);
     }
   };
 

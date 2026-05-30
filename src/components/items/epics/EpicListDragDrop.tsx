@@ -5,7 +5,7 @@ import { HealthBadge } from '@/components/shared/HealthBadge';
 import { GripVertical } from '@/lib/atlaskit-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { EpicContextMenu } from './EpicContextMenu';
 
 interface Epic {
@@ -83,10 +83,10 @@ export function EpicListDragDrop({
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success(`Moved "${data.movedEpic.name}" from rank ${data.fromRank} to rank ${data.toRank}`);
+      catalystToast.success(`Moved "${data.movedEpic.name}" from rank ${data.fromRank} to rank ${data.toRank}`);
     },
     onError: () => {
-      toast.error('Failed to update ranking');
+      catalystToast.error('Failed to update ranking');
     }
   });
 

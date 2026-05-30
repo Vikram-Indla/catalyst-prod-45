@@ -4,7 +4,7 @@ import {
   X, Check, User, Calendar, Tag, FileText, Plus, Clock, 
   Trash2, ChevronDown, Search, Loader2, Copy
 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useT10Users } from '../../hooks/useT10Users';
 import { useT10Labels, useCreateT10Label } from '../../hooks/useT10Labels';
 import { T10ActivityTimeline } from './T10ActivityTimeline';
@@ -162,7 +162,7 @@ export function T10EnterpriseSidePanel({
   const handleCopyTaskKey = () => {
     if (item?.taskhub_key) {
       navigator.clipboard.writeText(item.taskhub_key);
-      toast.success(`Copied ${item.taskhub_key}`);
+      catalystToast.success(`Copied ${item.taskhub_key}`);
     }
   };
 
@@ -177,12 +177,12 @@ export function T10EnterpriseSidePanel({
     });
     setAssigneeDropdownOpen(false);
     setAssigneeSearch('');
-    toast.success(`Assigned to ${user.full_name}`);
+    catalystToast.success(`Assigned to ${user.full_name}`);
   };
 
   const handleRemoveAssignee = () => {
     onUpdate({ assignee_id: undefined, assignee_name: undefined, assignee_initials: undefined });
-    toast.success('Assignee removed');
+    catalystToast.success('Assignee removed');
   };
 
   // Get current label object from labels array
@@ -219,9 +219,9 @@ export function T10EnterpriseSidePanel({
       setNewLabelName('');
       setShowCreateLabel(false);
       setLabelDropdownOpen(false);
-      toast.success(`Label "${newLabel.name}" created`);
+      catalystToast.success(`Label "${newLabel.name}" created`);
     } catch (error) {
-      toast.error('Failed to create label');
+      catalystToast.error('Failed to create label');
       console.error('Failed to create label:', error);
     }
   };
@@ -243,7 +243,7 @@ export function T10EnterpriseSidePanel({
         setTimeout(() => setSaveStatus('idle'), 2000);
       } catch (error) {
         setSaveStatus('idle');
-        toast.error('Failed to save description');
+        catalystToast.error('Failed to save description');
       }
     }, 800);
   }, [onUpdate]);
@@ -251,7 +251,7 @@ export function T10EnterpriseSidePanel({
   const handleStatusToggle = () => {
     const newStatus = item?.status === 'done' ? 'todo' : 'done';
     onUpdate({ status: newStatus });
-    toast.success(newStatus === 'done' ? 'Marked as completed' : 'Marked as incomplete');
+    catalystToast.success(newStatus === 'done' ? 'Marked as completed' : 'Marked as incomplete');
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {

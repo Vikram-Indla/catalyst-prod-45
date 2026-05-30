@@ -13,7 +13,7 @@ import { UserDrawer } from './components/UserDrawer';
 import { BulkEditModal } from './components/BulkEditModal';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { loadXLSX } from '@/lib/exportLoaders';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import SearchIcon from '@atlaskit/icon/core/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import DownloadIcon from '@atlaskit/icon/core/download';
@@ -215,7 +215,7 @@ export default function UsersManagement() {
       ? `users-selected-${new Date().toISOString().split('T')[0]}.xlsx`
       : 'users-export.xlsx';
     XLSX.writeFile(wb, filename);
-    toast.success(`Exported ${dataToExport.length} users`);
+    catalystToast.success(`Exported ${dataToExport.length} users`);
   };
 
   const clearFilters = () => {
@@ -261,10 +261,10 @@ export default function UsersManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
-      toast.success('Updated');
+      catalystToast.success('Updated');
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to update');
+      catalystToast.error(err.message || 'Failed to update');
     }
   });
 
@@ -332,12 +332,12 @@ export default function UsersManagement() {
       queryClient.invalidateQueries({ queryKey: ['users-list'], refetchType: 'all' });
       queryClient.invalidateQueries({ queryKey: ['resource-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['capacity-departments'] });
-      toast.success(`Updated ${selectedIds.size} users`);
+      catalystToast.success(`Updated ${selectedIds.size} users`);
       setSelectedIds(new Set());
       setBulkModalOpen(false);
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to update');
+      catalystToast.error(err.message || 'Failed to update');
     }
   });
 
@@ -357,11 +357,11 @@ export default function UsersManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
-      toast.success(`Deleted ${selectedIds.size} users`);
+      catalystToast.success(`Deleted ${selectedIds.size} users`);
       setSelectedIds(new Set());
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to delete');
+      catalystToast.error(err.message || 'Failed to delete');
     }
   });
 

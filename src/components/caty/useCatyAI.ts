@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const CAPACITY_AI_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/capacity-ai`;
 
@@ -69,10 +69,10 @@ export function useCatyAI(): UseCatyAIReturn {
         }
 
         if (response.status === 429) {
-          toast.error('Rate limit exceeded. Please wait a moment.');
+          catalystToast.error('Rate limit exceeded. Please wait a moment.');
           errorMessage = 'Rate limit exceeded. Please try again in a moment.';
         } else if (response.status === 402) {
-          toast.error('AI credits exhausted. Please add funds.');
+          catalystToast.error('AI credits exhausted. Please add funds.');
           errorMessage = 'AI credits exhausted. Please add funds to continue.';
         }
 
@@ -146,7 +146,7 @@ export function useCatyAI(): UseCatyAIReturn {
         console.error('Caty AI streaming error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         onError?.(errorMessage);
-        toast.error('AI error. Please try again.');
+        catalystToast.error('AI error. Please try again.');
       }
     } finally {
       setIsStreaming(false);

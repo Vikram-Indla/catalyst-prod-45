@@ -17,7 +17,7 @@ import {
   Calendar as CalendarIcon
 } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface FeatureRightRailProps {
   featureId: string;
@@ -179,10 +179,10 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
       queryClient.invalidateQueries({ queryKey: ['feature-detail-panel', featureId] });
       queryClient.invalidateQueries({ queryKey: ['features'] });
       onRefresh();
-      toast.success('Saved');
+      catalystToast.success('Saved');
     },
     onError: (error: any) => {
-      toast.error('Failed to save', { description: error.message });
+      catalystToast.error('Failed to save');
     },
   });
 

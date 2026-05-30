@@ -29,7 +29,7 @@
  * (replace with @atlaskit/icon), no bespoke CSS chrome.
  */
 import { useCallback, useMemo } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useProductHubBusinessRequest } from './useProductHubBusinessRequest';
 import { useDuplicateBusinessRequest } from '@/hooks/useBusinessRequests';
@@ -91,9 +91,9 @@ export default function CatalystViewBusinessRequestV2({
     url.searchParams.set('selectedRequest', request.request_key);
     try {
       await navigator.clipboard.writeText(url.toString());
-      toast.success('Permalink copied');
+      catalystToast.success('Permalink copied');
     } catch {
-      toast.error('Could not copy permalink');
+      catalystToast.error('Could not copy permalink');
     }
   }, [request?.request_key]);
 
@@ -101,7 +101,7 @@ export default function CatalystViewBusinessRequestV2({
     if (!resolvedId) return;
     try {
       const newReq = await duplicateMutation.mutateAsync(resolvedId);
-      toast.success(`Duplicated as ${newReq?.request_key ?? 'BR'}`);
+      catalystToast.success(`Duplicated as ${newReq?.request_key ?? 'BR'}`);
     } catch {
       // Hook surfaces its own error toast via useToast — silent here.
     }
@@ -111,10 +111,10 @@ export default function CatalystViewBusinessRequestV2({
   const handleDelete = useCallback(async () => {
     try {
       await deleteRequest();
-      toast.success('Business Request deleted');
+      catalystToast.success('Business Request deleted');
       onClose();
     } catch {
-      toast.error('Delete failed');
+      catalystToast.error('Delete failed');
     }
   }, [deleteRequest, onClose]);
 

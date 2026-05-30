@@ -8,7 +8,7 @@ import { GripVertical, Plus } from '@/lib/atlaskit-icons';
 import { EpicContextMenu } from './EpicContextMenu';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -152,11 +152,11 @@ export function EpicBacklogListView({
           .eq('id', update.id);
       }
 
-      toast.success('Epic order updated');
+      catalystToast.success('Epic order updated');
       onRefetch();
     } catch (error) {
       console.error('Error updating epic order:', error);
-      toast.error('Failed to update epic order');
+      catalystToast.error('Failed to update epic order');
     }
   };
 

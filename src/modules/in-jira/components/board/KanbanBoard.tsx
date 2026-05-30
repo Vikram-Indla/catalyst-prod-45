@@ -9,7 +9,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { Plus, Settings, RefreshCw, Filter } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { BoardColumn } from './BoardColumn';
 import { useBoardData, useBoardColumns, type BoardIssue } from '../../hooks/useBoardData';
@@ -105,7 +105,7 @@ export function KanbanBoard({
       if (source.droppableId !== destination.droppableId) {
         const destIssues = issuesByColumn[destColumn.id] || [];
         if (destColumn.maxLimit !== null && destIssues.length >= destColumn.maxLimit) {
-          toast.error(`Column "${destColumn.name}" has reached its WIP limit of ${destColumn.maxLimit}`);
+          catalystToast.error(`Column "${destColumn.name}" has reached its WIP limit of ${destColumn.maxLimit}`);
           return;
         }
       }

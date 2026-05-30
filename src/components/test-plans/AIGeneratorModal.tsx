@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface AIGeneratorModalProps {
   open: boolean;
@@ -40,7 +40,7 @@ export function AIGeneratorModal({ open, onClose, onGenerate }: AIGeneratorModal
 
   const handleGenerate = async () => {
     if (!context.trim()) {
-      toast.error('Please describe what you want to test');
+      catalystToast.error('Please describe what you want to test');
       return;
     }
 
@@ -55,14 +55,14 @@ export function AIGeneratorModal({ open, onClose, onGenerate }: AIGeneratorModal
 
       onGenerate(data);
       onClose();
-      toast.success('Test plan generated!');
+      catalystToast.success('Test plan generated!');
     } catch (error) {
       console.error('AI generation error:', error);
       // Fallback: Generate locally
       const generated = generateLocalPlan(context, planType);
       onGenerate(generated);
       onClose();
-      toast.success('Test plan generated!');
+      catalystToast.success('Test plan generated!');
     } finally {
       setIsGenerating(false);
     }

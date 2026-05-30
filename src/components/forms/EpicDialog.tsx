@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { parseISO, format } from 'date-fns';
 
 interface EpicDialogProps {
@@ -79,11 +79,11 @@ export function EpicDialog({ open, onOpenChange, epic }: EpicDialogProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success(epic ? 'Epic updated' : 'Epic created');
+      catalystToast.success(epic ? 'Epic updated' : 'Epic created');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to save epic');
+      catalystToast.error('Failed to save epic');
     },
   });
 
@@ -92,7 +92,7 @@ export function EpicDialog({ open, onOpenChange, epic }: EpicDialogProps) {
     
     // Validate required theme
     if (!themeId) {
-      toast.error('Strategic Theme is required for epics');
+      catalystToast.error('Strategic Theme is required for epics');
       return;
     }
     

@@ -38,7 +38,7 @@ import {
   Layers
 } from '@/lib/atlaskit-icons';
 import { format, formatDistanceToNow } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -205,19 +205,19 @@ export default function FeatureDetailPage() {
       queryClient.invalidateQueries({ queryKey: ['features'] });
     },
     onError: (error: any) => {
-      toast.error('Failed to update feature', { description: error.message });
+      catalystToast.error('Failed to update feature');
     },
   });
 
   const handleStatusChange = (newStatus: FeatureStatus) => {
     updateFeature.mutate({ status: newStatus } as any, {
-      onSuccess: () => toast.success('Status updated'),
+      onSuccess: () => catalystToast.success('Status updated'),
     });
   };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
   };
 
   // Loading state

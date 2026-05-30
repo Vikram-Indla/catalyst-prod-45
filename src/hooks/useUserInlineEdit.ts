@@ -5,7 +5,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { UserProfile } from './useUsers';
 
 export type EditableUserField = 
@@ -217,12 +217,12 @@ export function useUserInlineEdit(referenceData: ReferenceData) {
       if (context?.previousData) {
         queryClient.setQueryData(['users-list'], context.previousData);
       }
-      toast.error('Failed to save changes');
+      catalystToast.error('Failed to save changes');
       console.error('Inline edit error:', err);
     },
     onSuccess: () => {
       // Show subtle success feedback
-      toast.success('Saved', { duration: 1500 });
+      catalystToast.success('Saved');
     },
     onSettled: () => {
       // Refetch to ensure consistency with DB

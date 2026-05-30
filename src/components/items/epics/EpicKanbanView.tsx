@@ -6,7 +6,7 @@ import { HealthBadge } from '@/components/shared/HealthBadge';
 import { MoreVertical } from '@/lib/atlaskit-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface Epic {
   id: string;
@@ -73,10 +73,10 @@ export function EpicKanbanView({ epics, onEpicClick, onContextMenu }: EpicKanban
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('Epic state updated');
+      catalystToast.success('Epic state updated');
     },
     onError: () => {
-      toast.error('Failed to update epic state');
+      catalystToast.error('Failed to update epic state');
     }
   });
 

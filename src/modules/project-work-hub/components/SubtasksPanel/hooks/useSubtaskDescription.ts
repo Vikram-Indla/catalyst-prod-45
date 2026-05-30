@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { ADFEntity } from '@atlaskit/adf-utils/types';
 import type { Json } from '@/integrations/supabase/types';
 import { adfToPlainText, isADFEmpty } from '@/utils/adf';
@@ -50,10 +50,10 @@ export function useSubtaskDescription(subtaskId: string | null, parentKey: strin
         qc.invalidateQueries({ queryKey: SUBTASK_DESCRIPTION_KEY(subtaskId) });
       }
       qc.invalidateQueries({ queryKey: ['childIssues', parentKey] });
-      toast.success('Description saved');
+      catalystToast.success('Description saved');
     },
     onError: (err) => {
-      toast.error('Failed to save description', { description: (err as Error).message });
+      catalystToast.error('Failed to save description');
     },
   });
 

@@ -25,7 +25,7 @@ import { ChevronDown, ChevronRight, ChevronLeft, Plus, Pencil, Trash2, BookOpen,
 import { GroupByPopover as SharedGroupByPopover } from '@/components/shared/GroupByPopover';
 import type { GroupByOption } from '@/components/shared/GroupByPopover';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 import type { BacklogStory } from '../types/backlog.types';
@@ -407,10 +407,10 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
-      toast.success('Story archived successfully');
+      catalystToast.success('Story archived successfully');
       setDeleteTarget(null);
     },
-    onError: () => toast.error('Failed to archive story'),
+    onError: () => catalystToast.error('Failed to archive story'),
   });
 
   const handleTogglePanelMode = useCallback(() => setPanelMode(p => !p), []);
@@ -1218,14 +1218,14 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
               const skipped = jiraItems.length;
               const deleted = catIds.length;
               if (skipped > 0) {
-                toast.success(`${deleted} item${deleted !== 1 ? 's' : ''} deleted. ${skipped} Jira-synced item${skipped !== 1 ? 's' : ''} skipped (delete in Jira).`);
+                catalystToast.success(`${deleted} item${deleted !== 1 ? 's' : ''} deleted. ${skipped} Jira-synced item${skipped !== 1 ? 's' : ''} skipped (delete in Jira).`);
               } else {
-                toast.success(`${deleted} item${deleted !== 1 ? 's' : ''} deleted`);
+                catalystToast.success(`${deleted} item${deleted !== 1 ? 's' : ''} deleted`);
               }
               setSelectedIds(new Set());
               queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
             } : async () => {
-              toast.info('Jira-synced items cannot be deleted from Catalyst. Delete them in Jira instead.');
+              catalystToast.info('Jira-synced items cannot be deleted from Catalyst. Delete them in Jira instead.');
             }}
             entityLabel="work item"
           />

@@ -4,7 +4,7 @@ import { Progress } from '@/components/ui/progress';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 
 interface Feature {
@@ -49,11 +49,11 @@ export function FeaturesKanbanView({ features, onFeatureSelect, onRefetch }: Fea
 
       if (error) throw error;
 
-      toast.success('Feature status updated');
+      catalystToast.success('Feature status updated');
       onRefetch();
     } catch (error) {
       console.error('Error updating feature status:', error);
-      toast.error('Failed to update feature status');
+      catalystToast.error('Failed to update feature status');
     }
   };
 

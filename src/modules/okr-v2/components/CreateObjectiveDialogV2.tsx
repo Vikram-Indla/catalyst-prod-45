@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { cn } from '@/lib/utils';
 import { Target, X, AlertCircle } from '@/lib/atlaskit-icons';
@@ -82,12 +82,12 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
     
     // Validate required fields
     if (!name.trim()) {
-      toast.error('Name is required');
+      catalystToast.error('Name is required');
       return;
     }
     
     if (!themeId) {
-      toast.error('Theme is required');
+      catalystToast.error('Theme is required');
       return;
     }
 

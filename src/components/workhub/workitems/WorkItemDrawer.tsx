@@ -10,7 +10,7 @@ import type { JiraIssue } from '@/hooks/workhub/useWorkItems';
 import { useUpdateWorkItem } from '@/hooks/workhub/useWorkItems';
 import { useWHThemes } from '@/hooks/workhub/useThemes';
 import { format, formatDistanceToNow } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface WorkItemDrawerProps {
   item: JiraIssue | null;
@@ -54,7 +54,7 @@ function ThemeSelector({ issueKey, currentThemeId }: { issueKey: string; current
       { issueKey, field: 'theme_id', value: themeId },
       {
         onSuccess: () => {
-          toast.success(themeId ? 'Theme assigned' : 'Theme removed');
+          catalystToast.success(themeId ? 'Theme assigned' : 'Theme removed');
           setOpen(false);
         },
       }

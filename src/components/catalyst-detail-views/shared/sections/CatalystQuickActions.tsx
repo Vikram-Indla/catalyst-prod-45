@@ -22,7 +22,7 @@ import WorldIcon from '@atlaskit/icon/glyph/world';
 import EditIcon from '@atlaskit/icon/core/edit';
 import SearchIcon from '@atlaskit/icon/core/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface CatalystQuickActionsProps {
   onCreateChild?: () => void;
@@ -61,10 +61,10 @@ export function CatalystQuickActions({
 
   const menuItems = [
     { id: 'child', icon: <CheckIcon size="small" primaryColor={textColor} />, label: 'Create child work item', section: 'primary', action: () => { setShowMenu(false); setSearch(''); onCreateChild ? onCreateChild() : toast('Create child — scroll to Child work items section'); } },
-    { id: 'link', icon: <ArrowRightIcon size="small" primaryColor={textColor} />, label: 'Link work item', section: 'primary', action: () => { setShowMenu(false); setSearch(''); onLinkItem ? onLinkItem() : toast.info('Link work item — coming soon'); } },
-    { id: 'attachment', icon: <AttachmentIcon size="small" primaryColor={textColor} />, label: 'Add attachment', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddAttachment ? onAddAttachment() : toast.info('Add attachment — coming soon'); } },
-    { id: 'weblink', icon: <WorldIcon size="small" primaryColor={textColor} />, label: 'Add web link', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddWebLink ? onAddWebLink() : toast.info('Add web link — coming soon'); } },
-    { id: 'design', icon: <EditIcon size="small" primaryColor={textColor} />, label: 'Add design', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddDesign ? onAddDesign() : toast.info('Add design — coming soon'); } },
+    { id: 'link', icon: <ArrowRightIcon size="small" primaryColor={textColor} />, label: 'Link work item', section: 'primary', action: () => { setShowMenu(false); setSearch(''); onLinkItem ? onLinkItem() : catalystToast.info('Link work item — coming soon'); } },
+    { id: 'attachment', icon: <AttachmentIcon size="small" primaryColor={textColor} />, label: 'Add attachment', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddAttachment ? onAddAttachment() : catalystToast.info('Add attachment — coming soon'); } },
+    { id: 'weblink', icon: <WorldIcon size="small" primaryColor={textColor} />, label: 'Add web link', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddWebLink ? onAddWebLink() : catalystToast.info('Add web link — coming soon'); } },
+    { id: 'design', icon: <EditIcon size="small" primaryColor={textColor} />, label: 'Add design', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddDesign ? onAddDesign() : catalystToast.info('Add design — coming soon'); } },
   ];
 
   const q = search.toLowerCase();

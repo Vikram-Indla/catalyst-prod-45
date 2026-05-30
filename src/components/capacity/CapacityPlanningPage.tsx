@@ -25,7 +25,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Lozenge, Tooltip } from '@/components/ads';
 import { Search, Filter, Copy, UserPlus, Plus, Users, LayoutGrid, Calendar, Clock, FileText, ChevronLeft, ChevronRight, Lock, LockOpen, Info } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 type CapacityTab = 'roster' | 'grid' | 'timeline' | 'available' | 'vacancies' | 'reports';
 
@@ -142,23 +142,23 @@ export function CapacityPlanningPage() {
 
   const handleCopyWeek = (options: any) => {
     const count = copyWeekAllocations(options);
-    toast.success(`Copied ${count} allocations to next week`);
+    catalystToast.success(`Copied ${count} allocations to next week`);
     return count;
   };
 
   const handleAddMember = (data: any) => {
     addResource(data);
-    toast.success('Team member added successfully');
+    catalystToast.success('Team member added successfully');
   };
 
   const handleAddAllocation = (data: any) => {
     addAllocation(data);
-    toast.success('Allocation created successfully');
+    catalystToast.success('Allocation created successfully');
   };
 
   const handleSave = () => {
     saveGridChanges();
-    toast.success('Allocations saved successfully');
+    catalystToast.success('Allocations saved successfully');
   };
 
   const handleReset = () => {
@@ -352,7 +352,7 @@ export function CapacityPlanningPage() {
                   size="icon"
                   onClick={() => {
                     toggleLock('Current User');
-                    toast.success(isLocked ? 'Allocations unlocked' : 'Allocations locked');
+                    catalystToast.success(isLocked ? 'Allocations unlocked' : 'Allocations locked');
                   }}
                   className={isLocked ? "bg-muted-foreground hover:bg-muted-foreground/80 text-white" : ""}
                 >
@@ -473,7 +473,7 @@ export function CapacityPlanningPage() {
                 onAddVacancy={(vacancy) => console.log('New vacancy:', vacancy)}
                 onAddNewPerson={(data, vacancyId) => {
                   addResource(data);
-                  toast.success('New team member added to roster');
+                  catalystToast.success('New team member added to roster');
                 }}
               />
             </TabsContent>

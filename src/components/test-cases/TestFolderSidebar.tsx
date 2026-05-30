@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ============================================
 // Types
@@ -143,13 +143,13 @@ function FolderTreeItem({
   const handleContextAction = (action: string) => {
     switch (action) {
       case 'rename':
-        toast.info('Rename folder coming soon');
+        catalystToast.info('Rename folder coming soon');
         break;
       case 'add-subfolder':
-        toast.info('Add subfolder coming soon');
+        catalystToast.info('Add subfolder coming soon');
         break;
       case 'delete':
-        toast.info('Delete folder coming soon');
+        catalystToast.info('Delete folder coming soon');
         break;
     }
   };
@@ -295,7 +295,7 @@ export function TestFolderSidebar({
   }, []);
 
   const handleCreateFolder = () => {
-    toast.info('Create folder coming soon');
+    catalystToast.info('Create folder coming soon');
   };
 
   return (

@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Bug, Loader2, Sparkles, Image as ImageIcon } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
@@ -94,12 +94,12 @@ export const CreateDefectModal: React.FC<CreateDefectModalProps> = ({
 
   const handleSubmit = async () => {
     if (!title.trim() || title.length < 10) {
-      toast.error('Title must be at least 10 characters');
+      catalystToast.error('Title must be at least 10 characters');
       return;
     }
 
     if (!projectId) {
-      toast.error('Project ID is required');
+      catalystToast.error('Project ID is required');
       return;
     }
 
@@ -192,12 +192,12 @@ export const CreateDefectModal: React.FC<CreateDefectModalProps> = ({
         }
       }
 
-      toast.success(`Defect ${defect.defect_key} created successfully`);
+      catalystToast.success(`Defect ${defect.defect_key} created successfully`);
       onDefectCreated?.(defect.id, defect.defect_key);
       onClose();
     } catch (error) {
       console.error('Failed to create defect:', error);
-      toast.error('Failed to create defect');
+      catalystToast.error('Failed to create defect');
     } finally {
       setSaving(false);
     }

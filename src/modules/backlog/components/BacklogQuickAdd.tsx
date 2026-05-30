@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Plus } from '@/lib/atlaskit-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface BacklogQuickAddProps {
   type: string;
@@ -46,12 +46,12 @@ export function BacklogQuickAdd({ type, programId, piId }: BacklogQuickAddProps)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success(`${type} created successfully`);
+      catalystToast.success(`${type} created successfully`);
       setName('');
       setIsAdding(false);
     },
     onError: (error: any) => {
-      toast.error(`Failed to create ${type}: ${error.message}`);
+      catalystToast.error(`Failed to create ${type}: ${error.message}`);
     },
   });
 

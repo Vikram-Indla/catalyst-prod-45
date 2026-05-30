@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Lozenge } from '@/components/ads';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Loader2 } from '@/lib/atlaskit-icons';
 
 interface MassMoveDialogProps {
@@ -74,14 +74,14 @@ export function MassMoveDialog({
     },
     onSuccess: (count) => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success(`Successfully moved ${count} epic(s) to new program and PI`);
+      catalystToast.success(`Successfully moved ${count} epic(s) to new program and PI`);
       setTargetProgram('');
       setTargetPI('');
       onOpenChange(false);
       onSuccess?.();
     },
     onError: () => {
-      toast.error('Failed to move epics');
+      catalystToast.error('Failed to move epics');
     }
   });
 

@@ -13,7 +13,7 @@
  */
 import React, { useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import SparklesIcon from '@atlaskit/icon/core/atlassian-intelligence';
 import LockIcon from '@atlaskit/icon/core/lock-locked';
 import CloseIcon from '@atlaskit/icon/core/close';
@@ -61,9 +61,9 @@ export function CommentsSummaryCard({
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(text);
-      toast.success('Summary copied');
+      catalystToast.success('Summary copied');
     } catch {
-      toast.error('Could not copy');
+      catalystToast.error('Could not copy');
     }
   }, [text]);
 

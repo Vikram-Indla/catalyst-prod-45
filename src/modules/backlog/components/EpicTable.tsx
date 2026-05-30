@@ -8,7 +8,7 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/CatalystEnterpriseTable';
 import { BacklogItem, BacklogMeta } from '../types';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Lozenge } from '@/components/ads';
 import { useBacklogState } from '../hooks/useBacklogState';
 import { getEpicStatusConfigFromList, getEpicStatusStyles } from '@/components/items/epics/drawer';
@@ -64,10 +64,10 @@ export function EpicTable({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Rank updated successfully');
+      catalystToast.success('Rank updated successfully');
     },
     onError: (error: any) => {
-      toast.error(`Failed to update rank: ${error.message}`);
+      catalystToast.error(`Failed to update rank: ${error.message}`);
     },
   });
 
@@ -314,7 +314,7 @@ export function EpicTable({
         queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
       }
     } catch (error: any) {
-      toast.error(`Failed to update: ${error.message}`);
+      catalystToast.error(`Failed to update: ${error.message}`);
     }
   };
 

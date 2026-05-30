@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Plus, MoreHorizontal, ArrowDownAZ, ArrowUpAZ, Pencil, Trash2, AlertTriangle } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RiskFormV2, RiskFormDataV2, getDefaultRiskFormData, RiskContext } from './RiskFormV2';
@@ -255,13 +255,13 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['entity-risks', entityType, entityId] });
-      toast.success('Risk created');
+      catalystToast.success('Risk created');
       resetForm();
       setShowAddForm(false);
     },
     onError: (e: any) => {
       console.error('[ENTITY RISK CREATE] Mutation error:', e);
-      toast.error(e.message);
+      catalystToast.error(e.message);
     }
   });
 
@@ -294,13 +294,13 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['entity-risks', entityType, entityId] });
-      toast.success('Risk updated');
+      catalystToast.success('Risk updated');
       setEditingId(null);
       resetForm();
     },
     onError: (e: any) => {
       console.error('[ENTITY RISK UPDATE] Mutation error:', e);
-      toast.error(e.message);
+      catalystToast.error(e.message);
     }
   });
 
@@ -315,10 +315,10 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['entity-risks', entityType, entityId] });
-      toast.success('Risk deleted');
+      catalystToast.success('Risk deleted');
       setDeleteId(null);
     },
-    onError: (e: any) => toast.error(e.message)
+    onError: (e: any) => catalystToast.error(e.message)
   });
 
   const resetForm = () => {

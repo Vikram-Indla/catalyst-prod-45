@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateCheckIn } from '@/hooks/useKeyResults';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const checkInSchema = z.object({
   value: z.number().min(0, 'Value must be positive'),
@@ -48,12 +48,12 @@ export function KeyResultCheckIn({ keyResult, open, onClose }: KeyResultCheckInP
         note_richtext: data.note_richtext || null,
         checked_in_at: new Date().toISOString(),
       });
-      toast.success('Check-in recorded successfully');
+      catalystToast.success('Check-in recorded successfully');
       reset();
       onClose();
     } catch (error) {
       console.error('Check-in error:', error);
-      toast.error('Failed to record check-in');
+      catalystToast.error('Failed to record check-in');
     }
   };
 

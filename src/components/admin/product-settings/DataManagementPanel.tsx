@@ -5,7 +5,7 @@ import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/admin/admin-alert-dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import Spinner from '@atlaskit/spinner';
 import DownloadIcon from '@atlaskit/icon/core/download';
@@ -68,10 +68,10 @@ export function DataManagementPanel() {
       a.click();
       URL.revokeObjectURL(url);
 
-      toast.success('Configuration exported successfully');
+      catalystToast.success('Configuration exported successfully');
     } catch (error) {
       console.error('Export error:', error);
-      toast.error('Failed to export configuration');
+      catalystToast.error('Failed to export configuration');
     }
   };
 
@@ -84,13 +84,13 @@ export function DataManagementPanel() {
       // For now, we'll just show the confirmation was successful
       // In production, you'd filter by a seeded flag or created_by system user
 
-      toast.success('Seeded data cleared successfully');
+      catalystToast.success('Seeded data cleared successfully');
       setIsDeleteOpen(false);
       setConfirmInput('');
       refetch();
     } catch (error) {
       console.error('Delete error:', error);
-      toast.error('Failed to delete seeded data');
+      catalystToast.error('Failed to delete seeded data');
     } finally {
       setIsDeleting(false);
     }

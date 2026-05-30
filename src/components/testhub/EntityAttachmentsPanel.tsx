@@ -12,7 +12,7 @@ import {
 } from '@/hooks/useEntityAttachments';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useDropzone } from 'react-dropzone';
 
 interface EntityAttachmentsPanelProps {
@@ -71,9 +71,9 @@ export function EntityAttachmentsPanel({
     setUploadCount(files.length);
     try {
       await uploadMutation.mutateAsync(files);
-      toast.success(`${files.length} file(s) uploaded`);
+      catalystToast.success(`${files.length} file(s) uploaded`);
     } catch (e: any) {
-      toast.error(e.message || 'Upload failed');
+      catalystToast.error(e.message || 'Upload failed');
     } finally {
       setUploading(false);
       setUploadCount(0);
@@ -85,7 +85,7 @@ export function EntityAttachmentsPanel({
       .from(BUCKET)
       .createSignedUrl(att.file_path, 60);
     if (error || !data?.signedUrl) {
-      toast.error('Failed to generate preview link');
+      catalystToast.error('Failed to generate preview link');
       return;
     }
     window.open(data.signedUrl, '_blank');
@@ -96,7 +96,7 @@ export function EntityAttachmentsPanel({
       .from(BUCKET)
       .createSignedUrl(att.file_path, 60);
     if (error || !data?.signedUrl) {
-      toast.error('Failed to generate download link');
+      catalystToast.error('Failed to generate download link');
       return;
     }
     const a = document.createElement('a');
@@ -110,9 +110,9 @@ export function EntityAttachmentsPanel({
   const handleDelete = useCallback(async (att: EntityAttachment) => {
     try {
       await deleteMutation.mutateAsync(att);
-      toast.success('Attachment deleted');
+      catalystToast.success('Attachment deleted');
     } catch {
-      toast.error('Failed to delete attachment');
+      catalystToast.error('Failed to delete attachment');
     }
     setConfirmDeleteId(null);
   }, [deleteMutation]);

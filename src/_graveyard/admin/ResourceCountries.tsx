@@ -8,7 +8,7 @@ import { Plus, Pencil, Trash2, GripVertical, Globe, AlertTriangle } from 'lucide
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Convert ISO country code to flag emoji
 const getFlagEmoji = (countryCode: string | null) => {

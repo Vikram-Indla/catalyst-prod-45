@@ -43,7 +43,7 @@ import { PlannerSearchBar } from './PlannerSearchBar';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
 import { usePlannerSearch } from '../hooks/usePlannerSearch';
 import { usePlannerStatuses } from '../hooks/usePlannerStatuses';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import '../styles/planner-calendar.css';
 
 interface PlannerCalendarProps {
@@ -273,27 +273,27 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
         onTaskClick(task);
         break;
       case 'copy-link':
-        toast.success('Link copied to clipboard');
+        catalystToast.success('Link copied to clipboard');
         break;
       case 'change-status':
         // Would trigger a mutation here
-        toast.info(`Status change to ${payload} - implement mutation`);
+        catalystToast.info(`Status change to ${payload} - implement mutation`);
         break;
       case 'reassign':
-        toast.info(`Reassign to ${payload} - implement mutation`);
+        catalystToast.info(`Reassign to ${payload} - implement mutation`);
         break;
       case 'change-priority':
-        toast.info(`Priority change to ${payload} - implement mutation`);
+        catalystToast.info(`Priority change to ${payload} - implement mutation`);
         break;
       case 'reschedule':
         // Could open a date picker
-        toast.info('Reschedule action - implement date picker');
+        catalystToast.info('Reschedule action - implement date picker');
         break;
       case 'duplicate':
-        toast.info('Duplicate task - implement mutation');
+        catalystToast.info('Duplicate task - implement mutation');
         break;
       case 'delete':
-        toast.error('Delete task - implement with confirmation');
+        catalystToast.error('Delete task - implement with confirmation');
         break;
       default:
         console.log('Unknown action:', action);

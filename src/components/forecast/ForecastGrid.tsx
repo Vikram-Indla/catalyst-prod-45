@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { GripVertical } from '@/lib/atlaskit-icons';
@@ -165,11 +165,11 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['forecast-entries'] });
       // Use toast ID to prevent duplicate notifications
-      toast.success('Forecast updated', { id: 'forecast-update' });
+      catalystToast.success('Forecast updated');
     },
     onError: (error: any) => {
       console.error('Failed to update forecast:', error);
-      toast.error(error.message || 'Failed to update forecast', { id: 'forecast-error' });
+      catalystToast.error(error.message || 'Failed to update forecast');
     },
   });
 
@@ -285,11 +285,11 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['forecast-ranks'] });
-      toast.success('Rank updated');
+      catalystToast.success('Rank updated');
     },
     onError: (error) => {
       console.error('Failed to update rank:', error);
-      toast.error('Failed to update rank');
+      catalystToast.error('Failed to update rank');
     },
   });
 

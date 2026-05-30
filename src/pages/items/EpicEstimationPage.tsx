@@ -21,7 +21,7 @@ import {
   ArrowLeft,
   Eye
 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useNavigate, useParams } from 'react-router-dom';
 
 // Fibonacci sequence columns for Technical Scoring board view
@@ -132,7 +132,7 @@ export default function EpicEstimationPage() {
       queryClient.invalidateQueries({ queryKey: ['epics-estimation'] });
     },
     onError: () => {
-      toast.error('Failed to update technical scoring value');
+      catalystToast.error('Failed to update technical scoring value');
     }
   });
 

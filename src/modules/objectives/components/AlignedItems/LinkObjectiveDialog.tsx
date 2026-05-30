@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Search, Target } from '@/lib/atlaskit-icons';
 import type { ObjectiveTier } from '../../types/objective.types';
 
@@ -72,14 +72,14 @@ export function LinkObjectiveDialog({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-objectives', workItemType, workItemId] });
-      toast.success('Objective linked successfully');
+      catalystToast.success('Objective linked successfully');
       onClose();
     },
     onError: (error: any) => {
       if (error.code === '23505') {
-        toast.error('This objective is already linked');
+        catalystToast.error('This objective is already linked');
       } else {
-        toast.error('Failed to link objective');
+        catalystToast.error('Failed to link objective');
       }
     },
   });

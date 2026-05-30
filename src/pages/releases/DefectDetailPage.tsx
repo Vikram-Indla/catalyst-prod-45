@@ -32,7 +32,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { SeverityBadge } from '@/components/releases/defects/SeverityBadge';
 import { DefectStatusBadge } from '@/components/releases/defects/DefectStatusBadge';
 import { PriorityBadge } from '@/components/releases/defects/PriorityBadge';
@@ -347,13 +347,13 @@ export default function DefectDetailPage() {
   const handleStatusChange = useCallback((newStatus: string) => {
     if (defect) {
       setDefect({ ...defect, status: newStatus, updatedAt: 'Just now' });
-      toast.success(`Status changed to ${formatStatus(newStatus)}`);
+      catalystToast.success(`Status changed to ${formatStatus(newStatus)}`);
     }
   }, [defect]);
 
   const handleSave = useCallback((updatedDefect: Defect) => {
     setDefect(updatedDefect);
-    toast.success(`${updatedDefect.id} updated successfully`);
+    catalystToast.success(`${updatedDefect.id} updated successfully`);
   }, []);
 
   // Inline field update handlers with autosave
@@ -374,13 +374,13 @@ export default function DefectDetailPage() {
     if (defect) {
       const newAssignee = getAssigneeById(assigneeId);
       setDefect({ ...defect, assignee: newAssignee, updatedAt: 'Just now' });
-      toast.success(`Reassigned to ${newAssignee.name}`);
+      catalystToast.success(`Reassigned to ${newAssignee.name}`);
     }
   }, [defect]);
 
   const handleDelete = useCallback(() => {
     if (confirm(`Are you sure you want to delete ${defect?.id}?`)) {
-      toast.success(`${defect?.id} deleted`);
+      catalystToast.success(`${defect?.id} deleted`);
       navigate('/releases/defects');
     }
   }, [defect, navigate]);
@@ -388,14 +388,14 @@ export default function DefectDetailPage() {
   const handleAddComment = useCallback(() => {
     if (comment.trim() && defect) {
       setDefect({ ...defect, updatedAt: 'Just now' });
-      toast.success('Comment added');
+      catalystToast.success('Comment added');
       setComment('');
     }
   }, [comment, defect]);
 
   const handleCopyLink = useCallback(() => {
     navigator.clipboard.writeText(window.location.href);
-    toast.success('Link copied');
+    catalystToast.success('Link copied');
   }, []);
 
   // Not found state

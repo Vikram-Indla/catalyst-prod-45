@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface FeatureStatus {
   id: string;
@@ -120,10 +120,10 @@ export function useCreateFeatureStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-statuses'] });
-      toast.success('Feature status added');
+      catalystToast.success('Feature status added');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to add feature status: ${error.message}`);
+      catalystToast.error(`Failed to add feature status: ${error.message}`);
     },
   });
 }
@@ -143,10 +143,10 @@ export function useUpdateFeatureStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-statuses'] });
-      toast.success('Feature status updated');
+      catalystToast.success('Feature status updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update feature status: ${error.message}`);
+      catalystToast.error(`Failed to update feature status: ${error.message}`);
     },
   });
 }
@@ -168,7 +168,7 @@ export function useToggleFeatureStatus() {
       queryClient.invalidateQueries({ queryKey: ['feature-statuses'] });
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update status: ${error.message}`);
+      catalystToast.error(`Failed to update status: ${error.message}`);
     },
   });
 }
@@ -188,10 +188,10 @@ export function useDeleteFeatureStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-statuses'] });
-      toast.success('Feature status deleted');
+      catalystToast.success('Feature status deleted');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete feature status: ${error.message}`);
+      catalystToast.error(`Failed to delete feature status: ${error.message}`);
     },
   });
 }
@@ -240,10 +240,10 @@ export function useReassignFeatures() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['linked-features'] });
       queryClient.invalidateQueries({ queryKey: ['features'] });
-      toast.success('Features reassigned successfully');
+      catalystToast.success('Features reassigned successfully');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to reassign features: ${error.message}`);
+      catalystToast.error(`Failed to reassign features: ${error.message}`);
     },
   });
 }

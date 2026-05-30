@@ -12,7 +12,7 @@ import {
   type MinimalEditorView,
 } from './imageNodeOps';
 import type { ImageSelection } from './useImageToolbarController';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { ChevronDown, ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
 // eslint-disable-next-line no-restricted-imports
 import AlignImageLeftIcon from '@atlaskit/icon/core/align-image-left';
@@ -188,21 +188,21 @@ function ImageToolbarInner({
   const handleCopy = useCallback(async () => {
     const url = (initialInner.url as string) ?? '';
     if (!url) {
-      toast.error('No image URL to copy');
+      catalystToast.error('No image URL to copy');
       return;
     }
     try {
       await navigator.clipboard.writeText(url);
-      toast.success('Image URL copied');
+      catalystToast.success('Image URL copied');
     } catch {
-      toast.error('Copy failed');
+      catalystToast.error('Copy failed');
     }
     closeAllMenus();
   }, [initialInner, closeAllMenus]);
 
   const handleDelete = useCallback(() => {
     const ok = removeMediaSingle(getEditorView(), selection.wrapperEl);
-    if (!ok) toast.error('Delete failed');
+    if (!ok) catalystToast.error('Delete failed');
     onDismiss();
   }, [getEditorView, selection.wrapperEl, onDismiss]);
 
@@ -219,7 +219,7 @@ function ImageToolbarInner({
       );
       if (img) img.alt = alt;
       setAltOpen(false);
-      toast.success('Alt text updated');
+      catalystToast.success('Alt text updated');
     },
     [getEditorView, selection.wrapperEl],
   );
@@ -228,7 +228,7 @@ function ImageToolbarInner({
     (href: string) => {
       setInnerMediaAttrs(getEditorView(), selection.wrapperEl, { link: { href } });
       setLinkOpen(false);
-      toast.success('Link added');
+      catalystToast.success('Link added');
     },
     [getEditorView, selection.wrapperEl],
   );
@@ -351,7 +351,7 @@ function ImageToolbarInner({
           onAddAlt={() => { setEllipsisOpen(false); setAltOpen(true); }}
           onResize={() => {
             setEllipsisOpen(false);
-            toast.info('Drag the corner handles on the image to resize');
+            catalystToast.info('Drag the corner handles on the image to resize');
           }}
           onPreview={() => { setEllipsisOpen(false); handlePreview(); }}
           onCopy={handleCopy}

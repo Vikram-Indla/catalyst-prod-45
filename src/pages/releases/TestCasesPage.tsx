@@ -87,7 +87,7 @@ import { useFolderTree, useMoveTestCases } from '@/hooks/useFolders';
 import { getDescendantFolderIds } from '@/types/test-folders';
 import { useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { GeneratedTestCase } from '@/hooks/test-management/useAIGeneration';
 import type { ParsedTestCase, PrefilledTestCase } from '@/components/releases/test-cases/utils';
 import { templateToTestCase } from '@/components/releases/test-cases/utils';
@@ -224,7 +224,7 @@ export default function TestCasesPage() {
   const handleAIGeneratedTestCases = useCallback((generatedTestCases: GeneratedTestCase[]) => {
     // Validate projectId before creating
     if (!projectId) {
-      toast.error('No project selected. Please select a project first.');
+      catalystToast.error('No project selected. Please select a project first.');
       return;
     }
 
@@ -247,18 +247,18 @@ export default function TestCasesPage() {
 
     Promise.all(createPromises)
       .then(results => {
-        toast.success(`Successfully created ${results.length} AI-generated test cases`);
+        catalystToast.success(`Successfully created ${results.length} AI-generated test cases`);
         refetch();
       })
       .catch(error => {
-        toast.error('Failed to create some test cases');
+        catalystToast.error('Failed to create some test cases');
       });
   }, [projectId, createTestCaseMutation, refetch]);
 
   // Handler for imported test cases
   const handleImportedTestCases = useCallback((parsedTestCases: ParsedTestCase[]) => {
     if (!projectId) {
-      toast.error('No project selected. Please select a project first.');
+      catalystToast.error('No project selected. Please select a project first.');
       return;
     }
     const createPromises = parsedTestCases.map(tc =>
@@ -279,11 +279,11 @@ export default function TestCasesPage() {
 
     Promise.all(createPromises)
       .then(results => {
-        toast.success(`Successfully imported ${results.length} test cases`);
+        catalystToast.success(`Successfully imported ${results.length} test cases`);
         refetch();
       })
       .catch(error => {
-        toast.error('Failed to import some test cases');
+        catalystToast.error('Failed to import some test cases');
       });
   }, [projectId, createTestCaseMutation, refetch]);
 
@@ -390,7 +390,7 @@ export default function TestCasesPage() {
     onDuplicate: () => {
       if (selectedIds.size > 0) {
         Array.from(selectedIds).forEach(id => duplicateTestCaseMutation.mutate({ id, project_id: projectId }));
-        toast.success(`Duplicating ${selectedIds.size} test case(s)...`);
+        catalystToast.success(`Duplicating ${selectedIds.size} test case(s)...`);
       }
     },
     onSelectAll: () => {
@@ -455,7 +455,7 @@ export default function TestCasesPage() {
     setIsRefreshing(true);
     await refetch();
     setIsRefreshing(false);
-    toast.success('Test cases refreshed');
+    catalystToast.success('Test cases refreshed');
   };
 
   const handleCreateSuccess = useCallback(() => {
@@ -821,11 +821,11 @@ export default function TestCasesPage() {
               deleteTestCasesMutation.mutate({ case_ids: ids, project_id: projectId });
               setSelectedIds(new Set());
             }}
-            onExecute={() => toast.success(`Starting execution for ${selectedIds.size} test case(s)...`)}
+            onExecute={() => catalystToast.success(`Starting execution for ${selectedIds.size} test case(s)...`)}
             onDuplicate={() => {
               const ids = Array.from(selectedIds);
               ids.forEach(id => duplicateTestCaseMutation.mutate({ id, project_id: projectId }));
-              toast.success(`Duplicating ${selectedIds.size} test case(s)...`);
+              catalystToast.success(`Duplicating ${selectedIds.size} test case(s)...`);
             }}
             onExport={() => setIsExportOpen(true)}
           />
@@ -1001,7 +1001,7 @@ export default function TestCasesPage() {
           if (advFilters.statuses.length) setFilter('statuses', advFilters.statuses);
           if (advFilters.priorities.length) setFilter('priorities', advFilters.priorities);
           if (advFilters.types.length) setFilter('types', advFilters.types);
-          toast.success('Filters applied');
+          catalystToast.success('Filters applied');
         }}
       />
 
@@ -1053,7 +1053,7 @@ export default function TestCasesPage() {
         open={isExecuteOpen}
         onOpenChange={setIsExecuteOpen}
         onComplete={(execution) => {
-          toast.success(`Execution completed: ${execution.overallResult.toUpperCase()}`, {
+          catalystToast.success(`Execution completed: ${execution.overallResult.toUpperCase()}`, {
             description: `Duration: ${Math.floor(execution.duration / 60)}m ${execution.duration % 60}s`,
           });
           refetch();
@@ -1078,7 +1078,7 @@ export default function TestCasesPage() {
         onOpenChange={setIsBulkAssignOpen}
         selectedCount={selectedIds.size}
         onAssign={(assigneeId) => {
-          toast.success(`Assigned ${selectedIds.size} test case(s) to team member`);
+          catalystToast.success(`Assigned ${selectedIds.size} test case(s) to team member`);
           setSelectedIds(new Set());
           refetch();
         }}
@@ -1091,7 +1091,7 @@ export default function TestCasesPage() {
         selectedCount={selectedIds.size}
         currentRelease={filters.releases?.[0]}
         onMove={(releaseId) => {
-          toast.success(`Moved ${selectedIds.size} test case(s) to release`);
+          catalystToast.success(`Moved ${selectedIds.size} test case(s) to release`);
           setSelectedIds(new Set());
           refetch();
         }}
@@ -1106,7 +1106,7 @@ export default function TestCasesPage() {
           const changes = [];
           if (tagsToAdd.length) changes.push(`added ${tagsToAdd.length} tag(s)`);
           if (tagsToRemove.length) changes.push(`removed ${tagsToRemove.length} tag(s)`);
-          toast.success(`Updated tags: ${changes.join(', ')}`);
+          catalystToast.success(`Updated tags: ${changes.join(', ')}`);
           setSelectedIds(new Set());
           refetch();
         }}

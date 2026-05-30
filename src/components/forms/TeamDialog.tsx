@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { TeamType } from '@/types/team.types';
 
 interface TeamDialogProps {
@@ -49,18 +49,18 @@ export function TeamDialog({ open, onOpenChange, team }: TeamDialogProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
-      toast.success(team ? 'Team updated' : 'Team created');
+      catalystToast.success(team ? 'Team updated' : 'Team created');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to save team');
+      catalystToast.error('Failed to save team');
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!programId) {
-      toast.error('Please select a program');
+      catalystToast.error('Please select a program');
       return;
     }
     mutation.mutate({

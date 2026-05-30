@@ -8,7 +8,7 @@ import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
 import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
 import { EmptyState } from '@/components/releasehub/EmptyState';
 import { ChgDrawer } from '@/components/releasehub/ChgDrawer';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   Dialog,
   DialogContent,
@@ -43,14 +43,14 @@ export default function SignOffQueuePage() {
     const { signoff, action } = actionModal;
     if (action === 'approve') {
       approveSignoff.mutate({ signoffId: signoff.id, comment }, {
-        onSuccess: () => { toast.success('Sign-off approved'); setActionModal(null); setComment(''); },
-        onError: () => toast.error('Failed to approve'),
+        onSuccess: () => { catalystToast.success('Sign-off approved'); setActionModal(null); setComment(''); },
+        onError: () => catalystToast.error('Failed to approve'),
       });
     } else {
-      if (!comment.trim()) { toast.error('Comment is required for rejection'); return; }
+      if (!comment.trim()) { catalystToast.error('Comment is required for rejection'); return; }
       rejectSignoff.mutate({ signoffId: signoff.id, comment }, {
-        onSuccess: () => { toast.success('Sign-off rejected'); setActionModal(null); setComment(''); },
-        onError: () => toast.error('Failed to reject'),
+        onSuccess: () => { catalystToast.success('Sign-off rejected'); setActionModal(null); setComment(''); },
+        onError: () => catalystToast.error('Failed to reject'),
       });
     }
   };

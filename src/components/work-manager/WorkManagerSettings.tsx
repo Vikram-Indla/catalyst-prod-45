@@ -25,7 +25,7 @@ import {
 import { useWorkManagerColumns } from '@/hooks/useWorkManagerColumns';
 import type { TaskStatus } from './types';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 type SettingsTab = 'columns' | 'recurrence' | 'notifications' | 'integrations';
 
@@ -126,7 +126,7 @@ export function WorkManagerSettings() {
 
   const handleSaveColumn = () => {
     if (!columnForm.name.trim()) {
-      toast.error('Column name is required');
+      catalystToast.error('Column name is required');
       return;
     }
 
@@ -135,13 +135,13 @@ export function WorkManagerSettings() {
         name: columnForm.name.trim(), 
         status: columnForm.status as TaskStatus 
       });
-      toast.success(`Column "${columnForm.name}" updated`);
+      catalystToast.success(`Column "${columnForm.name}" updated`);
     } else {
       addColumn({
         name: columnForm.name.trim(),
         status: columnForm.status as TaskStatus,
       });
-      toast.success(`Column "${columnForm.name}" added`);
+      catalystToast.success(`Column "${columnForm.name}" added`);
     }
     setIsColumnDialogOpen(false);
   };
@@ -154,7 +154,7 @@ export function WorkManagerSettings() {
   const handleConfirmDeleteColumn = () => {
     if (deletingColumn) {
       deleteColumn(deletingColumn.id);
-      toast.success(`Column "${deletingColumn.name}" deleted`);
+      catalystToast.success(`Column "${deletingColumn.name}" deleted`);
     }
     setIsDeleteDialogOpen(false);
     setDeletingColumn(null);
@@ -175,7 +175,7 @@ export function WorkManagerSettings() {
 
   const handleSaveTemplate = () => {
     if (!templateForm.name.trim()) {
-      toast.error('Template name is required');
+      catalystToast.error('Template name is required');
       return;
     }
 
@@ -185,7 +185,7 @@ export function WorkManagerSettings() {
           ? { ...t, name: templateForm.name.trim(), frequency: `${templateForm.frequency} (Friday)` }
           : t
       ));
-      toast.success(`Template "${templateForm.name}" updated`);
+      catalystToast.success(`Template "${templateForm.name}" updated`);
     } else {
       const newTemplate: RecurrenceTemplate = {
         id: `t-${Date.now()}`,
@@ -195,7 +195,7 @@ export function WorkManagerSettings() {
         active: true,
       };
       setTemplates(prev => [...prev, newTemplate]);
-      toast.success(`Template "${templateForm.name}" created`);
+      catalystToast.success(`Template "${templateForm.name}" created`);
     }
     setIsTemplateDialogOpen(false);
   };
@@ -211,7 +211,7 @@ export function WorkManagerSettings() {
     setNotifications(prev => prev.map(n =>
       n.id === notificationId ? { ...n, checked: !n.checked } : n
     ));
-    toast.success('Notification preference updated');
+    catalystToast.success('Notification preference updated');
   };
 
   // Integration handler
@@ -219,7 +219,7 @@ export function WorkManagerSettings() {
     setIntegrations(prev => prev.map(i =>
       i.name === integrationName ? { ...i, connected: true } : i
     ));
-    toast.success(`${integrationName} connected successfully`);
+    catalystToast.success(`${integrationName} connected successfully`);
   };
 
   return (

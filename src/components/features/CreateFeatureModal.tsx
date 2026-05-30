@@ -19,7 +19,7 @@ import { Avatar } from '@/components/ads';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { X, Save, FileText, Layers, User, FolderTree, Loader2 } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
 import { 
@@ -261,7 +261,7 @@ export function CreateFeatureModal({
       // Clear draft
       localStorage.removeItem(DRAFT_KEY);
       
-      toast.success('Feature created successfully', {
+      catalystToast.success('Feature created successfully', {
         description: `${data.display_id}: ${data.name}`,
       });
       
@@ -269,7 +269,7 @@ export function CreateFeatureModal({
       handleClose();
     },
     onError: (error: any) => {
-      toast.error('Failed to create feature', {
+      catalystToast.error('Failed to create feature', {
         description: error.message || 'An unexpected error occurred',
       });
     },
@@ -305,7 +305,7 @@ export function CreateFeatureModal({
 
   const handleSubmit = () => {
     if (!isValid) {
-      toast.error('Please fill in all required fields');
+      catalystToast.error('Please fill in all required fields');
       return;
     }
     createMutation.mutate(formData);

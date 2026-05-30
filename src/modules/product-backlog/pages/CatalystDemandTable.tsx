@@ -9,7 +9,7 @@ import { BusinessRequestDetailModal } from '@/components/business-requests/Busin
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { ProductBacklogFiltersDialog, ProductBacklogFilters } from '../components/ProductBacklogFiltersDialog';
 import { BacklogTableView } from '@/components/business-requests/table-view';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { useIndustryViewStore } from '@/stores/useIndustryViewStore';
@@ -117,7 +117,7 @@ export default function CatalystDemandTable() {
   // Export to CSV
   const handleExport = useCallback(() => {
     if (tableData.length === 0) {
-      toast.error('No items to export');
+      catalystToast.error('No items to export');
       return;
     }
 
@@ -151,10 +151,10 @@ export default function CatalystDemandTable() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      toast.success(`Exported ${tableData.length} requests to CSV`);
+      catalystToast.success(`Exported ${tableData.length} requests to CSV`);
     } catch (error) {
       console.error('Export failed:', error);
-      toast.error('Failed to export data');
+      catalystToast.error('Failed to export data');
     }
   }, [tableData]);
 

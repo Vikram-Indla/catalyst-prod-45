@@ -2,22 +2,22 @@
 // FILE VALIDATION UTILITIES
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { ALLOWED_TYPES, MAX_FILE_SIZE } from '../types';
 
 export const validateFile = (file: File): boolean => {
   if (!ALLOWED_TYPES.includes(file.type as any)) {
-    toast.error(`Invalid file type: ${file.name}`);
+    catalystToast.error(`Invalid file type: ${file.name}`);
     return false;
   }
 
   if (file.size > MAX_FILE_SIZE) {
-    toast.error(`File too large: ${file.name} (max 10MB)`);
+    catalystToast.error(`File too large: ${file.name} (max 10MB)`);
     return false;
   }
 
   if (file.size === 0) {
-    toast.error(`Empty file: ${file.name}`);
+    catalystToast.error(`Empty file: ${file.name}`);
     return false;
   }
 

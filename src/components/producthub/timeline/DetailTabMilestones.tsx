@@ -7,7 +7,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { logRequestAudit } from '@/lib/requestAudit';
 import { CheckCircle2, RotateCcw, Pencil, Trash2, Flag, CircleDot, X } from '@/lib/atlaskit-icons';
 
@@ -172,7 +172,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ reques
     };
     if (editing) {
       const { error } = await typedQuery('ph_request_milestones').update(payload).eq('id', editing.id);
-      if (error) { toast.error('Failed to update'); return; }
+      if (error) { catalystToast.error('Failed to update'); return; }
       logRequestAudit({ request_id: requestId, action: 'updated', entity_type: 'milestone', entity_id: editing.id, field_name: 'milestone', new_value: form.title });
       // Silent auto-save
     } else {
@@ -180,9 +180,9 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ reques
       payload.sort_order = milestones.length + 1;
       payload.created_by = (await supabase.auth.getUser()).data.user?.id;
       const { error } = await typedQuery('ph_request_milestones').insert(payload);
-      if (error) { toast.error('Failed to add'); return; }
+      if (error) { catalystToast.error('Failed to add'); return; }
       logRequestAudit({ request_id: requestId, action: 'created', entity_type: 'milestone', new_value: form.title });
-      toast.success('Milestone added', TOAST_OPTS);
+      catalystToast.success('Milestone added', TOAST_OPTS);
     }
     setShowModal(false);
     refetch();
@@ -194,7 +194,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ reques
       status: 'completed', actual_date: new Date().toISOString().slice(0, 10),
     }).eq('id', m.id);
     logRequestAudit({ request_id: requestId, action: 'completed', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
-    toast.success(`${m.title} completed`, TOAST_OPTS);
+    catalystToast.success(`${m.title} completed`, TOAST_OPTS);
     refetch();
   };
   const handleReopen = async (m: any) => {
@@ -202,13 +202,13 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ reques
       status: 'in_progress', actual_date: null,
     }).eq('id', m.id);
     logRequestAudit({ request_id: requestId, action: 'reopened', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
-    toast.success(`${m.title} reopened`, TOAST_OPTS);
+    catalystToast.success(`${m.title} reopened`, TOAST_OPTS);
     refetch();
   };
   const handleDelete = async (m: any) => {
     await typedQuery('ph_request_milestones').delete().eq('id', m.id);
     logRequestAudit({ request_id: requestId, action: 'deleted', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
-    toast.success('Milestone deleted', TOAST_OPTS);
+    catalystToast.success('Milestone deleted', TOAST_OPTS);
     refetch();
     queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
   };

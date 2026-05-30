@@ -3,7 +3,7 @@
  * Centralized validation for resource allocations against contract dates
  */
 
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 /**
  * Validates that an allocation end date does not exceed the resource's contract end date
@@ -38,7 +38,7 @@ export function validateAllocationAgainstContract(
       ? `Invalid assignment: Allocation cannot exceed ${resourceName}'s contract end date (${formattedContractEnd})`
       : `Invalid assignment: Allocation cannot exceed contract end date (${formattedContractEnd})`;
     
-    toast.error(message);
+    catalystToast.error(message);
     return false;
   }
 
@@ -77,7 +77,7 @@ export function validateAllocationStartAgainstContract(
       ? `Invalid assignment: Allocation start date is after ${resourceName}'s contract end date (${formattedContractEnd})`
       : `Invalid assignment: Allocation start date is after contract end date (${formattedContractEnd})`;
     
-    toast.error(message);
+    catalystToast.error(message);
     return false;
   }
 

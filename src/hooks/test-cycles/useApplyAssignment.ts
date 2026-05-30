@@ -3,7 +3,7 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import type { Assignment } from '@/types/smart-assignment.types';
 
@@ -63,10 +63,10 @@ export function useApplyAssignment() {
       queryClient.invalidateQueries({ queryKey: ['cycle', variables.cycleId] });
       queryClient.invalidateQueries({ queryKey: ['cycle-test-cases', variables.cycleId] });
       queryClient.invalidateQueries({ queryKey: ['tm_cycle_scope'] });
-      toast.success(`Successfully assigned ${data.applied} tests`);
+      catalystToast.success(`Successfully assigned ${data.applied} tests`);
     },
     onError: (error: Error) => {
-      toast.error('Failed to apply assignments: ' + error.message);
+      catalystToast.error('Failed to apply assignments: ' + error.message);
     },
   });
 }

@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Upload } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface ImportEpicsDialogProps {
   open: boolean;
@@ -59,12 +59,12 @@ export function ImportEpicsDialog({ open, onOpenChange }: ImportEpicsDialogProps
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success(`Imported ${data.length} epics successfully`);
+      catalystToast.success(`Imported ${data.length} epics successfully`);
       onOpenChange(false);
       setFile(null);
     },
     onError: (error: Error) => {
-      toast.error(`Import failed: ${error.message}`);
+      catalystToast.error(`Import failed: ${error.message}`);
     }
   });
 

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { ChevronDown, Info } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Card } from '@/components/ui/card';
 import { useCapacityWarnings } from '@/hooks/useCapacityWarnings';
 import { AlertTriangle } from '@/lib/atlaskit-icons';
@@ -222,11 +222,11 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['forecast-entries'] });
       // Use toast ID to prevent duplicate notifications
-      toast.success('Forecast updated', { id: 'forecast-update' });
+      catalystToast.success('Forecast updated');
     },
     onError: (error) => {
       console.error('Failed to update forecast:', error);
-      toast.error('Failed to update forecast', { id: 'forecast-error' });
+      catalystToast.error('Failed to update forecast');
     },
   });
 

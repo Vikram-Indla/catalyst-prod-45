@@ -32,7 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 
 interface LinkObjectivePickerProps {
@@ -147,14 +147,14 @@ export function LinkObjectivePicker({
     },
     onSuccess: () => {
       const count = selectedIds.size;
-      toast.success(`${count} objective${count > 1 ? 's' : ''} linked`);
+      catalystToast.success(`${count} objective${count > 1 ? 's' : ''} linked`);
       queryClient.invalidateQueries({ queryKey: ['theme-objectives', themeId] });
       queryClient.invalidateQueries({ queryKey: ['available-objectives-picker'] });
       onLinked();
       handleOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to link objectives');
+      catalystToast.error('Failed to link objectives');
     },
   });
 

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import Spinner from '@atlaskit/spinner';
 import { CompareHeader } from './CompareHeader';
 import { ReleaseSelector } from './ReleaseSelector';
@@ -55,7 +55,7 @@ export function ReleaseCompare({
   
   const handleExport = async (format: 'pdf' | 'excel') => {
     if (selectedReleases.length < 2) {
-      toast.error('Select at least 2 releases to export');
+      catalystToast.error('Select at least 2 releases to export');
       return;
     }
     
@@ -65,10 +65,10 @@ export function ReleaseCompare({
         releases: selectedReleases,
         generatedAt: new Date().toISOString(),
       }, format);
-      toast.success(`Comparison exported as ${format.toUpperCase()}`);
+      catalystToast.success(`Comparison exported as ${format.toUpperCase()}`);
     } catch (error) {
       console.error('Export error:', error);
-      toast.error('Failed to export comparison');
+      catalystToast.error('Failed to export comparison');
     } finally {
       setIsExporting(false);
     }
@@ -101,11 +101,11 @@ export function ReleaseCompare({
       savedViews.push(newView);
       localStorage.setItem('savedComparisonViews', JSON.stringify(savedViews));
       
-      toast.success('Comparison view saved');
+      catalystToast.success('Comparison view saved');
       setIsSaveViewOpen(false);
     } catch (error) {
       console.error('Save view error:', error);
-      toast.error('Failed to save view');
+      catalystToast.error('Failed to save view');
     } finally {
       setIsSaving(false);
     }

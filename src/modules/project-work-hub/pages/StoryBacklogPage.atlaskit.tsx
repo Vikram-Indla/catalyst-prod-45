@@ -27,7 +27,7 @@ import React, { useState, useMemo, useRef, useEffect, useCallback, lazy, Suspens
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ── Atlaskit ────────────────────────────────────────
 import Avatar from '@atlaskit/avatar';
@@ -445,9 +445,9 @@ export default function AtlaskitStoryBacklogPage({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
-      toast.success('Summary updated');
+      catalystToast.success('Summary updated');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => catalystToast.error(e.message),
   });
 
   // ── Inline-edit mutations: status / assignee / priority ──
@@ -466,9 +466,9 @@ export default function AtlaskitStoryBacklogPage({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
-      toast.success('Updated');
+      catalystToast.success('Updated');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => catalystToast.error(e.message),
   });
 
   // delete mutation (only Catalyst-native items)
@@ -479,10 +479,10 @@ export default function AtlaskitStoryBacklogPage({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
-      toast.success('Story archived');
+      catalystToast.success('Story archived');
       setDeleteTarget(null);
     },
-    onError: () => toast.error('Failed to archive story'),
+    onError: () => catalystToast.error('Failed to archive story'),
   });
 
   // === 2. Build the column schema for <JiraTable /> =========================
@@ -636,13 +636,13 @@ export default function AtlaskitStoryBacklogPage({
               id: 'flag',
               label: 'Flag',
               icon: <Flag size={14} />,
-              onClick: (row) => toast.info(`Flagged ${row.story_key || row.id}`),
+              onClick: (row) => catalystToast.info(`Flagged ${row.story_key || row.id}`),
             },
             {
               id: 'duplicate',
               label: 'Duplicate',
               icon: <CopyIcon size={14} />,
-              onClick: (row) => toast.info(`Duplicate ${row.story_key || row.id} (not yet implemented)`),
+              onClick: (row) => catalystToast.info(`Duplicate ${row.story_key || row.id} (not yet implemented)`),
               hidden: (row) => row.source !== 'catalyst',
             },
             {
@@ -1004,9 +1004,9 @@ export default function AtlaskitStoryBacklogPage({
                 if (error) throw error;
               }
               if (jiraCount > 0) {
-                toast.info(`${catIds.length} deleted. ${jiraCount} Jira-synced skipped.`);
+                catalystToast.info(`${catIds.length} deleted. ${jiraCount} Jira-synced skipped.`);
               } else {
-                toast.success(`${catIds.length} item${catIds.length !== 1 ? 's' : ''} deleted`);
+                catalystToast.success(`${catIds.length} item${catIds.length !== 1 ? 's' : ''} deleted`);
               }
               setSelectedIds(new Set());
               queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
@@ -1054,11 +1054,11 @@ function InlineCreateRow({
         priority: 'medium',
       });
       if (error) throw error;
-      toast.success(`Created "${title}"`);
+      catalystToast.success(`Created "${title}"`);
       reset();
       onCreated();
     } catch (e) {
-      toast.error('Failed to create story');
+      catalystToast.error('Failed to create story');
     }
   };
 

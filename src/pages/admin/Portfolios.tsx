@@ -11,7 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ResponsivePageContainer, ResponsivePageHeader, ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/admin/admin-dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/admin/admin-alert-dialog';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface Portfolio {
   id: string;
@@ -122,12 +122,12 @@ export default function Portfolios() {
       queryClient.invalidateQueries({ queryKey: ['programs'] });
       queryClient.invalidateQueries({ queryKey: ['programs-directory'] });
       queryClient.invalidateQueries({ queryKey: ['portfolios'] });
-      toast.success('Program created successfully');
+      catalystToast.success('Program created successfully');
       setIsAddDialogOpen(false);
       setFormData({ name: '', key: '' });
     },
     onError: (error) => {
-      toast.error('Failed to create program: ' + error.message);
+      catalystToast.error('Failed to create program: ' + error.message);
     }
   });
 
@@ -144,11 +144,11 @@ export default function Portfolios() {
       queryClient.invalidateQueries({ queryKey: ['programs'] });
       queryClient.invalidateQueries({ queryKey: ['programs-directory'] });
       queryClient.invalidateQueries({ queryKey: ['portfolios'] });
-      toast.success('Program updated successfully');
+      catalystToast.success('Program updated successfully');
       setEditingProgram(null);
     },
     onError: (error) => {
-      toast.error('Failed to update program: ' + error.message);
+      catalystToast.error('Failed to update program: ' + error.message);
     }
   });
 
@@ -165,12 +165,12 @@ export default function Portfolios() {
       queryClient.invalidateQueries({ queryKey: ['programs'] });
       queryClient.invalidateQueries({ queryKey: ['programs-directory'] });
       queryClient.invalidateQueries({ queryKey: ['portfolios'] });
-      toast.success('Program deleted successfully');
+      catalystToast.success('Program deleted successfully');
       setDeleteProgram(null);
       setDeleteError(null);
     },
     onError: (error) => {
-      toast.error('Failed to delete program: ' + error.message);
+      catalystToast.error('Failed to delete program: ' + error.message);
     }
   });
 
@@ -189,7 +189,7 @@ export default function Portfolios() {
 
   const handleCreate = () => {
     if (!formData.name.trim()) {
-      toast.error('Program name is required');
+      catalystToast.error('Program name is required');
       return;
     }
     const finalKey = formData.key.trim() || generateKey(formData.name);

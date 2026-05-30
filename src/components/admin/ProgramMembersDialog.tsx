@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/a
 import Button from '@atlaskit/button/new';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
 import PersonAddIcon from '@atlaskit/icon/core/person-add';
 import PersonRemoveIcon from '@atlaskit/icon/core/person-remove';
@@ -57,11 +57,11 @@ export function ProgramMembersDialog({ open, onOpenChange, programId, programNam
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['program-members', programId] });
-      toast.success('Members added successfully');
+      catalystToast.success('Members added successfully');
       setSelectedUsers([]);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to add members: ${error.message}`);
+      catalystToast.error(`Failed to add members: ${error.message}`);
     },
   });
 
@@ -77,11 +77,11 @@ export function ProgramMembersDialog({ open, onOpenChange, programId, programNam
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['program-members', programId] });
-      toast.success('Members removed successfully');
+      catalystToast.success('Members removed successfully');
       setSelectedUsers([]);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to remove members: ${error.message}`);
+      catalystToast.error(`Failed to remove members: ${error.message}`);
     },
   });
 

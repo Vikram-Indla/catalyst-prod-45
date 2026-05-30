@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import DownloadIcon from '@atlaskit/icon/core/download';
 import FileIcon from '@atlaskit/icon/core/file';
 import Spinner from '@atlaskit/spinner';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { ReleaseDetail, ReleaseMetrics, HealthScore, QualityGate } from '../types';
 
 interface ExportData {
@@ -95,11 +95,11 @@ Generated: ${new Date().toISOString()}
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      toast.success('Release exported as PDF', {
+      catalystToast.success('Release exported as PDF', {
         description: `${data.release.version} report downloaded`,
       });
     } catch (error) {
-      toast.error('Failed to export PDF');
+      catalystToast.error('Failed to export PDF');
     } finally {
       setIsExporting(null);
     }
@@ -152,11 +152,11 @@ Generated: ${new Date().toISOString()}
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      toast.success('Release exported as Excel', {
+      catalystToast.success('Release exported as Excel', {
         description: `${data.release.version} report downloaded`,
       });
     } catch (error) {
-      toast.error('Failed to export Excel');
+      catalystToast.error('Failed to export Excel');
     } finally {
       setIsExporting(null);
     }

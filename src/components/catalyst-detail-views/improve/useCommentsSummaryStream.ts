@@ -21,7 +21,7 @@
  *      stop the typewriter.
  */
 import { useEffect, useRef } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { fetchFunction } from '@/integrations/supabase/functionsRouter';
 import { useCatySummarize } from './catySummarizeStore';
@@ -132,7 +132,7 @@ export function useCommentsSummaryStream({
         const list: RawComment[] = (rawComments || []) as RawComment[];
 
         if (list.length === 0) {
-          toast.info('There are no comments to summarize');
+          catalystToast.info('There are no comments to summarize');
           useCatySummarize.getState().dismiss();
           return;
         }

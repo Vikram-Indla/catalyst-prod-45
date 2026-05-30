@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { ActivityPanel } from '@/components/catalyst-ds';
 import type { CdsComment, CdsActivityItem, CdsUser, CdsQuickReply } from '@/components/catalyst-ds';
 
@@ -159,10 +159,10 @@ export function ActivityTab({ requestId }: ActivityTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['business-request-discussions', requestId] });
-      toast.success('Comment added');
+      catalystToast.success('Comment added');
     },
     onError: () => {
-      toast.error('Failed to add comment');
+      catalystToast.error('Failed to add comment');
     },
   });
 
@@ -175,10 +175,10 @@ export function ActivityTab({ requestId }: ActivityTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['business-request-discussions', requestId] });
-      toast.success('Comment deleted');
+      catalystToast.success('Comment deleted');
     },
     onError: () => {
-      toast.error('Failed to delete comment');
+      catalystToast.error('Failed to delete comment');
     },
   });
 

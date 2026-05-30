@@ -5,7 +5,7 @@
 import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { ActivityPanel } from '@/components/catalyst-ds';
 import type { CdsComment, CdsUser } from '@/components/catalyst-ds';
 
@@ -57,8 +57,8 @@ export function CommentsSection({ entityId, entityType }: CommentsSectionProps) 
       if (!user) throw new Error('Not authenticated');
       await supabase.from('comments').insert({ entity_id: entityId, entity_type: entityType, user_id: user.id, content });
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['comments', entityId, entityType] }); toast.success('Comment added'); },
-    onError: () => toast.error('Failed to add comment'),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['comments', entityId, entityType] }); catalystToast.success('Comment added'); },
+    onError: () => catalystToast.error('Failed to add comment'),
   });
 
   const editMutation = useMutation({
@@ -70,7 +70,7 @@ export function CommentsSection({ entityId, entityType }: CommentsSectionProps) 
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => { await supabase.from('comments').delete().eq('id', id); },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['comments', entityId, entityType] }); toast.success('Comment deleted'); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['comments', entityId, entityType] }); catalystToast.success('Comment deleted'); },
   });
 
   const comments: CdsComment[] = rawComments.map((r: any) => ({

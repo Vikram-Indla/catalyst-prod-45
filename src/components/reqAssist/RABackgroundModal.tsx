@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Check, Clock, Loader2, AlertTriangle } from '@/lib/atlaskit-icons';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueueJob, useRAJobPolling, RA_KEYS } from '@/hooks/useReqAssist';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -68,7 +68,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
         filter: `brd_id=eq.${resolvedBrdId}`,
       }, (payload: any) => {
         if (payload.new.status === 'completed') {
-          toast.success('Generation completed successfully', {
+          catalystToast.success('Generation completed successfully', {
             description: `Artifacts ready for ${(doc as any).jira_ticket_key || doc.title}`,
             duration: 6000,
           });
@@ -76,7 +76,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
           qc.invalidateQueries({ queryKey: RA_KEYS.stats() });
         }
         if (payload.new.status === 'failed') {
-          toast.error('Generation failed', {
+          catalystToast.error('Generation failed', {
             description: payload.new.error_message || 'Check administrator logs',
           });
         }
@@ -114,7 +114,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
   useEffect(() => {
     if (jobStatus === 'done') {
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
-      toast.success('Generation Complete', {
+      catalystToast.success('Generation Complete', {
         description: `${config.title.replace('Generating ', '').replace('Creating ', '').replace('Re-syncing ', '')} ready for ${doc.jira_ticket_key}`,
         duration: 6000,
       });
@@ -124,7 +124,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
   const handleLeave = () => {
     // Do NOT fire a fake success toast — only show informational message
     if (jobStatus !== 'done' && jobStatus !== 'failed') {
-      toast.info('Generation running in background. Check back shortly.', { duration: 4000 });
+      catalystToast.info('Generation running in background. Check back shortly.');
     }
     onClose();
   };

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { ArchiveConfirmModal } from './ArchiveConfirmModal';
 
 interface DangerZoneProps {
@@ -22,10 +22,10 @@ export function DangerZone({ projectId, projectName }: DangerZoneProps) {
         .update({ is_archived: true, archived_at: new Date().toISOString() } as any)
         .eq('id', projectId);
       if (error) throw new Error(error.message);
-      toast.success('Project archived.');
+      catalystToast.success('Project archived.');
       navigate('/project-hub/projects');
     } catch (err: any) {
-      toast.error(err.message || 'Failed to archive project');
+      catalystToast.error(err.message || 'Failed to archive project');
     } finally {
       setLoading(false);
       setConfirmOpen(false);

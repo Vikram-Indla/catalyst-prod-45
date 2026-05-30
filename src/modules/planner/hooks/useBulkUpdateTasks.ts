@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface BulkUpdateInput {
   taskIds: string[];
@@ -58,11 +58,11 @@ export function useBulkUpdateTasks() {
       if (context?.previousKanban) {
         queryClient.setQueryData(['kanban-tasks'], context.previousKanban);
       }
-      toast.error(`Failed to update ${variables.taskIds.length} tasks`);
+      catalystToast.error(`Failed to update ${variables.taskIds.length} tasks`);
     },
 
     onSuccess: (data, variables) => {
-      toast.success(`Updated ${variables.taskIds.length} task${variables.taskIds.length > 1 ? 's' : ''}`);
+      catalystToast.success(`Updated ${variables.taskIds.length} task${variables.taskIds.length > 1 ? 's' : ''}`);
     },
 
     onSettled: () => {

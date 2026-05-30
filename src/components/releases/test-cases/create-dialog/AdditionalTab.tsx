@@ -23,7 +23,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { TestCaseFormData, ReviewStatus } from './types';
 
 interface AdditionalTabProps {
@@ -56,11 +56,11 @@ export function AdditionalTab({ data, onChange }: AdditionalTabProps) {
     const normalizedTag = tag.trim().toLowerCase();
     if (!normalizedTag) return;
     if (data.tags.includes(normalizedTag)) {
-      toast.error('Tag already exists');
+      catalystToast.error('Tag already exists');
       return;
     }
     if (data.tags.length >= 10) {
-      toast.error('Maximum 10 tags allowed');
+      catalystToast.error('Maximum 10 tags allowed');
       return;
     }
     onChange({ tags: [...data.tags, normalizedTag] });

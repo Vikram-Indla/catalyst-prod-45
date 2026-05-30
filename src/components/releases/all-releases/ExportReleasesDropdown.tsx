@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { exportReleases, ReleaseExportData } from '@/utils/exportReleases';
 
 interface ExportReleasesDropdownProps {
@@ -36,10 +36,10 @@ export function ExportReleasesDropdown({
       const format = type.includes('excel') ? 'xlsx' : 'csv';
       
       await exportReleases(dataToExport, format);
-      toast.success(`Exported ${dataToExport.length} releases as ${format.toUpperCase()}`);
+      catalystToast.success(`Exported ${dataToExport.length} releases as ${format.toUpperCase()}`);
     } catch (error) {
       console.error('Export failed:', error);
-      toast.error('Export failed. Please try again.');
+      catalystToast.error('Export failed. Please try again.');
     } finally {
       setIsExporting(false);
     }

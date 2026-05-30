@@ -24,7 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 
 interface QuickActionsBarProps {
@@ -44,7 +44,7 @@ export function QuickActionsBar({
     if (onExecute) {
       onExecute();
     } else {
-      toast.success('Starting test execution...');
+      catalystToast.success('Starting test execution...');
     }
   };
 
@@ -52,13 +52,13 @@ export function QuickActionsBar({
     if (onDuplicate) {
       onDuplicate();
     } else {
-      toast.success(`Test case duplicated as ${testCaseId}-copy`);
+      catalystToast.success(`Test case duplicated as ${testCaseId}-copy`);
     }
   };
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
   };
 
   const handlePrint = () => {
@@ -66,21 +66,21 @@ export function QuickActionsBar({
   };
 
   const handleExport = () => {
-    toast.success('Exporting test case as PDF...');
+    catalystToast.success('Exporting test case as PDF...');
   };
 
   const handleAddComment = () => {
     // Scroll to comments section
     document.querySelector('[data-tab="comments"]')?.scrollIntoView({ behavior: 'smooth' });
-    toast.info('Add your comment below');
+    catalystToast.info('Add your comment below');
   };
 
   const handleLogDefect = () => {
-    toast.info('Opening defect creation form...');
+    catalystToast.info('Opening defect creation form...');
   };
 
   const handleLinkItem = () => {
-    toast.info('Opening item linker...');
+    catalystToast.info('Opening item linker...');
   };
 
   const actions = [
@@ -106,7 +106,7 @@ export function QuickActionsBar({
   ];
 
   const moreActions = [
-    { icon: History, label: 'View History', onClick: () => toast.info('Opening version history...') },
+    { icon: History, label: 'View History', onClick: () => catalystToast.info('Opening version history...') },
     { icon: MessageSquarePlus, label: 'Add Comment', onClick: handleAddComment },
     { icon: Bug, label: 'Log Defect', onClick: handleLogDefect },
     { icon: Link2, label: 'Link Item', onClick: handleLinkItem },

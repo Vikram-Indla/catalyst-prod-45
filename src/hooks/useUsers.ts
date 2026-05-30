@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export type ApprovalStatus = 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'DISABLED';
 
@@ -371,7 +371,7 @@ export function useCreateUser() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
       queryClient.invalidateQueries({ queryKey: ['product-roles'] });
-      toast.success('User created successfully');
+      catalystToast.success('User created successfully');
     },
     onError: (error) => {
       // Don't show toast here, let the component handle the specific error message
@@ -395,11 +395,11 @@ export function useUpdateUserEmail() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
-      toast.success('Email updated successfully');
+      catalystToast.success('Email updated successfully');
     },
     onError: (error) => {
       console.error('Failed to update email:', error);
-      toast.error('Failed to update email');
+      catalystToast.error('Failed to update email');
     },
   });
 }
@@ -437,11 +437,11 @@ export function useUpdateUserRoles() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
       queryClient.invalidateQueries({ queryKey: ['product-roles'] });
-      toast.success('User roles updated successfully');
+      catalystToast.success('User roles updated successfully');
     },
     onError: (error) => {
       console.error('Failed to update user roles:', error);
-      toast.error('Failed to update roles');
+      catalystToast.error('Failed to update roles');
     }
   });
 }
@@ -479,10 +479,10 @@ export function useApproveUser() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
-      toast.success('User approved successfully');
+      catalystToast.success('User approved successfully');
     },
     onError: (error) => {
-      toast.error('Failed to approve user: ' + (error as Error).message);
+      catalystToast.error('Failed to approve user: ' + (error as Error).message);
     }
   });
 }
@@ -521,10 +521,10 @@ export function useRejectUser() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
-      toast.success('User rejected');
+      catalystToast.success('User rejected');
     },
     onError: (error) => {
-      toast.error('Failed to reject user: ' + (error as Error).message);
+      catalystToast.error('Failed to reject user: ' + (error as Error).message);
     }
   });
 }
@@ -560,10 +560,10 @@ export function useDisableUser() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
-      toast.success('User disabled');
+      catalystToast.success('User disabled');
     },
     onError: (error) => {
-      toast.error('Failed to disable user: ' + (error as Error).message);
+      catalystToast.error('Failed to disable user: ' + (error as Error).message);
     }
   });
 }
@@ -601,14 +601,14 @@ export function useDeleteUser() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
-      toast.success('User removed from the system');
+      catalystToast.success('User removed from the system');
     },
     onError: (error, _userId, context) => {
       // Rollback optimistic update
       if (context?.previousUsers) {
         queryClient.setQueryData(['users-list'], context.previousUsers);
       }
-      toast.error((error as Error).message || 'Failed to remove user');
+      catalystToast.error((error as Error).message || 'Failed to remove user');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });

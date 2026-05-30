@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip } from '@/components/ads';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useInJira } from '../context/InJiraContext';
 import { cn } from '@/lib/utils';
 import { InlineEdit } from './drawer/InlineEdit';
@@ -111,7 +111,7 @@ export function IssueDrawer() {
     const oldValue = (issue as any)[field];
     setIssue(prev => prev ? { ...prev, [field]: value } : null);
     logFieldChange(field, oldValue, value);
-    toast.success(`${field} updated`);
+    catalystToast.success(`${field} updated`);
   }, [issue, logFieldChange]);
 
   // Handle actions with audit logging
@@ -120,21 +120,21 @@ export function IssueDrawer() {
     
     switch (action) {
       case 'clone':
-        toast.success('Issue cloned');
+        catalystToast.success('Issue cloned');
         break;
       case 'move':
-        toast.info('Move dialog coming soon');
+        catalystToast.info('Move dialog coming soon');
         break;
       case 'archive':
-        toast.success('Issue archived');
+        catalystToast.success('Issue archived');
         closeIssueDrawer();
         break;
       case 'delete':
-        toast.success('Issue deleted');
+        catalystToast.success('Issue deleted');
         closeIssueDrawer();
         break;
       case 'export':
-        toast.success(`Exporting as ${(data?.format as string)?.toUpperCase()}`);
+        catalystToast.success(`Exporting as ${(data?.format as string)?.toUpperCase()}`);
         break;
     }
   }, [logAction, closeIssueDrawer]);
@@ -151,7 +151,7 @@ export function IssueDrawer() {
     };
     setComments(prev => [...prev, newComment]);
     logAction('comment_added', { isInternal });
-    toast.success('Comment added');
+    catalystToast.success('Comment added');
   }, [logAction]);
 
   const descToolbarComponents = useMemo(() => [
@@ -175,7 +175,7 @@ export function IssueDrawer() {
     const oldStatus = issue.status;
     setIssue(prev => prev ? { ...prev, status: toStatus } : null);
     logAction('status_transition', { from: oldStatus, to: toStatus, transitionId });
-    toast.success(`Transitioned to ${toStatus}`);
+    catalystToast.success(`Transitioned to ${toStatus}`);
   }, [issue, logAction]);
 
   if (!issue) {

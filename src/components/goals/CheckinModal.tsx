@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { X, ClipboardCheck } from '@/lib/atlaskit-icons';
 import { useAllKeyResults, useCreateCheckin } from '@/hooks/useGoals';
 import { Slider } from '@/components/ui/slider';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface CheckinModalProps {
   krId: string | null;
@@ -62,7 +62,7 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
   const handleSubmit = useCallback(async () => {
     if (!krId) return;
     const val = parseFloat(newValue);
-    if (isNaN(val)) { toast.error('Please enter a valid number'); return; }
+    if (isNaN(val)) { catalystToast.error('Please enter a valid number'); return; }
 
     try {
       await createCheckin.mutateAsync({
@@ -71,10 +71,10 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
         confidence_level: confidence / 100,
         note: note.trim() || undefined,
       });
-      toast.success('Check-in recorded');
+      catalystToast.success('Check-in recorded');
       onClose();
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to record check-in');
+      catalystToast.error(err?.message || 'Failed to record check-in');
     }
   }, [krId, newValue, confidence, note, createCheckin, onClose]);
 

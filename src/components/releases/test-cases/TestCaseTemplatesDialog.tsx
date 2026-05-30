@@ -32,7 +32,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 
 interface TestCaseTemplatesDialogProps {
@@ -192,7 +192,7 @@ export function TestCaseTemplatesDialog({
     if (selectedTemplate) {
       onSelectTemplate?.(selectedTemplate);
       onOpenChange(false);
-      toast.success(`Created test case from "${selectedTemplate.name}" template`);
+      catalystToast.success(`Created test case from "${selectedTemplate.name}" template`);
     }
   };
 

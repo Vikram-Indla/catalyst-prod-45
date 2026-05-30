@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { generateRankBetween, compareRanks } from '../utils/lexorank';
 import type { Issue, Sprint, BoardConfig, KanbanColumn, StatusCategory } from '../types';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Extended issue type with rank
 export interface BoardIssue extends Issue {
@@ -163,7 +163,7 @@ export function useBoardData(boardId: string, projectId: string) {
       queryClient.invalidateQueries({ queryKey: ['injira-board-issues', boardId, projectId] });
     },
     onError: (error) => {
-      toast.error('Failed to move issue: ' + error.message);
+      catalystToast.error('Failed to move issue: ' + error.message);
     },
   });
 
@@ -234,7 +234,7 @@ export function useSprintManagement(boardId: string, tenantId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['injira-sprints', boardId] });
-      toast.success('Sprint created');
+      catalystToast.success('Sprint created');
     },
   });
 
@@ -260,7 +260,7 @@ export function useSprintManagement(boardId: string, tenantId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['injira-sprints', boardId] });
-      toast.success('Sprint started');
+      catalystToast.success('Sprint started');
     },
   });
 
@@ -296,7 +296,7 @@ export function useSprintManagement(boardId: string, tenantId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['injira-sprints', boardId] });
       queryClient.invalidateQueries({ queryKey: ['injira-board-issues'] });
-      toast.success('Sprint completed');
+      catalystToast.success('Sprint completed');
     },
   });
 

@@ -48,7 +48,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface AdvancedFiltersDialogProps {
   open: boolean;
@@ -184,22 +184,22 @@ export function AdvancedFiltersDialog({
   const handleApply = () => {
     onApplyFilters?.(filters);
     onOpenChange(false);
-    toast.success(`Applied ${activeFilterCount} filter(s)`);
+    catalystToast.success(`Applied ${activeFilterCount} filter(s)`);
   };
 
   const handleReset = () => {
     setFilters(DEFAULT_FILTERS);
-    toast.info('Filters reset');
+    catalystToast.info('Filters reset');
   };
 
   const handleLoadSavedFilter = (saved: SavedFilter) => {
     setFilters(saved.filters);
-    toast.success(`Loaded filter: ${saved.name}`);
+    catalystToast.success(`Loaded filter: ${saved.name}`);
   };
 
   const handleSaveFilter = () => {
     if (!newFilterName.trim()) {
-      toast.error('Please enter a filter name');
+      catalystToast.error('Please enter a filter name');
       return;
     }
 
@@ -213,12 +213,12 @@ export function AdvancedFiltersDialog({
     setSavedFilters((prev) => [...prev, newSaved]);
     setNewFilterName('');
     setShowSaveInput(false);
-    toast.success(`Filter "${newSaved.name}" saved`);
+    catalystToast.success(`Filter "${newSaved.name}" saved`);
   };
 
   const handleDeleteSavedFilter = (id: string) => {
     setSavedFilters((prev) => prev.filter((f) => f.id !== id));
-    toast.success('Filter deleted');
+    catalystToast.success('Filter deleted');
   };
 
   return (

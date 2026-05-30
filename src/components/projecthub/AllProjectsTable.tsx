@@ -11,7 +11,7 @@ import { formatDistanceToNowStrict, format } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { Avatar, Tooltip } from '@/components/ads';
 import { IssueBreakdownPopover } from './IssueBreakdownPopover';
@@ -263,7 +263,7 @@ function LeadReassignPopover({ project, currentUserId }: { project: ProjectListI
         .update({ lead_id: newLeadId, updated_at: new Date().toISOString() } as any)
         .eq('id', project.id);
       if (error) {
-        toast.error('Failed to update lead');
+        catalystToast.error('Failed to update lead');
         setOptimisticLead(null);
         return;
       }
@@ -569,7 +569,7 @@ function MemberManagePopover({ project, currentUserId }: { project: ProjectListI
         delete next[userId];
         return next;
       });
-      toast.error(wasMember ? 'Failed to remove member' : 'Failed to add member');
+      catalystToast.error(wasMember ? 'Failed to remove member' : 'Failed to add member');
     }
   }, [isEffectiveMember, project.id, project.lead_id, queryClient]);
 
@@ -785,8 +785,8 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
       .from('projects')
       .update({ status: 'archived', updated_at: new Date().toISOString() } as any)
       .eq('id', project.id);
-    if (error) { toast.error('Failed to archive'); return; }
-    toast.success(`${project.name} archived`);
+    if (error) { catalystToast.error('Failed to archive'); return; }
+    catalystToast.success(`${project.name} archived`);
     queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
   };
 
@@ -811,7 +811,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
         },
       });
       if (error) throw error;
-      toast.success(`${project.project_key} sync started — refreshing…`);
+      catalystToast.success(`${project.project_key} sync started — refreshing…`);
       // Invalidate so the row's issue counts + last-sync timestamp refresh.
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
       queryClient.invalidateQueries({ queryKey: ['project-sync-stats'] });
@@ -822,7 +822,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Unknown error';
-      toast.error(`Sync failed: ${msg}`);
+      catalystToast.error(`Sync failed: ${msg}`);
     }
   };
 
@@ -838,8 +838,8 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
       .update({ name: next, updated_at: new Date().toISOString() } as any)
       .eq('id', project.id);
     setRenameSaving(false);
-    if (error) { toast.error('Failed to rename project'); return; }
-    toast.success(`Renamed to "${next}"`);
+    if (error) { catalystToast.error('Failed to rename project'); return; }
+    catalystToast.success(`Renamed to "${next}"`);
     setRenameOpen(false);
     queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
   };
@@ -851,8 +851,8 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
       .delete()
       .eq('id', project.id);
     setDeleting(false);
-    if (error) { toast.error(`Failed to delete: ${error.message}`); return; }
-    toast.success(`${project.name} deleted`);
+    if (error) { catalystToast.error(`Failed to delete: ${error.message}`); return; }
+    catalystToast.success(`${project.name} deleted`);
     setDeleteOpen(false);
     queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
   };

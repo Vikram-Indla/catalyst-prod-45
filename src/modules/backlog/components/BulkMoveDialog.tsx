@@ -19,7 +19,7 @@ import {
 import { MoveRight } from '@/lib/atlaskit-icons';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface BulkMoveDialogProps {
   open: boolean;
@@ -89,12 +89,12 @@ export function BulkMoveDialog({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success(`Moved ${selectedItems.length} item(s) to PI`);
+      catalystToast.success(`Moved ${selectedItems.length} item(s) to PI`);
       onComplete();
       onOpenChange(false);
     },
     onError: (error: any) => {
-      toast.error(`Move failed: ${error.message}`);
+      catalystToast.error(`Move failed: ${error.message}`);
     },
   });
 

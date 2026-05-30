@@ -20,7 +20,7 @@ import { CreateEpicModal } from './CreateEpicModal';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchBacklogItems } from '../api/backlogApi';
 import { useEpicBacklogPreferences } from '@/hooks/useEpicBacklogPreferences';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -221,12 +221,12 @@ export function BacklogWorkspace() {
       .eq('id', selectedEpic.id);
 
     if (error) {
-      toast.error(`Failed to update: ${error.message}`);
+      catalystToast.error(`Failed to update: ${error.message}`);
       return;
     }
 
     queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-    toast.success('Epic updated');
+    catalystToast.success('Epic updated');
   };
 
   // Handle clone
@@ -240,7 +240,7 @@ export function BacklogWorkspace() {
       .single();
 
     if (!original) {
-      toast.error('Failed to clone epic');
+      catalystToast.error('Failed to clone epic');
       return;
     }
 
@@ -253,12 +253,12 @@ export function BacklogWorkspace() {
       });
 
     if (error) {
-      toast.error('Failed to clone epic');
+      catalystToast.error('Failed to clone epic');
       return;
     }
 
     queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-    toast.success('Epic cloned successfully');
+    catalystToast.success('Epic cloned successfully');
   };
 
   // Handle delete
@@ -271,13 +271,13 @@ export function BacklogWorkspace() {
       .eq('id', selectedEpic.id);
 
     if (error) {
-      toast.error('Failed to delete epic');
+      catalystToast.error('Failed to delete epic');
       return;
     }
 
     setSelectedEpic(null);
     queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-    toast.success('Epic deleted');
+    catalystToast.success('Epic deleted');
   };
 
   // Bulk delete mutation
@@ -291,12 +291,12 @@ export function BacklogWorkspace() {
       return epicIds.length;
     },
     onSuccess: (count) => {
-      toast.success(`${count} epic(s) deleted`);
+      catalystToast.success(`${count} epic(s) deleted`);
       setSelectedItems([]);
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
     },
     onError: (error: any) => {
-      toast.error(`Failed to delete: ${error.message}`);
+      catalystToast.error(`Failed to delete: ${error.message}`);
     },
   });
 
@@ -304,7 +304,7 @@ export function BacklogWorkspace() {
   const handleExport = useCallback(() => {
     const items = backlogData?.items || [];
     if (items.length === 0) {
-      toast.error('No items to export');
+      catalystToast.error('No items to export');
       return;
     }
 
@@ -336,9 +336,9 @@ export function BacklogWorkspace() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      toast.success(`Exported ${items.length} epics`);
+      catalystToast.success(`Exported ${items.length} epics`);
     } catch (error) {
-      toast.error('Failed to export');
+      catalystToast.error('Failed to export');
     }
   }, [backlogData?.items]);
 

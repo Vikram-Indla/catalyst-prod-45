@@ -4,7 +4,7 @@ import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Plus, Target, ExternalLink, X } from '@/lib/atlaskit-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useState } from 'react';
 import { LinkObjectiveDialog } from './LinkObjectiveDialog';
 import { ObjectiveScoreBadge } from '../shared/ObjectiveScoreBadge';
@@ -65,10 +65,10 @@ export function ObjectivesSection({ workItemId, workItemType, readOnly = false }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-objectives', workItemType, workItemId] });
-      toast.success('Objective unlinked');
+      catalystToast.success('Objective unlinked');
     },
     onError: () => {
-      toast.error('Failed to unlink objective');
+      catalystToast.error('Failed to unlink objective');
     },
   });
 

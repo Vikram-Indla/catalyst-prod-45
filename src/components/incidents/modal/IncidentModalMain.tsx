@@ -3,7 +3,7 @@ import DOMPurify from 'dompurify';
 import { Plus, MoreHorizontal, Download, Trash2, ChevronDown } from '@/lib/atlaskit-icons';
 import type { Incident, Attachment } from '@/types/release';
 import { IncidentActivitySection } from './IncidentActivitySection';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface IncidentModalMainProps {
   incident: Incident;
@@ -32,12 +32,12 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
       }),
     }));
     onFieldChange('attachments', [...(incident.attachments || []), ...newAttachments]);
-    toast.success(`${files.length} file(s) uploaded`);
+    catalystToast.success(`${files.length} file(s) uploaded`);
   };
 
   const deleteAttachment = (id: string) => {
     onFieldChange('attachments', (incident.attachments || []).filter(a => a.id !== id));
-    toast.success('Attachment removed');
+    catalystToast.success('Attachment removed');
   };
 
   return (

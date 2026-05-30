@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronRight, FolderKanban, Plus, ChevronLeft, ChevronRight as ChevronRightIcon, ExternalLink, Copy, Star, Archive } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { ProjectToolbar } from '@/components/project-hub/ProjectToolbar';
 import { ProjectTable } from '@/components/project-hub/ProjectTable';
 import { ProjectCardGrid } from '@/components/project-hub/ProjectCardGrid';
@@ -134,7 +134,7 @@ export default function ProjectListPage() {
   // Toggle star
   const toggleStar = useCallback(async (projectId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { toast.error('Please sign in first'); return; }
+    if (!user) { catalystToast.error('Please sign in first'); return; }
 
     setStarredIds(prev => {
       const next = new Set(prev);
@@ -160,10 +160,10 @@ export default function ProjectListPage() {
         .update({ is_archived: true, archived_at: new Date().toISOString() } as any)
         .eq('id', projectId);
       if (error) throw new Error(error.message);
-      toast.success('Project archived');
+      catalystToast.success('Project archived');
       queryClient.invalidateQueries({ queryKey: ['ph-projects-full-list'] });
     } catch (err: any) {
-      toast.error(err.message || 'Failed to archive');
+      catalystToast.error(err.message || 'Failed to archive');
     }
   }, [queryClient]);
 
@@ -331,7 +331,7 @@ export default function ProjectListPage() {
             >
               <ExternalLink size={16} style={{ color: T.t3 }} /> Open in New Tab
             </button>
-            <button onClick={() => { navigator.clipboard.writeText(ctxMenu.project.key); toast.success('Copied'); setCtxMenu(null); }}
+            <button onClick={() => { navigator.clipboard.writeText(ctxMenu.project.key); catalystToast.success('Copied'); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
               style={{ height: 50, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}

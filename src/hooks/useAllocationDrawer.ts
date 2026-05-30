@@ -15,7 +15,7 @@ import {
   isBefore,
   startOfDay
 } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { 
   AllocationResource, 
   Assignment, 
@@ -248,11 +248,11 @@ export function useAllocationDrawer({ resource, onClose }: UseAllocationDrawerPr
       queryClient.invalidateQueries({ queryKey: ['resource-allocations-drawer', resource.id] });
       queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
       setIsDirty(false);
-      toast.success('Allocations saved successfully');
+      catalystToast.success('Allocations saved successfully');
     },
     onError: (error) => {
       console.error('Failed to save allocations:', error);
-      toast.error('Failed to save allocations');
+      catalystToast.error('Failed to save allocations');
     },
   });
 

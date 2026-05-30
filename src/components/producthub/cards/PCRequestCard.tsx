@@ -7,7 +7,7 @@ import { RequestMetrics } from '@/components/backlog/MetricBars';
 import { formatDistanceToNow, format, isValid } from 'date-fns';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { Avatar } from '@/components/ads';
 
@@ -87,7 +87,7 @@ export const PCRequestCard: React.FC<PCRequestCardProps> = ({ request, isSelecte
       }
       queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
     } catch {
-      toast.error('Failed to update star');
+      catalystToast.error('Failed to update star');
     }
   };
 

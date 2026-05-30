@@ -18,7 +18,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Plus, MoreHorizontal, Pencil, Trash2, GripVertical, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   useOptionValues,
   useCreateOptionValue,
@@ -76,7 +76,7 @@ export default function DeliveryPlatforms() {
 
   const handleSave = async () => {
     if (!formData.label.trim()) {
-      toast.error('Label is required');
+      catalystToast.error('Label is required');
       return;
     }
 
@@ -152,7 +152,7 @@ export default function DeliveryPlatforms() {
         updates,
       });
     } catch (error) {
-      toast.error('Failed to reorder');
+      catalystToast.error('Failed to reorder');
     }
   };
 

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { StoryWithRelations, STORY_STATUS_COLUMNS } from '@/types/story.types';
 
@@ -29,11 +29,11 @@ export function StoriesKanbanView({ stories, onStorySelect, onRefetch }: Stories
 
       if (error) throw error;
 
-      toast.success('Story status updated');
+      catalystToast.success('Story status updated');
       onRefetch();
     } catch (error) {
       console.error('Error updating story status:', error);
-      toast.error('Failed to update story status');
+      catalystToast.error('Failed to update story status');
     }
   };
 

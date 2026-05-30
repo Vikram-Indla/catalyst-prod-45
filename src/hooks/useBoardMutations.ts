@@ -1,7 +1,7 @@
 // useBoardMutations — create, update, delete, star board
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { CreateBoardInput, BoardVisibility, SwimlaneType } from '@/types/board';
 
 export function useCreateBoard() {
@@ -25,10 +25,10 @@ export function useCreateBoard() {
     },
     onSuccess: (result) => {
       qc.invalidateQueries({ queryKey: ['boards', result.projectId] });
-      toast.success(`"${result.name}" board created`);
+      catalystToast.success(`"${result.name}" board created`);
     },
     onError: (err: Error) => {
-      toast.error(`Failed to create board: ${err.message}`);
+      catalystToast.error(`Failed to create board: ${err.message}`);
     },
   });
 }
@@ -67,10 +67,10 @@ export function useUpdateBoard() {
     onSuccess: (result) => {
       qc.invalidateQueries({ queryKey: ['board', result.boardId] });
       if (result.projectId) qc.invalidateQueries({ queryKey: ['boards', result.projectId] });
-      toast.success('Board settings saved');
+      catalystToast.success('Board settings saved');
     },
     onError: (err: Error) => {
-      toast.error(`Failed to save: ${err.message}`);
+      catalystToast.error(`Failed to save: ${err.message}`);
     },
   });
 }
@@ -87,10 +87,10 @@ export function useDeleteBoard() {
     },
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ['boards', vars.projectId] });
-      toast.success('Board deleted');
+      catalystToast.success('Board deleted');
     },
     onError: (err: Error) => {
-      toast.error(`Failed to delete board: ${err.message}`);
+      catalystToast.error(`Failed to delete board: ${err.message}`);
     },
   });
 }
@@ -124,7 +124,7 @@ export function useToggleBoardStar() {
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.prev) qc.setQueryData(['boards', ctx.projectId], ctx.prev);
-      toast.error('Failed to update star');
+      catalystToast.error('Failed to update star');
     },
     onSettled: (_d, _e, vars) => {
       qc.invalidateQueries({ queryKey: ['boards', vars.projectId] });
@@ -165,9 +165,9 @@ export function useAddColumn() {
     },
     onSuccess: (r) => {
       qc.invalidateQueries({ queryKey: ['board', r.boardId] });
-      toast.success('Column added');
+      catalystToast.success('Column added');
     },
-    onError: (err: Error) => toast.error(`Failed to add column: ${err.message}`),
+    onError: (err: Error) => catalystToast.error(`Failed to add column: ${err.message}`),
   });
 }
 
@@ -189,7 +189,7 @@ export function useUpdateColumn() {
       return { boardId };
     },
     onSuccess: (r) => qc.invalidateQueries({ queryKey: ['board', r.boardId] }),
-    onError: (err: Error) => toast.error(`Failed to update column: ${err.message}`),
+    onError: (err: Error) => catalystToast.error(`Failed to update column: ${err.message}`),
   });
 }
 
@@ -205,9 +205,9 @@ export function useDeleteColumn() {
     },
     onSuccess: (r) => {
       qc.invalidateQueries({ queryKey: ['board', r.boardId] });
-      toast.success('Column removed');
+      catalystToast.success('Column removed');
     },
-    onError: (err: Error) => toast.error(`Failed to remove column: ${err.message}`),
+    onError: (err: Error) => catalystToast.error(`Failed to remove column: ${err.message}`),
   });
 }
 
@@ -234,7 +234,7 @@ export function useUpdateCardRank() {
         setTimeout(() => qc.invalidateQueries({ queryKey: ['board-cards', r.boardId] }), 300);
       }
     },
-    onError: (err: Error) => toast.error(`Failed to update card position: ${err.message}`),
+    onError: (err: Error) => catalystToast.error(`Failed to update card position: ${err.message}`),
   });
 }
 
@@ -256,7 +256,7 @@ export function useAddQuickFilter() {
       return { boardId };
     },
     onSuccess: (r) => { qc.invalidateQueries({ queryKey: ['board-quick-filters', r.boardId] }); },
-    onError: (err: Error) => toast.error(`Failed to add filter: ${err.message}`),
+    onError: (err: Error) => catalystToast.error(`Failed to add filter: ${err.message}`),
   });
 }
 
@@ -269,7 +269,7 @@ export function useDeleteQuickFilter() {
       return { boardId };
     },
     onSuccess: (r) => { qc.invalidateQueries({ queryKey: ['board-quick-filters', r.boardId] }); },
-    onError: (err: Error) => toast.error(`Failed to delete filter: ${err.message}`),
+    onError: (err: Error) => catalystToast.error(`Failed to delete filter: ${err.message}`),
   });
 }
 

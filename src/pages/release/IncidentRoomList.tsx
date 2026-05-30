@@ -10,7 +10,7 @@ import { CreateIncidentModal, IncidentFormData } from '@/components/incidents/Cr
 import { IncidentCommandBar } from '@/components/incidents/IncidentCommandBar';
 import { IncidentFiltersDialog } from '@/components/incidents/IncidentFiltersDialog';
 import { IncidentListTable } from '@/components/incidents/IncidentListTable';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,7 +76,7 @@ export default function IncidentRoomList() {
         target_date: formData.target_resolution_date,
       });
       
-      toast.success('Incident created successfully');
+      catalystToast.success('Incident created successfully');
       setCreateDialogOpen(false);
       
       // Navigate to detail page
@@ -84,7 +84,7 @@ export default function IncidentRoomList() {
         navigate(`/incident-hub/view/${result.id}?created=true`);
       }
     } catch (error: any) {
-      toast.error(error?.message || 'Failed to create incident');
+      catalystToast.error(error?.message || 'Failed to create incident');
     }
   };
 

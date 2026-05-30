@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface DocumentLabelsProps {
   documentId: string;
@@ -63,13 +63,13 @@ export function DocumentLabels({ documentId }: DocumentLabelsProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kb-labels', documentId] });
       setNewLabel('');
-      toast.success('Label added');
+      catalystToast.success('Label added');
     },
     onError: (error: any) => {
       if (error.code === '23505') {
-        toast.error('Label already exists');
+        catalystToast.error('Label already exists');
       } else {
-        toast.error('Failed to add label');
+        catalystToast.error('Failed to add label');
       }
     },
   });
@@ -85,7 +85,7 @@ export function DocumentLabels({ documentId }: DocumentLabelsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kb-labels', documentId] });
-      toast.success('Label removed');
+      catalystToast.success('Label removed');
     },
   });
 

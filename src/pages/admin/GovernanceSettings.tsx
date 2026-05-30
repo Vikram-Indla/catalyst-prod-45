@@ -6,7 +6,7 @@ import Spinner from '@atlaskit/spinner';
 import ShieldIcon from '@atlaskit/icon/core/shield';
 import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
 import WarningIcon from '@atlaskit/icon/core/warning';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface EnforcementConfig {
   enforceStrictly: boolean;
@@ -90,10 +90,10 @@ export default function GovernanceSettings() {
       const updatedConfig = await response.json();
       setConfig(updatedConfig);
       setHasChanges(false);
-      toast.success(`Design System Enforcement mode: ${localEnforceStrictly ? 'STRICT 🔒' : 'LENIENT 📋'}`);
+      catalystToast.success(`Design System Enforcement mode: ${localEnforceStrictly ? 'STRICT 🔒' : 'LENIENT 📋'}`);
     } catch (error) {
       console.error('Error saving governance config:', error);
-      toast.error('Failed to save governance settings');
+      catalystToast.error('Failed to save governance settings');
     } finally {
       setIsSaving(false);
     }

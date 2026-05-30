@@ -4,7 +4,7 @@
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { generateProgramCodeFromName } from '@/lib/programCodeUtils';
 import { DEFAULT_PROGRAM_ID } from '@/lib/programKeyUtils';
 import { useEffect } from 'react';
@@ -145,10 +145,10 @@ export function useCreateProgram() {
     onSuccess: (program) => {
       queryClient.invalidateQueries({ queryKey: PROGRAMS_KEY });
       queryClient.invalidateQueries({ queryKey: ['workspace-programs'] });
-      toast.success(`Program "${program.name}" created with code ${program.key}`);
+      catalystToast.success(`Program "${program.name}" created with code ${program.key}`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create program: ${error.message}`);
+      catalystToast.error(`Failed to create program: ${error.message}`);
     },
   });
 }
@@ -180,10 +180,10 @@ export function useUpdateProgram() {
       queryClient.invalidateQueries({ queryKey: PROGRAMS_KEY });
       queryClient.invalidateQueries({ queryKey: ['program', program.id] });
       queryClient.invalidateQueries({ queryKey: ['workspace-programs'] });
-      toast.success('Program updated');
+      catalystToast.success('Program updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update program: ${error.message}`);
+      catalystToast.error(`Failed to update program: ${error.message}`);
     },
   });
 }

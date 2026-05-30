@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { Loader2, Sparkles, AlertTriangle, CheckCircle, RefreshCw } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { IssueCard } from './IssueCard';
 import { 
   AiAnalysisPanelProps, 
@@ -36,14 +36,14 @@ export const AiAnalysisPanel: React.FC<AiAnalysisPanelProps> = ({
         setLocalAnalysis(result);
         const issueCount = result.issues?.length || 0;
         if (issueCount > 0) {
-          toast.warning(`AI detected ${issueCount} issue${issueCount > 1 ? 's' : ''}`);
+          catalystToast.warning(`AI detected ${issueCount} issue${issueCount > 1 ? 's' : ''}`);
         } else {
-          toast.success('No issues detected');
+          catalystToast.success('No issues detected');
         }
       }
     } catch (error) {
       console.error('Analysis failed:', error);
-      toast.error('Analysis failed. Please try again.');
+      catalystToast.error('Analysis failed. Please try again.');
     } finally {
       setAnalyzing(false);
     }

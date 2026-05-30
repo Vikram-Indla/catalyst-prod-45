@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Bug, AlertCircle } from '@/lib/atlaskit-icons';
 import { useCreateDefect } from '@/hooks/test-management/useDefects';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { DefectSeverity } from '@/types/test-management';
 
 const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
@@ -112,7 +112,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
       onClose();
     } catch (err: any) {
       console.error('Create defect error:', err);
-      toast.error(err.message || 'Failed to create defect');
+      catalystToast.error(err.message || 'Failed to create defect');
     }
   };
 

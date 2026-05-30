@@ -21,7 +21,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   ChevronDown, ChevronRight, Plus,
   Check,
@@ -420,7 +420,7 @@ export function SubtasksPanel({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] });
     },
-    onError: (err) => toast.error('Failed to create subtask', { description: (err as Error).message }),
+    onError: (err) => catalystToast.error('Failed to create subtask'),
   });
 
   // ─── Link-existing mutation ───────────────────
@@ -435,9 +435,9 @@ export function SubtasksPanel({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] });
-      toast.success('Linked to existing work item');
+      catalystToast.success('Linked to existing work item');
     },
-    onError: (err) => toast.error('Failed to link work item', { description: (err as Error).message }),
+    onError: (err) => catalystToast.error('Failed to link work item'),
   });
 
 

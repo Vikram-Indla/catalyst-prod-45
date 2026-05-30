@@ -3,7 +3,7 @@ import { X, Send } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTheme } from '@/hooks/useTheme';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const DOMAINS = [
   { code: 'D1', name: 'Industrial Licensing' },
@@ -55,7 +55,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
 
       if (error) throw error;
 
-      toast.success('Knowledge Request submitted', {
+      catalystToast.success('Knowledge Request submitted', {
         description: 'Your request has been routed to domain experts.',
       });
       qc.invalidateQueries({ queryKey: ['wiki-knowledge-requests'] });
@@ -63,7 +63,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
       setTitle(''); setDescription(''); setDomainCode(''); setPriority('medium');
       onClose();
     } catch (err: any) {
-      toast.error('Failed to submit request', { description: err.message });
+      catalystToast.error('Failed to submit request');
     } finally {
       setSubmitting(false);
     }

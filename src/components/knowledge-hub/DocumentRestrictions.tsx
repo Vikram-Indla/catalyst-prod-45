@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface DocumentRestrictionsProps {
   documentId: string;
@@ -84,13 +84,13 @@ export function DocumentRestrictions({ documentId }: DocumentRestrictionsProps) 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kb-restrictions', documentId] });
       setNewRestriction({ type: 'edit', entityType: 'user', entityId: '' });
-      toast.success('Restriction added');
+      catalystToast.success('Restriction added');
     },
     onError: (error: any) => {
       if (error.code === '23505') {
-        toast.error('This restriction already exists');
+        catalystToast.error('This restriction already exists');
       } else {
-        toast.error('Failed to add restriction');
+        catalystToast.error('Failed to add restriction');
       }
     },
   });
@@ -106,13 +106,13 @@ export function DocumentRestrictions({ documentId }: DocumentRestrictionsProps) 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kb-restrictions', documentId] });
-      toast.success('Restriction removed');
+      catalystToast.success('Restriction removed');
     },
   });
 
   const handleAddRestriction = () => {
     if (!newRestriction.entityId.trim()) {
-      toast.error('Please enter a user email or group name');
+      catalystToast.error('Please enter a user email or group name');
       return;
     }
     addRestrictionMutation.mutate();

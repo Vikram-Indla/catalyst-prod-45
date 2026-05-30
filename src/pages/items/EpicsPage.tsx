@@ -54,7 +54,7 @@ import {
   LayoutList,
   LayoutGrid
 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export default function EpicsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -192,11 +192,11 @@ export default function EpicsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('Epic duplicated successfully');
+      catalystToast.success('Epic duplicated successfully');
       setDuplicateDialogOpen(false);
     },
     onError: () => {
-      toast.error('Failed to duplicate epic');
+      catalystToast.error('Failed to duplicate epic');
     }
   });
 
@@ -234,7 +234,7 @@ export default function EpicsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('Epic position updated');
+      catalystToast.success('Epic position updated');
     }
   });
 
@@ -256,7 +256,7 @@ export default function EpicsPage() {
     },
     onSuccess: (isParked) => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success(isParked ? 'Epic moved to parking lot' : 'Epic removed from parking lot');
+      catalystToast.success(isParked ? 'Epic moved to parking lot' : 'Epic removed from parking lot');
     }
   });
 
@@ -271,7 +271,7 @@ export default function EpicsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('Epic moved to recycle bin');
+      catalystToast.success('Epic moved to recycle bin');
     }
   });
 
@@ -313,14 +313,14 @@ export default function EpicsPage() {
           link.download = 'epics-export.csv';
           link.click();
           
-          toast.success('Epics exported to CSV');
+          catalystToast.success('Epics exported to CSV');
         } else {
-          toast.error('No epics to export');
+          catalystToast.error('No epics to export');
         }
         break;
       case 'mass-move':
         if (selectedRows.length === 0) {
-          toast.error('Please select epics to move');
+          catalystToast.error('Please select epics to move');
         } else {
           setMassMoveDialogOpen(true);
         }
@@ -349,7 +349,7 @@ export default function EpicsPage() {
       try {
         await moveToPositionMutation.mutateAsync({ epicId: epic.id, position: 1 });
       } catch (error) {
-        toast.error('Failed to move epic to top');
+        catalystToast.error('Failed to move epic to top');
       }
     },
     moveToBottom: async (epic: any) => {
@@ -357,7 +357,7 @@ export default function EpicsPage() {
         const maxPosition = epics?.length || 1;
         await moveToPositionMutation.mutateAsync({ epicId: epic.id, position: maxPosition });
       } catch (error) {
-        toast.error('Failed to move epic to bottom');
+        catalystToast.error('Failed to move epic to bottom');
       }
     },
     moveToPosition: (epic: any) => {
@@ -372,14 +372,14 @@ export default function EpicsPage() {
       try {
         await recycleBinMutation.mutateAsync(epic.id);
       } catch (error) {
-        toast.error('Failed to move epic to recycle bin');
+        catalystToast.error('Failed to move epic to recycle bin');
       }
     },
     parkingLot: async (epic: any) => {
       try {
         await parkingLotMutation.mutateAsync(epic.id);
       } catch (error) {
-        toast.error('Failed to update parking lot status');
+        catalystToast.error('Failed to update parking lot status');
       }
     }
   };
@@ -405,7 +405,7 @@ export default function EpicsPage() {
 
   const calculateBottomUpEstimate = async () => {
     if (selectedRows.length === 0) {
-      toast.error('Please select epics to calculate estimates');
+      catalystToast.error('Please select epics to calculate estimates');
       return;
     }
 
@@ -426,10 +426,10 @@ export default function EpicsPage() {
       }
 
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success(`Bottom-up estimates calculated for ${selectedRows.length} epic(s)`);
+      catalystToast.success(`Bottom-up estimates calculated for ${selectedRows.length} epic(s)`);
       setSelectedRows([]);
     } catch (error) {
-      toast.error('Failed to calculate bottom-up estimates');
+      catalystToast.error('Failed to calculate bottom-up estimates');
     }
   };
 
@@ -667,7 +667,7 @@ export default function EpicsPage() {
                   e.preventDefault();
                   setContextEpic(epic);
                 }}
-                onConfigureColumns={() => toast.info('Column configuration coming soon')}
+                onConfigureColumns={() => catalystToast.info('Column configuration coming soon')}
               />
             )}
           </>
@@ -797,7 +797,7 @@ export default function EpicsPage() {
         open={pullRankOpen}
         onOpenChange={setPullRankOpen}
         onConfirm={(sourceEpicId) => {
-          toast.info('Pull rank feature coming soon');
+          catalystToast.info('Pull rank feature coming soon');
           // Will implement rank copying logic
         }}
       />

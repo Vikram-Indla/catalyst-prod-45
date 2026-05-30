@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+import { catalystToast } from "@/lib/catalystToast";
 import { containsArabic } from "@/lib/detectArabic";
 import { useTranslation } from "@/hooks/useTranslation";
 import "./title-translate.css";
@@ -45,13 +45,14 @@ export function TitleTranslateWrapper({
   const handleTranslate = useCallback(async () => {
     const text = value.trim();
     if (!text || isTranslating) return;
+<<<<<<< HEAD
     originalRef.current = text;
     const result = await translate(text, { issueKey, field, target });
     if (result) {
       onValueChange(result);
       setShowingTranslation(true);
     } else {
-      toast.error("Translation failed");
+      catalystToast.error("Translation failed");
     }
   }, [value, target, isTranslating, translate, issueKey, field, onValueChange]);
 

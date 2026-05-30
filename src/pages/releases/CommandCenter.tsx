@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -161,7 +161,7 @@ ${mockReleases.map(r => `- ${r.name} (${r.status}): ${r.health}% health`).join('
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        toast.success('Dashboard exported as PDF report');
+        catalystToast.success('Dashboard exported as PDF report');
       } else {
         // Generate Excel/CSV
         const headers = ['Release Name', 'Status', 'Health %', 'Start Date'];
@@ -182,17 +182,17 @@ ${mockReleases.map(r => `- ${r.name} (${r.status}): ${r.health}% health`).join('
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        toast.success('Metrics exported as Excel/CSV');
+        catalystToast.success('Metrics exported as Excel/CSV');
       }
     } catch (error) {
-      toast.error('Export failed. Please try again.');
+      catalystToast.error('Export failed. Please try again.');
     } finally {
       setIsExporting(false);
     }
   };
 
   const handleReleaseClick = (id: string) => {
-    toast.success(`Opening release ${id}...`);
+    catalystToast.success(`Opening release ${id}...`);
     navigate(`/releasehub/${id}`);
   };
 

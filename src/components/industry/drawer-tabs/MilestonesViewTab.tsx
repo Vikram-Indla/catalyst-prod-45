@@ -9,7 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 import { BusinessRequest } from '@/types/business-request';
 import { cn } from '@/lib/utils';
@@ -88,12 +88,12 @@ export function MilestonesViewTab({ data }: MilestonesViewTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['milestones', requestId] });
-      toast.success('Milestone created');
+      catalystToast.success('Milestone created');
       resetForm();
       setIsDialogOpen(false);
     },
     onError: (error: any) => {
-      toast.error(`Failed to create milestone: ${error.message}`);
+      catalystToast.error(`Failed to create milestone: ${error.message}`);
     },
   });
 
@@ -105,13 +105,13 @@ export function MilestonesViewTab({ data }: MilestonesViewTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['milestones', requestId] });
-      toast.success('Milestone updated');
+      catalystToast.success('Milestone updated');
       resetForm();
       setIsDialogOpen(false);
       setEditingMilestone(null);
     },
     onError: (error: any) => {
-      toast.error(`Failed to update milestone: ${error.message}`);
+      catalystToast.error(`Failed to update milestone: ${error.message}`);
     },
   });
 
@@ -123,10 +123,10 @@ export function MilestonesViewTab({ data }: MilestonesViewTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['milestones', requestId] });
-      toast.success('Milestone deleted');
+      catalystToast.success('Milestone deleted');
     },
     onError: (error: any) => {
-      toast.error(`Failed to delete milestone: ${error.message}`);
+      catalystToast.error(`Failed to delete milestone: ${error.message}`);
     },
   });
 
@@ -158,11 +158,11 @@ export function MilestonesViewTab({ data }: MilestonesViewTabProps) {
 
   const handleSave = () => {
     if (!title.trim()) {
-      toast.error('Title is required');
+      catalystToast.error('Title is required');
       return;
     }
     if (!endDate) {
-      toast.error('End date is required');
+      catalystToast.error('End date is required');
       return;
     }
 

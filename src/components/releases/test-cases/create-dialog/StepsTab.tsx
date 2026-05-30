@@ -23,7 +23,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { TestCaseFormData, TestCaseStep, StepMode } from './types';
 
 interface StepsTabProps {
@@ -268,7 +268,7 @@ export function StepsTab({ data, onChange, onOpenTemplates, onOpenAIGenerate }: 
       .filter((s) => s.id !== id)
       .map((s, i) => ({ ...s, order: i + 1 }));
     onChange({ steps: newSteps });
-    toast.success('Step deleted');
+    catalystToast.success('Step deleted');
   }, [data.steps, onChange]);
 
   const handleDuplicateStep = useCallback((step: TestCaseStep) => {
@@ -284,7 +284,7 @@ export function StepsTab({ data, onChange, onOpenTemplates, onOpenAIGenerate }: 
       ...data.steps.slice(index + 1).map((s) => ({ ...s, order: s.order + 1 })),
     ];
     onChange({ steps: newSteps });
-    toast.success('Step duplicated');
+    catalystToast.success('Step duplicated');
   }, [data.steps, onChange]);
 
   const handleMoveStep = useCallback((index: number, direction: 'up' | 'down') => {
@@ -303,7 +303,7 @@ export function StepsTab({ data, onChange, onOpenTemplates, onOpenAIGenerate }: 
       .map((s, i) => `Step ${i + 1}:\nAction: ${s.action}\nExpected: ${s.expectedResult}`)
       .join('\n\n');
     navigator.clipboard.writeText(stepsText);
-    toast.success('Steps copied to clipboard');
+    catalystToast.success('Steps copied to clipboard');
   }, [data.steps]);
 
   const handleModeChange = (mode: StepMode) => {

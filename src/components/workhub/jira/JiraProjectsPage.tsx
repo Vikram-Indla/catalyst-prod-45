@@ -12,7 +12,7 @@ import { SyncLogTable } from './SyncLogTable';
 import { SyncBadge } from '../shared/SyncBadge';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export function JiraProjectsPage() {
   const navigate = useNavigate();
@@ -58,9 +58,9 @@ export function JiraProjectsPage() {
     setSyncingIds(prev => new Set(prev).add(projectId));
     try {
       await triggerSync.mutateAsync({ projectId, syncType: 'manual' });
-      toast.success('Sync completed successfully');
+      catalystToast.success('Sync completed successfully');
     } catch (err: any) {
-      toast.error(`Sync failed: ${err.message}`);
+      catalystToast.error(`Sync failed: ${err.message}`);
     } finally {
       setSyncingIds(prev => {
         const next = new Set(prev);
@@ -82,9 +82,9 @@ export function JiraProjectsPage() {
           return next;
         });
       }
-      toast.success(`Sync complete — ${projects.length} projects refreshed`);
+      catalystToast.success(`Sync complete — ${projects.length} projects refreshed`);
     } catch (err: any) {
-      toast.error(`Sync failed: ${err.message}`);
+      catalystToast.error(`Sync failed: ${err.message}`);
     } finally {
       setSyncAllRunning(false);
       setSyncingIds(new Set());

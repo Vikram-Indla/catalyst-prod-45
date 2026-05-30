@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge, Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useDataRowResults, type DataRowLatestResult, type RowResultStatus } from '@/hooks/test-management/useDataRowResults';
 import { useCreateRunWithDataRows, type DataRowSelection } from '@/hooks/test-management/useCreateRunWithDataRows';
 
@@ -86,7 +86,7 @@ export function DataRowResultsSummary({
   // Re-run handlers
   const handleRerunSelected = async () => {
     if (!canExecute) {
-      toast.error('Execution context missing (cycle/scope)');
+      catalystToast.error('Execution context missing (cycle/scope)');
       return;
     }
     const selected = rows.filter(r => selectedRowIds.has(r.rowId));
@@ -95,7 +95,7 @@ export function DataRowResultsSummary({
   
   const handleRerunFailed = async () => {
     if (!canExecute) {
-      toast.error('Execution context missing (cycle/scope)');
+      catalystToast.error('Execution context missing (cycle/scope)');
       return;
     }
     await runRows(failedRows);
@@ -103,7 +103,7 @@ export function DataRowResultsSummary({
   
   const handleRerunAll = async () => {
     if (!canExecute) {
-      toast.error('Execution context missing (cycle/scope)');
+      catalystToast.error('Execution context missing (cycle/scope)');
       return;
     }
     await runRows(rows);

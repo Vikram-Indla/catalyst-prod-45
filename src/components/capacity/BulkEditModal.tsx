@@ -14,7 +14,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCapacityDepartments, useResourceAssignments } from '@/modules/capacity-planner';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { Loader2, Users } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
@@ -66,7 +66,7 @@ export function BulkEditModal({ isOpen, onClose, resources }: BulkEditModalProps
   
   const handleSubmit = async () => {
     if (!editDepartment && !editAssignment && !editAllocation) {
-      toast.error('Please select at least one field to update');
+      catalystToast.error('Please select at least one field to update');
       return;
     }
     
@@ -138,11 +138,11 @@ export function BulkEditModal({ isOpen, onClose, resources }: BulkEditModalProps
       if (editAssignment) fields.push('assignment');
       if (editAllocation) fields.push('allocation');
       
-      toast.success(`Updated ${fields.join(', ')} for ${resources.length} resource${resources.length > 1 ? 's' : ''}`);
+      catalystToast.success(`Updated ${fields.join(', ')} for ${resources.length} resource${resources.length > 1 ? 's' : ''}`);
       onClose();
     } catch (error: any) {
       console.error('Bulk edit error:', error);
-      toast.error(error.message || 'Failed to update resources');
+      catalystToast.error(error.message || 'Failed to update resources');
     } finally {
       setIsSubmitting(false);
     }

@@ -8,7 +8,7 @@ import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
 import { CheckCircle, ChevronDown, Sparkles } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 function mapRisk(risk: string) {
   const r = risk?.toLowerCase() || 'standard';
@@ -40,14 +40,14 @@ export default function TriageQueuePage() {
 
   const linkChangeToRelease = async (changeId: string, releaseId: string) => {
     const { error } = await supabase.from('rh_changes').update({ release_id: releaseId }).eq('id', changeId);
-    if (error) { toast.error('Failed to link release'); return; }
-    toast.success('Change linked to release');
+    if (error) { catalystToast.error('Failed to link release'); return; }
+    catalystToast.success('Change linked to release');
     queryClient.invalidateQueries({ queryKey: ['releasehub', 'changes'] });
   };
 
   const ignoreTriageItem = (changeId: string) => {
     setIgnoredIds(prev => new Set(prev).add(changeId));
-    toast.success('Item ignored');
+    catalystToast.success('Item ignored');
   };
 
   return (

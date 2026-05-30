@@ -41,7 +41,7 @@ import { DetailTabActivity } from './DetailTabActivity';
 import { RequestLinkedItemsTab } from '@/components/producthub/RequestLinkedItemsTab';
 import { typedQuery, supabase } from '@/integrations/supabase/client';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import '@/styles/request-detail-panel.css';
 
 /* UI status to DB status mapping */
@@ -146,7 +146,7 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
       // Silent auto-save
       queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
       queryClient.invalidateQueries({ queryKey: ['ph-requests'] });
-    } catch { toast.error('Failed to save title'); }
+    } catch { catalystToast.error('Failed to save title'); }
   }, [request.title, request.id, queryClient]);
 
   // Delete mutation
@@ -160,11 +160,11 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ph-requests'] });
       queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
-      toast.success('Business Request deleted', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' }, position: 'bottom-center' });
+      catalystToast.success('Business Request deleted', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' }, position: 'bottom-center' });
       setShowDeleteConfirm(false);
       handleClose();
     },
-    onError: () => toast.error('Failed to delete'),
+    onError: () => catalystToast.error('Failed to delete'),
   });
 
   // Clone
@@ -188,8 +188,8 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
       });
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
-      toast.success('Business Request cloned', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' }, position: 'bottom-center' });
-    } catch { toast.error('Clone failed'); }
+      catalystToast.success('Business Request cloned', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' }, position: 'bottom-center' });
+    } catch { catalystToast.error('Clone failed'); }
   };
 
   /* ── Watchers — Catalyst-canonical, on `ph_request_watchers` ── */
@@ -232,7 +232,7 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
       queryClient.invalidateQueries({ queryKey: ['ph-request-watchers', request.id] });
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : 'Could not update watch state');
+      catalystToast.error(err instanceof Error ? err.message : 'Could not update watch state');
     },
   });
 
@@ -247,13 +247,13 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
     url.searchParams.set('selectedInitiative', request.initiative_key);
     try {
       await navigator.clipboard.writeText(url.toString());
-      toast.success('Permalink copied', {
+      catalystToast.success('Permalink copied', {
         duration: 1800,
         style: { background: '#18181B', color: 'var(--ds-surface, #fff)' },
         position: 'bottom-center',
       });
     } catch {
-      toast.error('Could not copy permalink');
+      catalystToast.error('Could not copy permalink');
     }
   }, [request.initiative_key]);
 
@@ -289,8 +289,8 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
       queryClient.invalidateQueries({ queryKey: ['ph-requests'] });
-      toast.success(request.is_archived ? 'Restored' : 'Archived', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' }, position: 'bottom-center' });
-    } catch { toast.error('Failed to archive'); }
+      catalystToast.success(request.is_archived ? 'Restored' : 'Archived', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' }, position: 'bottom-center' });
+    } catch { catalystToast.error('Failed to archive'); }
   };
 
   // Tab index sync (Atlaskit Tabs uses index, we keep TabKey for content switch)

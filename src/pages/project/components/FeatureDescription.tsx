@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { CanonicalDescriptionField } from '@/components/shared/CanonicalDescriptionField';
 import { useCanonicalDescription } from '@/hooks/useCanonicalDescription';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import styles from '../FeatureViewPage.module.css';
 
 interface FeatureDescriptionProps {
@@ -28,12 +28,12 @@ export function FeatureDescription({ description, featureId, onUpdated }: Featur
     try {
       await save(value);
       queryClient.invalidateQueries({ queryKey: ['feature-view', featureId] });
-      toast.success('Description updated');
+      catalystToast.success('Description updated');
       setIsEditing(false);
       onUpdated?.();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to update description';
-      toast.error('Failed to update description', { description: message });
+      catalystToast.error('Failed to update description');
     }
   };
 

@@ -49,7 +49,7 @@ import {
 } from '@/components/ui/collapsible';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useAIGeneration, type GeneratedTestCase, type GenerationResult } from '@/hooks/test-management/useAIGeneration';
 
 interface AIGenerateTestCasesDialogProps {
@@ -95,7 +95,7 @@ export function AIGenerateTestCasesDialog({
 
   const handleGenerate = useCallback(async () => {
     if (!prompt.trim()) {
-      toast.error('Please enter a description of the test cases you want to generate');
+      catalystToast.error('Please enter a description of the test cases you want to generate');
       return;
     }
 
@@ -112,7 +112,7 @@ export function AIGenerateTestCasesDialog({
     if (result) {
       setGenerationResult(result);
       setSelectedTestCases(new Set(result.testCases.map((_, i) => i)));
-      toast.success(`Generated ${result.testCases.length} test cases`);
+      catalystToast.success(`Generated ${result.testCases.length} test cases`);
     }
   }, [prompt, projectName, featureName, testType, includeEdgeCases, includeNegativeTests, includePerformance, includeSecurity, generateTestCases]);
 
@@ -140,7 +140,7 @@ export function AIGenerateTestCasesDialog({
     if (generationResult && selectedTestCases.size > 0) {
       const selected = Array.from(selectedTestCases).map(i => generationResult.testCases[i]);
       onTestCasesGenerated?.(selected);
-      toast.success(`Added ${selected.length} test case(s) to your project`);
+      catalystToast.success(`Added ${selected.length} test case(s) to your project`);
       onOpenChange(false);
       resetForm();
     }

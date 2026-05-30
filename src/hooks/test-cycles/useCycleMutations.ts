@@ -5,7 +5,7 @@
  */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { 
   type CycleStatus,
   isValidStatusTransition,
@@ -86,11 +86,11 @@ export function useCycleMutations(cycleId: string, options?: UseCycleMutationsOp
         completed: 'Completed',
         archived: 'Archived',
       };
-      toast.success(`Cycle status changed to ${statusLabels[variables.toStatus]}`);
+      catalystToast.success(`Cycle status changed to ${statusLabels[variables.toStatus]}`);
       invalidateQueries();
     },
     onError: (error: Error) => {
-      toast.error('Failed to change status', { description: error.message });
+      catalystToast.error('Failed to change status');
     },
   });
 
@@ -100,11 +100,11 @@ export function useCycleMutations(cycleId: string, options?: UseCycleMutationsOp
       return transitionStatus.mutateAsync({ fromStatus: currentStatus, toStatus: 'active' });
     },
     onSuccess: () => {
-      toast.success('Cycle started');
+      catalystToast.success('Cycle started');
       invalidateQueries();
     },
     onError: (error: Error) => {
-      toast.error('Failed to start cycle', { description: error.message });
+      catalystToast.error('Failed to start cycle');
     },
   });
 
@@ -113,11 +113,11 @@ export function useCycleMutations(cycleId: string, options?: UseCycleMutationsOp
       return transitionStatus.mutateAsync({ fromStatus: currentStatus, toStatus: 'paused' });
     },
     onSuccess: () => {
-      toast.success('Cycle paused');
+      catalystToast.success('Cycle paused');
       invalidateQueries();
     },
     onError: (error: Error) => {
-      toast.error('Failed to pause cycle', { description: error.message });
+      catalystToast.error('Failed to pause cycle');
     },
   });
 
@@ -126,11 +126,11 @@ export function useCycleMutations(cycleId: string, options?: UseCycleMutationsOp
       return transitionStatus.mutateAsync({ fromStatus: currentStatus, toStatus: 'active' });
     },
     onSuccess: () => {
-      toast.success('Cycle resumed');
+      catalystToast.success('Cycle resumed');
       invalidateQueries();
     },
     onError: (error: Error) => {
-      toast.error('Failed to resume cycle', { description: error.message });
+      catalystToast.error('Failed to resume cycle');
     },
   });
 
@@ -139,11 +139,11 @@ export function useCycleMutations(cycleId: string, options?: UseCycleMutationsOp
       return transitionStatus.mutateAsync({ fromStatus: currentStatus, toStatus: 'completed' });
     },
     onSuccess: () => {
-      toast.success('Cycle marked as complete');
+      catalystToast.success('Cycle marked as complete');
       invalidateQueries();
     },
     onError: (error: Error) => {
-      toast.error('Failed to complete cycle', { description: error.message });
+      catalystToast.error('Failed to complete cycle');
     },
   });
 
@@ -152,11 +152,11 @@ export function useCycleMutations(cycleId: string, options?: UseCycleMutationsOp
       return transitionStatus.mutateAsync({ fromStatus: currentStatus, toStatus: 'archived' });
     },
     onSuccess: () => {
-      toast.info('Cycle archived');
+      catalystToast.info('Cycle archived');
       invalidateQueries();
     },
     onError: (error: Error) => {
-      toast.error('Failed to archive cycle', { description: error.message });
+      catalystToast.error('Failed to archive cycle');
     },
   });
 
@@ -165,11 +165,11 @@ export function useCycleMutations(cycleId: string, options?: UseCycleMutationsOp
       return transitionStatus.mutateAsync({ fromStatus: currentStatus, toStatus: 'planned' });
     },
     onSuccess: () => {
-      toast.success('Cycle promoted to planned');
+      catalystToast.success('Cycle promoted to planned');
       invalidateQueries();
     },
     onError: (error: Error) => {
-      toast.error('Failed to promote cycle', { description: error.message });
+      catalystToast.error('Failed to promote cycle');
     },
   });
 

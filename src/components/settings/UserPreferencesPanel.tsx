@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Settings, Globe, Layout, Bell } from '@/lib/atlaskit-icons';
 
 export function UserPreferencesPanel() {
@@ -27,7 +27,7 @@ export function UserPreferencesPanel() {
   const handleSave = () => {
     // Save to local storage or API
     localStorage.setItem('userPreferences', JSON.stringify(prefs));
-    toast.success('Preferences saved');
+    catalystToast.success('Preferences saved');
   };
 
   return (

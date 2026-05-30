@@ -6,7 +6,7 @@ import { Plus, ChevronDown, ChevronRight, TrendingUp, Edit, Trash2 } from '@/lib
 import { useKeyResults, useCreateKeyResult, useUpdateKeyResult, useDeleteKeyResult, useCreateCheckIn, type KeyResult } from '@/hooks/useKeyResults';
 import { CheckInModal } from './CheckInModal';
 import { KeyResultDialog } from './KeyResultDialog';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
@@ -84,8 +84,8 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
       deleteKeyResult.mutate(
         { id: krId, objectiveId },
         {
-          onSuccess: () => toast.success('Key result deleted'),
-          onError: () => toast.error('Failed to delete key result'),
+          onSuccess: () => catalystToast.success('Key result deleted'),
+          onError: () => catalystToast.error('Failed to delete key result'),
         }
       );
     }

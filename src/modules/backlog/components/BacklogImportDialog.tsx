@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Upload, FileText, AlertCircle, CheckCircle2 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Progress } from '@/components/ui/progress';
@@ -78,11 +78,11 @@ export function BacklogImportDialog({
     },
     onSuccess: (count) => {
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success(`Successfully imported ${count} ${itemType}(s)`);
+      catalystToast.success(`Successfully imported ${count} ${itemType}(s)`);
       handleClose();
     },
     onError: (error: any) => {
-      toast.error(`Import failed: ${error.message}`);
+      catalystToast.error(`Import failed: ${error.message}`);
     },
   });
 
@@ -91,7 +91,7 @@ export function BacklogImportDialog({
     if (!selectedFile) return;
 
     if (selectedFile.type !== 'text/csv' && !selectedFile.name.endsWith('.csv')) {
-      toast.error('Please select a valid CSV file');
+      catalystToast.error('Please select a valid CSV file');
       return;
     }
 
@@ -102,7 +102,7 @@ export function BacklogImportDialog({
     const lines = text.split('\n').filter(line => line.trim());
     
     if (lines.length < 2) {
-      toast.error('CSV file must have at least a header row and one data row');
+      catalystToast.error('CSV file must have at least a header row and one data row');
       return;
     }
 

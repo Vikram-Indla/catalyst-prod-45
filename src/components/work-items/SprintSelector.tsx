@@ -7,7 +7,7 @@ import { Lozenge } from '@/components/ads';
 import { Label } from '@/components/ui/label';
 import { CalendarDays, Users } from '@/lib/atlaskit-icons';
 import { format, isWithinInterval, parseISO } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface SprintSelectorProps {
   storyId: string;
@@ -86,11 +86,11 @@ export function SprintSelector({ storyId, currentSprintId, teamId, onSprintChang
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['stories'] });
       queryClient.invalidateQueries({ queryKey: ['story', storyId] });
-      toast.success('Release updated');
+      catalystToast.success('Release updated');
       onSprintChange?.(selectedSprintId);
     },
     onError: () => {
-      toast.error('Failed to update release');
+      catalystToast.error('Failed to update release');
     },
   });
 

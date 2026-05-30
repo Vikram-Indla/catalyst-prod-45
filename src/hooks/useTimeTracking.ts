@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface TimeLog {
   id: string;
@@ -110,10 +110,10 @@ export function useTimeTracking(workItemId: string, workItemType: WorkItemType) 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['time-logs', workItemId, workItemType] });
       queryClient.invalidateQueries({ queryKey: ['time-tracking-data', workItemId, workItemType] });
-      toast.success('Time logged');
+      catalystToast.success('Time logged');
     },
     onError: () => {
-      toast.error('Failed to log time');
+      catalystToast.error('Failed to log time');
     },
   });
 
@@ -138,10 +138,10 @@ export function useTimeTracking(workItemId: string, workItemType: WorkItemType) 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['time-tracking-data', workItemId, workItemType] });
-      toast.success('Estimate updated');
+      catalystToast.success('Estimate updated');
     },
     onError: () => {
-      toast.error('Failed to update estimate');
+      catalystToast.error('Failed to update estimate');
     },
   });
 
@@ -177,10 +177,10 @@ export function useTimeTracking(workItemId: string, workItemType: WorkItemType) 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['time-logs', workItemId, workItemType] });
       queryClient.invalidateQueries({ queryKey: ['time-tracking-data', workItemId, workItemType] });
-      toast.success('Time log deleted');
+      catalystToast.success('Time log deleted');
     },
     onError: () => {
-      toast.error('Failed to delete time log');
+      catalystToast.error('Failed to delete time log');
     },
   });
 

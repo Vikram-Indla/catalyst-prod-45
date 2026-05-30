@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import Spinner from '@atlaskit/spinner';
 import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
 import EyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
@@ -53,7 +53,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
       { displayName: displayName.trim(), email: email.trim(), password, resourceRoleId: roleId || null, catalystOnly: true },
       {
         onSuccess: () => {
-          toast.success('User created. Catalyst-only account — not synced to Jira.');
+          catalystToast.success('User created. Catalyst-only account — not synced to Jira.');
           setDisplayName(''); setEmail(''); setPassword(''); setRoleId(''); setDepartment(''); setErrors({});
           onClose();
           onSuccess();
@@ -63,7 +63,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
           if (msg.includes('23505') || msg.toLowerCase().includes('unique') || msg.toLowerCase().includes('already')) {
             setErrors(p => ({ ...p, email: 'This email is already registered in Catalyst.' }));
           } else {
-            toast.error(msg || 'Failed to create user');
+            catalystToast.error(msg || 'Failed to create user');
           }
         },
       }

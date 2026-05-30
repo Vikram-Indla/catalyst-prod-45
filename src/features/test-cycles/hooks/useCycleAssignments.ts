@@ -4,7 +4,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { CycleRole } from '../types/cycle-config';
 
 interface RpcResponse {
@@ -75,11 +75,11 @@ export function useCycleAssignments(cycleId: string | undefined) {
     },
     onSuccess: () => {
       invalidate();
-      toast.success('Tester assigned');
+      catalystToast.success('Tester assigned');
       // Notifications are now handled automatically by database triggers
     },
     onError: (error: Error) => {
-      toast.error(`Failed to assign tester: ${error.message}`);
+      catalystToast.error(`Failed to assign tester: ${error.message}`);
     },
   });
 
@@ -101,10 +101,10 @@ export function useCycleAssignments(cycleId: string | undefined) {
     },
     onSuccess: () => {
       invalidate();
-      toast.success('Tester removed');
+      catalystToast.success('Tester removed');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to remove tester: ${error.message}`);
+      catalystToast.error(`Failed to remove tester: ${error.message}`);
     },
   });
 
@@ -128,10 +128,10 @@ export function useCycleAssignments(cycleId: string | undefined) {
     },
     onSuccess: () => {
       invalidate();
-      toast.success('Role updated');
+      catalystToast.success('Role updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update role: ${error.message}`);
+      catalystToast.error(`Failed to update role: ${error.message}`);
     },
   });
 

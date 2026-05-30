@@ -13,7 +13,7 @@ import {
   UpdateCycleInput,
   ScopeFilters 
 } from '@/types/test-management';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { auditCycleCreate, auditCycleUpdate, auditCycleDelete } from '@/lib/tmAuditLogger';
 
 // Status mapping (DB uses lowercase)
@@ -243,10 +243,10 @@ export function useCreateCycle() {
       });
       
       queryClient.invalidateQueries({ queryKey: ['tm-cycles', data.project_id] });
-      toast.success('Test cycle created');
+      catalystToast.success('Test cycle created');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create cycle: ${error.message}`);
+      catalystToast.error(`Failed to create cycle: ${error.message}`);
     },
   });
 }
@@ -297,10 +297,10 @@ export function useUpdateCycle() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cycles', data.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycle', data.id] });
-      toast.success('Cycle updated');
+      catalystToast.success('Cycle updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update cycle: ${error.message}`);
+      catalystToast.error(`Failed to update cycle: ${error.message}`);
     },
   });
 }
@@ -326,10 +326,10 @@ export function useDeleteCycle() {
       auditCycleDelete(variables.project_id, variables.id);
       
       queryClient.invalidateQueries({ queryKey: ['tm-cycles', variables.project_id] });
-      toast.success('Cycle deleted');
+      catalystToast.success('Cycle deleted');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete cycle: ${error.message}`);
+      catalystToast.error(`Failed to delete cycle: ${error.message}`);
     },
   });
 }
@@ -396,10 +396,10 @@ export function useCloneCycle() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cycles', data.project_id] });
-      toast.success('Cycle cloned');
+      catalystToast.success('Cycle cloned');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to clone cycle: ${error.message}`);
+      catalystToast.error(`Failed to clone cycle: ${error.message}`);
     },
   });
 }
@@ -506,10 +506,10 @@ export function useAddCasesToScope() {
       queryClient.invalidateQueries({ queryKey: ['tm-cycle-scope', variables.cycle_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycle', variables.cycle_id] });
       queryClient.invalidateQueries({ queryKey: ['cycle-details', variables.cycle_id] });
-      toast.success(`Added ${variables.case_ids.length} case(s) to cycle`);
+      catalystToast.success(`Added ${variables.case_ids.length} case(s) to cycle`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to add cases: ${error.message}`);
+      catalystToast.error(`Failed to add cases: ${error.message}`);
     },
   });
 }
@@ -537,10 +537,10 @@ export function useRemoveFromScope() {
       queryClient.invalidateQueries({ queryKey: ['tm-cycle-scope', variables.cycle_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycle', variables.cycle_id] });
       queryClient.invalidateQueries({ queryKey: ['cycle-details', variables.cycle_id] });
-      toast.success('Removed from cycle');
+      catalystToast.success('Removed from cycle');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to remove: ${error.message}`);
+      catalystToast.error(`Failed to remove: ${error.message}`);
     },
   });
 }
@@ -567,10 +567,10 @@ export function useAssignTester() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cycle-scope', variables.cycle_id] });
-      toast.success('Tester assigned');
+      catalystToast.success('Tester assigned');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to assign: ${error.message}`);
+      catalystToast.error(`Failed to assign: ${error.message}`);
     },
   });
 }
@@ -601,10 +601,10 @@ export function useBulkAssignTesters() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cycle-scope', variables.cycle_id] });
-      toast.success('Testers assigned');
+      catalystToast.success('Testers assigned');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to assign: ${error.message}`);
+      catalystToast.error(`Failed to assign: ${error.message}`);
     },
   });
 }
@@ -634,10 +634,10 @@ export function useCompleteCycle() {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cycles', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycle', data.id] });
-      toast.success('Cycle completed');
+      catalystToast.success('Cycle completed');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to complete cycle: ${error.message}`);
+      catalystToast.error(`Failed to complete cycle: ${error.message}`);
     },
   });
 }
@@ -667,10 +667,10 @@ export function useStartCycle() {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cycles', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycle', data.id] });
-      toast.success('Cycle started');
+      catalystToast.success('Cycle started');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to start cycle: ${error.message}`);
+      catalystToast.error(`Failed to start cycle: ${error.message}`);
     },
   });
 }

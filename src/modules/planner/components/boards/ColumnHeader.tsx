@@ -22,7 +22,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useDeleteColumn, useUpdateColumn } from '../../hooks/useColumnManagement';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { BoardColumn } from '../../types/planner-boards';
 
 interface ColumnHeaderProps {

@@ -28,7 +28,7 @@ import {
 import { useHomeOperationsSummary } from '@/hooks/home/useHomeOperationsData';
 import { useDebounce } from '@/hooks/useDebounce';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -532,7 +532,7 @@ export const HomeContentV2 = memo(function HomeContentV2() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast.error('You must be logged in to assign items');
+        catalystToast.error('You must be logged in to assign items');
         return;
       }
 
@@ -549,7 +549,7 @@ export const HomeContentV2 = memo(function HomeContentV2() {
       const tableName = tableMap[itemType];
       if (!tableName) {
         console.error('[Assign to me] Unknown item type:', itemType);
-        toast.error(`Unknown item type: ${itemType}`);
+        catalystToast.error(`Unknown item type: ${itemType}`);
         return;
       }
       
@@ -566,15 +566,15 @@ export const HomeContentV2 = memo(function HomeContentV2() {
       if (error) throw error;
 
       if (!data || data.length === 0) {
-        toast.error('Item not found or you do not have permission to update it');
+        catalystToast.error('Item not found or you do not have permission to update it');
         return;
       }
 
-      toast.success('Item assigned to you');
+      catalystToast.success('Item assigned to you');
       invalidateItems();
     } catch (err) {
       console.error('[Assign to me] Failed to assign item:', err);
-      toast.error('Failed to assign item');
+      catalystToast.error('Failed to assign item');
     }
   }, [invalidateItems]);
 

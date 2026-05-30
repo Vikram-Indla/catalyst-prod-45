@@ -13,7 +13,7 @@ import { CreateBusinessRequestModal } from '@/components/business-requests/Creat
 import { ProductBacklogFiltersDialog, ProductBacklogFilters } from '../components/ProductBacklogFiltersDialog';
 import { RequestListPanel, RequestDetailPanel, AttachmentUploadModal } from '../components/split-panel';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { useIndustryViewStore } from '@/stores/useIndustryViewStore';
@@ -324,7 +324,7 @@ export default function CatalystDemandList() {
         .eq('id', selectedRequest._dbId);
 
       if (error) {
-        toast.error(`Failed to update: ${error.message}`);
+        catalystToast.error(`Failed to update: ${error.message}`);
         return;
       }
 
@@ -354,7 +354,7 @@ export default function CatalystDemandList() {
       .eq('id', selectedRequest._dbId);
 
     if (error) {
-      toast.error(`Failed to update: ${error.message}`);
+      catalystToast.error(`Failed to update: ${error.message}`);
       return;
     }
 
@@ -369,7 +369,7 @@ export default function CatalystDemandList() {
     
     // Show success toast for status changes
     if (field === 'processStep') {
-      toast.success('Status updated');
+      catalystToast.success('Status updated');
     }
   };
 
@@ -388,7 +388,7 @@ export default function CatalystDemandList() {
 
     const originalTyped = original as { title: string; id: string } | null;
     if (fetchError || !originalTyped) {
-      toast.error('Failed to clone request');
+      catalystToast.error('Failed to clone request');
       return;
     }
 
@@ -415,7 +415,7 @@ export default function CatalystDemandList() {
 
     const newRequestTyped = newRequest as { request_key: string; id: string } | null;
     if (insertError || !newRequestTyped) {
-      toast.error('Failed to clone request');
+      catalystToast.error('Failed to clone request');
       return;
     }
 
@@ -423,7 +423,7 @@ export default function CatalystDemandList() {
 
     // Show the new cloned request key
     const newKey = newRequestTyped.request_key || newRequestTyped.id?.slice(0, 8);
-    toast.success(`Request cloned successfully as ${newKey}`, {
+    catalystToast.success(`Request cloned successfully as ${newKey}`, {
       description: 'The new request has been added to the backlog.',
       duration: 5000,
     });
@@ -438,20 +438,20 @@ export default function CatalystDemandList() {
       .eq('id', selectedRequest._dbId);
 
     if (error) {
-      toast.error('Failed to delete request');
+      catalystToast.error('Failed to delete request');
       return;
     }
 
     setSelectedRequest(null);
     setDeleteDialogOpen(false);
     queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-    toast.success('Request deleted');
+    catalystToast.success('Request deleted');
   };
 
   // Export to CSV
   const handleExport = useCallback(() => {
     if (tableData.length === 0) {
-      toast.error('No items to export');
+      catalystToast.error('No items to export');
       return;
     }
 
@@ -486,10 +486,10 @@ export default function CatalystDemandList() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      toast.success(`Exported ${tableData.length} requests to CSV`);
+      catalystToast.success(`Exported ${tableData.length} requests to CSV`);
     } catch (error) {
       console.error('Export failed:', error);
-      toast.error('Failed to export data');
+      catalystToast.error('Failed to export data');
     }
   }, [tableData]);
 

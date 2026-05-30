@@ -4,7 +4,7 @@ import { Sheet, SheetPortal, SheetTitle, SheetDescription } from '@/components/u
 import * as SheetPrimitive from "@radix-ui/react-dialog";
 // Checkbox replaced with native <input type="checkbox"> to avoid Radix Dialog event interception
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   useConnectedProjects,
   useProjectTickets,
@@ -119,7 +119,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
         setVerifyState('not_configured');
       } else {
         setVerifyState('not_found');
-        toast.error(err.message || 'Verification failed');
+        catalystToast.error(err.message || 'Verification failed');
       }
     }
   }, [addInput, verifyMutation, syncMutation, qc]);
@@ -128,12 +128,12 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
     for (const p of projects) {
       await syncMutation.mutateAsync(p.project_key);
     }
-    toast.success('All projects synced');
+    catalystToast.success('All projects synced');
   }, [projects, syncMutation]);
 
   const handleSyncOne = useCallback(async (key: string) => {
     await syncMutation.mutateAsync(key);
-    toast.success(`${key} synced`);
+    catalystToast.success(`${key} synced`);
   }, [syncMutation]);
 
   const toggleTicket = (key: string) => {
@@ -158,10 +158,10 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
     if (!keys.length) return;
     try {
       const result = await importMutation.mutateAsync(keys);
-      toast.success(`Imported ${result.imported} tickets, ${result.processing} queued for processing`);
+      catalystToast.success(`Imported ${result.imported} tickets, ${result.processing} queued for processing`);
       onOpenChange(false);
     } catch (err: any) {
-      toast.error(err.message || 'Import failed');
+      catalystToast.error(err.message || 'Import failed');
     }
   }, [selectedTickets, importMutation, onOpenChange]);
 

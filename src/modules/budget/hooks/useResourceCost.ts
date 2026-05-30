@@ -4,7 +4,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { ResourceCostHistory, ResourceCurrentCost, ResourceCostFormData } from '../types';
 
 export function useResourceCostHistory(resourceId: string | undefined) {
@@ -71,11 +71,11 @@ export function useAddResourceCost() {
     onSuccess: (_, { resourceId }) => {
       queryClient.invalidateQueries({ queryKey: ['resource-cost-history', resourceId] });
       queryClient.invalidateQueries({ queryKey: ['resource-current-cost', resourceId] });
-      toast.success('Cost record added successfully');
+      catalystToast.success('Cost record added successfully');
     },
     onError: (error) => {
       console.error('Error adding cost record:', error);
-      toast.error('Failed to add cost record');
+      catalystToast.error('Failed to add cost record');
     },
   });
 }

@@ -12,7 +12,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Avatar } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Validation schema
 const versionSchema = z.object({
@@ -83,7 +83,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
 
     // Success
     onSave?.(result.data);
-    toast.success('Version created successfully');
+    catalystToast.success('Version created successfully');
     resetForm();
     onOpenChange(false);
   };

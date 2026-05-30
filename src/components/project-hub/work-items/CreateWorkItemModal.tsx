@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { createWorkItem } from '@/services/workItemService';
 import { X, ArrowUp, ArrowRight, ArrowDown, ChevronsUp, Calendar, Search, ChevronDown } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ─── Types ────────────────────────────────────────────────
 interface WorkTypeOption { id: string; name: string; color: string; icon: string; level: string; }
@@ -203,7 +203,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
 
       queryClient.invalidateQueries({ queryKey: ['ph-work-items'] });
 
-      toast.success(`✓ ${result.item_key} created`, {
+      catalystToast.success(`✓ ${result.item_key} created`, {
         description: result.title,
         duration: 4000,
       });
@@ -218,7 +218,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
         onClose();
       }
     } catch (err: any) {
-      toast.error('Failed to create work item', { description: err.message });
+      catalystToast.error('Failed to create work item');
     } finally {
       setSubmitting(false);
     }

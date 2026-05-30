@@ -30,7 +30,7 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 import Heading from '@atlaskit/heading';
 import Button from '@atlaskit/button/new';
@@ -111,12 +111,12 @@ const SURFACES_BY_CATEGORY: Record<IconCategory, string[]> = {
 function announceSurfaces(category: IconCategory, label: string) {
   const surfaces = SURFACES_BY_CATEGORY[category as keyof typeof SURFACES_BY_CATEGORY];
   if (surfaces) {
-    toast.success(`${label} updated`, {
+    catalystToast.success(`${label} updated`, {
       description: `Now visible in: ${surfaces.join(' · ')}`,
       duration: 9000,
     });
   } else {
-    toast.success(`${label} updated`, {
+    catalystToast.success(`${label} updated`, {
       description: `Available wherever code references "${category}".`,
       duration: 6000,
     });
@@ -207,17 +207,17 @@ function IconCard({
     const file = e.target.files?.[0];
     if (!file) return;
     if (!user?.id) {
-      toast.error('Not signed in');
+      catalystToast.error('Not signed in');
       return;
     }
     const allowed = ['image/svg+xml', 'image/png', 'image/jpeg', 'image/webp'];
     if (!allowed.includes(file.type)) {
-      toast.error(`Unsupported type: ${file.type}. Use SVG / PNG / JPG / WEBP.`);
+      catalystToast.error(`Unsupported type: ${file.type}. Use SVG / PNG / JPG / WEBP.`);
       e.target.value = '';
       return;
     }
     if (file.size > 1024 * 1024) {
-      toast.error(`File too large (${Math.round(file.size / 1024)} KB). Max 1 MB.`);
+      catalystToast.error(`File too large (${Math.round(file.size / 1024)} KB). Max 1 MB.`);
       e.target.value = '';
       return;
     }
@@ -227,7 +227,7 @@ function IconCard({
       await queryClient.invalidateQueries({ queryKey: ['icon-overrides'] });
       announceSurfaces(category, label);
     } catch (err) {
-      toast.error(`Upload failed: ${err instanceof Error ? err.message : String(err)}`);
+      catalystToast.error(`Upload failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setBusy(false);
       e.target.value = '';
@@ -239,9 +239,9 @@ function IconCard({
     try {
       await removeIconOverride(category, itemKey, variant);
       await queryClient.invalidateQueries({ queryKey: ['icon-overrides'] });
-      toast.success(`${label} reset to bundled icon`);
+      catalystToast.success(`${label} reset to bundled icon`);
     } catch (err) {
-      toast.error(`Reset failed: ${err instanceof Error ? err.message : String(err)}`);
+      catalystToast.error(`Reset failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setBusy(false);
     }
@@ -354,19 +354,19 @@ function AddCustomIconModal({ isOpen, onClose, category }: AddCustomIconModalPro
   async function handleCreate() {
     const trimmed = key.trim();
     if (!trimmed) {
-      toast.error('Key is required');
+      catalystToast.error('Key is required');
       return;
     }
     if (!/^[A-Za-z0-9_-]+$/.test(trimmed)) {
-      toast.error('Key must contain only letters, numbers, hyphens, underscores');
+      catalystToast.error('Key must contain only letters, numbers, hyphens, underscores');
       return;
     }
     if (!file) {
-      toast.error('Pick a file');
+      catalystToast.error('Pick a file');
       return;
     }
     if (!user?.id) {
-      toast.error('Not signed in');
+      catalystToast.error('Not signed in');
       return;
     }
     setBusy(true);
@@ -377,7 +377,7 @@ function AddCustomIconModal({ isOpen, onClose, category }: AddCustomIconModalPro
       reset();
       onClose();
     } catch (err) {
-      toast.error(`Create failed: ${err instanceof Error ? err.message : String(err)}`);
+      catalystToast.error(`Create failed: ${err instanceof Error ? err.message : String(err)}`);
       setBusy(false);
     }
   }
@@ -846,7 +846,7 @@ function NewCategoryModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
 
   async function handleCreate() {
     if (!user?.id) {
-      toast.error('Not signed in');
+      catalystToast.error('Not signed in');
       return;
     }
     setBusy(true);
@@ -858,14 +858,14 @@ function NewCategoryModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
         createdBy: user.id,
       });
       await queryClient.invalidateQueries({ queryKey: ['icon-categories'] });
-      toast.success(`Category "${label || name}" created`, {
+      catalystToast.success(`Category "${label || name}" created`, {
         description: 'A new tab is now visible above. Add icons to populate it.',
         duration: 6000,
       });
       reset();
       onClose();
     } catch (err) {
-      toast.error(`Create failed: ${err instanceof Error ? err.message : String(err)}`);
+      catalystToast.error(`Create failed: ${err instanceof Error ? err.message : String(err)}`);
       setBusy(false);
     }
   }
@@ -964,10 +964,10 @@ function ConfirmDeleteCategoryModal({
       await deleteIconCategory(category.name);
       await queryClient.invalidateQueries({ queryKey: ['icon-categories'] });
       await queryClient.invalidateQueries({ queryKey: ['icon-overrides'] });
-      toast.success(`Category "${category.label}" removed`);
+      catalystToast.success(`Category "${category.label}" removed`);
       onClose();
     } catch (err) {
-      toast.error(`Delete failed: ${err instanceof Error ? err.message : String(err)}`);
+      catalystToast.error(`Delete failed: ${err instanceof Error ? err.message : String(err)}`);
       setBusy(false);
     }
   }

@@ -19,7 +19,7 @@ import {
 import { MentionInput, CommentContent } from './MentionInput';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface DocumentCommentsProps {
   documentId: string;
@@ -77,10 +77,10 @@ export function DocumentComments({ documentId }: DocumentCommentsProps) {
       setNewComment('');
       setReplyContent('');
       setReplyingTo(null);
-      toast.success('Comment added');
+      catalystToast.success('Comment added');
     },
     onError: () => {
-      toast.error('Failed to add comment');
+      catalystToast.error('Failed to add comment');
     },
   });
 
@@ -95,7 +95,7 @@ export function DocumentComments({ documentId }: DocumentCommentsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kb-comments', documentId] });
-      toast.success('Comment resolved');
+      catalystToast.success('Comment resolved');
     },
   });
 
@@ -110,7 +110,7 @@ export function DocumentComments({ documentId }: DocumentCommentsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kb-comments', documentId] });
-      toast.success('Comment deleted');
+      catalystToast.success('Comment deleted');
     },
   });
 

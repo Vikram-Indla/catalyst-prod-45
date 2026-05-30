@@ -25,7 +25,7 @@ import {
 import { TestCase } from '@/types/test-cases';
 import { PriorityBadge, TypeBadge, LastRunBadge } from './badges';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface TestCasesKanbanProps {
   testCases: TestCase[];
@@ -77,10 +77,10 @@ function KanbanCard({ testCase, onClick }: KanbanCardProps) {
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onClick?.(); }}>
               <Eye className="w-4 h-4 mr-2" /> View
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); toast.info('Edit coming soon'); }}>
+            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); catalystToast.info('Edit coming soon'); }}>
               <Pencil className="w-4 h-4 mr-2" /> Edit
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); toast.success(`Executing ${testCase.id}...`); }}>
+            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); catalystToast.success(`Executing ${testCase.id}...`); }}>
               <Play className="w-4 h-4 mr-2" /> Execute
             </DropdownMenuItem>
           </DropdownMenuContent>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Search, Loader2, CheckCircle2 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { RA_KEYS } from '@/hooks/useReqAssist';
 import { sanitiseError } from '@/lib/errorUtils';
 
@@ -83,12 +83,12 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
 
       if (failures.length > 0 && successes.length > 0) {
         // Partial success — still mark succeeded ones
-        toast.warning(`Published ${successes.length} of ${epics.length} epics. ${failures.length} failed.`);
+        catalystToast.warning(`Published ${successes.length} of ${epics.length} epics. ${failures.length} failed.`);
       } else if (failures.length > 0 && successes.length === 0) {
-        toast.error('Publish failed — no epics were created');
+        catalystToast.error('Publish failed — no epics were created');
         return;
       } else {
-        toast.success(`${successes.length} epics published to ${selectedProject.name}`);
+        catalystToast.success(`${successes.length} epics published to ${selectedProject.name}`);
       }
 
       // Update brd_epics.publish_status = 'published'
@@ -107,7 +107,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
 
       onPublished();
     } catch (err: any) {
-      toast.error(sanitiseError(err));
+      catalystToast.error(sanitiseError(err));
     } finally {
       setPublishing(false);
     }

@@ -11,7 +11,7 @@ import {
 import { StatusPill } from './StatusPill';
 import { useWorkflowEngine } from '../engine/useWorkflowEngine';
 import type { AvailableTransition } from '../engine/types';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface TransitionControlsProps {
   issue: Record<string, unknown>;
@@ -45,18 +45,18 @@ export function TransitionControls({
       const result = await executeTransition(transition.id, issue);
 
       if (result.success && result.newStatusId) {
-        toast.success(`Issue transitioned to ${transition.toStatus.name}`);
+        catalystToast.success(`Issue transitioned to ${transition.toStatus.name}`);
         onTransitionComplete?.(result.newStatusId);
       } else {
         const errorMessages = result.errors.map(e => e.message).join(', ');
-        toast.error(`Transition failed: ${errorMessages}`);
+        catalystToast.error(`Transition failed: ${errorMessages}`);
       }
 
       if (result.warnings.length > 0) {
-        result.warnings.forEach(w => toast.warning(w));
+        result.warnings.forEach(w => catalystToast.warning(w));
       }
     } catch (error) {
-      toast.error('Failed to execute transition');
+      catalystToast.error('Failed to execute transition');
       console.error('Transition error:', error);
     } finally {
       setIsTransitioning(false);

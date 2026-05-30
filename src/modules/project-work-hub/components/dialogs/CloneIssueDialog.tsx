@@ -14,7 +14,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 import Modal, {
   ModalBody,
@@ -191,11 +191,11 @@ export function CloneIssueDialog({ open, onClose, source }: CloneIssueDialogProp
   const onSubmit = async (values: CloneFormValues) => {
     const summary = (values.summary ?? '').trim();
     if (summary.length < 3 || summary.length > 255) {
-      toast.error('Summary must be 3–255 characters');
+      catalystToast.error('Summary must be 3–255 characters');
       return;
     }
     if (!values.reporter?.data?.jiraAccountId) {
-      toast.error('Reporter is required');
+      catalystToast.error('Reporter is required');
       return;
     }
 
@@ -214,11 +214,11 @@ export function CloneIssueDialog({ open, onClose, source }: CloneIssueDialogProp
       });
       if (error || (data as any)?.error) {
         const msg = (data as any)?.error ?? error?.message ?? 'Clone failed';
-        toast.error(msg);
+        catalystToast.error(msg);
         return;
       }
       const newKey = (data as any)?.new_issue_key as string;
-      toast.success(`Cloned to ${newKey}`);
+      catalystToast.success(`Cloned to ${newKey}`);
       onClose();
       if (newKey) navigate(`/browse/${newKey}`);
     } finally {

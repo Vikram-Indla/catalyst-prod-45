@@ -18,7 +18,7 @@ import { AgingPressureBar } from '../components/AgingPressureBar';
 import { RequiresAttentionTabs } from '../components/RequiresAttentionTabs';
 import { DrilldownDrawer } from '../components/DrilldownDrawer';
 import { TimeRangeSelector } from '../components/TimeRangeSelector';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 import type { TimeRange, DrilldownFilter, IncidentWithSLA } from '../types';
@@ -95,14 +95,14 @@ export default function IncidentAnalyticsPage() {
         target_date: formData.target_resolution_date,
       });
       
-      toast.success('Incident created successfully');
+      catalystToast.success('Incident created successfully');
       setCreateDialogOpen(false);
       
       if (result?.id) {
         navigate(`/release/incidents/${result.id}?created=true`);
       }
     } catch (error: any) {
-      toast.error(error?.message || 'Failed to create incident');
+      catalystToast.error(error?.message || 'Failed to create incident');
     }
   };
 

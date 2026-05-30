@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { X, Link2 } from '@/lib/atlaskit-icons';
 
 import { ChangeNumberSelect } from '@/components/common/ChangeNumberSelect';
@@ -95,7 +95,7 @@ export function CreateStoryModal({
       queryClient.invalidateQueries({ queryKey: ['feature-detail', parentFeature.id] });
       queryClient.invalidateQueries({ queryKey: ['feature-story-stats', parentFeature.id] });
       queryClient.invalidateQueries({ queryKey: ['stories', parentFeature.id] });
-      toast.success('Story created successfully');
+      catalystToast.success('Story created successfully');
       
       if (createAnother) {
         resetForm();
@@ -104,17 +104,17 @@ export function CreateStoryModal({
       }
     },
     onError: (error: any) => {
-      toast.error('Failed to create story', { description: error.message });
+      catalystToast.error('Failed to create story');
     },
   });
 
   const handleSubmit = () => {
     if (!title.trim()) {
-      toast.error('Title is required');
+      catalystToast.error('Title is required');
       return;
     }
     if (title.length < 3) {
-      toast.error('Title must be at least 3 characters');
+      catalystToast.error('Title must be at least 3 characters');
       return;
     }
 

@@ -25,7 +25,7 @@ import React from 'react';
 import { useMutation } from '@tanstack/react-query';
 import Select from '@atlaskit/select';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { PhIssue } from '../types';
 
 interface Props {
@@ -84,18 +84,18 @@ export function CatalystAssessmentFeatureField({ issue, onUpdate }: Props) {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Assessment Feature updated');
+      catalystToast.success('Assessment Feature updated');
       onUpdate?.();
     },
     onError: (e: any) => {
       const msg = e?.message ?? '';
       if (msg.includes('assessment_feature') || msg.includes('column')) {
-        toast.info(
+        catalystToast.info(
           'Assessment Feature column not yet in database. Run migration ' +
           'supabase/migrations/20260428180000_jira_compare_severity_assessment_feature.sql.',
         );
       } else {
-        toast.error(`Failed to save Assessment Feature: ${msg}`);
+        catalystToast.error(`Failed to save Assessment Feature: ${msg}`);
       }
     },
   });

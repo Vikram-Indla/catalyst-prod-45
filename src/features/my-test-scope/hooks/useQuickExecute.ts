@@ -5,7 +5,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { myTestScopeKeys } from './useMyTestScope';
 
 type QuickAction = 'passed' | 'failed' | 'blocked' | 'not_run';
@@ -47,10 +47,10 @@ export function useQuickExecute() {
         blocked: '⚠️ Test marked as blocked',
         not_run: '↩️ Test unblocked',
       };
-      toast.success(messages[action]);
+      catalystToast.success(messages[action]);
     },
     onError: (error) => {
-      toast.error(`Failed to update test: ${error.message}`);
+      catalystToast.error(`Failed to update test: ${error.message}`);
     },
   });
 }

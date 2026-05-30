@@ -8,7 +8,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Search, X, ChevronRight, Loader2 } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { resolveStatusCategory } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
@@ -147,12 +147,12 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
       await enqueueWriteBack({ phIssueId: issueId, fieldName: 'issue_type', newValue: subtaskType });
     },
     onSuccess: () => {
-      toast.success(`${issueKey} converted to ${subtaskType}`);
+      catalystToast.success(`${issueKey} converted to ${subtaskType}`);
       queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
       queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
       onClose();
     },
-    onError: () => toast.error('Conversion failed'),
+    onError: () => catalystToast.error('Conversion failed'),
   });
 
   const canProceedStep0 = !!selectedParentId && !!subtaskType;

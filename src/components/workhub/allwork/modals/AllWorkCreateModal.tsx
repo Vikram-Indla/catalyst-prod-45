@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, Loader2, ChevronDown, Check } from '@/lib/atlaskit-icons';
 import { useIssueTypes } from '@/hooks/workhub/useWorkItems';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface Props {
@@ -116,7 +116,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
     if (!canSubmit || isSubmitting) return;
     setIsSubmitting(true);
     try {
-      toast.success(`Work item created: ${summary}`);
+      catalystToast.success(`Work item created: ${summary}`);
       qc.invalidateQueries({ queryKey: ['workhub'] });
       qc.invalidateQueries({ queryKey: ['projecthub'] });
       onCreated();
@@ -127,7 +127,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
         onClose();
       }
     } catch (err: any) {
-      toast.error(`Failed to create work item. Please try again.`);
+      catalystToast.error(`Failed to create work item. Please try again.`);
     } finally {
       setIsSubmitting(false);
     }

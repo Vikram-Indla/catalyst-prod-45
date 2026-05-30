@@ -5,7 +5,7 @@
 import { useCallback, useState } from 'react';
 import { X, Pencil, Clipboard, Trash2 } from '@/lib/atlaskit-icons';
 import { createPortal } from 'react-dom';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 interface JiraBulkActionBarProps {
@@ -41,7 +41,7 @@ export function JiraBulkActionBar({
       // Fallback: copy just the IDs
       const text = selectedIds.join('\n');
       navigator.clipboard.writeText(text);
-      toast.success(`${count} ${pluralLabel} copied to clipboard`);
+      catalystToast.success(`${count} ${pluralLabel} copied to clipboard`);
       return;
     }
 
@@ -58,12 +58,12 @@ export function JiraBulkActionBar({
     const text = [header, ...rows].join('\n');
 
     navigator.clipboard.writeText(text).then(() => {
-      toast.success(`${count} ${pluralLabel} copied to clipboard`, {
+      catalystToast.success(`${count} ${pluralLabel} copied to clipboard`, {
         description: 'Paste into any spreadsheet or text editor',
         duration: 3000,
       });
     }).catch(() => {
-      toast.error('Failed to copy to clipboard');
+      catalystToast.error('Failed to copy to clipboard');
     });
   }, [selectedIds, items, count, pluralLabel]);
 
@@ -72,7 +72,7 @@ export function JiraBulkActionBar({
     if (onEdit) {
       onEdit(selectedIds);
     } else {
-      toast.info('Select items and use inline editing', { duration: 2000 });
+      catalystToast.info('Select items and use inline editing');
     }
   }, [selectedIds, onEdit]);
 
@@ -92,11 +92,11 @@ export function JiraBulkActionBar({
           .delete()
           .in('id', selectedIds);
         if (error) throw error;
-        toast.success(`${count} ${pluralLabel} deleted`);
+        catalystToast.success(`${count} ${pluralLabel} deleted`);
       }
       onClear();
     } catch (err: any) {
-      toast.error(`Failed to delete: ${err.message}`);
+      catalystToast.error(`Failed to delete: ${err.message}`);
     } finally {
       setIsDeleting(false);
       setDeleteConfirm(false);

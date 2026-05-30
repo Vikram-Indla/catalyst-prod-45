@@ -13,7 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getWorkstreamColor } from '@/lib/workstream-colors';
 import { useAuth } from '@/lib/auth';
 import { useUserRole } from '@/hooks/useUserRole';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface SidebarFieldsProps {
   task: any;
@@ -590,7 +590,7 @@ function LabelsField({ taskId }: { taskId: string }) {
       queryClient.invalidateQueries({ queryKey: ['task-label-assignments', taskId] });
     },
     onError: () => {
-      toast.error('Failed to update label');
+      catalystToast.error('Failed to update label');
     },
   });
 
@@ -610,13 +610,13 @@ function LabelsField({ taskId }: { taskId: string }) {
       toggleLabel.mutate(data.id);
       setNewLabelName('');
       setIsCreating(false);
-      toast.success('Label created');
+      catalystToast.success('Label created');
     },
     onError: (err: any) => {
       if (err.message?.includes('duplicate')) {
-        toast.error('Label already exists');
+        catalystToast.error('Label already exists');
       } else {
-        toast.error('Failed to create label');
+        catalystToast.error('Failed to create label');
       }
     },
   });
@@ -639,10 +639,10 @@ function LabelsField({ taskId }: { taskId: string }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['task-labels'] });
       queryClient.invalidateQueries({ queryKey: ['task-label-assignments'] });
-      toast.success('Label deleted');
+      catalystToast.success('Label deleted');
     },
     onError: () => {
-      toast.error('Failed to delete label');
+      catalystToast.error('Failed to delete label');
     },
   });
 

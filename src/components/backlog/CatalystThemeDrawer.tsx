@@ -53,7 +53,7 @@ import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { LinkObjectivePicker } from './pickers/LinkObjectivePicker';
 import { LinkEpicPicker } from './pickers/LinkEpicPicker';
 import { ThemeStatusDropdown } from './ThemeStatusDropdown';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -813,7 +813,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
       queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
       queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
       queryClient.invalidateQueries({ queryKey: ['themes'] });
-      toast.success('Theme name updated');
+      catalystToast.success('Theme name updated');
     },
   });
 
@@ -832,10 +832,10 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
       queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
       queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
       queryClient.invalidateQueries({ queryKey: ['themes'] });
-      toast.success('Status updated');
+      catalystToast.success('Status updated');
     },
     onError: () => {
-      toast.error('Failed to update status');
+      catalystToast.error('Failed to update status');
     },
   });
 
@@ -852,7 +852,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
       queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
       queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
       queryClient.invalidateQueries({ queryKey: ['themes'] });
-      toast.success('Theme deleted');
+      catalystToast.success('Theme deleted');
       onClose();
     },
   });
@@ -874,7 +874,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
       queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
       queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
       queryClient.invalidateQueries({ queryKey: ['themes'] });
-      toast.success('Theme duplicated');
+      catalystToast.success('Theme duplicated');
     },
   });
 
@@ -903,7 +903,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
   const handleCopyLink = () => {
     const url = `${window.location.origin}/backlog/themes/${theme.id}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard', {
+    catalystToast.success('Link copied to clipboard', {
       description: formatThemeKey(theme.id),
       duration: 2000,
     });

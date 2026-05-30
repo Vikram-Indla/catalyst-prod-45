@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Trash2 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -60,7 +60,7 @@ export function EditSkillModal({ open, onClose, skill, onDelete, onSave }: EditS
         proficiency: formData.proficiency,
         notes: formData.notes
       });
-      toast.success('Skill assessment updated successfully');
+      catalystToast.success('Skill assessment updated successfully');
       onClose();
     } finally {
       setIsSaving(false);

@@ -8,7 +8,7 @@ import { Plus, Pencil, Trash2, GripVertical, Building2, AlertTriangle } from 'lu
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface LinkedRecord {
   full_name: string;

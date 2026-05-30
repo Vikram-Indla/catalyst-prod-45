@@ -5,7 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { useCreateProject, useProjects } from '@/hooks/useProjectHub';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Avatar } from '@/components/ads';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -105,13 +105,13 @@ export function CreateProjectDialog({ open, onClose }: Props) {
         lead_id: leadId || undefined,
         jira_key: linkJira && jiraKey.trim() ? jiraKey.trim().toUpperCase() : undefined,
       });
-      toast.success('Project created successfully');
+      catalystToast.success('Project created successfully');
       onClose();
     } catch (err: unknown) {
       if (err instanceof Error && err.message.includes('duplicate')) {
         setErrors(prev => ({ ...prev, key: 'A project with this key already exists' }));
       } else {
-        toast.error(err instanceof Error ? err.message : 'Failed to create project');
+        catalystToast.error(err instanceof Error ? err.message : 'Failed to create project');
       }
     }
   };

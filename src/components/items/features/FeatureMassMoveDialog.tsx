@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface FeatureMassMoveDialogProps {
   open: boolean;
@@ -38,7 +38,7 @@ export function FeatureMassMoveDialog({ open, onClose, selectedFeatureIds }: Fea
   });
 
   const handleMassMove = async () => {
-    toast.success(`Moving ${selectedFeatureIds.length} features`);
+    catalystToast.success(`Moving ${selectedFeatureIds.length} features`);
     onClose();
   };
 

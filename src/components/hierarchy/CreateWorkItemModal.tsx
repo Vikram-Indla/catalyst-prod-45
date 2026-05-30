@@ -8,7 +8,7 @@ import { X, ArrowLeft, ChevronDown } from '@/lib/atlaskit-icons';
 import { HIERARCHY_LEVELS, canBeParentOf } from '@/types/hierarchy';
 import type { WorkItem, HierarchyLevel } from '@/types/hierarchy';
 import { useCreateWorkItem, useStatuses, usePriorities } from '@/hooks/useHierarchy';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface CreateWorkItemModalProps {
   open: boolean;
@@ -124,10 +124,10 @@ export function CreateWorkItemModal({ open, onClose, projectId, parentItem }: Cr
         priorityId: priorityId || undefined,
       });
       const key = (result as any)?.key || selectedLevel.name;
-      toast.success(`${key} created`);
+      catalystToast.success(`${key} created`);
       onClose();
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to create work item');
+      catalystToast.error(err?.message || 'Failed to create work item');
       // Keep modal open for retry
     }
   };

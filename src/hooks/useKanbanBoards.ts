@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type {
   KanbanBoard,
   CreateBoardInput,
@@ -111,11 +111,11 @@ export function useCreateBoard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kanban-boards'] });
-      toast.success('Board created successfully');
+      catalystToast.success('Board created successfully');
     },
     onError: (error) => {
       console.error('Error creating board:', error);
-      toast.error('Failed to create board');
+      catalystToast.error('Failed to create board');
     },
   });
 }
@@ -142,11 +142,11 @@ export function useUpdateBoard() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['kanban-boards'] });
       queryClient.invalidateQueries({ queryKey: ['kanban-board', data.id] });
-      toast.success('Board updated successfully');
+      catalystToast.success('Board updated successfully');
     },
     onError: (error) => {
       console.error('Error updating board:', error);
-      toast.error('Failed to update board');
+      catalystToast.error('Failed to update board');
     },
   });
 }
@@ -165,11 +165,11 @@ export function useDeleteBoard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kanban-boards'] });
-      toast.success('Board deleted successfully');
+      catalystToast.success('Board deleted successfully');
     },
     onError: (error) => {
       console.error('Error deleting board:', error);
-      toast.error('Failed to delete board');
+      catalystToast.error('Failed to delete board');
     },
   });
 }
@@ -219,11 +219,11 @@ export function useCreateColumn() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['kanban-columns', data.board_id] });
-      toast.success('Column created successfully');
+      catalystToast.success('Column created successfully');
     },
     onError: (error) => {
       console.error('Error creating column:', error);
-      toast.error('Failed to create column');
+      catalystToast.error('Failed to create column');
     },
   });
 }
@@ -253,11 +253,11 @@ export function useUpdateColumn() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['kanban-columns', data.board_id] });
-      toast.success('Column updated successfully');
+      catalystToast.success('Column updated successfully');
     },
     onError: (error) => {
       console.error('Error updating column:', error);
-      toast.error('Failed to update column');
+      catalystToast.error('Failed to update column');
     },
   });
 }
@@ -277,11 +277,11 @@ export function useDeleteColumn() {
     },
     onSuccess: ({ boardId }) => {
       queryClient.invalidateQueries({ queryKey: ['kanban-columns', boardId] });
-      toast.success('Column deleted successfully');
+      catalystToast.success('Column deleted successfully');
     },
     onError: (error) => {
       console.error('Error deleting column:', error);
-      toast.error('Failed to delete column');
+      catalystToast.error('Failed to delete column');
     },
   });
 }
@@ -322,11 +322,11 @@ export function useCreateSwimLane() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['swim-lanes', data.board_id] });
-      toast.success('Swim lane created successfully');
+      catalystToast.success('Swim lane created successfully');
     },
     onError: (error) => {
       console.error('Error creating swim lane:', error);
-      toast.error('Failed to create swim lane');
+      catalystToast.error('Failed to create swim lane');
     },
   });
 }
@@ -367,11 +367,11 @@ export function useAddCard() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['kanban-cards', data.board_id] });
-      toast.success('Card added to board');
+      catalystToast.success('Card added to board');
     },
     onError: (error) => {
       console.error('Error adding card:', error);
-      toast.error('Failed to add card');
+      catalystToast.error('Failed to add card');
     },
   });
 }
@@ -408,11 +408,11 @@ export function useMoveCard() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['kanban-cards', data.board_id] });
-      toast.success('Card moved');
+      catalystToast.success('Card moved');
     },
     onError: (error) => {
       console.error('Error moving card:', error);
-      toast.error('Failed to move card');
+      catalystToast.error('Failed to move card');
     },
   });
 }
@@ -451,11 +451,11 @@ export function useAddBoardUser() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['board-users', data.board_id] });
-      toast.success('User added to board');
+      catalystToast.success('User added to board');
     },
     onError: (error) => {
       console.error('Error adding user:', error);
-      toast.error('Failed to add user');
+      catalystToast.error('Failed to add user');
     },
   });
 }

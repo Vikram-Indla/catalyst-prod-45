@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface ResourceLocation {
   id: string;
@@ -73,10 +73,10 @@ export function useResourceLocations() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['resource-locations'] });
       queryClient.invalidateQueries({ queryKey: ['resource-locations-all'] });
-      toast.success(`Location "${data.name}" created`);
+      catalystToast.success(`Location "${data.name}" created`);
     },
     onError: (error) => {
-      toast.error(`Failed to create location: ${error.message}`);
+      catalystToast.error(`Failed to create location: ${error.message}`);
     },
   });
 
@@ -95,10 +95,10 @@ export function useResourceLocations() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resource-locations'] });
       queryClient.invalidateQueries({ queryKey: ['resource-locations-all'] });
-      toast.success('Location updated');
+      catalystToast.success('Location updated');
     },
     onError: (error) => {
-      toast.error(`Failed to update location: ${error.message}`);
+      catalystToast.error(`Failed to update location: ${error.message}`);
     },
   });
 
@@ -114,10 +114,10 @@ export function useResourceLocations() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resource-locations'] });
       queryClient.invalidateQueries({ queryKey: ['resource-locations-all'] });
-      toast.success('Location deleted');
+      catalystToast.success('Location deleted');
     },
     onError: (error) => {
-      toast.error(`Failed to delete location: ${error.message}`);
+      catalystToast.error(`Failed to delete location: ${error.message}`);
     },
   });
 

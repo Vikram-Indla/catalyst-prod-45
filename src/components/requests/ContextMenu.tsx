@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { ExternalLink, Pencil, Copy, Link2, ChevronRight, Archive, Trash2, CopyPlus } from '@/lib/atlaskit-icons';
 import type { Request, RequestStatus } from '@/types/request';
 import { STATUS_DISPLAY } from '@/types/request';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useProfileOptions } from '@/hooks/useRequestLookups';
 
 interface ContextMenuProps {
@@ -91,13 +91,13 @@ export function ContextMenu({ position, request, onAction, onClose }: ContextMen
         icon={<Copy size={14} />}
         onClick={() => {
           navigator.clipboard.writeText(request.initiative_key);
-          toast.success('Copied!');
+          catalystToast.success('Copied!');
           onClose();
         }}
       >
         Copy ID
       </MenuItem>
-      <MenuItem icon={<Link2 size={14} />} onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/producthub/request/${request.id}`); toast.success('Link copied!'); onClose(); }}>
+      <MenuItem icon={<Link2 size={14} />} onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/producthub/request/${request.id}`); catalystToast.success('Link copied!'); onClose(); }}>
         Copy link
       </MenuItem>
 

@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getWorkstreamColor } from '@/lib/workstream-colors';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useAuth } from '@/lib/auth';
 import { useUserRole } from '@/hooks/useUserRole';
 
@@ -483,7 +483,7 @@ export function DrawerHeader({
   const handleCopyLink = () => {
     const url = `${window.location.origin}/taskhub/task-list?task=${task.id}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
   };
 
   return (

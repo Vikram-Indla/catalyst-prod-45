@@ -24,7 +24,7 @@ import {
   downloadBlob,
   type ExportOptions 
 } from '../lib/pdf-export';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 
 interface RoadmapExportDialogProps {
@@ -70,18 +70,18 @@ export function RoadmapExportDialog({
         });
         
         downloadBlob(blob, `roadmap-${timestamp}.pdf`);
-        toast.success('PDF exported successfully');
+        catalystToast.success('PDF exported successfully');
       } else {
         const csv = exportRoadmapToCSV(items);
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         downloadBlob(blob, `roadmap-${timestamp}.csv`);
-        toast.success('CSV exported successfully');
+        catalystToast.success('CSV exported successfully');
       }
       
       onClose();
     } catch (error) {
       console.error('Export failed:', error);
-      toast.error('Export failed. Please try again.');
+      catalystToast.error('Export failed. Please try again.');
     } finally {
       setIsExporting(false);
     }

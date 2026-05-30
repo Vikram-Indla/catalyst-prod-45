@@ -19,7 +19,7 @@ import {
   SkipForward,
 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 type QuickResult = 'passed' | 'failed' | 'blocked' | 'skipped';
 
@@ -48,7 +48,7 @@ export function QuickExecuteButton({
     if (!selectedResult) return;
 
     onExecute?.(selectedResult, notes);
-    toast.success(`Test case marked as ${selectedResult}`, {
+    catalystToast.success(`Test case marked as ${selectedResult}`, {
       description: testCaseTitle,
     });
 

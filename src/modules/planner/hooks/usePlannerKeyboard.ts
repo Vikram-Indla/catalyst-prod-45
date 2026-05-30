@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useEffect, useCallback } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface PlannerKeyboardActions {
   onCreateTask: () => void;
@@ -72,7 +72,7 @@ export function usePlannerKeyboard(
     // ?: Show shortcuts help
     if (e.key === '?' && !e.metaKey && !e.ctrlKey) {
       e.preventDefault();
-      toast.info(
+      catalystToast.info(
         'Keyboard Shortcuts',
         {
           description: 'C: Create task | A: AI Panel | ⌘K: Search | J/K: Navigate | Esc: Close',

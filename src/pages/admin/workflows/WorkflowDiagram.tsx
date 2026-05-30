@@ -40,7 +40,7 @@ import Button from '@atlaskit/button/new';
 import { AdminAlertDialog } from '@/components/admin/admin-alert-dialog';
 import { typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { WorkflowScheme, WorkflowStatus, WorkflowTransition } from '@/hooks/useCatalystWorkflow';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -390,10 +390,10 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
     if (addingTransition) {
       if (!transitionFrom) {
         setTransitionFrom(node.id);
-        toast.info('Now click the target status to complete the transition');
+        catalystToast.info('Now click the target status to complete the transition');
       } else {
         if (transitionFrom === node.id) {
-          toast.error('Source and target must be different');
+          catalystToast.error('Source and target must be different');
           return;
         }
         createTransition(transitionFrom, node.id);
@@ -417,7 +417,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
       t.from_status_id === fromId && t.to_status_id === toId && !t.is_global
     );
     if (existing) {
-      toast.info('Transition already exists');
+      catalystToast.info('Transition already exists');
       return;
     }
 
@@ -433,9 +433,9 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
       if (error) throw error;
       qc.invalidateQueries({ queryKey: ['catalyst', 'workflows'] });
       onInvalidate();
-      toast.success(`Transition added: ${fromStatus.name} → ${toStatus.name}`);
+      catalystToast.success(`Transition added: ${fromStatus.name} → ${toStatus.name}`);
     } catch (e: any) {
-      toast.error(e.message || 'Failed to add transition');
+      catalystToast.error(e.message || 'Failed to add transition');
     }
   }
 
@@ -451,9 +451,9 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
       setPositions(prev => { const next = { ...prev }; delete next[selectedNode]; return next; });
       qc.invalidateQueries({ queryKey: ['catalyst', 'workflows'] });
       onInvalidate();
-      toast.success(`Removed "${status.name}"`);
+      catalystToast.success(`Removed "${status.name}"`);
     } catch (e: any) {
-      toast.error(e.message || 'Failed to delete status');
+      catalystToast.error(e.message || 'Failed to delete status');
     }
   }
 
@@ -480,9 +480,9 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
       setShowAddStatus(false);
       qc.invalidateQueries({ queryKey: ['catalyst', 'workflows'] });
       onInvalidate();
-      toast.success(`Status "${newStatusName.trim()}" added`);
+      catalystToast.success(`Status "${newStatusName.trim()}" added`);
     } catch (e: any) {
-      toast.error(e.message || 'Failed to add status');
+      catalystToast.error(e.message || 'Failed to add status');
     }
   }
 
@@ -505,9 +505,9 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
       qc.invalidateQueries({ queryKey: ['catalyst', 'workflows'] });
       qc.invalidateQueries({ queryKey: ['ph-work-types-settings'] });
       onInvalidate();
-      toast.success(`"${scheme.name}" published — applied to all ${scheme.issue_type} work types`);
+      catalystToast.success(`"${scheme.name}" published — applied to all ${scheme.issue_type} work types`);
     } catch (e: any) {
-      toast.error(e.message || 'Failed to publish');
+      catalystToast.error(e.message || 'Failed to publish');
     } finally {
       setPublishing(false);
     }
@@ -583,7 +583,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
             setAddingTransition(a => !a);
             setTransitionFrom(null);
             setShowAddStatus(false);
-            if (!addingTransition) toast.info('Click source status, then target status');
+            if (!addingTransition) catalystToast.info('Click source status, then target status');
           }}
         >
           {addingTransition

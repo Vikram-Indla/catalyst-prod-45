@@ -25,7 +25,7 @@ import { cn } from '@/lib/utils';
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 import { format } from 'date-fns';
 import catalystLogo from '@/assets/catalyst-logo.png';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { InsightPeriod, DrilldownFilter, IncidentWithSLA, ConversionMetrics, PeriodMetrics, PeriodComparison } from '../types';
 
 const PERIOD_TABS: { value: InsightPeriod; label: string }[] = [
@@ -1251,14 +1251,14 @@ export default function IncidentInsightsPage() {
         target_date: formData.target_resolution_date,
       });
       
-      toast.success('Incident created successfully');
+      catalystToast.success('Incident created successfully');
       setCreateDialogOpen(false);
       
       if (result?.id) {
         navigate(`/release/incidents/${result.id}?created=true`);
       }
     } catch (error: any) {
-      toast.error(error?.message || 'Failed to create incident');
+      catalystToast.error(error?.message || 'Failed to create incident');
     }
   };
 

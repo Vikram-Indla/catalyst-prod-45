@@ -5,7 +5,7 @@ import { Search, UserPlus, Trash2, Loader2 } from '@/lib/atlaskit-icons';
 import { AddMemberDialog } from './AddMemberDialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-purple-60, #7C3AED)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))', '#0284C7', '#6366F1'];
 function getColor(name: string) {
@@ -71,8 +71,8 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
       const { error } = await typedQuery('project_members').delete().eq('project_id', projectId).eq('user_id', userId);
       if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['project-team'] }); queryClient.invalidateQueries({ queryKey: ['projects'] }); toast.success('Member removed'); },
-    onError: (err: Error) => { toast.error(`Failed to remove: ${err.message}`); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['project-team'] }); queryClient.invalidateQueries({ queryKey: ['projects'] }); catalystToast.success('Member removed'); },
+    onError: (err: Error) => { catalystToast.error(`Failed to remove: ${err.message}`); },
   });
 
   const addMember = useMutation({
@@ -82,10 +82,10 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
       const { error } = await typedQuery('project_members').insert({ project_id: projectId, user_id: memberUserId, role: roleName || 'viewer', status: 'active', added_by: user?.id || null });
       if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['project-team'] }); queryClient.invalidateQueries({ queryKey: ['projects'] }); toast.success('Member added to project'); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['project-team'] }); queryClient.invalidateQueries({ queryKey: ['projects'] }); catalystToast.success('Member added to project'); },
     onError: (err: Error) => {
-      if (err.message?.includes('duplicate') || err.message?.includes('unique')) toast.error('This user is already a member of this project');
-      else toast.error(`Failed to add member: ${err.message}`);
+      if (err.message?.includes('duplicate') || err.message?.includes('unique')) catalystToast.error('This user is already a member of this project');
+      else catalystToast.error(`Failed to add member: ${err.message}`);
     },
   });
 

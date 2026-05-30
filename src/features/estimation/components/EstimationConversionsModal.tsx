@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, X, Info } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 
 interface EstimationConversion {
@@ -49,7 +49,7 @@ export function EstimationConversionsModal({ open, onOpenChange }: EstimationCon
       .order('sort_order');
 
     if (error) {
-      toast.error('Failed to load conversions');
+      catalystToast.error('Failed to load conversions');
       return;
     }
 
@@ -108,10 +108,10 @@ export function EstimationConversionsModal({ open, onOpenChange }: EstimationCon
 
       if (error) throw error;
 
-      toast.success('Estimation conversions saved successfully');
+      catalystToast.success('Estimation conversions saved successfully');
       onOpenChange(false);
     } catch (error: any) {
-      toast.error(`Failed to save conversions: ${error.message}`);
+      catalystToast.error(`Failed to save conversions: ${error.message}`);
     } finally {
       setIsLoading(false);
     }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Copy, X } from '@/lib/atlaskit-icons';
 
 interface CopyWorkflowSectionProps {
@@ -40,7 +40,7 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
         .eq('project_id', sourceProjectId)
         .order('position');
       if (fetchErr) throw new Error(fetchErr.message);
-      if (!sourceStatuses?.length) { toast.error('Source project has no workflow statuses'); return; }
+      if (!sourceStatuses?.length) { catalystToast.error('Source project has no workflow statuses'); return; }
 
       // Delete current statuses
       const { error: delErr } = await supabase
@@ -63,10 +63,10 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
         .insert(newStatuses);
       if (insErr) throw new Error(insErr.message);
 
-      toast.success('Workflow copied successfully');
+      catalystToast.success('Workflow copied successfully');
       onCopied();
     } catch (err: any) {
-      toast.error(err.message || 'Failed to copy workflow');
+      catalystToast.error(err.message || 'Failed to copy workflow');
     } finally {
       setLoading(false);
       setConfirmOpen(false);

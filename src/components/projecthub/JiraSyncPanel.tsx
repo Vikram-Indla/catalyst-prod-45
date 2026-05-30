@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { RefreshCw, Loader2 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { token } from '@atlaskit/tokens';
 
@@ -178,14 +178,14 @@ export function JiraSyncPanel() {
       // Handle multiple response formats from different versions of the edge function
       if (data?.success) {
         const count = data.issues_upserted ?? data.issues_fetched ?? 0;
-        toast.success(`Sync complete: ${count} issues synced`);
+        catalystToast.success(`Sync complete: ${count} issues synced`);
       } else if (data?.status === 'processing' || data?.status === 'started') {
-        toast.success('Sync triggered — processing in background. Stats will update shortly.');
+        catalystToast.success('Sync triggered — processing in background. Stats will update shortly.');
       } else if (data?.error) {
-        toast.error(`Sync error: ${data.error}`);
+        catalystToast.error(`Sync error: ${data.error}`);
       } else {
         // Treat any non-error response as success
-        toast.success('Sync triggered successfully');
+        catalystToast.success('Sync triggered successfully');
       }
 
       // Refresh all related queries after a short delay for background processing
@@ -199,7 +199,7 @@ export function JiraSyncPanel() {
         queryClient.invalidateQueries({ queryKey: ['project-sync-data'] });
       }, 3000);
     } catch (err) {
-      toast.error(`Sync failed: ${String(err)}`);
+      catalystToast.error(`Sync failed: ${String(err)}`);
     } finally {
       setSyncing(false);
     }

@@ -5,7 +5,7 @@
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ═══ TYPES ═══
 export interface IdeaRow {
@@ -249,9 +249,9 @@ export function useCreateIdeaComment() {
     },
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ideasHubKeys.comments(vars.ideaId) });
-      toast.success('Comment posted');
+      catalystToast.success('Comment posted');
     },
-    onError: (e: Error) => toast.error('Failed to post comment: ' + e.message),
+    onError: (e: Error) => catalystToast.error('Failed to post comment: ' + e.message),
   });
 }
 
@@ -300,9 +300,9 @@ export function useCreateIdea() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['ideas-hub'] });
-      toast.success('Idea created');
+      catalystToast.success('Idea created');
     },
-    onError: (e: Error) => toast.error('Failed to create idea: ' + e.message),
+    onError: (e: Error) => catalystToast.error('Failed to create idea: ' + e.message),
   });
 }
 
@@ -324,9 +324,9 @@ export function useUpdateIdea() {
       qc.invalidateQueries({ queryKey: ['ideas-hub'] });
       qc.invalidateQueries({ queryKey: ['ideas'] });
       qc.invalidateQueries({ queryKey: ['ideas-roadmap'] });
-      toast.success('Changes saved');
+      catalystToast.success('Changes saved');
     },
-    onError: (e: Error) => toast.error('Save failed: ' + e.message),
+    onError: (e: Error) => catalystToast.error('Save failed: ' + e.message),
   });
 }
 
@@ -343,9 +343,9 @@ export function useDeleteIdea() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['ideas-hub'] });
-      toast.success('Idea deleted');
+      catalystToast.success('Idea deleted');
     },
-    onError: (e: Error) => toast.error('Delete failed: ' + e.message),
+    onError: (e: Error) => catalystToast.error('Delete failed: ' + e.message),
   });
 }
 

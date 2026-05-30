@@ -18,7 +18,7 @@ import { getWorkstreamColor } from '@/lib/workstream-colors';
 import { PRIORITY_CONFIG } from '../../types';
 import type { TaskListTask } from '../../hooks/useTaskList';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface TaskRowProps {
   task: TaskListTask;
@@ -47,7 +47,7 @@ export function TaskRow({
   const handleCopyKey = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigator.clipboard.writeText(task.task_key);
-    toast.success(`Copied ${task.task_key}`);
+    catalystToast.success(`Copied ${task.task_key}`);
   };
 
   const formatDate = (dateStr: string | null) => {

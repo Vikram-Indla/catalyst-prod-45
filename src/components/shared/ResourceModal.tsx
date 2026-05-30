@@ -20,7 +20,7 @@ import { Loader2, AlertCircle } from '@/lib/atlaskit-icons';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { ResourceCostSection } from '@/modules/budget';
 
@@ -194,7 +194,7 @@ export function ResourceModal({
           roleIds: selectedRoles,
         };
         await createUser.mutateAsync(input);
-        toast.success('User created successfully');
+        catalystToast.success('User created successfully');
       } else {
         // Capacity Planner: Add existing users to capacity planner
         const startDate = new Date().toISOString().split('T')[0];
@@ -245,7 +245,7 @@ export function ResourceModal({
 
         queryClient.invalidateQueries({ queryKey: ['capacity-planner-assignments'] });
         queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
-        toast.success(`Added ${selectedUserIds.length} resource${selectedUserIds.length === 1 ? '' : 's'}`);
+        catalystToast.success(`Added ${selectedUserIds.length} resource${selectedUserIds.length === 1 ? '' : 's'}`);
       }
 
       handleClose();

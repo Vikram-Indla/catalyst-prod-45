@@ -6,7 +6,7 @@ import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -142,11 +142,11 @@ export function NotificationSettings() {
         ['notification-preferences', user?.id],
         context?.previous
       );
-      toast.error('Failed to update preferences');
+      catalystToast.error('Failed to update preferences');
       console.error('Preference update error:', error);
     },
     onSuccess: () => {
-      toast.success('Preferences updated');
+      catalystToast.success('Preferences updated');
     },
   });
 

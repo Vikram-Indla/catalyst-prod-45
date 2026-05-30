@@ -6,7 +6,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { PlannerStatus } from '../types/kanban';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useEffect } from 'react';
 
 const QUERY_KEY = ['kanban-statuses'];
@@ -96,10 +96,10 @@ export function useCreateKanbanStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
-      toast.success('Column created successfully');
+      catalystToast.success('Column created successfully');
     },
     onError: (error) => {
-      toast.error('Failed to create column: ' + error.message);
+      catalystToast.error('Failed to create column: ' + error.message);
     },
   });
 }
@@ -126,7 +126,7 @@ export function useUpdateKanbanStatus() {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
     onError: (error) => {
-      toast.error('Failed to update column: ' + error.message);
+      catalystToast.error('Failed to update column: ' + error.message);
     },
   });
 }
@@ -164,10 +164,10 @@ export function useDeleteKanbanStatus() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
-      toast.success('Column deleted');
+      catalystToast.success('Column deleted');
     },
     onError: (error) => {
-      toast.error('Failed to delete column: ' + error.message);
+      catalystToast.error('Failed to delete column: ' + error.message);
     },
   });
 }

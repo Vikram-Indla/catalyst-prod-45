@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import Spinner from '@atlaskit/spinner';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { ReleaseDetail } from '../types';
 import { STATUS_LABELS } from '../types';
 
@@ -58,7 +58,7 @@ export function EditReleaseDialog({ open, onOpenChange, release, onSave }: EditR
 
   const handleSubmit = async () => {
     if (!formData.name.trim() || !formData.version.trim()) {
-      toast.error('Name and version are required');
+      catalystToast.error('Name and version are required');
       return;
     }
 
@@ -70,10 +70,10 @@ export function EditReleaseDialog({ open, onOpenChange, release, onSave }: EditR
         // Simulate API call
         await new Promise(r => setTimeout(r, 800));
       }
-      toast.success('Release updated successfully');
+      catalystToast.success('Release updated successfully');
       onOpenChange(false);
     } catch (error) {
-      toast.error('Failed to update release');
+      catalystToast.error('Failed to update release');
     } finally {
       setIsSubmitting(false);
     }

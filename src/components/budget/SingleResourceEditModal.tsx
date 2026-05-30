@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { X, User, Calendar, Building2, Briefcase, Loader2 } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 
 interface Resource {
@@ -63,7 +63,7 @@ export function SingleResourceEditModal({
   const handleSave = async () => {
     // Allow zero values - only block if empty string
     if (ctcValue === '' || ctcValue === undefined) {
-      toast.error('Please enter a CTC value');
+      catalystToast.error('Please enter a CTC value');
       return;
     }
 
@@ -76,7 +76,7 @@ export function SingleResourceEditModal({
 
       if (error) throw error;
 
-      toast.success(`CTC updated for ${resource.name}`);
+      catalystToast.success(`CTC updated for ${resource.name}`);
 
       // Optimistic UI: update cached budget resources immediately
       const nextCtc = parseInt(ctcValue);
@@ -89,7 +89,7 @@ export function SingleResourceEditModal({
       onOpenChange(false);
     } catch (error) {
       console.error('Error saving CTC:', error);
-      toast.error('Failed to save. Please try again.');
+      catalystToast.error('Failed to save. Please try again.');
     } finally {
       setIsSaving(false);
     }

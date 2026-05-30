@@ -26,7 +26,7 @@ import { getWorkstreamColor } from '@/lib/workstream-colors';
 import type { TaskListTask } from '../../hooks/useTaskList';
 import type { Label } from '@/components/planner/task-modal/types/labels';
 import { format, differenceInDays } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { AssigneeDropdown } from './AssigneeDropdown';
 import { StatusDropdown } from './StatusDropdown';
 import { PriorityDropdown } from './PriorityDropdown';
@@ -146,7 +146,7 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
   const handleCopyKey = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigator.clipboard.writeText(task.task_key);
-    toast.success(`Copied ${task.task_key}`);
+    catalystToast.success(`Copied ${task.task_key}`);
   };
 
   const startEditing = (field: string, value: string) => {

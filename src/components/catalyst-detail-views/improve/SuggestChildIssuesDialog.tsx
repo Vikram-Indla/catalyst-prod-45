@@ -25,7 +25,7 @@ import Button from '@atlaskit/button/new';
 import Checkbox from '@atlaskit/checkbox';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import { token } from '@atlaskit/tokens';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { createChildIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { improveTriggerLabel, childWorkItemLabel } from './improve-config';
@@ -134,7 +134,7 @@ export function SuggestChildIssuesDialog({
 
   const createSelected = async () => {
     if (!parentIssueKey || !projectKey) {
-      toast.error('Missing parent context — cannot create children.');
+      catalystToast.error('Missing parent context — cannot create children.');
       return;
     }
     setCreating(true);
@@ -159,11 +159,11 @@ export function SuggestChildIssuesDialog({
         } as Parameters<typeof createChildIssue>[0]);
         if (result?.issue_key) created.push(result.issue_key);
       }
-      toast.success(`Created ${created.length} child work item${created.length === 1 ? '' : 's'}`);
+      catalystToast.success(`Created ${created.length} child work item${created.length === 1 ? '' : 's'}`);
       if (onChildrenCreated) onChildrenCreated(created);
       onClose();
     } catch (e) {
-      toast.error('Failed to create children', {
+      catalystToast.error('Failed to create children', {
         description: e instanceof Error ? e.message : 'Unknown error',
       });
     } finally {

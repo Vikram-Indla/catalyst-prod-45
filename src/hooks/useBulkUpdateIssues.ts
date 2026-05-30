@@ -3,7 +3,7 @@
  */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export function useBulkUpdateIssues(projectKey: string | undefined) {
   const queryClient = useQueryClient();
@@ -19,10 +19,10 @@ export function useBulkUpdateIssues(projectKey: string | undefined) {
     },
     onSuccess: (count) => {
       queryClient.invalidateQueries({ queryKey: ['jira-hierarchy', projectKey] });
-      toast.success(`${count} item${count > 1 ? 's' : ''} updated`);
+      catalystToast.success(`${count} item${count > 1 ? 's' : ''} updated`);
     },
     onError: () => {
-      toast.error('Bulk update failed');
+      catalystToast.error('Bulk update failed');
     },
   });
 }
@@ -41,10 +41,10 @@ export function useBulkDeleteIssues(projectKey: string | undefined) {
     },
     onSuccess: (count) => {
       queryClient.invalidateQueries({ queryKey: ['jira-hierarchy', projectKey] });
-      toast.success(`${count} item${count > 1 ? 's' : ''} deleted`);
+      catalystToast.success(`${count} item${count > 1 ? 's' : ''} deleted`);
     },
     onError: () => {
-      toast.error('Bulk delete failed');
+      catalystToast.error('Bulk delete failed');
     },
   });
 }

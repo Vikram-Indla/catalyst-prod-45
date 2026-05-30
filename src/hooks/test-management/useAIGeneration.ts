@@ -5,7 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface GeneratedTestCase {
   title: string;
@@ -91,11 +91,11 @@ export function useAIGeneration() {
       if (data?.error) {
         // Handle specific error codes
         if (data.error.includes('Rate limit')) {
-          toast.error('Rate limit exceeded. Please wait a moment and try again.');
+          catalystToast.error('Rate limit exceeded. Please wait a moment and try again.');
         } else if (data.error.includes('credits')) {
-          toast.error('AI credits exhausted. Please add credits to continue.');
+          catalystToast.error('AI credits exhausted. Please add credits to continue.');
         } else {
-          toast.error(data.error);
+          catalystToast.error(data.error);
         }
         setError(data.error);
         return null;
@@ -119,7 +119,7 @@ export function useAIGeneration() {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to generate test cases';
       setError(message);
-      toast.error(message);
+      catalystToast.error(message);
       return null;
     } finally {
       setIsGenerating(false);

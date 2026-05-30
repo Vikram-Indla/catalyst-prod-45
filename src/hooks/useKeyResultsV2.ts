@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // UI-friendly metric type labels
 export type MetricType = 'number' | 'percentage' | 'currency' | 'boolean' | 'nps' | 'score';
@@ -247,11 +247,11 @@ export function useCreateKeyResultV2() {
       queryClient.invalidateQueries({ queryKey: ['key-results-v2', variables.objective_id] });
       queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
       queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
-      toast.success('Key Result created');
+      catalystToast.success('Key Result created');
     },
     onError: (error: any) => {
       const msg = error?.message || error?.code || 'Unknown error';
-      toast.error(`Failed to create Key Result: ${msg}`);
+      catalystToast.error(`Failed to create Key Result: ${msg}`);
     },
   });
 }
@@ -300,7 +300,7 @@ export function useUpdateKeyResultV2() {
       queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
       queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
     },
-    onError: () => toast.error('Failed to update Key Result'),
+    onError: () => catalystToast.error('Failed to update Key Result'),
   });
 }
 
@@ -328,8 +328,8 @@ export function useDeleteKeyResultV2() {
       queryClient.invalidateQueries({ queryKey: ['key-results-v2', variables.objectiveId] });
       queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
       queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
-      toast.success('Key Result deleted');
+      catalystToast.success('Key Result deleted');
     },
-    onError: () => toast.error('Failed to delete Key Result'),
+    onError: () => catalystToast.error('Failed to delete Key Result'),
   });
 }

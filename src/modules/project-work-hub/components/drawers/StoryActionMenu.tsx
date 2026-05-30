@@ -9,7 +9,7 @@ import CopyIcon from '@atlaskit/icon/core/copy';
 import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
 import ArchiveBoxIcon from '@atlaskit/icon/core/archive-box';
 import DeleteIcon from '@atlaskit/icon/core/delete';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -33,9 +33,9 @@ export function StoryActionMenu({ storyId, storyKey, onClose }: StoryActionMenuP
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['story-drawer-detail', storyId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-stories'] });
-      toast.success('Flag added');
+      catalystToast.success('Flag added');
     } catch {
-      toast.error('Failed to add flag');
+      catalystToast.error('Failed to add flag');
     }
   };
 
@@ -59,9 +59,9 @@ export function StoryActionMenu({ storyId, storyKey, onClose }: StoryActionMenuP
       if (insertError) throw insertError;
 
       queryClient.invalidateQueries({ queryKey: ['backlog-stories'] });
-      toast.success('Story cloned');
+      catalystToast.success('Story cloned');
     } catch {
-      toast.error('Failed to clone story');
+      catalystToast.error('Failed to clone story');
     }
   };
 
@@ -74,9 +74,9 @@ export function StoryActionMenu({ storyId, storyKey, onClose }: StoryActionMenuP
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['story-drawer-detail', storyId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-stories'] });
-      toast.success('Story archived');
+      catalystToast.success('Story archived');
     } catch {
-      toast.error('Failed to archive story');
+      catalystToast.error('Failed to archive story');
     }
   };
 
@@ -89,10 +89,10 @@ export function StoryActionMenu({ storyId, storyKey, onClose }: StoryActionMenuP
         .eq('id', storyId);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['backlog-stories'] });
-      toast.success('Story deleted');
+      catalystToast.success('Story deleted');
       onClose?.();
     } catch {
-      toast.error('Failed to delete story');
+      catalystToast.error('Failed to delete story');
     } finally {
       setIsDeleting(false);
       setDeleteDialogOpen(false);

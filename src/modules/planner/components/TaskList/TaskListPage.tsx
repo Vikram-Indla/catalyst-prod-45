@@ -13,7 +13,7 @@ import { BulkActionBar } from '../task-list/BulkActionBar';
 import { useTaskList, useTaskListStats } from '../../hooks/useTaskList';
 import type { TaskListFilters, TaskListSorting, TaskListTask } from '../../hooks/useTaskList';
 import type { GroupByOption } from '../../types';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 
 interface TaskListPageProps {
@@ -89,12 +89,12 @@ export function TaskListPage({ onTaskClick, onCreateTask }: TaskListPageProps) {
 
   const handleTaskDelete = useCallback((id: string) => {
     // This will be handled by the drawer or a confirmation dialog
-    toast.info('Delete action triggered');
+    catalystToast.info('Delete action triggered');
   }, []);
 
   const handleExport = useCallback(() => {
     if (tasks.length === 0) {
-      toast.error('No tasks to export');
+      catalystToast.error('No tasks to export');
       return;
     }
 
@@ -128,7 +128,7 @@ export function TaskListPage({ onTaskClick, onCreateTask }: TaskListPageProps) {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    toast.success(`Exported ${tasks.length} tasks`);
+    catalystToast.success(`Exported ${tasks.length} tasks`);
   }, [tasks]);
 
   // Stats

@@ -6,7 +6,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TMProject } from '@/types/test-management';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Fetch all projects
 export function useProjects() {
@@ -74,10 +74,10 @@ export function useCreateProject() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tm-projects'] });
-      toast.success('Project created successfully');
+      catalystToast.success('Project created successfully');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create project: ${error.message}`);
+      catalystToast.error(`Failed to create project: ${error.message}`);
     },
   });
 }

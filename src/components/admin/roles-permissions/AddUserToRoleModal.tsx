@@ -15,7 +15,7 @@ import Textfield from '@atlaskit/textfield';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface AddUserToRoleModalProps {
   isOpen: boolean;
@@ -87,12 +87,12 @@ export function AddUserToRoleModal({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-with-role', roleId] });
       queryClient.invalidateQueries({ queryKey: ['product-roles'] });
-      toast.success(`${selectedUserIds.length} user(s) added to ${roleName}`);
+      catalystToast.success(`${selectedUserIds.length} user(s) added to ${roleName}`);
       handleClose();
     },
     onError: (error) => {
       console.error('Failed to add users:', error);
-      toast.error('Failed to add users to role');
+      catalystToast.error('Failed to add users to role');
     },
   });
 

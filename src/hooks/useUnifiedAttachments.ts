@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface UnifiedAttachment {
   id: string;
@@ -215,10 +215,10 @@ export function useDeleteAttachment() {
       queryClient.invalidateQueries({ 
         queryKey: ['unified-attachments', attachment.work_item_id] 
       });
-      toast.success('Attachment deleted');
+      catalystToast.success('Attachment deleted');
     },
     onError: () => {
-      toast.error('Failed to delete attachment');
+      catalystToast.error('Failed to delete attachment');
     }
   });
 }
@@ -230,7 +230,7 @@ export async function downloadAttachment(attachment: UnifiedAttachment) {
     .download(attachment.storage_key);
   
   if (error) {
-    toast.error('Failed to download file');
+    catalystToast.error('Failed to download file');
     throw error;
   }
   

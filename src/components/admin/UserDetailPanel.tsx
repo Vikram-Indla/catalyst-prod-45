@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useJiraUserDetail, useToggleUserStatus, useUpdatePerm } from '@/hooks/useJiraUserSync';
 import Spinner from '@atlaskit/spinner';
 import ChartTrendIcon from '@atlaskit/icon/core/chart-trend';
@@ -152,7 +152,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
           <button className={xsBtnClass} style={xsBtn} onClick={deselectAll}>Deselect All</button>
           <button
             style={{ ...xsBtn, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none' }}
-            onClick={() => toast.info('Project picker — Phase 2')}
+            onClick={() => catalystToast.info('Project picker — Phase 2')}
           >+ Add Project</button>
         </div>
       </div>
@@ -162,7 +162,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
           <div style={{ fontSize: '12px', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginBottom: '10px' }}>No projects assigned yet</div>
           <button
             style={{ fontSize: '11px', fontWeight: 600, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '4px', padding: '5px 12px', cursor: 'pointer' }}
-            onClick={() => toast.info('Project picker — Phase 2')}
+            onClick={() => catalystToast.info('Project picker — Phase 2')}
           >+ Add Project</button>
         </div>
       ) : (
@@ -250,7 +250,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
               background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
               borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
             }}
-            onClick={() => toast.success('Assignments saved. Changes push to Jira on next sync.')}
+            onClick={() => catalystToast.success('Assignments saved. Changes push to Jira on next sync.')}
           >Save Project Assignments</button>
         </>
       )}
@@ -341,8 +341,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
     toggleStatus(
       { id: user.id, active: !user.is_active_in_catalyst },
       {
-        onSuccess: () => toast.success(isInactive ? 'User reactivated' : 'User deactivated'),
-        onError: () => toast.error('Failed to update status'),
+        onSuccess: () => catalystToast.success(isInactive ? 'User reactivated' : 'User deactivated'),
+        onError: () => catalystToast.error('Failed to update status'),
       }
     );
   };
@@ -597,7 +597,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 </button>
                 <button
                   className="jus-action-btn"
-                  onClick={() => toast.info('Select target users in the table first')}
+                  onClick={() => catalystToast.info('Select target users in the table first')}
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
                     padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
@@ -610,7 +610,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 {!isCatalystOnly && (
                   <button
                     className="jus-action-btn"
-                    onClick={() => toast.info('Re-sync triggered for this user')}
+                    onClick={() => catalystToast.info('Re-sync triggered for this user')}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '4px',
                       padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,

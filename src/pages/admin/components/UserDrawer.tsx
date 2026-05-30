@@ -6,7 +6,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { UserProfile } from '@/hooks/useUsers';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
@@ -184,7 +184,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
   // Save mutation
   const handleSave = async () => {
     if (!formData.full_name.trim()) {
-      toast.error('Name is required');
+      catalystToast.error('Name is required');
       return;
     }
 
@@ -256,7 +256,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
           if (insertError) throw insertError;
         }
 
-        toast.success('User updated successfully');
+        catalystToast.success('User updated successfully');
       } else {
         const { data: allInventory } = await supabase
           .from('resource_inventory')
@@ -288,7 +288,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
           });
 
         if (insertError) throw insertError;
-        toast.success('User created successfully');
+        catalystToast.success('User created successfully');
       }
 
       await queryClient.invalidateQueries({ queryKey: ['users-list'] });
@@ -296,7 +296,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
       onSuccess();
     } catch (error: any) {
       console.error('Save error:', error);
-      toast.error(error.message || 'Failed to save user');
+      catalystToast.error(error.message || 'Failed to save user');
     } finally {
       setIsSaving(false);
     }
@@ -311,12 +311,12 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
       await supabase.from('profiles').delete().eq('id', user.id);
       await supabase.from('resource_inventory').delete().or(`profile_id.eq.${user.id},id.eq.${user.id}`);
 
-      toast.success('User deleted');
+      catalystToast.success('User deleted');
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
       onSuccess();
     } catch (error: any) {
       console.error('Delete error:', error);
-      toast.error(error.message || 'Failed to delete user');
+      catalystToast.error(error.message || 'Failed to delete user');
     } finally {
       setIsDeleting(false);
     }

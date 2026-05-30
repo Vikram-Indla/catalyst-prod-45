@@ -5,7 +5,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { RescheduleParams, BulkRescheduleParams } from '@/types/calendar.types';
 
 export function useTestReschedule(cycleId: string) {
@@ -24,10 +24,10 @@ export function useTestReschedule(cycleId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-data', cycleId] });
       queryClient.invalidateQueries({ queryKey: ['test-cycles'] });
-      toast.success('Cycle rescheduled successfully');
+      catalystToast.success('Cycle rescheduled successfully');
     },
     onError: () => {
-      toast.error('Failed to reschedule');
+      catalystToast.error('Failed to reschedule');
     },
   });
 
@@ -54,10 +54,10 @@ export function useTestReschedule(cycleId: string) {
     onSuccess: (_, params) => {
       queryClient.invalidateQueries({ queryKey: ['calendar-data', cycleId] });
       queryClient.invalidateQueries({ queryKey: ['test-cycles'] });
-      toast.success(`${params.testIds.length} items rescheduled`);
+      catalystToast.success(`${params.testIds.length} items rescheduled`);
     },
     onError: () => {
-      toast.error('Failed to reschedule');
+      catalystToast.error('Failed to reschedule');
     },
   });
 

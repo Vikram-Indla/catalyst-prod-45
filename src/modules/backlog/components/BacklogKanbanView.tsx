@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Checkbox } from '@/components/ui/checkbox';
 
 interface BacklogKanbanViewProps {
@@ -36,10 +36,10 @@ export function BacklogKanbanView({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('State updated');
+      catalystToast.success('State updated');
     },
     onError: (error: any) => {
-      toast.error(`Failed to update state: ${error.message}`);
+      catalystToast.error(`Failed to update state: ${error.message}`);
     },
   });
 

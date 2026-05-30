@@ -17,7 +17,7 @@ import { format } from 'date-fns';
 import { useProjects } from '@/hooks/useProjects';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface FeatureRightRailProps {
   feature: {
@@ -131,10 +131,10 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-detail'] });
       queryClient.invalidateQueries({ queryKey: ['features'] });
-      toast.success('Project updated');
+      catalystToast.success('Project updated');
     },
     onError: () => {
-      toast.error('Failed to update project');
+      catalystToast.error('Failed to update project');
     },
   });
 

@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -87,12 +87,12 @@ export function KeyResultDialog({ open, onClose, keyResultId, objectiveId }: Key
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['key-results'] });
-      toast.success(isEdit ? 'Key result updated' : 'Key result created');
+      catalystToast.success(isEdit ? 'Key result updated' : 'Key result created');
       onClose();
       form.reset();
     },
     onError: (error) => {
-      toast.error(`Failed to ${isEdit ? 'update' : 'create'} key result: ${error.message}`);
+      catalystToast.error(`Failed to ${isEdit ? 'update' : 'create'} key result: ${error.message}`);
     },
   });
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Search } from '@/lib/atlaskit-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { MemberRow } from './MemberRow';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
@@ -83,11 +83,11 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
         .insert({ project_id: projectId, user_id: user.id, role: 'member' });
       if (error) throw new Error(error.message);
       queryClient.invalidateQueries({ queryKey: ['ph-project-members', projectId] });
-      toast.success(`${user.name} added as Member`);
+      catalystToast.success(`${user.name} added as Member`);
       setSearchTerm('');
       setSearchResults([]);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to add member');
+      catalystToast.error(err.message || 'Failed to add member');
     }
   };
 
@@ -96,9 +96,9 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
       const { error } = await supabase.from('ph_project_members').update({ role }).eq('id', memberId);
       if (error) throw new Error(error.message);
       queryClient.invalidateQueries({ queryKey: ['ph-project-members', projectId] });
-      toast.success('Role updated');
+      catalystToast.success('Role updated');
     } catch (err: any) {
-      toast.error(err.message || 'Failed to update role');
+      catalystToast.error(err.message || 'Failed to update role');
     }
   };
 
@@ -108,9 +108,9 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
       const { error } = await supabase.from('ph_project_members').delete().eq('id', pendingRemove.id);
       if (error) throw new Error(error.message);
       queryClient.invalidateQueries({ queryKey: ['ph-project-members', projectId] });
-      toast.success('Member removed');
+      catalystToast.success('Member removed');
     } catch (err: any) {
-      toast.error(err.message || 'Failed to remove member');
+      catalystToast.error(err.message || 'Failed to remove member');
     } finally {
       setPendingRemove(null);
     }

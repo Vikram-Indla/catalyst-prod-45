@@ -27,7 +27,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { token } from '@atlaskit/tokens';
 
 interface CreateProductModalProps {
@@ -145,7 +145,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
         return;
       }
 
-      toast.success(`Product line "${data.name}" created`);
+      catalystToast.success(`Product line "${data.name}" created`);
       queryClient.invalidateQueries({ queryKey: ['product-hub', 'products'] });
       onClose();
       navigate(`/product-hub/${data.code}/dashboard`);

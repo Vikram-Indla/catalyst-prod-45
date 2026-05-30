@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface ResourceVendor {
   id: string;
@@ -76,10 +76,10 @@ export function useResourceVendors() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['resource-vendors'] });
       queryClient.invalidateQueries({ queryKey: ['resource-vendors-all'] });
-      toast.success(`Vendor "${data.name}" created`);
+      catalystToast.success(`Vendor "${data.name}" created`);
     },
     onError: (error) => {
-      toast.error(`Failed to create vendor: ${error.message}`);
+      catalystToast.error(`Failed to create vendor: ${error.message}`);
     },
   });
 
@@ -98,10 +98,10 @@ export function useResourceVendors() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resource-vendors'] });
       queryClient.invalidateQueries({ queryKey: ['resource-vendors-all'] });
-      toast.success('Vendor updated');
+      catalystToast.success('Vendor updated');
     },
     onError: (error) => {
-      toast.error(`Failed to update vendor: ${error.message}`);
+      catalystToast.error(`Failed to update vendor: ${error.message}`);
     },
   });
 
@@ -117,10 +117,10 @@ export function useResourceVendors() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resource-vendors'] });
       queryClient.invalidateQueries({ queryKey: ['resource-vendors-all'] });
-      toast.success('Vendor deleted');
+      catalystToast.success('Vendor deleted');
     },
     onError: (error) => {
-      toast.error(`Failed to delete vendor: ${error.message}`);
+      catalystToast.error(`Failed to delete vendor: ${error.message}`);
     },
   });
 

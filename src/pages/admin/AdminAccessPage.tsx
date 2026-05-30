@@ -18,7 +18,7 @@ import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { supabase } from '@/integrations/supabase/client';
 import { useInviteUser } from '@/hooks/useInviteUser';
 import { useAuth } from '@/lib/auth';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -132,10 +132,10 @@ function InviteUserModal({ onClose }: { onClose: () => void }) {
       module_access: moduleAccess,
     });
     if (result.ok) {
-      toast.success(`Invitation sent to ${email}`);
+      catalystToast.success(`Invitation sent to ${email}`);
       onClose();
     } else {
-      toast.error(result.error || 'Failed to send invitation');
+      catalystToast.error(result.error || 'Failed to send invitation');
     }
   };
 
@@ -327,19 +327,19 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
       if (res.error) throw new Error(res.error.message);
       const data = res.data as { ok: boolean; error?: string };
       if (!data?.ok) throw new Error(data?.error || 'Update failed');
-      toast.success('User updated successfully');
+      catalystToast.success('User updated successfully');
       qc.invalidateQueries({ queryKey: ['admin-access-people'] });
       onSaved();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Update failed');
+      catalystToast.error(e instanceof Error ? e.message : 'Update failed');
     } finally {
       setSaving(false);
     }
   };
 
   const handleChangePassword = async () => {
-    if (!newPw || newPw !== confirmPw) { toast.error('Passwords do not match'); return; }
-    if (newPw.length < 8) { toast.error('Password must be at least 8 characters'); return; }
+    if (!newPw || newPw !== confirmPw) { catalystToast.error('Passwords do not match'); return; }
+    if (newPw.length < 8) { catalystToast.error('Password must be at least 8 characters'); return; }
     setPwSaving(true);
     try {
       const res = await supabase.functions.invoke('admin-set-password', {
@@ -348,10 +348,10 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
       if (res.error) throw new Error(res.error.message);
       const data = res.data as { ok: boolean; error?: string };
       if (!data?.ok) throw new Error(data?.error || 'Failed to set password');
-      toast.success('Password changed successfully');
+      catalystToast.success('Password changed successfully');
       setPwOpen(false); setNewPw(''); setConfirmPw('');
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Failed to change password');
+      catalystToast.error(e instanceof Error ? e.message : 'Failed to change password');
     } finally {
       setPwSaving(false);
     }
@@ -368,9 +368,9 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
       if (!data?.ok) throw new Error(data?.error || 'Failed to send reset email');
       const recipient = data.email || user.email;
       const ref = data.message_id ? ` (ref: ${data.message_id.slice(0, 8)})` : '';
-      toast.success(`Password reset email sent to ${recipient}${ref}`);
+      catalystToast.success(`Password reset email sent to ${recipient}${ref}`);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Failed to send reset email');
+      catalystToast.error(e instanceof Error ? e.message : 'Failed to send reset email');
     } finally {
       setResetSending(false);
     }
@@ -387,10 +387,10 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
       const data = res.data as { ok: boolean; error?: string };
       if (!data?.ok) throw new Error(data?.error || 'Failed to update account status');
       setLocalApprovalStatus(newStatus);
-      toast.success(newStatus === 'SUSPENDED' ? 'Account suspended' : 'Account reactivated');
+      catalystToast.success(newStatus === 'SUSPENDED' ? 'Account suspended' : 'Account reactivated');
       qc.invalidateQueries({ queryKey: ['admin-access-people'] });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Failed to update account status');
+      catalystToast.error(e instanceof Error ? e.message : 'Failed to update account status');
     } finally {
       setSuspending(false);
     }
@@ -405,11 +405,11 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
       if (res.error) throw new Error(res.error.message);
       const data = res.data as { ok: boolean; error?: string };
       if (!data?.ok) throw new Error(data?.error || 'Delete failed');
-      toast.success(`${user.full_name || user.email} has been removed`);
+      catalystToast.success(`${user.full_name || user.email} has been removed`);
       qc.invalidateQueries({ queryKey: ['admin-access-people'] });
       onClose();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Delete failed');
+      catalystToast.error(e instanceof Error ? e.message : 'Delete failed');
       setDeleting(false);
     }
   };
@@ -995,10 +995,10 @@ function InvitationsTab() {
       if (res.error) throw new Error(res.error.message);
       const data = res.data as { ok: boolean; error?: string };
       if (!data?.ok) throw new Error(data?.error || 'Resend failed');
-      toast.success(`Invitation resent to ${inv.email}`);
+      catalystToast.success(`Invitation resent to ${inv.email}`);
       qc.invalidateQueries({ queryKey: ['admin-access-invitations'] });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Failed to resend invitation');
+      catalystToast.error(e instanceof Error ? e.message : 'Failed to resend invitation');
     } finally {
       setActionLoading(prev => ({ ...prev, [inv.id]: null }));
     }
@@ -1009,10 +1009,10 @@ function InvitationsTab() {
     try {
       const { error } = await supabase.from('user_invitations').delete().eq('id', inv.id);
       if (error) throw error;
-      toast.success(`Invitation for ${inv.email} revoked`);
+      catalystToast.success(`Invitation for ${inv.email} revoked`);
       qc.invalidateQueries({ queryKey: ['admin-access-invitations'] });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Failed to revoke invitation');
+      catalystToast.error(e instanceof Error ? e.message : 'Failed to revoke invitation');
     } finally {
       setActionLoading(prev => ({ ...prev, [inv.id]: null }));
     }

@@ -50,7 +50,7 @@ import { WorkflowViewerModal } from './WorkflowViewerModal';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 import { StoryDetailsPanel } from '@/components/items/stories/StoryDetailsPanel';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
@@ -357,7 +357,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
       queryClient.invalidateQueries({ queryKey: ['business-request-audit', requestId] });
     } catch (error) {
       console.error('Auto-save failed:', error);
-      toast.error('Failed to save changes');
+      catalystToast.error('Failed to save changes');
     } finally {
       setIsSaving(false);
     }
@@ -448,7 +448,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const handleCopyLink = () => {
     const url = `${window.location.origin}/producthub?request=${requestId}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
   };
 
   // Edit name handlers

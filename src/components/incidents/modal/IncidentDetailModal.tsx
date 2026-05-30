@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface IncidentDetailModalProps {
   incident: Incident;
@@ -60,29 +60,29 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
   const handleMenuAction = useCallback((action: string) => {
     switch (action) {
       case 'flag':
-        toast.success('Flag added');
+        catalystToast.success('Flag added');
         break;
       case 'clone':
-        toast.success('Issue cloned');
+        catalystToast.success('Issue cloned');
         break;
       case 'move':
-        toast.info('Move dialog opened');
+        catalystToast.info('Move dialog opened');
         break;
       case 'archive':
-        toast.success('Issue archived');
+        catalystToast.success('Issue archived');
         break;
       case 'delete':
-        toast.error('Issue deleted');
+        catalystToast.error('Issue deleted');
         onClose();
         break;
       case 'print':
         window.print();
         break;
       case 'excel':
-        toast.success('Exported to Excel');
+        catalystToast.success('Exported to Excel');
         break;
       case 'word':
-        toast.success('Exported to Word');
+        catalystToast.success('Exported to Word');
         break;
     }
   }, [onClose]);

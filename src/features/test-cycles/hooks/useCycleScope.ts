@@ -4,7 +4,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface RpcResponse {
   success: boolean;
@@ -51,10 +51,10 @@ export function useCycleScopeMutations(cycleId: string | undefined) {
     },
     onSuccess: (added) => {
       invalidate();
-      toast.success(`Added ${added} test case(s) to cycle`);
+      catalystToast.success(`Added ${added} test case(s) to cycle`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to add test cases: ${error.message}`);
+      catalystToast.error(`Failed to add test cases: ${error.message}`);
     },
   });
 
@@ -76,10 +76,10 @@ export function useCycleScopeMutations(cycleId: string | undefined) {
     },
     onSuccess: () => {
       invalidate();
-      toast.success('Test case removed from cycle');
+      catalystToast.success('Test case removed from cycle');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to remove test case: ${error.message}`);
+      catalystToast.error(`Failed to remove test case: ${error.message}`);
     },
   });
 
@@ -105,10 +105,10 @@ export function useCycleScopeMutations(cycleId: string | undefined) {
     },
     onSuccess: () => {
       invalidate();
-      toast.success('Assignment updated');
+      catalystToast.success('Assignment updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to assign test case: ${error.message}`);
+      catalystToast.error(`Failed to assign test case: ${error.message}`);
     },
   });
 

@@ -36,7 +36,7 @@ import {
 } from '@/lib/atlaskit-icons';
 import { StatusBadge, PriorityBadge, TypeBadge } from './badges';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface TestStep {
   id: string;
@@ -117,17 +117,17 @@ export function ExecuteTestCaseDialog({
     setStartTime(Date.now());
     setStepExecutions(new Map());
     setCurrentStepIndex(0);
-    toast.info('Test execution started');
+    catalystToast.info('Test execution started');
   };
 
   const handlePause = () => {
     setIsRunning(false);
-    toast.info('Test execution paused');
+    catalystToast.info('Test execution paused');
   };
 
   const handleResume = () => {
     setIsRunning(true);
-    toast.info('Test execution resumed');
+    catalystToast.info('Test execution resumed');
   };
 
   const handleStepResult = (result: StepResult) => {
@@ -180,7 +180,7 @@ export function ExecuteTestCaseDialog({
       notes: executionNotes,
     });
 
-    toast.success(`Test execution completed: ${overallResult.toUpperCase()}`);
+    catalystToast.success(`Test execution completed: ${overallResult.toUpperCase()}`);
     handleReset();
     onOpenChange(false);
   };

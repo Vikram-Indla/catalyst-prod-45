@@ -6,7 +6,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { 
   type CycleStatus,
   isInProgressStatus,
@@ -354,10 +354,10 @@ export function useCreateCycleEnhanced() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cycles-enhanced'] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycles'] });
-      toast.success('Test cycle created successfully');
+      catalystToast.success('Test cycle created successfully');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create cycle: ${error.message}`);
+      catalystToast.error(`Failed to create cycle: ${error.message}`);
     },
   });
 }
@@ -381,10 +381,10 @@ export function useDeleteCycleEnhanced() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tm-cycles-enhanced'] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycles'] });
-      toast.success('Test cycle deleted');
+      catalystToast.success('Test cycle deleted');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete cycle: ${error.message}`);
+      catalystToast.error(`Failed to delete cycle: ${error.message}`);
     },
   });
 }
@@ -485,10 +485,10 @@ export function useCloneCycleEnhanced() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tm-cycles-enhanced'] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycles'] });
-      toast.success('Test cycle duplicated');
+      catalystToast.success('Test cycle duplicated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to duplicate cycle: ${error.message}`);
+      catalystToast.error(`Failed to duplicate cycle: ${error.message}`);
     },
   });
 }

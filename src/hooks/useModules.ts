@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface Module {
   id: string;
@@ -146,11 +146,11 @@ export function useUpdateModuleSettings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['org-modules'] });
       queryClient.invalidateQueries({ queryKey: ['active-package'] });
-      toast.success('Module settings saved');
+      catalystToast.success('Module settings saved');
     },
     onError: (error) => {
       console.error('Error updating module settings:', error);
-      toast.error('Failed to save module settings');
+      catalystToast.error('Failed to save module settings');
     },
   });
 }

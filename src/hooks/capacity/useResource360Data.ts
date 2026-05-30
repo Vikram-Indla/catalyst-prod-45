@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useEffect, useMemo } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { Resource360Data, WorkItemAssignment, HierarchyNode, SunburstNode, SunburstMetrics } from '@/types/resource360';
 
 export function useResource360Data(resourceId: string | null) {

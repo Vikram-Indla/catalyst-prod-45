@@ -30,7 +30,7 @@ import TextArea from '@atlaskit/textarea';
 import Lozenge from '@atlaskit/lozenge';
 import SectionMessage from '@atlaskit/section-message';
 import { token } from '@atlaskit/tokens';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { supabase } from '@/integrations/supabase/client';
@@ -185,12 +185,12 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
         );
       if (error) throw error;
       await queryClient.invalidateQueries({ queryKey: COMPONENT_CONFIG_QUERY_KEY });
-      toast.success(
+      catalystToast.success(
         `Published ${entry.name} v${versionDraft || entry.version} (${routeLabel(routeDraft)})`,
       );
       setNotes('');
     } catch (e: unknown) {
-      toast.error(`Publish failed: ${(e as Error).message ?? 'unknown error'}`);
+      catalystToast.error(`Publish failed: ${(e as Error).message ?? 'unknown error'}`);
     } finally {
       setSubmitting(false);
     }
@@ -210,9 +210,9 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
         .eq('route', routeDraft);
       if (error) throw error;
       await queryClient.invalidateQueries({ queryKey: COMPONENT_CONFIG_QUERY_KEY });
-      toast.success(`Reset ${entry.name} (${routeLabel(routeDraft)}) to registry default`);
+      catalystToast.success(`Reset ${entry.name} (${routeLabel(routeDraft)}) to registry default`);
     } catch (e: unknown) {
-      toast.error(`Reset failed: ${(e as Error).message ?? 'unknown error'}`);
+      catalystToast.error(`Reset failed: ${(e as Error).message ?? 'unknown error'}`);
     } finally {
       setSubmitting(false);
     }

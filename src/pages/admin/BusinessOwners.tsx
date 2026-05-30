@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings } from '@/hooks/useDepartmentsAndOwners';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   Dialog,
   DialogContent,
@@ -53,7 +53,7 @@ export default function BusinessOwners() {
     const newOwnerTyped = newOwner as { id: string } | null;
 
     if (ownerError || !newOwnerTyped) {
-      toast.error('Failed to add business owner');
+      catalystToast.error('Failed to add business owner');
       return;
     }
 
@@ -73,11 +73,11 @@ export default function BusinessOwners() {
         });
 
       if (mappingError) {
-        toast.error('Failed to create department mapping');
+        catalystToast.error('Failed to create department mapping');
       }
     }
 
-    toast.success('Business Owner added');
+    catalystToast.success('Business Owner added');
     setNewOwnerName('');
     setSelectedDepartmentId('');
     setIsDialogOpen(false);
@@ -93,7 +93,7 @@ export default function BusinessOwners() {
       .eq('id', editingOwner.id);
 
     if (ownerError) {
-      toast.error('Failed to update business owner');
+      catalystToast.error('Failed to update business owner');
       return;
     }
 
@@ -120,11 +120,11 @@ export default function BusinessOwners() {
         });
 
       if (mappingError) {
-        toast.error('Failed to update department mapping');
+        catalystToast.error('Failed to update department mapping');
       }
     }
 
-    toast.success('Business Owner updated');
+    catalystToast.success('Business Owner updated');
     setEditingOwner(null);
     setNewOwnerName('');
     setSelectedDepartmentId('');
@@ -139,11 +139,11 @@ export default function BusinessOwners() {
       .eq('id', id);
 
     if (error) {
-      toast.error('Failed to update status');
+      catalystToast.error('Failed to update status');
       return;
     }
 
-    toast.success(`Business Owner ${!currentStatus ? 'enabled' : 'disabled'}`);
+    catalystToast.success(`Business Owner ${!currentStatus ? 'enabled' : 'disabled'}`);
     queryClient.invalidateQueries({ queryKey: ['business-owners'] });
   };
 

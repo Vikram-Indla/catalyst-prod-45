@@ -5,7 +5,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Types
@@ -76,11 +76,11 @@ export function useCreateColumn() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['planner', 'board', 'columns'] });
       queryClient.invalidateQueries({ queryKey: ['planner-statuses'] });
-      toast.success(`Column "${data.name}" created`);
+      catalystToast.success(`Column "${data.name}" created`);
     },
     onError: (error) => {
       console.error('Failed to create column:', error);
-      toast.error('Failed to create column');
+      catalystToast.error('Failed to create column');
     },
   });
 }
@@ -118,11 +118,11 @@ export function useUpdateColumn() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['planner', 'board', 'columns'] });
       queryClient.invalidateQueries({ queryKey: ['planner-statuses'] });
-      toast.success('Column updated');
+      catalystToast.success('Column updated');
     },
     onError: (error) => {
       console.error('Failed to update column:', error);
-      toast.error('Failed to update column');
+      catalystToast.error('Failed to update column');
     },
   });
 }
@@ -175,11 +175,11 @@ export function useDeleteColumn() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['planner', 'board'] });
       queryClient.invalidateQueries({ queryKey: ['planner-statuses'] });
-      toast.success(`Column "${data.name}" deleted`);
+      catalystToast.success(`Column "${data.name}" deleted`);
     },
     onError: (error) => {
       console.error('Failed to delete column:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to delete column');
+      catalystToast.error(error instanceof Error ? error.message : 'Failed to delete column');
     },
   });
 }
@@ -215,7 +215,7 @@ export function useReorderColumns() {
     },
     onError: (error) => {
       console.error('Failed to reorder columns:', error);
-      toast.error('Failed to reorder columns');
+      catalystToast.error('Failed to reorder columns');
     },
   });
 }

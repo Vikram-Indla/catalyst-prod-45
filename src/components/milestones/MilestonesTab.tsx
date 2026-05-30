@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Plus, Calendar, MoreHorizontal, ArrowDownAZ, ArrowUpAZ, Pencil, Trash2, AlertCircle, Copy } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -108,11 +108,11 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['milestones', entityType, entityId] });
-      toast.success('Milestone created');
+      catalystToast.success('Milestone created');
       resetForm();
       setShowAddForm(false);
     },
-    onError: (e: any) => toast.error(e.message)
+    onError: (e: any) => catalystToast.error(e.message)
   });
 
   const updateMutation = useMutation({
@@ -129,11 +129,11 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['milestones', entityType, entityId] });
-      toast.success('Milestone updated');
+      catalystToast.success('Milestone updated');
       setEditingId(null);
       resetForm();
     },
-    onError: (e: any) => toast.error(e.message)
+    onError: (e: any) => catalystToast.error(e.message)
   });
 
   const deleteMutation = useMutation({
@@ -146,10 +146,10 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['milestones', entityType, entityId] });
-      toast.success('Milestone deleted');
+      catalystToast.success('Milestone deleted');
       setDeleteId(null);
     },
-    onError: (e: any) => toast.error(e.message)
+    onError: (e: any) => catalystToast.error(e.message)
   });
 
   const resetForm = () => {

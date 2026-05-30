@@ -9,7 +9,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { KanbanTicket, UNCATEGORIZED_COLUMN_ID } from '../types';
 import { useKanbanColumns, useProcessSteps } from './useProcessSteps';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Map process_step from DB to column ID
 // Returns _uncategorized for null/empty/invalid process_steps
@@ -156,7 +156,7 @@ export function useKanbanData() {
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
     },
     onError: (error) => {
-      toast.error('Failed to update status');
+      catalystToast.error('Failed to update status');
       console.error('Status update error:', error);
     },
   });

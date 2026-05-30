@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { UserProfile } from '@/hooks/useUsers';
 import { 
   getCountryInfo, 
@@ -328,11 +328,11 @@ export function useBulkUpdateUsers() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
-      toast.success(`Bulk update complete: ${data.updatedCount} users updated`);
+      catalystToast.success(`Bulk update complete: ${data.updatedCount} users updated`);
     },
     onError: (error) => {
       console.error('Bulk update failed:', error);
-      toast.error('Bulk update failed: ' + (error as Error).message);
+      catalystToast.error('Bulk update failed: ' + (error as Error).message);
     },
   });
 }

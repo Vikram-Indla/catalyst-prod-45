@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Lozenge } from '@/components/ads';
 import { Plus, Trash2, GripVertical } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface GateRule {
   id: string;
@@ -122,12 +122,12 @@ export function EditQualityGateDialog({ open, gate, onOpenChange, onSuccess }: E
   
   const handleSubmit = async () => {
     if (!name.trim()) {
-      toast.error('Gate name is required');
+      catalystToast.error('Gate name is required');
       return;
     }
     
     if (rules.length === 0) {
-      toast.error('At least one condition is required');
+      catalystToast.error('At least one condition is required');
       return;
     }
     
@@ -137,11 +137,11 @@ export function EditQualityGateDialog({ open, gate, onOpenChange, onSuccess }: E
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      toast.success('Quality gate updated successfully');
+      catalystToast.success('Quality gate updated successfully');
       onSuccess();
       onOpenChange(false);
     } catch (error) {
-      toast.error('Failed to update quality gate');
+      catalystToast.error('Failed to update quality gate');
     } finally {
       setIsSubmitting(false);
     }

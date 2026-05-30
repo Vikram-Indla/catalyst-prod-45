@@ -9,7 +9,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { Loader2, Send } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import styles from '../FeatureViewPage.module.css';
 
 interface FeatureActivityProps {
@@ -136,10 +136,10 @@ export function FeatureActivity({ featureId }: FeatureActivityProps) {
     onSuccess: () => {
       setComment('');
       queryClient.invalidateQueries({ queryKey: ['feature-activity', featureId] });
-      toast.success('Comment added');
+      catalystToast.success('Comment added');
     },
     onError: (error: any) => {
-      toast.error('Failed to add comment', { description: error.message });
+      catalystToast.error('Failed to add comment');
     },
   });
 

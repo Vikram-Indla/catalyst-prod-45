@@ -9,7 +9,7 @@ import type { HubClosureData } from '@/components/resources/ai-intelligence/HubC
 import type { BacklogHub, BacklogMetrics } from '@/components/resources/ai-intelligence/DeliveryBacklog';
 import type { PatternInsight } from '@/components/resources/ai-intelligence/BehavioralPatterns';
 import { useState, useCallback, useEffect } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 function classifyHub(key: string): string {
   if (!key) return 'Other';
@@ -267,11 +267,11 @@ export function useAIActions(resourceId: string, jiraAccountId: string | null | 
         body: { resource_id: resourceId, jira_account_id: jiraAccountId },
       });
       if (error) throw error;
-      if (data?.error) { toast.error(data.error); return; }
-      toast.success(`Metrics computed — ${data?.total_items || 0} items`);
+      if (data?.error) { catalystToast.error(data.error); return; }
+      catalystToast.success(`Metrics computed — ${data?.total_items || 0} items`);
       invalidateAll();
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to sync data');
+      catalystToast.error(err?.message || 'Failed to sync data');
     } finally {
       setSyncing(false);
     }
@@ -284,11 +284,11 @@ export function useAIActions(resourceId: string, jiraAccountId: string | null | 
         body: { resource_id: resourceId },
       });
       if (error) throw error;
-      if (data?.error) { toast.error(data.error); return; }
-      toast.success('AI profile regenerated');
+      if (data?.error) { catalystToast.error(data.error); return; }
+      catalystToast.success('AI profile regenerated');
       invalidateAll();
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to generate AI profile');
+      catalystToast.error(err?.message || 'Failed to generate AI profile');
     } finally {
       setGenerating(false);
     }

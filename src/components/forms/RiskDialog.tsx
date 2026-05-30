@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface RiskDialogProps {
   open: boolean;
@@ -87,7 +87,7 @@ export function RiskDialog({ open, onOpenChange, risk, defaultProgramId }: RiskD
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['risks'] });
       queryClient.invalidateQueries({ queryKey: ['epic-linked-risks'] });
-      toast.success(risk ? 'Risk updated' : 'Risk created');
+      catalystToast.success(risk ? 'Risk updated' : 'Risk created');
       onOpenChange(false);
       // Reset form
       setTitle('');
@@ -99,18 +99,18 @@ export function RiskDialog({ open, onOpenChange, risk, defaultProgramId }: RiskD
     },
     onError: (error: any) => {
       console.error('[RISK DIALOG] Mutation error:', error);
-      toast.error('Failed to save risk');
+      catalystToast.error('Failed to save risk');
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      toast.error('Please enter a risk title');
+      catalystToast.error('Please enter a risk title');
       return;
     }
     if (!programId) {
-      toast.error('Please select a program');
+      catalystToast.error('Please select a program');
       return;
     }
     // NOTE: PI validation removed - program_increment_id column does not exist

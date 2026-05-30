@@ -15,7 +15,7 @@ import type { TaskListTask } from '../../hooks/useTaskList';
 import type { Label } from '@/components/planner/task-modal/types/labels';
 import { LabelBadge } from '@/components/planner/task-modal/molecules/LabelBadge';
 import { useLabels } from '@/components/planner/task-modal/hooks/useLabels';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -120,7 +120,7 @@ export const LabelsDropdown = memo(function LabelsDropdown({ task, taskLabels, w
       queryClient.invalidateQueries({ queryKey: ['task-labels-map'] });
     } catch (error) {
       console.error('Error toggling label:', error);
-      toast.error('Failed to update label');
+      catalystToast.error('Failed to update label');
     } finally {
       setUpdatingLabels(prev => {
         const next = new Set(prev);
@@ -146,10 +146,10 @@ export const LabelsDropdown = memo(function LabelsDropdown({ task, taskLabels, w
       if (error) throw error;
       setLocalLabels([]);
       queryClient.invalidateQueries({ queryKey: ['task-labels-map'] });
-      toast.success('All labels removed');
+      catalystToast.success('All labels removed');
     } catch (error) {
       console.error('Error removing all labels:', error);
-      toast.error('Failed to remove labels');
+      catalystToast.error('Failed to remove labels');
     } finally {
       setUpdatingLabels(new Set());
     }
@@ -157,7 +157,7 @@ export const LabelsDropdown = memo(function LabelsDropdown({ task, taskLabels, w
 
   const handleCreateLabel = async () => {
     if (!newLabelName.trim()) {
-      toast.error('Label name is required');
+      catalystToast.error('Label name is required');
       return;
     }
 
@@ -189,11 +189,11 @@ export const LabelsDropdown = memo(function LabelsDropdown({ task, taskLabels, w
         setNewLabelName('');
         setNewLabelColor(LABEL_COLORS[6].value);
         setIsCreating(false);
-        toast.success(`Label "${newLabel.name}" created and assigned`);
+        catalystToast.success(`Label "${newLabel.name}" created and assigned`);
       }
     } catch (error) {
       console.error('Error creating label:', error);
-      toast.error('Failed to create label');
+      catalystToast.error('Failed to create label');
     } finally {
       setIsSavingLabel(false);
     }

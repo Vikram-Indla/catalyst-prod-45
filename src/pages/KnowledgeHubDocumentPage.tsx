@@ -15,7 +15,7 @@ import { DocumentWatchers } from '@/components/knowledge-hub/DocumentWatchers';
 import { DocumentRestrictions } from '@/components/knowledge-hub/DocumentRestrictions';
 import { DocumentFavorite } from '@/components/knowledge-hub/DocumentFavorite';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function KnowledgeHubDocumentPage() {
@@ -98,12 +98,12 @@ export default function KnowledgeHubDocumentPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kb-document', documentId] });
-      toast.success('Document saved');
+      catalystToast.success('Document saved');
       setHasChanges(false);
       setIsEditing(false);
     },
     onError: () => {
-      toast.error('Failed to save document');
+      catalystToast.error('Failed to save document');
     },
   });
 
@@ -300,7 +300,7 @@ export default function KnowledgeHubDocumentPage() {
             setContent(restoredContent);
             setHasChanges(true);
             setIsEditing(true);
-            toast.success('Version restored - save to apply changes');
+            catalystToast.success('Version restored - save to apply changes');
           }}
         />
       )}

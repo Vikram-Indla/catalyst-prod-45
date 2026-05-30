@@ -36,7 +36,7 @@ import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { toggleMark as atlaskitToggleMark } from '@atlaskit/editor-common/mark';
 import Spinner from '@atlaskit/spinner';
 import { token } from '@atlaskit/tokens';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { normalizeAdfForAtlaskit, parseStoredDescriptionToAdf } from './adfNormalizer';
 import { uploadDescriptionImage } from './supabaseImageUpload';
@@ -599,7 +599,7 @@ function EpicDescriptionEditorImpl({
     uploadDescriptionImage(file, { workItemId })
       .then((uploaded) => {
         if (!uploaded) {
-          toast.error(`Couldn't upload ${file.name}`);
+          catalystToast.error(`Couldn't upload ${file.name}`);
           return;
         }
         // Notify caller so the attachments rail can stay in sync with the
@@ -627,7 +627,7 @@ function EpicDescriptionEditorImpl({
           adfDocRef.current = doc;
         }).catch(() => { /* noop */ });
       })
-      .catch(() => toast.error(`Couldn't upload ${file.name}`))
+      .catch(() => catalystToast.error(`Couldn't upload ${file.name}`))
       .finally(() => setUploading(false));
   }, [workItemId, onAttachmentUploaded]);
 
@@ -697,7 +697,7 @@ function EpicDescriptionEditorImpl({
     e.target.value = '';
     if (!file) return;
     if (file.size > MAX_IMAGE_BYTES) {
-      toast.error(`Image too large — max 10 MB (got ${(file.size / 1024 / 1024).toFixed(1)} MB)`);
+      catalystToast.error(`Image too large — max 10 MB (got ${(file.size / 1024 / 1024).toFixed(1)} MB)`);
       return;
     }
     insertExternalMedia(file);
@@ -722,7 +722,7 @@ function EpicDescriptionEditorImpl({
 
   const handleEditorSave = useCallback((_view: any) => {
     if (uploading) {
-      toast.error('Image is still uploading — please wait a moment and save again');
+      catalystToast.error('Image is still uploading — please wait a moment and save again');
       return;
     }
     const actions = actionsRef.current;

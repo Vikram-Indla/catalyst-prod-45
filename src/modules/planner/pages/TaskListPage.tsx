@@ -8,14 +8,14 @@ import { useCallback, useState } from 'react';
 import { TaskListPageV3 } from '../components/TaskList';
 import { PlannerCreateModal } from '../components/PlannerCreateModal';
 import type { TaskListTask } from '../hooks/useTaskList';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export default function TaskListPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const handleTaskClick = useCallback((task: TaskListTask) => {
     // Opens task detail drawer/modal
-    toast.info(`Opening ${task.task_key}`);
+    catalystToast.info(`Opening ${task.task_key}`);
   }, []);
 
   const handleCreateTask = useCallback(() => {

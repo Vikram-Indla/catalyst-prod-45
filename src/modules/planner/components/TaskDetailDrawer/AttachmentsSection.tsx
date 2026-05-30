@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { Upload, FileText, X, Loader2 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import type { TaskAttachment } from '../../hooks/useTaskDetails';
@@ -56,10 +56,10 @@ export function AttachmentsSection({ taskId, attachments }: AttachmentsSectionPr
     for (const file of Array.from(files)) {
       try {
         await uploadAttachment.mutateAsync({ taskId, file });
-        toast.success(`Uploaded ${file.name}`);
+        catalystToast.success(`Uploaded ${file.name}`);
       } catch (err) {
         console.error('Upload error:', err);
-        toast.error(`Failed to upload ${file.name}`);
+        catalystToast.error(`Failed to upload ${file.name}`);
       }
     }
   }, [taskId, uploadAttachment]);
@@ -167,7 +167,7 @@ function AttachmentItem({
       setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
     } catch (err) {
       console.error('Download error:', err);
-      toast.error(`Failed to download ${attachment.file_name}`);
+      catalystToast.error(`Failed to download ${attachment.file_name}`);
 
       // Last-resort fallback
       window.open(attachment.file_url, '_blank', 'noopener,noreferrer');

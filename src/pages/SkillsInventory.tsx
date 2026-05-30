@@ -11,7 +11,7 @@ import { EditSkillModal } from '@/components/skills-inventory/EditSkillModal';
 import { DeleteSkillDialog } from '@/components/skills-inventory/DeleteSkillDialog';
 import { AddTeamMemberModal, STANDARD_SKILLS } from '@/components/skills-inventory/AddTeamMemberModal';
 import { CapacityPlanningPage } from '@/components/capacity/CapacityPlanningPage';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { UserPlus } from '@/lib/atlaskit-icons';
 
 type ViewMode = 'table' | 'matrix' | 'gap-analysis' | 'report' | 'capacity';
@@ -125,7 +125,7 @@ export default function SkillsInventory() {
     // Simulate deletion
     setTimeout(() => {
       setSkillsData(prev => prev.filter(s => s.id !== selectedSkill.id));
-      toast.success('Skill assessment deleted');
+      catalystToast.success('Skill assessment deleted');
       setIsDeleting(false);
       setDeleteDialogOpen(false);
       setEditModalOpen(false);
@@ -226,7 +226,7 @@ export default function SkillsInventory() {
     a.download = `skills_inventory_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('CSV exported successfully');
+    catalystToast.success('CSV exported successfully');
   };
 
   const handleExportReport = async () => {
@@ -282,7 +282,7 @@ export default function SkillsInventory() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast.success('Skills report exported successfully');
+      catalystToast.success('Skills report exported successfully');
     } finally {
       setIsExporting(false);
       setExportMenuOpen(false);
@@ -311,7 +311,7 @@ export default function SkillsInventory() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success('Skills matrix exported successfully');
+    catalystToast.success('Skills matrix exported successfully');
     setExportMenuOpen(false);
   };
 

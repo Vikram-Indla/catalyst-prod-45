@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Camera, Loader2 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { showCaptureFlash } from '../utils/validation';
 
 interface ScreenCaptureButtonProps {
@@ -59,14 +59,14 @@ export const ScreenCaptureButton: React.FC<ScreenCaptureButtonProps> = ({
       canvas.toBlob((blob) => {
         if (blob) {
           onCapture(blob);
-          toast.success('Screenshot captured');
+          catalystToast.success('Screenshot captured');
         }
       }, 'image/png', 1.0);
 
     } catch (error) {
       if ((error as Error).name !== 'NotAllowedError') {
         console.error('Screen capture failed:', error);
-        toast.error('Screen capture failed');
+        catalystToast.error('Screen capture failed');
       }
     } finally {
       setIsCapturing(false);

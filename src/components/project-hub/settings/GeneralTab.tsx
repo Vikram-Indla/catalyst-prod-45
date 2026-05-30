@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Lock } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { DangerZone } from './DangerZone';
 
 const DEPARTMENTS = [
@@ -69,7 +69,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
 
   const handleSave = async () => {
     if (!form.name.trim() || !form.department) {
-      toast.error('Name and Department are required');
+      catalystToast.error('Name and Department are required');
       return;
     }
     setSaving(true);
@@ -89,10 +89,10 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
         } as any)
         .eq('id', project.id);
       if (error) throw new Error(error.message);
-      toast.success('Settings saved.');
+      catalystToast.success('Settings saved.');
       onSaved();
     } catch (err: any) {
-      toast.error(err.message || 'Failed to save settings');
+      catalystToast.error(err.message || 'Failed to save settings');
     } finally {
       setSaving(false);
     }

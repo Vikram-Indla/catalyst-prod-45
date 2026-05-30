@@ -40,7 +40,7 @@ import {
 } from '@/lib/atlaskit-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { ProgressWithTooltip } from '@/components/shared/ProgressWithTooltip';
 import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
@@ -165,7 +165,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
       queryClient.invalidateQueries({ queryKey: ['program-epics-roadmap'] });
     },
     onError: (error) => {
-      toast.error('Failed to save epic: ' + error.message);
+      catalystToast.error('Failed to save epic: ' + error.message);
     }
   });
 
@@ -182,11 +182,11 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Epic deleted');
+      catalystToast.success('Epic deleted');
       onClose();
     },
     onError: () => {
-      toast.error('Failed to delete epic');
+      catalystToast.error('Failed to delete epic');
     }
   });
 
@@ -214,13 +214,13 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
     onSuccess: (newEpic) => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Epic duplicated');
+      catalystToast.success('Epic duplicated');
       if (onEpicChange) {
         onEpicChange(newEpic.id);
       }
     },
     onError: () => {
-      toast.error('Failed to duplicate epic');
+      catalystToast.error('Failed to duplicate epic');
     }
   });
 
@@ -246,7 +246,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
       setTimeout(() => setShowSavedIndicator(false), 2000);
     } catch (error) {
       console.error('Auto-save failed:', error);
-      toast.error('Failed to save changes');
+      catalystToast.error('Failed to save changes');
     } finally {
       setIsSaving(false);
     }
@@ -300,7 +300,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
   const handleCopyLink = () => {
     const url = `${window.location.origin}/program/${epic?.primary_program_id}/epic-backlog?epicId=${epicId}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
   };
 
   // Edit name handlers

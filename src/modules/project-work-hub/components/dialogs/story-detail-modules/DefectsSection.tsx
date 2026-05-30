@@ -27,7 +27,7 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { createChildIssue, type WorkItemSource } from '../../../lib/workItemRepo';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { resolveAvatarUrl } from '@/lib/avatars';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import '../../linked-work-items/linked-work-items.css';
 
 type AllowedAppearance = 'default' | 'inprogress' | 'success';
@@ -106,7 +106,7 @@ export function DefectsSection({
       setDraftSummary('');
       setTimeout(() => createRef.current?.focus(), 50);
     },
-    onError: (err) => toast.error('Failed to log defect', { description: (err as Error).message }),
+    onError: (err) => catalystToast.error('Failed to log defect'),
   });
 
   const deleteMutation = useMutation({

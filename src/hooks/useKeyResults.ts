@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { logAuditEntry } from '@/lib/auditLogger';
 
 export interface KeyResult {
@@ -75,12 +75,12 @@ export const useCreateKeyResult = () => {
         afterData: data,
       });
       
-      toast.success('Key result created successfully');
+      catalystToast.success('Key result created successfully');
     },
     onError: (error: any) => {
       // Show friendly message instead of raw DB constraint errors
       console.error('Create key result error:', error);
-      toast.error('Failed to create key result. Please try again.');
+      catalystToast.error('Failed to create key result. Please try again.');
     },
   });
 };
@@ -122,11 +122,11 @@ export const useUpdateKeyResult = () => {
         afterData: data,
       });
       
-      toast.success('Key result updated successfully');
+      catalystToast.success('Key result updated successfully');
     },
     onError: (error: any) => {
       console.error('Update key result error:', error);
-      toast.error('Failed to update key result. Please try again.');
+      catalystToast.error('Failed to update key result. Please try again.');
     },
   });
 };
@@ -165,11 +165,11 @@ export const useDeleteKeyResult = () => {
         beforeData,
       });
       
-      toast.success('Key result deleted successfully');
+      catalystToast.success('Key result deleted successfully');
     },
     onError: (error: any) => {
       const message = error?.message || 'Failed to delete key result';
-      toast.error(message);
+      catalystToast.error(message);
       console.error('Delete key result error:', error);
     },
   });
@@ -214,11 +214,11 @@ export const useCreateCheckIn = () => {
       queryClient.invalidateQueries({ queryKey: ['key-result-checkins', data.key_result_id] });
       queryClient.invalidateQueries({ queryKey: ['key-results'] });
       queryClient.invalidateQueries({ queryKey: ['objectives'] });
-      toast.success('Check-in recorded successfully');
+      catalystToast.success('Check-in recorded successfully');
     },
     onError: (error: any) => {
       const message = error?.message || 'Failed to record check-in';
-      toast.error(message);
+      catalystToast.error(message);
       console.error('Create check-in error:', error);
     },
   });
@@ -242,11 +242,11 @@ export const useDeleteCheckIn = () => {
       queryClient.invalidateQueries({ queryKey: ['key-result-checkins', keyResultId] });
       queryClient.invalidateQueries({ queryKey: ['key-results'] });
       queryClient.invalidateQueries({ queryKey: ['objectives'] });
-      toast.success('Check-in deleted successfully');
+      catalystToast.success('Check-in deleted successfully');
     },
     onError: (error: any) => {
       const message = error?.message || 'Failed to delete check-in';
-      toast.error(message);
+      catalystToast.error(message);
       console.error('Delete check-in error:', error);
     },
   });

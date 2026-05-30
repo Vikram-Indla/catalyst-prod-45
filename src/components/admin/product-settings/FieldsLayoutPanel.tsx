@@ -8,7 +8,7 @@ import { Lozenge } from '@/components/ads';
 import Button from '@atlaskit/button/new';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { OptionValuesDrawer } from '../lookup-management/OptionValuesDrawer';
 import Spinner from '@atlaskit/spinner';
 import ListBulletedIcon from '@atlaskit/icon/core/list-bulleted';
@@ -120,7 +120,7 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
       setSelectedOptionSet(optionSet);
       setValuesDrawerOpen(true);
     } else {
-      toast.error(`Option set "${field.optionsSourceKey}" not found`);
+      catalystToast.error(`Option set "${field.optionsSourceKey}" not found`);
     }
   };
 

@@ -10,7 +10,7 @@ import {
   ReportSchedule,
 } from '@/types/reports';
 import { ExportData, ExportOptions, reportExportToPDF, reportExportToExcel, reportExportToCSV } from '@/lib/reportExportUtils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 import { useState } from 'react';
 
@@ -140,7 +140,7 @@ export function useCreateReport() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['report-definitions'] });
-      toast.success('Report saved');
+      catalystToast.success('Report saved');
     },
   });
 }
@@ -157,7 +157,7 @@ export function useDeleteReport() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['report-definitions'] });
-      toast.success('Report deleted');
+      catalystToast.success('Report deleted');
     },
   });
 }
@@ -194,7 +194,7 @@ export function useCreateSchedule() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['report-schedules', variables.report_id] });
-      toast.success('Schedule created');
+      catalystToast.success('Schedule created');
     },
   });
 }
@@ -214,7 +214,7 @@ export function useUpdateSchedule() {
     },
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ['report-schedules', data.report_id] });
-      toast.success('Schedule updated');
+      catalystToast.success('Schedule updated');
     },
   });
 }
@@ -231,7 +231,7 @@ export function useDeleteSchedule() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['report-schedules'] });
-      toast.success('Schedule deleted');
+      catalystToast.success('Schedule deleted');
     },
   });
 }

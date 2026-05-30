@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useDropzone } from 'react-dropzone';
 
 interface DocumentAttachmentsProps {
@@ -90,10 +90,10 @@ export function DocumentAttachments({ documentId }: DocumentAttachmentsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kb-attachments', documentId] });
-      toast.success('File uploaded');
+      catalystToast.success('File uploaded');
     },
     onError: () => {
-      toast.error('Failed to upload file');
+      catalystToast.error('Failed to upload file');
     },
   });
 
@@ -117,11 +117,11 @@ export function DocumentAttachments({ documentId }: DocumentAttachmentsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kb-attachments', documentId] });
-      toast.success('File deleted');
+      catalystToast.success('File deleted');
       setDeleteId(null);
     },
     onError: () => {
-      toast.error('Failed to delete file');
+      catalystToast.error('Failed to delete file');
     },
   });
 
@@ -144,7 +144,7 @@ export function DocumentAttachments({ documentId }: DocumentAttachmentsProps) {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch {
-      toast.error('Failed to download file');
+      catalystToast.error('Failed to download file');
     }
   };
 

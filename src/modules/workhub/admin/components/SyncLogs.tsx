@@ -10,7 +10,7 @@ import FilterIcon from '@atlaskit/icon/core/filter';
 import DownloadIcon from '@atlaskit/icon/core/download';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
-import { toast } from 'sonner'
+import { catalystToast } from '@/lib/catalystToast'
 import { formatDistanceToNow } from 'date-fns'
 import {
   useSyncHealth,
@@ -71,7 +71,7 @@ export function SyncLogs() {
 
   const handleFilteredSync = () => {
     if (!hasFilters) {
-      toast.error('Please select at least one project, work item type, or fix version filter before syncing.')
+      catalystToast.error('Please select at least one project, work item type, or fix version filter before syncing.')
       setFiltersOpen(true)
       return
     }
@@ -82,8 +82,8 @@ export function SyncLogs() {
       fix_versions: selectedVersions,
       projects: selectedProjects,
     }, {
-      onSuccess: () => toast.success('Sync completed successfully'),
-      onError: (err) => toast.error(`Sync failed: ${err.message}`),
+      onSuccess: () => catalystToast.success('Sync completed successfully'),
+      onError: (err) => catalystToast.error(`Sync failed: ${err.message}`),
     })
   }
 
@@ -99,8 +99,8 @@ export function SyncLogs() {
       issue_types: [],
       fix_versions: [],
     }, {
-      onSuccess: () => toast.success('Full sync completed'),
-      onError: (err) => toast.error(`Sync failed: ${err.message}`),
+      onSuccess: () => catalystToast.success('Full sync completed'),
+      onError: (err) => catalystToast.error(`Sync failed: ${err.message}`),
     })
   }
 
@@ -109,8 +109,8 @@ export function SyncLogs() {
       sync_interval_minutes: intervalMin,
       sync_full_time_utc: fullSyncTime,
     }, {
-      onSuccess: () => toast.success('Schedule saved'),
-      onError: (err) => toast.error(`Failed to save: ${err.message}`),
+      onSuccess: () => catalystToast.success('Schedule saved'),
+      onError: (err) => catalystToast.error(`Failed to save: ${err.message}`),
     })
   }
 
@@ -121,8 +121,8 @@ export function SyncLogs() {
       sync_fix_versions: selectedVersions,
       sync_lookback_months: lookbackMonths,
     }, {
-      onSuccess: () => toast.success('Filter settings saved'),
-      onError: (err) => toast.error(`Failed to save filters: ${err.message}`),
+      onSuccess: () => catalystToast.success('Filter settings saved'),
+      onError: (err) => catalystToast.error(`Failed to save filters: ${err.message}`),
     })
   }
 

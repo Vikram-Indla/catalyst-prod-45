@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export type FieldType = 'text' | 'number' | 'date' | 'select' | 'multi_select' | 'boolean';
 
@@ -97,7 +97,7 @@ export function useCustomFields(entityType: string, entityId: string) {
       queryClient.invalidateQueries({ queryKey: ['custom-field-values', entityType, entityId] });
     },
     onError: () => {
-      toast.error('Failed to save custom field');
+      catalystToast.error('Failed to save custom field');
     },
   });
 

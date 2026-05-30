@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface SubtaskDialogProps {
   open: boolean;
@@ -61,18 +61,18 @@ export function SubtaskDialog({ open, onOpenChange, subtask, storyId }: SubtaskD
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subtasks'] });
-      toast.success(subtask ? 'Subtask updated' : 'Subtask created');
+      catalystToast.success(subtask ? 'Subtask updated' : 'Subtask created');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to save subtask');
+      catalystToast.error('Failed to save subtask');
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedStoryId) {
-      toast.error('Please select a story');
+      catalystToast.error('Please select a story');
       return;
     }
     mutation.mutate({

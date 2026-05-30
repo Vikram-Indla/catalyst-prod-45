@@ -16,7 +16,7 @@ import { usePublishedBrief, useDraftBrief, usePublishBrief, useGenerateBrief, us
 import { useStrategyRoomIntelligence } from '@/hooks/useStrategyRoomIntelligence';
 import { generateExecutiveBrief, type ExecutiveBriefAI } from '@/utils/generateExecutiveBrief';
 import { useUserRole } from '@/hooks/useUserRole';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const TOKENS = `
 [data-sri] {
@@ -169,8 +169,8 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
     generateMutation.mutate(
       { scope: 'strategy_room', metricsJson: metrics, generateFn: generateExecutiveBrief },
       {
-        onSuccess: () => { toast.success('Draft generated — review before publishing'); setPreviewingDraft(true); },
-        onError: () => toast.error('Failed to generate brief'),
+        onSuccess: () => { catalystToast.success('Draft generated — review before publishing'); setPreviewingDraft(true); },
+        onError: () => catalystToast.error('Failed to generate brief'),
       }
     );
   };
@@ -178,16 +178,16 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
   const handlePublish = () => {
     if (!draftBrief) return;
     publishMutation.mutate(draftBrief.id, {
-      onSuccess: () => { toast.success('Brief published to all users'); setPreviewingDraft(false); },
-      onError: () => toast.error('Failed to publish brief'),
+      onSuccess: () => { catalystToast.success('Brief published to all users'); setPreviewingDraft(false); },
+      onError: () => catalystToast.error('Failed to publish brief'),
     });
   };
 
   const handleDiscard = () => {
     if (!draftBrief) return;
     discardMutation.mutate(draftBrief.id, {
-      onSuccess: () => { toast.success('Draft discarded'); setPreviewingDraft(false); },
-      onError: () => toast.error('Failed to discard draft'),
+      onSuccess: () => { catalystToast.success('Draft discarded'); setPreviewingDraft(false); },
+      onError: () => catalystToast.error('Failed to discard draft'),
     });
   };
 

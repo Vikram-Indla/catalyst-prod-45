@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface CreateSpaceDialogProps {
   open: boolean;
@@ -20,7 +20,7 @@ export function CreateSpaceDialog({ open, onOpenChange, onSuccess }: CreateSpace
 
   const handleCreate = async () => {
     if (!name.trim()) {
-      toast.error('Please enter a space name');
+      catalystToast.error('Please enter a space name');
       return;
     }
 
@@ -36,14 +36,14 @@ export function CreateSpaceDialog({ open, onOpenChange, onSuccess }: CreateSpace
 
       if (error) throw error;
 
-      toast.success('Space created');
+      catalystToast.success('Space created');
       onOpenChange(false);
       setName('');
       setDescription('');
       onSuccess?.();
     } catch (error) {
       console.error('Error creating space:', error);
-      toast.error('Failed to create space');
+      catalystToast.error('Failed to create space');
     } finally {
       setIsCreating(false);
     }

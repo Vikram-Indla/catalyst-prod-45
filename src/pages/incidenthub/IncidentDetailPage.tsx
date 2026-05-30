@@ -16,7 +16,7 @@ import { SeverityChip } from './components/SeverityChip';
 import { PriorityChip } from './components/PriorityChip';
 import { CommitteeModal } from './components/CommitteeModal';
 import { ConvertDialog } from './components/ConvertDialog';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { formatDistanceToNow } from 'date-fns';
 
 export default function IncidentDetailPage() {
@@ -53,9 +53,9 @@ export default function IncidentDetailPage() {
     try {
       await addComment.mutateAsync({ incident_id: id, content: commentText.trim(), comment_type: 'update' });
       setCommentText('');
-      toast.success('Comment saved');
+      catalystToast.success('Comment saved');
     } catch {
-      toast.error('Failed to save comment');
+      catalystToast.error('Failed to save comment');
     }
   };
 
@@ -63,9 +63,9 @@ export default function IncidentDetailPage() {
     if (!id) return;
     try {
       await updateIncident.mutateAsync({ id, data: { status: 'resolved' as any } });
-      toast.success('Incident resolved');
+      catalystToast.success('Incident resolved');
     } catch {
-      toast.error('Failed to resolve incident');
+      catalystToast.error('Failed to resolve incident');
     }
   };
 

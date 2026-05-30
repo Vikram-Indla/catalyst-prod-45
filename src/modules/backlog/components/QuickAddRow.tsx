@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, X } from '@/lib/atlaskit-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface QuickAddRowProps {
   itemType: string;
@@ -29,14 +29,14 @@ export function QuickAddRow({ itemType, onAdd }: QuickAddRowProps) {
       return data;
     },
     onSuccess: () => {
-      toast.success(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} created successfully`);
+      catalystToast.success(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} created successfully`);
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
       setName('');
       setIsAdding(false);
       onAdd?.();
     },
     onError: (error: any) => {
-      toast.error(`Failed to create ${itemType}: ${error.message}`);
+      catalystToast.error(`Failed to create ${itemType}: ${error.message}`);
     },
   });
 

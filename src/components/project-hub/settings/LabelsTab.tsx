@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { X, Tag } from '@/lib/atlaskit-icons';
 
 const COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#EA580C', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-success, var(--cp-success, #16A34A))', '#0284C7'];
@@ -40,11 +40,11 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
         .from('ph_labels')
         .insert({ project_id: projectId, name: newName.trim(), color: newColor });
       if (error) throw new Error(error.message);
-      toast.success('Label added');
+      catalystToast.success('Label added');
       setNewName('');
       queryClient.invalidateQueries({ queryKey });
     } catch (err: any) {
-      toast.error(err.message || 'Failed to add label');
+      catalystToast.error(err.message || 'Failed to add label');
     }
   };
 
@@ -54,7 +54,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
       if (error) throw new Error(error.message);
       queryClient.invalidateQueries({ queryKey });
     } catch (err: any) {
-      toast.error(err.message || 'Failed to delete label');
+      catalystToast.error(err.message || 'Failed to delete label');
     }
   };
 

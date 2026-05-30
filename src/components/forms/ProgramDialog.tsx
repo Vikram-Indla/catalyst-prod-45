@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface ProgramDialogProps {
   open: boolean;
@@ -51,18 +51,18 @@ export function ProgramDialog({ open, onOpenChange, program }: ProgramDialogProp
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
-      toast.success(program ? 'Project updated' : 'Project created');
+      catalystToast.success(program ? 'Project updated' : 'Project created');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to save project');
+      catalystToast.error('Failed to save project');
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!programId) {
-      toast.error('Please select a program');
+      catalystToast.error('Please select a program');
       return;
     }
     mutation.mutate({

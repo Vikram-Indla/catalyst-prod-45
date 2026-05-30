@@ -12,7 +12,7 @@ import {
 import type { HeatmapResource, MonthlyUtilization } from '@/types/capacity-heatmap';
 import { CATALYST_COLORS } from '@/types/capacity-heatmap';
 import { formatMonth } from '@/lib/capacity-heatmap/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface ContextMenuProps {
   x: number;
@@ -70,7 +70,7 @@ export const HeatmapContextMenu = memo(function HeatmapContextMenu({
   const handleCopy = () => {
     const text = `${resource.name} - ${formatMonth(utilization.month, 'long')}: ${utilization.percentage}%`;
     navigator.clipboard.writeText(text).then(() => {
-      toast.success('Copied to clipboard');
+      catalystToast.success('Copied to clipboard');
     });
     onClose();
   };

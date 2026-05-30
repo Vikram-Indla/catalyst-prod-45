@@ -10,7 +10,7 @@ import { useWorkItemIconPreferences, IconStyle } from '@/hooks/useWorkItemIconPr
 import { IconStyleSelector } from '@/components/admin/IconStyleSelector';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 import { Save, Loader2, AlertCircle, RotateCcw, Palette } from 'lucide-react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 const WORK_ITEM_TYPES: WorkItemType[] = [
   'theme',
@@ -198,10 +198,10 @@ export default function CreateMenuConfig() {
       
       setPendingChanges({});
       setPendingIconChanges({});
-      toast.success('Settings saved successfully');
+      catalystToast.success('Settings saved successfully');
     } catch (error) {
       console.error('Failed to save settings:', error);
-      toast.error('Failed to save settings');
+      catalystToast.error('Failed to save settings');
     }
   };
 
@@ -239,9 +239,9 @@ export default function CreateMenuConfig() {
     const hasChanges = Object.keys(newPendingChanges).length > 0 || Object.keys(newPendingIconChanges).length > 0;
     
     if (hasChanges) {
-      toast.info('Default settings staged. Click "Save Settings" to apply.');
+      catalystToast.info('Default settings staged. Click "Save Settings" to apply.');
     } else {
-      toast.info('Settings are already at defaults.');
+      catalystToast.info('Settings are already at defaults.');
     }
   };
 

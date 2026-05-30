@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Upload, FileText, Download, Trash2, Paperclip } from '@/lib/atlaskit-icons';
 import {
   AlertDialog,
@@ -79,10 +79,10 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['story-attachments', storyId] });
-      toast.success('File uploaded successfully');
+      catalystToast.success('File uploaded successfully');
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to upload file');
+      catalystToast.error(error.message || 'Failed to upload file');
     },
   });
 
@@ -105,10 +105,10 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['story-attachments', storyId] });
       setDeleteId(null);
-      toast.success('File deleted');
+      catalystToast.success('File deleted');
     },
     onError: () => {
-      toast.error('Failed to delete file');
+      catalystToast.error('Failed to delete file');
     },
   });
 
@@ -118,7 +118,7 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
 
     // Check file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
-      toast.error('File size must be less than 10MB');
+      catalystToast.error('File size must be less than 10MB');
       return;
     }
 
@@ -137,7 +137,7 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
       .download(attachment.file_path);
 
     if (error) {
-      toast.error('Failed to download file');
+      catalystToast.error('Failed to download file');
       return;
     }
 

@@ -10,7 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { type DesignGap, detectedGaps } from '@/lib/designAudit/designSystemBaseline';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
 import AutomationIcon from '@atlaskit/icon/core/automation';
 import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
@@ -80,7 +80,7 @@ export function FixIssuesPanel() {
     }
     
     setIsRunning(false);
-    toast.success('Fix operation completed');
+    catalystToast.success('Fix operation completed');
   };
 
   const pauseFixes = () => {

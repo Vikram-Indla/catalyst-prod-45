@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface LinkedTheme {
   id: string;
@@ -81,10 +81,10 @@ export function useLinkThemesToObjective() {
       queryClient.invalidateQueries({ queryKey: ['objective-detail', objectiveId] });
       queryClient.invalidateQueries({ queryKey: ['theme-objective-links'] });
       queryClient.invalidateQueries({ queryKey: ['theme-objective-counts'] });
-      toast.success('Themes linked to objective');
+      catalystToast.success('Themes linked to objective');
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to link themes');
+      catalystToast.error(error.message || 'Failed to link themes');
     },
   });
 }
@@ -106,10 +106,10 @@ export function useUnlinkThemesFromObjective() {
       queryClient.invalidateQueries({ queryKey: ['objective-detail', objectiveId] });
       queryClient.invalidateQueries({ queryKey: ['theme-objective-links'] });
       queryClient.invalidateQueries({ queryKey: ['theme-objective-counts'] });
-      toast.success('Themes unlinked from objective');
+      catalystToast.success('Themes unlinked from objective');
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to unlink themes');
+      catalystToast.error(error.message || 'Failed to unlink themes');
     },
   });
 }

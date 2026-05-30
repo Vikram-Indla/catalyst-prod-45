@@ -22,7 +22,7 @@ import { HeatmapContextMenu } from './HeatmapContextMenu';
 import type { HeatmapResource } from '@/types/capacity-heatmap';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { exportToPDF, exportToCSV } from '@/lib/capacity-heatmap/export';
 
 interface CapacityHeatmapProps {
@@ -118,10 +118,10 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
     setIsExporting(true);
     try {
       await exportToPDF(heatmapRef.current, `capacity-heatmap-${year}`);
-      toast.success('Heatmap exported to PDF');
+      catalystToast.success('Heatmap exported to PDF');
     } catch (err) {
       console.error('Export failed:', err);
-      toast.error('Failed to export PDF');
+      catalystToast.error('Failed to export PDF');
     } finally {
       setIsExporting(false);
     }
@@ -131,7 +131,7 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
   const handleExportCSV = useCallback(() => {
     if (!data) return;
     exportToCSV(filteredResources, data.months, `capacity-heatmap-${year}`);
-    toast.success('Heatmap exported to CSV');
+    catalystToast.success('Heatmap exported to CSV');
   }, [filteredResources, data, year]);
   
   // Get selected resource and utilization for detail panel
@@ -166,7 +166,7 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
     
     switch (action) {
       case 'resolve-conflict':
-        toast.info(`Opening conflict resolution for ${resource?.name}`);
+        catalystToast.info(`Opening conflict resolution for ${resource?.name}`);
         setSelectedCell({ resourceId: contextMenu.resourceId, month: contextMenu.month });
         break;
       case 'view-breakdown':
@@ -174,16 +174,16 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
         setSelectedCell({ resourceId: contextMenu.resourceId, month: contextMenu.month });
         break;
       case 'find-replacement':
-        toast.info('Find replacement feature coming soon');
+        catalystToast.info('Find replacement feature coming soon');
         break;
       case 'adjust-timeline':
-        toast.info('Adjust timeline feature coming soon');
+        catalystToast.info('Adjust timeline feature coming soon');
         break;
       case 'send-message':
-        toast.info(`Message ${resource?.name}`);
+        catalystToast.info(`Message ${resource?.name}`);
         break;
       case 'open-profile':
-        toast.info(`Open profile for ${resource?.name}`);
+        catalystToast.info(`Open profile for ${resource?.name}`);
         break;
     }
     
@@ -224,10 +224,10 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
       <div className={cn("rounded-lg border border-border bg-card", className)}>
         <HeatmapEmptyState
           onAddResource={() => {
-            toast.info('Add resource feature coming soon');
+            catalystToast.info('Add resource feature coming soon');
           }}
           onImportData={() => {
-            toast.info('Import data feature coming soon');
+            catalystToast.info('Import data feature coming soon');
           }}
         />
       </div>
@@ -260,13 +260,13 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
             scenarioMode={scenarioMode}
             onClose={() => setSelectedCell(null)}
             onResolveConflict={() => {
-              toast.info('Conflict resolution feature coming soon');
+              catalystToast.info('Conflict resolution feature coming soon');
             }}
             onAddAllocation={(percentage, projectName) => {
-              toast.info(`Adding ${percentage}% allocation to ${projectName}`);
+              catalystToast.info(`Adding ${percentage}% allocation to ${projectName}`);
             }}
             onEditAllocation={(id) => {
-              toast.info(`Editing allocation ${id}`);
+              catalystToast.info(`Editing allocation ${id}`);
             }}
           />
         )}

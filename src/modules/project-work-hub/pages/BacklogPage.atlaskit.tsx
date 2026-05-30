@@ -258,7 +258,7 @@ import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 // chokepoint per CLAUDE.md §19).
 import AvatarGroup from '@atlaskit/avatar-group';
 import { resolveAvatarUrl } from '@/lib/avatars';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 

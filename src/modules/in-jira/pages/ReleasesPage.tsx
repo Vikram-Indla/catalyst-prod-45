@@ -17,7 +17,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useVersions, VersionWithProgress } from '../hooks/useVersions';
 import { VersionCard, VersionDialog } from '../components/releases';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -91,7 +91,7 @@ export function ReleasesPage() {
     releaseDate?: string;
   }) => {
     if (!projectId) {
-      toast.error('No project selected');
+      catalystToast.error('No project selected');
       return;
     }
     await createVersion({
@@ -122,7 +122,7 @@ export function ReleasesPage() {
 
   const handleViewDetails = useCallback((versionId: string) => {
     // TODO: Navigate to version detail page or open modal
-    toast.info('Version details coming soon');
+    catalystToast.info('Version details coming soon');
   }, []);
 
   return (

@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useActiveEpicStatuses } from '@/hooks/useEpicStatuses';
 import { getEpicStatusConfigFromList, getEpicStatusStyles } from '@/components/items/epics/drawer';
 
@@ -259,10 +259,10 @@ export function EpicTableView({
 
       await Promise.all(updatePromises);
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Rank order saved');
+      catalystToast.success('Rank order saved');
     } catch (error) {
       console.error('Failed to save rank order:', error);
-      toast.error('Failed to save rank order');
+      catalystToast.error('Failed to save rank order');
     }
   }, [sortedData, queryClient]);
 

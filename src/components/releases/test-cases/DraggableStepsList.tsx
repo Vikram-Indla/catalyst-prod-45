@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Lozenge, Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface TestStep {
   id: string;
@@ -67,11 +67,11 @@ function StepItem({
 
   const handleSave = () => {
     if (!editedStep.action.trim()) {
-      toast.error('Action is required');
+      catalystToast.error('Action is required');
       return;
     }
     if (!editedStep.expectedResult.trim()) {
-      toast.error('Expected result is required');
+      catalystToast.error('Expected result is required');
       return;
     }
     onSave(editedStep);
@@ -254,7 +254,7 @@ export function DraggableStepsList({ steps, onChange, readOnly }: DraggableSteps
     );
     onChange(newSteps);
     setEditingId(null);
-    toast.success('Step updated');
+    catalystToast.success('Step updated');
   }, [steps, onChange]);
 
   const handleDeleteStep = useCallback((id: string) => {
@@ -262,7 +262,7 @@ export function DraggableStepsList({ steps, onChange, readOnly }: DraggableSteps
       .filter((s) => s.id !== id)
       .map((step, i) => ({ ...step, stepNumber: i + 1 }));
     onChange(newSteps);
-    toast.success('Step deleted');
+    catalystToast.success('Step deleted');
   }, [steps, onChange]);
 
   const handleDuplicateStep = useCallback((step: TestStep) => {
@@ -278,7 +278,7 @@ export function DraggableStepsList({ steps, onChange, readOnly }: DraggableSteps
       ...steps.slice(index + 1).map((s) => ({ ...s, stepNumber: s.stepNumber + 1 })),
     ];
     onChange(newSteps);
-    toast.success('Step duplicated');
+    catalystToast.success('Step duplicated');
   }, [steps, onChange]);
 
   const handleAddNewStep = useCallback(() => {

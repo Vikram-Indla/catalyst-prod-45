@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ── Debounce hook ───────────────────────────────────────────
 export const useDebouncedValue = <T>(value: T, delay = 300): T => {
@@ -256,7 +256,7 @@ export const useWikiSearch = (query: string) => {
         body: { query, language: 'en' },
       });
       if (error) {
-        toast.error('Search failed. Please try again.');
+        catalystToast.error('Search failed. Please try again.');
         throw error;
       }
       return data;
@@ -327,10 +327,10 @@ export const useToggleWikiBookmark = () => {
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['wiki-bookmarks'] });
       qc.invalidateQueries({ queryKey: ['wiki-bookmark-check'] });
-      toast.success(data.pinned ? 'Article pinned' : 'Article unpinned');
+      catalystToast.success(data.pinned ? 'Article pinned' : 'Article unpinned');
     },
     onError: () => {
-      toast.error('Failed to update bookmark. Please try again.');
+      catalystToast.error('Failed to update bookmark. Please try again.');
     },
   });
 };
@@ -438,7 +438,7 @@ export const useWikiDocumentUpload = () => {
       qc.invalidateQueries({ queryKey: ['wiki-domains'] });
     },
     onError: (err: any) => {
-      toast.error(`Upload failed: ${err.message || 'Unknown error'}`);
+      catalystToast.error(`Upload failed: ${err.message || 'Unknown error'}`);
     },
   });
 };
@@ -499,7 +499,7 @@ export const useSubmitFeedback = () => {
       }
     },
     onSuccess: () => {
-      toast.success('Thank you for your feedback');
+      catalystToast.success('Thank you for your feedback');
     },
   });
 };

@@ -30,7 +30,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
 import { buildIdeasBoardAdapter } from '@/components/kanban/adapters/ideasBoardAdapter';
 import { useIdeasHub, type IdeaRow } from '@/hooks/useIdeasHub';
@@ -107,7 +107,7 @@ export default function IdeasBoardPage() {
       qc.invalidateQueries({ queryKey: ['ideas-hub'] });
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : 'Failed to update idea status');
+      catalystToast.error(err instanceof Error ? err.message : 'Failed to update idea status');
     },
   });
 
@@ -186,7 +186,7 @@ export default function IdeasBoardPage() {
             } as any)
             .eq('id', idea.id);
           qc.invalidateQueries({ queryKey: ['ideas-hub'] });
-          toast.success(`${conversionSource.primaryIdea.key} converted to ${initiativeKey}`);
+          catalystToast.success(`${conversionSource.primaryIdea.key} converted to ${initiativeKey}`);
         }}
       />
     </>

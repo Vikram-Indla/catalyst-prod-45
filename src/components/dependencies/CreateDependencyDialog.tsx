@@ -27,7 +27,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { CalendarIcon, Calendar as CalendarIcon2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { WorkItemDependencyType, DependencyTypeV2, RiskLevel, DependencyLevelV2 } from '@/lib/dependencies/types';
@@ -300,12 +300,12 @@ export function CreateDependencyDialog({
       queryClient.invalidateQueries({ queryKey: ['work-item-dependencies'] });
       queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
       queryClient.invalidateQueries({ queryKey: ['team-dependencies'] });
-      toast.success('Dependency created successfully');
+      catalystToast.success('Dependency created successfully');
       clearDraft();
       handleClose();
     },
     onError: (error: any) => {
-      toast.error(`Failed to create dependency: ${error.message}`);
+      catalystToast.error(`Failed to create dependency: ${error.message}`);
     },
   });
 
@@ -313,12 +313,12 @@ export function CreateDependencyDialog({
     e.preventDefault();
     
     if (!requestingWorkItemId || !dependsOnWorkItemId) {
-      toast.error('Please select both requesting and dependent work items');
+      catalystToast.error('Please select both requesting and dependent work items');
       return;
     }
 
     if (!neededByDate) {
-      toast.error('Please specify a needed-by date');
+      catalystToast.error('Please specify a needed-by date');
       return;
     }
 

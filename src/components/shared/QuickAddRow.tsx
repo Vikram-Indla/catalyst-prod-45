@@ -5,7 +5,7 @@ import { TableRow, TableCell } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, X } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export type CreateType = 'epic' | 'business_request';
 
@@ -63,7 +63,7 @@ export function QuickAddRow({
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey });
-      toast.success(`${label.replace('Add ', '')} created successfully`);
+      catalystToast.success(`${label.replace('Add ', '')} created successfully`);
       setInputValue('');
       setIsAdding(false);
       setError(null);
@@ -74,7 +74,7 @@ export function QuickAddRow({
     },
     onError: (err: any) => {
       setError(err?.message || 'Failed to create item');
-      toast.error('Failed to create item');
+      catalystToast.error('Failed to create item');
     }
   });
 

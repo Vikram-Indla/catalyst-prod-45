@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { ResourceMetric, AiRecommendation } from './types';
 import { departmentColors } from './types';
 
@@ -59,7 +59,7 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
 
   const handleAssign = () => {
     if (selectedWorkItems.length > 0) {
-      toast.success(`Assigned ${selectedWorkItems.length} items to ${selectedResource?.name}`);
+      catalystToast.success(`Assigned ${selectedWorkItems.length} items to ${selectedResource?.name}`);
       handleSkip();
     }
   };

@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { Archive, FileSpreadsheet, Printer, Loader2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface ExportButtonsProps {
   executionId: string;
@@ -46,7 +46,7 @@ export const ExportButtons: React.FC<ExportButtonsProps> = ({
       if (error) throw error;
 
       if (!attachments || attachments.length === 0) {
-        toast.info('No evidence files to download');
+        catalystToast.info('No evidence files to download');
         return;
       }
 
@@ -105,10 +105,10 @@ export const ExportButtons: React.FC<ExportButtonsProps> = ({
       a.click();
       URL.revokeObjectURL(url);
 
-      toast.success(`Downloaded ${successCount} files`);
+      catalystToast.success(`Downloaded ${successCount} files`);
     } catch (error) {
       console.error('Download failed:', error);
-      toast.error('Failed to download evidence');
+      catalystToast.error('Failed to download evidence');
     } finally {
       setDownloading(false);
     }
@@ -138,7 +138,7 @@ export const ExportButtons: React.FC<ExportButtonsProps> = ({
       if (error) throw error;
 
       if (!attachments || attachments.length === 0) {
-        toast.info('No evidence to export');
+        catalystToast.info('No evidence to export');
         return;
       }
 
@@ -194,10 +194,10 @@ export const ExportButtons: React.FC<ExportButtonsProps> = ({
       a.click();
       URL.revokeObjectURL(url);
 
-      toast.success('CSV exported');
+      catalystToast.success('CSV exported');
     } catch (error) {
       console.error('Export failed:', error);
-      toast.error('Failed to export CSV');
+      catalystToast.error('Failed to export CSV');
     } finally {
       setExporting(false);
     }

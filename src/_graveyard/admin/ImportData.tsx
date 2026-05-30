@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { ImportWizardStepper, WizardStep } from '@/components/admin/import/ImportWizardStepper';
 import { ImportStepSetup } from '@/components/admin/import/ImportStepSetup';
 import { ImportStepSettings } from '@/components/admin/import/ImportStepSettings';
@@ -132,9 +132,9 @@ export default function ImportData() {
     queryClient.invalidateQueries({ queryKey: [selectedModule] });
     
     if (failed === 0) {
-      toast.success(`Successfully imported ${success} ${moduleConfig.label.toLowerCase()}`);
+      catalystToast.success(`Successfully imported ${success} ${moduleConfig.label.toLowerCase()}`);
     } else {
-      toast.warning(`Imported ${success} records, ${failed} failed`);
+      catalystToast.warning(`Imported ${success} records, ${failed} failed`);
     }
   }, [moduleConfig, validationResults, queryClient, selectedModule]);
   
@@ -300,7 +300,7 @@ export default function ImportData() {
               dateFormat={dateFormat}
               validationResults={validationResults}
               onValidate={handleValidate}
-              onDownloadErrors={() => toast.info('Error report downloaded')}
+              onDownloadErrors={() => catalystToast.info('Error report downloaded')}
             />
           )}
           
@@ -312,7 +312,7 @@ export default function ImportData() {
               importProgress={importProgress}
               importResult={importResult}
               onBeginImport={handleBeginImport}
-              onDownloadPreview={() => toast.info('Preview downloaded')}
+              onDownloadPreview={() => catalystToast.info('Preview downloaded')}
             />
           )}
         </div>

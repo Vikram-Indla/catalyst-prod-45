@@ -14,7 +14,7 @@ import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@a
 import Button from '@atlaskit/button/new';
 import Select from '@atlaskit/select';
 import { useQuery } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { moveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 
@@ -67,11 +67,11 @@ export function MoveIssueDialog({
     setMoving(true);
     try {
       await moveIssue(issueKey, selected.value, selected.projectId);
-      toast.success(`Moved to ${selected.label}`);
+      catalystToast.success(`Moved to ${selected.label}`);
       onClose();
       onMoved?.();
     } catch (e) {
-      toast.error('Move failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+      catalystToast.error('Move failed');
     } finally {
       setMoving(false);
     }

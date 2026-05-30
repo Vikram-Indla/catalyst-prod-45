@@ -7,7 +7,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useDebounce } from '@/hooks/useDebounce';
 import type { Json } from '@/integrations/supabase/types';
 
@@ -425,7 +425,7 @@ export function useEnterpriseGrid(config: EnterpriseGridConfig): UseEnterpriseGr
   // View operations
   const saveView = useCallback(async (name: string, isDefault = false, isShared = false) => {
     if (!user?.id) {
-      toast.error('You must be logged in to save views');
+      catalystToast.error('You must be logged in to save views');
       return;
     }
 
@@ -462,10 +462,10 @@ export function useEnterpriseGrid(config: EnterpriseGridConfig): UseEnterpriseGr
 
       queryClient.invalidateQueries({ queryKey: ['enterprise-grid-views', gridId] });
       setActiveViewId(dataTyped.id);
-      toast.success(`View "${name}" saved`);
+      catalystToast.success(`View "${name}" saved`);
     } catch (error) {
       console.error('Error saving view:', error);
-      toast.error('Failed to save view');
+      catalystToast.error('Failed to save view');
     }
   }, [user?.id, gridId, columns, sortConfig, filterConfig, groupBy, rowHeight, queryClient]);
 
@@ -489,10 +489,10 @@ export function useEnterpriseGrid(config: EnterpriseGridConfig): UseEnterpriseGr
       }
 
       queryClient.invalidateQueries({ queryKey: ['enterprise-grid-views', gridId] });
-      toast.success('View deleted');
+      catalystToast.success('View deleted');
     } catch (error) {
       console.error('Error deleting view:', error);
-      toast.error('Failed to delete view');
+      catalystToast.error('Failed to delete view');
     }
   }, [activeViewId, defaultColumns, defaultSort, gridId, queryClient]);
 
@@ -505,10 +505,10 @@ export function useEnterpriseGrid(config: EnterpriseGridConfig): UseEnterpriseGr
       if (error) throw error;
 
       queryClient.invalidateQueries({ queryKey: ['enterprise-grid-views', gridId] });
-      toast.success('View renamed');
+      catalystToast.success('View renamed');
     } catch (error) {
       console.error('Error renaming view:', error);
-      toast.error('Failed to rename view');
+      catalystToast.error('Failed to rename view');
     }
   }, [gridId, queryClient]);
 
@@ -534,7 +534,7 @@ export function useEnterpriseGrid(config: EnterpriseGridConfig): UseEnterpriseGr
 
   const exportData = useCallback((format: 'csv' | 'json') => {
     // This will be called by the parent component with actual data
-    toast.info(`Export to ${format.toUpperCase()} - implement in parent component`);
+    catalystToast.info(`Export to ${format.toUpperCase()} - implement in parent component`);
   }, []);
 
   // Generate server filter params for API calls

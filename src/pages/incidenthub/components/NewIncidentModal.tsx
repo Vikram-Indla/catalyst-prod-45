@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useCreateIncident } from '@/hooks/useIncidents';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useTheme } from '@/hooks/useTheme';
 
 interface NewIncidentModalProps {
@@ -38,7 +38,7 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!title.trim()) { toast.error('Title is required'); return; }
+    if (!title.trim()) { catalystToast.error('Title is required'); return; }
     setIsSubmitting(true);
     try {
       await createIncident.mutateAsync({
@@ -49,13 +49,13 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
         urgency: 'medium' as any,
       });
       qc.invalidateQueries({ queryKey: ['incident-hub-list'] });
-      toast.success('Incident created');
+      catalystToast.success('Incident created');
       setTitle('');
       setDescription('');
       setSeverity('SEV3');
       onClose();
     } catch {
-      toast.error('Failed to create incident');
+      catalystToast.error('Failed to create incident');
     } finally {
       setIsSubmitting(false);
     }

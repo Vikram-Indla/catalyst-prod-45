@@ -4,7 +4,7 @@
 
 import React, { useEffect, useCallback } from 'react';
 import { Clipboard } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface ClipboardPasteButtonProps {
   onPaste: (blob: Blob) => void;
@@ -27,7 +27,7 @@ export const useClipboardPaste = (
         const blob = item.getAsFile();
         if (blob) {
           onPaste(blob);
-          toast.success('Image pasted');
+          catalystToast.success('Image pasted');
         }
         return;
       }

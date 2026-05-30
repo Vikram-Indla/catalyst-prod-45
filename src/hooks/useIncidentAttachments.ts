@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export function useUploadIncidentAttachment() {
   const queryClient = useQueryClient();
@@ -38,10 +38,10 @@ export function useUploadIncidentAttachment() {
     },
     onSuccess: (_, { incidentId }) => {
       queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
-      toast.success('File uploaded');
+      catalystToast.success('File uploaded');
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to upload file');
+      catalystToast.error(error.message || 'Failed to upload file');
     },
   });
 }
@@ -68,10 +68,10 @@ export function useDeleteIncidentAttachment() {
     },
     onSuccess: (_, { incidentId }) => {
       queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
-      toast.success('Attachment deleted');
+      catalystToast.success('Attachment deleted');
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to delete attachment');
+      catalystToast.error(error.message || 'Failed to delete attachment');
     },
   });
 }
@@ -96,7 +96,7 @@ export function useDownloadIncidentAttachment() {
       URL.revokeObjectURL(url);
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to download file');
+      catalystToast.error(error.message || 'Failed to download file');
     },
   });
 }

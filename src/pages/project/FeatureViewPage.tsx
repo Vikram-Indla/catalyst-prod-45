@@ -15,7 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useFeatureProgress } from '@/hooks/useFeatureProgress';
 import { Layers, Share2, Link2, MoreHorizontal, ChevronDown, Pencil, Calendar, Ban, Zap, AlertTriangle } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -303,19 +303,19 @@ export default function FeatureViewPage() {
       queryClient.invalidateQueries({ queryKey: ['work-items'] });
     },
     onError: (error: any) => {
-      toast.error('Failed to update feature', { description: error.message });
+      catalystToast.error('Failed to update feature');
     },
   });
 
   // Handlers
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
   };
 
   const handleStatusChange = (newStatus: FeatureStatus) => {
     updateFeature.mutate({ status: newStatus }, {
-      onSuccess: () => toast.success('Status updated'),
+      onSuccess: () => catalystToast.success('Status updated'),
     });
   };
 
@@ -323,7 +323,7 @@ export default function FeatureViewPage() {
     if (editedName.trim() && editedName.trim() !== feature?.name) {
       updateFeature.mutate({ name: editedName.trim() }, {
         onSuccess: () => {
-          toast.success('Title updated');
+          catalystToast.success('Title updated');
           setIsEditingName(false);
         },
       });
@@ -339,18 +339,18 @@ export default function FeatureViewPage() {
 
   const handleOwnerChange = (newOwnerId: string | null) => {
     updateFeature.mutate({ owner_id: newOwnerId }, {
-      onSuccess: () => toast.success('Owner updated'),
+      onSuccess: () => catalystToast.success('Owner updated'),
     });
   };
 
   const handleEpicChange = (newEpicId: string) => {
     if (!newEpicId) {
-      toast.error('Epic is required', { description: 'Features must be linked to an Epic' });
+      catalystToast.error('Epic is required');
       return;
     }
     updateFeature.mutate({ epic_id: newEpicId }, {
       onSuccess: () => {
-        toast.success('Epic updated');
+        catalystToast.success('Epic updated');
         setEpicPopoverOpen(false);
       },
     });
@@ -358,14 +358,14 @@ export default function FeatureViewPage() {
 
   const handleStartDateChange = (date: Date | null) => {
     if (date && feature?.planned_end_date && date > new Date(feature.planned_end_date)) {
-      toast.error('Start date must be before end date');
+      catalystToast.error('Start date must be before end date');
       return;
     }
     updateFeature.mutate({
       planned_start_date: date ? format(date, 'yyyy-MM-dd') : null,
     }, {
       onSuccess: () => {
-        toast.success('Start date updated');
+        catalystToast.success('Start date updated');
         setStartDateOpen(false);
       },
     });
@@ -373,14 +373,14 @@ export default function FeatureViewPage() {
 
   const handleEndDateChange = (date: Date | null) => {
     if (date && feature?.planned_start_date && new Date(feature.planned_start_date) > date) {
-      toast.error('End date must be after start date');
+      catalystToast.error('End date must be after start date');
       return;
     }
     updateFeature.mutate({
       planned_end_date: date ? format(date, 'yyyy-MM-dd') : null,
     }, {
       onSuccess: () => {
-        toast.success('End date updated');
+        catalystToast.success('End date updated');
         setEndDateOpen(false);
       },
     });

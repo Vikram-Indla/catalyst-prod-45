@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useKnowledgeHubDocuments, useCreateKBDocument, type WorkItemType } from '@/hooks/useKnowledgeHubDocuments';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface KnowledgeBaseCardProps {
   workItemId: string;
@@ -25,11 +25,11 @@ export function KnowledgeBaseCard({ workItemId, workItemType }: KnowledgeBaseCar
         linked_work_item_id: workItemId,
         linked_work_item_type: workItemType,
       });
-      toast.success('Document created');
+      catalystToast.success('Document created');
       // Navigate to the new document
       navigate(`/knowledge-hub/documents/${newDoc.id}`);
     } catch (error) {
-      toast.error('Failed to create document');
+      catalystToast.error('Failed to create document');
     }
   };
 

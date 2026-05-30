@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -109,12 +109,12 @@ export function ReleaseDialog({ open, onClose, releaseId }: ReleaseDialogProps) 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['releases'] });
-      toast.success(isEdit ? 'Release updated' : 'Release created');
+      catalystToast.success(isEdit ? 'Release updated' : 'Release created');
       onClose();
       form.reset();
     },
     onError: (error) => {
-      toast.error(`Failed to ${isEdit ? 'update' : 'create'} release: ${error.message}`);
+      catalystToast.error(`Failed to ${isEdit ? 'update' : 'create'} release: ${error.message}`);
     },
   });
 

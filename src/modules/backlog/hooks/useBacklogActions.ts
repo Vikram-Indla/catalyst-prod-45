@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export function useBacklogActions(itemType: string = 'epic') {
   const queryClient = useQueryClient();
@@ -50,10 +50,10 @@ export function useBacklogActions(itemType: string = 'epic') {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Item duplicated successfully');
+      catalystToast.success('Item duplicated successfully');
     },
     onError: (error: any) => {
-      toast.error(`Failed to duplicate: ${error.message}`);
+      catalystToast.error(`Failed to duplicate: ${error.message}`);
     },
   });
 
@@ -74,10 +74,10 @@ export function useBacklogActions(itemType: string = 'epic') {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Moved to top');
+      catalystToast.success('Moved to top');
     },
     onError: (error: any) => {
-      toast.error(`Failed to move: ${error.message}`);
+      catalystToast.error(`Failed to move: ${error.message}`);
     },
   });
 
@@ -98,10 +98,10 @@ export function useBacklogActions(itemType: string = 'epic') {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Moved to bottom');
+      catalystToast.success('Moved to bottom');
     },
     onError: (error: any) => {
-      toast.error(`Failed to move: ${error.message}`);
+      catalystToast.error(`Failed to move: ${error.message}`);
     },
   });
 
@@ -126,10 +126,10 @@ export function useBacklogActions(itemType: string = 'epic') {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Moved to Program Increment');
+      catalystToast.success('Moved to Program Increment');
     },
     onError: (error: any) => {
-      toast.error(`Failed to move: ${error.message}`);
+      catalystToast.error(`Failed to move: ${error.message}`);
     },
   });
 
@@ -143,10 +143,10 @@ export function useBacklogActions(itemType: string = 'epic') {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Moved to parking lot');
+      catalystToast.success('Moved to parking lot');
     },
     onError: (error: any) => {
-      toast.error(`Failed to park: ${error.message}`);
+      catalystToast.error(`Failed to park: ${error.message}`);
     },
   });
 
@@ -160,10 +160,10 @@ export function useBacklogActions(itemType: string = 'epic') {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Item deleted');
+      catalystToast.success('Item deleted');
     },
     onError: (error: any) => {
-      toast.error(`Failed to delete: ${error.message}`);
+      catalystToast.error(`Failed to delete: ${error.message}`);
     },
   });
 

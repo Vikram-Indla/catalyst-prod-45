@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { formatDistanceToNow } from 'date-fns';
 import { useDropzone } from 'react-dropzone';
 
@@ -82,9 +82,9 @@ export function DefectAttachments({ defectId }: { defectId: string }) {
       }
 
       qc.invalidateQueries({ queryKey: ['g25-defect-attachments', defectId] });
-      toast.success(`${files.length} file(s) uploaded`);
+      catalystToast.success(`${files.length} file(s) uploaded`);
     } catch (e: any) {
-      toast.error(e.message);
+      catalystToast.error(e.message);
     } finally {
       setUploading(false);
     }
@@ -102,7 +102,7 @@ export function DefectAttachments({ defectId }: { defectId: string }) {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['g25-defect-attachments', defectId] });
-      toast.success('Attachment deleted');
+      catalystToast.success('Attachment deleted');
     },
   });
 

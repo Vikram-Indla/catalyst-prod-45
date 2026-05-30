@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Link as LinkIcon, Plus, X, ExternalLink, Trash2 } from '@/lib/atlaskit-icons';
 
 interface StoryLinksProps {
@@ -79,14 +79,14 @@ export function StoryLinks({ storyId }: StoryLinksProps) {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Story link added');
+      catalystToast.success('Story link added');
       refetch();
       setIsAdding(false);
       setLinkedStoryId('');
       setLinkType('relates_to');
     },
     onError: (error: any) => {
-      toast.error('Failed to add link: ' + error.message);
+      catalystToast.error('Failed to add link: ' + error.message);
     },
   });
 
@@ -106,14 +106,14 @@ export function StoryLinks({ storyId }: StoryLinksProps) {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('External link added');
+      catalystToast.success('External link added');
       refetch();
       setIsAdding(false);
       setExternalUrl('');
       setExternalTitle('');
     },
     onError: (error: any) => {
-      toast.error('Failed to add link: ' + error.message);
+      catalystToast.error('Failed to add link: ' + error.message);
     },
   });
 
@@ -128,17 +128,17 @@ export function StoryLinks({ storyId }: StoryLinksProps) {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Link removed');
+      catalystToast.success('Link removed');
       refetch();
     },
     onError: (error: any) => {
-      toast.error('Failed to remove link: ' + error.message);
+      catalystToast.error('Failed to remove link: ' + error.message);
     },
   });
 
   const handleAddInternalLink = () => {
     if (!linkedStoryId) {
-      toast.error('Please select a story');
+      catalystToast.error('Please select a story');
       return;
     }
     addInternalLinkMutation.mutate();
@@ -146,7 +146,7 @@ export function StoryLinks({ storyId }: StoryLinksProps) {
 
   const handleAddExternalLink = () => {
     if (!externalUrl || !externalTitle) {
-      toast.error('Please provide both URL and title');
+      catalystToast.error('Please provide both URL and title');
       return;
     }
     addExternalLinkMutation.mutate();

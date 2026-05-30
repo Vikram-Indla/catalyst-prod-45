@@ -22,7 +22,7 @@
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface CommentReactionAggregate {
   /** The emoji key stored in the row (e.g. "fire", "heart", "thumb"). */
@@ -144,7 +144,7 @@ export function useCommentReactions(commentId: string | null | undefined) {
     onError: (err, _emoji, ctx) => {
       if (ctx?.prev) queryClient.setQueryData(queryKey, ctx.prev);
       console.warn('[useCommentReactions] toggle failed', err);
-      toast.error('Could not save reaction');
+      catalystToast.error('Could not save reaction');
     },
     onSettled: () => {
       // Final truth: re-fetch after settle so any concurrent reactions from

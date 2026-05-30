@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Users, Target, Star, Award, AlertTriangle, Download, Loader2 } from '@/lib/atlaskit-icons';
 import { loadJsPDF } from '@/lib/exportLoaders';
 const loadHtml2Canvas = () => import('html2canvas').then(m => m.default);
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface ProgramFilter {
   id: string;
@@ -138,10 +138,10 @@ export const SkillsInventoryReport: React.FC = () => {
       // Save the PDF
       pdf.save(`skills-inventory-report-${new Date().toISOString().split('T')[0]}.pdf`);
       
-      toast.success('Report exported successfully');
+      catalystToast.success('Report exported successfully');
     } catch (error) {
       console.error('PDF export error:', error);
-      toast.error('Failed to export report');
+      catalystToast.error('Failed to export report');
     } finally {
       setIsExporting(false);
     }

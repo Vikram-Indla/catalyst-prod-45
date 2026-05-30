@@ -33,7 +33,7 @@ import {
   XCircle
 } from '@/lib/atlaskit-icons';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export default function EnterpriseEpics() {

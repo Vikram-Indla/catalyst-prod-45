@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useToast } from '@/hooks/use-toast';
 import {
   createLink,
@@ -260,10 +260,10 @@ export function useWorkItemLinks(workItemType: WorkItemType, workItemId: string)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-links'] });
-      toast.success('Link created');
+      catalystToast.success('Link created');
     },
     onError: () => {
-      toast.error('Failed to create link');
+      catalystToast.error('Failed to create link');
     },
   });
 
@@ -278,10 +278,10 @@ export function useWorkItemLinks(workItemType: WorkItemType, workItemId: string)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-links'] });
-      toast.success('Link removed');
+      catalystToast.success('Link removed');
     },
     onError: () => {
-      toast.error('Failed to remove link');
+      catalystToast.error('Failed to remove link');
     },
   });
 

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { validateAllocationAgainstContract } from '@/utils/allocationValidation';
 
 interface UpdateAllocationParams {
@@ -78,7 +78,7 @@ export function useAllocationMutation() {
       queryClient.setQueryData(['resource-allocations'], context?.previousAllocations);
       // Don't show duplicate error for validation failures
       if (err instanceof Error && err.message === 'VALIDATION_FAILED') return;
-      toast.error('Failed to save changes', {
+      catalystToast.error('Failed to save changes', {
         description: 'Your changes could not be saved. Please try again.',
       });
     },

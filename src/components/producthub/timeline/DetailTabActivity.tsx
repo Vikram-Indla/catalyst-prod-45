@@ -9,7 +9,7 @@
 import React, { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { ActivityPanel } from '@/components/catalyst-ds';
 import type { CdsComment, CdsActivityItem, CdsUser, CdsQuickReply } from '@/components/catalyst-ds';
 
@@ -153,9 +153,9 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ requestId 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ph-request-comments', requestId] });
-      toast.success('Comment added');
+      catalystToast.success('Comment added');
     },
-    onError: () => toast.error('Failed to add comment'),
+    onError: () => catalystToast.error('Failed to add comment'),
   });
 
   const deleteMutation = useMutation({
@@ -164,7 +164,7 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ requestId 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ph-request-comments', requestId] });
-      toast.success('Comment deleted');
+      catalystToast.success('Comment deleted');
     },
   });
 

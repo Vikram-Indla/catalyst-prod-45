@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Plus, X } from '@/lib/atlaskit-icons';
 
 interface StoryQuickAddProps {
@@ -52,14 +52,14 @@ export function StoryQuickAdd({ onSuccess }: StoryQuickAddProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['all-stories'] });
-      toast.success('Story created');
+      catalystToast.success('Story created');
       setName('');
       setFeatureId('');
       setIsOpen(false);
       onSuccess?.();
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to create story');
+      catalystToast.error(error.message || 'Failed to create story');
     },
   });
 

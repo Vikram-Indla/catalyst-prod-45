@@ -24,7 +24,7 @@ import {
   type DesignGap,
   type ResponsivenessGap,
 } from '@/lib/designAudit/designSystemBaseline';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface GapDetectionGridProps {
   onFixSelected?: (gaps: DesignGap[]) => void;
@@ -62,9 +62,9 @@ async function copyFixInstruction(gap: DesignGap | ResponsivenessGap) {
   const instruction = generateFixInstruction(gap);
   try {
     await navigator.clipboard.writeText(instruction);
-    toast.success('Fix instruction copied! Paste it in the chat to fix this issue.');
+    catalystToast.success('Fix instruction copied! Paste it in the chat to fix this issue.');
   } catch {
-    toast.error('Failed to copy instruction');
+    catalystToast.error('Failed to copy instruction');
   }
 }
 
@@ -118,10 +118,10 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
     const manual = gaps.filter(g => !g.autoFixable);
     
     if (autoFixable.length > 0) {
-      toast.success(`Queued ${autoFixable.length} auto-fixable issues for repair`);
+      catalystToast.success(`Queued ${autoFixable.length} auto-fixable issues for repair`);
     }
     if (manual.length > 0) {
-      toast.info(`${manual.length} issues require manual intervention`);
+      catalystToast.info(`${manual.length} issues require manual intervention`);
     }
     
     onFixSelected?.(gaps);

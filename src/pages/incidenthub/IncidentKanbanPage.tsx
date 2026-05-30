@@ -29,7 +29,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
 import {
   buildIncidentHubBoardAdapter,

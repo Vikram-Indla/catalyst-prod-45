@@ -19,7 +19,7 @@ import { useCreateIncident, useReleaseVersions, useWorkgroups } from '@/hooks/us
 import { useDepartments } from '@/hooks/useDepartments';
 import { useActiveBusinessProcesses } from '@/hooks/useBusinessProcesses';
 import type { SeverityLevel, ImpactLevel, UrgencyLevel, SupportLevel, PriorityLevel } from '@/types/incident';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 
 // Rich Text Editor Component (JSM-style) - Enhanced for 400-500 word descriptions
@@ -244,7 +244,7 @@ export default function CreateIncidentPage() {
         assignee_workgroup_id: formData.assignee_workgroup_id || undefined,
       });
 
-      toast.success('Incident created successfully');
+      catalystToast.success('Incident created successfully');
       
       // Redirect to detail page - incident immediately appears in list via query invalidation
       if (result?.id) {
@@ -255,7 +255,7 @@ export default function CreateIncidentPage() {
     } catch (error: any) {
       // Show backend error message if available
       const errorMsg = error?.message || 'Failed to create incident';
-      toast.error(errorMsg);
+      catalystToast.error(errorMsg);
       console.error('Create incident error:', error);
     }
   };

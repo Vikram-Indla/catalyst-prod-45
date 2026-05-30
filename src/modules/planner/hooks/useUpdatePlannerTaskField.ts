@@ -5,7 +5,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useCallback, useRef } from 'react';
 
 interface UpdateTaskFieldInput {
@@ -86,7 +86,7 @@ export function useUpdatePlannerTaskField() {
       if (context?.previousTaskList) {
         queryClient.invalidateQueries({ queryKey: ['planner-task-list'] });
       }
-      toast.error('Failed to save changes');
+      catalystToast.error('Failed to save changes');
     },
 
     onSuccess: (data, { taskId }) => {

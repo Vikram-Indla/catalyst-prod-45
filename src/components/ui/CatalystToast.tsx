@@ -1,5 +1,5 @@
 import { CheckCircle, XCircle, AlertTriangle, Info, X } from '@/lib/atlaskit-icons';
-import { toast as sonnerToast } from 'sonner';
+import { toast as sonnerToast } from 'sonner'; // TODO(sonner-sweep): complex import — migrate manually
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
 

@@ -9,7 +9,7 @@ import { getSignoffWaitTime } from '@/utils/releasehub.utils';
 import { differenceInHours } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { ReleaseStatus } from '@/types/releasehub';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
@@ -167,8 +167,8 @@ export function ReleaseDrawer({ release, onClose }: Props) {
 
   const handleStatusChange = (status: ReleaseStatus) => {
     updateStatus.mutate({ id: release.id, status }, {
-      onSuccess: () => toast.success(`Release status updated to ${status}`),
-      onError: (err: any) => toast.error(err.message || 'Failed to update'),
+      onSuccess: () => catalystToast.success(`Release status updated to ${status}`),
+      onError: (err: any) => catalystToast.error(err.message || 'Failed to update'),
     });
   };
 
@@ -210,9 +210,9 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                     try {
                       await updateTargetDate.mutateAsync({ id: release.id, targetDate: dateInput });
                       release.target_date = dateInput;
-                      toast.success('Release date updated');
+                      catalystToast.success('Release date updated');
                     } catch {
-                      toast.error('Failed to update date');
+                      catalystToast.error('Failed to update date');
                     } finally {
                       setSavingDate(false);
                       setEditingDate(false);
@@ -556,13 +556,13 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
 
   const handleLink = async (cycleId: string) => {
     await linkMut.mutateAsync({ releaseId: release.id, testCycleId: cycleId });
-    toast.success('Test cycle linked.');
+    catalystToast.success('Test cycle linked.');
     setShowLinkModal(false);
   };
 
   const handleUnlink = async (testCycleId: string) => {
     await unlinkMut.mutateAsync({ releaseId: release.id, testCycleId });
-    toast.success('Test cycle unlinked.');
+    catalystToast.success('Test cycle unlinked.');
   };
 
   return (
@@ -707,9 +707,9 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
             </div>
             {hasPending && stageSignoffs.filter((so: any) => so.status === 'pending').map((so: any) => (
               <div key={so.id} className="flex items-center gap-2">
-                <button onClick={() => approveSignoff.mutate(so.id, { onSuccess: () => toast.success('Approved') })}
+                <button onClick={() => approveSignoff.mutate(so.id, { onSuccess: () => catalystToast.success('Approved') })}
                   className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white text-[11px] font-bold hover:bg-[#004D33]">Approve</button>
-                <button onClick={() => rejectSignoff.mutate({ signoffId: so.id, comment: 'Rejected' }, { onSuccess: () => toast.success('Rejected') })}
+                <button onClick={() => rejectSignoff.mutate({ signoffId: so.id, comment: 'Rejected' }, { onSuccess: () => catalystToast.success('Rejected') })}
                   className="h-7 px-3 rounded border border-[var(--ds-border-danger,#FCA5A5)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)]">Reject</button>
               </div>
             ))}

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface ResourceCountry {
   id: string;
@@ -78,10 +78,10 @@ export function useResourceCountries() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['resource-countries'] });
       queryClient.invalidateQueries({ queryKey: ['resource-countries-all'] });
-      toast.success(`Country "${data.name}" created`);
+      catalystToast.success(`Country "${data.name}" created`);
     },
     onError: (error) => {
-      toast.error(`Failed to create country: ${error.message}`);
+      catalystToast.error(`Failed to create country: ${error.message}`);
     },
   });
 
@@ -100,10 +100,10 @@ export function useResourceCountries() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resource-countries'] });
       queryClient.invalidateQueries({ queryKey: ['resource-countries-all'] });
-      toast.success('Country updated');
+      catalystToast.success('Country updated');
     },
     onError: (error) => {
-      toast.error(`Failed to update country: ${error.message}`);
+      catalystToast.error(`Failed to update country: ${error.message}`);
     },
   });
 
@@ -119,10 +119,10 @@ export function useResourceCountries() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resource-countries'] });
       queryClient.invalidateQueries({ queryKey: ['resource-countries-all'] });
-      toast.success('Country deleted');
+      catalystToast.success('Country deleted');
     },
     onError: (error) => {
-      toast.error(`Failed to delete country: ${error.message}`);
+      catalystToast.error(`Failed to delete country: ${error.message}`);
     },
   });
 

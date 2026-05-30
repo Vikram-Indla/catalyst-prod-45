@@ -8,7 +8,7 @@ import { Star } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 
 interface DocumentFavoriteProps {
@@ -60,10 +60,10 @@ export function DocumentFavorite({ documentId, variant = 'button' }: DocumentFav
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kb-favorite', documentId] });
       queryClient.invalidateQueries({ queryKey: ['kb-favorites'] });
-      toast.success('Added to favorites');
+      catalystToast.success('Added to favorites');
     },
     onError: () => {
-      toast.error('Failed to add to favorites');
+      catalystToast.error('Failed to add to favorites');
     },
   });
 
@@ -81,10 +81,10 @@ export function DocumentFavorite({ documentId, variant = 'button' }: DocumentFav
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kb-favorite', documentId] });
       queryClient.invalidateQueries({ queryKey: ['kb-favorites'] });
-      toast.success('Removed from favorites');
+      catalystToast.success('Removed from favorites');
     },
     onError: () => {
-      toast.error('Failed to remove from favorites');
+      catalystToast.error('Failed to remove from favorites');
     },
   });
 

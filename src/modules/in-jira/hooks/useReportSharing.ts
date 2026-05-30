@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 import { loadJsPDF } from '@/lib/exportLoaders';
 
@@ -66,12 +66,12 @@ export function useReportSharing(programId: string | null) {
       };
     },
     onSuccess: (data) => {
-      toast.success('Share link created', {
+      catalystToast.success('Share link created', {
         description: 'Link expires in 7 days',
       });
     },
     onError: (err: Error) => {
-      toast.error('Failed to create share link', { description: err.message });
+      catalystToast.error('Failed to create share link');
     },
   });
 
@@ -191,12 +191,12 @@ export function useReportSharing(programId: string | null) {
       doc.save(filename);
       
       setExportProgress(100);
-      toast.success('Report exported successfully');
+      catalystToast.success('Report exported successfully');
       
       setTimeout(() => setExportProgress(0), 1000);
     } catch (error) {
       console.error('PDF export error:', error);
-      toast.error('Failed to export PDF');
+      catalystToast.error('Failed to export PDF');
       setExportProgress(0);
     }
   };
@@ -249,10 +249,10 @@ export function useReportSharing(programId: string | null) {
       link.download = `${reportType}-report-${format(new Date(), 'yyyy-MM-dd')}.csv`;
       link.click();
       
-      toast.success('CSV exported successfully');
+      catalystToast.success('CSV exported successfully');
     } catch (error) {
       console.error('CSV export error:', error);
-      toast.error('Failed to export CSV');
+      catalystToast.error('Failed to export CSV');
     }
   };
 

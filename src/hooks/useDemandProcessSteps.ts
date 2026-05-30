@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface DemandProcessStep {
   id: string;
@@ -93,10 +93,10 @@ export function useCreateDemandProcessStep() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['demand-process-steps'] });
-      toast.success('Process step added');
+      catalystToast.success('Process step added');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to add process step: ${error.message}`);
+      catalystToast.error(`Failed to add process step: ${error.message}`);
     },
   });
 }
@@ -116,10 +116,10 @@ export function useUpdateDemandProcessStep() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['demand-process-steps'] });
-      toast.success('Process step updated');
+      catalystToast.success('Process step updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update process step: ${error.message}`);
+      catalystToast.error(`Failed to update process step: ${error.message}`);
     },
   });
 }
@@ -141,7 +141,7 @@ export function useToggleDemandProcessStep() {
       queryClient.invalidateQueries({ queryKey: ['demand-process-steps'] });
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update status: ${error.message}`);
+      catalystToast.error(`Failed to update status: ${error.message}`);
     },
   });
 }

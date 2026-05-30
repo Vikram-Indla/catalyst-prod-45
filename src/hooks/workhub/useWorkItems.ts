@@ -6,7 +6,7 @@
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface JiraIssue {
   issue_key: string;
@@ -271,7 +271,7 @@ export function useUpdateWorkItem() {
       qc.invalidateQueries({ queryKey: ['projecthub'] });
     },
     onError: (err: Error) => {
-      toast.error(`Update failed: ${err.message}`);
+      catalystToast.error(`Update failed: ${err.message}`);
     },
   });
 }
@@ -288,10 +288,10 @@ export function useBulkUpdateWorkItems() {
     },
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ['projecthub'] });
-      toast.success(`Updated ${vars.issueKeys.length} items`);
+      catalystToast.success(`Updated ${vars.issueKeys.length} items`);
     },
     onError: (err: Error) => {
-      toast.error(`Bulk update failed: ${err.message}`);
+      catalystToast.error(`Bulk update failed: ${err.message}`);
     },
   });
 }

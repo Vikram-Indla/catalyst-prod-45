@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface MockRun {
   id: string;
@@ -83,7 +83,7 @@ export function useMockDataRuns() {
       setRuns(data);
     } catch (error) {
       console.error('Error fetching runs:', error);
-      toast.error('Failed to load runs');
+      catalystToast.error('Failed to load runs');
     }
   }, []);
 
@@ -133,7 +133,7 @@ export function useMockDataRuns() {
         
         if (uploadError) {
           console.error('File upload error:', uploadError);
-          toast.error('Failed to upload file');
+          catalystToast.error('Failed to upload file');
           throw uploadError;
         }
         filePath = fileName;
@@ -160,11 +160,11 @@ export function useMockDataRuns() {
       const run = await response.json();
       setCurrentRun(run);
       await fetchRuns();
-      toast.success('Run created successfully');
+      catalystToast.success('Run created successfully');
       return run;
     } catch (error) {
       console.error('Error creating run:', error);
-      toast.error('Failed to create run');
+      catalystToast.error('Failed to create run');
       throw error;
     } finally {
       setIsLoading(false);
@@ -187,10 +187,10 @@ export function useMockDataRuns() {
       if (!response.ok) throw new Error('Failed to update config');
       const updated = await response.json();
       setCurrentRun(updated);
-      toast.success('Configuration saved');
+      catalystToast.success('Configuration saved');
     } catch (error) {
       console.error('Error updating config:', error);
-      toast.error('Failed to save configuration');
+      catalystToast.error('Failed to save configuration');
       throw error;
     } finally {
       setIsLoading(false);
@@ -211,10 +211,10 @@ export function useMockDataRuns() {
       );
       if (!response.ok) throw new Error('Failed to generate preview');
       startPolling(currentRun.id);
-      toast.success('Generation started');
+      catalystToast.success('Generation started');
     } catch (error) {
       console.error('Error generating preview:', error);
-      toast.error('Failed to generate preview');
+      catalystToast.error('Failed to generate preview');
       throw error;
     } finally {
       setIsLoading(false);
@@ -235,10 +235,10 @@ export function useMockDataRuns() {
       );
       if (!response.ok) throw new Error('Failed to load data');
       startPolling(currentRun.id);
-      toast.success('Loading data to Catalyst');
+      catalystToast.success('Loading data to Catalyst');
     } catch (error) {
       console.error('Error loading data:', error);
-      toast.error('Failed to load data');
+      catalystToast.error('Failed to load data');
       throw error;
     } finally {
       setIsLoading(false);
@@ -260,10 +260,10 @@ export function useMockDataRuns() {
       );
       if (!response.ok) throw new Error('Failed to cleanup');
       startPolling(currentRun.id);
-      toast.success('Cleanup started');
+      catalystToast.success('Cleanup started');
     } catch (error) {
       console.error('Error during cleanup:', error);
-      toast.error('Failed to cleanup');
+      catalystToast.error('Failed to cleanup');
       throw error;
     } finally {
       setIsLoading(false);

@@ -30,7 +30,7 @@ import Select from '@atlaskit/select';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import CopyIcon from '@atlaskit/icon/glyph/copy';
 import ArrowRightIcon from '@atlaskit/icon/glyph/arrow-right';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useIdeaByKey, useUpdateIdea, useProfiles, type IdeaRow } from '@/hooks/useIdeasHub';
 import { QUARTER_BADGE } from '@/modules-dormant/ideation/ideation-data';
 import type { CatalystViewBaseProps } from '../shared/types';
@@ -209,7 +209,7 @@ export default function CatalystViewIdea({
           impact_time_to_value: timeToValue,
         },
       });
-      toast.success('Idea saved');
+      catalystToast.success('Idea saved');
     } catch {
       // useUpdateIdea raises a toast on error already
     } finally {
@@ -265,7 +265,7 @@ export default function CatalystViewIdea({
                     spacing="compact"
                     onClick={() => {
                       navigator.clipboard.writeText(rawIdea.idea_key || '');
-                      toast.success('Key copied');
+                      catalystToast.success('Key copied');
                     }}
                   />
                 )}

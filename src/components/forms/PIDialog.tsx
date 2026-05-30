@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface PIDialogProps {
   open: boolean;
@@ -50,18 +50,18 @@ export function PIDialog({ open, onOpenChange, pi }: PIDialogProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['program-increments'] });
-      toast.success(pi ? 'PI updated' : 'PI created');
+      catalystToast.success(pi ? 'PI updated' : 'PI created');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to save PI');
+      catalystToast.error('Failed to save PI');
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!programId || !startDate || !endDate) {
-      toast.error('Please fill all required fields');
+      catalystToast.error('Please fill all required fields');
       return;
     }
     mutation.mutate({

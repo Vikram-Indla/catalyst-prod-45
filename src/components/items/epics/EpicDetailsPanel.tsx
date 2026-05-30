@@ -54,7 +54,7 @@ import {
   Copy
 } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Import drawer tabs
 import { EpicDetailsViewTab } from './drawer-tabs/EpicDetailsViewTab';
@@ -281,7 +281,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
       // Enterprise Strategic Backlog (and any filtered variants)
       queryClient.invalidateQueries({ queryKey: ['strategic-backlog-all-epics'] });
       queryClient.invalidateQueries({ queryKey: ['strategic-backlog-epics'] });
-      toast.success(`Epic ${epic.epic_key || ''} deleted`);
+      catalystToast.success(`Epic ${epic.epic_key || ''} deleted`);
       onClose();
     },
   });
@@ -310,7 +310,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
     onSuccess: (newEpic) => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success(`Epic duplicated as ${newEpic.epic_key || 'new epic'}`);
+      catalystToast.success(`Epic duplicated as ${newEpic.epic_key || 'new epic'}`);
     },
   });
 
@@ -325,7 +325,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
         setOriginalData(formData);
         setHasChanges(false);
         skipNextFormResetRef.current = true;
-        toast.success('Epic saved');
+        catalystToast.success('Epic saved');
       }
     });
   };
@@ -364,7 +364,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
     updateMutation.mutate(formData, {
       onSuccess: () => {
         setOriginalData(formData);
-        toast.success('Epic saved');
+        catalystToast.success('Epic saved');
       }
     });
   };
@@ -373,7 +373,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
   const handleCopyLink = () => {
     const url = `${window.location.origin}/program/${epic.primary_program_id}/epic-backlog?epicId=${epic.id}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
   };
 
   // Edit name handlers

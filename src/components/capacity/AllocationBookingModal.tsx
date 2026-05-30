@@ -19,7 +19,7 @@ import {
   ALLOCATION_SEGMENT_COLORS,
 } from '@/lib/catalyst-colors';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useResourceProfiles } from '@/hooks/useResourceProfiles';
 import type { 
   CapacityResource, 
@@ -202,7 +202,7 @@ export function AllocationBookingModal({
         const allocEnd = new Date(newAllocation.end_date);
         const contractEnd = new Date(contractEndDate);
         if (allocEnd > contractEnd) {
-          toast.error('Allocation end date cannot exceed contract end date', {
+          catalystToast.error('Allocation end date cannot exceed contract end date', {
             description: `Contract ends on ${format(contractEnd, 'MMM d, yyyy')}. Please adjust the allocation end date.`
           });
           return;
@@ -419,7 +419,7 @@ export function AllocationBookingModal({
       });
       
       if (invalidAllocation) {
-        toast.error('Allocation end date cannot exceed contract end date', {
+        catalystToast.error('Allocation end date cannot exceed contract end date', {
           description: `Contract ends on ${format(contractEnd, 'MMM d, yyyy')}. Please adjust the allocation "${invalidAllocation.assignment_name}" end date.`
         });
         return;

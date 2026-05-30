@@ -4,7 +4,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ============================================================
 // TYPES
@@ -160,10 +160,10 @@ export function useSaveSlackConfig() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['slack-admin'] });
-      toast.success('Slack configuration saved');
+      catalystToast.success('Slack configuration saved');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to save: ${error.message}`);
+      catalystToast.error(`Failed to save: ${error.message}`);
     },
   });
 }
@@ -212,10 +212,10 @@ export function useDisconnectSlackUser() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['slack-admin', 'users'] });
       queryClient.invalidateQueries({ queryKey: ['slack-admin', 'stats'] });
-      toast.success('User disconnected');
+      catalystToast.success('User disconnected');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to disconnect: ${error.message}`);
+      catalystToast.error(`Failed to disconnect: ${error.message}`);
     },
   });
 }
@@ -251,10 +251,10 @@ export function useTestSlackConnection() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['slack-admin', 'config'] });
-      toast.success('Test notification sent!');
+      catalystToast.success('Test notification sent!');
     },
     onError: (error: Error) => {
-      toast.error(`Test failed: ${error.message}`);
+      catalystToast.error(`Test failed: ${error.message}`);
     },
   });
 }
@@ -287,10 +287,10 @@ export function useSlackInstallCallback() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['slack-admin'] });
-      toast.success(`Connected to ${data.workspace_name}!`);
+      catalystToast.success(`Connected to ${data.workspace_name}!`);
     },
     onError: (error: Error) => {
-      toast.error(`Install failed: ${error.message}`);
+      catalystToast.error(`Install failed: ${error.message}`);
     },
   });
 }
@@ -329,10 +329,10 @@ export function useUpdateSlackRouting() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['slack-admin', 'config'] });
-      toast.success('Routing rules updated');
+      catalystToast.success('Routing rules updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update routing: ${error.message}`);
+      catalystToast.error(`Failed to update routing: ${error.message}`);
     },
   });
 }

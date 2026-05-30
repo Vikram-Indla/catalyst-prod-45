@@ -57,7 +57,7 @@ import {
 } from '@/components/admin/admin-alert-dialog';
 import { formatDistanceToNow, format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Slack icon component
 const SlackIcon = ({ className }: { className?: string }) => (
@@ -188,7 +188,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard');
+    catalystToast.success('Copied to clipboard');
   };
 
   return (

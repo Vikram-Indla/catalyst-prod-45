@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';
 import { Search, RotateCcw, ArrowLeft } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useNavigate } from 'react-router-dom';
 
 export default function EpicsCanceledPage() {
@@ -46,10 +46,10 @@ export default function EpicsCanceledPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['canceled-epics'] });
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('Epic restored from canceled state');
+      catalystToast.success('Epic restored from canceled state');
     },
     onError: () => {
-      toast.error('Failed to restore epic');
+      catalystToast.error('Failed to restore epic');
     },
   });
 

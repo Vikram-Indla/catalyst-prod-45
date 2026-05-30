@@ -35,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { parseImportFile, downloadImportTemplate, type ParsedTestCase, type ParseResult } from './utils';
 
@@ -104,7 +104,7 @@ export function ImportTestCasesDialog({
     const type = ext === 'xlsx' ? 'xlsx' : ext === 'csv' ? 'csv' : ext === 'json' ? 'json' : null;
     
     if (!type) {
-      toast.error('Unsupported file format. Please use .xlsx, .csv, or .json');
+      catalystToast.error('Unsupported file format. Please use .xlsx, .csv, or .json');
       return;
     }
 
@@ -135,7 +135,7 @@ export function ImportTestCasesDialog({
         status: 'error',
         error: result.error,
       } : null);
-      toast.error(result.error || 'Failed to parse file');
+      catalystToast.error(result.error || 'Failed to parse file');
     }
   }, []);
 
@@ -173,7 +173,7 @@ export function ImportTestCasesDialog({
     // Pass the parsed test cases to the parent
     onImport?.(testCases);
     onOpenChange(false);
-    toast.success(`Imported ${total} test cases successfully`);
+    catalystToast.success(`Imported ${total} test cases successfully`);
     
     // Reset state
     setStep('upload');
@@ -190,7 +190,7 @@ export function ImportTestCasesDialog({
 
   const handleDownloadTemplate = () => {
     downloadImportTemplate();
-    toast.success('Template downloaded');
+    catalystToast.success('Template downloaded');
   };
 
   const getFileIcon = (type: string) => {

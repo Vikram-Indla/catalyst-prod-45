@@ -36,7 +36,7 @@ import {
   DropResult,
 } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface OptionValuesDrawerProps {
   optionSet: OptionSet;
@@ -149,13 +149,13 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
   // Add new value
   const handleAddNew = async () => {
     if (!newValue.valueKey || !newValue.label) {
-      toast.error('Value key and label are required');
+      catalystToast.error('Value key and label are required');
       return;
     }
 
     // Check for duplicate value_key
     if (localValues.some(v => v.value_key === newValue.valueKey)) {
-      toast.error('Value key must be unique');
+      catalystToast.error('Value key must be unique');
       return;
     }
 

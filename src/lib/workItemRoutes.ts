@@ -8,7 +8,7 @@
  * The primary deep-link resolver is /browse/:key which handles resolution.
  */
 
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface WorkItemRouteInput {
   id?: string;
@@ -93,7 +93,7 @@ export function getValidatedWorkItemRoute(item: WorkItemRouteInput): string | nu
   const route = getWorkItemRoute(item);
   
   if (!route) {
-    toast.error('Cannot open work item', {
+    catalystToast.error('Cannot open work item', {
       description: 'Missing identifier - this item cannot be opened.',
     });
     return null;
@@ -110,7 +110,7 @@ export function canNavigateToWorkItem(item: WorkItemRouteInput): boolean {
   const route = getWorkItemRoute(item);
   
   if (!route) {
-    toast.error('Cannot open work item', {
+    catalystToast.error('Cannot open work item', {
       description: 'Missing identifier - this item cannot be opened.',
     });
     return false;

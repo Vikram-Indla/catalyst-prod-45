@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   Dialog,
   DialogContent,
@@ -41,11 +41,11 @@ export default function Departments() {
       .insert({ name: newDepartmentName.trim() });
 
     if (error) {
-      toast.error('Failed to add department');
+      catalystToast.error('Failed to add department');
       return;
     }
 
-    toast.success('Department added');
+    catalystToast.success('Department added');
     setNewDepartmentName('');
     setIsDialogOpen(false);
     queryClient.invalidateQueries({ queryKey: ['departments'] });
@@ -60,11 +60,11 @@ export default function Departments() {
       .eq('id', editingDepartment.id);
 
     if (error) {
-      toast.error('Failed to update department');
+      catalystToast.error('Failed to update department');
       return;
     }
 
-    toast.success('Department updated');
+    catalystToast.success('Department updated');
     setEditingDepartment(null);
     setNewDepartmentName('');
     setIsDialogOpen(false);
@@ -78,11 +78,11 @@ export default function Departments() {
       .eq('id', id);
 
     if (error) {
-      toast.error('Failed to update status');
+      catalystToast.error('Failed to update status');
       return;
     }
 
-    toast.success(`Department ${!currentStatus ? 'enabled' : 'disabled'}`);
+    catalystToast.success(`Department ${!currentStatus ? 'enabled' : 'disabled'}`);
     queryClient.invalidateQueries({ queryKey: ['departments'] });
   };
 

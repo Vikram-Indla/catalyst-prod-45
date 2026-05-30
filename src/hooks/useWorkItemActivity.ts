@@ -13,7 +13,7 @@
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { formatDistanceToNow } from 'date-fns';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -191,9 +191,9 @@ export function useWorkItemActivity(workItemId: string | null) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast.success('Comment added');
+      catalystToast.success('Comment added');
     },
-    onError: () => toast.error('Failed to add comment'),
+    onError: () => catalystToast.error('Failed to add comment'),
   });
 
   // Delete comment
@@ -204,9 +204,9 @@ export function useWorkItemActivity(workItemId: string | null) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast.success('Comment deleted');
+      catalystToast.success('Comment deleted');
     },
-    onError: () => toast.error('Failed to delete comment'),
+    onError: () => catalystToast.error('Failed to delete comment'),
   });
 
   // Toggle reaction

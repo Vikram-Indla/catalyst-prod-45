@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useEffect } from 'react';
 import type { TeamMember } from '@/types/team.types';
 
@@ -105,12 +105,12 @@ export function useAddTeamMember() {
       queryClient.invalidateQueries({ queryKey: ['team-members', variables.teamId] });
       queryClient.invalidateQueries({ queryKey: ['team-member-ids'] });
       queryClient.invalidateQueries({ queryKey: ['all-team-members'] });
-      toast.success('Team member added successfully');
+      catalystToast.success('Team member added successfully');
     },
     onError: (error: any) => {
       console.error('Error adding team member:', error);
       if (error?.code !== '23505') {
-        toast.error('Failed to add team member');
+        catalystToast.error('Failed to add team member');
       }
     },
   });
@@ -147,11 +147,11 @@ export function useUpdateTeamMember() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['team-members', variables.teamId] });
-      toast.success('Team member updated successfully');
+      catalystToast.success('Team member updated successfully');
     },
     onError: (error) => {
       console.error('Error updating team member:', error);
-      toast.error('Failed to update team member');
+      catalystToast.error('Failed to update team member');
     },
   });
 }
@@ -169,11 +169,11 @@ export function useRemoveTeamMember() {
       queryClient.invalidateQueries({ queryKey: ['team-members', variables.teamId] });
       queryClient.invalidateQueries({ queryKey: ['team-member-ids'] });
       queryClient.invalidateQueries({ queryKey: ['all-team-members'] });
-      toast.success('Team member removed successfully');
+      catalystToast.success('Team member removed successfully');
     },
     onError: (error) => {
       console.error('Error removing team member:', error);
-      toast.error('Failed to remove team member');
+      catalystToast.error('Failed to remove team member');
     },
   });
 }

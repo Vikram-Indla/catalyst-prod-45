@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Download, FileSpreadsheet, FileText, FileJson } from '@/lib/atlaskit-icons';
 import type { ProjectListItem } from '@/types/projecthub';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface Props {
   open: boolean;
@@ -37,7 +37,7 @@ const FORMATS = [
 export function ExportDialog({ open, onClose, projects }: Props) {
   const handleExport = (action: (p: ProjectListItem[]) => void) => {
     action(projects);
-    toast.success('Export downloaded');
+    catalystToast.success('Export downloaded');
     onClose();
   };
 

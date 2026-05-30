@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { useUserRole } from '@/hooks/useUserRole';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface LeadNote {
   id: string;
@@ -126,14 +126,14 @@ export function useAddLeadNote() {
     },
     onSuccess: (data, { taskId }) => {
       queryClient.invalidateQueries({ queryKey: ['lead-notes', taskId] });
-      toast.success('Note added');
+      catalystToast.success('Note added');
     },
     onError: (error: any) => {
       console.error('Failed to add note:', error);
       if (error.code === '42501' || error.message?.includes('policy')) {
-        toast.error('You do not have permission to add notes');
+        catalystToast.error('You do not have permission to add notes');
       } else {
-        toast.error('Failed to add note');
+        catalystToast.error('Failed to add note');
       }
     },
   });
@@ -164,10 +164,10 @@ export function useUpdateLeadNote() {
     },
     onSuccess: ({ taskId }) => {
       queryClient.invalidateQueries({ queryKey: ['lead-notes', taskId] });
-      toast.success('Note updated');
+      catalystToast.success('Note updated');
     },
     onError: () => {
-      toast.error('Failed to update note');
+      catalystToast.error('Failed to update note');
     },
   });
 }
@@ -190,10 +190,10 @@ export function useDeleteLeadNote() {
     },
     onSuccess: ({ taskId }) => {
       queryClient.invalidateQueries({ queryKey: ['lead-notes', taskId] });
-      toast.success('Note deleted');
+      catalystToast.success('Note deleted');
     },
     onError: () => {
-      toast.error('Failed to delete note');
+      catalystToast.error('Failed to delete note');
     },
   });
 }

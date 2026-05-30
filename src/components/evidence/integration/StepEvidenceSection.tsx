@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { EvidenceUploadZone } from '../EvidenceUploadZone';
 import { EvidenceGallery } from '../EvidenceGallery';
 import { Attachment } from '../types';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface StepEvidenceSectionProps {
   stepResultId: string;
@@ -95,7 +95,7 @@ export const StepEvidenceSection: React.FC<StepEvidenceSectionProps> = ({
   };
 
   const handleUploadError = (error: string) => {
-    toast.error(error);
+    catalystToast.error(error);
   };
 
   const handleDeleteAttachment = async (id: string) => {
@@ -105,9 +105,9 @@ export const StepEvidenceSection: React.FC<StepEvidenceSectionProps> = ({
         .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
       setAttachments((prev) => prev.filter((a) => a.id !== id));
-      toast.success('Evidence deleted');
+      catalystToast.success('Evidence deleted');
     } catch (error) {
-      toast.error('Failed to delete evidence');
+      catalystToast.error('Failed to delete evidence');
     }
   };
 

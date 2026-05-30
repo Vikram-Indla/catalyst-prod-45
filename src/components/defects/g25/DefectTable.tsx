@@ -14,7 +14,7 @@ import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
 import { BulkActionBar } from '@/components/producthub/listing/BulkActionBar';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { EpicIcon, StoryIcon, TaskIcon, BugIcon } from '@/components/boards/WorkItemTypeIcons';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
 import { ResizableTableHeader, type SortDir } from '@/components/shared/ResizableTableHeader';
@@ -153,9 +153,9 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
       .update({ jira_parent_key: parentKey })
       .eq('id', defectId);
     if (error) {
-      toast.error('Failed to update parent');
+      catalystToast.error('Failed to update parent');
     } else {
-      toast.success(parentKey ? `Parent set to ${parentKey}` : 'Parent removed');
+      catalystToast.success(parentKey ? `Parent set to ${parentKey}` : 'Parent removed');
     }
     setOpen(false);
     setSearch('');
@@ -403,7 +403,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
   };
 
   const handleBulkAction = (action: string) => {
-    toast.info(`${action} action for ${selectedIds.size} items — coming soon`);
+    catalystToast.info(`${action} action for ${selectedIds.size} items — coming soon`);
   };
 
   // Cell renderer map

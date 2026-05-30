@@ -12,7 +12,7 @@ import { Avatar } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { Search, X, ArrowUp, ArrowDown, CornerDownLeft } from '@/lib/atlaskit-icons';
 
@@ -84,7 +84,7 @@ export function AddTeamMemberDialog({ teamId, open, onOpenChange }: AddTeamMembe
       // Don't close - allow adding multiple
     } catch (error: any) {
       if (error?.code === '23505') {
-        toast.error('This user is already a member of this team');
+        catalystToast.error('This user is already a member of this team');
       }
     }
   }, [addMember, teamId]);

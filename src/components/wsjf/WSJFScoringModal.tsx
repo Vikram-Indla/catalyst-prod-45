@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { X, ExternalLink, Grid3X3 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 /**
  * WSJFScoringModal - Canonical WSJF Modal matching Jira Align exactly
@@ -181,11 +181,11 @@ export function WSJFScoringModal({
       queryClient.invalidateQueries({ queryKey: ['epic-wsjf'] });
       queryClient.invalidateQueries({ queryKey: ['features'] });
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('WSJF scores saved successfully');
+      catalystToast.success('WSJF scores saved successfully');
       onSuccess?.();
     },
     onError: (error: Error) => {
-      toast.error(`Failed to save WSJF: ${error.message}`);
+      catalystToast.error(`Failed to save WSJF: ${error.message}`);
     },
   });
 
@@ -207,11 +207,11 @@ export function WSJFScoringModal({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('WSJF applied to global ranking');
+      catalystToast.success('WSJF applied to global ranking');
       onOpenChange(false);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to apply ranking: ${error.message}`);
+      catalystToast.error(`Failed to apply ranking: ${error.message}`);
     },
   });
 

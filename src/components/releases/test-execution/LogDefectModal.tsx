@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -45,13 +45,13 @@ export function LogDefectModal({
 
   const handleSubmit = () => {
     if (!title.trim()) {
-      toast.error('Please enter a defect title');
+      catalystToast.error('Please enter a defect title');
       return;
     }
 
     // Mock defect creation
     const defectId = `DEF-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
-    toast.success(`Defect ${defectId} created and linked to ${testCaseId}`);
+    catalystToast.success(`Defect ${defectId} created and linked to ${testCaseId}`);
     onClose();
   };
 

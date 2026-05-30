@@ -6,7 +6,7 @@
 
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Plus } from '@/lib/atlaskit-icons';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 import { EnterpriseToolbar } from './EnterpriseToolbar';
@@ -638,9 +638,9 @@ export function ExecutiveTable({
 
     try {
       await onFieldUpdate(rowId, columnId, newValue);
-      toast.success('Updated successfully');
+      catalystToast.success('Updated successfully');
     } catch (error) {
-      toast.error('Failed to update');
+      catalystToast.error('Failed to update');
     }
   };
 
@@ -679,7 +679,7 @@ export function ExecutiveTable({
     a.href = url;
     a.download = 'business-requests.csv';
     a.click();
-    toast.success(`Exported ${exportData.length} rows`);
+    catalystToast.success(`Exported ${exportData.length} rows`);
   };
 
   const handleColumnDragStart = (e: React.DragEvent, columnId: string) => {
@@ -1047,7 +1047,7 @@ export function ExecutiveTable({
                         <RowActionsMenu
                           onDuplicate={async () => {
                             if (onDuplicate) await onDuplicate(row.id);
-                            else toast.success('Duplicated');
+                            else catalystToast.success('Duplicated');
                           }}
                           onDelete={() => setDeleteConfirmId(row.id)}
                         />
@@ -1113,7 +1113,7 @@ export function ExecutiveTable({
                 onClick={async () => {
                   if (onDelete) await onDelete(deleteConfirmId);
                   setDeleteConfirmId(null);
-                  toast.success('Deleted successfully');
+                  catalystToast.success('Deleted successfully');
                 }}
                 className="flex-1 py-2.5 border-none rounded-lg bg-destructive text-white text-sm font-medium cursor-pointer hover:bg-destructive/90 focus:outline-none focus:ring-2 focus:ring-destructive/30"
               >

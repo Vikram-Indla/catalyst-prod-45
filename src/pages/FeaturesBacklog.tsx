@@ -12,7 +12,7 @@ const FeatureDialog = lazy(() => import('@/components/forms/FeatureDialog').then
 const ApplyWSJFToRankDialog = lazy(() => import('@/components/prioritization/ApplyWSJFToRankDialog').then(m => ({ default: m.ApplyWSJFToRankDialog })));
 const PullRankDialog = lazy(() => import('@/components/backlog/PullRankDialog').then(m => ({ default: m.PullRankDialog })));
 import { exportToCSV } from '@/lib/exportUtils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export default function FeaturesBacklog() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -86,7 +86,7 @@ export default function FeaturesBacklog() {
         'features',
         ['name', 'status', 'health', 'estimate_points', 'wsjf_score', 'progress_pct']
       );
-      toast.success('Features exported successfully');
+      catalystToast.success('Features exported successfully');
     }
   };
 

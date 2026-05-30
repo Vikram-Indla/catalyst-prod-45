@@ -29,7 +29,7 @@ import Modal, {
 } from '@atlaskit/modal-dialog';
 import { token } from '@atlaskit/tokens';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -152,10 +152,10 @@ export default function HistoryTab() {
       await queryClient.invalidateQueries({ queryKey: COMPONENT_CONFIG_QUERY_KEY });
       await queryClient.invalidateQueries({ queryKey: HISTORY_QUERY_KEY });
       const scope = targetRoute === '' ? 'global' : targetRoute;
-      toast.success(`Rolled back ${rollbackTarget.component_id} (${scope}) to v${rollbackTarget.version}`);
+      catalystToast.success(`Rolled back ${rollbackTarget.component_id} (${scope}) to v${rollbackTarget.version}`);
       setRollbackTarget(null);
     } catch (e: unknown) {
-      toast.error(`Rollback failed: ${(e as Error).message ?? 'unknown error'}`);
+      catalystToast.error(`Rollback failed: ${(e as Error).message ?? 'unknown error'}`);
     } finally {
       setSubmitting(false);
     }

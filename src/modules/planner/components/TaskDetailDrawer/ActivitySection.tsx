@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { TaskComment, TaskActivity } from '../../hooks/useTaskDetails';
 import { useAddComment } from '../../hooks/useTaskDetails';
 
@@ -36,7 +36,7 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
     if (!newComment.trim()) return;
     
     if (!userId) {
-      toast.error('You must be logged in to comment');
+      catalystToast.error('You must be logged in to comment');
       return;
     }
     
@@ -47,11 +47,11 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
     }, {
       onSuccess: () => {
         setNewComment('');
-        toast.success('Comment added');
+        catalystToast.success('Comment added');
       },
       onError: (err) => {
         console.error('Failed to add comment:', err);
-        toast.error('Failed to add comment');
+        catalystToast.error('Failed to add comment');
       }
     });
   };

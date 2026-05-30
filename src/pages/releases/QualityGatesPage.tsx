@@ -25,7 +25,7 @@ import { Switch } from '@/components/ui/switch';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 import {
   useReleaseQualityGates,
@@ -285,7 +285,7 @@ function CreateEditGateDialog({
 
   const handleSubmit = () => {
     if (!name.trim()) {
-      toast.error('Gate name is required');
+      catalystToast.error('Gate name is required');
       return;
     }
 
@@ -398,7 +398,7 @@ function WaiverDialog({
 
   const handleSubmit = () => {
     if (!reason.trim()) {
-      toast.error('Waiver reason is required');
+      catalystToast.error('Waiver reason is required');
       return;
     }
     if (!gate) return;

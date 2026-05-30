@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ExportData, ExportOptions, reportExportToPDF, reportExportToExcel, reportExportToCSV } from '@/lib/reportExportUtils';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface ExportModalProps { open: boolean; onClose: () => void; data: ExportData; }
 
@@ -31,9 +31,9 @@ export function ExportModal({ open, onClose, data }: ExportModalProps) {
         case 'excel': reportExportToExcel(data, exportOptions); break;
         case 'csv': reportExportToCSV(data); break;
       }
-      toast.success(`Report exported as ${format.toUpperCase()}`);
+      catalystToast.success(`Report exported as ${format.toUpperCase()}`);
       onClose();
-    } catch { toast.error('Export failed. Please try again.'); }
+    } catch { catalystToast.error('Export failed. Please try again.'); }
     finally { setIsExporting(false); }
   };
 

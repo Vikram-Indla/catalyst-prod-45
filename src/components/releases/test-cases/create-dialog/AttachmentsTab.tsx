@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Trash2, FileImage, File, FileText, Download } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { TestCaseFormData, TestCaseAttachment } from './types';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -37,7 +37,7 @@ export function AttachmentsTab({ data, onChange }: AttachmentsTabProps) {
     
     for (const file of Array.from(files)) {
       if (file.size > 10 * 1024 * 1024) {
-        toast.error(`${file.name} exceeds 10MB limit`);
+        catalystToast.error(`${file.name} exceeds 10MB limit`);
         continue;
       }
       
@@ -53,7 +53,7 @@ export function AttachmentsTab({ data, onChange }: AttachmentsTabProps) {
     
     if (newAttachments.length > 0) {
       onChange({ attachments: [...data.attachments, ...newAttachments] });
-      toast.success(`${newAttachments.length} file(s) uploaded`);
+      catalystToast.success(`${newAttachments.length} file(s) uploaded`);
     }
   }, [data.attachments, onChange]);
 
@@ -67,7 +67,7 @@ export function AttachmentsTab({ data, onChange }: AttachmentsTabProps) {
 
   const handleDelete = useCallback((id: string) => {
     onChange({ attachments: data.attachments.filter((a) => a.id !== id) });
-    toast.success('Attachment removed');
+    catalystToast.success('Attachment removed');
   }, [data.attachments, onChange]);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

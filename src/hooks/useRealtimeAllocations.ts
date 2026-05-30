@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface RealtimePayload {
   eventType: 'INSERT' | 'UPDATE' | 'DELETE';
@@ -64,7 +64,7 @@ export function useRealtimeAllocations() {
             
             if (isExternalChange) {
               const userName = await fetchUserName(modifierId);
-              toast.info('New allocation added', {
+              catalystToast.info('New allocation added', {
                 description: userName 
                   ? `An allocation was added by ${userName}`
                   : 'An allocation was added by another user',
@@ -81,7 +81,7 @@ export function useRealtimeAllocations() {
             
             if (isExternalChange) {
               const userName = await fetchUserName(modifierId);
-              toast.info('Allocation updated', {
+              catalystToast.info('Allocation updated', {
                 description: userName
                   ? `An allocation was modified by ${userName}`
                   : 'An allocation was modified by another user',
@@ -109,7 +109,7 @@ export function useRealtimeAllocations() {
               // For deletes, we might not have the user who deleted, so check old record
               const deleterId = oldRecord?.updated_by;
               const userName = await fetchUserName(deleterId);
-              toast.info('Allocation removed', {
+              catalystToast.info('Allocation removed', {
                 description: userName
                   ? `An allocation was deleted by ${userName}`
                   : 'An allocation was deleted by another user',

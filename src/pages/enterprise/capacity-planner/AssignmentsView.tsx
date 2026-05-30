@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { ResourceMetric, CapacityProject } from './types';
 import { departmentColors, projectColors } from './types';
 import type { useAssignments } from '@/modules/capacity-planner';
@@ -44,7 +44,7 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
 
   const handleAddAssignment = async () => {
     if (!selectedUserId || !selectedProjectId) {
-      toast.error('Please select a resource and project');
+      catalystToast.error('Please select a resource and project');
       return;
     }
 

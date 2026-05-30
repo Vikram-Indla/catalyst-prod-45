@@ -5,7 +5,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { UserProfile } from './useUsers';
 
 export type BulkEditableField = 
@@ -175,11 +175,11 @@ export function useBulkEditUsers(referenceData: ReferenceData) {
       if (context?.previousData) {
         queryClient.setQueryData(['users-list'], context.previousData);
       }
-      toast.error('Failed to update users');
+      catalystToast.error('Failed to update users');
       console.error('Bulk edit error:', err);
     },
     onSuccess: ({ updatedCount }) => {
-      toast.success(`Updated ${updatedCount} user(s)`);
+      catalystToast.success(`Updated ${updatedCount} user(s)`);
     },
     onSettled: () => {
       // Refetch to ensure consistency with DB

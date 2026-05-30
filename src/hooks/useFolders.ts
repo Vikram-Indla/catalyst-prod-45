@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState, useCallback } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import * as folderService from '@/services/testFolderService';
 import type { CreateFolderInput, UpdateFolderInput, FolderTreeNode, TestFolderWithCount } from '@/types/test-folders';
 import { buildFolderTree } from '@/types/test-folders';
@@ -105,10 +105,10 @@ export function useCreateFolder(projectId: string) {
       // Force immediate refetch
       await queryClient.invalidateQueries({ queryKey: folderKeys.tree(projectId) });
       await queryClient.refetchQueries({ queryKey: folderKeys.tree(projectId) });
-      toast.success(`Folder "${data.name}" created`);
+      catalystToast.success(`Folder "${data.name}" created`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create folder: ${error.message}`);
+      catalystToast.error(`Failed to create folder: ${error.message}`);
     },
   });
 }
@@ -125,10 +125,10 @@ export function useUpdateFolder(projectId: string) {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: folderKeys.tree(projectId) });
       queryClient.invalidateQueries({ queryKey: folderKeys.detail(data.id) });
-      toast.success(`Folder "${data.name}" updated`);
+      catalystToast.success(`Folder "${data.name}" updated`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update folder: ${error.message}`);
+      catalystToast.error(`Failed to update folder: ${error.message}`);
     },
   });
 }
@@ -145,10 +145,10 @@ export function useDeleteFolder(projectId: string) {
       queryClient.invalidateQueries({ queryKey: folderKeys.tree(projectId) });
       queryClient.invalidateQueries({ queryKey: folderKeys.unassignedCount(projectId) });
       queryClient.invalidateQueries({ queryKey: ['testCases'] });
-      toast.success('Folder deleted');
+      catalystToast.success('Folder deleted');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete folder: ${error.message}`);
+      catalystToast.error(`Failed to delete folder: ${error.message}`);
     },
   });
 }
@@ -166,10 +166,10 @@ export function useMoveTestCases(projectId: string) {
       queryClient.invalidateQueries({ queryKey: folderKeys.tree(projectId) });
       queryClient.invalidateQueries({ queryKey: folderKeys.unassignedCount(projectId) });
       queryClient.invalidateQueries({ queryKey: ['testCases'] });
-      toast.success(`Moved ${count} test case(s)`);
+      catalystToast.success(`Moved ${count} test case(s)`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to move test cases: ${error.message}`);
+      catalystToast.error(`Failed to move test cases: ${error.message}`);
     },
   });
 }

@@ -12,7 +12,7 @@ import {
   Clipboard, Check, Loader2, ArrowUpDown, Calendar, Rocket,
   AlertTriangle, Package, RefreshCw,
 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useAllReleases } from '@/hooks/releases/useAllReleases';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -229,10 +229,10 @@ export default function AllReleasesPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['all-releases'] });
-      toast.success('Release created');
+      catalystToast.success('Release created');
       setIsNewReleaseModalOpen(false);
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 
   const bulkUpdateStatusMutation = useMutation({
@@ -247,11 +247,11 @@ export default function AllReleasesPage() {
     },
     onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ['all-releases'] });
-      toast.success(`Updated ${vars.ids.length} releases`);
+      catalystToast.success(`Updated ${vars.ids.length} releases`);
       setSelectedIds(new Set());
       setBulkStatusDropdown(false);
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 
   const bulkDeleteMutation = useMutation({
@@ -266,11 +266,11 @@ export default function AllReleasesPage() {
     },
     onSuccess: (_, ids) => {
       queryClient.invalidateQueries({ queryKey: ['all-releases'] });
-      toast.success(`Archived ${ids.length} releases`);
+      catalystToast.success(`Archived ${ids.length} releases`);
       setSelectedIds(new Set());
       setDeleteConfirm(false);
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => catalystToast.error(err.message),
   });
 
   // ─── Derived state ──────────────────────────────────────────
@@ -402,7 +402,7 @@ export default function AllReleasesPage() {
     a.download = `all-releases-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("CSV exported successfully");
+    catalystToast.success("CSV exported successfully");
     setIsExportDropdownOpen(false);
   };
 
@@ -412,7 +412,7 @@ export default function AllReleasesPage() {
       `${r.name}\t${r.version}\t${r.status}\t${r.health}\t${r.progress}%\t${r.testsPass}/${r.testsTotal}\t${r.defects}\t${r.coverage ?? '—'}\t${r.daysRemaining}d\t${r.owner}`
     );
     navigator.clipboard.writeText([headers, ...rows].join('\n'));
-    toast.success("Copied to clipboard!");
+    catalystToast.success("Copied to clipboard!");
     setIsExportDropdownOpen(false);
   };
 
@@ -438,7 +438,7 @@ export default function AllReleasesPage() {
     a.download = `selected-releases-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`Exported ${sel.length} releases`);
+    catalystToast.success(`Exported ${sel.length} releases`);
   };
 
   const handleCreateRelease = (input: { name: string; version: string; status: string; targetDate: string; description: string }) => {
@@ -557,8 +557,8 @@ export default function AllReleasesPage() {
             {isExportDropdownOpen && (
               <div className="absolute right-0 mt-1 z-50" style={{ background: 'var(--bg-app, #fff)', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', padding: '4px', minWidth: '200px' }}>
                 <DropdownItem icon={<FileText className="w-3.5 h-3.5" />} label="Export as CSV" onClick={handleExportCSV} />
-                <DropdownItem icon={<FileSpreadsheet className="w-3.5 h-3.5" />} label="Export as Excel" onClick={() => { toast.info('Coming soon'); setIsExportDropdownOpen(false); }} />
-                <DropdownItem icon={<FileDown className="w-3.5 h-3.5" />} label="Export as PDF" onClick={() => { toast.info('Coming soon'); setIsExportDropdownOpen(false); }} />
+                <DropdownItem icon={<FileSpreadsheet className="w-3.5 h-3.5" />} label="Export as Excel" onClick={() => { catalystToast.info('Coming soon'); setIsExportDropdownOpen(false); }} />
+                <DropdownItem icon={<FileDown className="w-3.5 h-3.5" />} label="Export as PDF" onClick={() => { catalystToast.info('Coming soon'); setIsExportDropdownOpen(false); }} />
                 <div style={{ height: '1px', background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', margin: '4px 0' }} />
                 <DropdownItem icon={<Clipboard className="w-3.5 h-3.5" />} label="Copy to Clipboard" onClick={handleCopyClipboard} />
               </div>
@@ -1259,7 +1259,7 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
   const [description, setDescription] = useState('');
 
   const handleSubmit = () => {
-    if (!name.trim()) { toast.error('Release name is required'); return; }
+    if (!name.trim()) { catalystToast.error('Release name is required'); return; }
     onCreate({ name: name.trim(), version, status, targetDate, description });
   };
 

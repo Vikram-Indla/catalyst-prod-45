@@ -51,7 +51,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import type { WorkItemDependencyType, DependencyTypeV2, RiskLevel, DependencyLevelV2, DependencyStatus } from '@/lib/dependencies/types';
 import { DEPENDENCY_TYPE_LABELS, DEPENDENCY_LEVEL_LABELS, DEPENDENCY_STATUS_LABELS } from '@/lib/dependencies/types';
@@ -380,7 +380,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
       queryClient.invalidateQueries({ queryKey: ['dependency', dependencyId] });
     },
     onError: (error) => {
-      toast.error('Failed to save dependency: ' + error.message);
+      catalystToast.error('Failed to save dependency: ' + error.message);
     }
   });
 
@@ -393,11 +393,11 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
       queryClient.invalidateQueries({ queryKey: ['work-item-dependencies'] });
-      toast.success('Dependency deleted');
+      catalystToast.success('Dependency deleted');
       handleClose();
     },
     onError: (error: any) => {
-      toast.error(`Failed to delete dependency: ${error.message}`);
+      catalystToast.error(`Failed to delete dependency: ${error.message}`);
     },
   });
 
@@ -588,7 +588,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
   const handleCopyLink = () => {
     const url = `${window.location.origin}/dependencies?id=${dependencyId}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
   };
 
 
@@ -792,7 +792,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 z-[400] bg-popover border">
-                      <DropdownMenuItem onSelect={() => toast.info('Subscribe to dependency updates')}>
+                      <DropdownMenuItem onSelect={() => catalystToast.info('Subscribe to dependency updates')}>
                         <Bell className="h-4 w-4 mr-2" />
                         Subscribe
                       </DropdownMenuItem>
@@ -800,12 +800,12 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                         <History className="h-4 w-4 mr-2" />
                         Audit Log
                       </DropdownMenuItem>
-                      <DropdownMenuItem onSelect={() => toast.info('Refresh dependency status')}>
+                      <DropdownMenuItem onSelect={() => catalystToast.info('Refresh dependency status')}>
                         <RefreshCw className="h-4 w-4 mr-2" />
                         Refresh Status
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onSelect={() => toast.info('Copy dependency')}>
+                      <DropdownMenuItem onSelect={() => catalystToast.info('Copy dependency')}>
                         <Copy className="h-4 w-4 mr-2" />
                         Copy
                       </DropdownMenuItem>

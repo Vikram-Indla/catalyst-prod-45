@@ -22,7 +22,7 @@ import { HierarchyContextMenu } from './HierarchyContextMenu';
 import { ColumnManagerDropdown, ALL_COLUMNS, getInitialVisibleColumns, saveVisibleColumns } from './ColumnManager';
 import { useUpdateIssueField } from '@/hooks/useUpdateIssueField';
 import { useBulkUpdateIssues, useBulkDeleteIssues } from '@/hooks/useBulkUpdateIssues';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { getEpicChipColor } from '@/modules/project-work-hub/utils/backlog.utils';
 
 interface WorkItemTableProps {
@@ -444,13 +444,13 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
   const handleStatusChange = useCallback((issueKey: string, newStatus: string) => {
     updateField.mutate({ issueKey, fields: { status: newStatus } });
     setActiveDropdown(null);
-    toast.success(`Status updated to ${newStatus}`);
+    catalystToast.success(`Status updated to ${newStatus}`);
   }, [updateField]);
 
   const handlePriorityChange = useCallback((issueKey: string, newPriority: string) => {
     updateField.mutate({ issueKey, fields: { priority: newPriority === 'None' ? null : newPriority } });
     setActiveDropdown(null);
-    toast.success(`Priority updated to ${newPriority}`);
+    catalystToast.success(`Priority updated to ${newPriority}`);
   }, [updateField]);
 
   const handleAssigneeChange = useCallback((issueKey: string, assignee: AssigneeOption | null) => {
@@ -463,13 +463,13 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       },
     });
     setActiveDropdown(null);
-    toast.success(assignee ? `Assigned to ${assignee.displayName}` : 'Unassigned');
+    catalystToast.success(assignee ? `Assigned to ${assignee.displayName}` : 'Unassigned');
   }, [updateField]);
 
   const handleTitleSave = useCallback((issueKey: string, newTitle: string) => {
     updateField.mutate({ issueKey, fields: { summary: newTitle } });
     setEditingTitleKey(null);
-    toast.success('Title updated');
+    catalystToast.success('Title updated');
   }, [updateField]);
 
   /* ── Checkbox selection ── */
@@ -853,8 +853,8 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
           allAssignees={allAssignees}
           onClose={() => setContextMenu(null)}
           onEditTitle={() => setEditingTitleKey(contextMenu.item.key)}
-          onCopyKey={() => { navigator.clipboard.writeText(contextMenu.item.key); toast.success(`Copied ${contextMenu.item.key}`); }}
-          onCopyLink={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
+          onCopyKey={() => { navigator.clipboard.writeText(contextMenu.item.key); catalystToast.success(`Copied ${contextMenu.item.key}`); }}
+          onCopyLink={() => { navigator.clipboard.writeText(window.location.href); catalystToast.success('Link copied'); }}
           onChangeStatus={(s) => handleStatusChange(contextMenu.item.key, s)}
           onChangePriority={(p) => handlePriorityChange(contextMenu.item.key, p)}
           onChangeAssignee={(a) => handleAssigneeChange(contextMenu.item.key, a)}

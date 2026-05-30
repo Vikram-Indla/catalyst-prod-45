@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Plus, Search, GripVertical } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   Dialog,
   DialogContent,
@@ -117,13 +117,13 @@ export default function EpicPlanningPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['features', 'epic', epicId] });
-      toast.success('Feature added to epic');
+      catalystToast.success('Feature added to epic');
       setAddFeatureDialogOpen(false);
       setNewFeatureName('');
       setSelectedPI('');
     },
     onError: () => {
-      toast.error('Failed to create feature');
+      catalystToast.error('Failed to create feature');
     }
   });
 
@@ -139,7 +139,7 @@ export default function EpicPlanningPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['features', 'epic', epicId] });
-      toast.success('Feature moved');
+      catalystToast.success('Feature moved');
     }
   });
 
@@ -294,7 +294,7 @@ export default function EpicPlanningPage() {
                 variant="outline" 
                 size="sm" 
                 className="w-full mt-4 text-xs"
-                onClick={() => toast.info('Apply Bottom-Up Estimate: TODO (needs confirmation)')}
+                onClick={() => catalystToast.info('Apply Bottom-Up Estimate: TODO (needs confirmation)')}
               >
                 Apply Bottom-Up Estimate
               </Button>

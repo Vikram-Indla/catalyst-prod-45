@@ -16,7 +16,7 @@ import { Plus, Calendar } from '@/lib/atlaskit-icons';
 import { useTestCycles } from '@/hooks/test-management/useTestCycles';
 import { TestSet } from '@/types/test-sets';
 import { formatDistanceToNow } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -83,20 +83,20 @@ export function AddToCycleModal({ open, onClose, testSet }: AddToCycleModalProps
       queryClient.invalidateQueries({ queryKey: ['cycle-test-cases'] });
 
       if (result.skipped > 0) {
-        toast.success(`Added ${result.added} test cases (${result.skipped} already in cycle)`);
+        catalystToast.success(`Added ${result.added} test cases (${result.skipped} already in cycle)`);
       } else {
-        toast.success(`Added ${result.added} test cases to cycle`);
+        catalystToast.success(`Added ${result.added} test cases to cycle`);
       }
       onClose();
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to add test cases to cycle');
+      catalystToast.error(error.message || 'Failed to add test cases to cycle');
     },
   });
 
   const handleAdd = () => {
     if (!selectedCycleId) {
-      toast.error('Please select a cycle');
+      catalystToast.error('Please select a cycle');
       return;
     }
     addToCycleMutation.mutate({ cycleId: selectedCycleId, testSetId: testSet.id });

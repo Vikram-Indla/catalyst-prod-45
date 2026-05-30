@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 
 interface TableViewProps {
@@ -125,7 +125,7 @@ function TableRow({ item, depth, onItemClick, expandedIds, toggleExpand, columns
   const handleCopyKey = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigator.clipboard.writeText(item.key);
-    toast.success('Key copied to clipboard');
+    catalystToast.success('Key copied to clipboard');
   };
 
   return (

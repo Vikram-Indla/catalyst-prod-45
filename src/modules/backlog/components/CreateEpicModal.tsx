@@ -9,7 +9,7 @@ import { X, Save } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { ProgressRing, KeyboardShortcuts, AutoSaveIndicator, AutoSaveStatus } from '@/components/business-requests/create-form';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
@@ -146,11 +146,11 @@ export function CreateEpicModal({ isOpen, onClose, programId }: CreateEpicModalP
       queryClient.invalidateQueries({ queryKey: ['epics'] });
       
       const epicKey = data.epic_key || data.id?.slice(0, 8);
-      toast.success(`Epic ${epicKey} created successfully`);
+      catalystToast.success(`Epic ${epicKey} created successfully`);
       handleClose();
     },
     onError: (error: any) => {
-      toast.error(`Failed to create epic: ${error.message}`);
+      catalystToast.error(`Failed to create epic: ${error.message}`);
     },
   });
 
@@ -174,19 +174,19 @@ export function CreateEpicModal({ isOpen, onClose, programId }: CreateEpicModalP
 
   const handleSave = () => {
     if (!formData.name || formData.name.length < 5) {
-      toast.error('Epic name is required and must be at least 5 characters');
+      catalystToast.error('Epic name is required and must be at least 5 characters');
       return;
     }
     if (!formData.theme_id) {
-      toast.error('Strategic Theme is required');
+      catalystToast.error('Strategic Theme is required');
       return;
     }
     if (!formData.reporter_id) {
-      toast.error('Reporter is required');
+      catalystToast.error('Reporter is required');
       return;
     }
     if (!formData.assignee_id) {
-      toast.error('Assignee is required');
+      catalystToast.error('Assignee is required');
       return;
     }
 

@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format } from 'date-fns';
 import { Send, MessageSquare, AtSign } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   Popover,
   PopoverContent,
@@ -87,10 +87,10 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['business-request-discussions', requestId] });
       setNewComment('');
-      toast.success('Comment added');
+      catalystToast.success('Comment added');
     },
     onError: () => {
-      toast.error('Failed to add comment');
+      catalystToast.error('Failed to add comment');
     }
   });
 

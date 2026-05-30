@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { myTasksKeys } from './useMyTasks';
 import { useMyTasksUndo, UndoAction } from './useMyTasksUndo';
 import { useUncompleteMyTask } from './useUncompleteMyTask';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useAuth } from '@/hooks/useAuth';
 import type { TimeSection, MyTask } from '../types/my-tasks';
 
@@ -90,12 +90,12 @@ export function useCompleteMyTaskWithUndo() {
       }
       // Pop from undo stack since it failed
       undoStore.popUndo();
-      toast.error('Failed to complete task');
+      catalystToast.error('Failed to complete task');
     },
 
     onSuccess: (data, { taskTitle }, context) => {
       // Show toast with undo
-      toast.success(`"${taskTitle}" completed`, {
+      catalystToast.success(`"${taskTitle}" completed`, {
         action: {
           label: 'Undo',
           onClick: () => {

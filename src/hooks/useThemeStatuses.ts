@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface ThemeStatus {
   id: string;
@@ -93,10 +93,10 @@ export function useCreateThemeStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['theme-statuses'] });
-      toast.success('Theme status added');
+      catalystToast.success('Theme status added');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to add theme status: ${error.message}`);
+      catalystToast.error(`Failed to add theme status: ${error.message}`);
     },
   });
 }
@@ -116,10 +116,10 @@ export function useUpdateThemeStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['theme-statuses'] });
-      toast.success('Theme status updated');
+      catalystToast.success('Theme status updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update theme status: ${error.message}`);
+      catalystToast.error(`Failed to update theme status: ${error.message}`);
     },
   });
 }
@@ -141,7 +141,7 @@ export function useToggleThemeStatus() {
       queryClient.invalidateQueries({ queryKey: ['theme-statuses'] });
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update status: ${error.message}`);
+      catalystToast.error(`Failed to update status: ${error.message}`);
     },
   });
 }
@@ -161,10 +161,10 @@ export function useDeleteThemeStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['theme-statuses'] });
-      toast.success('Theme status deleted');
+      catalystToast.success('Theme status deleted');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete theme status: ${error.message}`);
+      catalystToast.error(`Failed to delete theme status: ${error.message}`);
     },
   });
 }

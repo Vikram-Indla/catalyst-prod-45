@@ -11,7 +11,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { WorkflowStatus, WorkflowTransition } from './useCatalystWorkflow';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -262,9 +262,9 @@ export function useWorkflowAI({
       ));
       setUndoStack(prev => [...prev, ...newUndoEntries]);
       onInvalidate();
-      toast.success('Workflow updated');
+      catalystToast.success('Workflow updated');
     } catch (err: unknown) {
-      toast.error(`Apply failed: ${(err as Error).message}`);
+      catalystToast.error(`Apply failed: ${(err as Error).message}`);
       console.error('applyProposal error:', err);
     }
   }, [schemeId, statuses, transitions, onInvalidate]);
@@ -297,9 +297,9 @@ export function useWorkflowAI({
       setUndoStack([]);
       setMessages([]);
       onInvalidate();
-      toast.success('Workflow restored to session start');
+      catalystToast.success('Workflow restored to session start');
     } catch (err: unknown) {
-      toast.error(`Restore failed: ${(err as Error).message}`);
+      catalystToast.error(`Restore failed: ${(err as Error).message}`);
     }
   }, [undoStack, onInvalidate]);
 

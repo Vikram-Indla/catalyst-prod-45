@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, Lozenge, Tooltip } from '@/components/ads';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useInJira } from '../context/InJiraContext';
 import { useBoardData, useBoardColumns, type BoardIssue, type DBBoardColumn } from '../hooks/useBoardData';
 import { compareRanks } from '../utils/lexorank';
@@ -168,7 +168,7 @@ export function KanbanBoardPage() {
       if (source.droppableId !== destination.droppableId) {
         const destIssues = issuesByColumn[destColumn.id] || [];
         if (destColumn.maxLimit !== null && destIssues.length >= destColumn.maxLimit) {
-          toast.error(`Column "${destColumn.name}" has reached its WIP limit of ${destColumn.maxLimit}`);
+          catalystToast.error(`Column "${destColumn.name}" has reached its WIP limit of ${destColumn.maxLimit}`);
           return;
         }
       }

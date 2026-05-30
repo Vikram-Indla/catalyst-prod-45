@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   ClipboardCheck,
   X,
@@ -225,7 +225,7 @@ export function CreateTestCaseDialogV2({
 
   const handleSaveDraft = async () => {
     if (!projectId) {
-      toast.error('No project selected');
+      catalystToast.error('No project selected');
       return;
     }
     
@@ -263,14 +263,14 @@ export function CreateTestCaseDialogV2({
         } catch (testDataError) {
           // Show error but don't fail the whole save - draft was already created
           const errorMessage = testDataError instanceof Error ? testDataError.message : 'Failed to save test data';
-          toast.error('Draft saved, but test data failed', { description: errorMessage });
+          catalystToast.error('Draft saved, but test data failed', { description: errorMessage });
           console.error('[CreateTestCaseDialog] Test data save failed:', testDataError);
           // Keep modal open so user can retry
           return;
         }
       }
       
-      toast.success('Draft saved', { description: result.case_key || 'Test case draft saved' });
+      catalystToast.success('Draft saved');
       
       // Close the modal after successful save
       if (createAnother) {
@@ -289,7 +289,7 @@ export function CreateTestCaseDialogV2({
     } catch (error) {
       // User-facing error toast
       const errorMessage = error instanceof Error ? error.message : 'Failed to save draft';
-      toast.error('Failed to save draft', { description: errorMessage });
+      catalystToast.error('Failed to save draft');
       console.error('[CreateTestCaseDialog] Draft save failed:', error);
       // Keep modal open so user can retry
     } finally {
@@ -299,12 +299,12 @@ export function CreateTestCaseDialogV2({
 
   const handleSubmit = async () => {
     if (!validate()) {
-      toast.error(getMissingFieldsMessage() || 'Please fill in all required fields');
+      catalystToast.error(getMissingFieldsMessage() || 'Please fill in all required fields');
       return;
     }
     
     if (!projectId) {
-      toast.error('Project ID is required');
+      catalystToast.error('Project ID is required');
       return;
     }
     
@@ -372,7 +372,7 @@ export function CreateTestCaseDialogV2({
       
       // Show success toast with REAL case_key from database
       const realCaseKey = result.key || result.id;
-      toast.success(`Test case ${realCaseKey} created`, { description: formData.title });
+      catalystToast.success(`Test case ${realCaseKey} created`);
       
       // Call onSuccess callback with real data
       onSuccess?.({ ...formData, id: result.id });
@@ -393,7 +393,7 @@ export function CreateTestCaseDialogV2({
     } catch (error) {
       // User-facing error toast
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      toast.error('Failed to create test case', { description: errorMessage });
+      catalystToast.error('Failed to create test case');
       console.error('[CreateTestCaseDialog] Database insert failed:', error);
       // Keep modal open so user can retry
     } finally {
@@ -404,7 +404,7 @@ export function CreateTestCaseDialogV2({
   // AI Generate Steps handler
   const handleAIGenerateSteps = async () => {
     if (!aiPrompt.trim()) {
-      toast.error('Please describe what you want to test');
+      catalystToast.error('Please describe what you want to test');
       return;
     }
 
@@ -430,7 +430,7 @@ export function CreateTestCaseDialogV2({
       const generatedSteps = generatedTestCase?.steps || [];
 
       if (generatedSteps.length === 0) {
-        toast.error('No steps were generated. Try a more detailed description.');
+        catalystToast.error('No steps were generated. Try a more detailed description.');
         return;
       }
 
@@ -451,13 +451,13 @@ export function CreateTestCaseDialogV2({
         steps: transformedSteps,
       }));
 
-      toast.success(`AI generated ${transformedSteps.length} test steps`);
+      catalystToast.success(`AI generated ${transformedSteps.length} test steps`);
       setShowAIGenerate(false);
       setAiPrompt('');
       setActiveTab('steps'); // Switch to steps tab to show results
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to generate steps';
-      toast.error(message);
+      catalystToast.error(message);
     } finally {
       setIsGeneratingSteps(false);
     }
@@ -631,7 +631,7 @@ export function CreateTestCaseDialogV2({
                   key={template.name}
                   className="p-4 border rounded-lg hover:border-blue-500 hover:bg-blue-50/50 transition-all text-left"
                   onClick={() => {
-                    toast.success(`Template "${template.name}" applied`);
+                    catalystToast.success(`Template "${template.name}" applied`);
                     setShowTemplates(false);
                   }}
                 >

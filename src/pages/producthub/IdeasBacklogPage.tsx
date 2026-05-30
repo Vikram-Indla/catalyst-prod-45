@@ -12,7 +12,7 @@ import { Search, Plus, Sparkles, ArrowUpRight } from '@/lib/atlaskit-icons';
 import { useIdeasHub, useIdeaStats, useUpdateIdea, useCreateIdea, type IdeaRow } from '@/hooks/useIdeasHub';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import IdeaDrawer from '../../modules-dormant/ideation/IdeaDrawer';
 import IdeationTriagePanel from '../../modules-dormant/ideation/IdeationTriagePanel';
 import IdeationIntelligenceHub from '../../modules-dormant/ideation/IdeationIntelligenceHub';
@@ -104,7 +104,7 @@ export default function IdeasBacklogPage() {
   const ideasData = useMemo(() => ideas.map(toIdea), [ideas]);
 
   const handleMergeIdeas = useCallback((primaryKey: string, mergeKey: string) => {
-    toast.info(`Merging ${mergeKey} into ${primaryKey}`);
+    catalystToast.info(`Merging ${mergeKey} into ${primaryKey}`);
   }, []);
 
   const handleConvertIdea = (idea: IdeaRow) => {
@@ -328,7 +328,7 @@ export default function IdeasBacklogPage() {
               } as any).eq('id', ideaToConvert.id);
               queryClient.invalidateQueries({ queryKey: ['ideas-hub'] });
               queryClient.invalidateQueries({ queryKey: ['ideas'] });
-              toast.success(`${conversionSource.primaryIdea.key} converted to ${initiativeKey}`);
+              catalystToast.success(`${conversionSource.primaryIdea.key} converted to ${initiativeKey}`);
             }
           }
         }}
@@ -376,7 +376,7 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
   const [description, setDescription] = useState('');
 
   const handleCreate = async () => {
-    if (!title.trim()) { toast.error('Title is required'); return; }
+    if (!title.trim()) { catalystToast.error('Title is required'); return; }
     await createIdea.mutateAsync({
       title: title.trim(),
       status: 'Draft',

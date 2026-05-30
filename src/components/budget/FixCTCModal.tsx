@@ -13,7 +13,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { X, AlertCircle, Check, CheckCircle, Users, Loader2, Pencil } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 
 interface ResourceToFix {
@@ -153,7 +153,7 @@ export function FixCTCModal({
     const rawValue = bulkValue.replace(/,/g, '');
     // Allow 0 as valid bulk value
     if (rawValue === '' || isNaN(parseInt(rawValue)) || parseInt(rawValue) < 0) {
-      toast.error('Please enter a valid CTC value');
+      catalystToast.error('Please enter a valid CTC value');
       return;
     }
 
@@ -163,7 +163,7 @@ export function FixCTCModal({
       updated[r.id] = numericValue.toString();
     });
     setCTCValues(updated);
-    toast.success(`Applied ${numericValue.toLocaleString()} SAR to all ${resources.length} resources`);
+    catalystToast.success(`Applied ${numericValue.toLocaleString()} SAR to all ${resources.length} resources`);
   };
 
   const handleSave = async () => {
@@ -182,7 +182,7 @@ export function FixCTCModal({
     });
 
     if (updates.length === 0) {
-      toast.error('No changes to save. Please enter CTC values.');
+      catalystToast.error('No changes to save. Please enter CTC values.');
       return;
     }
 
@@ -209,12 +209,12 @@ export function FixCTCModal({
         });
       });
 
-      toast.success(`${updates.length} resource${updates.length > 1 ? 's' : ''} updated successfully!`);
+      catalystToast.success(`${updates.length} resource${updates.length > 1 ? 's' : ''} updated successfully!`);
       onSaved();
       onOpenChange(false);
     } catch (error) {
       console.error('Error saving CTC:', error);
-      toast.error('Error saving changes. Please try again.');
+      catalystToast.error('Error saving changes. Please try again.');
     } finally {
       setSaving(false);
     }

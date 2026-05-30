@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface WorkItemLabel {
   id: string;
@@ -63,10 +63,10 @@ export function useWorkItemLabels(entityType: EntityType, entityId: string) {
       queryClient.invalidateQueries({ 
         queryKey: ['work-item-label-assignments', entityType, entityId] 
       });
-      toast.success('Label assigned');
+      catalystToast.success('Label assigned');
     },
     onError: () => {
-      toast.error('Failed to assign label');
+      catalystToast.error('Failed to assign label');
     },
   });
 
@@ -85,10 +85,10 @@ export function useWorkItemLabels(entityType: EntityType, entityId: string) {
       queryClient.invalidateQueries({ 
         queryKey: ['work-item-label-assignments', entityType, entityId] 
       });
-      toast.success('Label removed');
+      catalystToast.success('Label removed');
     },
     onError: () => {
-      toast.error('Failed to remove label');
+      catalystToast.error('Failed to remove label');
     },
   });
 
@@ -129,10 +129,10 @@ export function useManageLabels() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-labels'] });
-      toast.success('Label created');
+      catalystToast.success('Label created');
     },
     onError: () => {
-      toast.error('Failed to create label');
+      catalystToast.error('Failed to create label');
     },
   });
 
@@ -146,10 +146,10 @@ export function useManageLabels() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-labels'] });
-      toast.success('Label updated');
+      catalystToast.success('Label updated');
     },
     onError: () => {
-      toast.error('Failed to update label');
+      catalystToast.error('Failed to update label');
     },
   });
 
@@ -163,10 +163,10 @@ export function useManageLabels() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-labels'] });
-      toast.success('Label deleted');
+      catalystToast.success('Label deleted');
     },
     onError: () => {
-      toast.error('Failed to delete label');
+      catalystToast.error('Failed to delete label');
     },
   });
 

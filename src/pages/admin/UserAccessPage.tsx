@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from '@/components/admin/admin-dialog';
 import AdsSelect from '@atlaskit/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import SearchIcon from '@atlaskit/icon/core/search';
 import PersonIcon from '@atlaskit/icon/core/person';
 import EmailIcon from '@atlaskit/icon/core/email';
@@ -213,13 +213,13 @@ export default function UserAccessPage() {
       return data;
     },
     onSuccess: () => {
-      toast.success('Account created successfully');
+      catalystToast.success('Account created successfully');
       setCreateAccountOpen(false);
       setSelectedUser(null);
       queryClient.invalidateQueries({ queryKey: ['user-access-resources'] });
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to create account');
+      catalystToast.error(error.message || 'Failed to create account');
     },
   });
 
@@ -240,12 +240,12 @@ export default function UserAccessPage() {
       }
     },
     onSuccess: () => {
-      toast.success('Role updated successfully');
+      catalystToast.success('Role updated successfully');
       queryClient.invalidateQueries({ queryKey: ['user-role-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['user-access-resources'] });
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to update role');
+      catalystToast.error(error.message || 'Failed to update role');
     },
   });
 
@@ -264,13 +264,13 @@ export default function UserAccessPage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Email updated successfully');
+      catalystToast.success('Email updated successfully');
       setEditingEmailId(null);
       setEditingEmailValue('');
       queryClient.invalidateQueries({ queryKey: ['user-access-resources'] });
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to update email');
+      catalystToast.error(error.message || 'Failed to update email');
     },
   });
 
@@ -292,7 +292,7 @@ export default function UserAccessPage() {
 
   const handleCreateAccount = () => {
     if (!selectedUser?.email) {
-      toast.error('Email is required to create an account');
+      catalystToast.error('Email is required to create an account');
       return;
     }
     createAccountMutation.mutate({
@@ -305,7 +305,7 @@ export default function UserAccessPage() {
 
   const handleBulkCreate = async () => {
     if (usersNeedingAccounts.length === 0) {
-      toast.info('All users already have accounts');
+      catalystToast.info('All users already have accounts');
       setBulkCreateOpen(false);
       return;
     }
@@ -338,9 +338,9 @@ export default function UserAccessPage() {
     setBulkCreateOpen(false);
 
     if (errors.length === 0) {
-      toast.success(`Successfully created ${usersNeedingAccounts.length} account(s)`);
+      catalystToast.success(`Successfully created ${usersNeedingAccounts.length} account(s)`);
     } else {
-      toast.warning(`Created ${usersNeedingAccounts.length - errors.length} account(s). ${errors.length} failed.`);
+      catalystToast.warning(`Created ${usersNeedingAccounts.length - errors.length} account(s). ${errors.length} failed.`);
     }
 
     queryClient.invalidateQueries({ queryKey: ['user-access-resources'] });

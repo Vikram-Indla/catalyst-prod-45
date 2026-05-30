@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface StoryDialogProps {
   open: boolean;
@@ -73,18 +73,18 @@ export function StoryDialog({ open, onOpenChange, story }: StoryDialogProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['stories'] });
-      toast.success(story ? 'Story updated' : 'Story created');
+      catalystToast.success(story ? 'Story updated' : 'Story created');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to save story');
+      catalystToast.error('Failed to save story');
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!featureId) {
-      toast.error('Please select a feature');
+      catalystToast.error('Please select a feature');
       return;
     }
     mutation.mutate({

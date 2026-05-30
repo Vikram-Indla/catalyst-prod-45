@@ -17,7 +17,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { format, parseISO } from 'date-fns';
 import { Calendar as CalendarIcon, Lock } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { UserAvatar } from '@/components/shared/UserAvatar';
 
 // Unified quarter options - using space format to match database storage
@@ -306,7 +306,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
           <div 
             className="h-10 px-3 rounded-md flex items-center justify-between cursor-pointer"
             style={{ backgroundColor: 'var(--surface-2)', border: '1px solid var(--divider)' }}
-            onClick={() => toast.info('Priority is auto-calculated from the Scoring tab')}
+            onClick={() => catalystToast.info('Priority is auto-calculated from the Scoring tab')}
           >
             <div className="flex items-center gap-2 min-w-0">
               <div className={cn('w-2 h-2 rounded-full flex-shrink-0', priorityInfo.color)} />

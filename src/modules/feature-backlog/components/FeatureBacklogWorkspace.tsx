@@ -14,7 +14,7 @@ import { CreateFeatureModal } from '@/components/features/CreateFeatureModal';
 import { fetchFeatureBacklog, fetchProgramProjects, fetchProgramEpics, clearProjectIdsCache } from '../api/featureBacklogApi';
 import { FeatureKanbanBoard } from './FeatureKanbanBoard';
 import { useFeatureBacklogPreferences } from '../hooks/useFeatureBacklogPreferences';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 import type { FeatureBacklogQueryParams } from '../types';
 import {
@@ -183,13 +183,13 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
       return ids;
     },
     onSuccess: (deletedIds) => {
-      toast.success(`${deletedIds.length} feature(s) deleted`);
+      catalystToast.success(`${deletedIds.length} feature(s) deleted`);
       setSelectedItems([]);
       clearProjectIdsCache(programId);
       refetch();
     },
     onError: (error: any) => {
-      toast.error('Failed to delete features', {
+      catalystToast.error('Failed to delete features', {
         description: error.message,
       });
     },
@@ -209,7 +209,7 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
   const handleExport = useCallback(() => {
     const items = backlogData?.items || [];
     if (items.length === 0) {
-      toast.error('No items to export');
+      catalystToast.error('No items to export');
       return;
     }
 
@@ -241,10 +241,10 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      toast.success(`Exported ${items.length} features to CSV`);
+      catalystToast.success(`Exported ${items.length} features to CSV`);
     } catch (error) {
       console.error('Export failed:', error);
-      toast.error('Failed to export data');
+      catalystToast.error('Failed to export data');
     }
   }, [backlogData?.items]);
 

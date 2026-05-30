@@ -7,7 +7,7 @@ import { Lozenge } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Search, FileText, CheckCircle2, Loader2 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface Requirement {
   id: string;
@@ -91,7 +91,7 @@ export function AddTestsToCoverageDialog({
 
   const handleSubmit = async () => {
     if (selectedTests.size === 0) {
-      toast.error('Please select at least one test case');
+      catalystToast.error('Please select at least one test case');
       return;
     }
 
@@ -101,13 +101,13 @@ export function AddTestsToCoverageDialog({
       // Simulate API call to link tests to requirement
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      toast.success(`${selectedTests.size} test(s) linked to ${requirement?.id}`);
+      catalystToast.success(`${selectedTests.size} test(s) linked to ${requirement?.id}`);
       onSuccess();
       onOpenChange(false);
       setSelectedTests(new Set());
       setSearchQuery('');
     } catch (error) {
-      toast.error('Failed to link test cases');
+      catalystToast.error('Failed to link test cases');
     } finally {
       setIsSubmitting(false);
     }

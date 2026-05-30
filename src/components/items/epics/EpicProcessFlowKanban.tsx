@@ -6,7 +6,7 @@ import { HealthBadge } from '@/components/shared/HealthBadge';
 import { MoreVertical, Clock } from '@/lib/atlaskit-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { formatDistanceToNow } from 'date-fns';
 
 interface Epic {
@@ -83,10 +83,10 @@ export function EpicProcessFlowKanban({ epics, onEpicClick, onContextMenu }: Epi
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('Epic process step updated');
+      catalystToast.success('Epic process step updated');
     },
     onError: () => {
-      toast.error('Failed to update epic process step');
+      catalystToast.error('Failed to update epic process step');
     }
   });
 

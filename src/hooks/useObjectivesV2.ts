@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // OKR v2 Types - Unified Objectives (no Portfolio/Program tiers)
 // Using actual DB enum values
@@ -335,10 +335,10 @@ export function useCreateObjectiveV2() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
       queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
-      toast.success('Objective created');
+      catalystToast.success('Objective created');
     },
     onError: (error) => {
-      toast.error('Failed to create objective');
+      catalystToast.error('Failed to create objective');
       console.error('Create objective error:', error);
     },
   });
@@ -391,7 +391,7 @@ export function useUpdateObjectiveV2() {
       queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
     },
     onError: (error) => {
-      toast.error('Failed to update objective');
+      catalystToast.error('Failed to update objective');
       console.error('Update objective error:', error);
     },
   });
@@ -422,10 +422,10 @@ export function useDeleteObjectiveV2() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
       queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
-      toast.success('Objective deleted');
+      catalystToast.success('Objective deleted');
     },
     onError: (error) => {
-      toast.error('Failed to delete objective');
+      catalystToast.error('Failed to delete objective');
       console.error('Delete objective error:', error);
     },
   });

@@ -23,7 +23,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   ChevronDown, ChevronRight, Plus, LayoutGrid,
   Check, Loader2, CornerDownLeft,
@@ -328,7 +328,7 @@ export function SubtasksPanelV2({
       setDraftSummary('');
       setTimeout(() => createRef.current?.focus(), 50);
     },
-    onError: (err) => toast.error('Failed to create subtask', { description: (err as Error).message }),
+    onError: (err) => catalystToast.error('Failed to create subtask'),
   });
 
   useEffect(() => {

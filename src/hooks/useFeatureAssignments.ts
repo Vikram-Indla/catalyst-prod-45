@@ -9,7 +9,7 @@ import {
   updateFeatureContributors,
   getTeamMembers 
 } from '@/services/featureService';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface TeamMember {
   id: string;
@@ -45,7 +45,7 @@ export function useFeatureAssignments(featureId: string) {
       queryClient.invalidateQueries({ queryKey: ['features'] });
     },
     onError: (error: any) => {
-      toast.error('Failed to update owner', { description: error.message });
+      catalystToast.error('Failed to update owner');
     },
   });
 
@@ -59,7 +59,7 @@ export function useFeatureAssignments(featureId: string) {
       queryClient.invalidateQueries({ queryKey: ['features'] });
     },
     onError: (error: any) => {
-      toast.error('Failed to update contributors', { description: error.message });
+      catalystToast.error('Failed to update contributors');
     },
   });
 

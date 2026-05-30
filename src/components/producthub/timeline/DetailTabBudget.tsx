@@ -7,7 +7,7 @@ import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { logRequestAudit } from '@/lib/requestAudit';
 import { Pencil, Trash2, FolderOpen, X } from '@/lib/atlaskit-icons';
 
@@ -148,15 +148,15 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ requestId }) =
     };
     if (editingItem) {
       const { error } = await typedQuery('ph_request_budget_items').update(payload).eq('id', editingItem.id);
-      if (error) { toast.error('Failed to update'); return; }
+      if (error) { catalystToast.error('Failed to update'); return; }
       logRequestAudit({ request_id: requestId, action: 'updated', entity_type: 'budget_item', new_value: form.description });
       // Silent auto-save
     } else {
       payload.created_by = (await supabase.auth.getUser()).data.user?.id;
       const { error } = await typedQuery('ph_request_budget_items').insert(payload);
-      if (error) { toast.error('Failed to add'); return; }
+      if (error) { catalystToast.error('Failed to add'); return; }
       logRequestAudit({ request_id: requestId, action: 'created', entity_type: 'budget_item', new_value: form.description });
-      toast.success('Item added', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' }, position: 'bottom-center' });
+      catalystToast.success('Item added', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' }, position: 'bottom-center' });
     }
     setShowModal(false);
     refetch();
@@ -165,7 +165,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ requestId }) =
   const handleDelete = async (id: string) => {
     await typedQuery('ph_request_budget_items').delete().eq('id', id);
     logRequestAudit({ request_id: requestId, action: 'deleted', entity_type: 'budget_item' });
-    toast.success('Item deleted', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' }, position: 'bottom-center' });
+    catalystToast.success('Item deleted', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' }, position: 'bottom-center' });
     refetch();
   };
 

@@ -7,7 +7,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cycleExecutionKeys, type ExecutionStatus, mapUiToDbStatus, type UIStatus } from './useCycleExecutionItems';
 import { cycleListKeys } from './useTestCycleList';
 import { auditExecutionStatusChange } from '@/lib/tmAuditLogger';
@@ -105,7 +105,7 @@ export function useUpdateExecutionStatus(cycleId: string) {
       queryClient.invalidateQueries({ queryKey: cycleListKeys.all });
     },
     onError: (error: Error) => {
-      toast.error(`Status update failed: ${error.message}`);
+      catalystToast.error(`Status update failed: ${error.message}`);
     },
   });
 }
@@ -135,7 +135,7 @@ export function useUpdateExecutionField(cycleId: string) {
       queryClient.invalidateQueries({ queryKey: cycleListKeys.all });
     },
     onError: (error: Error) => {
-      toast.error(`Update failed: ${error.message}`);
+      catalystToast.error(`Update failed: ${error.message}`);
     },
   });
 }
@@ -163,10 +163,10 @@ export function useBulkUpdateExecution(cycleId: string) {
       queryClient.invalidateQueries({ queryKey: ['cycle-details', cycleId] });
       queryClient.invalidateQueries({ queryKey: ['cycle-test-cases', cycleId] });
       queryClient.invalidateQueries({ queryKey: cycleListKeys.all });
-      toast.success(`Updated ${result.count} tests`);
+      catalystToast.success(`Updated ${result.count} tests`);
     },
     onError: (error: Error) => {
-      toast.error(`Bulk update failed: ${error.message}`);
+      catalystToast.error(`Bulk update failed: ${error.message}`);
     },
   });
 }
@@ -194,10 +194,10 @@ export function useRemoveFromExecution(cycleId: string) {
       queryClient.invalidateQueries({ queryKey: ['cycle-details', cycleId] });
       queryClient.invalidateQueries({ queryKey: ['cycle-test-cases', cycleId] });
       queryClient.invalidateQueries({ queryKey: cycleListKeys.all });
-      toast.success(`Removed ${result.count} tests from cycle`);
+      catalystToast.success(`Removed ${result.count} tests from cycle`);
     },
     onError: (error: Error) => {
-      toast.error(`Remove failed: ${error.message}`);
+      catalystToast.error(`Remove failed: ${error.message}`);
     },
   });
 }

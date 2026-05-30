@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface RiskLinkDialogProps {
   open: boolean;
@@ -107,12 +107,12 @@ export function RiskLinkDialog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-linked-items', featureId] });
       queryClient.invalidateQueries({ queryKey: ['feature-risk-links', featureId] });
-      toast.success('Risk linked');
+      catalystToast.success('Risk linked');
       onOpenChange(false);
       onSuccess?.();
     },
     onError: () => {
-      toast.error('Failed to link risk');
+      catalystToast.error('Failed to link risk');
     },
   });
 

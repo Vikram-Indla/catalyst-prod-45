@@ -4,7 +4,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { CreateMilestoneInput, UpdateMilestoneInput } from '../types/cycle-config';
 
 interface RpcResponse {
@@ -44,10 +44,10 @@ export function useCycleMilestones(cycleId: string | undefined) {
     },
     onSuccess: () => {
       invalidate();
-      toast.success('Milestone created');
+      catalystToast.success('Milestone created');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create milestone: ${error.message}`);
+      catalystToast.error(`Failed to create milestone: ${error.message}`);
     },
   });
 
@@ -70,10 +70,10 @@ export function useCycleMilestones(cycleId: string | undefined) {
     },
     onSuccess: () => {
       invalidate();
-      toast.success('Milestone updated');
+      catalystToast.success('Milestone updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update milestone: ${error.message}`);
+      catalystToast.error(`Failed to update milestone: ${error.message}`);
     },
   });
 
@@ -92,10 +92,10 @@ export function useCycleMilestones(cycleId: string | undefined) {
     },
     onSuccess: () => {
       invalidate();
-      toast.success('Milestone deleted');
+      catalystToast.success('Milestone deleted');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete milestone: ${error.message}`);
+      catalystToast.error(`Failed to delete milestone: ${error.message}`);
     },
   });
 
@@ -115,10 +115,10 @@ export function useCycleMilestones(cycleId: string | undefined) {
     },
     onSuccess: (_, variables) => {
       invalidate();
-      toast.success(variables.isCompleted ? 'Milestone completed' : 'Milestone reopened');
+      catalystToast.success(variables.isCompleted ? 'Milestone completed' : 'Milestone reopened');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to toggle milestone: ${error.message}`);
+      catalystToast.error(`Failed to toggle milestone: ${error.message}`);
     },
   });
 

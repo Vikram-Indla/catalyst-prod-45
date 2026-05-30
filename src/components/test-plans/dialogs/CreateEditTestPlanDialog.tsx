@@ -15,7 +15,7 @@ import {
   X, Sparkles, FileStack, Loader2, AlertCircle, Save
 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 import { CreateEditTestPlanDialogProps, TabId } from './CreateEditTestPlanDialog.types';
 import { useCreateEditPlanForm } from './hooks/useCreateEditPlanForm';
@@ -111,9 +111,9 @@ export function CreateEditTestPlanDialog({
         await createMutation.mutateAsync(input);
       }
       
-      toast.success('Draft saved successfully');
+      catalystToast.success('Draft saved successfully');
     } catch (error) {
-      toast.error('Failed to save draft');
+      catalystToast.error('Failed to save draft');
     }
   };
 
@@ -122,7 +122,7 @@ export function CreateEditTestPlanDialog({
       // Find first tab with errors and switch to it
       if (tabErrors.basic) setActiveTab('basic');
       else if (tabErrors.team) setActiveTab('team');
-      toast.error('Please fix the validation errors');
+      catalystToast.error('Please fix the validation errors');
       return;
     }
 
@@ -145,17 +145,17 @@ export function CreateEditTestPlanDialog({
 
       if (isEditing && editPlanId) {
         await updateMutation.mutateAsync({ id: editPlanId, ...input });
-        toast.success('Test plan updated successfully');
+        catalystToast.success('Test plan updated successfully');
       } else {
         await createMutation.mutateAsync(input);
-        toast.success('Test plan created successfully');
+        catalystToast.success('Test plan created successfully');
       }
 
       reset();
       onOpenChange(false);
       onSuccess?.();
     } catch (error) {
-      toast.error(isEditing ? 'Failed to update test plan' : 'Failed to create test plan');
+      catalystToast.error(isEditing ? 'Failed to update test plan' : 'Failed to create test plan');
     }
   };
 

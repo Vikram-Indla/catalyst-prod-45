@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { CollapsibleSection } from './CollapsibleSection';
 import { Upload, X, FileText, Image as ImageIcon, Loader2 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface Props {
   workItemId: string;
@@ -43,7 +43,7 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
     if (files.length === 0) return;
     setUploading(true);
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { toast.error('Not authenticated'); setUploading(false); return; }
+    if (!user) { catalystToast.error('Not authenticated'); setUploading(false); return; }
 
     try {
       for (const file of files) {
@@ -64,9 +64,9 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
         if (insertErr) throw new Error(insertErr.message);
       }
       queryClient.invalidateQueries({ queryKey });
-      toast.success(`${files.length} file(s) uploaded`);
+      catalystToast.success(`${files.length} file(s) uploaded`);
     } catch (e: any) {
-      toast.error(e.message);
+      catalystToast.error(e.message);
     } finally {
       setUploading(false);
     }
@@ -80,9 +80,9 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast.success('Attachment deleted');
+      catalystToast.success('Attachment deleted');
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => catalystToast.error(e.message),
   });
 
   const handleDrop = (e: React.DragEvent) => {

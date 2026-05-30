@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface ProjectInfo {
   id: string;
@@ -168,10 +168,10 @@ export function useResourceAssignments() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resource-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['resource-assignments-all'] });
-      toast.success('Assignment created successfully');
+      catalystToast.success('Assignment created successfully');
     },
     onError: (error) => {
-      toast.error(`Failed to create assignment: ${error.message}`);
+      catalystToast.error(`Failed to create assignment: ${error.message}`);
     },
   });
 
@@ -190,10 +190,10 @@ export function useResourceAssignments() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resource-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['resource-assignments-all'] });
-      toast.success('Assignment updated successfully');
+      catalystToast.success('Assignment updated successfully');
     },
     onError: (error) => {
-      toast.error(`Failed to update assignment: ${error.message}`);
+      catalystToast.error(`Failed to update assignment: ${error.message}`);
     },
   });
 
@@ -210,10 +210,10 @@ export function useResourceAssignments() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resource-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['resource-assignments-all'] });
-      toast.success('Assignment deleted successfully');
+      catalystToast.success('Assignment deleted successfully');
     },
     onError: (error) => {
-      toast.error(`Failed to delete assignment: ${error.message}`);
+      catalystToast.error(`Failed to delete assignment: ${error.message}`);
     },
   });
 

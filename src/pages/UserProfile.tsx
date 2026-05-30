@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { User, Mail, Briefcase, Save, Shield, History } from '@/lib/atlaskit-icons';
 import { useUserRole } from '@/hooks/useUserRole';
 import { formatDistanceToNow } from 'date-fns';
@@ -99,10 +99,10 @@ export default function UserProfile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile', user?.id] });
-      toast.success('Profile updated successfully');
+      catalystToast.success('Profile updated successfully');
     },
     onError: (error) => {
-      toast.error(`Failed to update profile: ${error.message}`);
+      catalystToast.error(`Failed to update profile: ${error.message}`);
     },
   });
 

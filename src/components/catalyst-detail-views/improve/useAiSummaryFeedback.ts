@@ -10,7 +10,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export type FeedbackVote = 'up' | 'down';
 
@@ -76,10 +76,10 @@ export function useAiSummaryFeedback({
       queryClient.invalidateQueries({
         queryKey: ['ai-summary-feedback', surface, issueKey, user?.id],
       });
-      toast.success('Thanks for the feedback');
+      catalystToast.success('Thanks for the feedback');
     },
     onError: (err: unknown) => {
-      toast.error(
+      catalystToast.error(
         err instanceof Error ? err.message : 'Could not record feedback',
       );
     },

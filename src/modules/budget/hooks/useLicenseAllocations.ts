@@ -4,7 +4,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { AssignmentLicenseAllocation, SoftwareLicense } from '../types';
 
 export function useAssignmentLicenseAllocations(assignmentId: string | undefined) {
@@ -84,7 +84,7 @@ export function useUpdateLicenseAllocation() {
     },
     onError: (error) => {
       console.error('Error updating allocation:', error);
-      toast.error('Failed to update allocation');
+      catalystToast.error('Failed to update allocation');
     },
   });
 }
@@ -127,11 +127,11 @@ export function useBulkUpdateAllocations() {
       queryClient.invalidateQueries({ queryKey: ['assignment-license-allocations', assignmentId] });
       queryClient.invalidateQueries({ queryKey: ['software-licenses'] });
       queryClient.invalidateQueries({ queryKey: ['license-stats'] });
-      toast.success('License allocations saved');
+      catalystToast.success('License allocations saved');
     },
     onError: (error) => {
       console.error('Error saving allocations:', error);
-      toast.error('Failed to save allocations');
+      catalystToast.error('Failed to save allocations');
     },
   });
 }

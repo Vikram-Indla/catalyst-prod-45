@@ -11,7 +11,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useEffect } from 'react';
 import type {
   WorkItemDependencyType, 
@@ -272,10 +272,10 @@ export function useWorkItemDependencies(
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-dependencies'] });
       queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
-      toast.success('Dependency created');
+      catalystToast.success('Dependency created');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create dependency: ${error.message}`);
+      catalystToast.error(`Failed to create dependency: ${error.message}`);
     },
   });
 
@@ -296,10 +296,10 @@ export function useWorkItemDependencies(
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-dependencies'] });
       queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
-      toast.success('Dependency updated');
+      catalystToast.success('Dependency updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update dependency: ${error.message}`);
+      catalystToast.error(`Failed to update dependency: ${error.message}`);
     },
   });
 
@@ -316,10 +316,10 @@ export function useWorkItemDependencies(
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-dependencies'] });
       queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
-      toast.success('Dependency deleted');
+      catalystToast.success('Dependency deleted');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete dependency: ${error.message}`);
+      catalystToast.error(`Failed to delete dependency: ${error.message}`);
     },
   });
 

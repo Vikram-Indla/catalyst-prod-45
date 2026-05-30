@@ -13,7 +13,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useSearchWorkItems, useLinkWorkItem, type WorkItemSearchResult } from '@/hooks/useIncidentWorkItems';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface LinkWorkItemModalProps {
   open: boolean;
@@ -58,15 +58,15 @@ export function LinkWorkItemModal({
     
     try {
       await linkWorkItem.mutateAsync({ incidentId, workItem: selectedItem });
-      toast.success(`Linked ${selectedItem.key} to ${incidentKey}`);
+      catalystToast.success(`Linked ${selectedItem.key} to ${incidentKey}`);
       onOpenChange(false);
       setSearchTerm('');
       setSelectedItem(null);
     } catch (error: any) {
       if (error.code === '23505') {
-        toast.error('This work item is already linked');
+        catalystToast.error('This work item is already linked');
       } else {
-        toast.error(error.message || 'Failed to link work item');
+        catalystToast.error(error.message || 'Failed to link work item');
       }
     }
   };

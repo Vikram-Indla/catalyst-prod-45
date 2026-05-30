@@ -6,7 +6,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { 
   Plus, 
   Trash2, 
@@ -133,9 +133,9 @@ export function TestCaseDataTab({ testCaseId }: TestCaseDataTabProps) {
       
       setIsDirty(false);
       setLastUpdated(new Date());
-      toast.success('Test data saved');
+      catalystToast.success('Test data saved');
     } catch (error) {
-      toast.error('Failed to save test data', {
+      catalystToast.error('Failed to save test data', {
         description: error instanceof Error ? error.message : 'Unknown error',
       });
     }
@@ -161,12 +161,12 @@ export function TestCaseDataTab({ testCaseId }: TestCaseDataTabProps) {
   const handleAddColumn = useCallback(async () => {
     const trimmedName = newColumnName.trim();
     if (!trimmedName) {
-      toast.error('Column name is required');
+      catalystToast.error('Column name is required');
       return;
     }
     
     if (headers.includes(trimmedName)) {
-      toast.error('Column already exists');
+      catalystToast.error('Column already exists');
       return;
     }
     
@@ -188,9 +188,9 @@ export function TestCaseDataTab({ testCaseId }: TestCaseDataTabProps) {
       setNewColumnName('');
       setShowAddColumnDialog(false);
       setLastUpdated(new Date());
-      toast.success(`Column "${trimmedName}" added`);
+      catalystToast.success(`Column "${trimmedName}" added`);
     } catch (error) {
-      toast.error('Failed to add column', {
+      catalystToast.error('Failed to add column', {
         description: error instanceof Error ? error.message : 'Unknown error',
       });
     }
@@ -223,9 +223,9 @@ export function TestCaseDataTab({ testCaseId }: TestCaseDataTabProps) {
       setShowDeleteColumnDialog(false);
       setColumnToDelete(null);
       setLastUpdated(new Date());
-      toast.success(`Column deleted`);
+      catalystToast.success(`Column deleted`);
     } catch (error) {
-      toast.error('Failed to delete column', {
+      catalystToast.error('Failed to delete column', {
         description: error instanceof Error ? error.message : 'Unknown error',
       });
     }
@@ -249,9 +249,9 @@ export function TestCaseDataTab({ testCaseId }: TestCaseDataTabProps) {
       
       setRows(newRows);
       setLastUpdated(new Date());
-      toast.success('Row added');
+      catalystToast.success('Row added');
     } catch (error) {
-      toast.error('Failed to add row', {
+      catalystToast.error('Failed to add row', {
         description: error instanceof Error ? error.message : 'Unknown error',
       });
     }
@@ -284,9 +284,9 @@ export function TestCaseDataTab({ testCaseId }: TestCaseDataTabProps) {
       setShowDeleteRowDialog(false);
       setRowToDelete(null);
       setLastUpdated(new Date());
-      toast.success('Row deleted');
+      catalystToast.success('Row deleted');
     } catch (error) {
-      toast.error('Failed to delete row', {
+      catalystToast.error('Failed to delete row', {
         description: error instanceof Error ? error.message : 'Unknown error',
       });
     }
@@ -295,7 +295,7 @@ export function TestCaseDataTab({ testCaseId }: TestCaseDataTabProps) {
   // CSV Export
   const handleExportCSV = useCallback(() => {
     if (headers.length === 0) {
-      toast.error('No data to export');
+      catalystToast.error('No data to export');
       return;
     }
     
@@ -321,7 +321,7 @@ export function TestCaseDataTab({ testCaseId }: TestCaseDataTabProps) {
     link.click();
     URL.revokeObjectURL(url);
     
-    toast.success('CSV exported');
+    catalystToast.success('CSV exported');
   }, [testCaseId, headers, rows]);
 
   // CSV Import
@@ -339,7 +339,7 @@ export function TestCaseDataTab({ testCaseId }: TestCaseDataTabProps) {
       const lines = text.split('\n').filter(line => line.trim());
       
       if (lines.length < 1) {
-        toast.error('CSV file is empty');
+        catalystToast.error('CSV file is empty');
         return;
       }
       
@@ -385,9 +385,9 @@ export function TestCaseDataTab({ testCaseId }: TestCaseDataTabProps) {
       setShowImportConfirmDialog(false);
       setPendingImportData(null);
       setLastUpdated(new Date());
-      toast.success(`Imported ${importRows.length} rows`);
+      catalystToast.success(`Imported ${importRows.length} rows`);
     } catch (error) {
-      toast.error('Failed to import CSV', {
+      catalystToast.error('Failed to import CSV', {
         description: error instanceof Error ? error.message : 'Unknown error',
       });
     }
@@ -485,19 +485,19 @@ export function TestCaseDataTab({ testCaseId }: TestCaseDataTabProps) {
                     .order('step_number');
                   
                   if (!steps || steps.length === 0) {
-                    toast.info('No steps found for this test case');
+                    catalystToast.info('No steps found for this test case');
                     return;
                   }
 
                   const detected = extractVariablesFromSteps(steps);
                   if (detected.length === 0) {
-                    toast.info('No {{variables}} found in steps');
+                    catalystToast.info('No {{variables}} found in steps');
                     return;
                   }
 
                   const newVars = detected.filter(v => !headers.includes(v));
                   if (newVars.length === 0) {
-                    toast.info('All variables already have columns');
+                    catalystToast.info('All variables already have columns');
                     return;
                   }
 
@@ -516,9 +516,9 @@ export function TestCaseDataTab({ testCaseId }: TestCaseDataTabProps) {
                   setHeaders(newHeaders);
                   setRows(newRows);
                   setLastUpdated(new Date());
-                  toast.success(`Added ${newVars.length} variable column${newVars.length !== 1 ? 's' : ''}: ${newVars.join(', ')}`);
+                  catalystToast.success(`Added ${newVars.length} variable column${newVars.length !== 1 ? 's' : ''}: ${newVars.join(', ')}`);
                 } catch (error) {
-                  toast.error('Failed to detect variables');
+                  catalystToast.error('Failed to detect variables');
                 }
               }}>
                 <ScanSearch className="w-4 h-4 mr-2" />

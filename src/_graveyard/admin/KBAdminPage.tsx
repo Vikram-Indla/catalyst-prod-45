@@ -6,7 +6,7 @@ import { fetchQueryLogs, fetchSources, fetchAccessMatrix, type KBQueryLogEntry, 
 import { supabase } from '@/integrations/supabase/client';
 import { Shield, FileText, Lock, RefreshCw, Zap, FolderOpen, Globe, Brain, ThumbsUp, ThumbsDown, Keyboard, Mic, Check, X as XIcon, Activity, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
 import { AutoSyncCard } from '@/components/shared/AutoSyncCard';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { formatDistanceToNow } from 'date-fns';
 
 /* ═══════════════════════════════════════════
@@ -192,7 +192,7 @@ function HealthTab() {
       setGenProgress({ done: 0, total: total, currentCategory: 'Starting...', alreadyDone });
 
       if (remaining === 0) {
-        toast.success('All questions already have answers!');
+        catalystToast.success('All questions already have answers!');
         setGenerating(false);
         setGenProgress(null);
         return;
@@ -220,10 +220,10 @@ function HealthTab() {
         }
       }
 
-      toast.success(`Generated ${totalDone} answers successfully!`);
+      catalystToast.success(`Generated ${totalDone} answers successfully!`);
       runChecks();
     } catch (err: any) {
-      toast.error(`Error generating answers: ${err.message}`);
+      catalystToast.error(`Error generating answers: ${err.message}`);
     } finally {
       setGenerating(false);
       setGenProgress(null);
@@ -238,10 +238,10 @@ function HealthTab() {
         body: { action: 'warm_cache' },
       });
       if (res.error) throw new Error(res.error.message);
-      toast.success(res.data.message || 'Cache warmed successfully!');
+      catalystToast.success(res.data.message || 'Cache warmed successfully!');
       runChecks();
     } catch (err: any) {
-      toast.error(`Cache warm failed: ${err.message}`);
+      catalystToast.error(`Cache warm failed: ${err.message}`);
     } finally {
       setWarmingCache(false);
     }
@@ -284,10 +284,10 @@ function HealthTab() {
         await new Promise(r => setTimeout(r, 350));
       }
 
-      toast.success(`RAG index built — ${totalIngested} chunks ingested!`);
+      catalystToast.success(`RAG index built — ${totalIngested} chunks ingested!`);
       runChecks();
     } catch (err: any) {
-      toast.error(`RAG ingest failed: ${err.message}`);
+      catalystToast.error(`RAG ingest failed: ${err.message}`);
     } finally {
       setIngesting(false);
       setIngestProgress(null);
@@ -563,7 +563,7 @@ function QueryLogTab() {
 
   const loadLogs = useCallback(() => {
     setLoading(true);
-    fetchQueryLogs(200).then(setLogs).catch(() => toast.error('Failed to load logs')).finally(() => setLoading(false));
+    fetchQueryLogs(200).then(setLogs).catch(() => catalystToast.error('Failed to load logs')).finally(() => setLoading(false));
   }, []);
 
   useEffect(() => { loadLogs(); }, [loadLogs]);
@@ -596,7 +596,7 @@ function QueryLogTab() {
   };
 
   const handleSubmitTraining = async (log: KBQueryLogEntry) => {
-    if (!draftAnswer.trim()) { toast.error('Please provide an answer'); return; }
+    if (!draftAnswer.trim()) { catalystToast.error('Please provide an answer'); return; }
     setSubmitting(true);
     try {
       const { data: maxQ } = await supabase.from('kb_training_questions')
@@ -615,13 +615,13 @@ function QueryLogTab() {
 
       await supabase.from('kb_cache').delete().eq('query_text', log.query_text);
 
-      toast.success(`Training question #${nextNum} created! Run "Embed All" from Health tab to vectorize.`);
+      catalystToast.success(`Training question #${nextNum} created! Run "Embed All" from Health tab to vectorize.`);
       setTrainedIds((prev) => new Set(prev).add(log.id));
       setExpandedId(null);
       setDraftAnswer('');
       setDraftCategory('');
     } catch (err: any) {
-      toast.error(`Failed to create training entry: ${err.message}`);
+      catalystToast.error(`Failed to create training entry: ${err.message}`);
     } finally {
       setSubmitting(false);
     }
@@ -816,7 +816,7 @@ function AccessMatrixTab() {
 
   const load = useCallback(() => {
     setLoading(true);
-    fetchAccessMatrix().then(setMatrix).catch(() => toast.error('Failed to load matrix')).finally(() => setLoading(false));
+    fetchAccessMatrix().then(setMatrix).catch(() => catalystToast.error('Failed to load matrix')).finally(() => setLoading(false));
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -836,7 +836,7 @@ function AccessMatrixTab() {
         await supabase.from('kb_access_matrix').insert({ role_name: role, module_name: mod, has_access: newVal });
       }
       load();
-    } catch { toast.error('Update failed'); }
+    } catch { catalystToast.error('Update failed'); }
   };
 
   const enabledCount = matrix.filter((m: any) => m.has_access).length;
@@ -1028,7 +1028,7 @@ function SourcesTab() {
 
   const load = useCallback(() => {
     setLoading(true);
-    fetchSources().then(setSources).catch(() => toast.error('Failed to load sources')).finally(() => setLoading(false));
+    fetchSources().then(setSources).catch(() => catalystToast.error('Failed to load sources')).finally(() => setLoading(false));
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -1039,7 +1039,7 @@ function SourcesTab() {
   };
 
   const addSource = async () => {
-    if (!newSource.label || !newSource.url) { toast.error('Label and URL required'); return; }
+    if (!newSource.label || !newSource.url) { catalystToast.error('Label and URL required'); return; }
     await supabase.from('kb_sources').insert({
       label: newSource.label,
       url: newSource.url,
@@ -1050,7 +1050,7 @@ function SourcesTab() {
     });
     setNewSource({ label: '', url: '', description: '' });
     load();
-    toast.success('Source added');
+    catalystToast.success('Source added');
   };
 
   const ministry = sources.filter((s) => s.source_type === 'ministry');
@@ -1218,12 +1218,12 @@ function TrainingTab() {
         const { error } = await supabase.from('kb_training_questions').delete().in('id', batch);
         if (error) throw error;
       }
-      toast.success(`Deleted ${ids.length} question(s)`);
+      catalystToast.success(`Deleted ${ids.length} question(s)`);
       setSelected(new Set());
       await loadQuestions();
       fetchStatus();
     } catch (err: any) {
-      toast.error(err.message || 'Delete failed');
+      catalystToast.error(err.message || 'Delete failed');
     } finally {
       setIsDeleting(false);
     }

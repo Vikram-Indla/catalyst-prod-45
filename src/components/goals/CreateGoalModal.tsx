@@ -6,7 +6,7 @@ import { X, Plus } from '@/lib/atlaskit-icons';
 import { useCreateGoal, useThemes } from '@/hooks/useGoals';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { CreateGoalInput, GoalStatus, Priority, BSCPerspective } from '@/types/goals';
 
 interface CreateGoalModalProps {
@@ -69,8 +69,8 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
   }, [isOpen, onClose]);
 
   const handleSubmit = useCallback(async () => {
-    if (!title.trim()) { toast.error('Title is required'); return; }
-    if (!themeId) { toast.error('Theme is required'); return; }
+    if (!title.trim()) { catalystToast.error('Title is required'); return; }
+    if (!themeId) { catalystToast.error('Theme is required'); return; }
 
     const input: CreateGoalInput = {
       title: title.trim(),
@@ -89,10 +89,10 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
 
     try {
       await createGoal.mutateAsync(input);
-      toast.success('Goal created successfully');
+      catalystToast.success('Goal created successfully');
       onClose();
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to create goal');
+      catalystToast.error(err?.message || 'Failed to create goal');
     }
   }, [title, description, themeId, ownerId, status, priority, confidence, quarter, bsc, startDate, targetDate, weight, createGoal, onClose]);
 

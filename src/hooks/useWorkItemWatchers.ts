@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface Watcher {
   id: string;
@@ -54,10 +54,10 @@ export function useWorkItemWatchers(workItemType: string, workItemId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-watchers', workItemType, workItemId] });
-      toast.success('You are now watching this item');
+      catalystToast.success('You are now watching this item');
     },
     onError: () => {
-      toast.error('Failed to watch item');
+      catalystToast.error('Failed to watch item');
     },
   });
 
@@ -75,10 +75,10 @@ export function useWorkItemWatchers(workItemType: string, workItemId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-watchers', workItemType, workItemId] });
-      toast.success('You are no longer watching this item');
+      catalystToast.success('You are no longer watching this item');
     },
     onError: () => {
-      toast.error('Failed to unwatch item');
+      catalystToast.error('Failed to unwatch item');
     },
   });
 

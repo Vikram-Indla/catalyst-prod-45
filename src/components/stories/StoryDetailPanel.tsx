@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Edit2, Save, Calendar, User, Flag, MoreVertical, Bell, MessageSquare, History, Link as LinkIcon, Copy, ArrowDown, Trash2 } from '@/lib/atlaskit-icons';
 import { WorkItemPresence } from '@/components/work-items/WorkItemPresence';
 import { WorkItemWatchers } from '@/components/work-items/WorkItemWatchers';
@@ -97,13 +97,13 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Story updated');
+      catalystToast.success('Story updated');
       queryClient.invalidateQueries({ queryKey: ['all-stories'] });
       setIsEditing(false);
       onUpdate?.();
     },
     onError: () => {
-      toast.error('Failed to update story');
+      catalystToast.error('Failed to update story');
     },
   });
 
@@ -163,7 +163,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
                   <Edit2 className="h-4 w-4 mr-2" />
                   Edit Story
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => toast.info('Subscribe to story')}>
+                <DropdownMenuItem onClick={() => catalystToast.info('Subscribe to story')}>
                   <Bell className="h-4 w-4 mr-2" />
                   Subscribe
                 </DropdownMenuItem>
@@ -176,16 +176,16 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
                   Links
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => toast.info('Copy story')}>
+                <DropdownMenuItem onClick={() => catalystToast.info('Copy story')}>
                   <Copy className="h-4 w-4 mr-2" />
                   Copy
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => toast.info('Move story')}>
+                <DropdownMenuItem onClick={() => catalystToast.info('Move story')}>
                   <ArrowDown className="h-4 w-4 mr-2" />
                   Move
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => toast.info('Delete story')}>
+                <DropdownMenuItem onClick={() => catalystToast.info('Delete story')}>
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete
                 </DropdownMenuItem>

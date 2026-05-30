@@ -13,7 +13,7 @@ import {
 } from '@/hooks/useAdminFeatureFlags';
 import { featureFlagService } from '@/services/feature-flags';
 import type { FeatureFlag, ModuleCategory } from '@/types/feature-flags';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import Spinner from '@atlaskit/spinner';
 import SearchIcon from '@atlaskit/icon/core/search';
 import RefreshIcon from '@atlaskit/icon/core/refresh';
@@ -395,7 +395,7 @@ export default function FeatureFlagsPage() {
         try {
           const dependents = await featureFlagService.getDependents(flag.module_key);
           if (dependents.length > 0) {
-            toast.warning(
+            catalystToast.warning(
               `${dependents.join(', ')} depend${dependents.length === 1 ? 's' : ''} on ${flag.module_name}`,
               {
                 description: `Disabling ${flag.module_name} may break dependent module functionality.`,

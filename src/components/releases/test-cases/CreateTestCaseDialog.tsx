@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Loader2 } from '@/lib/atlaskit-icons';
 import type { PrefilledTestCase } from './utils';
 
@@ -104,7 +104,7 @@ export function CreateTestCaseDialog({
       id: `TC-${String(Math.floor(Math.random() * 900) + 100).padStart(3, '0')}`,
     };
     
-    toast.success(`Test case ${newTestCase.id} created`, {
+    catalystToast.success(`Test case ${newTestCase.id} created`, {
       description: data.title,
     });
     

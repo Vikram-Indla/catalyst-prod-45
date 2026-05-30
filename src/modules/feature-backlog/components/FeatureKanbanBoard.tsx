@@ -12,7 +12,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { FeatureBacklogItem } from '../types';
 import { FeatureKanbanColumn } from './FeatureKanbanColumn';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface FeatureKanbanBoardProps {
   items: FeatureBacklogItem[];
@@ -145,10 +145,10 @@ export function FeatureKanbanBoard({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['program', programId, 'feature-backlog'] });
-      toast.success('Feature status updated');
+      catalystToast.success('Feature status updated');
     },
     onError: (error: any) => {
-      toast.error(`Failed to update status: ${error.message}`);
+      catalystToast.error(`Failed to update status: ${error.message}`);
     },
   });
 

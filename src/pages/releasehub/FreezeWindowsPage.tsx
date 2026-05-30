@@ -4,7 +4,7 @@ import { useFreezeWindows, useCreateFreezeWindow, useDeleteFreezeWindow } from '
 import { RH } from '@/constants/releasehub.design';
 import { useTheme } from '@/hooks/useTheme';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Tooltip } from '@/components/ads';
 
 function formatDate(d: string) {
@@ -81,11 +81,11 @@ export default function FreezeWindowsPage() {
         end_date: form.end_date,
         reason: form.reason.trim() || undefined,
       });
-      toast.success('Freeze window added.');
+      catalystToast.success('Freeze window added.');
       setShowModal(false);
       setForm({ name: '', start_date: '', end_date: '', reason: '' });
     } catch (err) {
-      toast.error('Failed to create freeze window: ' + String(err));
+      catalystToast.error('Failed to create freeze window: ' + String(err));
     }
   };
 
@@ -93,9 +93,9 @@ export default function FreezeWindowsPage() {
     if (!confirm(`Delete freeze window "${name}"?`)) return;
     try {
       await deleteMut.mutateAsync(id);
-      toast.success('Freeze window removed.');
+      catalystToast.success('Freeze window removed.');
     } catch (err) {
-      toast.error('Failed to delete: ' + String(err));
+      catalystToast.error('Failed to delete: ' + String(err));
     }
   };
 

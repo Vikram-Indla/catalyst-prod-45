@@ -17,7 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 import { StrategyTree } from './StrategyTree';
 import { AnalyticsDrawerContent } from './AnalyticsDrawerContent';
@@ -133,7 +133,7 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
 
   const handleExport = () => {
     if (!strategicData?.themes) {
-      toast.error('No data to export');
+      catalystToast.error('No data to export');
       return;
     }
 
@@ -143,10 +143,10 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
         : strategicData.themes;
 
       exportOkrViewToCsv(filteredThemes, 'okr-strategy-export');
-      toast.success('Export downloaded successfully');
+      catalystToast.success('Export downloaded successfully');
     } catch (err) {
       console.error('Export failed:', err);
-      toast.error('Failed to export data');
+      catalystToast.error('Failed to export data');
     }
   };
 

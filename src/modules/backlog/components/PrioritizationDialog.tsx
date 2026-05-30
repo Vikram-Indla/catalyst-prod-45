@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface PrioritizationDialogProps {
   open: boolean;
@@ -71,11 +71,11 @@ export function PrioritizationDialog({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success(`WSJF scores updated for ${selectedItems.length} item(s)`);
+      catalystToast.success(`WSJF scores updated for ${selectedItems.length} item(s)`);
       onOpenChange(false);
     },
     onError: (error: any) => {
-      toast.error(`Failed to update WSJF: ${error.message}`);
+      catalystToast.error(`Failed to update WSJF: ${error.message}`);
     },
   });
 

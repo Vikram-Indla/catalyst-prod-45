@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { logAuditEntry } from '@/lib/auditLogger';
 
 // Objectives Module - Proper Types per Technical Specification
@@ -592,11 +592,11 @@ export const useCreateObjective = () => {
         afterData: data,
       });
       
-      toast.success('Objective created successfully');
+      catalystToast.success('Objective created successfully');
     },
     onError: (error: any) => {
       const message = error?.message || 'Failed to create objective';
-      toast.error(message);
+      catalystToast.error(message);
       console.error('Create objective error:', error);
     },
   });
@@ -655,11 +655,11 @@ export const useUpdateObjective = () => {
         afterData: data,
       });
       
-      toast.success('Objective updated successfully');
+      catalystToast.success('Objective updated successfully');
     },
     onError: (error: any) => {
       const message = error?.message || 'Failed to update objective';
-      toast.error(message);
+      catalystToast.error(message);
       console.error('Update objective error:', error);
     },
   });
@@ -699,11 +699,11 @@ export const useDeleteObjective = () => {
         beforeData,
       });
       
-      toast.success('Objective deleted successfully');
+      catalystToast.success('Objective deleted successfully');
     },
     onError: (error: any) => {
       const message = error?.message || 'Failed to delete objective';
-      toast.error(message);
+      catalystToast.error(message);
       console.error('Delete objective error:', error);
     },
   });

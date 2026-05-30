@@ -17,7 +17,7 @@ import {
 import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface ResetPasswordDialogProps {
@@ -67,10 +67,10 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
 
       setResetLink(data.resetLink);
       setStep('link-success');
-      toast.success(`Password reset link created for ${userName || 'user'}`);
+      catalystToast.success(`Password reset link created for ${userName || 'user'}`);
     } catch (error) {
       console.error('Error generating reset link:', error);
-      toast.error((error as Error).message || 'Unable to generate password reset link. Please try again later.');
+      catalystToast.error((error as Error).message || 'Unable to generate password reset link. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +80,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
     if (!userId || !newPassword) return;
 
     if (newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      catalystToast.error('Password must be at least 6 characters');
       return;
     }
     
@@ -99,10 +99,10 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
       }
 
       setStep('password-success');
-      toast.success(`Default password set for ${userName || 'user'}. They will be required to change it on next login.`);
+      catalystToast.success(`Default password set for ${userName || 'user'}. They will be required to change it on next login.`);
     } catch (error) {
       console.error('Error setting password:', error);
-      toast.error((error as Error).message || 'Unable to set password. Please try again later.');
+      catalystToast.error((error as Error).message || 'Unable to set password. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -112,10 +112,10 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
     try {
       await navigator.clipboard.writeText(resetLink);
       setCopied(true);
-      toast.success('Link copied to clipboard');
+      catalystToast.success('Link copied to clipboard');
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      toast.error('Failed to copy link');
+      catalystToast.error('Failed to copy link');
     }
   };
 
@@ -123,10 +123,10 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
     try {
       await navigator.clipboard.writeText(newPassword);
       setCopied(true);
-      toast.success('Password copied to clipboard');
+      catalystToast.success('Password copied to clipboard');
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      toast.error('Failed to copy password');
+      catalystToast.error('Failed to copy password');
     }
   };
 

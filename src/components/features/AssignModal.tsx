@@ -23,7 +23,7 @@ import { cn } from '@/lib/utils';
 import { useTeamMembers, TeamMember, Contributor } from '@/hooks/useFeatureAssignments';
 import { updateFeatureOwner, updateFeatureContributors } from '@/services/featureService';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface AssignModalProps {
   isOpen: boolean;
@@ -105,11 +105,11 @@ export function AssignModal({
       queryClient.invalidateQueries({ queryKey: ['feature-detail', featureId] });
       queryClient.invalidateQueries({ queryKey: ['feature-assignments', featureId] });
       queryClient.invalidateQueries({ queryKey: ['features'] });
-      toast.success('Assignments updated');
+      catalystToast.success('Assignments updated');
       onClose();
     },
     onError: (error: any) => {
-      toast.error('Failed to update assignments', { description: error.message });
+      catalystToast.error('Failed to update assignments');
     },
   });
 

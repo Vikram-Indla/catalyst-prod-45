@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lozenge, Tooltip } from '@/components/ads';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { Star, User, Calendar, Clock, ChevronLeft, ChevronRight, MoreHorizontal, ExternalLink, Building2 } from '@/lib/atlaskit-icons';
 import { useQueryClient } from '@tanstack/react-query';
@@ -88,11 +88,11 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
 
       if (error) throw error;
 
-      toast.success('Request status updated');
+      catalystToast.success('Request status updated');
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
     } catch (error) {
       console.error('Error updating request status:', error);
-      toast.error('Failed to update request status');
+      catalystToast.error('Failed to update request status');
     }
   };
 

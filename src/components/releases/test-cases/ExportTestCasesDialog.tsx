@@ -27,7 +27,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { TestCase } from '@/types/test-cases';
 import { exportTestCases, type ExportFormat } from './utils/exportTestCases';
@@ -142,10 +142,10 @@ export function ExportTestCasesDialog({
       }
 
       const count = casesToExport.length;
-      toast.success(`Exported ${count} test cases as ${format.toUpperCase()}`);
+      catalystToast.success(`Exported ${count} test cases as ${format.toUpperCase()}`);
     } catch (error) {
       console.error('Export failed:', error);
-      toast.error('Export failed. Please try again.');
+      catalystToast.error('Export failed. Please try again.');
     } finally {
       setIsExporting(false);
       setExportProgress(0);

@@ -47,7 +47,7 @@ import { LabelsFilter } from '@/components/planner/shared/LabelsFilter';
 import { PRIORITY_CONFIG } from '../../types';
 import type { TaskListFilters, TaskListSorting, TaskListTask } from '../../hooks/useTaskList';
 import type { TaskPriority, GroupByOption } from '../../types';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 
 // Import ring-fenced styles
@@ -267,14 +267,14 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
 
   const handleTaskUpdate = useCallback((taskId: string, field: string, value: any) => {
     updateTask.mutate({ id: taskId, updates: { [field]: value } }, {
-      onSuccess: () => toast.success('Task updated'),
-      onError: () => toast.error('Failed to update task'),
+      onSuccess: () => catalystToast.success('Task updated'),
+      onError: () => catalystToast.error('Failed to update task'),
     });
   }, [updateTask]);
 
   const handleExport = useCallback(() => {
     if (tasks.length === 0) {
-      toast.error('No tasks to export');
+      catalystToast.error('No tasks to export');
       return;
     }
     const headers = ['ID', 'Title', 'Status', 'Priority', 'Workstream', 'Assignee', 'Due Date', 'Progress'];
@@ -298,7 +298,7 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    toast.success(`Exported ${tasks.length} tasks`);
+    catalystToast.success(`Exported ${tasks.length} tasks`);
   }, [tasks]);
 
   const handleClearFilters = useCallback(() => {

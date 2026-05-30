@@ -8,7 +8,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
 import { EmptyState } from './WikiAdminSyncTab';
 import { Search, Plus, Trash2, ChevronLeft, ChevronRight, GraduationCap } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const fromAny = (t: string) => typedQuery(t);
 
@@ -26,8 +26,8 @@ export function WikiAdminTrainingTab() {
       const { error } = await fromAny('kb_training_questions').delete().eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => { toast.success('Deleted'); qc.invalidateQueries({ queryKey: ['wiki-training-questions'] }); },
-    onError: () => toast.error('Delete failed'),
+    onSuccess: () => { catalystToast.success('Deleted'); qc.invalidateQueries({ queryKey: ['wiki-training-questions'] }); },
+    onError: () => catalystToast.error('Delete failed'),
   });
 
   const rows = data?.rows ?? [];
@@ -139,11 +139,11 @@ function AddQuestionForm({ onClose }: { onClose: () => void }) {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Question added');
+      catalystToast.success('Question added');
       qc.invalidateQueries({ queryKey: ['wiki-training-questions'] });
       onClose();
     },
-    onError: () => toast.error('Failed to add question'),
+    onError: () => catalystToast.error('Failed to add question'),
   });
 
   return (

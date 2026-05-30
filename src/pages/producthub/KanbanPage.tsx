@@ -24,7 +24,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
 import { buildProductHubBoardAdapter } from '@/components/kanban/adapters/productHubBoardAdapter';
 import { ProductChromeBand } from '@/components/product-hub/ProductChromeBand';
@@ -155,7 +155,7 @@ export default function ProductHubKanbanPage() {
       qc.invalidateQueries({ queryKey: ['requests-backlog'] });
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : 'Failed to update request status');
+      catalystToast.error(err instanceof Error ? err.message : 'Failed to update request status');
     },
   });
 

@@ -13,7 +13,7 @@ import { PlanApproval, PlanStatus } from '@/types/testPlans';
 import { format } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface Props { planId: string; planStatus: PlanStatus; }
 
@@ -139,7 +139,7 @@ function DecisionModal({ open, onClose, approval, action, planId }: { open: bool
     if (action === 'approve') {
       await approve.mutateAsync({ approvalId: approval.id, planId, comments: comments || undefined });
     } else {
-      if (!comments.trim()) { toast.error('Please provide a reason for rejection'); return; }
+      if (!comments.trim()) { catalystToast.error('Please provide a reason for rejection'); return; }
       await reject.mutateAsync({ approvalId: approval.id, planId, comments });
     }
     setComments(''); onClose();

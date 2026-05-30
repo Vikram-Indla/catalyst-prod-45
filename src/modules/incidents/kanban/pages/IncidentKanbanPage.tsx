@@ -23,7 +23,7 @@ import { useIncidents, useUpdateIncident, useCreateIncident } from '@/hooks/useI
 import { useUserRole } from '@/hooks/useUserRole';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 import { KanbanColumn } from '../components/KanbanColumn';
 import { KanbanSwimlane } from '../components/KanbanSwimlane';
@@ -258,7 +258,7 @@ export default function IncidentKanbanPage() {
         return next;
       });
       
-      toast.success(`Moved to ${newStatus.replace('_', ' ')}`);
+      catalystToast.success(`Moved to ${newStatus.replace('_', ' ')}`);
     } catch (err: any) {
       setOptimisticUpdates(prev => {
         const next = { ...prev };
@@ -266,7 +266,7 @@ export default function IncidentKanbanPage() {
         return next;
       });
       
-      toast.error(`Failed to update status: ${err?.message || 'Unknown error'}`);
+      catalystToast.error(`Failed to update status: ${err?.message || 'Unknown error'}`);
     }
   }, [incidents, updateIncident]);
 
@@ -363,10 +363,10 @@ export default function IncidentKanbanPage() {
       queryClient.invalidateQueries({ queryKey: ['incidents'] });
       queryClient.invalidateQueries({ queryKey: ['incident-committee', incidentId] });
 
-      toast.success('Moved to Committee with approvers configured');
+      catalystToast.success('Moved to Committee with approvers configured');
     } catch (err: any) {
       console.error('Failed to set up committee:', err);
-      toast.error(`Failed to set up committee: ${err?.message || 'Unknown error'}`);
+      catalystToast.error(`Failed to set up committee: ${err?.message || 'Unknown error'}`);
       
       // Revert optimistic update on error
       setOptimisticUpdates(prev => {
@@ -488,10 +488,10 @@ export default function IncidentKanbanPage() {
       queryClient.invalidateQueries({ queryKey: ['incidents'] });
       queryClient.invalidateQueries({ queryKey: ['incident-committee', incident.id] });
 
-      toast.success('Committee updated');
+      catalystToast.success('Committee updated');
     } catch (err: any) {
       console.error('Failed to update committee:', err);
-      toast.error(`Failed to update committee: ${err?.message || 'Unknown error'}`);
+      catalystToast.error(`Failed to update committee: ${err?.message || 'Unknown error'}`);
     }
   }, [editingCommitteeIncident, queryClient]);
 
@@ -524,14 +524,14 @@ export default function IncidentKanbanPage() {
         target_date: formData.target_resolution_date,
       });
 
-      toast.success('Incident created successfully');
+      catalystToast.success('Incident created successfully');
       setCreateDialogOpen(false);
 
       if (result?.id) {
         navigate(`/release/incidents/${result.id}?created=true`);
       }
     } catch (error: any) {
-      toast.error(error?.message || 'Failed to create incident');
+      catalystToast.error(error?.message || 'Failed to create incident');
     }
   };
 

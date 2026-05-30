@@ -8,7 +8,7 @@ import TextArea from '@atlaskit/textarea';
 import Button from '@atlaskit/button/new';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -58,12 +58,12 @@ export function PermissionRoleDialog({ open, onOpenChange, role }: PermissionRol
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['permission-roles'] });
-      toast.success(isEditing ? 'Role updated successfully' : 'Role created successfully');
+      catalystToast.success(isEditing ? 'Role updated successfully' : 'Role created successfully');
       onOpenChange(false);
       form.reset();
     },
     onError: (error: Error) => {
-      toast.error(error.message);
+      catalystToast.error(error.message);
     },
   });
 

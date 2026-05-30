@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, ExternalLink, Trash2 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { Feature } from '@/types/feature.types';
 import { KnowledgeBaseCard } from '@/components/knowledge-hub/KnowledgeBaseCard';
 
@@ -25,7 +25,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
 
   const handleAddLink = () => {
     if (!newLink.title || !newLink.url) {
-      toast.error('Please provide both title and URL');
+      catalystToast.error('Please provide both title and URL');
       return;
     }
 
@@ -35,12 +35,12 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
     }]);
 
     setNewLink({ title: '', url: '', type: 'documentation' });
-    toast.success('Link added');
+    catalystToast.success('Link added');
   };
 
   const handleDeleteLink = (linkId: string) => {
     setLinks(prev => prev.filter(l => l.id !== linkId));
-    toast.success('Link removed');
+    catalystToast.success('Link removed');
   };
 
   return (

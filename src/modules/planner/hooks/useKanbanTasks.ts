@@ -6,7 +6,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { KanbanTask, KanbanTaskFilters } from '../types/kanban';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useEffect } from 'react';
 
 const QUERY_KEY = ['kanban-tasks'];
@@ -158,10 +158,10 @@ export function useCreateKanbanTask() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
-      toast.success('Task created successfully');
+      catalystToast.success('Task created successfully');
     },
     onError: (error) => {
-      toast.error('Failed to create task: ' + error.message);
+      catalystToast.error('Failed to create task: ' + error.message);
     },
   });
 }
@@ -205,7 +205,7 @@ export function useUpdateKanbanTask() {
       context?.previous?.forEach(([key, data]) => {
         queryClient.setQueryData(key, data);
       });
-      toast.error('Failed to update task');
+      catalystToast.error('Failed to update task');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
@@ -241,10 +241,10 @@ export function useDeleteKanbanTask() {
       if (context?.previous) {
         queryClient.setQueryData(QUERY_KEY, context.previous);
       }
-      toast.error('Failed to delete task');
+      catalystToast.error('Failed to delete task');
     },
     onSuccess: () => {
-      toast.success('Task deleted');
+      catalystToast.success('Task deleted');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
@@ -335,7 +335,7 @@ export function useMoveKanbanTask() {
       if (context?.previousTasks) {
         queryClient.setQueryData(QUERY_KEY, context.previousTasks);
       }
-      toast.error('Failed to move task');
+      catalystToast.error('Failed to move task');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });

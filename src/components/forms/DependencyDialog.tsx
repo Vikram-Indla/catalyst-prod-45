@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const formSchema = z.object({
   from_feature_id: z.string().min(1, 'Source feature is required'),
@@ -121,12 +121,12 @@ export function DependencyDialog({ open, onClose, dependencyId }: DependencyDial
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dependencies'] });
       queryClient.invalidateQueries({ queryKey: ['all-dependencies'] });
-      toast.success(isEdit ? 'Dependency updated' : 'Dependency created');
+      catalystToast.success(isEdit ? 'Dependency updated' : 'Dependency created');
       onClose();
       form.reset();
     },
     onError: (error) => {
-      toast.error(`Failed to ${isEdit ? 'update' : 'create'} dependency: ${error.message}`);
+      catalystToast.error(`Failed to ${isEdit ? 'update' : 'create'} dependency: ${error.message}`);
     },
   });
 

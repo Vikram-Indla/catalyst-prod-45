@@ -44,7 +44,7 @@ import { Risk, RiskFormData, RoamStatus, RiskStatus, SeverityLevel, YesNo } from
 import { RiskFormV2, RiskFormDataV2 } from './shared/RiskFormV2';
 import { RiskLinksTab } from './drawer-tabs/RiskLinksTab';
 import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -125,7 +125,7 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
     setHasChanges(false);
     setIsEditing(false);
     queryClient.invalidateQueries({ queryKey: ['risks'] });
-    toast.success('Risk saved');
+    catalystToast.success('Risk saved');
   };
 
   const handleAttemptClose = () => {
@@ -160,14 +160,14 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
     
     onUpdate({ id: risk.id, ...formData });
     queryClient.invalidateQueries({ queryKey: ['risks'] });
-    toast.success('Risk saved');
+    catalystToast.success('Risk saved');
   };
 
   // Copy link handler
   const handleCopyLink = () => {
     const url = `${window.location.origin}/enterprise/risks?riskId=${risk?.id}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
   };
 
   // Edit name handlers

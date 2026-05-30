@@ -9,7 +9,7 @@ import DragHandlerIcon from '@atlaskit/icon/glyph/drag-handler';
 import TrashIcon from '@atlaskit/icon/glyph/trash';
 import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
 import { useState, useMemo } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   Dialog,
   DialogContent,
@@ -109,7 +109,7 @@ export default function ThemeStatuses() {
     });
 
     if (changedStatuses.length === 0) {
-      toast.info('No changes to save');
+      catalystToast.info('No changes to save');
       return;
     }
 
@@ -121,9 +121,9 @@ export default function ThemeStatuses() {
         )
       );
       setPendingColors({});
-      toast.success('Color settings saved and applied across the application');
+      catalystToast.success('Color settings saved and applied across the application');
     } catch (error) {
-      toast.error('Failed to save color settings');
+      catalystToast.error('Failed to save color settings');
     } finally {
       setIsSaving(false);
     }

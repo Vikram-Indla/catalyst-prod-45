@@ -26,7 +26,7 @@ import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, parseISO } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 
 // Quarter options matching the create form format (with hyphens)
@@ -73,7 +73,7 @@ function PriorityDropdown({ value, locked = true }: { value: string; locked?: bo
     <div 
       className="h-9 px-3 rounded-md flex items-center justify-between border cursor-pointer"
       style={{ backgroundColor: 'var(--surface-2)', borderColor: 'var(--divider)' }}
-      onClick={() => locked && toast.info('Priority is auto-calculated from the Scoring tab')}
+      onClick={() => locked && catalystToast.info('Priority is auto-calculated from the Scoring tab')}
     >
       <div className="flex items-center gap-2">
         <div className={cn('w-2 h-2 rounded-full', priorityInfo.color)} />
@@ -131,7 +131,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
     } catch (error) {
       console.error('[DemandDetailsViewTab] Auto-save failed:', error);
       pendingChangesRef.current = { ...changesToSave, ...pendingChangesRef.current };
-      toast.error('Auto-save failed. Changes will be retried.');
+      catalystToast.error('Auto-save failed. Changes will be retried.');
     } finally {
       setIsSaving(false);
     }

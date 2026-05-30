@@ -4,7 +4,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { BulkUpdateParams, CycleAssignment } from '@/types/assignment-table.types';
 import { cycleListKeys } from './useTestCycleList';
 
@@ -71,13 +71,13 @@ export function useBulkActions(cycleId: string) {
       if (context?.previousData) {
         queryClient.setQueryData(['assignment-table', cycleId], context.previousData);
       }
-      toast.error('Failed to update');
+      catalystToast.error('Failed to update');
     },
     onSuccess: (_, { ids }) => {
       queryClient.invalidateQueries({ queryKey: ['cycle-test-cases', cycleId] });
       queryClient.invalidateQueries({ queryKey: ['cycle-details', cycleId] });
       queryClient.invalidateQueries({ queryKey: cycleListKeys.all });
-      toast.success(`Updated ${ids.length} tests`);
+      catalystToast.success(`Updated ${ids.length} tests`);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['assignment-table', cycleId] });
@@ -113,13 +113,13 @@ export function useBulkActions(cycleId: string) {
       if (context?.previousData) {
         queryClient.setQueryData(['assignment-table', cycleId], context.previousData);
       }
-      toast.error('Failed to remove tests');
+      catalystToast.error('Failed to remove tests');
     },
     onSuccess: (ids) => {
       queryClient.invalidateQueries({ queryKey: ['cycle-test-cases', cycleId] });
       queryClient.invalidateQueries({ queryKey: ['cycle-details', cycleId] });
       queryClient.invalidateQueries({ queryKey: cycleListKeys.all });
-      toast.success(`Removed ${ids.length} tests from cycle`);
+      catalystToast.success(`Removed ${ids.length} tests from cycle`);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['assignment-table', cycleId] });

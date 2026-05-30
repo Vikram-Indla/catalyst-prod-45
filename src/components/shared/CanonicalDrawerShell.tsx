@@ -47,7 +47,7 @@ import {
   ChevronDown,
   MoreVertical,
 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface DrawerTab {
   value: string;
@@ -147,7 +147,7 @@ export function CanonicalDrawerShell({
   const handleCopyLink = () => {
     const url = `${window.location.origin}/${entityType}/${entityId}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
   };
 
   // Edit name handlers

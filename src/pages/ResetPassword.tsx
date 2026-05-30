@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { KeyRound, Loader2, AlertCircle, CheckCircle2, Eye, EyeOff } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 type PageState = 'loading' | 'valid' | 'invalid' | 'success';
 
@@ -123,7 +123,7 @@ export default function ResetPassword() {
       }
 
       setPageState('success');
-      toast.success('Password updated successfully');
+      catalystToast.success('Password updated successfully');
     } catch (err) {
       console.error('Error updating password:', err);
       setError((err as Error).message || 'Failed to update password. Please try again.');

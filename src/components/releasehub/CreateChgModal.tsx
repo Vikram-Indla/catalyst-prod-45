@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, ChevronDown, CalendarIcon } from '@/lib/atlaskit-icons';
 import { RH, CATEGORIES } from '@/constants/releasehub.design';
 import { useCreateChange, useReleases } from '@/hooks/useReleaseHub';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -32,8 +32,8 @@ export function CreateChgModal({ onClose }: Props) {
       risk_level: 'standard',
       source: 'catalyst',
     }, {
-      onSuccess: () => { toast.success('Change created'); onClose(); },
-      onError: (err: any) => { setError(err.message || 'Failed to create change'); toast.error('Failed to create change'); },
+      onSuccess: () => { catalystToast.success('Change created'); onClose(); },
+      onError: (err: any) => { setError(err.message || 'Failed to create change'); catalystToast.error('Failed to create change'); },
     });
   };
 

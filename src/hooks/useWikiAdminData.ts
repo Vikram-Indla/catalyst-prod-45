@@ -3,7 +3,7 @@
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Helper: typed query on tables/views not yet in generated types
 const fromAny = (table: string) => typedQuery(table);
@@ -307,12 +307,12 @@ export function useTriggerSync() {
       return run;
     },
     onSuccess: () => {
-      toast.success('Wiki sync completed');
+      catalystToast.success('Wiki sync completed');
       qc.invalidateQueries({ queryKey: ['wiki-sync-runs'] });
       qc.invalidateQueries({ queryKey: ['wiki-admin-stats'] });
     },
     onError: (err: Error) => {
-      toast.error(`Sync failed: ${err.message}`);
+      catalystToast.error(`Sync failed: ${err.message}`);
       qc.invalidateQueries({ queryKey: ['wiki-sync-runs'] });
     },
   });
@@ -329,11 +329,11 @@ export function useRegeneratePage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Page regeneration started');
+      catalystToast.success('Page regeneration started');
       qc.invalidateQueries({ queryKey: ['wiki-page-admin-list'] });
     },
     onError: (err: Error) => {
-      toast.error(`Regeneration failed: ${err.message}`);
+      catalystToast.error(`Regeneration failed: ${err.message}`);
     },
   });
 }
@@ -349,12 +349,12 @@ export function useUpdatePageStatus() {
       if (error) throw error;
     },
     onSuccess: (_data, variables) => {
-      toast.success(`Page status → ${variables.status}`);
+      catalystToast.success(`Page status → ${variables.status}`);
       qc.invalidateQueries({ queryKey: ['wiki-page-admin-list'] });
       qc.invalidateQueries({ queryKey: ['wiki-admin-stats'] });
     },
     onError: (err: Error) => {
-      toast.error(`Status update failed: ${err.message}`);
+      catalystToast.error(`Status update failed: ${err.message}`);
     },
   });
 }
@@ -370,11 +370,11 @@ export function useReembedDocument() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Re-embedding started');
+      catalystToast.success('Re-embedding started');
       qc.invalidateQueries({ queryKey: ['wiki-admin-documents'] });
     },
     onError: (err: Error) => {
-      toast.error(`Re-embed failed: ${err.message}`);
+      catalystToast.error(`Re-embed failed: ${err.message}`);
     },
   });
 }
@@ -396,12 +396,12 @@ export function useDeleteDocument() {
       if (embErr) console.warn('Embedding cleanup warning:', embErr.message);
     },
     onSuccess: () => {
-      toast.success('Document deleted');
+      catalystToast.success('Document deleted');
       qc.invalidateQueries({ queryKey: ['wiki-admin-documents'] });
       qc.invalidateQueries({ queryKey: ['wiki-admin-stats'] });
     },
     onError: (err: Error) => {
-      toast.error(`Delete failed: ${err.message}`);
+      catalystToast.error(`Delete failed: ${err.message}`);
     },
   });
 }
@@ -421,7 +421,7 @@ export function useUpdateAccess() {
       qc.invalidateQueries({ queryKey: ['wiki-access-matrix'] });
     },
     onError: (err: Error) => {
-      toast.error(`Access update failed: ${err.message}`);
+      catalystToast.error(`Access update failed: ${err.message}`);
     },
   });
 }

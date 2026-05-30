@@ -6,7 +6,7 @@
 import React, { useState, useCallback } from 'react';
 import { typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { WorkflowScheme, WorkflowStatus, WorkflowTransition } from '@/hooks/useCatalystWorkflow';
 import { cn } from '@/lib/utils';
 import AddIcon from '@atlaskit/icon/core/add';
@@ -79,9 +79,9 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
       if (error) throw error;
       setNewStatusName('');
       invalidateAll();
-      toast.success(`Status "${newStatusName.trim()}" added`);
+      catalystToast.success(`Status "${newStatusName.trim()}" added`);
     } catch (e: any) {
-      toast.error(e.message || 'Failed to add status');
+      catalystToast.error(e.message || 'Failed to add status');
     } finally {
       setAdding(false);
     }
@@ -96,9 +96,9 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
         .eq('id', deleteTarget.id);
       if (error) throw error;
       invalidateAll();
-      toast.success(`Status "${deleteTarget.name}" removed`);
+      catalystToast.success(`Status "${deleteTarget.name}" removed`);
     } catch (e: any) {
-      toast.error(e.message || 'Failed to delete status');
+      catalystToast.error(e.message || 'Failed to delete status');
     } finally {
       setDeleteTarget(null);
     }
@@ -113,7 +113,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
       if (error) throw error;
       invalidateAll();
     } catch (e: any) {
-      toast.error(e.message || 'Failed to update category');
+      catalystToast.error(e.message || 'Failed to update category');
     }
   }
 
@@ -128,7 +128,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
       setEditingId(null);
       invalidateAll();
     } catch (e: any) {
-      toast.error(e.message || 'Failed to rename');
+      catalystToast.error(e.message || 'Failed to rename');
     }
   }
 
@@ -146,7 +146,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
       if (error) throw error;
       invalidateAll();
     } catch (e: any) {
-      toast.error(e.message || 'Failed to update WIP limit');
+      catalystToast.error(e.message || 'Failed to update WIP limit');
     }
   }
 
@@ -162,7 +162,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
       if (error) throw error;
       invalidateAll();
     } catch (e: any) {
-      toast.error(e.message || 'Failed to toggle active');
+      catalystToast.error(e.message || 'Failed to toggle active');
     }
   }
 
@@ -184,7 +184,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
       if (error) throw error;
       invalidateAll();
     } catch (e: any) {
-      toast.error(e.message || 'Failed to update aliases');
+      catalystToast.error(e.message || 'Failed to update aliases');
     }
   }
 
@@ -216,7 +216,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
       }
       invalidateAll();
     } catch (e: any) {
-      toast.error(e.message || 'Failed to update transition');
+      catalystToast.error(e.message || 'Failed to update transition');
     }
   }
 
@@ -242,7 +242,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
       if (error) throw error;
       invalidateAll();
     } catch (e: any) {
-      toast.error(e.message || 'Failed to update flag');
+      catalystToast.error(e.message || 'Failed to update flag');
     }
   }
 

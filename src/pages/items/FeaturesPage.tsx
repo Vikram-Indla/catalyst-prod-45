@@ -20,7 +20,7 @@ import { FeatureToolbar } from '@/components/items/features/FeatureToolbar';
 import { FeatureTable } from '@/components/items/features/FeatureTable';
 import { FeatureMassMoveDialog } from '@/components/items/features/FeatureMassMoveDialog';
 import { Search, Plus } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { Feature } from '@/types/feature.types';
 
 export default function FeaturesPage() {
@@ -109,9 +109,9 @@ export default function FeaturesPage() {
       link.download = 'features-export.csv';
       link.click();
       
-      toast.success('Features exported');
+      catalystToast.success('Features exported');
     } else {
-      toast.error('No features to export');
+      catalystToast.error('No features to export');
     }
   };
 
@@ -173,7 +173,7 @@ export default function FeaturesPage() {
                 navigate(`/features?featureId=${id}`);
               }}
               onSortChange={(column, direction) => {
-                toast.info(`Sorting by ${column} ${direction}`);
+                catalystToast.info(`Sorting by ${column} ${direction}`);
               }}
             />
           </div>

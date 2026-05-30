@@ -6,7 +6,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { myTasksKeys } from './useMyTasks';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useAuth } from '@/hooks/useAuth';
 
 interface UncompleteTaskParams {
@@ -53,11 +53,11 @@ export function useUncompleteMyTask() {
     },
 
     onSuccess: () => {
-      toast.success('Task restored');
+      catalystToast.success('Task restored');
     },
 
     onError: () => {
-      toast.error('Failed to restore task');
+      catalystToast.error('Failed to restore task');
     },
 
     onSettled: () => {

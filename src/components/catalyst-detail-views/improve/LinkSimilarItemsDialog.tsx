@@ -23,7 +23,7 @@ import Button from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import { token } from '@atlaskit/tokens';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { improveTriggerLabel } from './improve-config';
 
@@ -130,10 +130,10 @@ export function LinkSimilarItemsDialog({
       });
       if (insertErr) throw new Error(insertErr.message);
       setLinkedThisSession((prev) => new Set(prev).add(target.issue_key));
-      toast.success(`Linked ${target.issue_key}`);
+      catalystToast.success(`Linked ${target.issue_key}`);
       if (onLinked) onLinked();
     } catch (e) {
-      toast.error('Failed to link', { description: e instanceof Error ? e.message : 'Unknown error' });
+      catalystToast.error('Failed to link');
     } finally {
       setLinking(null);
     }

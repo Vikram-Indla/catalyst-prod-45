@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';
 import { Search, RotateCcw, Trash2, ArrowLeft } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useNavigate } from 'react-router-dom';
 import {
   AlertDialog,
@@ -56,10 +56,10 @@ export default function EpicsRecycleBinPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['deleted-epics'] });
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('Epic restored successfully');
+      catalystToast.success('Epic restored successfully');
     },
     onError: () => {
-      toast.error('Failed to restore epic');
+      catalystToast.error('Failed to restore epic');
     },
   });
 
@@ -73,11 +73,11 @@ export default function EpicsRecycleBinPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['deleted-epics'] });
-      toast.success('Epic permanently deleted');
+      catalystToast.success('Epic permanently deleted');
       setConfirmDelete(null);
     },
     onError: () => {
-      toast.error('Failed to delete epic permanently');
+      catalystToast.error('Failed to delete epic permanently');
       setConfirmDelete(null);
     },
   });

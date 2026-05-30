@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 
 // Real hooks
@@ -77,7 +77,7 @@ export function TestCaseLinksAttachments({ testCaseId }: TestCaseLinksAttachment
 
   const handleAddLink = () => {
     if (!externalKey.trim()) {
-      toast.error('Please enter an ID/key');
+      catalystToast.error('Please enter an ID/key');
       return;
     }
 
@@ -95,10 +95,10 @@ export function TestCaseLinksAttachments({ testCaseId }: TestCaseLinksAttachment
           setExternalKey('');
           setExternalTitle('');
           setExternalUrl('');
-          toast.success('Link added successfully');
+          catalystToast.success('Link added successfully');
         },
         onError: (error) => {
-          toast.error(`Failed to add link: ${error.message}`);
+          catalystToast.error(`Failed to add link: ${error.message}`);
         },
       }
     );
@@ -109,10 +109,10 @@ export function TestCaseLinksAttachments({ testCaseId }: TestCaseLinksAttachment
       { linkId: link.id, caseId: testCaseId },
       {
         onSuccess: () => {
-          toast.success('Link removed');
+          catalystToast.success('Link removed');
         },
         onError: (error) => {
-          toast.error(`Failed to remove link: ${error.message}`);
+          catalystToast.error(`Failed to remove link: ${error.message}`);
         },
       }
     );

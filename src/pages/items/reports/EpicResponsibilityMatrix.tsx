@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Lozenge } from '@/components/ads';
 import { ArrowLeft, Plus, Trash2, Save, Users } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   Select,
   SelectContent,
@@ -92,7 +92,7 @@ export default function EpicResponsibilityMatrix() {
   const handleSave = () => {
     // TODO (needs confirmation): Persist RACI matrix to database
     // Document doesn't specify exact storage mechanism
-    toast.success('Responsibility Matrix saved');
+    catalystToast.success('Responsibility Matrix saved');
   };
 
   if (isLoading) {

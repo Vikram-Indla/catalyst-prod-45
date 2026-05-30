@@ -9,7 +9,7 @@
  */
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 /* jira-compare 2026-05-03 — Patch D3 (lucide sweep) ·
    Trash2  → @atlaskit/icon/core/delete
@@ -184,7 +184,7 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
     const validationErr = validateFile(file);
     if (validationErr) {
       setUploads(u => [...u, { id, fileName: file.name, pct: 0, status: 'error', error: validationErr }]);
-      toast.error(validationErr);
+      catalystToast.error(validationErr);
       return;
     }
 
@@ -227,7 +227,7 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Upload failed';
       setUploads(u => u.map(x => x.id === id ? { ...x, status: 'error', error: msg } : x));
-      toast.error(`Failed: ${file.name} — ${msg}`);
+      catalystToast.error(`Failed: ${file.name} — ${msg}`);
     }
   }, [itemId, userId, invalidate]);
 
@@ -283,10 +283,10 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
         if (error) throw error;
         if (data && (data as any).error) throw new Error((data as any).error);
       }
-      toast.success('Attachment deleted');
+      catalystToast.success('Attachment deleted');
       invalidate();
     } catch (e) {
-      toast.error(`Delete failed: ${e instanceof Error ? e.message : 'Unknown'}`);
+      catalystToast.error(`Delete failed: ${e instanceof Error ? e.message : 'Unknown'}`);
     }
   }, [pendingDelete, invalidate, source, BUCKET, ATTACHMENTS_TABLE]);
 
@@ -323,9 +323,9 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
       a.click();
       a.remove();
       URL.revokeObjectURL(objectUrl);
-      toast.success('Download ready');
+      catalystToast.success('Download ready');
     } catch (e) {
-      toast.error(`Download all failed: ${e instanceof Error ? e.message : 'Unknown'}`);
+      catalystToast.error(`Download all failed: ${e instanceof Error ? e.message : 'Unknown'}`);
     } finally {
       setZipping(false);
     }

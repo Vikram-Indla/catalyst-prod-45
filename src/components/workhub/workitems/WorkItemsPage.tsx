@@ -6,7 +6,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { RefreshCw, Loader2, ChevronLeft, ChevronRight, Download, History, SlidersHorizontal } from '@/lib/atlaskit-icons';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useWorkItems } from '@/hooks/workhub/useWorkItems';
 import type { WorkItemFilterConfig, PaginationConfig, JiraIssue } from '@/hooks/workhub/useWorkItems';
 import { WorkItemFilters } from './WorkItemFilters';
@@ -122,7 +122,7 @@ export function WorkItemsPage() {
   const handleExport = useCallback(() => {
     if (items.length === 0) return;
     exportWorkItemsCSV(items);
-    toast.success(`Exported ${items.length} items to CSV`);
+    catalystToast.success(`Exported ${items.length} items to CSV`);
   }, [items]);
 
   const pageStart = currentPage * PAGE_SIZE + 1;

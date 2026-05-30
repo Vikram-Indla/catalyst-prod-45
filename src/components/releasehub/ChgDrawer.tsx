@@ -10,7 +10,7 @@ import { ChgGateModal } from './ChgGateModal';
 import { useUpdateChangeStatus, useChangeSignoffs, useChangeHistory, useApproveSignoff, useRejectSignoff, useLinkWorkItem } from '@/hooks/useReleaseHub';
 import { getSignoffWaitTime } from '@/utils/releasehub.utils';
 import { differenceInHours, format } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { ChangeStatus } from '@/types/releasehub';
 
 interface Props {
@@ -43,8 +43,8 @@ export function ChgDrawer({ change: c, onClose }: Props) {
       }
     }
     updateStatus.mutate({ id: c.id, status: newStatus }, {
-      onSuccess: () => toast.success(`Status updated to ${CHG_STATUS_LABELS[newStatus]}`),
-      onError: (err: any) => toast.error(err.message || 'Failed to update status'),
+      onSuccess: () => catalystToast.success(`Status updated to ${CHG_STATUS_LABELS[newStatus]}`),
+      onError: (err: any) => catalystToast.error(err.message || 'Failed to update status'),
     });
   };
 
@@ -203,7 +203,7 @@ function WorkItemsTab({ workItems, changeId }: { workItems: any[]; changeId: str
   const handleLink = () => {
     if (!key || !title) return;
     linkWorkItem.mutate({ changeId, workItem: { work_item_key: key, work_item_title: title, work_item_type: 'story', work_item_status: 'todo' } }, {
-      onSuccess: () => { setShowLink(false); setKey(''); setTitle(''); toast.success('Work item linked'); },
+      onSuccess: () => { setShowLink(false); setKey(''); setTitle(''); catalystToast.success('Work item linked'); },
     });
   };
 
@@ -278,10 +278,10 @@ function SignoffsTab({ changeId }: { changeId: string }) {
             </div>
             {signoff && status === 'pending' && (
               <div className="flex items-center gap-2">
-                <button onClick={() => approveSignoff.mutate({ signoffId: signoff.id }, { onSuccess: () => toast.success('Approved') })}
+                <button onClick={() => approveSignoff.mutate({ signoffId: signoff.id }, { onSuccess: () => catalystToast.success('Approved') })}
                   disabled={approveSignoff.isPending}
                   className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white text-[11px] font-bold hover:bg-[#004D33] disabled:opacity-50">Approve</button>
-                <button onClick={() => rejectSignoff.mutate({ signoffId: signoff.id, comment: 'Rejected' }, { onSuccess: () => toast.success('Rejected') })}
+                <button onClick={() => rejectSignoff.mutate({ signoffId: signoff.id, comment: 'Rejected' }, { onSuccess: () => catalystToast.success('Rejected') })}
                   disabled={rejectSignoff.isPending}
                   className="h-7 px-3 rounded border border-[var(--ds-border-danger,#FCA5A5)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)] disabled:opacity-50">Reject</button>
               </div>

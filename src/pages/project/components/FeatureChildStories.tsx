@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Link2, Plus, AlertTriangle, X, Loader2 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   Dialog,
   DialogContent,
@@ -171,13 +171,13 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
       queryClient.invalidateQueries({ queryKey: ['feature-stories-with-assignees', featureId] });
       queryClient.invalidateQueries({ queryKey: ['feature-view', featureId] });
       queryClient.invalidateQueries({ queryKey: ['work-items'] });
-      toast.success('Story created');
+      catalystToast.success('Story created');
       resetAddForm();
       setAddStoryOpen(false);
       onUpdated?.();
     },
     onError: (error: any) => {
-      toast.error('Failed to create story', { description: error.message });
+      catalystToast.error('Failed to create story');
     },
   });
 
@@ -197,13 +197,13 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
       queryClient.invalidateQueries({ queryKey: ['feature-view', featureId] });
       queryClient.invalidateQueries({ queryKey: ['work-items'] });
       queryClient.invalidateQueries({ queryKey: ['unlinked-stories'] });
-      toast.success('Stories linked');
+      catalystToast.success('Stories linked');
       setSelectedStoryIds([]);
       setLinkExistingOpen(false);
       onUpdated?.();
     },
     onError: (error: any) => {
-      toast.error('Failed to link stories', { description: error.message });
+      catalystToast.error('Failed to link stories');
     },
   });
 

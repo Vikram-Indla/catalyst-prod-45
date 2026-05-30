@@ -17,7 +17,7 @@ import {
   WorkloadTrendChart,
 } from '@/components/workload';
 import type { WorkloadFilters, WorkloadAlert } from '@/types/workload.types';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export default function WorkloadDashboard() {
   const [filters, setFilters] = useState<WorkloadFilters>({
@@ -34,15 +34,15 @@ export default function WorkloadDashboard() {
   };
 
   const handleAlertAction = (alert: WorkloadAlert) => {
-    toast.info(`Action: ${alert.actionLabel} for ${alert.memberName || 'team'}`);
+    catalystToast.info(`Action: ${alert.actionLabel} for ${alert.memberName || 'team'}`);
   };
 
   const handleReassign = (memberId: string) => {
-    toast.info('Opening reassign dialog...');
+    catalystToast.info('Opening reassign dialog...');
   };
 
   const handleViewDetails = (memberId: string) => {
-    toast.info('Opening test details...');
+    catalystToast.info('Opening test details...');
   };
 
   return (

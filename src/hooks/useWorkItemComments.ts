@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface Comment {
   id: string;
@@ -87,10 +87,10 @@ export function useWorkItemComments(entityType: string, entityId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-comments', entityType, entityId] });
-      toast.success('Comment added');
+      catalystToast.success('Comment added');
     },
     onError: () => {
-      toast.error('Failed to add comment');
+      catalystToast.error('Failed to add comment');
     },
   });
 
@@ -106,10 +106,10 @@ export function useWorkItemComments(entityType: string, entityId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-comments', entityType, entityId] });
-      toast.success('Comment updated');
+      catalystToast.success('Comment updated');
     },
     onError: () => {
-      toast.error('Failed to update comment');
+      catalystToast.error('Failed to update comment');
     },
   });
 
@@ -125,10 +125,10 @@ export function useWorkItemComments(entityType: string, entityId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-comments', entityType, entityId] });
-      toast.success('Comment deleted');
+      catalystToast.success('Comment deleted');
     },
     onError: () => {
-      toast.error('Failed to delete comment');
+      catalystToast.error('Failed to delete comment');
     },
   });
 

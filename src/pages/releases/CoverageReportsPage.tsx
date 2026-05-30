@@ -9,7 +9,7 @@
 import React, { useState, useMemo } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -668,7 +668,7 @@ export default function CoverageReportsPage() {
   
   const handleViewRequirement = (reqId: string) => {
     // Navigate to requirement detail - using a toast for now as specific route may vary
-    toast.info(`Navigating to requirement ${reqId}`);
+    catalystToast.info(`Navigating to requirement ${reqId}`);
     navigate(`/releases/${selectedRelease}/requirements?id=${reqId}`);
   };
   
@@ -678,7 +678,7 @@ export default function CoverageReportsPage() {
   
   const handleCoverageRefresh = () => {
     // In real implementation, refetch coverage data
-    toast.success('Coverage data refreshed');
+    catalystToast.success('Coverage data refreshed');
   };
 
   return (

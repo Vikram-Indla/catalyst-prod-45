@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { X, Puzzle } from '@/lib/atlaskit-icons';
 
 const MAX_COMPONENTS = 30;
@@ -38,11 +38,11 @@ export function ComponentsTab({ projectId }: ComponentsTabProps) {
         .from('ph_components')
         .insert({ project_id: projectId, name: newName.trim() });
       if (error) throw new Error(error.message);
-      toast.success('Component added');
+      catalystToast.success('Component added');
       setNewName('');
       queryClient.invalidateQueries({ queryKey });
     } catch (err: any) {
-      toast.error(err.message || 'Failed to add component');
+      catalystToast.error(err.message || 'Failed to add component');
     }
   };
 
@@ -52,7 +52,7 @@ export function ComponentsTab({ projectId }: ComponentsTabProps) {
       if (error) throw new Error(error.message);
       queryClient.invalidateQueries({ queryKey });
     } catch (err: any) {
-      toast.error(err.message || 'Failed to delete component');
+      catalystToast.error(err.message || 'Failed to delete component');
     }
   };
 

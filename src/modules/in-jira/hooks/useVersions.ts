@@ -6,7 +6,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface Version {
   id: string;
@@ -193,10 +193,10 @@ export function useVersions(projectId: string | null | undefined) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['injira-versions', projectId] });
-      toast.success('Version created successfully');
+      catalystToast.success('Version created successfully');
     },
     onError: (error) => {
-      toast.error(`Failed to create version: ${error.message}`);
+      catalystToast.error(`Failed to create version: ${error.message}`);
     },
   });
 
@@ -223,10 +223,10 @@ export function useVersions(projectId: string | null | undefined) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['injira-versions', projectId] });
-      toast.success('Version updated successfully');
+      catalystToast.success('Version updated successfully');
     },
     onError: (error) => {
-      toast.error(`Failed to update version: ${error.message}`);
+      catalystToast.error(`Failed to update version: ${error.message}`);
     },
   });
 
@@ -273,10 +273,10 @@ export function useVersions(projectId: string | null | undefined) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['injira-versions', projectId] });
-      toast.success('Version deleted successfully');
+      catalystToast.success('Version deleted successfully');
     },
     onError: (error) => {
-      toast.error(`Failed to delete version: ${error.message}`);
+      catalystToast.error(`Failed to delete version: ${error.message}`);
     },
   });
 

@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { CollapsibleSection } from './CollapsibleSection';
 import { StatusLozenge } from './StatusLozenge';
 import { Plus, Search, X, Link as LinkIcon, Check } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const TYPE_COLORS: Record<string, string> = {
   Epic: 'var(--cp-purple-60, #7C3AED)', Feature: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', Story: 'var(--cp-teal-60, #0D9488)',
@@ -145,10 +145,10 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
         created_by: user.id,
       });
       if (error) throw new Error(error.message);
-      toast.success('Link created');
+      catalystToast.success('Link created');
       onCreated();
     } catch (e: any) {
-      toast.error(e.message);
+      catalystToast.error(e.message);
     } finally {
       setSubmitting(false);
     }

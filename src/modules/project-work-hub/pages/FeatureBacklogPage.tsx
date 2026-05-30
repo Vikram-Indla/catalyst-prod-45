@@ -11,7 +11,7 @@ import { CreateFeatureDialog } from '../components/dialogs/CreateFeatureDialog';
 import { EditFeatureDialog } from '../components/dialogs/EditFeatureDialog';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Layers } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 import type { BacklogFeature } from '../types/backlog.types';
@@ -38,10 +38,10 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-features', projectId] });
-      toast.success('Feature archived successfully');
+      catalystToast.success('Feature archived successfully');
       setDeleteTarget(null);
     },
-    onError: () => toast.error('Failed to archive feature'),
+    onError: () => catalystToast.error('Failed to archive feature'),
   });
 
   const toggleGroup = (status: string) => setCollapsed(prev => ({ ...prev, [status]: !prev[status] }));

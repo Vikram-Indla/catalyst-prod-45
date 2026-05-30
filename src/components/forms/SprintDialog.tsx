@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface SprintDialogProps {
   open: boolean;
@@ -59,18 +59,18 @@ export function SprintDialog({ open, onOpenChange, sprint }: SprintDialogProps) 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['iterations'] });
       queryClient.invalidateQueries({ queryKey: ['sprints'] });
-      toast.success(sprint ? 'Release updated' : 'Release created');
+      catalystToast.success(sprint ? 'Release updated' : 'Release created');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to save release');
+      catalystToast.error('Failed to save release');
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!piId || !startDate || !endDate) {
-      toast.error('Please fill all required fields');
+      catalystToast.error('Please fill all required fields');
       return;
     }
     mutation.mutate({

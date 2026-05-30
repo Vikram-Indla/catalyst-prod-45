@@ -14,7 +14,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { Plus, Trash2 } from '@/lib/atlaskit-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { typedQuery, supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface SubtaskRow {
   id: string;
@@ -71,7 +71,7 @@ export function RequestSubtasksSection({ requestId }: Props) {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: QK(requestId) }),
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Could not add subtask'),
+    onError: (e) => catalystToast.error(e instanceof Error ? e.message : 'Could not add subtask'),
   });
 
   // ── Toggle done ──
@@ -83,7 +83,7 @@ export function RequestSubtasksSection({ requestId }: Props) {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: QK(requestId) }),
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Could not update subtask'),
+    onError: (e) => catalystToast.error(e instanceof Error ? e.message : 'Could not update subtask'),
   });
 
   // ── Delete ──
@@ -95,7 +95,7 @@ export function RequestSubtasksSection({ requestId }: Props) {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: QK(requestId) }),
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Could not delete subtask'),
+    onError: (e) => catalystToast.error(e instanceof Error ? e.message : 'Could not delete subtask'),
   });
 
   const handleSubmitDraft = useCallback(() => {

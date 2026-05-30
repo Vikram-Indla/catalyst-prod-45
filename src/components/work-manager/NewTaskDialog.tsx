@@ -2,7 +2,7 @@
 // Dialog for creating a new task
 
 import { useEffect, useMemo, useState } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   Dialog,
   DialogContent,
@@ -77,11 +77,11 @@ export function NewTaskDialog({ open, onOpenChange, onCreateTask, teams, users }
 
     if (!title.trim()) return;
     if (!teamId) {
-      toast.error('Please select a team');
+      catalystToast.error('Please select a team');
       return;
     }
     if (!teamMembers.length) {
-      toast.error('This team has no members to assign');
+      catalystToast.error('This team has no members to assign');
       return;
     }
 

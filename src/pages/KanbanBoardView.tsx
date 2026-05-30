@@ -39,7 +39,7 @@
  */
 import { useCallback, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   useKanbanBoard,
   useKanbanColumns,
@@ -102,7 +102,7 @@ export default function KanbanBoardView() {
       try {
         await moveCard.mutateAsync({ card_id: cardId, to_column_id: toColumnId });
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Failed to move card');
+        catalystToast.error(err instanceof Error ? err.message : 'Failed to move card');
       }
     },
     [moveCard],
@@ -130,9 +130,9 @@ export default function KanbanBoardView() {
           swim_lane_id: null,
           sort_order: 0,
         });
-        toast.success('Card added to board');
+        catalystToast.success('Card added to board');
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Failed to add card');
+        catalystToast.error(err instanceof Error ? err.message : 'Failed to add card');
       }
     },
     [boardId, addCard],

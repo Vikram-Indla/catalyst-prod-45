@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { CatyConversation, CatyMessage } from '@/types/caty-ai';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
 
@@ -71,7 +71,7 @@ export function useDeleteCatyConversation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['caty-conversations'] });
-      toast.success('Conversation deleted');
+      catalystToast.success('Conversation deleted');
     },
   });
 }
@@ -103,7 +103,7 @@ export function useSendCatyMessage() {
       queryClient.invalidateQueries({ queryKey: ['caty-conversations'] });
     },
     onError: (error) => {
-      toast.error('Failed to send message');
+      catalystToast.error('Failed to send message');
       console.error(error);
     },
   });
@@ -117,7 +117,7 @@ export function useCatyFeedback() {
         .eq('id', messageId);
       if (error) throw new Error(error.message);
     },
-    onSuccess: () => toast.success('Thanks for your feedback!'),
+    onSuccess: () => catalystToast.success('Thanks for your feedback!'),
   });
 }
 
@@ -140,7 +140,7 @@ export function useGenerateCatyTestCases() {
       return { conversationId: conversation.id, testCases: data.test_cases, suggestions: data.suggestions };
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['caty-conversations'] }); },
-    onError: (e) => { toast.error('Failed to generate test cases'); console.error(e); },
+    onError: (e) => { catalystToast.error('Failed to generate test cases'); console.error(e); },
   });
 }
 
@@ -171,9 +171,9 @@ export function useSaveCatyGeneratedTests() {
     },
     onSuccess: (ids) => {
       queryClient.invalidateQueries({ queryKey: ['test-cases'] });
-      toast.success(`${ids.length} test cases saved`);
+      catalystToast.success(`${ids.length} test cases saved`);
     },
-    onError: (e) => { toast.error('Failed to save test cases'); console.error(e); },
+    onError: (e) => { catalystToast.error('Failed to save test cases'); console.error(e); },
   });
 }
 
@@ -186,7 +186,7 @@ export function useAnalyzeCatyCoverage() {
       if (error) throw new Error(error.message || 'Analysis failed');
       return data;
     },
-    onError: (e) => { toast.error('Failed to analyze coverage'); console.error(e); },
+    onError: (e) => { catalystToast.error('Failed to analyze coverage'); console.error(e); },
   });
 }
 

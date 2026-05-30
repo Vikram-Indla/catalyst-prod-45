@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X, Download } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface ExportTestCasesModalProps {
   isOpen: boolean;
@@ -91,11 +91,11 @@ export function ExportTestCasesModal({ isOpen, onClose, testCaseCount, selectedF
       a.click();
       URL.revokeObjectURL(url);
       
-      toast.success(`Exported ${testCases?.length || 0} test cases`);
+      catalystToast.success(`Exported ${testCases?.length || 0} test cases`);
       onClose();
     } catch (err) {
       console.error('Export failed:', err);
-      toast.error('Export failed');
+      catalystToast.error('Export failed');
     } finally {
       setIsExporting(false);
     }

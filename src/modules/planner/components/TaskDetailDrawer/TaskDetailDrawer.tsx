@@ -10,7 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { catalystToast } from '@/lib/catalystToast';
 import { X, Link2, Maximize2, MoreHorizontal, Copy, Trash2, Loader2, Check } from '@/lib/atlaskit-icons';
 import {
@@ -115,7 +115,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
     
     if (lastUpdatedAtRef.current && lastUpdatedAtRef.current !== serverTask.updated_at) {
       if (open && saveStatus === 'idle') {
-        toast.info('Task updated by another user', { duration: 2000 });
+        catalystToast.info('Task updated by another user');
       }
     }
     lastUpdatedAtRef.current = serverTask.updated_at;
@@ -216,7 +216,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   const handleCopyLink = () => {
     const url = `${window.location.origin}/taskhub/task-list?task=${task?.id}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
   };
 
   const handleDuplicate = async () => {

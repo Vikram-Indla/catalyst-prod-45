@@ -4,7 +4,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { Task, TaskStatus, Priority, TaskType, RecurrenceType, LinkedItem } from '@/components/work-manager/types';
 
 // Database row type
@@ -157,10 +157,10 @@ export function useCreateWorkManagerTask() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-manager-tasks'] });
-      toast.success('Task created successfully');
+      catalystToast.success('Task created successfully');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create task: ${error.message}`);
+      catalystToast.error(`Failed to create task: ${error.message}`);
     },
   });
 }
@@ -221,7 +221,7 @@ export function useUpdateWorkManagerTask() {
       queryClient.invalidateQueries({ queryKey: ['work-manager-tasks'] });
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update task: ${error.message}`);
+      catalystToast.error(`Failed to update task: ${error.message}`);
     },
   });
 }
@@ -242,10 +242,10 @@ export function useDeleteWorkManagerTask() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-manager-tasks'] });
-      toast.success('Task deleted successfully');
+      catalystToast.success('Task deleted successfully');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete task: ${error.message}`);
+      catalystToast.error(`Failed to delete task: ${error.message}`);
     },
   });
 }

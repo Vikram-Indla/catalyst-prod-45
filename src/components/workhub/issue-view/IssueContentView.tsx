@@ -5,7 +5,7 @@
  * Implements recommendations #11-16, #17, #19-26, #28-30
  */
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { ChevronDown, ChevronRight, ChevronLeft, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, MessageSquare, History as HistoryIcon, FileText, Send, Eye, Share2, Bold, Italic, List, Code2, Link as LinkIcon, Smile, Paperclip, Undo2, Redo2, ArrowUpDown, ArrowRight, CheckSquare, Globe, Palette, Search, X, Flag, Zap, SquarePen } from '@/lib/atlaskit-icons';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -227,11 +227,11 @@ export function IssueContentView({
       await enqueueWriteBack({ phIssueId: item.id, fieldName: 'status', newValue: newStatus });
     },
     onSuccess: () => {
-      toast.success('Status updated');
+      catalystToast.success('Status updated');
       queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
       queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
     },
-    onError: () => toast.error('Failed to update status'),
+    onError: () => catalystToast.error('Failed to update status'),
   });
 
   // Close more menu on outside click
@@ -284,8 +284,8 @@ export function IssueContentView({
     if (item?.id) {
       supabase.from('ph_issues').update({ fix_versions: updated } as any).eq('id', item.id)
         .then(async ({ error }) => {
-          if (error) { toast.error('Failed to update fix version'); return; }
-          toast.success('Fix version updated');
+          if (error) { catalystToast.error('Failed to update fix version'); return; }
+          catalystToast.success('Fix version updated');
           // Log to ph_activity_log so history panel and scope-change gadget
           // have Catalyst-native data (Jira-decommission-ready).
           const { data: { user } } = await supabase.auth.getUser();
@@ -373,7 +373,7 @@ export function IssueContentView({
       const { error } = await supabase.from('ph_comments').insert({ work_item_id: item.id, body, author_id: user.id });
       if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-comments', item?.id] }); toast.success('Comment added'); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-comments', item?.id] }); catalystToast.success('Comment added'); },
   });
 
   const fixVersionName = item?.fix_version_name;
@@ -469,8 +469,8 @@ export function IssueContentView({
               const newText = e.currentTarget.textContent?.trim() ?? '';
               if (newText && newText !== item?.summary && item?.id) {
                 supabase.from('ph_issues').update({ summary: newText }).eq('id', item.id).then(({ error }) => {
-                  if (error) { toast.error('Failed to save title'); return; }
-                  toast.success('Title saved');
+                  if (error) { catalystToast.error('Failed to save title'); return; }
+                  catalystToast.success('Title saved');
                   queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
                   queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
                 });
@@ -495,9 +495,9 @@ export function IssueContentView({
               const atlText = 'var(--ds-text, #292A2E)';
               const addMenuItems = [
                 { id: 'subtask', icon: <CheckSquare size={16} color={atlText} />, label: 'Create subtask', shortcut: '⇧ C', section: 'primary', action: () => { setShowAddMenu(false); toast('Use the Sub-tasks section below'); } },
-                { id: 'link', icon: <Link2 size={16} color={atlText} />, label: 'Link work item', shortcut: '⇧ K', section: 'primary', action: () => { setShowAddMenu(false); toast.info('Use the Linked Issues section below'); } },
-                { id: 'attachment', icon: <Paperclip size={16} color={atlText} />, label: 'Add attachment', section: 'secondary', action: () => { setShowAddMenu(false); toast.info('Use the Attachments section below'); } },
-                { id: 'weblink', icon: <Globe size={16} color={atlText} />, label: 'Add web link', section: 'secondary', action: () => { setShowAddMenu(false); toast.info('Web link — coming soon'); } },
+                { id: 'link', icon: <Link2 size={16} color={atlText} />, label: 'Link work item', shortcut: '⇧ K', section: 'primary', action: () => { setShowAddMenu(false); catalystToast.info('Use the Linked Issues section below'); } },
+                { id: 'attachment', icon: <Paperclip size={16} color={atlText} />, label: 'Add attachment', section: 'secondary', action: () => { setShowAddMenu(false); catalystToast.info('Use the Attachments section below'); } },
+                { id: 'weblink', icon: <Globe size={16} color={atlText} />, label: 'Add web link', section: 'secondary', action: () => { setShowAddMenu(false); catalystToast.info('Web link — coming soon'); } },
               ];
               const q = addMenuSearch.toLowerCase();
               const filtered = q ? addMenuItems.filter(i => i.label.toLowerCase().includes(q)) : addMenuItems;
@@ -789,7 +789,7 @@ export function IssueContentView({
               <span style={{ fontSize: 11, fontWeight: 600 }}>1</span>
             </button>
             {/* Share — copies current URL */}
-            <button className="awPill" style={{ padding: '0 4px', height: 22 }} onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}><Share2 style={{ width: 14, height: 14 }} /></button>
+            <button className="awPill" style={{ padding: '0 4px', height: 22 }} onClick={() => { navigator.clipboard.writeText(window.location.href); catalystToast.success('Link copied'); }}><Share2 style={{ width: 14, height: 14 }} /></button>
             {/* More menu — Jira parity dropdown */}
             <div ref={moreMenuRef} style={{ position: 'relative' }}>
               <button className="awPill" style={{ padding: '0 4px', height: 22, background: moreMenuOpen ? 'var(--ds-background-selected, #E9F2FF)' : undefined }} onClick={() => setMoreMenuOpen(o => !o)}>

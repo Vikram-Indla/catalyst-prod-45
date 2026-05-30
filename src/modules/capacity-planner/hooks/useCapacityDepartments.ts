@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface CapacityDepartment {
   id: string;
@@ -65,10 +65,10 @@ export function useCapacityDepartments() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['capacity-departments'] });
-      toast.success(`Department "${data.name}" created`);
+      catalystToast.success(`Department "${data.name}" created`);
     },
     onError: (error) => {
-      toast.error(`Failed to create department: ${error.message}`);
+      catalystToast.error(`Failed to create department: ${error.message}`);
     },
   });
 
@@ -86,10 +86,10 @@ export function useCapacityDepartments() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['capacity-departments'] });
-      toast.success('Department updated');
+      catalystToast.success('Department updated');
     },
     onError: (error) => {
-      toast.error(`Failed to update department: ${error.message}`);
+      catalystToast.error(`Failed to update department: ${error.message}`);
     },
   });
 
@@ -104,10 +104,10 @@ export function useCapacityDepartments() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['capacity-departments'] });
-      toast.success('Department removed');
+      catalystToast.success('Department removed');
     },
     onError: (error) => {
-      toast.error(`Failed to remove department: ${error.message}`);
+      catalystToast.error(`Failed to remove department: ${error.message}`);
     },
   });
 

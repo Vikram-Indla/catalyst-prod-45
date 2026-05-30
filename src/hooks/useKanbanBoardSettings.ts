@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { Json } from '@/integrations/supabase/types';
 
 export interface KanbanColumn {
@@ -187,11 +187,11 @@ export function useSaveKanbanBoardSettings() {
       queryClient.invalidateQueries({
         queryKey: ['kanban-board-settings', variables.scope, variables.scopeId],
       });
-      toast.success('Kanban settings saved successfully');
+      catalystToast.success('Kanban settings saved successfully');
     },
     onError: (error) => {
       console.error('Failed to save kanban settings:', error);
-      toast.error('Failed to save kanban settings');
+      catalystToast.error('Failed to save kanban settings');
     },
   });
 }

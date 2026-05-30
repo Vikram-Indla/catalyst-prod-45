@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { FileText, FileSearch, Download, Loader2, Zap, RotateCcw, Eye, ArrowRight, Sparkles, FileUp } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useRADocuments, useRAStats, RA_KEYS } from '@/hooks/useReqAssist';
 import { syncSingleBrdToKb, fetchDocumentEpicCounts } from '@/services/reqAssistService';
 import { sanitiseError } from '@/lib/errorUtils';
@@ -138,14 +138,14 @@ export default function ReqAssistLibrary() {
         const { data: jiraMatch } = await typedQuery('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
         if (jiraMatch?.id) brdId = jiraMatch.id;
       }
-      if (!brdId) { toast.error('Document not yet processed — generate BRDs first'); return; }
+      if (!brdId) { catalystToast.error('Document not yet processed — generate BRDs first'); return; }
       await syncSingleBrdToKb(brdId);
       await typedQuery('ra_documents').update({ kb_synced: true, kb_synced_at: new Date().toISOString() }).eq('id', docId);
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
       qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
-      toast.success('Document indexed for Knowledge Assistant');
+      catalystToast.success('Document indexed for Knowledge Assistant');
     } catch (err: any) {
-      toast.error(sanitiseError(err));
+      catalystToast.error(sanitiseError(err));
     } finally {
       setSyncingIds(prev => { const n = new Set(prev); n.delete(docId); return n; });
     }
@@ -154,7 +154,7 @@ export default function ReqAssistLibrary() {
   const handleSyncAll = useCallback(async () => {
     if (!documents) return;
     const unsyncedReady = documents.filter(d => (d.status === 'ready' || d.status === 'complete') && !(d as any).kb_synced);
-    if (!unsyncedReady.length) { toast.info('All documents already indexed'); return; }
+    if (!unsyncedReady.length) { catalystToast.info('All documents already indexed'); return; }
     setSyncingAll(true);
     let success = 0;
     let failed = 0;
@@ -179,9 +179,9 @@ export default function ReqAssistLibrary() {
       }
     }
     if (failed > 0) {
-      toast.warning(`Indexed ${success} of ${unsyncedReady.length}. ${failed} failed.`);
+      catalystToast.warning(`Indexed ${success} of ${unsyncedReady.length}. ${failed} failed.`);
     } else {
-      toast.success(`Indexed ${success} documents for Knowledge Assistant`);
+      catalystToast.success(`Indexed ${success} documents for Knowledge Assistant`);
     }
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
     qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
@@ -717,11 +717,11 @@ function PdfUploadCell({ brdId: initialBrdId, jiraKey }: { brdId: string | null;
       brdId = data?.id ?? null;
     }
     if (!brdId) {
-      toast.error('BRD document not found — cannot attach PDF');
+      catalystToast.error('BRD document not found — cannot attach PDF');
       return;
     }
     if (file.size > 50 * 1024 * 1024) {
-      toast.error('File too large — max 50MB');
+      catalystToast.error('File too large — max 50MB');
       return;
     }
     setUploading(true);
@@ -738,10 +738,10 @@ function PdfUploadCell({ brdId: initialBrdId, jiraKey }: { brdId: string | null;
         pdf_attached_at: new Date().toISOString(),
       }).eq('id', brdId);
 
-      toast.success('PDF attached — click to open');
+      catalystToast.success('PDF attached — click to open');
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
     } catch (err: any) {
-      toast.error('Upload failed: ' + (err.message || 'Unknown error'));
+      catalystToast.error('Upload failed: ' + (err.message || 'Unknown error'));
     } finally {
       setUploading(false);
     }

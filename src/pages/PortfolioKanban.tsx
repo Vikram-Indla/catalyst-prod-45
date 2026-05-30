@@ -15,7 +15,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
 import {
   buildPortfolioBoardAdapter,
@@ -82,7 +82,7 @@ export default function PortfolioKanban() {
       qc.invalidateQueries({ queryKey: ['epics-kanban'] });
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : 'Failed to update epic status');
+      catalystToast.error(err instanceof Error ? err.message : 'Failed to update epic status');
     },
   });
 

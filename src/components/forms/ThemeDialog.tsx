@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { CATALYST_BRAND_COLORS, DEFAULT_THEME_COLOR } from '@/constants/brandColors';
 import { useActiveThemeStatuses } from '@/hooks/useThemeStatuses';
 import Spinner from '@atlaskit/spinner';
@@ -66,11 +66,11 @@ export function ThemeDialog({ open, onOpenChange, theme }: ThemeDialogProps) {
       queryClient.invalidateQueries({ queryKey: ['themes'] });
       queryClient.invalidateQueries({ queryKey: ['theme-groups-with-counts'] });
       queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
-      toast.success(theme ? 'Theme updated' : 'Theme created');
+      catalystToast.success(theme ? 'Theme updated' : 'Theme created');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to save theme');
+      catalystToast.error('Failed to save theme');
     },
   });
 

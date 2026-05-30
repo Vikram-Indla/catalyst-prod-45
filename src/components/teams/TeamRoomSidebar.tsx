@@ -18,7 +18,7 @@ import {
   Network,
   Lock
 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   Select,
   SelectContent,
@@ -457,7 +457,7 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamR
             <button 
               className="w-full flex items-center gap-3 px-3 text-[13px] font-normal hover:bg-blue-500/6 transition-colors rounded-md relative"
               style={{ height: '50px' }}
-              onClick={() => toast.info('Team Settings coming soon', { icon: <Lock className="h-4 w-4" /> })}
+              onClick={() => catalystToast.info('Team Settings coming soon')}
             >
               <Lock 
                 style={{ 

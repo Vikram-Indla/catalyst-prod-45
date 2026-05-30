@@ -3,7 +3,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { X, Save, CheckCircle } from '@/lib/atlaskit-icons';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { CatalystCreateDemand } from './create-tabs/CatalystCreateDemand';
 import { cn } from '@/lib/utils';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -99,23 +99,23 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
   const handleSave = async () => {
     // Validate required fields
     if (!formData.title || formData.title.length < 5) {
-      toast.error('Summary is required and must be at least 5 characters');
+      catalystToast.error('Summary is required and must be at least 5 characters');
       return;
     }
     if (!formData.description || formData.description.trim().length === 0) {
-      toast.error('Description is required');
+      catalystToast.error('Description is required');
       return;
     }
     if (!formData.requestor) {
-      toast.error('Assignee is required');
+      catalystToast.error('Assignee is required');
       return;
     }
     if (!formData.department_id && !formData.department) {
-      toast.error('Department is required');
+      catalystToast.error('Department is required');
       return;
     }
     if (!formData.business_owner_id && (!formData.business_owner || formData.business_owner.trim().length === 0)) {
-      toast.error('Business Owner is required');
+      catalystToast.error('Business Owner is required');
       return;
     }
     

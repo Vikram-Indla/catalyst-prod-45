@@ -8,7 +8,7 @@ import Button from '@atlaskit/button/new';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const formSchema = z.object({
   role_id: z.string().min(1, 'Role is required'),
@@ -97,12 +97,12 @@ export function PermissionGrantDialog({ open, onOpenChange, grant }: PermissionG
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['permission-grants'] });
-      toast.success(isEditing ? 'Grant updated successfully' : 'Grant created successfully');
+      catalystToast.success(isEditing ? 'Grant updated successfully' : 'Grant created successfully');
       onOpenChange(false);
       form.reset();
     },
     onError: (error: Error) => {
-      toast.error(error.message);
+      catalystToast.error(error.message);
     },
   });
 

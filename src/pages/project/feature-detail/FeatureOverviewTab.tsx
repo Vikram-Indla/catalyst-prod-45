@@ -29,7 +29,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format, formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/lib/auth';
 
@@ -172,10 +172,10 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-attachments', feature.id] });
-      toast.success('File uploaded successfully');
+      catalystToast.success('File uploaded successfully');
     },
     onError: (error: Error) => {
-      toast.error('Upload failed', { description: error.message });
+      catalystToast.error('Upload failed');
     },
   });
 
@@ -196,10 +196,10 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-attachments', feature.id] });
-      toast.success('File deleted');
+      catalystToast.success('File deleted');
     },
     onError: (error: Error) => {
-      toast.error('Delete failed', { description: error.message });
+      catalystToast.error('Delete failed');
     },
   });
 
@@ -224,7 +224,7 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
       .download(attachment.file_path);
 
     if (error) {
-      toast.error('Download failed', { description: error.message });
+      catalystToast.error('Download failed');
       return;
     }
 
@@ -248,7 +248,7 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
 
   const handleCriteriaToggle = (id: string, checked: boolean) => {
     // In a real implementation, this would update the acceptance_criteria text
-    toast.success('Acceptance criteria updated');
+    catalystToast.success('Acceptance criteria updated');
   };
 
   return (

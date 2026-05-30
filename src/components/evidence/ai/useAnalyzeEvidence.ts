@@ -5,7 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { AiAnalysisResult } from './types';
 
 export function useAnalyzeEvidence() {
@@ -18,7 +18,7 @@ export function useAnalyzeEvidence() {
     testCaseContext?: string
   ): Promise<AiAnalysisResult | null> => {
     if (!attachmentId || !imageUrl) {
-      toast.error('Attachment ID and image URL are required');
+      catalystToast.error('Attachment ID and image URL are required');
       return null;
     }
 
@@ -44,11 +44,11 @@ export function useAnalyzeEvidence() {
       setLastError(message);
       
       if (message.includes('Rate limit')) {
-        toast.error('AI rate limit exceeded. Please wait a moment and try again.');
+        catalystToast.error('AI rate limit exceeded. Please wait a moment and try again.');
       } else if (message.includes('Payment required')) {
-        toast.error('AI credits depleted. Please add credits to continue.');
+        catalystToast.error('AI credits depleted. Please add credits to continue.');
       } else {
-        toast.error(`AI analysis failed: ${message}`);
+        catalystToast.error(`AI analysis failed: ${message}`);
       }
       
       return null;

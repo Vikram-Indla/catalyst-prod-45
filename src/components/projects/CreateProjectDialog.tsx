@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { getProjectLandingRoute } from '@/lib/workspaceContext';
 import { Search } from '@/lib/atlaskit-icons';
 
@@ -130,7 +130,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess, defaultProg
       queryClient.invalidateQueries({ queryKey: ['workspace-projects'] });
       queryClient.invalidateQueries({ queryKey: ['projects-header'] });
       queryClient.invalidateQueries({ queryKey: ['project-keys'] });
-      toast.success('Project created successfully');
+      catalystToast.success('Project created successfully');
       handleClose();
       
       if (onSuccess) {
@@ -140,7 +140,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess, defaultProg
       }
     },
     onError: (error) => {
-      toast.error('Failed to create project: ' + error.message);
+      catalystToast.error('Failed to create project: ' + error.message);
     },
   });
 
@@ -157,7 +157,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess, defaultProg
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      toast.error('Project name is required');
+      catalystToast.error('Project name is required');
       return;
     }
     const error = validateKey(key);
@@ -166,7 +166,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess, defaultProg
       return;
     }
     if (!programId) {
-      toast.error('Program is required');
+      catalystToast.error('Program is required');
       return;
     }
     createProject.mutate();

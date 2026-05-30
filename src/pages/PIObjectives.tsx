@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 interface PIObjective {
@@ -95,7 +95,7 @@ export default function PIObjectives() {
       queryClient.invalidateQueries({ queryKey: ['pi-objectives'] });
       setDialogOpen(false);
       resetForm();
-      toast.success(editingObjective ? 'Objective updated' : 'Objective created');
+      catalystToast.success(editingObjective ? 'Objective updated' : 'Objective created');
     },
   });
 
@@ -113,7 +113,7 @@ export default function PIObjectives() {
 
   const handleSubmit = () => {
     if (!selectedPIId || !selectedProgramId) {
-      toast.error('Please select a Program and PI');
+      catalystToast.error('Please select a Program and PI');
       return;
     }
     mutation.mutate({

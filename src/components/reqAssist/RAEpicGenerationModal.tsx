@@ -4,7 +4,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { RA_KEYS } from '@/hooks/useReqAssist';
 import { CheckCircle2, XCircle, Sparkles, Check, Loader2 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 import { sanitiseError } from '@/lib/errorUtils';
 import { isValidUUID } from '@/lib/utils/assertUuid';
@@ -124,7 +124,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
     qc.invalidateQueries({ queryKey: ['brd-epics'] });
     qc.invalidateQueries({ queryKey: RA_KEYS.stats() });
     qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
-    setTimeout(() => toast.success(`Epics generated for ${doc.title}`), 600);
+    setTimeout(() => catalystToast.success(`Epics generated for ${doc.title}`), 600);
   };
 
   useEffect(() => {

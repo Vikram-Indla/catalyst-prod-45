@@ -12,7 +12,7 @@ import { useGovernanceScore } from '@/hooks/useGovernanceScore';
 import { useAgeingItems, type AgeingItem } from '@/hooks/useAgeingItems';
 import { useForceClose } from '@/hooks/useForceClose';
 import { useRestore } from '@/hooks/useRestore';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   ChevronDown, ChevronUp, ChevronRight,
   AlertTriangle, Clock, GitBranch, UserX, Link2, ShieldOff, Copy, AlertCircle,
@@ -234,11 +234,11 @@ export default function CleanupPage() {
       .update({ status: newStatus })
       .eq('id', itemId);
     if (error) {
-      toast.error('Status update failed: ' + error.message);
+      catalystToast.error('Status update failed: ' + error.message);
       return;
     }
     qc.invalidateQueries({ queryKey: ['ageing-items'] });
-    toast.success(`Status updated to "${newStatus}"`);
+    catalystToast.success(`Status updated to "${newStatus}"`);
   }, [qc]);
 
   // ── Categorize items ──
@@ -396,15 +396,15 @@ export default function CleanupPage() {
 
       setSelected(new Set());
       setShowForceCloseDialog(false);
-      toast.success(`${ids.length} item${ids.length > 1 ? 's' : ''} force-closed. Comment added to each issue. Reporters notified.`);
+      catalystToast.success(`${ids.length} item${ids.length > 1 ? 's' : ''} force-closed. Comment added to each issue. Reporters notified.`);
     } catch (err: unknown) {
-      toast.error('Force close failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      catalystToast.error('Force close failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   }, [user, selected, closureReason, allFlatItems, qc, forceCloseMutation]);
 
   // ── Notify Reporter ──
   const handleNotifyReporter = useCallback(async (item: CleanupItem) => {
-    if (!item.reporter_account_id) { toast.error('No reporter on this item'); return; }
+    if (!item.reporter_account_id) { catalystToast.error('No reporter on this item'); return; }
     await supabase.from('notifications').insert({
       recipient_user_id: item.reporter_account_id,
       notification_type: 'direct',
@@ -413,7 +413,7 @@ export default function CleanupPage() {
       entity_type: 'issue',
       entity_id: item.id,
     });
-    toast.success('Reporter notified');
+    catalystToast.success('Reporter notified');
   }, []);
 
   // ── RAG config ──
@@ -506,10 +506,10 @@ export default function CleanupPage() {
         });
       }
 
-      toast.success('Item restored. Original status and assignee reinstated.');
+      catalystToast.success('Item restored. Original status and assignee reinstated.');
       refetchRestore();
     } catch (err: unknown) {
-      toast.error('Restore failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      catalystToast.error('Restore failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   }, [user, restoreMutation, refetchRestore]);
 
@@ -524,7 +524,7 @@ export default function CleanupPage() {
   // ── Preview reporter notifications ──
   const handlePreviewReporterNotifications = useCallback(() => {
     if (selectedItems.length === 0) {
-      toast.error('No items selected');
+      catalystToast.error('No items selected');
       return;
     }
     const reporterMap = new Map<string, { name: string; count: number }>();
@@ -536,7 +536,7 @@ export default function CleanupPage() {
     });
     const reporters = Array.from(reporterMap.values());
     const msg = reporters.map(r => `${r.name} (${r.count} item${r.count > 1 ? 's' : ''})`).join(', ');
-    toast.info(`Reporters to be notified: ${msg}`);
+    catalystToast.info(`Reporters to be notified: ${msg}`);
   }, [selectedItems]);
 
 
@@ -1293,7 +1293,7 @@ export default function CleanupPage() {
                 <Button
                   variant="outline"
                   style={{ height: 36, fontSize: 14, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}
-                  onClick={() => toast.info('Force Close via workflow — coming soon')}
+                  onClick={() => catalystToast.info('Force Close via workflow — coming soon')}
                 >
                   Force Close (via workflow)
                 </Button>

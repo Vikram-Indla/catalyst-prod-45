@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface PortfolioDialogProps {
   open: boolean;
@@ -39,11 +39,11 @@ export function PortfolioDialog({ open, onOpenChange, portfolio }: PortfolioDial
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['programs'] });
       queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
-      toast.success(portfolio ? 'Program updated' : 'Program created');
+      catalystToast.success(portfolio ? 'Program updated' : 'Program created');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to save program');
+      catalystToast.error('Failed to save program');
     },
   });
 

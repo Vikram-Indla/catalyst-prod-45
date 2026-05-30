@@ -20,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { CycleCardEnhanced } from '@/components/releases/test-cycles/CycleCardEnhanced';
 import { CycleKPICards } from '@/components/releases/test-cycles/CycleKPICards';
@@ -124,7 +124,7 @@ export default function TestCyclesPage() {
   // Handlers
   const handleCreateCycle = (data: CreateCycleFormData) => {
     if (!projectId) {
-      toast.error('No project selected');
+      catalystToast.error('No project selected');
       return;
     }
     
@@ -183,9 +183,9 @@ export default function TestCyclesPage() {
         environment: c.environment,
       }));
       await exportTestCycles(exportData, format);
-      toast.success(`Exported ${exportData.length} test cycles`);
+      catalystToast.success(`Exported ${exportData.length} test cycles`);
     } catch (error) {
-      toast.error('Export failed');
+      catalystToast.error('Export failed');
     } finally {
       setIsExporting(false);
     }

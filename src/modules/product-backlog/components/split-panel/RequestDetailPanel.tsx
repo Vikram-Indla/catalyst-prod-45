@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { 
   Link2, Edit, Paperclip, Copy, Trash2, 
@@ -135,7 +135,7 @@ function CopyLinkButton({ requestId }: { requestId: string }) {
     const url = `${window.location.origin}/industry/backlog?request=${requestId}`;
     await navigator.clipboard.writeText(url);
     setCopied(true);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
     setTimeout(() => setCopied(false), 2000);
   };
   
@@ -510,7 +510,7 @@ export function RequestDetailPanel({
               <FieldLabel>Priority</FieldLabel>
               <div 
                 className="h-10 px-3 rounded-md flex items-center justify-between cursor-pointer bg-card border border-border"
-                onClick={() => toast.info('Priority is auto-calculated from the Scoring tab')}
+                onClick={() => catalystToast.info('Priority is auto-calculated from the Scoring tab')}
               >
                 <div className="flex items-center gap-2">
                   <div className={cn('w-2 h-2 rounded-full', priorityColor)} />
@@ -557,7 +557,7 @@ export function RequestDetailPanel({
                     </div>
                     <button 
                       className="text-xs font-medium text-brand-primary hover:underline"
-                      onClick={() => toast.info('Change reporter')}
+                      onClick={() => catalystToast.info('Change reporter')}
                     >
                       Change
                     </button>

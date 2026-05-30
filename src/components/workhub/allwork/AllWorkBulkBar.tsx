@@ -5,7 +5,7 @@
  */
 import { JiraBulkActionBar } from '@/components/shared/JiraBulkActionBar';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface Props {
   selectedIds: string[];
@@ -30,15 +30,15 @@ export function AllWorkBulkBar({ selectedIds, items = [], totalCount, onSelectAl
       }
 
       if (catIds.length > 0 && jiraCount > 0) {
-        toast.success(`${catIds.length} item${catIds.length !== 1 ? 's' : ''} deleted. ${jiraCount} Jira-synced item${jiraCount !== 1 ? 's' : ''} skipped (delete in Jira).`);
+        catalystToast.success(`${catIds.length} item${catIds.length !== 1 ? 's' : ''} deleted. ${jiraCount} Jira-synced item${jiraCount !== 1 ? 's' : ''} skipped (delete in Jira).`);
       } else if (catIds.length > 0) {
-        toast.success(`${catIds.length} item${catIds.length !== 1 ? 's' : ''} deleted`);
+        catalystToast.success(`${catIds.length} item${catIds.length !== 1 ? 's' : ''} deleted`);
       } else {
-        toast.info('Jira-synced items cannot be deleted from Catalyst. Delete them in Jira instead.');
+        catalystToast.info('Jira-synced items cannot be deleted from Catalyst. Delete them in Jira instead.');
       }
       onDone();
     } catch (err: any) {
-      toast.error(`Delete failed: ${err.message}`);
+      catalystToast.error(`Delete failed: ${err.message}`);
     }
   };
 

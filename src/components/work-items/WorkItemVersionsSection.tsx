@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useWorkItemVersions, useReleases, WorkItemVersion } from '@/hooks/useWorkItemVersions';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface WorkItemVersionsSectionProps {
@@ -32,14 +32,14 @@ export function WorkItemVersionsSection({
   const handleAddVersion = async (releaseId: string, linkType: 'fix' | 'affects') => {
     try {
       await addVersion.mutateAsync({ releaseId, linkType });
-      toast.success(`${linkType === 'fix' ? 'Fix' : 'Affects'} version added`);
+      catalystToast.success(`${linkType === 'fix' ? 'Fix' : 'Affects'} version added`);
       if (linkType === 'fix') setAddingFix(false);
       else setAddingAffects(false);
     } catch (error: any) {
       if (error.message?.includes('duplicate')) {
-        toast.error('Version already linked');
+        catalystToast.error('Version already linked');
       } else {
-        toast.error('Failed to add version');
+        catalystToast.error('Failed to add version');
       }
     }
   };
@@ -47,9 +47,9 @@ export function WorkItemVersionsSection({
   const handleRemoveVersion = async (version: WorkItemVersion) => {
     try {
       await removeVersion.mutateAsync(version.id);
-      toast.success('Version removed');
+      catalystToast.success('Version removed');
     } catch {
-      toast.error('Failed to remove version');
+      catalystToast.error('Failed to remove version');
     }
   };
 

@@ -8,7 +8,7 @@ import { X, Search, Plus, Loader2, AlertCircle, CheckCircle2 } from '@/lib/atlas
 import { INK, SURFACE, FONT } from './constants/roadmap.constants';
 import { useBacklogItemsNotOnRoadmap, useAddToRoadmap } from './hooks/useRoadmapData';
 import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface AddRequestModalProps {
   isOpen: boolean;
@@ -32,7 +32,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
 
   const handleAdd = async (id: string, title: string) => {
     await addMutation.mutateAsync(id);
-    toast.success(`Added "${title}" to roadmap`, { duration: 3000 });
+    catalystToast.success(`Added "${title}" to roadmap`);
   };
 
   // Escape to close

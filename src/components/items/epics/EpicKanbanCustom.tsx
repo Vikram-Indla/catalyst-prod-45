@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, MoreVertical, Settings, Trash2 } from '@/lib/atlaskit-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -98,9 +98,9 @@ export function EpicKanbanCustom({ epics, onEpicClick, onContextMenu }: EpicKanb
       queryClient.invalidateQueries({ queryKey: ['epic-custom-columns'] });
       setNewColumnLabel('');
       setNewColumnColor('#6B7280');
-      toast.success('Column added');
+      catalystToast.success('Column added');
     },
-    onError: () => toast.error('Failed to add column'),
+    onError: () => catalystToast.error('Failed to add column'),
   });
 
   const deleteColumnMutation = useMutation({
@@ -114,9 +114,9 @@ export function EpicKanbanCustom({ epics, onEpicClick, onContextMenu }: EpicKanb
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epic-custom-columns'] });
-      toast.success('Column deleted');
+      catalystToast.success('Column deleted');
     },
-    onError: () => toast.error('Failed to delete column'),
+    onError: () => catalystToast.error('Failed to delete column'),
   });
 
   const updateEpicColumnMutation = useMutation({
@@ -132,10 +132,10 @@ export function EpicKanbanCustom({ epics, onEpicClick, onContextMenu }: EpicKanb
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('Epic column updated');
+      catalystToast.success('Epic column updated');
     },
     onError: () => {
-      toast.error('Failed to update epic column');
+      catalystToast.error('Failed to update epic column');
     }
   });
 

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface LinkedTicket {
   id: string;
@@ -56,10 +56,10 @@ export function useReassignTickets() {
       queryClient.invalidateQueries({ queryKey: ['linked-tickets', variables.fromProcessStep] });
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
       queryClient.invalidateQueries({ queryKey: ['demand-process-steps'] });
-      toast.success('Tickets reassigned successfully');
+      catalystToast.success('Tickets reassigned successfully');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to reassign tickets: ${error.message}`);
+      catalystToast.error(`Failed to reassign tickets: ${error.message}`);
     },
   });
 }
@@ -79,10 +79,10 @@ export function useDeleteProcessStep() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['demand-process-steps'] });
-      toast.success('Process step deleted');
+      catalystToast.success('Process step deleted');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete process step: ${error.message}`);
+      catalystToast.error(`Failed to delete process step: ${error.message}`);
     },
   });
 }

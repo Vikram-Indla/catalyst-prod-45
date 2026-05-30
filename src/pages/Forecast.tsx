@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, Settings, Filter, ArrowUpDown, Download } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { ForecastGrid } from '@/components/forecast/ForecastGrid';
 import { ForecastFiltersDialog } from '@/components/forecast/ForecastFiltersDialog';
 import { ForecastColumnsDialog } from '@/components/forecast/ForecastColumnsDialog';
@@ -148,7 +148,7 @@ export default function Forecast() {
               <span className="hidden sm:inline">Columns</span>
             </Button>
             <Button variant="outline" size="sm" className="h-8 sm:h-9 text-xs sm:text-sm" onClick={() => {
-              toast.info('Apply Backlog Rank resets ordering based on program/portfolio/global rank');
+              catalystToast.info('Apply Backlog Rank resets ordering based on program/portfolio/global rank');
             }}>
               <ArrowUpDown className="h-4 w-4 mr-2" />
               Apply Backlog Rank
@@ -171,7 +171,7 @@ export default function Forecast() {
             {/* Export Button - Feature Flagged */}
             {exportEnabled && (
               <Button variant="outline" size="sm" onClick={() => {
-                toast.info('CSV export functionality coming soon');
+                catalystToast.info('CSV export functionality coming soon');
               }}>
                 <Download className="h-4 w-4 mr-2" />
                 Export CSV

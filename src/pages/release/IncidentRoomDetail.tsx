@@ -25,7 +25,7 @@ import { CommitteeModal } from '@/components/incidents/detail/CommitteeModal';
 import { supabase } from '@/integrations/supabase/client';
 import type { IncidentStatus, CommentType } from '@/types/incident';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { canConvertIncident } from '@/utils/incidentLifecycle';
 
@@ -84,7 +84,7 @@ export default function IncidentRoomDetail() {
     
     // Validation: Cannot close if no project assigned
     if ((status === 'closed' || status === 'resolved') && !incident?.project_id) {
-      toast.error('Cannot close incident: Please assign a project first');
+      catalystToast.error('Cannot close incident: Please assign a project first');
       return;
     }
     
@@ -96,8 +96,8 @@ export default function IncidentRoomDetail() {
     }
     
     updateIncident.mutate({ id: incidentId, data: { status } }, {
-      onSuccess: () => toast.success('Status updated'),
-      onError: () => toast.error('Failed to update status'),
+      onSuccess: () => catalystToast.success('Status updated'),
+      onError: () => catalystToast.error('Failed to update status'),
     });
   };
 
@@ -132,12 +132,12 @@ export default function IncidentRoomDetail() {
         changed_by: user?.id,
       });
       
-      toast.success(`Incident ${pendingStatus}`);
+      catalystToast.success(`Incident ${pendingStatus}`);
       setResolutionModalOpen(false);
       setPendingStatus(null);
       queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
     } catch (error: any) {
-      toast.error(error.message || 'Failed to update');
+      catalystToast.error(error.message || 'Failed to update');
     } finally {
       setIsSubmitting(false);
     }
@@ -147,9 +147,9 @@ export default function IncidentRoomDetail() {
     if (!incidentId) return;
     try {
       await unlinkWorkItem.mutateAsync({ incidentId, linkId, workItemKey: key, workItemType: type });
-      toast.success('Work item unlinked');
+      catalystToast.success('Work item unlinked');
     } catch (error: any) {
-      toast.error('Failed to unlink');
+      catalystToast.error('Failed to unlink');
     }
   };
 
@@ -160,7 +160,7 @@ export default function IncidentRoomDetail() {
     
     updateIncident.mutate({ id: incidentId, data: { [field]: value } }, {
       onSuccess: async () => {
-        toast.success('Updated');
+        catalystToast.success('Updated');
         
         // Add audit log entry for important field changes
         const auditableFields = [
@@ -179,15 +179,15 @@ export default function IncidentRoomDetail() {
           queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
         }
       },
-      onError: () => toast.error('Failed to update'),
+      onError: () => catalystToast.error('Failed to update'),
     });
   };
 
   const handlePostComment = (content: string, type: CommentType) => {
     if (!incidentId || !content.trim()) return;
     addComment.mutate({ incident_id: incidentId, content, comment_type: type }, {
-      onSuccess: () => toast.success('Comment posted'),
-      onError: () => toast.error('Failed to post comment'),
+      onSuccess: () => catalystToast.success('Comment posted'),
+      onError: () => catalystToast.error('Failed to post comment'),
     });
   };
 
@@ -200,12 +200,12 @@ export default function IncidentRoomDetail() {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      toast.success(`Incident converted to ${convertType}`);
+      catalystToast.success(`Incident converted to ${convertType}`);
       setConvertDialogOpen(false);
       setConvertReason('');
       queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
     } catch (error: any) {
-      toast.error(error.message || 'Failed to convert incident');
+      catalystToast.error(error.message || 'Failed to convert incident');
     } finally {
       setIsSubmitting(false);
     }
@@ -222,11 +222,11 @@ export default function IncidentRoomDetail() {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      toast.success(data.message || 'Vote submitted');
+      catalystToast.success(data.message || 'Vote submitted');
       queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
       queryClient.invalidateQueries({ queryKey: ['incident-committee', incidentId] });
     } catch (error: any) {
-      toast.error(error.message || 'Failed to submit vote');
+      catalystToast.error(error.message || 'Failed to submit vote');
     } finally {
       setIsSubmitting(false);
     }
@@ -267,11 +267,11 @@ export default function IncidentRoomDetail() {
         changed_by: user?.id,
       });
 
-      toast.success('Committee created');
+      catalystToast.success('Committee created');
       queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
       queryClient.invalidateQueries({ queryKey: ['incident-committee', incidentId] });
     } catch (error: any) {
-      toast.error(error.message || 'Failed to create committee');
+      catalystToast.error(error.message || 'Failed to create committee');
     } finally {
       setIsSubmitting(false);
     }
@@ -334,12 +334,12 @@ export default function IncidentRoomDetail() {
         changed_by: user?.id,
       });
 
-      toast.success('Approver added');
+      catalystToast.success('Approver added');
       queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
       queryClient.invalidateQueries({ queryKey: ['incident-committee', incidentId] });
     } catch (error: any) {
       console.error('Failed to add approver:', error);
-      toast.error(error.message || 'Failed to add approver');
+      catalystToast.error(error.message || 'Failed to add approver');
     } finally {
       setIsSubmitting(false);
     }
@@ -354,11 +354,11 @@ export default function IncidentRoomDetail() {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      toast.success('Committee review initiated');
+      catalystToast.success('Committee review initiated');
       queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
       queryClient.invalidateQueries({ queryKey: ['incident-committee', incidentId] });
     } catch (error: any) {
-      toast.error(error.message || 'Failed to initiate committee');
+      catalystToast.error(error.message || 'Failed to initiate committee');
     } finally {
       setIsSubmitting(false);
     }

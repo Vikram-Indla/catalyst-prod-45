@@ -8,7 +8,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Edit2, Copy, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Bug, BookOpen, MessageSquare, Search, Loader2, GitBranch, ChevronRight, FileText, Settings2, Share2, MoreHorizontal, Check } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
 import { EntityCommentsPanel } from '@/components/testhub/EntityCommentsPanel';
@@ -564,7 +564,7 @@ export function ViewTestCaseModal({
     const { error } = await typedQuery('tm_test_cases').update({ [field]: value }).eq('id', testCase.id);
     if (error) {
       console.error(`Failed to update ${field}:`, error);
-      toast.error(`Failed to update ${field}`);
+      catalystToast.error(`Failed to update ${field}`);
       return;
     }
     queryClient.invalidateQueries({ queryKey: ['tm-cases'] });
@@ -581,7 +581,7 @@ export function ViewTestCaseModal({
       action: newStepAction.trim(),
       expected_result: newStepExpected.trim() || null,
     }).select().single();
-    if (error) { toast.error('Failed to add step'); return; }
+    if (error) { catalystToast.error('Failed to add step'); return; }
     if (data) setSteps(prev => [...prev, { ...(data as any), is_shared: false, shared_step_id: null }]);
     setNewStepAction('');
     setNewStepExpected('');
@@ -594,14 +594,14 @@ export function ViewTestCaseModal({
       action: editStepAction.trim(),
       expected_result: editStepExpected.trim() || null,
     }).eq('id', stepId);
-    if (error) { toast.error('Failed to update step'); return; }
+    if (error) { catalystToast.error('Failed to update step'); return; }
     setSteps(prev => prev.map(s => s.id === stepId ? { ...s, action: editStepAction.trim(), expected_result: editStepExpected.trim() || null } : s));
     setEditingStepId(null);
   }, [editStepAction, editStepExpected]);
 
   const handleDeleteStep = useCallback(async (stepId: string) => {
     const { error } = await supabase.from('tm_test_steps').delete().eq('id', stepId);
-    if (error) { toast.error('Failed to delete step'); return; }
+    if (error) { catalystToast.error('Failed to delete step'); return; }
     setSteps(prev => {
       const filtered = prev.filter(s => s.id !== stepId);
       return filtered.map((s, i) => ({ ...s, step_number: i + 1 }));
@@ -649,7 +649,7 @@ export function ViewTestCaseModal({
       expected_result: newGherkinFeature.trim() || null,
       is_shared: false,
     }).select().single();
-    if (error) { toast.error('Failed to add scenario'); return; }
+    if (error) { catalystToast.error('Failed to add scenario'); return; }
     if (data) setGherkinScenarios(prev => [...prev, { id: (data as any).id, feature: (data as any).expected_result || '', scenario: (data as any).action }]);
     setNewGherkinFeature('');
     setNewGherkinScenario('');
@@ -681,7 +681,7 @@ export function ViewTestCaseModal({
       expected_result: null,
       is_shared: false,
     }).select().single();
-    if (error) { toast.error('Failed to add text block'); return; }
+    if (error) { catalystToast.error('Failed to add text block'); return; }
     if (data) setFreeTextBlocks(prev => [...prev, { id: (data as any).id, text: (data as any).action }]);
     setNewFreeText('');
     setAddingFreeText(false);
@@ -961,7 +961,7 @@ export function ViewTestCaseModal({
 
   const handleCopyKey = () => {
     navigator.clipboard.writeText(testCase.case_key);
-    toast.success(`Copied ${testCase.case_key}`);
+    catalystToast.success(`Copied ${testCase.case_key}`);
   };
 
   const fmtDate = (d: string | null | undefined) => {

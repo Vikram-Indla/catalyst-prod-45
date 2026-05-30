@@ -15,7 +15,7 @@ import {
   DefectSeverity,
   DefectStatus 
 } from '@/types/test-management';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // DB uses lowercase enums - match the actual DB enum values
 type DbDefectSeverity = 'critical' | 'major' | 'minor' | 'trivial';
@@ -417,10 +417,10 @@ export function useCreateDefect() {
       queryClient.invalidateQueries({ queryKey: ['tm-defects', data.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-defect-stats', data.project_id] });
       queryClient.invalidateQueries({ queryKey: ['testcase-defects'] });
-      toast.success(`Defect ${data.key} created`);
+      catalystToast.success(`Defect ${data.key} created`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create defect: ${error.message}`);
+      catalystToast.error(`Failed to create defect: ${error.message}`);
     },
   });
 }
@@ -465,10 +465,10 @@ export function useUpdateDefect() {
       queryClient.invalidateQueries({ queryKey: ['tm-defects', data.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-defect', data.id] });
       queryClient.invalidateQueries({ queryKey: ['tm-defect-stats', data.project_id] });
-      toast.success('Defect updated');
+      catalystToast.success('Defect updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update defect: ${error.message}`);
+      catalystToast.error(`Failed to update defect: ${error.message}`);
     },
   });
 }
@@ -505,10 +505,10 @@ export function useUpdateDefectStatus() {
       queryClient.invalidateQueries({ queryKey: ['tm-defects', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-defect', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['tm-defect-stats', variables.project_id] });
-      toast.success('Status updated');
+      catalystToast.success('Status updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update status: ${error.message}`);
+      catalystToast.error(`Failed to update status: ${error.message}`);
     },
   });
 }
@@ -532,10 +532,10 @@ export function useDeleteDefect() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-defects', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-defect-stats', variables.project_id] });
-      toast.success('Defect deleted');
+      catalystToast.success('Defect deleted');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete defect: ${error.message}`);
+      catalystToast.error(`Failed to delete defect: ${error.message}`);
     },
   });
 }
@@ -619,10 +619,10 @@ export function useAddDefectComment() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-defect-comments', variables.defect_id] });
-      toast.success('Comment added');
+      catalystToast.success('Comment added');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to add comment: ${error.message}`);
+      catalystToast.error(`Failed to add comment: ${error.message}`);
     },
   });
 }
@@ -648,10 +648,10 @@ export function useDeleteDefectComment() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-defect-comments', variables.defect_id] });
-      toast.success('Comment deleted');
+      catalystToast.success('Comment deleted');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete comment: ${error.message}`);
+      catalystToast.error(`Failed to delete comment: ${error.message}`);
     },
   });
 }
@@ -752,10 +752,10 @@ export function useUploadAttachment() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: [`tm-${variables.entity_type}-attachments`, variables.entity_id] });
-      toast.success('File uploaded');
+      catalystToast.success('File uploaded');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to upload file: ${error.message}`);
+      catalystToast.error(`Failed to upload file: ${error.message}`);
     },
   });
 }
@@ -792,10 +792,10 @@ export function useDeleteAttachment() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: [`tm-${variables.entity_type}-attachments`, variables.entity_id] });
-      toast.success('Attachment deleted');
+      catalystToast.success('Attachment deleted');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete attachment: ${error.message}`);
+      catalystToast.error(`Failed to delete attachment: ${error.message}`);
     },
   });
 }

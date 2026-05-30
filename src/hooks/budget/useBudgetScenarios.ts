@@ -12,7 +12,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { BudgetResource } from '@/lib/budget/types';
 
 export interface ScenarioExtension {
@@ -174,11 +174,11 @@ export function useCreateScenario() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budget-scenarios'] });
-      toast.success('Scenario saved successfully');
+      catalystToast.success('Scenario saved successfully');
     },
     onError: (error) => {
       console.error('Failed to create scenario:', error);
-      toast.error('Failed to save scenario');
+      catalystToast.error('Failed to save scenario');
     },
   });
 }
@@ -196,11 +196,11 @@ export function useDeleteScenario() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budget-scenarios'] });
-      toast.success('Scenario deleted');
+      catalystToast.success('Scenario deleted');
     },
     onError: (error) => {
       console.error('Failed to delete scenario:', error);
-      toast.error('Failed to delete scenario');
+      catalystToast.error('Failed to delete scenario');
     },
   });
 }

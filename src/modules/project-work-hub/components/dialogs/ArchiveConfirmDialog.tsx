@@ -16,7 +16,7 @@
  */
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 import Modal, {
   ModalBody,
@@ -93,7 +93,7 @@ export function ArchiveConfirmDialog({
       });
     },
     onSuccess: () => {
-      toast.success(isArchive ? `Archived ${issue.issue_key}` : `Restored ${issue.issue_key}`);
+      catalystToast.success(isArchive ? `Archived ${issue.issue_key}` : `Restored ${issue.issue_key}`);
 
       // Invalidate every list/family that reads archived_at IS NULL.
       queryClient.invalidateQueries({ queryKey: ['kanban-issues'] });
@@ -119,9 +119,9 @@ export function ArchiveConfirmDialog({
         err?.code === '42501' ||
         err?.code === 'PGRST301'
       ) {
-        toast.error('You need admin or owner access on this project to archive or restore issues.');
+        catalystToast.error('You need admin or owner access on this project to archive or restore issues.');
       } else {
-        toast.error(`Could not ${isArchive ? 'archive' : 'restore'}: ${msg}`);
+        catalystToast.error(`Could not ${isArchive ? 'archive' : 'restore'}: ${msg}`);
       }
     },
     onSettled: () => setIsSubmitting(false),

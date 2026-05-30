@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { FileText, ListChecks, Lightbulb, BookOpen, Target, Users } from '@/lib/atlaskit-icons';
 import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 
@@ -146,7 +146,7 @@ export function CreateDocumentDialog({
 
   const handleCreate = async () => {
     if (!title.trim()) {
-      toast.error('Please enter a document title');
+      catalystToast.error('Please enter a document title');
       return;
     }
 
@@ -173,7 +173,7 @@ export function CreateDocumentDialog({
 
       if (error) throw error;
 
-      toast.success('Document created');
+      catalystToast.success('Document created');
       onOpenChange(false);
       setTitle('');
       setSpaceId(defaultSpaceId || '');
@@ -181,7 +181,7 @@ export function CreateDocumentDialog({
       onSuccess?.(data.id);
     } catch (error) {
       console.error('Error creating document:', error);
-      toast.error('Failed to create document');
+      catalystToast.error('Failed to create document');
     } finally {
       setIsCreating(false);
     }

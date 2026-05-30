@@ -17,7 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format, formatDistanceToNow } from 'date-fns';
 
 interface ManagerFollowUp {
@@ -179,10 +179,10 @@ export function ManagerFollowUpNotes({
       addHistoryEntry(newFollowUp.id, 'created', undefined, undefined, newNote.trim());
       
       setNewNote('');
-      toast.success('Follow-up note saved');
+      catalystToast.success('Follow-up note saved');
     } catch (err) {
       console.error('Error adding follow-up:', err);
-      toast.error('Failed to save follow-up note');
+      catalystToast.error('Failed to save follow-up note');
     } finally {
       setIsSaving(false);
     }
@@ -216,10 +216,10 @@ export function ManagerFollowUpNotes({
         String(newCompleted)
       );
 
-      toast.success(newCompleted ? 'Marked as complete' : 'Reopened');
+      catalystToast.success(newCompleted ? 'Marked as complete' : 'Reopened');
     } catch (err) {
       console.error('Error toggling completion:', err);
-      toast.error('Failed to update status');
+      catalystToast.error('Failed to update status');
     } finally {
       setIsSaving(false);
     }
@@ -249,10 +249,10 @@ export function ManagerFollowUpNotes({
       
       setEditingId(null);
       setEditContent('');
-      toast.success('Follow-up note updated');
+      catalystToast.success('Follow-up note updated');
     } catch (err) {
       console.error('Error updating follow-up:', err);
-      toast.error('Failed to update note');
+      catalystToast.error('Failed to update note');
     } finally {
       setIsSaving(false);
     }
@@ -272,10 +272,10 @@ export function ManagerFollowUpNotes({
       setFollowUps(updatedFollowUps);
       saveFollowUps(updatedFollowUps);
       
-      toast.success('Follow-up note deleted');
+      catalystToast.success('Follow-up note deleted');
     } catch (err) {
       console.error('Error deleting follow-up:', err);
-      toast.error('Failed to delete note');
+      catalystToast.error('Failed to delete note');
     } finally {
       setIsSaving(false);
     }

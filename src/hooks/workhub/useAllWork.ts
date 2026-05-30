@@ -6,7 +6,7 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { workhubService } from '@/services/workhub';
 import { whQueryKeys } from '@/types/workhub.ts';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ════════════════════════════════════════════════════════════════
 // READ HOOKS
@@ -154,10 +154,10 @@ export function useCreateWorkItem() {
     mutationFn: workhubService.createWorkItem,
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['workhub'] });
-      toast.success(`${data.item_key || 'Work item'} created`);
+      catalystToast.success(`${data.item_key || 'Work item'} created`);
     },
     onError: (err: Error) => {
-      toast.error(`Failed to create work item: ${err.message}`);
+      catalystToast.error(`Failed to create work item: ${err.message}`);
     },
   });
 }
@@ -171,7 +171,7 @@ export function useUpdateWorkItem() {
       qc.invalidateQueries({ queryKey: ['workhub'] });
     },
     onError: (err: Error) => {
-      toast.error(`Update failed: ${err.message}`);
+      catalystToast.error(`Update failed: ${err.message}`);
     },
   });
 }
@@ -182,10 +182,10 @@ export function useDeleteWorkItem() {
     mutationFn: workhubService.deleteWorkItem,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['workhub'] });
-      toast.success('Work item deleted');
+      catalystToast.success('Work item deleted');
     },
     onError: (err: Error) => {
-      toast.error(`Delete failed: ${err.message}`);
+      catalystToast.error(`Delete failed: ${err.message}`);
     },
   });
 }
@@ -196,10 +196,10 @@ export function useBulkDelete() {
     mutationFn: workhubService.bulkDelete,
     onSuccess: (_data, ids) => {
       qc.invalidateQueries({ queryKey: ['workhub'] });
-      toast.success(`${ids.length} items deleted`);
+      catalystToast.success(`${ids.length} items deleted`);
     },
     onError: (err: Error) => {
-      toast.error(`Bulk delete failed: ${err.message}`);
+      catalystToast.error(`Bulk delete failed: ${err.message}`);
     },
   });
 }
@@ -211,10 +211,10 @@ export function useBulkUpdateStatus() {
       workhubService.bulkUpdateStatus(ids, statusId),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ['workhub'] });
-      toast.success(`${vars.ids.length} items updated`);
+      catalystToast.success(`${vars.ids.length} items updated`);
     },
     onError: (err: Error) => {
-      toast.error(`Bulk status update failed: ${err.message}`);
+      catalystToast.error(`Bulk status update failed: ${err.message}`);
     },
   });
 }
@@ -226,10 +226,10 @@ export function useCreateComment(workItemId: string) {
       workhubService.createComment(workItemId, body, authorId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: whQueryKeys.comments(workItemId) });
-      toast.success('Comment added');
+      catalystToast.success('Comment added');
     },
     onError: (err: Error) => {
-      toast.error(`Failed to add comment: ${err.message}`);
+      catalystToast.error(`Failed to add comment: ${err.message}`);
     },
   });
 }
@@ -243,10 +243,10 @@ export function useLogWork(workItemId: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: whQueryKeys.worklogs(workItemId) });
       qc.invalidateQueries({ queryKey: whQueryKeys.detail(workItemId) });
-      toast.success('Work logged');
+      catalystToast.success('Work logged');
     },
     onError: (err: Error) => {
-      toast.error(`Failed to log work: ${err.message}`);
+      catalystToast.error(`Failed to log work: ${err.message}`);
     },
   });
 }
@@ -259,10 +259,10 @@ export function useAddLink(workItemId: string) {
     }) => workhubService.addLink(linkTypeId, workItemId, targetItemId, comment, createdBy),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: whQueryKeys.links(workItemId) });
-      toast.success('Link added');
+      catalystToast.success('Link added');
     },
     onError: (err: Error) => {
-      toast.error(`Failed to add link: ${err.message}`);
+      catalystToast.error(`Failed to add link: ${err.message}`);
     },
   });
 }
@@ -274,10 +274,10 @@ export function useAddLabel() {
       workhubService.addLabel(workItemId, labelId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['workhub'] });
-      toast.success('Label added');
+      catalystToast.success('Label added');
     },
     onError: (err: Error) => {
-      toast.error(`Failed to add label: ${err.message}`);
+      catalystToast.error(`Failed to add label: ${err.message}`);
     },
   });
 }
@@ -289,10 +289,10 @@ export function useRemoveLabel() {
       workhubService.removeLabel(workItemId, labelId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['workhub'] });
-      toast.success('Label removed');
+      catalystToast.success('Label removed');
     },
     onError: (err: Error) => {
-      toast.error(`Failed to remove label: ${err.message}`);
+      catalystToast.error(`Failed to remove label: ${err.message}`);
     },
   });
 }
@@ -305,10 +305,10 @@ export function useCloneWorkItem() {
     }) => workhubService.cloneWorkItem(sourceId, cloneLinks, cloneSubtasks, clonedBy),
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['workhub'] });
-      toast.success(`Cloned as ${data.item_key || 'new item'}`);
+      catalystToast.success(`Cloned as ${data.item_key || 'new item'}`);
     },
     onError: (err: Error) => {
-      toast.error(`Clone failed: ${err.message}`);
+      catalystToast.error(`Clone failed: ${err.message}`);
     },
   });
 }
@@ -321,10 +321,10 @@ export function useMoveWorkItem() {
     }) => workhubService.moveWorkItem(id, targetProjectId, targetWorkTypeId, targetStatusId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['workhub'] });
-      toast.success('Work item moved');
+      catalystToast.success('Work item moved');
     },
     onError: (err: Error) => {
-      toast.error(`Move failed: ${err.message}`);
+      catalystToast.error(`Move failed: ${err.message}`);
     },
   });
 }

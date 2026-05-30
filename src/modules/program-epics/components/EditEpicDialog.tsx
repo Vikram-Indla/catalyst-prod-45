@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
 import {
@@ -176,12 +176,12 @@ export function EditEpicDialog({ open, onOpenChange, epicId, onUpdated }: EditEp
       queryClient.invalidateQueries({ queryKey: ['epics'] });
       queryClient.invalidateQueries({ queryKey: ['epic-detail', epicId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Epic updated successfully');
+      catalystToast.success('Epic updated successfully');
       onOpenChange(false);
       onUpdated?.();
     },
     onError: (error: any) => {
-      toast.error(`Failed to update epic: ${error?.message || 'Unknown error'}`);
+      catalystToast.error(`Failed to update epic: ${error?.message || 'Unknown error'}`);
     },
   });
 

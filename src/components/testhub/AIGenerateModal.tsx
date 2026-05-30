@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X, Sparkles, Loader2, CheckCircle2, XCircle, AlertTriangle, FolderOpen, ChevronRight } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
 
@@ -113,7 +113,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
       (data || []).forEach(f => { if (f.parent_id) parentIds.add(f.parent_id); });
       setExpandedFolders(parentIds);
     } catch {
-      toast.error('Failed to load folders');
+      catalystToast.error('Failed to load folders');
     } finally {
       setLoadingFolders(false);
     }
@@ -138,7 +138,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
 
   const handleFolderContinue = () => {
     if (!selectedFolderId) {
-      toast.error('Please select a target folder');
+      catalystToast.error('Please select a target folder');
       return;
     }
     setStep('input');
@@ -193,7 +193,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
       if (err?.message?.includes('too short') || err?.message?.includes('too vague') || err?.message?.includes('lacks enough detail')) {
         setValidationError(err.message);
       } else {
-        toast.error(err?.message || 'Failed to generate test cases');
+        catalystToast.error(err?.message || 'Failed to generate test cases');
       }
     } finally {
       setIsGenerating(false);
@@ -203,7 +203,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
   const handleInsert = async () => {
     const toInsert = generated.filter(g => selected.has(g.id));
     if (toInsert.length === 0) {
-      toast.error('Please select at least one test case');
+      catalystToast.error('Please select at least one test case');
       return;
     }
 
@@ -289,7 +289,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
       }
 
       const folderName = selectedFolder?.name || 'selected folder';
-      toast.success(`Created ${toInsert.length} test cases in "${folderName}"`);
+      catalystToast.success(`Created ${toInsert.length} test cases in "${folderName}"`);
       onSuccess();
       handleClose();
     } catch (err) {
@@ -300,7 +300,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
           ? String((err as { message: string }).message)
           : 'Failed to create test cases';
 
-      toast.error(message);
+      catalystToast.error(message);
     } finally {
       setIsInserting(false);
     }

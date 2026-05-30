@@ -32,7 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 
 interface LinkEpicPickerProps {
@@ -155,14 +155,14 @@ export function LinkEpicPicker({
     },
     onSuccess: () => {
       const count = selectedIds.size;
-      toast.success(`${count} epic${count > 1 ? 's' : ''} linked`);
+      catalystToast.success(`${count} epic${count > 1 ? 's' : ''} linked`);
       queryClient.invalidateQueries({ queryKey: ['theme-epics', themeId] });
       queryClient.invalidateQueries({ queryKey: ['available-epics-picker'] });
       onLinked();
       handleOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to link epics');
+      catalystToast.error('Failed to link epics');
     },
   });
 

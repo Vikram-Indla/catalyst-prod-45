@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { IssueCard } from './IssueCard';
 import { BoardColumn } from './BoardColumn';
 import { useBoardData, useBoardColumns, useSprintManagement, type BoardIssue } from '../../hooks/useBoardData';

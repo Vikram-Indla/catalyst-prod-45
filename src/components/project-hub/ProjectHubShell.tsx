@@ -9,7 +9,7 @@ import { Sidebar } from './shell/Sidebar';
 import { ProjectEntry } from './shell/ProjectSwitcher';
 const CreateProjectModal = lazy(() => import('./CreateProjectModal').then(m => ({ default: m.CreateProjectModal })));
 const CreateWorkItemModal = lazy(() => import('./work-items/CreateWorkItemModal').then(m => ({ default: m.CreateWorkItemModal })));
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export function ProjectHubShell() {
   const params = useParams<{ key?: string }>();

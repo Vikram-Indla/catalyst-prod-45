@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { AnnotationEditorProps, Annotation, Point } from './types';
 import { EditorHeader } from './EditorHeader';
@@ -316,11 +316,11 @@ export const AnnotationEditor: React.FC<AnnotationEditorProps> = ({
       
       const savedAt = new Date().toISOString();
       setLastSaved(savedAt);
-      toast.success('Annotations saved');
+      catalystToast.success('Annotations saved');
       onSave(annotations);
       
     } catch (error) {
-      toast.error('Failed to save annotations');
+      catalystToast.error('Failed to save annotations');
       console.error('Save error:', error);
     } finally {
       setSaving(false);
@@ -345,7 +345,7 @@ export const AnnotationEditor: React.FC<AnnotationEditorProps> = ({
   const confirmClear = useCallback(() => {
     handleClear();
     setShowClearDialog(false);
-    toast.success('All annotations cleared');
+    catalystToast.success('All annotations cleared');
   }, [handleClear]);
 
   // Keyboard shortcuts for save and escape

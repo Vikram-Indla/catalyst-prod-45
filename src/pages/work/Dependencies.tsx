@@ -18,7 +18,7 @@ import { DependencyContextMenu } from '@/components/dependencies/DependencyConte
 import { DependenciesSidebar } from '@/components/dependencies/DependenciesSidebar';
 import { WorkItemIcon, WorkItemBadge } from '@/components/dependencies/WorkItemIcon';
 import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useNavigate, useParams } from 'react-router-dom';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { cn } from '@/lib/utils';
@@ -283,7 +283,7 @@ export default function DependenciesPage() {
 
   const handleExport = () => {
     if (!filteredDependencies?.length) {
-      toast.error('No dependencies to export');
+      catalystToast.error('No dependencies to export');
       return;
     }
 
@@ -308,7 +308,7 @@ export default function DependenciesPage() {
     a.download = `dependencies-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Dependencies exported');
+    catalystToast.success('Dependencies exported');
   };
 
   const getStatusBadge = (status: string) => {
@@ -632,13 +632,13 @@ export default function DependenciesPage() {
                               if (confirm('Delete this dependency?')) {
                                 await supabase.from('dependencies').delete().eq('id', dep.id);
                                 queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
-                                toast.success('Dependency deleted');
+                                catalystToast.success('Dependency deleted');
                               }
                             }}
                             onChangeStatus={async (status) => {
                               await supabase.from('dependencies').update({ status: status as any }).eq('id', dep.id);
                               queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
-                              toast.success('Status updated');
+                              catalystToast.success('Status updated');
                             }}
                           >
                             <TableRow

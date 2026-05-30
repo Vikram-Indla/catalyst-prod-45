@@ -36,7 +36,7 @@ import {
 import { AlertTriangle, Info, Search } from '@/lib/atlaskit-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useProjectKeyResolver } from '@/hooks/useKeyAliasResolver';
 
 interface Project {
@@ -198,10 +198,10 @@ function DetailsTab({ project }: { project: Project }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['project-settings'] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      toast.success('Project settings saved');
+      catalystToast.success('Project settings saved');
     },
     onError: (error) => {
-      toast.error('Failed to save settings: ' + error.message);
+      catalystToast.error('Failed to save settings: ' + error.message);
     },
   });
 
@@ -409,7 +409,7 @@ function NotificationsTab() {
   const [slackNotifications, setSlackNotifications] = useState(false);
 
   const handleSave = () => {
-    toast.success('Notification settings saved');
+    catalystToast.success('Notification settings saved');
   };
 
   return (
@@ -458,7 +458,7 @@ function FeaturesTab() {
   const [releases, setReleases] = useState(true);
 
   const handleSave = () => {
-    toast.success('Feature settings saved');
+    catalystToast.success('Feature settings saved');
   };
 
   return (
@@ -521,17 +521,17 @@ function AdvancedTab({ project }: { project: Project }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      toast.success('Project deleted permanently');
+      catalystToast.success('Project deleted permanently');
       navigate('/projects');
     },
     onError: (error) => {
-      toast.error('Failed to delete project: ' + error.message);
+      catalystToast.error('Failed to delete project: ' + error.message);
     },
   });
 
   const handleArchive = () => {
     if (confirm('Are you sure you want to archive this project?')) {
-      toast.success('Project archived');
+      catalystToast.success('Project archived');
       navigate('/projects');
     }
   };
@@ -540,7 +540,7 @@ function AdvancedTab({ project }: { project: Project }) {
     if (deleteConfirmKey === project.key) {
       deleteProject.mutate();
     } else {
-      toast.error('Project key does not match');
+      catalystToast.error('Project key does not match');
     }
   };
 

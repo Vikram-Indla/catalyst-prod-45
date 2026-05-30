@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Download, Trash2, Move, UserPlus, MoreHorizontal, ArrowUpDown } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import {
   AlertDialog,
@@ -38,7 +38,7 @@ export function StoriesToolbar({ selectedCount, selectedIds, stories, onRefetch,
 
   const handleExport = () => {
     if (!stories || stories.length === 0) {
-      toast.error('No stories to export');
+      catalystToast.error('No stories to export');
       return;
     }
 
@@ -77,7 +77,7 @@ export function StoriesToolbar({ selectedCount, selectedIds, stories, onRefetch,
     link.click();
     document.body.removeChild(link);
 
-    toast.success(`Exported ${storiesToExport.length} stories`);
+    catalystToast.success(`Exported ${storiesToExport.length} stories`);
   };
 
   const handleBulkDelete = async () => {
@@ -90,24 +90,24 @@ export function StoriesToolbar({ selectedCount, selectedIds, stories, onRefetch,
 
       if (error) throw error;
 
-      toast.success(`Deleted ${selectedCount} stories`);
+      catalystToast.success(`Deleted ${selectedCount} stories`);
       onRefetch();
       onClearSelection();
       setShowDeleteDialog(false);
     } catch (error) {
       console.error('Error deleting stories:', error);
-      toast.error('Failed to delete stories');
+      catalystToast.error('Failed to delete stories');
     } finally {
       setIsDeleting(false);
     }
   };
 
   const handleBulkMove = () => {
-    toast.info('Bulk move functionality coming soon');
+    catalystToast.info('Bulk move functionality coming soon');
   };
 
   const handleBulkAssign = () => {
-    toast.info('Bulk assign functionality coming soon');
+    catalystToast.info('Bulk assign functionality coming soon');
   };
 
   return (

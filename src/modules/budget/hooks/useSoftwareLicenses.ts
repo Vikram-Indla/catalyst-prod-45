@@ -4,7 +4,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { addDays, differenceInDays } from 'date-fns';
 import type { 
   SoftwareLicense, 
@@ -121,11 +121,11 @@ export function useCreateLicense() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['software-licenses'] });
       queryClient.invalidateQueries({ queryKey: ['license-stats'] });
-      toast.success('License created successfully');
+      catalystToast.success('License created successfully');
     },
     onError: (error) => {
       console.error('Error creating license:', error);
-      toast.error('Failed to create license');
+      catalystToast.error('Failed to create license');
     },
   });
 }
@@ -156,11 +156,11 @@ export function useUpdateLicense() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['software-licenses'] });
       queryClient.invalidateQueries({ queryKey: ['license-stats'] });
-      toast.success('License updated successfully');
+      catalystToast.success('License updated successfully');
     },
     onError: (error) => {
       console.error('Error updating license:', error);
-      toast.error('Failed to update license');
+      catalystToast.error('Failed to update license');
     },
   });
 }
@@ -180,11 +180,11 @@ export function useDeleteLicense() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['software-licenses'] });
       queryClient.invalidateQueries({ queryKey: ['license-stats'] });
-      toast.success('License deleted successfully');
+      catalystToast.success('License deleted successfully');
     },
     onError: (error) => {
       console.error('Error deleting license:', error);
-      toast.error('Failed to delete license');
+      catalystToast.error('Failed to delete license');
     },
   });
 }

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface DrawerTabConfig {
   id: string;
@@ -65,7 +65,7 @@ export function useUpdateDrawerTabConfig() {
     },
     onError: (error) => {
       console.error('Error updating drawer tab config:', error);
-      toast.error('Failed to update tab configuration');
+      catalystToast.error('Failed to update tab configuration');
     },
   });
 }
@@ -93,11 +93,11 @@ export function useBulkUpdateDrawerTabConfigs() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['drawer-tab-configs'] });
-      toast.success('Tab configuration saved');
+      catalystToast.success('Tab configuration saved');
     },
     onError: (error) => {
       console.error('Error saving drawer tab configs:', error);
-      toast.error('Failed to save tab configuration');
+      catalystToast.error('Failed to save tab configuration');
     },
   });
 }

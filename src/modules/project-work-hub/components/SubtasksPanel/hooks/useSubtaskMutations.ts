@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface SubtaskRow {
   id: string;
@@ -45,7 +45,7 @@ export function useSubtaskMutations(parentKey: string) {
     },
     onError: (err, _vars, ctx) => {
       if (ctx?.prev) qc.setQueryData(queryKey, ctx.prev);
-      toast.error('Failed to update subtask', { description: (err as Error).message });
+      catalystToast.error('Failed to update subtask');
     },
     onSettled: () => qc.invalidateQueries({ queryKey }),
   });
@@ -66,9 +66,9 @@ export function useSubtaskMutations(parentKey: string) {
     },
     onError: (err, _id, ctx) => {
       if (ctx?.prev) qc.setQueryData(queryKey, ctx.prev);
-      toast.error('Failed to delete subtask', { description: (err as Error).message });
+      catalystToast.error('Failed to delete subtask');
     },
-    onSuccess: () => toast.success('Subtask deleted'),
+    onSuccess: () => catalystToast.success('Subtask deleted'),
     onSettled: () => qc.invalidateQueries({ queryKey }),
   });
 
@@ -83,9 +83,9 @@ export function useSubtaskMutations(parentKey: string) {
       return ids.length;
     },
     onSuccess: (n) => {
-      if (n > 0) toast.success(`Cleared ${n} completed subtask${n === 1 ? '' : 's'}`);
+      if (n > 0) catalystToast.success(`Cleared ${n} completed subtask${n === 1 ? '' : 's'}`);
     },
-    onError: (err) => toast.error('Failed to clear completed', { description: (err as Error).message }),
+    onError: (err) => catalystToast.error('Failed to clear completed'),
     onSettled: () => qc.invalidateQueries({ queryKey }),
   });
 
@@ -106,11 +106,11 @@ export function useSubtaskMutations(parentKey: string) {
       return { prev };
     },
     onSuccess: (n) => {
-      if (n > 0) toast.success(`Updated ${n} subtask${n === 1 ? '' : 's'}`);
+      if (n > 0) catalystToast.success(`Updated ${n} subtask${n === 1 ? '' : 's'}`);
     },
     onError: (err, _vars, ctx) => {
       if (ctx?.prev) qc.setQueryData(queryKey, ctx.prev);
-      toast.error('Bulk update failed', { description: (err as Error).message });
+      catalystToast.error('Bulk update failed');
     },
     onSettled: () => qc.invalidateQueries({ queryKey }),
   });
@@ -135,11 +135,11 @@ export function useSubtaskMutations(parentKey: string) {
       return { prev };
     },
     onSuccess: (n) => {
-      if (n > 0) toast.success(`Deleted ${n} subtask${n === 1 ? '' : 's'}`);
+      if (n > 0) catalystToast.success(`Deleted ${n} subtask${n === 1 ? '' : 's'}`);
     },
     onError: (err, _vars, ctx) => {
       if (ctx?.prev) qc.setQueryData(queryKey, ctx.prev);
-      toast.error('Bulk delete failed', { description: (err as Error).message });
+      catalystToast.error('Bulk delete failed');
     },
     onSettled: () => qc.invalidateQueries({ queryKey }),
   });
@@ -174,7 +174,7 @@ export function useSubtaskMutations(parentKey: string) {
     },
     onError: (err, _vars, ctx) => {
       if (ctx?.prev) qc.setQueryData(queryKey, ctx.prev);
-      toast.error('Reorder failed', { description: (err as Error).message });
+      catalystToast.error('Reorder failed');
     },
     onSettled: () => qc.invalidateQueries({ queryKey }),
   });

@@ -9,7 +9,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Plus, Flag, Trash2, Check } from '@/lib/atlaskit-icons';
 import { logRequestAudit } from '@/lib/requestAudit';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 
 interface RequestMilestonesTabProps {
@@ -60,14 +60,14 @@ export function RequestMilestonesTab({ requestId }: RequestMilestonesTabProps) {
         .select();
       if (error) throw error;
       if (!rows || rows.length === 0) {
-        toast.error('Failed to add milestone — no rows inserted');
+        catalystToast.error('Failed to add milestone — no rows inserted');
         return;
       }
       invalidate();
       setNewTitle('');
       setNewDate('');
       setShowAdd(false);
-      toast.success('Milestone added');
+      catalystToast.success('Milestone added');
       logRequestAudit({
         request_id: requestId,
         action: 'milestone_added',
@@ -76,7 +76,7 @@ export function RequestMilestonesTab({ requestId }: RequestMilestonesTabProps) {
         new_value: JSON.stringify({ title: newTitle.trim(), planned_date: newDate }),
       });
     } catch (err: any) {
-      toast.error('Failed: ' + err.message);
+      catalystToast.error('Failed: ' + err.message);
     } finally {
       setSubmitting(false);
     }
@@ -92,11 +92,11 @@ export function RequestMilestonesTab({ requestId }: RequestMilestonesTabProps) {
         .select();
       if (error) throw error;
       if (!rows || rows.length === 0) {
-        toast.error('Failed to update milestone');
+        catalystToast.error('Failed to update milestone');
         return;
       }
       invalidate();
-      toast.success(newStatus === 'completed' ? 'Milestone completed' : 'Milestone reopened');
+      catalystToast.success(newStatus === 'completed' ? 'Milestone completed' : 'Milestone reopened');
       logRequestAudit({
         request_id: requestId,
         action: newStatus === 'completed' ? 'milestone_completed' : 'milestone_reopened',
@@ -107,7 +107,7 @@ export function RequestMilestonesTab({ requestId }: RequestMilestonesTabProps) {
         new_value: newStatus,
       });
     } catch (err: any) {
-      toast.error('Update failed: ' + err.message);
+      catalystToast.error('Update failed: ' + err.message);
     }
   };
 
@@ -118,7 +118,7 @@ export function RequestMilestonesTab({ requestId }: RequestMilestonesTabProps) {
         .eq('id', id);
       if (error) throw error;
       invalidate();
-      toast.success('Milestone removed');
+      catalystToast.success('Milestone removed');
       logRequestAudit({
         request_id: requestId,
         action: 'milestone_deleted',
@@ -126,7 +126,7 @@ export function RequestMilestonesTab({ requestId }: RequestMilestonesTabProps) {
         entity_id: id,
       });
     } catch (err: any) {
-      toast.error('Delete failed: ' + err.message);
+      catalystToast.error('Delete failed: ' + err.message);
     }
   };
 

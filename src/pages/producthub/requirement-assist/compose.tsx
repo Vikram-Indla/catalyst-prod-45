@@ -9,7 +9,7 @@ import { useRaSourceBrds } from '@/hooks/useRaDocuments';
 import { useRaGenerate } from '@/hooks/useRaGenerate';
 import { RaBadge } from '@/components/requirement-assist/RaBadge';
 import { Zap, Upload, FileText, X } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 const METHODOLOGY_OPTIONS: { key: RaMethodology; title: string; sections: number }[] = [
   { key: 'kpmg', title: 'KPMG Advisory', sections: 16 },
@@ -43,11 +43,11 @@ export default function RequirementAssistCompose() {
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ];
     if (!allowedTypes.includes(file.type)) {
-      toast.error('Only PDF and DOCX files are supported');
+      catalystToast.error('Only PDF and DOCX files are supported');
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      toast.error('File must be under 10MB');
+      catalystToast.error('File must be under 10MB');
       return;
     }
 
@@ -64,19 +64,19 @@ export default function RequirementAssistCompose() {
         if (file.type === 'application/pdf' || file.type.includes('word')) {
           // Binary files: store a placeholder, actual parsing happens server-side
           setInputText(`[Uploaded file: ${file.name}]\n\nFile will be processed by the AI pipeline.`);
-          toast.success(`${file.name} uploaded successfully`);
+          catalystToast.success(`${file.name} uploaded successfully`);
         }
         setIsExtracting(false);
       };
       reader.onerror = () => {
         // For binary files, still mark as uploaded
         setInputText(`[Uploaded file: ${file.name}]\n\nFile will be processed by the AI pipeline.`);
-        toast.success(`${file.name} uploaded successfully`);
+        catalystToast.success(`${file.name} uploaded successfully`);
         setIsExtracting(false);
       };
       reader.readAsText(file);
     } catch {
-      toast.error('Failed to read file');
+      catalystToast.error('Failed to read file');
       setIsExtracting(false);
     }
   }, []);
@@ -122,7 +122,7 @@ export default function RequirementAssistCompose() {
 
       navigate(`/producthub/requirement-assist/${doc.id}`);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to create document');
+      catalystToast.error(err.message || 'Failed to create document');
     }
   };
 

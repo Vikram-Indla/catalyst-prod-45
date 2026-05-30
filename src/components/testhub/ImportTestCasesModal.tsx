@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { X, Upload, FileText, Download, AlertCircle } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface ImportTestCasesModalProps {
   isOpen: boolean;
@@ -142,7 +142,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
         }
       }
       
-      toast.success(`Imported ${parsedData.length} test cases`);
+      catalystToast.success(`Imported ${parsedData.length} test cases`);
       onSuccess();
       handleClose();
     } catch (err: unknown) {

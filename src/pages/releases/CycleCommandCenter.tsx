@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { exportTestCycles } from '@/utils/exportTestCycles';
 
 // Command Center Components
@@ -89,9 +89,9 @@ export default function CycleCommandCenter() {
         endDate: cycle.endDate,
         environment: cycle.environment,
       }], format);
-      toast.success(`Exported cycle data as ${format.toUpperCase()}`);
+      catalystToast.success(`Exported cycle data as ${format.toUpperCase()}`);
     } catch {
-      toast.error('Export failed');
+      catalystToast.error('Export failed');
     } finally {
       setIsExporting(false);
     }
@@ -240,7 +240,7 @@ export default function CycleCommandCenter() {
         isOpen={isAddTestsOpen}
         onClose={() => setIsAddTestsOpen(false)}
         onSuccess={(count) => {
-          toast.success(`Added ${count} tests to cycle`);
+          catalystToast.success(`Added ${count} tests to cycle`);
           refetch();
         }}
       />

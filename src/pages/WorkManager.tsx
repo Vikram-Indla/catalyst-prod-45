@@ -17,7 +17,7 @@ import {
   Layers
 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -286,7 +286,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
   // Create new team handler - now wired to the backend
   const handleCreateTeam = (teamInput: Omit<Team, 'id'>) => {
     if (!user) {
-      toast.error('Please sign in to create a team');
+      catalystToast.error('Please sign in to create a team');
       return;
     }
 

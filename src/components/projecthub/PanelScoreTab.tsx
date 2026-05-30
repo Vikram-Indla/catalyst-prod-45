@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface Props {
   projectId: string;
@@ -52,10 +52,10 @@ export function PanelScoreTab({ projectId }: Props) {
         { onConflict: 'project_id' },
       );
       if (error) throw error;
-      toast.success('Score saved');
+      catalystToast.success('Score saved');
       qc.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
     } catch (e: any) {
-      toast.error(e.message || 'Failed to save score');
+      catalystToast.error(e.message || 'Failed to save score');
     } finally {
       setSaving(false);
     }

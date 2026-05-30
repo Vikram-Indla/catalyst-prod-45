@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TestSet, TestSetFilters, CreateTestSetInput, UpdateTestSetInput } from '@/types/test-sets';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export function useTestSets(projectId: string, filters?: TestSetFilters) {
   return useQuery({
@@ -88,9 +88,9 @@ export function useCreateTestSet() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['test-sets'] });
-      toast.success('Test set created');
+      catalystToast.success('Test set created');
     },
-    onError: (e) => { toast.error('Failed to create test set'); console.error(e); },
+    onError: (e) => { catalystToast.error('Failed to create test set'); console.error(e); },
   });
 }
 
@@ -117,9 +117,9 @@ export function useUpdateTestSet() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['test-sets'] });
       queryClient.invalidateQueries({ queryKey: ['test-set'] });
-      toast.success('Test set updated');
+      catalystToast.success('Test set updated');
     },
-    onError: (e) => { toast.error('Failed to update test set'); console.error(e); },
+    onError: (e) => { catalystToast.error('Failed to update test set'); console.error(e); },
   });
 }
 
@@ -132,9 +132,9 @@ export function useDeleteTestSet() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['test-sets'] });
-      toast.success('Test set deleted');
+      catalystToast.success('Test set deleted');
     },
-    onError: (e) => { toast.error('Failed to delete test set'); console.error(e); },
+    onError: (e) => { catalystToast.error('Failed to delete test set'); console.error(e); },
   });
 }
 
@@ -149,9 +149,9 @@ export function useRefreshDynamicSet() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['test-sets'] });
       queryClient.invalidateQueries({ queryKey: ['test-set-cases'] });
-      toast.success(`Refreshed: ${data?.added || 0} test cases matched`);
+      catalystToast.success(`Refreshed: ${data?.added || 0} test cases matched`);
     },
-    onError: (e) => { toast.error('Failed to refresh'); console.error(e); },
+    onError: (e) => { catalystToast.error('Failed to refresh'); console.error(e); },
   });
 }
 
@@ -181,9 +181,9 @@ export function useAddTestCasesToSet() {
       queryClient.invalidateQueries({ queryKey: ['test-set-cases', setId] });
       queryClient.invalidateQueries({ queryKey: ['test-set', setId] });
       queryClient.invalidateQueries({ queryKey: ['test-sets'] });
-      toast.success('Test cases added');
+      catalystToast.success('Test cases added');
     },
-    onError: (e) => { toast.error('Failed to add test cases'); console.error(e); },
+    onError: (e) => { catalystToast.error('Failed to add test cases'); console.error(e); },
   });
 }
 
@@ -202,9 +202,9 @@ export function useRemoveTestCasesFromSet() {
       queryClient.invalidateQueries({ queryKey: ['test-set-cases', setId] });
       queryClient.invalidateQueries({ queryKey: ['test-set', setId] });
       queryClient.invalidateQueries({ queryKey: ['test-sets'] });
-      toast.success('Test cases removed');
+      catalystToast.success('Test cases removed');
     },
-    onError: (e) => { toast.error('Failed to remove test cases'); console.error(e); },
+    onError: (e) => { catalystToast.error('Failed to remove test cases'); console.error(e); },
   });
 }
 
@@ -220,7 +220,7 @@ export function useReorderTestSetCases() {
     onSuccess: (_, { setId }) => {
       queryClient.invalidateQueries({ queryKey: ['test-set-cases', setId] });
     },
-    onError: (e) => { toast.error('Failed to reorder'); console.error(e); },
+    onError: (e) => { catalystToast.error('Failed to reorder'); console.error(e); },
   });
 }
 
@@ -261,9 +261,9 @@ export function useCloneTestSet() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['test-sets'] });
-      toast.success('Test set cloned');
+      catalystToast.success('Test set cloned');
     },
-    onError: (e) => { toast.error('Failed to clone'); console.error(e); },
+    onError: (e) => { catalystToast.error('Failed to clone'); console.error(e); },
   });
 }
 
@@ -276,9 +276,9 @@ export function useArchiveTestSet() {
     },
     onSuccess: (_, { archive }) => {
       queryClient.invalidateQueries({ queryKey: ['test-sets'] });
-      toast.success(archive ? 'Test set archived' : 'Test set restored');
+      catalystToast.success(archive ? 'Test set archived' : 'Test set restored');
     },
-    onError: (e) => { toast.error('Failed to update'); console.error(e); },
+    onError: (e) => { catalystToast.error('Failed to update'); console.error(e); },
   });
 }
 
@@ -363,10 +363,10 @@ export function useCreateTestCycleFromSet() {
     },
     onSuccess: (cycle) => {
       queryClient.invalidateQueries({ queryKey: ['test-sets'] });
-      toast.success(`Created cycle: ${(cycle as any).name}`);
+      catalystToast.success(`Created cycle: ${(cycle as any).name}`);
       // Navigate to the new cycle after a brief delay
       setTimeout(() => window.location.href = `/testhub/cycles/${(cycle as any).id}`, 500);
     },
-    onError: (e) => { toast.error('Failed to create cycle'); console.error(e); },
+    onError: (e) => { catalystToast.error('Failed to create cycle'); console.error(e); },
   });
 }

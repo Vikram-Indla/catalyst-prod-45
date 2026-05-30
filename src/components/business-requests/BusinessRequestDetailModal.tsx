@@ -9,7 +9,7 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   X, Share2, MoreHorizontal, ChevronDown, Copy, Trash2, Loader2,
   Check, Pencil, Calendar, Archive, ExternalLink,
@@ -306,7 +306,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
       skipNextFormResetRef.current = true;
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
       queryClient.invalidateQueries({ queryKey: ['br-audit-log', requestId] });
-    } catch { toast.error('Failed to save changes'); }
+    } catch { catalystToast.error('Failed to save changes'); }
     finally { setIsSaving(false); }
   }, [requestId, originalData, updateMutation, queryClient]);
 
@@ -393,7 +393,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
       old_value: null,
       new_value: html,
     });
-    toast.success('Comment added');
+    catalystToast.success('Comment added');
     queryClient.invalidateQueries({ queryKey: ['br-comments', requestId] });
   };
 

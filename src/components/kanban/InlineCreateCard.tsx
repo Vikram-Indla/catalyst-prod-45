@@ -31,7 +31,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useCreatemeta } from '@/hooks/useCreatemeta';
 import { useSearchAssignees } from '@/hooks/useSearchAssignees';
 import { SPACING_TOKENS } from './kanban-tokens';

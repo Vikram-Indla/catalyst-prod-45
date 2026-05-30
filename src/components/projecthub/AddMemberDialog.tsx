@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Search, UserPlus, Loader2 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface Props {
   open: boolean;
@@ -66,10 +66,10 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
       const { error } = await typedQuery('project_members').insert({ project_id: projectId, user_id: memberUserId, role: roleName || 'viewer', status: 'active', added_by: user?.id || null });
       if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['project-team'] }); queryClient.invalidateQueries({ queryKey: ['projects'] }); toast.success('Member added to project'); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['project-team'] }); queryClient.invalidateQueries({ queryKey: ['projects'] }); catalystToast.success('Member added to project'); },
     onError: (err: Error) => {
-      if (err.message?.includes('duplicate') || err.message?.includes('unique')) toast.error('This user is already a member of this project');
-      else toast.error(`Failed to add member: ${err.message}`);
+      if (err.message?.includes('duplicate') || err.message?.includes('unique')) catalystToast.error('This user is already a member of this project');
+      else catalystToast.error(`Failed to add member: ${err.message}`);
     },
   });
 

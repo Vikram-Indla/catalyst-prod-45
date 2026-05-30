@@ -25,7 +25,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link as RouterLink } from 'react-router-dom';
 import { Plus, Star, MoreHorizontal, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import Avatar from '@atlaskit/avatar';
 import Textfield from '@atlaskit/textfield';
 import DropdownMenu, {
@@ -235,12 +235,12 @@ function LeadOwnerPopover({ product }: { product: Product }) {
       if (error) throw error;
 
       const newOwner = profiles.find(p => p.id === userId);
-      toast.success(`Lead changed to ${newOwner?.display_name || 'Unknown'}`);
+      catalystToast.success(`Lead changed to ${newOwner?.display_name || 'Unknown'}`);
       setOpen(false);
       setSearch('');
       await queryClient.invalidateQueries({ queryKey: ['product-hub', 'products'] });
     } catch (e) {
-      toast.error('Failed to update lead');
+      catalystToast.error('Failed to update lead');
     } finally {
       setUpdating(false);
     }
@@ -256,12 +256,12 @@ function LeadOwnerPopover({ product }: { product: Product }) {
         .eq('id', product.id);
       if (error) throw error;
 
-      toast.success('Lead cleared');
+      catalystToast.success('Lead cleared');
       setOpen(false);
       setSearch('');
       await queryClient.invalidateQueries({ queryKey: ['product-hub', 'products'] });
     } catch (e) {
-      toast.error('Failed to clear lead');
+      catalystToast.error('Failed to clear lead');
     } finally {
       setUpdating(false);
     }

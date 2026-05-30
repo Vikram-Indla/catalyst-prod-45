@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export type WorkItemType = 'epic' | 'feature' | 'story';
 
@@ -96,10 +96,10 @@ export function useCreateWorkContribution() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['kr-work-contributions', variables.key_result_id] });
       queryClient.invalidateQueries({ queryKey: ['key-results-v2'] });
-      toast.success('Work item linked');
+      catalystToast.success('Work item linked');
     },
     onError: (error: any) => {
-      toast.error(error.code === '23505' ? 'Already linked' : 'Failed to link');
+      catalystToast.error(error.code === '23505' ? 'Already linked' : 'Failed to link');
     },
   });
 }
@@ -114,9 +114,9 @@ export function useDeleteWorkContribution() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['kr-work-contributions', variables.keyResultId] });
       queryClient.invalidateQueries({ queryKey: ['key-results-v2'] });
-      toast.success('Work item unlinked');
+      catalystToast.success('Work item unlinked');
     },
-    onError: () => toast.error('Failed to unlink'),
+    onError: () => catalystToast.error('Failed to unlink'),
   });
 }
 
@@ -141,7 +141,7 @@ export function useUpdateContributionPercent() {
       queryClient.invalidateQueries({ queryKey: ['kr-work-contributions', variables.keyResultId] });
       queryClient.invalidateQueries({ queryKey: ['key-results-v2'] });
     },
-    onError: () => toast.error('Failed to update contribution'),
+    onError: () => catalystToast.error('Failed to update contribution'),
   });
 }
 

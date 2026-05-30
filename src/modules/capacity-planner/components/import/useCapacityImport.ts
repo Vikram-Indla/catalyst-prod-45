@@ -5,7 +5,7 @@
 import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { ImportMode, ParsedRow, ImportPreviewRow, ValidationError, ImportField } from './types';
 import { RESOURCE_IMPORT_FIELDS, UNIQUE_KEY_FIELD } from './fieldConfig';
 import { parseInput, findMatchingField, normalizeHeader } from './parseUtils';
@@ -194,16 +194,16 @@ export function useCapacityImport() {
       queryClient.invalidateQueries({ queryKey: ['resource-inventory'] });
 
       if (errors.length > 0) {
-        toast.warning(`Import completed with ${errors.length} errors`, {
+        catalystToast.warning(`Import completed with ${errors.length} errors`, {
           description: errors.slice(0, 3).join('\n'),
         });
       } else {
-        toast.success(`Successfully imported ${processed} resources`);
+        catalystToast.success(`Successfully imported ${processed} resources`);
       }
 
       return { success: true, processed, errors };
     } catch (error) {
-      toast.error('Import failed', {
+      catalystToast.error('Import failed', {
         description: error instanceof Error ? error.message : 'Unknown error',
       });
       return { success: false, processed: 0, errors: [String(error)] };

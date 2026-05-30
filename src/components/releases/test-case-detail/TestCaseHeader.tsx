@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useAutoVersioning } from '@/hooks/test-management/useAutoVersioning';
 import { getEstimatedDurationDisplay } from '@/utils/test-case-duration';
 import type { TestCaseDetailData } from '@/hooks/test-management/useTestCases';
@@ -84,10 +84,10 @@ export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
       
       await queryClient.invalidateQueries({ queryKey: ['tm-case', testCase.id] });
       await queryClient.invalidateQueries({ queryKey: ['tm-cases'] });
-      toast.success('Title updated');
+      catalystToast.success('Title updated');
       setIsEditingTitle(false);
     } catch (error) {
-      toast.error('Failed to update title');
+      catalystToast.error('Failed to update title');
       setTitle(testCase.title);
     } finally {
       setIsSavingTitle(false);

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { Team, TeamFilters, CreateTeamInput, UpdateTeamInput } from '@/types/team.types';
 
 export function useTeams(filters?: TeamFilters) {
@@ -83,11 +83,11 @@ export function useCreateTeam() {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
       queryClient.invalidateQueries({ queryKey: ['planner-teams'] });
       queryClient.invalidateQueries({ queryKey: ['accessible-teams'] });
-      toast.success('Team created successfully');
+      catalystToast.success('Team created successfully');
     },
     onError: (error) => {
       console.error('Error creating team:', error);
-      toast.error('Failed to create team');
+      catalystToast.error('Failed to create team');
     },
   });
 }
@@ -110,11 +110,11 @@ export function useUpdateTeam() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
       queryClient.invalidateQueries({ queryKey: ['team', variables.id] });
-      toast.success('Team updated successfully');
+      catalystToast.success('Team updated successfully');
     },
     onError: (error) => {
       console.error('Error updating team:', error);
-      toast.error('Failed to update team');
+      catalystToast.error('Failed to update team');
     },
   });
 }
@@ -135,11 +135,11 @@ export function useDeleteTeams() {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
       queryClient.invalidateQueries({ queryKey: ['accessible-teams'] });
       queryClient.invalidateQueries({ queryKey: ['team-member-ids'] });
-      toast.success('Teams deleted successfully');
+      catalystToast.success('Teams deleted successfully');
     },
     onError: (error) => {
       console.error('Error deleting teams:', error);
-      toast.error('Failed to delete teams');
+      catalystToast.error('Failed to delete teams');
     },
   });
 }
@@ -158,11 +158,11 @@ export function useUpdateTeamsStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
-      toast.success('Team status updated successfully');
+      catalystToast.success('Team status updated successfully');
     },
     onError: (error) => {
       console.error('Error updating team status:', error);
-      toast.error('Failed to update team status');
+      catalystToast.error('Failed to update team status');
     },
   });
 }
@@ -204,11 +204,11 @@ export function useToggleTeamSubscription() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['team-subscriptions'] });
-      toast.success(data.subscribed ? 'Subscribed to team' : 'Unsubscribed from team');
+      catalystToast.success(data.subscribed ? 'Subscribed to team' : 'Unsubscribed from team');
     },
     onError: (error) => {
       console.error('Error toggling team subscription:', error);
-      toast.error('Failed to update subscription');
+      catalystToast.error('Failed to update subscription');
     },
   });
 }

@@ -11,7 +11,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { PhIssue } from '../types';
 
 interface Props {
@@ -38,7 +38,7 @@ export function CatalystMdtRefField({ issue, onUpdate }: Props) {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('MDT Ref updated');
+      catalystToast.success('MDT Ref updated');
       onUpdate?.();
     },
     onError: (e: any) => {
@@ -46,12 +46,12 @@ export function CatalystMdtRefField({ issue, onUpdate }: Props) {
       // a friendly message instead of a 400 toast spam.
       const msg = e?.message ?? '';
       if (msg.includes("mdt_ref") || msg.includes("column")) {
-        toast.info(
+        catalystToast.info(
           'MDT Ref column not yet in database. Run the migration ' +
           'outputs/20260428140000_mdt_ref_field.sql in Supabase Studio.',
         );
       } else {
-        toast.error(`Failed to save MDT Ref: ${msg}`);
+        catalystToast.error(`Failed to save MDT Ref: ${msg}`);
       }
     },
   });

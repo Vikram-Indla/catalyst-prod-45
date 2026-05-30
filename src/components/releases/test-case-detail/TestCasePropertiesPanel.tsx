@@ -41,7 +41,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { format, formatDistanceToNow } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
@@ -199,7 +199,7 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
   const handleStatusChange = async (value: string) => {
     const dbStatus = STATUS_TO_DB[value] as 'draft' | 'ready' | 'approved' | 'deprecated';
     if (!dbStatus) {
-      toast.error('Invalid status value');
+      catalystToast.error('Invalid status value');
       return;
     }
 
@@ -225,10 +225,10 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
       });
 
       await invalidateQueries();
-      toast.success(`Status updated to ${statusConfig[value]?.label || value}`);
+      catalystToast.success(`Status updated to ${statusConfig[value]?.label || value}`);
     } catch (error) {
       console.error('Failed to update status:', error);
-      toast.error('Failed to update status');
+      catalystToast.error('Failed to update status');
     } finally {
       setIsUpdatingStatus(false);
     }
@@ -238,7 +238,7 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
     const priorityId = PRIORITY_ID_MAP[value];
     
     if (!priorityId) {
-      toast.error('Invalid priority value');
+      catalystToast.error('Invalid priority value');
       return;
     }
 
@@ -264,10 +264,10 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
       });
 
       await invalidateQueries();
-      toast.success(`Priority updated to ${value}`);
+      catalystToast.success(`Priority updated to ${value}`);
     } catch (error) {
       console.error('Failed to update priority:', error);
-      toast.error('Failed to update priority');
+      catalystToast.error('Failed to update priority');
     } finally {
       setIsUpdatingPriority(false);
     }
@@ -277,7 +277,7 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
     const typeId = TYPE_ID_MAP[value];
     
     if (!typeId) {
-      toast.error('Invalid type value');
+      catalystToast.error('Invalid type value');
       return;
     }
 
@@ -303,10 +303,10 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
       });
 
       await invalidateQueries();
-      toast.success(`Type updated to ${value}`);
+      catalystToast.success(`Type updated to ${value}`);
     } catch (error) {
       console.error('Failed to update type:', error);
-      toast.error('Failed to update type');
+      catalystToast.error('Failed to update type');
     } finally {
       setIsUpdatingType(false);
     }
@@ -336,10 +336,10 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
       });
 
       await invalidateQueries();
-      toast.success('Assignee updated');
+      catalystToast.success('Assignee updated');
     } catch (error) {
       console.error('Failed to update assignee:', error);
-      toast.error('Failed to update assignee');
+      catalystToast.error('Failed to update assignee');
     } finally {
       setIsUpdatingAssignee(false);
     }
@@ -357,7 +357,7 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
       setNewTag('');
       setIsAddingTag(false);
     } catch (error) {
-      toast.error('Failed to add tag');
+      catalystToast.error('Failed to add tag');
     }
   };
 
@@ -368,7 +368,7 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
         labelId,
       });
     } catch (error) {
-      toast.error('Failed to remove tag');
+      catalystToast.error('Failed to remove tag');
     }
   };
 

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { IncidentHeader } from '@/components/incidents/IncidentHeader';
@@ -129,9 +129,9 @@ export default function IncidentDetail() {
       await refetch();
       setIsEditMode(false);
       setEditedData({});
-      toast.success('Incident updated successfully');
+      catalystToast.success('Incident updated successfully');
     } catch (error) {
-      toast.error('Failed to update incident');
+      catalystToast.error('Failed to update incident');
     }
   };
 
@@ -159,23 +159,23 @@ export default function IncidentDetail() {
         if (error) throw error;
 
         await refetch();
-        toast.success(`Status changed to ${status.replace('-', ' ')}`);
+        catalystToast.success(`Status changed to ${status.replace('-', ' ')}`);
       } catch (error) {
-        toast.error('Failed to update status');
+        catalystToast.error('Failed to update status');
       }
     }
   };
 
   const handleAddComment = (text: string) => {
-    toast.success('Comment added');
+    catalystToast.success('Comment added');
   };
 
   const handleRemoveLinkedItem = (itemId: string) => {
-    toast.info('Link removed');
+    catalystToast.info('Link removed');
   };
 
   const handleRemoveWatcher = (watcherId: string) => {
-    toast.info('Watcher removed');
+    catalystToast.info('Watcher removed');
   };
 
   const currentSummary = editedData.summary ?? incident.summary;
@@ -207,12 +207,12 @@ export default function IncidentDetail() {
               attachments={incident.attachments || []}
               isEditMode={isEditMode}
               onUpload={(files) => {
-                toast.success(`${files.length} file(s) uploaded`);
+                catalystToast.success(`${files.length} file(s) uploaded`);
               }}
               onDelete={(attId) => {
-                toast.success('Attachment removed');
+                catalystToast.success('Attachment removed');
               }}
-              onDownload={(att) => toast.info(`Downloading ${att.name}...`)}
+              onDownload={(att) => catalystToast.info(`Downloading ${att.name}...`)}
             />
           </div>
         </div>

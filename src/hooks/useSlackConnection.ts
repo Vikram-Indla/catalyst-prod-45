@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface SlackStatus {
   connected: boolean;
@@ -47,7 +47,7 @@ export function useSlackConnection() {
   // Start OAuth flow
   const startConnection = async () => {
     if (!user?.id) {
-      toast.error('You must be logged in to connect Slack');
+      catalystToast.error('You must be logged in to connect Slack');
       return;
     }
 
@@ -104,7 +104,7 @@ export function useSlackConnection() {
 
     } catch (error) {
       console.error('Slack connection error:', error);
-      toast.error('Failed to start Slack connection');
+      catalystToast.error('Failed to start Slack connection');
       setIsConnecting(false);
     }
   };
@@ -115,12 +115,12 @@ export function useSlackConnection() {
     const userId = sessionStorage.getItem('slack_oauth_user_id');
 
     if (state !== storedState) {
-      toast.error('Invalid OAuth state - please try again');
+      catalystToast.error('Invalid OAuth state - please try again');
       return false;
     }
 
     if (!userId) {
-      toast.error('User session expired - please try again');
+      catalystToast.error('User session expired - please try again');
       return false;
     }
 
@@ -137,7 +137,7 @@ export function useSlackConnection() {
       sessionStorage.removeItem('slack_oauth_state');
       sessionStorage.removeItem('slack_oauth_user_id');
 
-      toast.success(`Connected to ${data.team_name || 'Slack'}!`);
+      catalystToast.success(`Connected to ${data.team_name || 'Slack'}!`);
       
       // Refresh queries
       queryClient.invalidateQueries({ queryKey: ['slack-connection-status'] });
@@ -146,7 +146,7 @@ export function useSlackConnection() {
       return true;
     } catch (error) {
       console.error('Slack callback error:', error);
-      toast.error('Failed to complete Slack connection');
+      catalystToast.error('Failed to complete Slack connection');
       return false;
     }
   };
@@ -163,13 +163,13 @@ export function useSlackConnection() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Disconnected from Slack');
+      catalystToast.success('Disconnected from Slack');
       queryClient.invalidateQueries({ queryKey: ['slack-connection-status'] });
       queryClient.invalidateQueries({ queryKey: ['notification-preferences'] });
     },
     onError: (error) => {
       console.error('Disconnect error:', error);
-      toast.error('Failed to disconnect from Slack');
+      catalystToast.error('Failed to disconnect from Slack');
     },
   });
 

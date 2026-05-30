@@ -19,7 +19,7 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 import Heading from '@atlaskit/heading';
 import Button from '@atlaskit/button/new';
@@ -124,16 +124,16 @@ function ResourceRow({ profile, overrideUrl, overrideStoragePath, isLast }: Reso
     const file = e.target.files?.[0];
     if (!file) return;
     if (!user?.id) {
-      toast.error('Not signed in');
+      catalystToast.error('Not signed in');
       return;
     }
     if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
-      toast.error(`Unsupported type: ${file.type}. Use PNG / JPG / WEBP.`);
+      catalystToast.error(`Unsupported type: ${file.type}. Use PNG / JPG / WEBP.`);
       e.target.value = '';
       return;
     }
     if (file.size > 2 * 1024 * 1024) {
-      toast.error(`File too large (${Math.round(file.size / 1024)} KB). Max 2 MB.`);
+      catalystToast.error(`File too large (${Math.round(file.size / 1024)} KB). Max 2 MB.`);
       e.target.value = '';
       return;
     }
@@ -146,12 +146,12 @@ function ResourceRow({ profile, overrideUrl, overrideStoragePath, isLast }: Reso
         previousStoragePath: overrideStoragePath ?? null,
       });
       await queryClient.invalidateQueries({ queryKey: ['resource-avatar-overrides'] });
-      toast.success(`${profile.full_name ?? profile.email ?? 'Resource'} avatar updated`, {
+      catalystToast.success(`${profile.full_name ?? profile.email ?? 'Resource'} avatar updated`, {
         description: 'Visible across every Catalyst surface that renders this person.',
         duration: 6000,
       });
     } catch (err) {
-      toast.error(`Upload failed: ${err instanceof Error ? err.message : String(err)}`);
+      catalystToast.error(`Upload failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setBusy(false);
       e.target.value = '';
@@ -163,9 +163,9 @@ function ResourceRow({ profile, overrideUrl, overrideStoragePath, isLast }: Reso
     try {
       await removeResourceAvatar(profile.id);
       await queryClient.invalidateQueries({ queryKey: ['resource-avatar-overrides'] });
-      toast.success(`${profile.full_name ?? profile.email ?? 'Resource'} avatar reset`);
+      catalystToast.success(`${profile.full_name ?? profile.email ?? 'Resource'} avatar reset`);
     } catch (err) {
-      toast.error(`Remove failed: ${err instanceof Error ? err.message : String(err)}`);
+      catalystToast.error(`Remove failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setBusy(false);
     }

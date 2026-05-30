@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Upload, FileJson, CheckCircle2, AlertTriangle, Loader2 } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface ImportWizardProps {
   open: boolean;
@@ -54,9 +54,9 @@ export function ImportWizard({ open, onOpenChange, projectId, tenantId }: Import
       if (error) throw error;
       setImportJobId(job.id);
       setStep('mapping');
-      toast.success(`Loaded ${data.issues?.length || 0} issues from manifest`);
+      catalystToast.success(`Loaded ${data.issues?.length || 0} issues from manifest`);
     } catch (err: any) {
-      toast.error('Failed to parse import file: ' + err.message);
+      catalystToast.error('Failed to parse import file: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -73,7 +73,7 @@ export function ImportWizard({ open, onOpenChange, projectId, tenantId }: Import
       setDiffReport(data);
       setStep('analyze');
     } catch (err: any) {
-      toast.error('Analysis failed: ' + err.message);
+      catalystToast.error('Analysis failed: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -91,12 +91,12 @@ export function ImportWizard({ open, onOpenChange, projectId, tenantId }: Import
       setProgress(100);
       if (!dryRun) {
         setStep('complete');
-        toast.success(`Imported ${data.stats.imported} issues`);
+        catalystToast.success(`Imported ${data.stats.imported} issues`);
       } else {
-        toast.info(`Dry run: ${data.stats.imported} would be imported`);
+        catalystToast.info(`Dry run: ${data.stats.imported} would be imported`);
       }
     } catch (err: any) {
-      toast.error('Import failed: ' + err.message);
+      catalystToast.error('Import failed: ' + err.message);
     } finally {
       setLoading(false);
     }

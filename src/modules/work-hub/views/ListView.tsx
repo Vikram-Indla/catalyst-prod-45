@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { 
   ColumnHeaderMenu, 
   FieldPicker, 
@@ -301,7 +301,7 @@ export function ListView() {
     if (selectedItem?.id === id) {
       setSelectedItem(prev => prev ? { ...prev, [field]: value } : null);
     }
-    toast.success('Changes saved');
+    catalystToast.success('Changes saved');
   };
 
   const handleDragEnd = (result: DropResult) => {
@@ -317,7 +317,7 @@ export function ListView() {
     reorderedItems.splice(destIndex, 0, movedItem);
     
     setItems(reorderedItems);
-    toast.success(`Moved "${movedItem.key}" to position ${destIndex + 1}`);
+    catalystToast.success(`Moved "${movedItem.key}" to position ${destIndex + 1}`);
   };
 
   const handleRowClick = (item: WorkItem) => {

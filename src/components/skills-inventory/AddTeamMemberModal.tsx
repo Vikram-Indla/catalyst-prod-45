@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -91,7 +91,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
   const handleQuickAddSkill = (skillName: string) => {
     // Check if skill already exists
     if (skills.some(s => s.skill === skillName)) {
-      toast.error(`${skillName} is already added`);
+      catalystToast.error(`${skillName} is already added`);
       return;
     }
     // Find empty skill slot or add new one
@@ -105,13 +105,13 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
 
   const handleSave = async () => {
     if (!formData.name || !formData.role) {
-      toast.error('Please fill in name and role');
+      catalystToast.error('Please fill in name and role');
       return;
     }
     
     const validSkills = skills.filter(s => s.skill);
     if (validSkills.length === 0) {
-      toast.error('Please add at least one skill');
+      catalystToast.error('Please add at least one skill');
       return;
     }
     
@@ -124,7 +124,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
         skills: validSkills,
         notes: formData.notes
       });
-      toast.success('Team member added successfully');
+      catalystToast.success('Team member added successfully');
       handleClose();
     } finally {
       setIsSaving(false);

@@ -4,7 +4,7 @@
  */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export function useUpdateIssueField(projectKey: string | undefined) {
   const queryClient = useQueryClient();
@@ -21,7 +21,7 @@ export function useUpdateIssueField(projectKey: string | undefined) {
       // Silent for most updates per platform policy — caller can toast if needed
     },
     onError: () => {
-      toast.error('Failed to update');
+      catalystToast.error('Failed to update');
     },
   });
 }

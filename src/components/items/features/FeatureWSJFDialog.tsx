@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { Feature } from '@/types/feature.types';
 
 interface FeatureWSJFDialogProps {
@@ -28,7 +28,7 @@ export function FeatureWSJFDialog({ features, open, onClose }: FeatureWSJFDialog
   };
 
   const handleSave = () => {
-    toast.success('WSJF scores updated');
+    catalystToast.success('WSJF scores updated');
     onClose();
   };
 

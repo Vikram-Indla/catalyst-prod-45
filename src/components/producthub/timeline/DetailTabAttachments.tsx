@@ -6,7 +6,7 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { logRequestAudit } from '@/lib/requestAudit';
 import { Upload, Paperclip, Download, Pin, PinOff, Trash2 } from '@/lib/atlaskit-icons';
 
@@ -93,16 +93,16 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ requ
 
     for (const file of toUpload) {
       if (file.size > MAX_FILE_SIZE) {
-        toast.error(`${file.name} exceeds 6MB limit`);
+        catalystToast.error(`${file.name} exceeds 6MB limit`);
         continue;
       }
       if (totalUsed + file.size > MAX_TOTAL) {
-        toast.error('Storage limit (30MB) exceeded');
+        catalystToast.error('Storage limit (30MB) exceeded');
         break;
       }
       const path = `${requestId}/${Date.now()}-${file.name}`;
       const { error: uploadErr } = await supabase.storage.from('request-attachments').upload(path, file);
-      if (uploadErr) { toast.error(`Upload failed: ${file.name}`); continue; }
+      if (uploadErr) { catalystToast.error(`Upload failed: ${file.name}`); continue; }
 
       const { error: dbErr } = await typedQuery('ph_request_attachments').insert({
         request_id: requestId,
@@ -114,10 +114,10 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ requ
         uploaded_by: user?.id || null,
         is_pinned: false,
       });
-      if (dbErr) { toast.error(`DB insert failed: ${file.name}`); continue; }
+      if (dbErr) { catalystToast.error(`DB insert failed: ${file.name}`); continue; }
 
       logRequestAudit({ request_id: requestId, action: 'uploaded', entity_type: 'attachment', new_value: file.name });
-      toast.success(`Uploaded ${file.name}`, TOAST_OPTS);
+      catalystToast.success(`Uploaded ${file.name}`, TOAST_OPTS);
     }
     refetch();
   }, [requestId, totalUsed, refetch]);
@@ -131,7 +131,7 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ requ
     const { data } = supabase.storage.from('request-attachments').getPublicUrl(f.file_path);
     if (data?.publicUrl) {
       window.open(data.publicUrl, '_blank');
-      toast.success(`Downloading ${f.file_name}`, TOAST_OPTS);
+      catalystToast.success(`Downloading ${f.file_name}`, TOAST_OPTS);
     }
   };
 
@@ -146,7 +146,7 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ requ
     await supabase.storage.from('request-attachments').remove([f.file_path]);
     await typedQuery('ph_request_attachments').delete().eq('id', f.id);
     logRequestAudit({ request_id: requestId, action: 'deleted', entity_type: 'attachment', new_value: f.file_name });
-    toast.success(`Deleted ${f.file_name}`, TOAST_OPTS);
+    catalystToast.success(`Deleted ${f.file_name}`, TOAST_OPTS);
     refetch();
   };
 

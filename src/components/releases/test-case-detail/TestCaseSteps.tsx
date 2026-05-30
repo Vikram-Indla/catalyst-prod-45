@@ -40,7 +40,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -121,16 +121,16 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
         
         setNewStep({ action: '', expectedResult: '' });
         setShowAddForm(false);
-        toast.success('Step added successfully');
+        catalystToast.success('Step added successfully');
       } catch (error) {
-        toast.error('Failed to add step');
+        catalystToast.error('Failed to add step');
       }
     }
   };
 
   const handleAIGenerate = async () => {
     if (!aiPrompt.trim()) {
-      toast.error('Please describe what you want to test');
+      catalystToast.error('Please describe what you want to test');
       return;
     }
 
@@ -151,11 +151,11 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
       if (error) {
         // Handle rate limiting and payment errors
         if (error.message?.includes('429') || error.message?.includes('rate')) {
-          toast.error('Rate limit exceeded', { description: 'Please try again in a moment.' });
+          catalystToast.error('Rate limit exceeded');
           return;
         }
         if (error.message?.includes('402') || error.message?.includes('payment')) {
-          toast.error('AI credits exhausted', { description: 'Please add credits to continue using AI features.' });
+          catalystToast.error('AI credits exhausted');
           return;
         }
         throw new Error(error.message);
@@ -163,11 +163,11 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
       
       if (data?.error) {
         if (data.error.includes('429') || data.error.includes('rate')) {
-          toast.error('Rate limit exceeded', { description: 'Please try again in a moment.' });
+          catalystToast.error('Rate limit exceeded');
           return;
         }
         if (data.error.includes('402') || data.error.includes('payment')) {
-          toast.error('AI credits exhausted', { description: 'Please add credits to continue using AI features.' });
+          catalystToast.error('AI credits exhausted');
           return;
         }
         throw new Error(data.error);
@@ -178,7 +178,7 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
       const generatedSteps = generatedTestCase?.steps || [];
 
       if (generatedSteps.length === 0) {
-        toast.error('No steps were generated. Try a more detailed description.');
+        catalystToast.error('No steps were generated. Try a more detailed description.');
         return;
       }
 
@@ -201,15 +201,15 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
       }
 
       if (insertedCount > 0) {
-        toast.success(`AI generated ${insertedCount} test steps`);
+        catalystToast.success(`AI generated ${insertedCount} test steps`);
         setShowAIDialog(false);
         setAiPrompt('');
       } else {
-        toast.error('Failed to save generated steps');
+        catalystToast.error('Failed to save generated steps');
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to generate steps';
-      toast.error(message);
+      catalystToast.error(message);
     } finally {
       setIsGenerating(false);
     }
@@ -222,7 +222,7 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
         test_case_id: testCaseId,
       });
     } catch (error) {
-      toast.error('Failed to delete step');
+      catalystToast.error('Failed to delete step');
     }
   };
 
@@ -233,7 +233,7 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
         test_case_id: testCaseId,
       });
     } catch (error) {
-      toast.error('Failed to duplicate step');
+      catalystToast.error('Failed to duplicate step');
     }
   };
 
@@ -259,7 +259,7 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
     } catch (error) {
       // Revert on error
       setSteps(mapDbStepsToUi(dbSteps));
-      toast.error('Failed to reorder steps');
+      catalystToast.error('Failed to reorder steps');
     }
   };
 
@@ -294,9 +294,9 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
           expected_result: editingStep.expectedResult,
         });
         setEditingStepId(null);
-        toast.success('Step updated');
+        catalystToast.success('Step updated');
       } catch (error) {
-        toast.error('Failed to update step');
+        catalystToast.error('Failed to update step');
       }
     }
   };

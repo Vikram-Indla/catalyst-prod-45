@@ -57,7 +57,7 @@ import { StatusBadge, PriorityBadge, TypeBadge } from './badges';
 import { ExecutionStatusBadge } from './badges/ExecutionStatusBadge';
 import { AutomationBadge } from './badges/AutomationBadge';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { assertUuid, isValidUUID } from '@/lib/utils/assertUuid';
 
 // Real hooks
@@ -124,17 +124,17 @@ export function TestCaseDetailDrawer({
 
   const handleCopyId = () => {
     navigator.clipboard.writeText(displayKey);
-    toast.success('Test case ID copied');
+    catalystToast.success('Test case ID copied');
   };
 
   const handleDuplicate = () => {
     const resolvedProjectId = projectId || testCase.project_id;
     if (!resolvedProjectId) {
-      toast.error('Cannot duplicate: project ID not available');
+      catalystToast.error('Cannot duplicate: project ID not available');
       return;
     }
     if (!caseUuid || !assertUuid(caseUuid, 'handleDuplicate.caseUuid')) {
-      toast.error('Cannot duplicate: invalid test case UUID');
+      catalystToast.error('Cannot duplicate: invalid test case UUID');
       return;
     }
     
@@ -142,11 +142,11 @@ export function TestCaseDetailDrawer({
       { id: caseUuid, project_id: resolvedProjectId },
       {
         onSuccess: () => {
-          toast.success('Test case duplicated');
+          catalystToast.success('Test case duplicated');
           queryClient.invalidateQueries({ queryKey: ['tm-cases', resolvedProjectId] });
         },
         onError: (error) => {
-          toast.error(`Failed to duplicate: ${error.message}`);
+          catalystToast.error(`Failed to duplicate: ${error.message}`);
         },
       }
     );
@@ -155,11 +155,11 @@ export function TestCaseDetailDrawer({
   const handleDelete = () => {
     const resolvedProjectId = projectId || testCase.project_id;
     if (!resolvedProjectId) {
-      toast.error('Cannot delete: project ID not available');
+      catalystToast.error('Cannot delete: project ID not available');
       return;
     }
     if (!caseUuid || !assertUuid(caseUuid, 'handleDelete.caseUuid')) {
-      toast.error('Cannot delete: invalid test case UUID');
+      catalystToast.error('Cannot delete: invalid test case UUID');
       return;
     }
     
@@ -167,13 +167,13 @@ export function TestCaseDetailDrawer({
       { id: caseUuid, project_id: resolvedProjectId },
       {
         onSuccess: () => {
-          toast.success('Test case deleted');
+          catalystToast.success('Test case deleted');
           setIsDeleteDialogOpen(false);
           onOpenChange(false); // Close drawer after delete
           queryClient.invalidateQueries({ queryKey: ['tm-cases', resolvedProjectId] });
         },
         onError: (error) => {
-          toast.error(`Failed to delete: ${error.message}`);
+          catalystToast.error(`Failed to delete: ${error.message}`);
         },
       }
     );
@@ -490,7 +490,7 @@ export function TestCaseDetailDrawer({
                   variant="outline" 
                   className="w-full mt-4"
                   onClick={() => {
-                    toast.info('Use the full detail view to link work items');
+                    catalystToast.info('Use the full detail view to link work items');
                   }}
                 >
                   <Link2 className="w-4 h-4 mr-2" />

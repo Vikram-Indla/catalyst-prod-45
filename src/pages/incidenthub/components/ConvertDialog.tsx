@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useTheme } from '@/hooks/useTheme';
 
 interface ConvertDialogProps {
@@ -30,7 +30,7 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
 
   const handleConvert = () => {
     if (!selected) return;
-    toast.success(`Incident queued for conversion to ${selected}`);
+    catalystToast.success(`Incident queued for conversion to ${selected}`);
     setSelected(null);
     onClose();
   };

@@ -6,7 +6,7 @@ import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   Dialog,
   DialogContent,
@@ -117,10 +117,10 @@ export function AttachmentUploadModal({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['business-request-attachments', requestId] });
       queryClient.invalidateQueries({ queryKey: ['business-request-links', requestId] });
-      toast.success('Attachment uploaded successfully');
+      catalystToast.success('Attachment uploaded successfully');
     },
     onError: (error: Error) => {
-      toast.error(`Upload failed: ${error.message}`);
+      catalystToast.error(`Upload failed: ${error.message}`);
     },
   });
 
@@ -146,10 +146,10 @@ export function AttachmentUploadModal({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['business-request-attachments', requestId] });
       queryClient.invalidateQueries({ queryKey: ['business-request-links', requestId] });
-      toast.success('Attachment deleted');
+      catalystToast.success('Attachment deleted');
     },
     onError: (error: Error) => {
-      toast.error(`Delete failed: ${error.message}`);
+      catalystToast.error(`Delete failed: ${error.message}`);
     },
   });
 
@@ -186,7 +186,7 @@ export function AttachmentUploadModal({
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (error) {
-      toast.error('Failed to download file');
+      catalystToast.error('Failed to download file');
     }
   };
 

@@ -5,7 +5,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Defect, DefectStats, DefectFilters, DefectHistoryEntry, DefectComment, DefectLink } from '@/types/defects';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ─── List Defects ────────────────────────────────────────────────
 export function useDefectsG25(filters?: DefectFilters) {
@@ -97,9 +97,9 @@ export function useCreateDefectG25() {
     onSuccess: (data: any) => {
       qc.invalidateQueries({ queryKey: ['g25-defects'] });
       qc.invalidateQueries({ queryKey: ['g25-defect-stats'] });
-      toast.success(`Defect ${data.defect_key} created`);
+      catalystToast.success(`Defect ${data.defect_key} created`);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => catalystToast.error(e.message),
   });
 }
 
@@ -120,9 +120,9 @@ export function useUpdateDefectG25() {
       qc.invalidateQueries({ queryKey: ['g25-defects'] });
       qc.invalidateQueries({ queryKey: ['g25-defect', data.id] });
       qc.invalidateQueries({ queryKey: ['g25-defect-stats'] });
-      toast.success('Defect updated');
+      catalystToast.success('Defect updated');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => catalystToast.error(e.message),
   });
 }
 
@@ -148,9 +148,9 @@ export function useChangeDefectStatusG25() {
       qc.invalidateQueries({ queryKey: ['g25-defect', data.id] });
       qc.invalidateQueries({ queryKey: ['g25-defect-stats'] });
       qc.invalidateQueries({ queryKey: ['g25-defect-history', data.id] });
-      toast.success('Status updated');
+      catalystToast.success('Status updated');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => catalystToast.error(e.message),
   });
 }
 
@@ -165,9 +165,9 @@ export function useDeleteDefectG25() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['g25-defects'] });
       qc.invalidateQueries({ queryKey: ['g25-defect-stats'] });
-      toast.success('Defect deleted');
+      catalystToast.success('Defect deleted');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => catalystToast.error(e.message),
   });
 }
 
@@ -265,9 +265,9 @@ export function useCreateDefectCommentG25() {
     },
     onSuccess: (data: any) => {
       qc.invalidateQueries({ queryKey: ['g25-defect-comments', data.defect_id] });
-      toast.success('Comment added');
+      catalystToast.success('Comment added');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => catalystToast.error(e.message),
   });
 }
 
@@ -281,7 +281,7 @@ export function useDeleteDefectCommentG25() {
     },
     onSuccess: (defectId) => {
       qc.invalidateQueries({ queryKey: ['g25-defect-comments', defectId] });
-      toast.success('Comment deleted');
+      catalystToast.success('Comment deleted');
     },
   });
 }
@@ -329,7 +329,7 @@ export function useCreateDefectLinkG25() {
     },
     onSuccess: (data: any) => {
       qc.invalidateQueries({ queryKey: ['g25-defect-links', data.defect_id] });
-      toast.success('Link added');
+      catalystToast.success('Link added');
     },
   });
 }
@@ -344,7 +344,7 @@ export function useDeleteDefectLinkG25() {
     },
     onSuccess: (defectId) => {
       qc.invalidateQueries({ queryKey: ['g25-defect-links', defectId] });
-      toast.success('Link removed');
+      catalystToast.success('Link removed');
     },
   });
 }

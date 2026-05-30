@@ -25,7 +25,7 @@ import { SectionBlock, IssueIcon, ColumnPicker, SkeletonRows, EmptyState } from 
 import Lozenge from '@atlaskit/lozenge';
 import { statusToLozenge } from '../../../utils/statusToLozenge';
 import { ConfirmDialog } from './ConfirmDialog';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 /* ── Sort types ── */
 type SortKey = 'work' | 'priority' | 'assignee' | 'status';
@@ -379,7 +379,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] });
-      toast.success('Status updated');
+      catalystToast.success('Status updated');
     },
   });
 
@@ -482,7 +482,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
                 item={item}
                 columns={columns}
                 onDelete={() => setDeleteTarget({ id: item.id, key: item.issue_key })}
-                onCopyLink={() => { navigator.clipboard.writeText(`${window.location.origin}/issues/${item.issue_key}`); toast.success('Link copied'); }}
+                onCopyLink={() => { navigator.clipboard.writeText(`${window.location.origin}/issues/${item.issue_key}`); catalystToast.success('Link copied'); }}
                 onStatusUpdate={handleStatusUpdate}
                 onClickKey={handleClickKey}
               />

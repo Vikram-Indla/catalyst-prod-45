@@ -9,7 +9,7 @@ import { ArrowUpDown, ArrowUp, ArrowDown } from '@/lib/atlaskit-icons';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { TableToolbar } from './TableToolbar';
 import { BulkActionsBar } from './BulkActionsBar';
@@ -101,7 +101,7 @@ export function AssignmentTableView({ cycleId }: AssignmentTableViewProps) {
 
   // Handle export
   const handleExport = (format: 'csv' | 'xlsx') => {
-    toast.success(`Exporting as ${format.toUpperCase()}...`);
+    catalystToast.success(`Exporting as ${format.toUpperCase()}...`);
     // In real implementation, generate and download file
   };
 
@@ -247,7 +247,7 @@ export function AssignmentTableView({ cycleId }: AssignmentTableViewProps) {
                     });
                   }}
                   onOpenDetails={() => {
-                    toast.info(`Opening details for ${assignment.testCaseCode}`);
+                    catalystToast.info(`Opening details for ${assignment.testCaseCode}`);
                   }}
                   teamMembers={teamMembers}
                   visibleColumns={visibleColumns}

@@ -32,7 +32,7 @@ import { Lozenge } from '@/components/ads';
 import { Lock, Unlock, Check, ChevronsUpDown, X } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
 import { 
@@ -100,19 +100,19 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
     if (targetDateLocked) {
       setTargetDateLocked(false);
       onChange('date_locked', false);
-      toast.info('Target Completion Date unlocked');
+      catalystToast.info('Target Completion Date unlocked');
     } else {
       if (!data.start_date) {
-        toast.error('Cannot lock: Start Date must be populated first');
+        catalystToast.error('Cannot lock: Start Date must be populated first');
         return;
       }
       if (!data.target_completion_date && !data.end_date) {
-        toast.error('Cannot lock: Target Completion Date must be populated first');
+        catalystToast.error('Cannot lock: Target Completion Date must be populated first');
         return;
       }
       setTargetDateLocked(true);
       onChange('date_locked', true);
-      toast.success(`Target Completion Date locked by ${currentUser}`);
+      catalystToast.success(`Target Completion Date locked by ${currentUser}`);
     }
   };
 

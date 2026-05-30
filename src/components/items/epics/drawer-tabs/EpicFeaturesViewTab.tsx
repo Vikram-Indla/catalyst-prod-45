@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus, ExternalLink, GitBranch, Link as LinkIcon, Search, ArrowLeft } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 
 interface EpicFeaturesViewTabProps {
@@ -185,13 +185,13 @@ export function EpicFeaturesViewTab({ epicId }: EpicFeaturesViewTabProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['unified-links', 'epic', epicId] });
       queryClient.invalidateQueries({ queryKey: ['epic-features', epicId] });
-      toast.success('Implementation link added');
+      catalystToast.success('Implementation link added');
       setSelectedWorkItem(null);
       setImplSearch('');
       setShowLinkForm(false);
     },
     onError: () => {
-      toast.error('Failed to add implementation link');
+      catalystToast.error('Failed to add implementation link');
     }
   });
 

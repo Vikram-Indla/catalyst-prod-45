@@ -37,7 +37,7 @@ import { TablePagination } from './TablePagination';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface BusinessRequestRow {
   id: string;
@@ -223,10 +223,10 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       );
 
       await Promise.all(updatePromises);
-      toast.success('Rank order saved');
+      catalystToast.success('Rank order saved');
     } catch (error) {
       console.error('Failed to save rank order:', error);
-      toast.error('Failed to save rank order');
+      catalystToast.error('Failed to save rank order');
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
     }
   }, [sortedData, queryClient]);
@@ -241,10 +241,10 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       if (error) throw error;
       
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-      toast.success(assignee ? `Assigned to ${assignee}` : 'Unassigned');
+      catalystToast.success(assignee ? `Assigned to ${assignee}` : 'Unassigned');
     } catch (error) {
       console.error('Failed to update assignee:', error);
-      toast.error('Failed to update assignee');
+      catalystToast.error('Failed to update assignee');
     }
   }, [queryClient]);
 
@@ -258,10 +258,10 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       if (error) throw error;
       
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-      toast.success('Status updated');
+      catalystToast.success('Status updated');
     } catch (error) {
       console.error('Failed to update status:', error);
-      toast.error('Failed to update status');
+      catalystToast.error('Failed to update status');
     }
   }, [queryClient]);
 
@@ -275,10 +275,10 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       if (error) throw error;
       
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-      toast.success(value ? `Updated ${fieldName.replace('_', ' ')}` : `Cleared ${fieldName.replace('_', ' ')}`);
+      catalystToast.success(value ? `Updated ${fieldName.replace('_', ' ')}` : `Cleared ${fieldName.replace('_', ' ')}`);
     } catch (error) {
       console.error(`Failed to update ${fieldName}:`, error);
-      toast.error(`Failed to update ${fieldName.replace('_', ' ')}`);
+      catalystToast.error(`Failed to update ${fieldName.replace('_', ' ')}`);
     }
   }, [queryClient]);
 
@@ -292,10 +292,10 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       if (error) throw error;
       
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-      toast.success(quarter ? 'Quarter updated' : 'Quarter cleared');
+      catalystToast.success(quarter ? 'Quarter updated' : 'Quarter cleared');
     } catch (error) {
       console.error('Failed to update quarter:', error);
-      toast.error('Failed to update quarter');
+      catalystToast.error('Failed to update quarter');
     }
   }, [queryClient]);
 
@@ -309,10 +309,10 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       if (error) throw error;
       
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-      toast.success(department ? 'Department updated' : 'Department cleared');
+      catalystToast.success(department ? 'Department updated' : 'Department cleared');
     } catch (error) {
       console.error('Failed to update department:', error);
-      toast.error('Failed to update department');
+      catalystToast.error('Failed to update department');
     }
   }, [queryClient]);
 
@@ -751,8 +751,8 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       <BulkActionsBar
         selectedCount={selectedIds.size}
         onClear={clearSelection}
-        onAssignOwner={() => toast.info('Assign Owner feature coming soon')}
-        onSetQuarter={() => toast.info('Set Quarter feature coming soon')}
+        onAssignOwner={() => catalystToast.info('Assign Owner feature coming soon')}
+        onSetQuarter={() => catalystToast.info('Set Quarter feature coming soon')}
         onStatusUpdate={async (status: string) => {
           const ids = Array.from(selectedIds);
           try {
@@ -760,12 +760,12 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
               .update({ process_step: status, updated_at: new Date().toISOString() })
               .in('id', ids);
             if (error) throw error;
-            toast.success(`Updated ${ids.length} item${ids.length > 1 ? 's' : ''} to ${status.replace(/_/g, ' ')}`);
+            catalystToast.success(`Updated ${ids.length} item${ids.length > 1 ? 's' : ''} to ${status.replace(/_/g, ' ')}`);
             clearSelection();
             queryClient.invalidateQueries({ queryKey: ['business-requests'] });
           } catch (err) {
             console.error('Bulk status update failed:', err);
-            toast.error('Failed to update status');
+            catalystToast.error('Failed to update status');
           }
         }}
         onDelete={() => setDeleteDialogOpen(true)}
@@ -788,13 +788,13 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
             
             if (error) throw error;
             
-            toast.success(`Successfully deleted ${selectedIds.size} request${selectedIds.size > 1 ? 's' : ''}`);
+            catalystToast.success(`Successfully deleted ${selectedIds.size} request${selectedIds.size > 1 ? 's' : ''}`);
             clearSelection();
             queryClient.invalidateQueries({ queryKey: ['business-requests'] });
             setDeleteDialogOpen(false);
           } catch (error) {
             console.error('Failed to delete requests:', error);
-            toast.error('Failed to delete requests');
+            catalystToast.error('Failed to delete requests');
           } finally {
             setIsDeleting(false);
           }

@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getAssignmentColor } from '@/lib/catalyst-colors';
@@ -73,11 +73,11 @@ export function BookResourceModal({ open, onOpenChange, availableUsers, resource
 
   const handleSubmit = async () => {
     if (!selectedDepartmentId) {
-      toast.error('Please select a department');
+      catalystToast.error('Please select a department');
       return;
     }
     if (!selectedUserId) {
-      toast.error('Please select a user');
+      catalystToast.error('Please select a user');
       return;
     }
 
@@ -139,13 +139,13 @@ export function BookResourceModal({ open, onOpenChange, availableUsers, resource
       queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
 
       const selectedUser = userById.get(userId);
-      toast.success(
+      catalystToast.success(
         `Added ${selectedUser?.name || 'resource'} with allocations configured.`
       );
 
       handleOpenChange(false);
     } catch (error: any) {
-      toast.error(`Failed to add resource: ${error?.message ?? 'Unknown error'}`);
+      catalystToast.error(`Failed to add resource: ${error?.message ?? 'Unknown error'}`);
     } finally {
       setIsAddingResources(false);
     }

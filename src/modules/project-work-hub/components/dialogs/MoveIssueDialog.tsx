@@ -12,7 +12,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 import Modal, {
   ModalBody,
@@ -81,7 +81,7 @@ export function MoveIssueDialog({ open, onClose, source }: MoveIssueDialogProps)
 
   const onSubmit = async (values: MoveFormValues) => {
     if (!values.destination?.value) {
-      toast.error('Select a destination project');
+      catalystToast.error('Select a destination project');
       return;
     }
     setSubmitting(true);
@@ -94,11 +94,11 @@ export function MoveIssueDialog({ open, onClose, source }: MoveIssueDialogProps)
       });
       if (error || (data as any)?.error) {
         const msg = (data as any)?.error ?? error?.message ?? 'Move failed';
-        toast.error(msg);
+        catalystToast.error(msg);
         return;
       }
       const newKey = (data as any)?.new_issue_key as string;
-      toast.success(`Moved to ${newKey}`);
+      catalystToast.success(`Moved to ${newKey}`);
       onClose();
       if (newKey) navigate(`/project-hub/${values.destination.value}/issue/${newKey}`);
     } finally {

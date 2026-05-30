@@ -7,7 +7,7 @@ import {
   Plus, Link2, Copy, Move, Tag, Paperclip, Trash2,
 } from '@/lib/atlaskit-icons';
 import type { AllWorkItem } from '@/types/allwork.types';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface Props {
   item: AllWorkItem;
@@ -62,7 +62,7 @@ export function AllWorkContextMenu({ item, x, y, onClose, onOpenItem }: Props) {
         onOpenItem(item.issue_key);
         break;
       default:
-        toast.info(`${actionId} action for ${item.issue_key} — coming soon`);
+        catalystToast.info(`${actionId} action for ${item.issue_key} — coming soon`);
     }
   };
 

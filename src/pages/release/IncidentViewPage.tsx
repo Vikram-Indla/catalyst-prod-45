@@ -36,7 +36,7 @@ import { cn } from '@/lib/utils';
 import { useIncident, useUpdateIncident } from '@/hooks/useIncidents';
 import { useAvailableApprovers } from '@/hooks/useIncidentUserProfiles';
 import { format, formatDistanceToNow } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { ConversionDialog } from '@/components/incidents/ConversionDialog';
 import { AddApproverDialog } from '@/components/incidents/AddApproverDialog';
 import type { IncidentStatus, SeverityLevel, VoteStatus } from '@/types/incident';
@@ -74,9 +74,9 @@ export default function IncidentViewPage() {
     if (!incident?.id) return;
     try {
       await updateIncident.mutateAsync({ id: incident.id, data: { [field]: value } });
-      toast.success('Saved');
+      catalystToast.success('Saved');
     } catch {
-      toast.error('Failed to update');
+      catalystToast.error('Failed to update');
     }
   }, [incident?.id, updateIncident]);
 
@@ -93,7 +93,7 @@ export default function IncidentViewPage() {
             converted_to_type: type as 'story' | 'feature' | 'epic',
           },
         });
-        toast.success('Sent to CAP Committee for approval');
+        catalystToast.success('Sent to CAP Committee for approval');
       } else {
         await updateIncident.mutateAsync({
           id: incident.id,
@@ -104,17 +104,17 @@ export default function IncidentViewPage() {
             conversion_reason: justification,
           },
         });
-        toast.success(`Incident converted to ${type}`);
+        catalystToast.success(`Incident converted to ${type}`);
       }
     } catch {
-      toast.error('Failed to convert incident');
+      catalystToast.error('Failed to convert incident');
     }
   }, [incident?.id, updateIncident]);
 
   const handleSaveDescription = async () => {
     await handleFieldUpdate('description', editedDescription);
     setIsEditingDescription(false);
-    toast.success('Description saved');
+    catalystToast.success('Description saved');
   };
 
   if (isLoading) {
@@ -634,7 +634,7 @@ export default function IncidentViewPage() {
         availableApprovers={availableApprovers}
         existingApproverIds={approvers.map(a => a.user_id)}
         onAdd={(userId, hasVeto, note) => {
-          toast.success('Approver added');
+          catalystToast.success('Approver added');
           setShowAddApprover(false);
         }}
       />

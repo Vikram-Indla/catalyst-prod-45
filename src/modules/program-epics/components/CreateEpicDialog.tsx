@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { isValidProgramKey } from '@/utils/epic-key-generator';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
@@ -264,7 +264,7 @@ export function CreateEpicDialog({
         sessionId = session.id;
         setUploadSessionId(sessionId);
       } catch (error) {
-        toast.error('Failed to create upload session');
+        catalystToast.error('Failed to create upload session');
         return;
       }
     }
@@ -359,7 +359,7 @@ export function CreateEpicDialog({
       queryClient.invalidateQueries({ queryKey: ['program-epics', programId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-items', programId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success(`Epic ${data.epic_key} created successfully`);
+      catalystToast.success(`Epic ${data.epic_key} created successfully`);
       handleClose();
       if (onCreated) {
         onCreated(data.id);
@@ -368,7 +368,7 @@ export function CreateEpicDialog({
     onError: (error: any) => {
       console.error('[CreateEpicDialog] Failed to create epic:', error);
       const errorMessage = error?.message || error?.details || 'Failed to create epic';
-      toast.error(`Failed to create epic: ${errorMessage}`);
+      catalystToast.error(`Failed to create epic: ${errorMessage}`);
     },
   });
 

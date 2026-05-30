@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface MonthlyAllocation {
   month: number; // 1-12
@@ -220,7 +220,7 @@ export function useSaveAllocation() {
       queryClient.invalidateQueries({ queryKey: ['resource-utilization', variables.year] });
     },
     onError: (error: Error) => {
-      toast.error(`Failed to save allocation: ${error.message}`);
+      catalystToast.error(`Failed to save allocation: ${error.message}`);
     },
   });
 }
@@ -276,10 +276,10 @@ export function useBulkSaveAllocations() {
       queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
       queryClient.invalidateQueries({ queryKey: ['capacity-summary'] });
-      toast.success('Allocations saved successfully');
+      catalystToast.success('Allocations saved successfully');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to save allocations: ${error.message}`);
+      catalystToast.error(`Failed to save allocations: ${error.message}`);
     },
   });
 }

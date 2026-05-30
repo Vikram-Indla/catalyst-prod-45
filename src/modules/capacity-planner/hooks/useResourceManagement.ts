@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface ResourceUpdateInput {
   id: string;
@@ -84,10 +84,10 @@ export function useResourceManagement() {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       queryClient.invalidateQueries({ queryKey: ['users'] });
       queryClient.invalidateQueries({ queryKey: ['resource-inventory'] });
-      toast.success('Resource updated successfully');
+      catalystToast.success('Resource updated successfully');
     },
     onError: (error) => {
-      toast.error(`Failed to update resource: ${error.message}`);
+      catalystToast.error(`Failed to update resource: ${error.message}`);
     },
   });
 
@@ -154,10 +154,10 @@ export function useResourceManagement() {
 
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
-      toast.success('Allocation updated');
+      catalystToast.success('Allocation updated');
     },
     onError: (error) => {
-      toast.error(`Failed to update allocation: ${error.message}`);
+      catalystToast.error(`Failed to update allocation: ${error.message}`);
     },
   });
 
@@ -239,10 +239,10 @@ export function useResourceManagement() {
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['resource-inventory'] });
-      toast.success('Assignment updated');
+      catalystToast.success('Assignment updated');
     },
     onError: (error) => {
-      toast.error(`Failed to update assignment: ${error.message}`);
+      catalystToast.error(`Failed to update assignment: ${error.message}`);
     },
   });
 

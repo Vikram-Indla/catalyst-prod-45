@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import type { IncidentCommitteeWithMembers } from '@/types/incident';
 
@@ -129,7 +129,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
               opacity: quorumMet ? 1 : 0.5,
               cursor: quorumMet ? 'pointer' : 'not-allowed',
             }}
-            onClick={() => { toast.success('Decision submitted'); onClose(); }}
+            onClick={() => { catalystToast.success('Decision submitted'); onClose(); }}
           >
             Submit Decision
           </Button>

@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
 
 interface Epic {
@@ -184,10 +184,10 @@ export function EpicListView({ programId }: EpicListViewProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['program-epics'] });
-      toast.success('State updated');
+      catalystToast.success('State updated');
     },
     onError: () => {
-      toast.error('Failed to update state');
+      catalystToast.error('Failed to update state');
     }
   });
 
@@ -230,7 +230,7 @@ export function EpicListView({ programId }: EpicListViewProps) {
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-    toast.success(`Epic reordered`);
+    catalystToast.success(`Epic reordered`);
   };
 
   const handleRowClick = (epic: Epic) => {

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useProjects, useDefaultProject } from '@/hooks/useProjects';
 
 interface FeatureDialogProps {
@@ -118,18 +118,18 @@ export function FeatureDialog({ open, onOpenChange, feature }: FeatureDialogProp
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['features'] });
       queryClient.invalidateQueries({ queryKey: ['features-backlog'] });
-      toast.success(feature ? 'Feature updated' : 'Feature created');
+      catalystToast.success(feature ? 'Feature updated' : 'Feature created');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to save feature');
+      catalystToast.error('Failed to save feature');
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!epicId || !programId) {
-      toast.error('Please select an epic and program');
+      catalystToast.error('Please select an epic and program');
       return;
     }
     mutation.mutate({

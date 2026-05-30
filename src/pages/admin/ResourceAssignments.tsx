@@ -25,7 +25,7 @@ import Toggle from '@atlaskit/toggle';
 import AdsSelect from '@atlaskit/select';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { LicenseAllocationSection } from '@/modules/budget';
 import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
@@ -587,9 +587,9 @@ export default function ResourceAssignmentsPage() {
     setIsDeleting(false);
 
     if (error) {
-      toast.error(`Failed to delete: ${error.message}`);
+      catalystToast.error(`Failed to delete: ${error.message}`);
     } else {
-      toast.success('Assignment deleted successfully');
+      catalystToast.success('Assignment deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['resource-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['resource-assignments-all'] });
       setDeleteModalOpen(false);
@@ -735,7 +735,7 @@ export default function ResourceAssignmentsPage() {
       }
     } catch (error) {
       console.error('Failed to persist sort order:', error);
-      toast.error('Failed to save order');
+      catalystToast.error('Failed to save order');
       queryClient.invalidateQueries({ queryKey: ['resource-assignments-all'] });
     }
   };
@@ -792,9 +792,9 @@ export default function ResourceAssignmentsPage() {
             onClick={() => {
               try {
                 exportAssignmentsToExcel(allAssignments);
-                toast.success('Excel file downloaded');
+                catalystToast.success('Excel file downloaded');
               } catch (error) {
-                toast.error('No data to export');
+                catalystToast.error('No data to export');
               }
             }}
             iconBefore={DownloadIcon}

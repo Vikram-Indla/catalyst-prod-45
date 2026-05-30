@@ -42,7 +42,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface IssueActionsMenuProps {
   issueId: string;
@@ -55,38 +55,38 @@ export function IssueActionsMenu({ issueId, issueKey, onAction }: IssueActionsMe
 
   const handleClone = () => {
     onAction('clone', { issueId });
-    toast.success(`Cloning ${issueKey}...`);
+    catalystToast.success(`Cloning ${issueKey}...`);
   };
 
   const handleMove = () => {
     onAction('move', { issueId });
-    toast.info('Move issue dialog coming soon');
+    catalystToast.info('Move issue dialog coming soon');
   };
 
   const handleArchive = () => {
     onAction('archive', { issueId });
-    toast.success(`${issueKey} archived`);
+    catalystToast.success(`${issueKey} archived`);
   };
 
   const handleDelete = () => {
     onAction('delete', { issueId });
     setShowDeleteDialog(false);
-    toast.success(`${issueKey} deleted`);
+    catalystToast.success(`${issueKey} deleted`);
   };
 
   const handleExport = (format: 'excel' | 'word' | 'xml') => {
     onAction('export', { issueId, format });
-    toast.success(`Exporting ${issueKey} as ${format.toUpperCase()}...`);
+    catalystToast.success(`Exporting ${issueKey} as ${format.toUpperCase()}...`);
   };
 
   const handleFindField = () => {
     onAction('find-field', { issueId });
-    toast.info('Field finder coming soon');
+    catalystToast.info('Field finder coming soon');
   };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(`${window.location.origin}/issue/${issueKey}`);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
   };
 
   return (

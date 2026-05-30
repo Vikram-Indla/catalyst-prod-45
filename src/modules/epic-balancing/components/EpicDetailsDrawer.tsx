@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Link2 } from '@/lib/atlaskit-icons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -118,10 +118,10 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
       };
 
       onSave(updatedEpic);
-      toast.success('Epic updated successfully');
+      catalystToast.success('Epic updated successfully');
       onClose();
     } catch (error) {
-      toast.error('Failed to update epic');
+      catalystToast.error('Failed to update epic');
     } finally {
       setSaving(false);
     }

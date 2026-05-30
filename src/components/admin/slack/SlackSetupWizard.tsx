@@ -27,7 +27,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge } from '@/components/ads';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Slack icon component (accepts both Lucide-style className and ADS-style label/size props)
 const SlackIcon = ({ className, label: _label, size: _size }: { className?: string; label?: string; size?: string }) => (
@@ -126,7 +126,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
       const { url } = await getInstallUrl.mutateAsync();
       window.location.href = url;
     } catch (error) {
-      toast.error('Failed to generate install URL');
+      catalystToast.error('Failed to generate install URL');
     }
   };
 
@@ -136,7 +136,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard');
+    catalystToast.success('Copied to clipboard');
   };
 
   return (

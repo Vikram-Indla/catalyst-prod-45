@@ -10,7 +10,7 @@ import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   X, Pencil, Copy, Star, Trash2,
   Map,
@@ -128,9 +128,9 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['roadmap-requests'] });
       queryClient.invalidateQueries({ queryKey: ['roadmap-stats'] });
-      toast.success(`${fieldName} updated`);
+      catalystToast.success(`${fieldName} updated`);
     } catch (err: any) {
-      toast.error(`Failed to update ${fieldName}: ${err.message}`);
+      catalystToast.error(`Failed to update ${fieldName}: ${err.message}`);
     }
   }, [item, queryClient]);
 

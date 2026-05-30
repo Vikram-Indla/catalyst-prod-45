@@ -6,7 +6,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface RescheduleInput {
   taskId: string;
@@ -31,12 +31,12 @@ export function useRescheduleTask() {
 
     onSuccess: (data, { newDate }) => {
       const formattedDate = format(newDate, 'MMM d');
-      toast.success(`Task moved to ${formattedDate}`);
+      catalystToast.success(`Task moved to ${formattedDate}`);
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
     },
 
     onError: () => {
-      toast.error('Failed to reschedule task');
+      catalystToast.error('Failed to reschedule task');
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
     },
   });

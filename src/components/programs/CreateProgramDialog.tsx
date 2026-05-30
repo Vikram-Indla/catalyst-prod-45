@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   Dialog,
   DialogContent,
@@ -81,7 +81,7 @@ export function CreateProgramDialog({ open, onOpenChange, onSuccess }: CreatePro
       queryClient.invalidateQueries({ queryKey: ['portfolios'] });
       queryClient.invalidateQueries({ queryKey: ['program-keys'] });
       
-      toast.success('Program created successfully');
+      catalystToast.success('Program created successfully');
       handleClose();
       
       if (onSuccess) {
@@ -91,7 +91,7 @@ export function CreateProgramDialog({ open, onOpenChange, onSuccess }: CreatePro
       }
     },
     onError: (error) => {
-      toast.error('Failed to create program: ' + error.message);
+      catalystToast.error('Failed to create program: ' + error.message);
     },
   });
 
@@ -106,7 +106,7 @@ export function CreateProgramDialog({ open, onOpenChange, onSuccess }: CreatePro
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      toast.error('Program name is required');
+      catalystToast.error('Program name is required');
       return;
     }
     const error = validateKey(key);

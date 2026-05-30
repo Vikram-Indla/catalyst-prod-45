@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { IncidentUserProfile } from '@/types/incident';
 
 interface CommitteeMember {
@@ -149,7 +149,7 @@ export function CommitteeModal({
     
     // Require justification for reject/veto
     if ((voteAction === 'rejected' || voteAction === 'vetoed') && !voteJustification.trim()) {
-      toast.error('Justification is required when rejecting or vetoing');
+      catalystToast.error('Justification is required when rejecting or vetoing');
       return;
     }
 

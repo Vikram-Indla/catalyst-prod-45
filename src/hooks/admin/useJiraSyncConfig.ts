@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface JiraSyncConfig {
   id: string;
@@ -61,13 +61,13 @@ export function useJiraSyncConfig() {
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
-      toast.success(
+      catalystToast.success(
         `Jira sync paused — ${result.preserved_work_items ?? 0} work items preserved in Catalyst.`,
         { duration: 6000 }
       );
     },
     onError: (err: Error) => {
-      toast.error(`Failed to pause Jira sync: ${err.message}`);
+      catalystToast.error(`Failed to pause Jira sync: ${err.message}`);
     },
   });
 
@@ -83,10 +83,10 @@ export function useJiraSyncConfig() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
-      toast.success('Jira sync re-enabled. Run a full sync to pull the latest data.');
+      catalystToast.success('Jira sync re-enabled. Run a full sync to pull the latest data.');
     },
     onError: (err: Error) => {
-      toast.error(`Failed to re-enable Jira sync: ${err.message}`);
+      catalystToast.error(`Failed to re-enable Jira sync: ${err.message}`);
     },
   });
 

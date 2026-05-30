@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface ProductRole {
   id: string;
@@ -249,10 +249,10 @@ export function useSaveUserOverrides() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['user-overrides', variables.userId] });
       queryClient.invalidateQueries({ queryKey: ['users-with-role'] });
-      toast.success('Overrides saved successfully');
+      catalystToast.success('Overrides saved successfully');
     },
     onError: (error) => {
-      toast.error('Failed to save overrides: ' + (error as Error).message);
+      catalystToast.error('Failed to save overrides: ' + (error as Error).message);
     }
   });
 }
@@ -349,10 +349,10 @@ export function useCreateRole() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['product-roles'] });
       queryClient.invalidateQueries({ queryKey: ['all-role-permissions'] });
-      toast.success('Role created successfully');
+      catalystToast.success('Role created successfully');
     },
     onError: (error) => {
-      toast.error('Failed to create role: ' + (error as Error).message);
+      catalystToast.error('Failed to create role: ' + (error as Error).message);
     }
   });
 }
@@ -389,10 +389,10 @@ export function useUpdateRole() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['product-roles'] });
-      toast.success('Role updated successfully');
+      catalystToast.success('Role updated successfully');
     },
     onError: (error) => {
-      toast.error('Failed to update role: ' + (error as Error).message);
+      catalystToast.error('Failed to update role: ' + (error as Error).message);
     }
   });
 }
@@ -430,10 +430,10 @@ export function useDeleteRole() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['product-roles'] });
       queryClient.invalidateQueries({ queryKey: ['all-role-permissions'] });
-      toast.success('Role deleted successfully');
+      catalystToast.success('Role deleted successfully');
     },
     onError: (error) => {
-      toast.error('Failed to delete role: ' + (error as Error).message);
+      catalystToast.error('Failed to delete role: ' + (error as Error).message);
     }
   });
 }
@@ -468,10 +468,10 @@ export function useUpdateRolePermissions() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['role-permissions'] });
       queryClient.invalidateQueries({ queryKey: ['all-role-permissions'] });
-      toast.success('Permissions updated successfully');
+      catalystToast.success('Permissions updated successfully');
     },
     onError: (error) => {
-      toast.error('Failed to update permissions: ' + (error as Error).message);
+      catalystToast.error('Failed to update permissions: ' + (error as Error).message);
     }
   });
 }

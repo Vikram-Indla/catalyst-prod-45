@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Search, Plus, Loader2 } from '@/lib/atlaskit-icons';
 
 interface AddFeatureDialogProps {
@@ -66,12 +66,12 @@ export function AddFeatureDialog({ epicId, open, onOpenChange }: AddFeatureDialo
       queryClient.invalidateQueries({ queryKey: ['features'] });
       queryClient.invalidateQueries({ queryKey: ['epic-child-progress', epicId] });
       queryClient.invalidateQueries({ queryKey: ['epic-children', epicId] });
-      toast.success('Features linked to epic');
+      catalystToast.success('Features linked to epic');
       setSelectedFeatureIds([]);
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to link features');
+      catalystToast.error('Failed to link features');
     }
   });
 
@@ -103,12 +103,12 @@ export function AddFeatureDialog({ epicId, open, onOpenChange }: AddFeatureDialo
       queryClient.invalidateQueries({ queryKey: ['features'] });
       queryClient.invalidateQueries({ queryKey: ['epic-child-progress', epicId] });
       queryClient.invalidateQueries({ queryKey: ['epic-children', epicId] });
-      toast.success('Feature created and linked to epic');
+      catalystToast.success('Feature created and linked to epic');
       setNewFeatureName('');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to create feature');
+      catalystToast.error('Failed to create feature');
     }
   });
 

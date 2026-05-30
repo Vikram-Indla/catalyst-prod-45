@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChevronDown, ChevronRight, Plus, Undo2 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface EpicForecastTabProps {
@@ -114,7 +114,7 @@ export function EpicForecastTab({ epicId }: EpicForecastTabProps) {
     },
     onError: (error) => {
       console.error('Failed to update forecast:', error);
-      toast.error('Failed to save forecast');
+      catalystToast.error('Failed to save forecast');
     },
   });
 
@@ -197,7 +197,7 @@ export function EpicForecastTab({ epicId }: EpicForecastTabProps) {
       teamId: null,
       estimate: teamSum,
     });
-    toast.success('Program estimate updated');
+    catalystToast.success('Program estimate updated');
   };
 
   // Handle Sum all button (PI level)
@@ -210,7 +210,7 @@ export function EpicForecastTab({ epicId }: EpicForecastTabProps) {
       teamId: null,
       estimate: sumOfProgramEstimates,
     });
-    toast.success('PI estimate updated');
+    catalystToast.success('PI estimate updated');
   };
 
   // Handle Undo
@@ -223,7 +223,7 @@ export function EpicForecastTab({ epicId }: EpicForecastTabProps) {
       estimate: previousPIEstimate,
     });
     setPreviousPIEstimate(null);
-    toast.success('Undo applied');
+    catalystToast.success('Undo applied');
   };
 
   // Toggle program expansion

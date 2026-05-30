@@ -19,7 +19,7 @@ import { format } from 'date-fns';
 import { Trash2 } from '@/lib/atlaskit-icons';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { usePromoteToRoadmap, useRemoveFromRoadmap } from '@/hooks/useRoadmapPromotion';
 import { getInitialsFromName, hashColor } from '@/types/producthub/request';
 import { Select, Textfield, Button, Avatar } from '@/components/ads';
@@ -249,7 +249,7 @@ function CommentsSection({ requestId }: { requestId: string }) {
       setNewComment('');
       // Silent auto-save
     } catch (err: any) {
-      toast.error('Failed: ' + err.message);
+      catalystToast.error('Failed: ' + err.message);
     } finally {
       setSubmitting(false);
     }
@@ -388,7 +388,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ request }) =
       // Silent auto-save — no toast for routine field updates
       invalidateAll();
     } catch (err: any) {
-      toast.error(`Failed to update ${label.toLowerCase()}: ${err?.message || 'unknown error'}`);
+      catalystToast.error(`Failed to update ${label.toLowerCase()}: ${err?.message || 'unknown error'}`);
       // Revert optimistic update
       setLocalFields(prev => { const n = { ...prev }; delete n[field]; return n; });
     }

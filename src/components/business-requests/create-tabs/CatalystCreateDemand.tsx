@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Lock, Unlock, Upload, X, FileText, Users, CalendarDays, Paperclip, Briefcase, Check } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { RichTextEditor } from '../RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
 
@@ -91,26 +91,26 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
   const handleLockToggle = () => {
     if (targetDateLocked) {
       if (lockedByUser && lockedByUser !== user?.id) {
-        toast.error(`Cannot unlock. This date was locked by another user`);
+        catalystToast.error(`Cannot unlock. This date was locked by another user`);
         return;
       }
       onChange('end_date_locked', false);
       onChange('end_date_locked_by', null);
       onChange('end_date_locked_at', null);
-      toast.info('Target Completion Date unlocked');
+      catalystToast.info('Target Completion Date unlocked');
     } else {
       if (!data.impl_start_date) {
-        toast.error('Cannot lock: Kickoff Date must be populated first');
+        catalystToast.error('Cannot lock: Kickoff Date must be populated first');
         return;
       }
       if (!data.end_date) {
-        toast.error('Cannot lock: Target Completion Date must be populated first');
+        catalystToast.error('Cannot lock: Target Completion Date must be populated first');
         return;
       }
       onChange('end_date_locked', true);
       onChange('end_date_locked_by', user?.id || null);
       onChange('end_date_locked_at', new Date().toISOString());
-      toast.success(`Target Completion Date locked`);
+      catalystToast.success(`Target Completion Date locked`);
     }
   };
 
@@ -118,7 +118,7 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
     const files = Array.from(e.target.files || []);
     
     if (attachments.length + files.length > MAX_FILES) {
-      toast.error(`Maximum ${MAX_FILES} files allowed`);
+      catalystToast.error(`Maximum ${MAX_FILES} files allowed`);
       return;
     }
 
@@ -127,7 +127,7 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
 
     for (const file of files) {
       if (totalSize + file.size > MAX_FILE_SIZE) {
-        toast.error(`Total file size cannot exceed 20MB`);
+        catalystToast.error(`Total file size cannot exceed 20MB`);
         break;
       }
       validFiles.push(file);
@@ -136,7 +136,7 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
 
     if (validFiles.length > 0) {
       onChange('attachments', [...attachments, ...validFiles]);
-      toast.success(`${validFiles.length} file(s) added`);
+      catalystToast.success(`${validFiles.length} file(s) added`);
     }
 
     if (fileInputRef.current) {

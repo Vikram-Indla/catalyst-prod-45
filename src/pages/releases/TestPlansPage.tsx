@@ -65,7 +65,7 @@ import {
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { TMTestPlan, TestPlanStatus } from '@/types/test-management';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 import { CreateEditTestPlanDialog } from '@/components/test-plans/dialogs';
 
@@ -186,7 +186,7 @@ export default function TestPlansPage() {
     setIsRefreshing(true);
     await refetch();
     setIsRefreshing(false);
-    toast.success('Test plans refreshed');
+    catalystToast.success('Test plans refreshed');
   }, [refetch]);
 
   const handleSelectAll = useCallback((checked: boolean) => {
@@ -209,23 +209,23 @@ export default function TestPlansPage() {
   const handleDelete = useCallback(async (id: string) => {
     try {
       await deletePlanMutation.mutateAsync(id);
-      toast.success('Test plan deleted');
+      catalystToast.success('Test plan deleted');
     } catch (error) {
-      toast.error('Failed to delete test plan');
+      catalystToast.error('Failed to delete test plan');
     }
   }, [deletePlanMutation]);
 
   const handleClone = useCallback(async (id: string) => {
     try {
       await clonePlanMutation.mutateAsync(id);
-      toast.success('Test plan cloned');
+      catalystToast.success('Test plan cloned');
     } catch (error) {
-      toast.error('Failed to clone test plan');
+      catalystToast.error('Failed to clone test plan');
     }
   }, [clonePlanMutation]);
 
   const handleExport = useCallback((format: 'csv' | 'xlsx') => {
-    toast.info(`Exporting as ${format.toUpperCase()}...`);
+    catalystToast.info(`Exporting as ${format.toUpperCase()}...`);
     // TODO: Implement export
   }, []);
 

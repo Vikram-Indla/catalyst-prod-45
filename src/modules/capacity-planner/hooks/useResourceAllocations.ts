@@ -6,7 +6,7 @@
 import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { ResourceAllocation, AllocationBookingInput } from '../types';
 
 // Re-export type for backward compatibility
@@ -301,10 +301,10 @@ export function useResourceAllocations() {
      queryClient.invalidateQueries({ queryKey: ['analytics-resources'] });
      queryClient.invalidateQueries({ queryKey: ['capacity-summary'] });
      queryClient.invalidateQueries({ queryKey: ['resource-utilization'] });
-      toast.success('Allocations saved');
+      catalystToast.success('Allocations saved');
     },
     onError: (error) => {
-      toast.error(`Failed to save allocations: ${error.message}`);
+      catalystToast.error(`Failed to save allocations: ${error.message}`);
     },
   });
 
@@ -353,10 +353,10 @@ export function useResourceAllocations() {
      queryClient.invalidateQueries({ queryKey: ['analytics-resources'] });
      queryClient.invalidateQueries({ queryKey: ['capacity-summary'] });
      queryClient.invalidateQueries({ queryKey: ['resource-utilization'] });
-      toast.success('Allocation added');
+      catalystToast.success('Allocation added');
     },
     onError: (error) => {
-      toast.error(`Failed to add allocation: ${error.message}`);
+      catalystToast.error(`Failed to add allocation: ${error.message}`);
     },
   });
 
@@ -399,10 +399,10 @@ export function useResourceAllocations() {
      queryClient.invalidateQueries({ queryKey: ['analytics-resources'] });
      queryClient.invalidateQueries({ queryKey: ['capacity-summary'] });
      queryClient.invalidateQueries({ queryKey: ['resource-utilization'] });
-      toast.success('Allocation updated');
+      catalystToast.success('Allocation updated');
     },
     onError: (error) => {
-      toast.error(`Failed to update allocation: ${error.message}`);
+      catalystToast.error(`Failed to update allocation: ${error.message}`);
     },
   });
 
@@ -422,10 +422,10 @@ export function useResourceAllocations() {
      queryClient.invalidateQueries({ queryKey: ['analytics-resources'] });
      queryClient.invalidateQueries({ queryKey: ['capacity-summary'] });
      queryClient.invalidateQueries({ queryKey: ['resource-utilization'] });
-      toast.success('Allocation removed');
+      catalystToast.success('Allocation removed');
     },
     onError: (error) => {
-      toast.error(`Failed to remove allocation: ${error.message}`);
+      catalystToast.error(`Failed to remove allocation: ${error.message}`);
     },
   });
 
@@ -512,10 +512,10 @@ export function useResourceAllocations() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
-      toast.success('Allocation transferred');
+      catalystToast.success('Allocation transferred');
     },
     onError: (error) => {
-      toast.error(`Failed to transfer allocation: ${error.message}`);
+      catalystToast.error(`Failed to transfer allocation: ${error.message}`);
     },
   });
 

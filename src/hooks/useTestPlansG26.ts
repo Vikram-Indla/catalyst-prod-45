@@ -4,7 +4,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TestPlan, PlanFilters, PlanProgress, PlanScope, PlanTeamMember, PlanApproval } from '@/types/testPlans';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ─── List Plans ──────────────────────────────────────────────────
 export function useTestPlans(filters?: PlanFilters) {
@@ -77,9 +77,9 @@ export function useCreateTestPlan(projectId?: string) {
     },
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['g26-test-plans'] });
-      toast.success(`Plan ${data.plan_key} created`);
+      catalystToast.success(`Plan ${data.plan_key} created`);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => catalystToast.error(e.message),
   });
 }
 
@@ -106,9 +106,9 @@ export function useDuplicateTestPlan() {
     },
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['g26-test-plans'] });
-      toast.success(`Plan duplicated as ${data.plan_key}`);
+      catalystToast.success(`Plan duplicated as ${data.plan_key}`);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => catalystToast.error(e.message),
   });
 }
 
@@ -129,9 +129,9 @@ export function useUpdateTestPlan() {
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['g26-test-plans'] });
       qc.invalidateQueries({ queryKey: ['g26-test-plan', data.id] });
-      toast.success('Plan updated');
+      catalystToast.success('Plan updated');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => catalystToast.error(e.message),
   });
 }
 
@@ -145,9 +145,9 @@ export function useDeleteTestPlan() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['g26-test-plans'] });
-      toast.success('Plan deleted');
+      catalystToast.success('Plan deleted');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => catalystToast.error(e.message),
   });
 }
 
@@ -187,7 +187,7 @@ export function useSaveAsTemplate() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['g26-plan-templates'] });
-      toast.success('Template created');
+      catalystToast.success('Template created');
     },
   });
 }
@@ -265,7 +265,7 @@ export function useAddToScope() {
     onSuccess: (_, v) => {
       qc.invalidateQueries({ queryKey: ['g26-plan-scope', v.planId] });
       qc.invalidateQueries({ queryKey: ['g26-scope-summary', v.planId] });
-      toast.success('Added to scope');
+      catalystToast.success('Added to scope');
     },
   });
 }
@@ -281,7 +281,7 @@ export function useRemoveFromScope() {
     onSuccess: (planId) => {
       qc.invalidateQueries({ queryKey: ['g26-plan-scope', planId] });
       qc.invalidateQueries({ queryKey: ['g26-scope-summary', planId] });
-      toast.success('Removed from scope');
+      catalystToast.success('Removed from scope');
     },
   });
 }
@@ -316,7 +316,7 @@ export function useAddTeamMember() {
     },
     onSuccess: (_, v) => {
       qc.invalidateQueries({ queryKey: ['g26-plan-team', v.planId] });
-      toast.success('Team member added');
+      catalystToast.success('Team member added');
     },
   });
 }
@@ -331,7 +331,7 @@ export function useRemoveTeamMember() {
     },
     onSuccess: (planId) => {
       qc.invalidateQueries({ queryKey: ['g26-plan-team', planId] });
-      toast.success('Team member removed');
+      catalystToast.success('Team member removed');
     },
   });
 }
@@ -366,7 +366,7 @@ export function useRequestApproval() {
     },
     onSuccess: (_, v) => {
       qc.invalidateQueries({ queryKey: ['g26-plan-approvals', v.planId] });
-      toast.success('Approval requested');
+      catalystToast.success('Approval requested');
     },
   });
 }
@@ -383,7 +383,7 @@ export function useApprove() {
     },
     onSuccess: (_, v) => {
       qc.invalidateQueries({ queryKey: ['g26-plan-approvals', v.planId] });
-      toast.success('Plan approved');
+      catalystToast.success('Plan approved');
     },
   });
 }
@@ -400,7 +400,7 @@ export function useReject() {
     },
     onSuccess: (_, v) => {
       qc.invalidateQueries({ queryKey: ['g26-plan-approvals', v.planId] });
-      toast.success('Plan rejected');
+      catalystToast.success('Plan rejected');
     },
   });
 }
@@ -467,9 +467,9 @@ export function useLinkCycleToPlan() {
     },
     onSuccess: (_, v) => {
       qc.invalidateQueries({ queryKey: ['g26-plan-cycles', v.planId] });
-      toast.success('Cycle linked to plan');
+      catalystToast.success('Cycle linked to plan');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => catalystToast.error(e.message),
   });
 }
 
@@ -483,8 +483,8 @@ export function useUnlinkCycleFromPlan() {
     },
     onSuccess: (planId) => {
       qc.invalidateQueries({ queryKey: ['g26-plan-cycles', planId] });
-      toast.success('Cycle unlinked');
+      catalystToast.success('Cycle unlinked');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => catalystToast.error(e.message),
   });
 }

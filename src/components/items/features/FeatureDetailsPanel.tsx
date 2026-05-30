@@ -38,7 +38,7 @@ import { AssignModal } from '@/components/features/AssignModal';
 
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -230,7 +230,7 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
       queryClient.invalidateQueries({ queryKey: ['features-backlog'] });
     },
     onError: (error: any) => {
-      toast.error('Failed to update feature', { description: error.message });
+      catalystToast.error('Failed to update feature');
     },
   });
 
@@ -247,22 +247,22 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-detail-panel', feature?.id] });
       queryClient.invalidateQueries({ queryKey: ['features'] });
-      toast.success('Project updated');
+      catalystToast.success('Project updated');
     },
     onError: () => {
-      toast.error('Failed to update project');
+      catalystToast.error('Failed to update project');
     },
   });
 
   const handleStatusChange = (newStatus: FeatureStatus) => {
     updateFeature.mutate({ status: newStatus }, {
-      onSuccess: () => toast.success('Status updated'),
+      onSuccess: () => catalystToast.success('Status updated'),
     });
   };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
   };
 
   const handleOpenFullPage = () => {

@@ -7,7 +7,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { featureFlagService } from '@/services/feature-flags';
 import type { EnvironmentScope, FeatureFlagTogglePayload, FeatureFlag } from '@/types/feature-flags';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useAuth } from '@/lib/auth';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 
@@ -66,10 +66,10 @@ export function useToggleAdminFeatureFlag() {
       if (context?.previous) {
         queryClient.setQueryData([QUERY_KEY, context.environment], context.previous);
       }
-      toast.error('Failed to update module. Please try again.');
+      catalystToast.error('Failed to update module. Please try again.');
     },
     onSuccess: (data) => {
-      toast.success(`${data.module_name} ${data.enabled ? 'enabled' : 'disabled'}`);
+      catalystToast.success(`${data.module_name} ${data.enabled ? 'enabled' : 'disabled'}`);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
@@ -93,10 +93,10 @@ export function useBulkToggleAdminFeatureFlags() {
         user?.id,
       ),
     onSuccess: (_, { enabled }) => {
-      toast.success(enabled ? 'All modules enabled' : 'All modules disabled');
+      catalystToast.success(enabled ? 'All modules enabled' : 'All modules disabled');
     },
     onError: () => {
-      toast.error('Bulk update failed. Please try again.');
+      catalystToast.error('Bulk update failed. Please try again.');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });

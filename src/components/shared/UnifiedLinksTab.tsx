@@ -35,7 +35,7 @@ import {
   Filter,
   ChevronDown
 } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 
 // Entity types supported by UnifiedLinksTab
@@ -337,12 +337,12 @@ export const UnifiedLinksTab = memo(function UnifiedLinksTab({ entityType, entit
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['unified-links', entityType, entityId] });
-      toast.success('External link added');
+      catalystToast.success('External link added');
       setExternalForm({ title: '', url: '' });
       setFormView('selection');
     },
     onError: () => {
-      toast.error('Failed to add link');
+      catalystToast.error('Failed to add link');
     }
   });
 
@@ -372,13 +372,13 @@ export const UnifiedLinksTab = memo(function UnifiedLinksTab({ entityType, entit
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['unified-links', entityType, entityId] });
-      toast.success('Implementation link added');
+      catalystToast.success('Implementation link added');
       setSelectedWorkItem(null);
       setImplSearch('');
       setFormView('selection');
     },
     onError: () => {
-      toast.error('Failed to add implementation link');
+      catalystToast.error('Failed to add implementation link');
     }
   });
 
@@ -404,13 +404,13 @@ export const UnifiedLinksTab = memo(function UnifiedLinksTab({ entityType, entit
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['unified-links', entityType, entityId] });
-      toast.success('Knowledge Hub page linked');
+      catalystToast.success('Knowledge Hub page linked');
       setSelectedKbDoc(null);
       setKbSearch('');
       setFormView('selection');
     },
     onError: () => {
-      toast.error('Failed to link Knowledge Hub page');
+      catalystToast.error('Failed to link Knowledge Hub page');
     }
   });
 
@@ -457,13 +457,13 @@ export const UnifiedLinksTab = memo(function UnifiedLinksTab({ entityType, entit
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['unified-links', entityType, entityId] });
-      toast.success('Documents uploaded');
+      catalystToast.success('Documents uploaded');
       setDocumentForm({ title: '', files: [] });
       setFormView('selection');
     },
     onError: (error) => {
       console.error('Upload error:', error);
-      toast.error('Failed to upload documents');
+      catalystToast.error('Failed to upload documents');
     }
   });
 
@@ -483,7 +483,7 @@ export const UnifiedLinksTab = memo(function UnifiedLinksTab({ entityType, entit
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['unified-links', entityType, entityId] });
-      toast.success('Link removed');
+      catalystToast.success('Link removed');
     }
   });
 
@@ -492,11 +492,11 @@ export const UnifiedLinksTab = memo(function UnifiedLinksTab({ entityType, entit
     
     for (const file of newFiles) {
       if (file.size > FILE_UPLOAD_CONFIG.MAX_FILE_SIZE_BYTES) {
-        toast.error(`${file.name} exceeds ${FILE_UPLOAD_CONFIG.MAX_FILE_SIZE_MB}MB limit`);
+        catalystToast.error(`${file.name} exceeds ${FILE_UPLOAD_CONFIG.MAX_FILE_SIZE_MB}MB limit`);
         continue;
       }
       if (documentForm.files.length + validFiles.length >= FILE_UPLOAD_CONFIG.MAX_FILES) {
-        toast.error(`Maximum ${FILE_UPLOAD_CONFIG.MAX_FILES} files allowed`);
+        catalystToast.error(`Maximum ${FILE_UPLOAD_CONFIG.MAX_FILES} files allowed`);
         break;
       }
       validFiles.push(file);

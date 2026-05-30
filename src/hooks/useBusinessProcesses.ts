@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface BusinessProcess {
   id: string;
@@ -110,10 +110,10 @@ export function useCreateBusinessProcess() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['business-processes'] });
-      toast.success('Business process created');
+      catalystToast.success('Business process created');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create: ${error.message}`);
+      catalystToast.error(`Failed to create: ${error.message}`);
     },
   });
 }
@@ -135,10 +135,10 @@ export function useUpdateBusinessProcess() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['business-processes'] });
-      toast.success('Business process updated');
+      catalystToast.success('Business process updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update: ${error.message}`);
+      catalystToast.error(`Failed to update: ${error.message}`);
     },
   });
 }
@@ -157,10 +157,10 @@ export function useDeleteBusinessProcess() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['business-processes'] });
-      toast.success('Business process deactivated');
+      catalystToast.success('Business process deactivated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to deactivate: ${error.message}`);
+      catalystToast.error(`Failed to deactivate: ${error.message}`);
     },
   });
 }
@@ -195,10 +195,10 @@ export function useUpdateEpicBusinessProcesses() {
     },
     onSuccess: (_, { epicId }) => {
       queryClient.invalidateQueries({ queryKey: ['epic-business-processes', epicId] });
-      toast.success('Business processes updated');
+      catalystToast.success('Business processes updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update: ${error.message}`);
+      catalystToast.error(`Failed to update: ${error.message}`);
     },
   });
 }

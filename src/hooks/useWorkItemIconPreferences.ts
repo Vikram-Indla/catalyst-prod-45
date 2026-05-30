@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export type IconStyle = 'filled' | 'outline' | 'minimal';
 
@@ -74,7 +74,7 @@ export function useWorkItemIconPreferences() {
     },
     onError: (error) => {
       console.error('Failed to update icon preference:', error);
-      toast.error('Failed to update icon preference');
+      catalystToast.error('Failed to update icon preference');
     },
   });
 
@@ -99,11 +99,11 @@ export function useWorkItemIconPreferences() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-item-icon-preferences'] });
-      toast.success('Icon preferences updated successfully');
+      catalystToast.success('Icon preferences updated successfully');
     },
     onError: (error) => {
       console.error('Failed to batch update icon preferences:', error);
-      toast.error('Failed to update icon preferences');
+      catalystToast.error('Failed to update icon preferences');
     },
   });
 

@@ -36,7 +36,7 @@ import {
 } from '@/lib/atlaskit-icons';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { assertUuid } from '@/lib/utils/assertUuid';
 import type { CaseStatus } from '@/types/test-management';
@@ -254,19 +254,19 @@ export function EditTestCaseDialog({
 
   const handleSave = async () => {
     if (!testCase || !title.trim()) {
-      toast.error('Title is required');
+      catalystToast.error('Title is required');
       return;
     }
 
     // Validate UUID before saving - HARD GUARD against display key usage
     if (!caseUuid || !assertUuid(caseUuid, 'caseUuid')) {
-      toast.error('Cannot save: invalid test case UUID');
+      catalystToast.error('Cannot save: invalid test case UUID');
       return;
     }
 
     const resolvedProjectId = projectId || testCase.project_id;
     if (!resolvedProjectId) {
-      toast.error('Project ID not available');
+      catalystToast.error('Project ID not available');
       return;
     }
 
@@ -290,7 +290,7 @@ export function EditTestCaseDialog({
       },
       {
         onSuccess: () => {
-          toast.success('Test case updated');
+          catalystToast.success('Test case updated');
           // Invalidate all related queries to ensure consistency
           queryClient.invalidateQueries({ queryKey: ['tm-cases', resolvedProjectId] });
           queryClient.invalidateQueries({ queryKey: ['tm-case', caseUuid] });
@@ -301,7 +301,7 @@ export function EditTestCaseDialog({
           onSuccess?.();
         },
         onError: (error) => {
-          toast.error(`Failed to update: ${error.message}`);
+          catalystToast.error(`Failed to update: ${error.message}`);
         },
       }
     );

@@ -12,7 +12,7 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { BacklogItem, BacklogMeta } from '../types';
 import { EpicKanbanColumn } from './EpicKanbanColumn';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface EpicKanbanBoardProps {
   items: BacklogItem[];
@@ -145,10 +145,10 @@ export function EpicKanbanBoard({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Epic state updated');
+      catalystToast.success('Epic state updated');
     },
     onError: (error: any) => {
-      toast.error(`Failed to update state: ${error.message}`);
+      catalystToast.error(`Failed to update state: ${error.message}`);
     },
   });
 

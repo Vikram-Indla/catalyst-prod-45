@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Loader2 } from '@/lib/atlaskit-icons';
 
 interface MoveToPIDialogProps {
@@ -78,11 +78,11 @@ export function MoveToPIDialog({ open, onOpenChange, epicId, epicName }: MoveToP
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
       queryClient.invalidateQueries({ queryKey: ['epic-pi-assignments', epicId] });
-      toast.success(`PI assignments updated for "${epicName}"`);
+      catalystToast.success(`PI assignments updated for "${epicName}"`);
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to update PI assignments');
+      catalystToast.error('Failed to update PI assignments');
     }
   });
 

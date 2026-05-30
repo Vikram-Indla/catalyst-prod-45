@@ -6,7 +6,7 @@ import { Zap, FileText, Link2, ArrowUp, ArrowDown, Ban, ExternalLink } from '@/l
 import { cn } from '@/lib/utils';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface FeatureLinksTabProps {
   feature: {
@@ -92,7 +92,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
           <Button 
             variant="outline" 
             size="sm"
-            onClick={() => toast.info('Link Story functionality coming soon')}
+            onClick={() => catalystToast.info('Link Story functionality coming soon')}
           >
             <Link2 className="h-4 w-4 mr-1" />
             Link Story
@@ -128,7 +128,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
           <Button 
             variant="outline" 
             size="sm"
-            onClick={() => toast.info('Add Dependency functionality coming soon')}
+            onClick={() => catalystToast.info('Add Dependency functionality coming soon')}
           >
             <Link2 className="h-4 w-4 mr-1" />
             Add Dependency
@@ -174,7 +174,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
           <Button 
             variant="outline" 
             size="sm"
-            onClick={() => toast.info('Link Change functionality coming soon')}
+            onClick={() => catalystToast.info('Link Change functionality coming soon')}
           >
             <Link2 className="h-4 w-4 mr-1" />
             Link Change

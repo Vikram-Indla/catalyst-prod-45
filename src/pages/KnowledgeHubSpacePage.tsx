@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { CreateDocumentDialog } from '@/components/knowledge-hub/CreateDocumentDialog';
 import {
   DropdownMenu,
@@ -84,11 +84,11 @@ export default function KnowledgeHubSpacePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kb-space-docs', spaceId] });
-      toast.success('Document deleted');
+      catalystToast.success('Document deleted');
       setDeleteDocId(null);
     },
     onError: () => {
-      toast.error('Failed to delete document');
+      catalystToast.error('Failed to delete document');
     },
   });
 

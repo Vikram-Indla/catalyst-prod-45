@@ -43,7 +43,7 @@ import { KeyResultsTabV2 } from './KeyResultsTabV2';
 import { LinkedWorkTabV2 } from './LinkedWorkTabV2';
 import { UnifiedLinksTab } from '@/components/shared/UnifiedLinksTab';
 import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { logAuditEntry, getChangedFields } from '@/lib/auditLogger';
 import { cn } from '@/lib/utils';
@@ -386,7 +386,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
 
     const errors = validateForm();
     if (errors.length > 0) {
-      toast.error(errors.join('. '));
+      catalystToast.error(errors.join('. '));
       return;
     }
 
@@ -427,9 +427,9 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
       queryClient.invalidateQueries({ queryKey: ['objective-v2', objectiveId] });
       queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
 
-      toast.success('Objective updated successfully');
+      catalystToast.success('Objective updated successfully');
     } catch (error: any) {
-      toast.error(`Failed to save: ${error?.message || 'Unknown error'}`);
+      catalystToast.error(`Failed to save: ${error?.message || 'Unknown error'}`);
     }
   };
 
@@ -445,10 +445,10 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
     try {
       await deleteObjective.mutateAsync(objectiveId);
       setShowDeleteDialog(false);
-      toast.success('Objective deleted successfully');
+      catalystToast.success('Objective deleted successfully');
       onClose();
     } catch (error: any) {
-      toast.error(`Failed to delete: ${error?.message || 'Unknown error'}`);
+      catalystToast.error(`Failed to delete: ${error?.message || 'Unknown error'}`);
     }
   };
 
@@ -470,14 +470,14 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
         notes: (objective as any).notes || undefined,
       });
       
-      toast.success('Objective duplicated');
+      catalystToast.success('Objective duplicated');
       queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
       
       if (onDuplicated && newObjective?.id) {
         onDuplicated(newObjective.id);
       }
     } catch (error: any) {
-      toast.error(`Failed to duplicate: ${error?.message || 'Unknown error'}`);
+      catalystToast.error(`Failed to duplicate: ${error?.message || 'Unknown error'}`);
     } finally {
       setIsDuplicating(false);
     }
@@ -520,9 +520,9 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      toast.success('Objective exported');
+      catalystToast.success('Objective exported');
     } catch (error: any) {
-      toast.error(`Failed to export: ${error?.message || 'Unknown error'}`);
+      catalystToast.error(`Failed to export: ${error?.message || 'Unknown error'}`);
     }
   };
 
@@ -530,7 +530,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
   const handleCopyLink = () => {
     const url = `${window.location.origin}/okr/objectives/${objectiveId}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
   };
 
   // Edit name handlers
@@ -549,9 +549,9 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
         });
         queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
         queryClient.invalidateQueries({ queryKey: ['objective-v2', objectiveId] });
-        toast.success('Objective name updated');
+        catalystToast.success('Objective name updated');
       } catch (error: any) {
-        toast.error(`Failed to update name: ${error?.message || 'Unknown error'}`);
+        catalystToast.error(`Failed to update name: ${error?.message || 'Unknown error'}`);
       }
     }
     setIsEditingName(false);

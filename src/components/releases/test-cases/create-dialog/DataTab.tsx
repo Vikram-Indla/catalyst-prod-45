@@ -8,7 +8,7 @@ import { Plus, Trash2, Upload, FileSpreadsheet } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { TestCaseFormData, TestCaseParameter } from './types';
 
 interface DataTabProps {
@@ -32,7 +32,7 @@ export function DataTab({ data, onChange }: DataTabProps) {
 
   const handleDeleteRow = useCallback((id: string) => {
     onChange({ parameters: parameters.filter((p) => p.id !== id) });
-    toast.success('Row deleted');
+    catalystToast.success('Row deleted');
   }, [parameters, onChange]);
 
   const handleUpdateCell = useCallback((id: string, header: string, value: string) => {
@@ -57,7 +57,7 @@ export function DataTab({ data, onChange }: DataTabProps) {
   const handleUpdateHeader = useCallback((oldHeader: string, newHeader: string) => {
     if (newHeader === oldHeader) return;
     if (parameterHeaders.includes(newHeader)) {
-      toast.error('Column name already exists');
+      catalystToast.error('Column name already exists');
       return;
     }
     onChange({
@@ -71,7 +71,7 @@ export function DataTab({ data, onChange }: DataTabProps) {
 
   const handleDeleteColumn = useCallback((header: string) => {
     if (parameterHeaders.length <= 1) {
-      toast.error('Must have at least one column');
+      catalystToast.error('Must have at least one column');
       return;
     }
     onChange({
@@ -87,9 +87,9 @@ export function DataTab({ data, onChange }: DataTabProps) {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
     if (file && (file.name.endsWith('.csv') || file.name.endsWith('.xlsx'))) {
-      toast.info(`Import from ${file.name} - Feature coming soon!`);
+      catalystToast.info(`Import from ${file.name} - Feature coming soon!`);
     } else {
-      toast.error('Please upload a CSV or Excel file');
+      catalystToast.error('Please upload a CSV or Excel file');
     }
   }, []);
 

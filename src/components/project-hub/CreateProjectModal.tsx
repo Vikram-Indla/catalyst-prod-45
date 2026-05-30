@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { X } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { StepIndicator } from './wizard/StepIndicator';
 import { StepDetails, StepDetailsData } from './wizard/StepDetails';
 import { StepWorkflow, StepWorkflowData } from './wizard/StepWorkflow';
@@ -52,7 +52,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     setSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { toast.error('Please sign in first'); setSubmitting(false); return; }
+      if (!user) { catalystToast.error('Please sign in first'); setSubmitting(false); return; }
       const { data: projectId, error } = await supabase.rpc('ph_create_project', {
         p_name: details.name.trim(), p_key: details.key.trim().toUpperCase(),
         p_department: details.department, p_description: details.description.trim() || null,
@@ -102,11 +102,11 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       queryClient.invalidateQueries({ queryKey: ['ph-projects'] });
       queryClient.invalidateQueries({ queryKey: ['ph-projects-list'] });
       queryClient.invalidateQueries({ queryKey: ['ph-projects-full-list'] });
-      toast.success('Project created successfully');
+      catalystToast.success('Project created successfully');
       onClose();
       navigate(`/project-hub/${details.key.toUpperCase()}/dashboard`);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to create project');
+      catalystToast.error(err.message || 'Failed to create project');
     } finally {
       setSubmitting(false);
     }

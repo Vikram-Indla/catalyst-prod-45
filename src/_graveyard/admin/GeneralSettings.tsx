@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Settings } from 'lucide-react';
 
 /**
@@ -15,7 +15,7 @@ import { Settings } from 'lucide-react';
  */
 export default function GeneralSettings() {
   const handleSave = () => {
-    toast.success('General settings saved successfully');
+    catalystToast.success('General settings saved successfully');
   };
 
   return (

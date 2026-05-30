@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import { Upload } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { validateFile } from '../utils/validation';
 
@@ -36,7 +36,7 @@ export const DragDropZone: React.FC<DragDropZoneProps> = ({ onDrop, disabled }) 
     const validFiles = files.filter(validateFile);
 
     if (validFiles.length < files.length) {
-      toast.error('Some files were rejected (invalid type or too large)');
+      catalystToast.error('Some files were rejected (invalid type or too large)');
     }
 
     if (validFiles.length > 0) {

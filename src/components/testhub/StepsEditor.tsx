@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { GripVertical, Paperclip, Copy, ArrowUp, Trash2, Plus, ChevronDown, Library, X } from '@/lib/atlaskit-icons';
 import { SharedStepsModal } from './SharedStepsModal';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   DndContext,
   closestCenter,
@@ -187,9 +187,9 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
   const deleteStep = (id: string) => {
     if (steps.length > 1) {
       onChange(steps.filter(s => s.id !== id));
-      toast.success('Step deleted');
+      catalystToast.success('Step deleted');
     } else {
-      toast.error('At least one step is required');
+      catalystToast.error('At least one step is required');
     }
   };
 
@@ -208,7 +208,7 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
       for (const file of Array.from(files)) {
         // Validate file size (max 10MB)
         if (file.size > 10 * 1024 * 1024) {
-          toast.error(`${file.name} is too large (max 10MB)`);
+          catalystToast.error(`${file.name} is too large (max 10MB)`);
           continue;
         }
         
@@ -234,7 +234,7 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
         return step;
       }));
       
-      toast.success(`${newAttachments.length} file(s) attached`);
+      catalystToast.success(`${newAttachments.length} file(s) attached`);
     };
     
     input.click();
@@ -250,7 +250,7 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
       }
       return step;
     }));
-    toast.success('Attachment removed');
+    catalystToast.success('Attachment removed');
   };
 
   const cloneStep = (id: string) => {
@@ -261,7 +261,7 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
       const newSteps = [...steps];
       newSteps.splice(index + 1, 0, newStep);
       onChange(newSteps);
-      toast.success('Step cloned');
+      catalystToast.success('Step cloned');
     }
   };
 

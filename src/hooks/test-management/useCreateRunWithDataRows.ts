@@ -6,7 +6,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 type DbExecutionStatus = 'not_run' | 'in_progress' | 'passed' | 'failed' | 'blocked' | 'skipped';
 
@@ -195,9 +195,9 @@ export function useCreateRunWithDataRows() {
       queryClient.invalidateQueries({ queryKey: ['tm-cycle', variables.cycle_id] });
       
       if (result.total_count === 1) {
-        toast.success('Execution started');
+        catalystToast.success('Execution started');
       } else {
-        toast.success(`Started ${result.total_count} executions`, {
+        catalystToast.success(`Started ${result.total_count} executions`, {
           description: `Data rows: ${result.created_runs
             .filter(r => r.data_row_number)
             .map(r => r.data_row_number)
@@ -206,7 +206,7 @@ export function useCreateRunWithDataRows() {
       }
     },
     onError: (error: Error) => {
-      toast.error(`Failed to start execution: ${error.message}`);
+      catalystToast.error(`Failed to start execution: ${error.message}`);
     },
   });
 }

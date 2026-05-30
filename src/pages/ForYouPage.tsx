@@ -25,7 +25,7 @@ import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBa
 import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '@/components/catalyst-ai/CatalystAIPanel';
 
 // ─── Group By ────────────────────────────────────────────────
@@ -277,9 +277,9 @@ export default function ForYouPage() {
     return groupForYouItems(allItems, fyGroupBy);
   }, [filteredGroupedItems, fyGroupBy]);
 
-  const handleBulkApprove = () => { toast.success(`Approved ${selectedIds.size} items`); setSelectedIds(new Set()); };
-  const handleBulkDelete = () => { toast.success(`Deleted ${selectedIds.size} items`); setSelectedIds(new Set()); };
-  const handleBulkAssign = () => { toast.info('Assign owner dialog would open here'); };
+  const handleBulkApprove = () => { catalystToast.success(`Approved ${selectedIds.size} items`); setSelectedIds(new Set()); };
+  const handleBulkDelete = () => { catalystToast.success(`Deleted ${selectedIds.size} items`); setSelectedIds(new Set()); };
+  const handleBulkAssign = () => { catalystToast.info('Assign owner dialog would open here'); };
   const handleClearSelection = () => { setSelectedIds(new Set()); };
 
   const navigate = useNavigate();
@@ -294,7 +294,7 @@ export default function ForYouPage() {
       case 'epic': navigate(`/program/epics?selected=${key}`); break;
       case 'task': navigate(`/project/tasks?selected=${key}`); break;
       case 'business-request': navigate(`/product/business-requests?selected=${key}`); break;
-      default: toast.info(`Opening ${type}: ${key}`);
+      default: catalystToast.info(`Opening ${type}: ${key}`);
     }
   }, [navigate, setIsAIPanelOpen]);
 

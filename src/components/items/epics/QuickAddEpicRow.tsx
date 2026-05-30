@@ -5,7 +5,7 @@ import { TableRow, TableCell } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, X, Check } from '@/lib/atlaskit-icons';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface QuickAddEpicRowProps {
   columnsCount: number;
@@ -34,18 +34,18 @@ export function QuickAddEpicRow({ columnsCount }: QuickAddEpicRowProps) {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success(`Epic "${data.name}" created successfully`);
+      catalystToast.success(`Epic "${data.name}" created successfully`);
       setEpicName('');
       setIsAdding(false);
     },
     onError: () => {
-      toast.error('Failed to create epic');
+      catalystToast.error('Failed to create epic');
     }
   });
 
   const handleSubmit = () => {
     if (!epicName.trim()) {
-      toast.error('Epic name is required');
+      catalystToast.error('Epic name is required');
       return;
     }
     createEpicMutation.mutate(epicName.trim());

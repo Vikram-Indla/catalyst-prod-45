@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, CalendarIcon } from '@/lib/atlaskit-icons';
 import { RH } from '@/constants/releasehub.design';
 import { useCreateRelease } from '@/hooks/useReleaseHub';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -20,8 +20,8 @@ export function CreateReleaseModal({ onClose }: Props) {
     if (!name || !targetDate) return;
     setError('');
     createRelease.mutate({ name, target_date: format(targetDate, 'yyyy-MM-dd'), version: version || undefined, source: 'catalyst', status: 'todo' }, {
-      onSuccess: () => { toast.success('Release created'); onClose(); },
-      onError: (err: any) => { setError(err.message || 'Failed to create release'); toast.error('Failed to create release'); },
+      onSuccess: () => { catalystToast.success('Release created'); onClose(); },
+      onError: (err: any) => { setError(err.message || 'Failed to create release'); catalystToast.error('Failed to create release'); },
     });
   };
 

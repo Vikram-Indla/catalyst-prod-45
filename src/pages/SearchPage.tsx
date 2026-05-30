@@ -37,7 +37,7 @@ import {
 } from '@/components/ui/table';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useAuth } from '@/lib/auth';
 
 type WorkItemType = 'all' | 'epic' | 'feature' | 'story' | 'subtask' | 'demand';
@@ -118,11 +118,11 @@ export default function SearchPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['saved-filters'] });
-      toast.success('Filter saved');
+      catalystToast.success('Filter saved');
       setSaveDialogOpen(false);
       setFilterName('');
     },
-    onError: () => toast.error('Failed to save filter'),
+    onError: () => catalystToast.error('Failed to save filter'),
   });
 
   const toggleStarMutation = useMutation({
@@ -143,7 +143,7 @@ export default function SearchPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['saved-filters'] });
-      toast.success('Filter deleted');
+      catalystToast.success('Filter deleted');
     },
   });
 

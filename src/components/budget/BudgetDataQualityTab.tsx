@@ -22,7 +22,7 @@ import {
   MissingCTCModal, 
   DataQualityBreakdownModal 
 } from './DataQualityDetailModals';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { PeriodToggle, DEPT_ORDER } from './shared';
 
 interface BudgetDataQualityTabProps {
@@ -277,9 +277,9 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
       link.click();
 
       URL.revokeObjectURL(url);
-      toast.success('Report exported successfully!');
+      catalystToast.success('Report exported successfully!');
     } catch (error) {
-      toast.error('Failed to export report');
+      catalystToast.error('Failed to export report');
     } finally {
       setIsExporting(false);
     }

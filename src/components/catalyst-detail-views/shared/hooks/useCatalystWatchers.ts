@@ -19,7 +19,7 @@
  *   2026-05-11 — Vikram re-ran SQL via Lovable; migration committed to repo
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface WatcherProfile {
@@ -103,7 +103,7 @@ export function useCatalystWatchers(issueKey: string | null | undefined) {
     onSettled: () => qc.invalidateQueries({ queryKey: ['cv-watchers', issueKey] }),
     onError: (err: unknown) => {
       const msg = err instanceof Error ? err.message : 'Unknown error';
-      toast.error(`Could not update watchers: ${msg}`);
+      catalystToast.error(`Could not update watchers: ${msg}`);
     },
   });
 

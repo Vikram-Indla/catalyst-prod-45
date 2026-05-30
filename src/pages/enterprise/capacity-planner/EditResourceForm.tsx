@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DialogFooter } from '@/components/ui/dialog';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCapacityDepartments, useResourceManagement, useResourceAssignments } from '@/modules/capacity-planner';
@@ -97,7 +97,7 @@ export function EditResourceForm({
       setLastSaved(new Date());
     } catch (error) {
       console.error('Failed to save allocation:', error);
-      toast.error('Failed to save allocation');
+      catalystToast.error('Failed to save allocation');
     } finally {
       setIsSaving(false);
     }

@@ -4,7 +4,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { CycleAssignment, InlineEditParams } from '@/types/assignment-table.types';
 import { cycleListKeys } from './useTestCycleList';
 
@@ -82,7 +82,7 @@ export function useInlineEdit(cycleId: string) {
       if (context?.previousData) {
         queryClient.setQueryData(['assignment-table', cycleId], context.previousData);
       }
-      toast.error('Failed to update');
+      catalystToast.error('Failed to update');
     },
     onSuccess: () => {
       // Invalidate related queries to ensure consistency

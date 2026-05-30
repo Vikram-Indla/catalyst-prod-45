@@ -7,7 +7,7 @@ import AdsSelect from '@atlaskit/select';
 import TextArea from '@atlaskit/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
 interface BulkRoleAssignmentProps {
   open: boolean;
@@ -62,11 +62,11 @@ export function BulkRoleAssignment({ open, onOpenChange }: BulkRoleAssignmentPro
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user_roles'] });
       queryClient.invalidateQueries({ queryKey: ['user-role-history'] });
-      toast.success(`Roles ${action === 'assign' ? 'assigned' : 'removed'} successfully`);
+      catalystToast.success(`Roles ${action === 'assign' ? 'assigned' : 'removed'} successfully`);
       handleClose();
     },
     onError: (error: Error) => {
-      toast.error(error.message);
+      catalystToast.error(error.message);
     },
   });
 

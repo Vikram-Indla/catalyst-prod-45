@@ -22,7 +22,7 @@ import { AllWorkTicketList } from '../components/AllWorkTicketList';
 import { CreateVersionDialog } from '../components/CreateVersionDialog';
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface WorkItem {
   id: string;
@@ -203,7 +203,7 @@ export function AllWorkView() {
 
   // Handle navigating to parent (Feature/Epic)
   const handleNavigateToParent = (parentKey: string, parentType: 'Feature' | 'Epic') => {
-    toast.info(`Navigating to ${parentType}: ${parentKey}`);
+    catalystToast.info(`Navigating to ${parentType}: ${parentKey}`);
     // In production, navigate to the actual route
     // navigate(`/items/${parentType.toLowerCase()}s/${parentKey}`);
   };

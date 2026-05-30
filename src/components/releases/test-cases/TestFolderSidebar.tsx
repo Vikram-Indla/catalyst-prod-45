@@ -23,7 +23,7 @@ import { CreateFolderDialog } from './CreateFolderDialog';
 import { RenameFolderDialog } from './RenameFolderDialog';
 import { DeleteFolderDialog } from './DeleteFolderDialog';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface TestFolderSidebarProps {
   projectId: string;
@@ -167,17 +167,17 @@ export function TestFolderSidebar({
             if (count > 0) {
               console.log('[DROP] Successfully moved to', targetFolder);
             } else {
-              toast.error('Test case not found in database');
+              catalystToast.error('Test case not found in database');
             }
           },
           onError: () => {
-            toast.error('Failed to move test case');
+            catalystToast.error('Failed to move test case');
           },
         }
       );
     } else {
       console.error('[DROP] Invalid test case ID format:', testCaseId);
-      toast.error('Could not identify test case. Please try again.');
+      catalystToast.error('Could not identify test case. Please try again.');
     }
   };
 

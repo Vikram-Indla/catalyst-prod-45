@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Types
 export interface BusinessLine {
@@ -103,11 +103,11 @@ export function useCreateBusinessLine() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['business-lines'] });
-      toast.success('Business line created');
+      catalystToast.success('Business line created');
     },
     onError: (error) => {
       console.error('Error creating business line:', error);
-      toast.error('Failed to create business line');
+      catalystToast.error('Failed to create business line');
     },
   });
 }
@@ -131,7 +131,7 @@ export function useUpdateBusinessLine() {
     },
     onError: (error) => {
       console.error('Error updating business line:', error);
-      toast.error('Failed to update business line');
+      catalystToast.error('Failed to update business line');
     },
   });
 }
@@ -149,11 +149,11 @@ export function useDeleteBusinessLine() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['business-lines'] });
-      toast.success('Business line deleted');
+      catalystToast.success('Business line deleted');
     },
     onError: (error) => {
       console.error('Error deleting business line:', error);
-      toast.error('Failed to delete business line');
+      catalystToast.error('Failed to delete business line');
     },
   });
 }
@@ -210,7 +210,7 @@ export function useCreateProductStatusConfig() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['product-status-configs'] });
-      toast.success('Status created');
+      catalystToast.success('Status created');
     },
   });
 }
@@ -229,7 +229,7 @@ export function useDeleteProductStatusConfig() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['product-status-configs'] });
-      toast.success('Status deleted');
+      catalystToast.success('Status deleted');
     },
   });
 }

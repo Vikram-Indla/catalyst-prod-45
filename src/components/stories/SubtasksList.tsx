@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Plus, MoreHorizontal, Trash2, Edit2, CheckCircle2, Circle } from '@/lib/atlaskit-icons';
 import {
   AlertDialog,
@@ -68,10 +68,10 @@ export function SubtasksList({ storyId }: SubtasksListProps) {
       queryClient.invalidateQueries({ queryKey: ['subtasks', storyId] });
       setNewSubtaskName('');
       setIsAdding(false);
-      toast.success('Subtask added');
+      catalystToast.success('Subtask added');
     },
     onError: () => {
-      toast.error('Failed to add subtask');
+      catalystToast.error('Failed to add subtask');
     },
   });
 
@@ -87,10 +87,10 @@ export function SubtasksList({ storyId }: SubtasksListProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subtasks', storyId] });
       setEditingId(null);
-      toast.success('Subtask updated');
+      catalystToast.success('Subtask updated');
     },
     onError: () => {
-      toast.error('Failed to update subtask');
+      catalystToast.error('Failed to update subtask');
     },
   });
 
@@ -106,10 +106,10 @@ export function SubtasksList({ storyId }: SubtasksListProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subtasks', storyId] });
       setDeleteId(null);
-      toast.success('Subtask deleted');
+      catalystToast.success('Subtask deleted');
     },
     onError: () => {
-      toast.error('Failed to delete subtask');
+      catalystToast.error('Failed to delete subtask');
     },
   });
 

@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { TaskListTask } from '../../hooks/useTaskList';
 import { format } from 'date-fns';
 
@@ -23,7 +23,7 @@ interface ExportButtonProps {
 export function ExportButton({ tasks, disabled }: ExportButtonProps) {
   const exportToCSV = () => {
     if (tasks.length === 0) {
-      toast.error('No tasks to export');
+      catalystToast.error('No tasks to export');
       return;
     }
 
@@ -70,12 +70,12 @@ export function ExportButton({ tasks, disabled }: ExportButtonProps) {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    toast.success(`Exported ${tasks.length} tasks to CSV`);
+    catalystToast.success(`Exported ${tasks.length} tasks to CSV`);
   };
 
   const exportToJSON = () => {
     if (tasks.length === 0) {
-      toast.error('No tasks to export');
+      catalystToast.error('No tasks to export');
       return;
     }
 
@@ -104,7 +104,7 @@ export function ExportButton({ tasks, disabled }: ExportButtonProps) {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    toast.success(`Exported ${tasks.length} tasks to JSON`);
+    catalystToast.success(`Exported ${tasks.length} tasks to JSON`);
   };
 
   return (

@@ -36,7 +36,7 @@ import {
 import { UserProfile } from '@/hooks/useUsers';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { getCountryInfo } from '@/lib/countryLookup';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -559,7 +559,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
       setInitialAssignmentId(selectedAssignmentId || '');
       setFieldErrors({});
 
-      toast.success('User updated successfully');
+      catalystToast.success('User updated successfully');
       onClose();
     },
     onError: (error) => {
@@ -581,11 +581,11 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
       }
 
       if (message.includes('permission') || message.includes('policy') || message.includes('RLS')) {
-        toast.error('Permission denied: You do not have access to update this user.');
+        catalystToast.error('Permission denied: You do not have access to update this user.');
         return;
       }
 
-      toast.error(message);
+      catalystToast.error(message);
     },
   });
 
@@ -596,7 +596,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
     const email = formData.email.trim();
     if (email && !/^\S+@\S+\.\S+$/.test(email)) {
       setFieldErrors({ email: 'Enter a valid email address.' });
-      toast.error('Enter a valid email address.');
+      catalystToast.error('Enter a valid email address.');
       return;
     }
 

@@ -56,7 +56,7 @@ import TextArea from '@atlaskit/textarea';
 import EditIcon from '@atlaskit/icon/glyph/edit';
 import EmojiAddIcon from '@atlaskit/icon/glyph/emoji-add';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import ForYouRow from './ForYouRow';
 import { ForYouEmptyState, GroupHeading, groupByRecency, MentionSparkleArt } from './helpers';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';

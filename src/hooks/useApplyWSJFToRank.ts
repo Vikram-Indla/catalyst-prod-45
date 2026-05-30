@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // NOTE: Function names reference WSJF for legacy/internal reasons
 // UI displays "Technical Scoring" - these apply tech scores to global_rank
@@ -47,10 +47,10 @@ export function useApplyWSJFToRankEpics(piId?: string) {
     onSuccess: (count) => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
       queryClient.invalidateQueries({ queryKey: ['wsjf'] });
-      toast.success(`Applied Technical Scoring ranking to ${count} epics`);
+      catalystToast.success(`Applied Technical Scoring ranking to ${count} epics`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to apply Technical Scoring ranking: ${error.message}`);
+      catalystToast.error(`Failed to apply Technical Scoring ranking: ${error.message}`);
     },
   });
 }
@@ -100,10 +100,10 @@ export function useApplyWSJFToRankFeatures(piId?: string) {
     },
     onSuccess: (count) => {
       queryClient.invalidateQueries({ queryKey: ['features'] });
-      toast.success(`Applied Technical Scoring ranking to ${count} features`);
+      catalystToast.success(`Applied Technical Scoring ranking to ${count} features`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to apply Technical Scoring ranking: ${error.message}`);
+      catalystToast.error(`Failed to apply Technical Scoring ranking: ${error.message}`);
     },
   });
 }

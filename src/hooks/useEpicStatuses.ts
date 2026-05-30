@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface EpicStatus {
   id: string;
@@ -120,10 +120,10 @@ export function useCreateEpicStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epic-statuses'] });
-      toast.success('Epic status added');
+      catalystToast.success('Epic status added');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to add epic status: ${error.message}`);
+      catalystToast.error(`Failed to add epic status: ${error.message}`);
     },
   });
 }
@@ -143,10 +143,10 @@ export function useUpdateEpicStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epic-statuses'] });
-      toast.success('Epic status updated');
+      catalystToast.success('Epic status updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update epic status: ${error.message}`);
+      catalystToast.error(`Failed to update epic status: ${error.message}`);
     },
   });
 }
@@ -168,7 +168,7 @@ export function useToggleEpicStatus() {
       queryClient.invalidateQueries({ queryKey: ['epic-statuses'] });
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update status: ${error.message}`);
+      catalystToast.error(`Failed to update status: ${error.message}`);
     },
   });
 }
@@ -188,10 +188,10 @@ export function useDeleteEpicStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epic-statuses'] });
-      toast.success('Epic status deleted');
+      catalystToast.success('Epic status deleted');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete epic status: ${error.message}`);
+      catalystToast.error(`Failed to delete epic status: ${error.message}`);
     },
   });
 }
@@ -240,10 +240,10 @@ export function useReassignEpics() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['linked-epics'] });
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('Epics reassigned successfully');
+      catalystToast.success('Epics reassigned successfully');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to reassign epics: ${error.message}`);
+      catalystToast.error(`Failed to reassign epics: ${error.message}`);
     },
   });
 }

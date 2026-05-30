@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { 
   Link2, Edit, Copy, Trash2, 
@@ -77,7 +77,7 @@ function CopyLinkButton({ epicKey }: { epicKey: string }) {
     const url = `${window.location.origin}${window.location.pathname}?epic=${epicKey}`;
     await navigator.clipboard.writeText(url);
     setCopied(true);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Link copied to clipboard');
     setTimeout(() => setCopied(false), 2000);
   };
   

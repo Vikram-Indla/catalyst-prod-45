@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface QuickAddPopoverProps {
   date: Date;
@@ -68,13 +68,13 @@ export function QuickAddPopover({
       return data;
     },
     onSuccess: () => {
-      toast.success(`Task added for ${format(date, 'MMM d')}`);
+      catalystToast.success(`Task added for ${format(date, 'MMM d')}`);
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
       setTitle('');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to create task');
+      catalystToast.error('Failed to create task');
     },
   });
 

@@ -5,7 +5,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Download, ChevronDown, Calendar, Loader2, Check } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { loadExcelJS } from '@/lib/exportLoaders';
 const loadFileSaver = () => import('file-saver').then(m => m.saveAs);
 import { format, subMonths, addMonths, startOfMonth, endOfMonth } from 'date-fns';
@@ -447,12 +447,12 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
 
       await generateExcel(months, deptFilter);
       setGenState('done');
-      toast.success('Excel exported successfully');
+      catalystToast.success('Excel exported successfully');
 
       setTimeout(() => setGenState('idle'), 3000);
     } catch (err: any) {
       setGenState('idle');
-      toast.error(err.message || 'Export failed');
+      catalystToast.error(err.message || 'Export failed');
     }
   }, [canGenerate, selected, customFrom, customTo, monthOptions, deptFilter]);
 

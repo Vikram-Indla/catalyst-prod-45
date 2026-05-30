@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { moveIssueToColumn, revertIssueMove } from '../api/moveIssue';
 import type { DragState, BoardIssue, MoveResult, PhBoard } from '../types/kanban';
 
@@ -67,7 +67,7 @@ export function useDragDrop(boardId: string, userId: string) {
 
       // UC-038: block cross-epic drops
       if (targetEpicId && issue?.epicId && issue.epicId !== targetEpicId) {
-        toast.error('Cannot move between epics', {
+        catalystToast.error('Cannot move between epics', {
           description: 'Cards must stay within their epic swimlane.',
         });
         setDragState((p) => ({ ...p, draggingId: null, sourceColumnId: null }));
@@ -82,7 +82,7 @@ export function useDragDrop(boardId: string, userId: string) {
           (i) => i.boardColumnId === targetColumnId
         ).length;
         if (currentCount >= targetCol.wipLimit) {
-          toast.error('Column limit reached', {
+          catalystToast.error('Column limit reached', {
             description: `"${targetCol.name}" has a WIP limit of ${targetCol.wipLimit}. Remove an issue first.`,
           });
           setDragState((p) => ({ ...p, draggingId: null, sourceColumnId: null }));
@@ -122,7 +122,7 @@ export function useDragDrop(boardId: string, userId: string) {
             return next;
           }
         );
-        toast.error('Move failed', {
+        catalystToast.error('Move failed', {
           description: 'Issue reverted to its original column.',
         });
         return { success: false, error: String(err) };

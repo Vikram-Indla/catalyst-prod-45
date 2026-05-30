@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Types
 export interface OptionSet {
@@ -163,10 +163,10 @@ export function useCreateOptionValue() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['option-values', variables.optionSetKey] });
-      toast.success('Option created successfully');
+      catalystToast.success('Option created successfully');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create option: ${error.message}`);
+      catalystToast.error(`Failed to create option: ${error.message}`);
     },
   });
 }
@@ -208,10 +208,10 @@ export function useUpdateOptionValue() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['option-values', variables.optionSetKey] });
-      toast.success('Option updated successfully');
+      catalystToast.success('Option updated successfully');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update option: ${error.message}`);
+      catalystToast.error(`Failed to update option: ${error.message}`);
     },
   });
 }
@@ -241,10 +241,10 @@ export function useDeleteOptionValue() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['option-values', variables.optionSetKey] });
-      toast.success(variables.hardDelete ? 'Option deleted' : 'Option deactivated');
+      catalystToast.success(variables.hardDelete ? 'Option deleted' : 'Option deactivated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete option: ${error.message}`);
+      catalystToast.error(`Failed to delete option: ${error.message}`);
     },
   });
 }

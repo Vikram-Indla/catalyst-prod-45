@@ -19,7 +19,7 @@ import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
 import WarningIcon from '@atlaskit/icon/core/warning';
 import Spinner from '@atlaskit/spinner';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import type { ReleaseDetail } from '../types';
 import { STATUS_LABELS } from '../types';
 
@@ -103,7 +103,7 @@ export function ApproveReleaseDialog({ open, onOpenChange, release, onApprove }:
 
   const handleApprove = async () => {
     if (!allRequiredChecked) {
-      toast.error('Please complete all required checklist items');
+      catalystToast.error('Please complete all required checklist items');
       return;
     }
 
@@ -115,13 +115,13 @@ export function ApproveReleaseDialog({ open, onOpenChange, release, onApprove }:
         // Simulate API call
         await new Promise(r => setTimeout(r, 1000));
       }
-      toast.success(`Release ${release.version} approved successfully`, {
+      catalystToast.success(`Release ${release.version} approved successfully`, {
         description: 'The release has been marked as approved and is ready for deployment.',
       });
       onOpenChange(false);
       setChecklist(DEFAULT_CHECKLIST); // Reset for next time
     } catch (error) {
-      toast.error('Failed to approve release');
+      catalystToast.error('Failed to approve release');
     } finally {
       setIsSubmitting(false);
     }

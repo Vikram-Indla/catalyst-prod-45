@@ -14,7 +14,7 @@ import {
   type DataRowSelection 
 } from '@/hooks/test-management/useCreateRunWithDataRows';
 import { useTestDataParameters } from '@/hooks/test-management/useTestData';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface ExecuteWithDataButtonProps extends Omit<ButtonProps, 'onClick'> {
   testCaseId: string;
@@ -68,7 +68,7 @@ export function ExecuteWithDataButton({
       }
     } catch (error) {
       console.error('Error checking data rows:', error);
-      toast.error('Failed to check test data rows');
+      catalystToast.error('Failed to check test data rows');
     } finally {
       setIsLoadingRows(false);
     }

@@ -4,7 +4,7 @@ import { BacklogSection } from './BacklogSection';
 import { EpicTable } from './EpicTable';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useBacklogState } from '../hooks/useBacklogState';
 
 interface BacklogListViewProps {
@@ -39,10 +39,10 @@ export function BacklogListView({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Rank updated successfully');
+      catalystToast.success('Rank updated successfully');
     },
     onError: (error: any) => {
-      toast.error(`Failed to update rank: ${error.message}`);
+      catalystToast.error(`Failed to update rank: ${error.message}`);
     },
   });
 

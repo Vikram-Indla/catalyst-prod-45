@@ -9,7 +9,7 @@ import { useGoals, useKeyResults, useThemes, useDeleteGoal, useUpdateGoal, useGo
 import { goalsService } from '@/services/goalsService';
 import { useQuery } from '@tanstack/react-query';
 import type { Goal, KeyResult, KRCheckin, GoalStatus, Priority, BSCPerspective } from '@/types/goals';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -129,11 +129,11 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
     if (!goalId) return;
     try {
       await deleteGoal.mutateAsync(goalId);
-      toast.success('Goal deleted successfully');
+      catalystToast.success('Goal deleted successfully');
       setShowDeleteDialog(false);
       onClose();
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to delete goal');
+      catalystToast.error(err?.message || 'Failed to delete goal');
     }
   }, [goalId, deleteGoal, onClose]);
 
@@ -248,9 +248,9 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
               <EditOverviewTab goal={goal} themes={themes} onSave={async (updates) => {
                 try {
                   await updateGoal.mutateAsync({ id: goal.id, updates });
-                  toast.success('Goal updated');
+                  catalystToast.success('Goal updated');
                   setIsEditing(false);
-                } catch (err: any) { toast.error(err?.message || 'Update failed'); }
+                } catch (err: any) { catalystToast.error(err?.message || 'Update failed'); }
               }} onCancel={() => setIsEditing(false)} isPending={updateGoal.isPending} />
             ) : (
               <OverviewTab goal={goal} theme={theme} krs={krs} confPct={confPct} confColor={confColor} daysToDeadline={daysToDeadline} />

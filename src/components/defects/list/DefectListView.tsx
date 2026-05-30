@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { DefectListHeader } from './DefectListHeader';
 import { DefectFilterBar } from './DefectFilterBar';
 import { DefectTable } from './DefectTable';
@@ -118,11 +118,11 @@ export function DefectListView({ projectId }: DefectListViewProps) {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Status updated');
+      catalystToast.success('Status updated');
       queryClient.invalidateQueries({ queryKey: ['defects', projectId] });
     },
     onError: () => {
-      toast.error('Failed to update status');
+      catalystToast.error('Failed to update status');
     },
   });
 
@@ -150,7 +150,7 @@ export function DefectListView({ projectId }: DefectListViewProps) {
   }, [selectView, views, clearFilters, addFilter]);
 
   const handleExport = useCallback(() => {
-    toast.info('Export functionality coming soon');
+    catalystToast.info('Export functionality coming soon');
   }, []);
 
   const defectCounts = useMemo(() => ({
@@ -201,8 +201,8 @@ export function DefectListView({ projectId }: DefectListViewProps) {
 
       <DefectBulkActionBar
         selectedCount={selection.count}
-        onChangeStatus={() => toast.info('Bulk status change coming soon')}
-        onAssign={() => toast.info('Bulk assign coming soon')}
+        onChangeStatus={() => catalystToast.info('Bulk status change coming soon')}
+        onAssign={() => catalystToast.info('Bulk assign coming soon')}
         onClose={() => selection.clear()}
       />
 

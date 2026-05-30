@@ -6,7 +6,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { 
   startOfWeek, 
   addWeeks, 
@@ -455,7 +455,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
       return data;
     },
     onSuccess: () => {
-      toast.success('Assignment added successfully');
+      catalystToast.success('Assignment added successfully');
      // Invalidate ALL allocation-related queries for complete CRUD sync
      queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
       queryClient.invalidateQueries({ queryKey: ['resource-allocations-timeline', resource.id] });
@@ -469,7 +469,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
     onError: (error) => {
       // Don't show duplicate error for validation failures (already shown via toast)
       if (error instanceof Error && error.message === 'VALIDATION_FAILED') return;
-      toast.error('Failed to add assignment', {
+      catalystToast.error('Failed to add assignment', {
         description: error instanceof Error ? error.message : 'Unknown error'
       });
     }
@@ -518,7 +518,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Allocation updated');
+      catalystToast.success('Allocation updated');
      // Invalidate ALL allocation-related queries for complete CRUD sync
      queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
       queryClient.invalidateQueries({ queryKey: ['resource-allocations-timeline', resource.id] });
@@ -532,7 +532,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
     onError: (error) => {
       // Don't show duplicate error for validation failures
       if (error instanceof Error && error.message === 'VALIDATION_FAILED') return;
-      toast.error('Failed to update allocation', {
+      catalystToast.error('Failed to update allocation', {
         description: error instanceof Error ? error.message : 'Unknown error'
       });
     }
@@ -548,7 +548,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Allocation removed');
+      catalystToast.success('Allocation removed');
      // Invalidate ALL allocation-related queries for complete CRUD sync
      queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
       queryClient.invalidateQueries({ queryKey: ['resource-allocations-timeline', resource.id] });
@@ -560,7 +560,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
       refetch();
     },
     onError: (error) => {
-      toast.error('Failed to remove allocation', {
+      catalystToast.error('Failed to remove allocation', {
         description: error instanceof Error ? error.message : 'Unknown error'
       });
     }

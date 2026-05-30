@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { useState } from 'react';
 
 interface FeatureLayerToggleProps {
@@ -28,10 +28,10 @@ export function FeatureLayerToggle({ projectId, enabled, onToggled }: FeatureLay
         .eq('name', 'Feature');
       if (typeErr) throw new Error(typeErr.message);
 
-      toast.success(`Feature Layer ${newVal ? 'enabled' : 'disabled'}.`);
+      catalystToast.success(`Feature Layer ${newVal ? 'enabled' : 'disabled'}.`);
       onToggled();
     } catch (err: any) {
-      toast.error(err.message || 'Failed to toggle Feature Layer');
+      catalystToast.error(err.message || 'Failed to toggle Feature Layer');
     } finally {
       setLoading(false);
     }
