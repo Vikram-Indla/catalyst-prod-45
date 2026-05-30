@@ -1,21 +1,15 @@
 /**
- * MicRecordingBar — floating control bar shown while a mic-driven voice
- * recording session is active. Sits in the same row as Save/Cancel and
- * replaces the standard "Hold Ctrl" tip.
+ * MicRecordingBar — "Caty is listening/transcribing/translating" centered pill.
  *
- * Display:
- *   - Recording  → blue pulsing dot + "Listening" label + transcript so
- *                  far (recordedText) + interim text currently being said.
- *   - Paused     → static gray dot + transcript so far (no "Listening"
- *                  label; no interim since none is being captured).
+ * Rendered OUTSIDE the save row, centered in the editor width. Matches
+ * the CatyStreamingOverlay strap design pattern exactly.
  *
- * Controls:
- *   - Pause / Play: toggle recognition. Recorded text is preserved
- *                   across pause/resume so the user sees what they've
- *                   captured so far.
- *   - Stop:         inserts the entire session transcript into the
- *                   editor and closes the bar.
- *   - Cancel:       discards everything and closes the bar — no insert.
+ * Phases:
+ *   listening    → "Caty is listening…" (no speech yet)
+ *   transcribing → "Caty is transcribing…" + interim text preview
+ *   translating  → "Caty is translating…" (language switch detected, auto-reverts after 2s)
+ *
+ * Controls (pause/resume, stop+insert, cancel) live inside the pill.
  */
 // eslint-disable-next-line no-restricted-imports
 import VideoPauseIcon from '@atlaskit/icon/core/video-pause';
@@ -25,143 +19,210 @@ import VideoPlayIcon from '@atlaskit/icon/core/video-play';
 import VideoStopIcon from '@atlaskit/icon/core/video-stop';
 // eslint-disable-next-line no-restricted-imports
 import CloseIcon from '@atlaskit/icon/core/close';
+import type { MicPhase } from '../../hooks/useMicVoiceRecorder';
 
 interface Props {
-  /** True when actively listening (not paused). */
   isRecording: boolean;
   isPaused: boolean;
-  /** Transcript finalised so far in this session. */
+  phase: MicPhase;
   recordedText: string;
-  /** Words currently being spoken (not yet finalised). */
   interimText: string;
   onPauseResume: () => void;
   onStop: () => void;
   onCancel: () => void;
 }
 
+const PHASE_LABEL: Record<MicPhase, string> = {
+  listening: 'Caty is listening',
+  transcribing: 'Caty is transcribing',
+  translating: 'Caty is translating',
+};
+
 export function MicRecordingBar({
   isRecording,
   isPaused,
+  phase,
   recordedText,
   interimText,
   onPauseResume,
   onStop,
   onCancel,
 }: Props) {
-  // Display rule:
-  //   Recording → buffer + interim (interim italicised)
-  //   Paused    → buffer only
-  const displayBuffer = recordedText;
+  const effectivePhase: MicPhase = isPaused ? 'listening' : phase;
+  const label = isPaused ? 'Paused — click ▶ to resume' : PHASE_LABEL[effectivePhase];
   const displayInterim = !isPaused ? interimText : '';
+  const preview = recordedText || displayInterim;
 
   return (
-    <div
-      role="toolbar"
-      aria-label="Voice recording controls"
-      style={{
-        marginLeft: 'auto',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 8,
-        padding: '4px 6px',
-        borderRadius: 999,
-        background: 'var(--ds-background-neutral, #F1F2F4)',
-        maxWidth: '70%',
-        minWidth: 0,
-      }}
-    >
-      {/* Live indicator. "Listening" label hidden when paused. */}
-      <span
+    <>
+      <style>{`
+        @keyframes caty-pill-enter {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes caty-mic-dot {
+          0%,80%,100% { transform: scale(0.6); opacity: 0.4; }
+          40%          { transform: scale(1);   opacity: 1; }
+        }
+        @keyframes caty-mic-ring-pulse {
+          0%,100% { opacity: 0.7; transform: scale(1); }
+          50%     { opacity: 1;   transform: scale(1.15); }
+        }
+      `}</style>
+
+      {/* Outer centering wrapper */}
+      <div
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 6,
-          paddingLeft: 4,
-          flexShrink: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          marginTop: 8,
+          marginBottom: 4,
         }}
       >
-        <span
-          aria-hidden
+        {/* Pill */}
+        <div
+          role="status"
+          aria-live="polite"
+          aria-label={label}
           style={{
-            width: 8,
-            height: 8,
-            borderRadius: '50%',
-            background: isRecording
-              ? 'var(--ds-background-brand-bold, #0C66E4)'
-              : 'var(--ds-text-subtlest, #97A0AF)',
-            animation: isRecording
-              ? 'catalyst-voice-pulse 1s ease-in-out infinite'
-              : 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '6px 10px 6px 10px',
+            borderRadius: 999,
+            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            boxShadow: '0 2px 8px rgba(9,30,66,0.12)',
+            animation: 'caty-pill-enter 220ms ease forwards',
+            maxWidth: 480,
+            minWidth: 0,
           }}
-        />
-        {isRecording && (
+        >
+          {/* Animated status dot / ring */}
           <span
+            aria-hidden
             style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: 'var(--ds-text-information, #0C66E4)',
+              flexShrink: 0,
+              position: 'relative',
+              width: 18,
+              height: 18,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            Listening
+            {/* Outer ring — only when active recording */}
+            {isRecording && !isPaused && (
+              <span
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: '50%',
+                  border: `2px solid ${
+                    effectivePhase === 'translating'
+                      ? 'var(--ds-background-warning-bold, #F79233)'
+                      : 'var(--ds-background-brand-bold, #0C66E4)'
+                  }`,
+                  animation: 'caty-mic-ring-pulse 1.2s ease-in-out infinite',
+                }}
+              />
+            )}
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: isPaused
+                  ? 'var(--ds-text-subtlest, #97A0AF)'
+                  : effectivePhase === 'translating'
+                    ? 'var(--ds-background-warning-bold, #F79233)'
+                    : 'var(--ds-background-brand-bold, #0C66E4)',
+                flexShrink: 0,
+              }}
+            />
           </span>
-        )}
-      </span>
 
-      {/* Captured transcript so far + live interim. */}
-      {(displayBuffer || displayInterim) && (
-        <span
-          style={{
-            fontSize: 12,
-            color: 'var(--ds-text-subtle, #44546F)',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            minWidth: 0,
-            direction: 'ltr',
-          }}
-          title={
-            displayBuffer && displayInterim
-              ? `${displayBuffer} ${displayInterim}`
-              : displayBuffer || displayInterim
-          }
-        >
-          {displayBuffer && <span>{displayBuffer}</span>}
-          {displayBuffer && displayInterim && ' '}
-          {displayInterim && (
-            <span style={{ fontStyle: 'italic', opacity: 0.7 }}>
-              {displayInterim}
+          {/* Label + preview text */}
+          <span
+            style={{
+              display: 'inline-flex',
+              flexDirection: 'column',
+              minWidth: 0,
+              flex: 1,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                color: isPaused
+                  ? 'var(--ds-text-subtlest, #97A0AF)'
+                  : effectivePhase === 'translating'
+                    ? 'var(--ds-text-warning, #974F0C)'
+                    : 'var(--ds-text-information, #0C66E4)',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {label}
+              {/* 3-dot trail — only while actively recording */}
+              {isRecording && !isPaused && (
+                <span aria-hidden style={{ display: 'inline-flex', gap: 2, marginLeft: 3, verticalAlign: 'middle' }}>
+                  {[0, 1, 2].map((i) => (
+                    <span
+                      key={i}
+                      style={{
+                        display: 'inline-block',
+                        width: 3,
+                        height: 3,
+                        borderRadius: '50%',
+                        background: 'currentColor',
+                        animation: `caty-mic-dot 1.2s ease-in-out ${i * 0.2}s infinite`,
+                      }}
+                    />
+                  ))}
+                </span>
+              )}
             </span>
-          )}
-        </span>
-      )}
+            {preview && (
+              <span
+                style={{
+                  fontSize: 11,
+                  color: 'var(--ds-text-subtle, #44546F)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  maxWidth: 260,
+                  fontStyle: displayInterim && !recordedText ? 'italic' : 'normal',
+                }}
+                title={preview}
+              >
+                {preview}
+              </span>
+            )}
+          </span>
 
-      {/* Buttons */}
-      <span
-        style={{
-          display: 'inline-flex',
-          gap: 2,
-          flexShrink: 0,
-          marginLeft: 'auto',
-        }}
-      >
-        <IconBtn
-          label={isPaused ? 'Resume recording' : 'Pause recording'}
-          onClick={onPauseResume}
-        >
-          {isPaused ? <VideoPlayIcon label="" /> : <VideoPauseIcon label="" />}
-        </IconBtn>
-        <IconBtn label="Stop and insert" onClick={onStop}>
-          <VideoStopIcon label="" />
-        </IconBtn>
-        <IconBtn label="Cancel" onClick={onCancel} danger>
-          <CloseIcon label="" />
-        </IconBtn>
-      </span>
-    </div>
+          {/* Controls */}
+          <span style={{ display: 'inline-flex', gap: 2, flexShrink: 0 }}>
+            <PillBtn
+              label={isPaused ? 'Resume recording' : 'Pause recording'}
+              onClick={onPauseResume}
+            >
+              {isPaused ? <VideoPlayIcon label="" /> : <VideoPauseIcon label="" />}
+            </PillBtn>
+            <PillBtn label="Stop and insert" onClick={onStop}>
+              <VideoStopIcon label="" />
+            </PillBtn>
+            <PillBtn label="Cancel recording" onClick={onCancel} danger>
+              <CloseIcon label="" />
+            </PillBtn>
+          </span>
+        </div>
+      </div>
+    </>
   );
 }
 
-function IconBtn({
+function PillBtn({
   label,
   onClick,
   danger = false,
@@ -180,8 +241,8 @@ function IconBtn({
       onClick={onClick}
       onMouseDown={(e) => e.preventDefault()}
       style={{
-        width: 26,
-        height: 26,
+        width: 24,
+        height: 24,
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -193,6 +254,7 @@ function IconBtn({
           : 'var(--ds-text, #292A2E)',
         cursor: 'pointer',
         padding: 0,
+        flexShrink: 0,
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.background = danger

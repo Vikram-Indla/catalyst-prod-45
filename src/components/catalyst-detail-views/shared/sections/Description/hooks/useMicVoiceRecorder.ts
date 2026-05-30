@@ -16,6 +16,8 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+export type MicPhase = 'listening' | 'transcribing' | 'translating';
+
 type MinimalView = {
   state: {
     doc: { content: { size: number } };
@@ -43,6 +45,8 @@ interface Result {
   interimText: string;
   /** Finalised transcript accumulated so far in this session (display + insert). */
   recordedText: string;
+  /** Current phase of the recording session. */
+  phase: MicPhase;
   start: () => void;
   pause: () => void;
   resume: () => void;
@@ -70,9 +74,9 @@ export function useMicVoiceRecorder({
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [interimText, setInterimText] = useState('');
-  // Finalised transcript so far. Mirrored from bufferRef so the UI can
-  // display it (the ref alone wouldn't trigger re-renders).
   const [recordedText, setRecordedText] = useState('');
+  const [phase, setPhase] = useState<MicPhase>('listening');
+  const prevLangRef = useRef<string>('');
 
   const recognitionRef = useRef<any>(null);
   // True while we WANT the recognition running — onend uses this to
@@ -143,7 +147,6 @@ export function useMicVoiceRecorder({
         const res = event.results[i];
         const transcript = res[0]?.transcript ?? '';
         if (res.isFinal) {
-          // Append finalised chunk to the session buffer with a space.
           const next = transcript.trim();
           if (next) {
             bufferRef.current = bufferRef.current
@@ -151,12 +154,21 @@ export function useMicVoiceRecorder({
               : next;
             bufferChanged = true;
           }
+          // Detect language switch for translating phase.
+          const detectedLang: string = res[0]?.lang ?? '';
+          if (detectedLang && prevLangRef.current && detectedLang !== prevLangRef.current) {
+            setPhase('translating');
+            setTimeout(() => setPhase('transcribing'), 2000);
+          }
+          if (detectedLang) prevLangRef.current = detectedLang;
         } else {
           interim += transcript;
         }
       }
       interimRef.current = interim;
       setInterimText(interim);
+      // Transition to transcribing as soon as we get any speech signal.
+      if (interim || bufferChanged) setPhase((p) => (p === 'listening' ? 'transcribing' : p));
       if (bufferChanged) setRecordedText(bufferRef.current);
     };
 
@@ -195,8 +207,10 @@ export function useMicVoiceRecorder({
     if (!isSupported || isActive) return;
     bufferRef.current = '';
     interimRef.current = '';
+    prevLangRef.current = '';
     setInterimText('');
     setRecordedText('');
+    setPhase('listening');
     setIsActive(true);
     setIsPaused(false);
     startRecognition();
@@ -229,7 +243,6 @@ export function useMicVoiceRecorder({
 
   const stop = useCallback(() => {
     if (!isActive) return;
-    // Flush remaining interim into the final transcript before insert.
     const finalText = bufferRef.current
       ? interimRef.current.trim()
         ? `${bufferRef.current} ${interimRef.current.trim()}`
@@ -239,8 +252,10 @@ export function useMicVoiceRecorder({
     if (finalText) insertText(finalText);
     bufferRef.current = '';
     interimRef.current = '';
+    prevLangRef.current = '';
     setInterimText('');
     setRecordedText('');
+    setPhase('listening');
     setIsActive(false);
     setIsPaused(false);
   }, [isActive, insertText, stopRecognition]);
@@ -250,8 +265,10 @@ export function useMicVoiceRecorder({
     stopRecognition();
     bufferRef.current = '';
     interimRef.current = '';
+    prevLangRef.current = '';
     setInterimText('');
     setRecordedText('');
+    setPhase('listening');
     setIsActive(false);
     setIsPaused(false);
   }, [isActive, stopRecognition]);
@@ -269,6 +286,7 @@ export function useMicVoiceRecorder({
     isPaused,
     interimText,
     recordedText,
+    phase,
     start,
     pause,
     resume,

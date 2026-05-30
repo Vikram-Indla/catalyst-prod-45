@@ -187,6 +187,18 @@ export function RichTextEditor({
     else mic.start();
   }, [mic]);
 
+  // Escape key exits mic recording (capture phase so it beats any parent modal handler).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mic.isActive) {
+        e.stopPropagation();
+        mic.cancel();
+      }
+    };
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [mic]);
+
   // ── Image selection → ImageToolbar ──
   const [imageState, setImageState] = useState<{
     pos: number;
@@ -289,15 +301,74 @@ export function RichTextEditor({
             onMicToggle={handleMicToggle}
             micActive={mic.isActive}
             micSupported={mic.isSupported}
+            voiceMode={voiceMode}
+            onVoiceModeChange={setVoiceMode}
           />
         }
         bodyOverlay={bodyOverlay}
         footer={belowEditor ? belowEditor(editor) : undefined}
       />
 
-      {/* Save / Cancel + voice — hidden while a streaming overlay owns
-          the body (e.g. Caty), since the overlay provides its own apply/
-          cancel controls. */}
+      {/* Mic session pill — centered above save row, outside flex container
+          so it's always visible regardless of editor body height. */}
+      {!overlayActive && mic.isActive && (
+        <MicRecordingBar
+          isRecording={!mic.isPaused}
+          isPaused={mic.isPaused}
+          phase={mic.phase}
+          recordedText={mic.recordedText}
+          interimText={mic.interimText}
+          onPauseResume={() => mic.isPaused ? mic.resume() : mic.pause()}
+          onStop={mic.stop}
+          onCancel={mic.cancel}
+        />
+      )}
+
+      {/* Ctrl-hold voice pill — same centered pill style */}
+      {!overlayActive && voice.isRecording && !mic.isActive && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8, marginBottom: 4 }}>
+          <div
+            role="status"
+            aria-live="polite"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '6px 14px',
+              borderRadius: 999,
+              background: 'var(--ds-surface-overlay, #FFFFFF)',
+              border: '1px solid var(--ds-border, #DFE1E6)',
+              boxShadow: '0 2px 8px rgba(9,30,66,0.12)',
+              animation: 'caty-pill-enter 220ms ease forwards',
+              maxWidth: 420,
+            }}
+          >
+            <span
+              aria-hidden
+              style={{
+                width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+                background: 'var(--ds-background-brand-bold, #0C66E4)',
+                animation: 'catalyst-voice-pulse 1s ease-in-out infinite',
+              }}
+            />
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-information, #0C66E4)', whiteSpace: 'nowrap' }}>
+              Caty is listening
+              <span aria-hidden style={{ display: 'inline-flex', gap: 2, marginLeft: 3, verticalAlign: 'middle' }}>
+                {[0,1,2].map((i) => (
+                  <span key={i} style={{ display: 'inline-block', width: 3, height: 3, borderRadius: '50%', background: 'currentColor', animation: `caty-mic-dot 1.2s ease-in-out ${i*0.2}s infinite` }} />
+                ))}
+              </span>
+            </span>
+            {voice.interimText && (
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #44546F)', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }} title={voice.interimText}>
+                {voice.interimText}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Save / Cancel row */}
       {!overlayActive && (
         <div
           style={{
@@ -346,146 +417,6 @@ export function RichTextEditor({
           >
             Cancel
           </button>
-
-          {mic.isActive ? (
-            <MicRecordingBar
-              isRecording={!mic.isPaused}
-              isPaused={mic.isPaused}
-              recordedText={mic.recordedText}
-              interimText={mic.interimText}
-              onPauseResume={() =>
-                mic.isPaused ? mic.resume() : mic.pause()
-              }
-              onStop={mic.stop}
-              onCancel={mic.cancel}
-            />
-          ) : voice.isSupported ? (
-            <div
-              style={{
-                marginLeft: 'auto',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                fontSize: 12,
-                color: voice.isRecording
-                  ? 'var(--ds-text-information, #0C66E4)'
-                  : 'var(--ds-text-subtlest, #6B778C)',
-                fontWeight: voice.isRecording ? 600 : 400,
-                maxWidth: '50%',
-                minWidth: 0,
-              }}
-            >
-              {voice.isRecording ? (
-                <>
-                  <span
-                    aria-hidden
-                    style={{
-                      flexShrink: 0,
-                      display: 'inline-block',
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      background:
-                        'var(--ds-background-brand-bold, #0C66E4)',
-                      animation:
-                        'catalyst-voice-pulse 1s ease-in-out infinite',
-                    }}
-                  />
-                  <span style={{ flexShrink: 0 }}>Catalyst is listening</span>
-                  {voice.interimText && (
-                    <span
-                      style={{
-                        color: 'var(--ds-text-subtle, #44546F)',
-                        fontStyle: 'italic',
-                        fontWeight: 400,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        minWidth: 0,
-                      }}
-                      title={voice.interimText}
-                    >
-                      "{voice.interimText}"
-                    </span>
-                  )}
-                </>
-              ) : (
-                <>
-                  <span>💡 Hold Ctrl or click the mic to dictate</span>
-                  <span
-                    role="group"
-                    aria-label="Voice language mode"
-                    style={{
-                      display: 'inline-flex',
-                      marginLeft: 8,
-                      padding: 2,
-                      background: 'var(--ds-background-neutral, #F1F2F4)',
-                      borderRadius: 999,
-                      gap: 0,
-                    }}
-                  >
-                    {(
-                      [
-                        { id: 'auto', label: 'Auto' },
-                        { id: 'en', label: 'EN' },
-                        { id: 'ar', label: 'AR' },
-                      ] as Array<{ id: VoiceMode; label: string }>
-                    ).map(({ id, label }) => {
-                      const active = voiceMode === id;
-                      const titleSuffix =
-                        id === 'auto'
-                          ? ` — currently using ${effectiveLang === 'ar-SA' ? 'Arabic' : 'English'}`
-                          : '';
-                      return (
-                        <button
-                          key={id}
-                          type="button"
-                          onClick={() => setVoiceMode(id)}
-                          aria-pressed={active}
-                          title={`${
-                            id === 'auto'
-                              ? 'Auto-detect from text'
-                              : id === 'en'
-                                ? 'English (US)'
-                                : 'Arabic'
-                          }${titleSuffix}`}
-                          style={{
-                            padding: '2px 10px',
-                            border: 'none',
-                            borderRadius: 999,
-                            fontSize: 11,
-                            lineHeight: '16px',
-                            fontWeight: active ? 600 : 500,
-                            background: active
-                              ? 'var(--ds-background-selected, #E9F2FE)'
-                              : 'transparent',
-                            color: active
-                              ? 'var(--ds-text-selected, #0C66E4)'
-                              : 'var(--ds-text-subtle, #6B778C)',
-                            cursor: 'pointer',
-                            transition:
-                              'background 120ms ease, color 120ms ease',
-                          }}
-                          onMouseEnter={(e) => {
-                            if (active) return;
-                            e.currentTarget.style.color =
-                              'var(--ds-text, #292A2E)';
-                          }}
-                          onMouseLeave={(e) => {
-                            if (active) return;
-                            e.currentTarget.style.color =
-                              'var(--ds-text-subtle, #6B778C)';
-                          }}
-                        >
-                          {label}
-                        </button>
-                      );
-                    })}
-                  </span>
-                </>
-              )}
-            </div>
-          ) : null}
         </div>
       )}
 

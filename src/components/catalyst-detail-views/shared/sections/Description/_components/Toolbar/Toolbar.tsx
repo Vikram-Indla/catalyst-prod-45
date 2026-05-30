@@ -40,6 +40,8 @@ export interface ToolbarProps {
   onMicToggle?: () => void;
   micActive?: boolean;
   micSupported?: boolean;
+  voiceMode?: 'auto' | 'en' | 'ar';
+  onVoiceModeChange?: (mode: 'auto' | 'en' | 'ar') => void;
 }
 
 export function Toolbar({
@@ -53,6 +55,8 @@ export function Toolbar({
   onMicToggle,
   micActive = false,
   micSupported = true,
+  voiceMode = 'auto',
+  onVoiceModeChange,
 }: ToolbarProps) {
   if (!editor) return null;
 
@@ -69,10 +73,17 @@ export function Toolbar({
         padding: '6px 8px',
         borderBottom: '1px solid var(--ds-border, #DFE1E6)',
         background: 'var(--ds-surface, #FFFFFF)',
-        /* Don't shrink when the body becomes scrollable. */
         flexShrink: 0,
       }}
     >
+      {micSupported && (
+        <MicButton
+          active={micActive}
+          onClick={onMicToggle}
+          voiceMode={voiceMode}
+          onVoiceModeChange={onVoiceModeChange}
+        />
+      )}
       <ImproveButton
         editor={editor}
         onImprove={onImprove}
@@ -92,9 +103,6 @@ export function Toolbar({
       <UndoButton editor={editor} />
       <RedoButton editor={editor} />
       <HistoryButton available={historyAvailable} />
-      {micSupported && (
-        <MicButton active={micActive} onClick={onMicToggle} />
-      )}
     </div>
   );
 }
