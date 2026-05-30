@@ -1,22 +1,9 @@
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import Select from '@atlaskit/select';
 import { WorkItem, Priority, StatusCategory } from '../../types';
 
 interface LogDefectDialogProps {
@@ -93,123 +80,107 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
     onClose();
   };
 
-  const isValid = summary.trim() && story && quarter && release && priority;
+  const isValid = summary.trim() !== '' && story !== '' && quarter !== '' && release !== '' && priority !== '';
+
+  if (!isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Log Defect</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-col gap-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="summary">
-              Summary <span className="text-destructive">*</span>
-            </Label>
-            <Input
+    <Modal onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle>Log Defect</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="summary" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Summary <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            </label>
+            <Textfield
               id="summary"
               value={summary}
-              onChange={(e) => setSummary(e.target.value)}
+              onChange={(e: any) => setSummary(e.target.value)}
               placeholder="Enter defect summary"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="story">
-              Story <span className="text-destructive">*</span>
-            </Label>
-            <Select value={story} onValueChange={setStory}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select related story (required)" />
-              </SelectTrigger>
-              <SelectContent>
-                {storyOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="story" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Story <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            </label>
+            <Select
+              inputId="story"
+              options={storyOptions}
+              value={storyOptions.find((o) => o.value === story)}
+              onChange={(opt: any) => setStory(opt ? opt.value : '')}
+              placeholder="Select related story (required)"
+            />
+            <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>
               Defects must be linked to a Story
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="quarter">
-                Quarter <span className="text-destructive">*</span>
-              </Label>
-              <Select value={quarter} onValueChange={setQuarter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select quarter" />
-                </SelectTrigger>
-                <SelectContent>
-                  {quarterOptions.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <label htmlFor="quarter" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                Quarter <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+              </label>
+              <Select
+                inputId="quarter"
+                options={quarterOptions}
+                value={quarterOptions.find((o) => o.value === quarter)}
+                onChange={(opt: any) => setQuarter(opt ? opt.value : '')}
+                placeholder="Select quarter"
+              />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="release">
-                Release Version <span className="text-destructive">*</span>
-              </Label>
-              <Select value={release} onValueChange={setRelease}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select release" />
-                </SelectTrigger>
-                <SelectContent>
-                  {releaseOptions.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <label htmlFor="release" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                Release Version <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+              </label>
+              <Select
+                inputId="release"
+                options={releaseOptions}
+                value={releaseOptions.find((o) => o.value === release)}
+                onChange={(opt: any) => setRelease(opt ? opt.value : '')}
+                placeholder="Select release"
+              />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="priority">
-              Priority <span className="text-destructive">*</span>
-            </Label>
-            <Select value={priority} onValueChange={setPriority}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select priority" />
-              </SelectTrigger>
-              <SelectContent>
-                {priorityOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="priority" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Priority <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            </label>
+            <Select
+              inputId="priority"
+              options={priorityOptions}
+              value={priorityOptions.find((o) => o.value === priority)}
+              onChange={(opt: any) => setPriority(opt ? opt.value : '')}
+              placeholder="Select priority"
+            />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="description" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Description
+            </label>
+            <TextArea
               id="description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e: any) => setDescription(e.target.value)}
               placeholder="Describe the defect, steps to reproduce, and expected behavior"
-              rows={4}
+              minimumRows={4}
             />
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={!isValid}>
-            Log Defect
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button appearance="primary" onClick={handleSubmit} isDisabled={!isValid}>
+          Log Defect
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 };

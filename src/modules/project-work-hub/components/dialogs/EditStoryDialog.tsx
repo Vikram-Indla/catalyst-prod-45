@@ -4,24 +4,11 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import Select from '@atlaskit/select';
 import { catalystToast as toast } from '@/lib/catalystToast';
 import { Loader2 } from '@/lib/atlaskit-icons';
 
@@ -119,107 +106,122 @@ export const EditStoryDialog: React.FC<EditStoryDialogProps> = ({
 
   const isValid = title.trim().length > 0;
 
+  if (!isOpen) return null;
+
   if (storyLoading) {
     return (
-      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="sm:max-w-[500px]">
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <Modal onClose={onClose} width="medium">
+        <ModalBody>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
+            <Loader2 className="animate-spin" size="large" />
           </div>
-        </DialogContent>
-      </Dialog>
+        </ModalBody>
+      </Modal>
     );
   }
 
+  const featureOptions = features?.map((f) => ({
+    label: f.display_id ? `${f.display_id}: ${f.name}` : f.name,
+    value: f.id,
+  })) || [];
+
+  const statusOptions = [
+    { label: 'Open', value: 'open' },
+    { label: 'In Progress', value: 'in_progress' },
+    { label: 'In Review', value: 'in_review' },
+    { label: 'Done', value: 'done' },
+    { label: 'Cancelled', value: 'cancelled' },
+  ];
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Edit Story {(story as any)?.story_key ? `— ${(story as any).story_key}` : ''}</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-col gap-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">
-              Title <span className="text-destructive">*</span>
-            </Label>
-            <Input
+    <Modal onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle>Edit Story {(story as any)?.story_key ? `— ${(story as any).story_key}` : ''}</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="title" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Title <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            </label>
+            <Textfield
               id="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e: any) => setTitle(e.target.value)}
               placeholder="Enter story title"
-              disabled={updateStory.isPending}
+              isDisabled={updateStory.isPending}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="feature">Feature</Label>
-            <Select value={featureId} onValueChange={setFeatureId} disabled={featuresLoading || updateStory.isPending}>
-              <SelectTrigger>
-                <SelectValue placeholder={featuresLoading ? 'Loading features...' : 'Select parent feature'} />
-              </SelectTrigger>
-              <SelectContent>
-                {features?.map((feature) => (
-                  <SelectItem key={feature.id} value={feature.id}>
-                    {feature.display_id ? `${feature.display_id}: ` : ''}{feature.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="feature" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Feature
+            </label>
+            <Select
+              inputId="feature"
+              options={featureOptions}
+              value={featureOptions.find((o) => o.value === featureId)}
+              onChange={(opt: any) => setFeatureId(opt ? opt.value : '')}
+              placeholder={featuresLoading ? 'Loading features...' : 'Select parent feature'}
+              isDisabled={featuresLoading || updateStory.isPending}
+            />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
-            <Select value={status} onValueChange={setStatus} disabled={updateStory.isPending}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="open">Open</SelectItem>
-                <SelectItem value="in_progress">In Progress</SelectItem>
-                <SelectItem value="in_review">In Review</SelectItem>
-                <SelectItem value="done">Done</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="status" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Status
+            </label>
+            <Select
+              inputId="status"
+              options={statusOptions}
+              value={statusOptions.find((o) => o.value === status)}
+              onChange={(opt: any) => setStatus(opt ? opt.value : '')}
+              isDisabled={updateStory.isPending}
+            />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="description" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Description
+            </label>
+            <TextArea
               id="description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e: any) => setDescription(e.target.value)}
               placeholder="Enter story description (optional)"
-              rows={3}
-              disabled={updateStory.isPending}
+              minimumRows={3}
+              isDisabled={updateStory.isPending}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="acceptance">Acceptance Criteria</Label>
-            <Textarea
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="acceptance" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Acceptance Criteria
+            </label>
+            <TextArea
               id="acceptance"
               value={acceptanceCriteria}
-              onChange={(e) => setAcceptanceCriteria(e.target.value)}
+              onChange={(e: any) => setAcceptanceCriteria(e.target.value)}
               placeholder="Enter acceptance criteria (optional)"
-              rows={3}
-              disabled={updateStory.isPending}
+              minimumRows={3}
+              isDisabled={updateStory.isPending}
             />
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={updateStory.isPending}>
-            Cancel
-          </Button>
-          <Button
-            onClick={() => updateStory.mutate()}
-            disabled={!isValid || updateStory.isPending}
-          >
-            {updateStory.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save Changes
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose} isDisabled={updateStory.isPending}>
+          Cancel
+        </Button>
+        <Button
+          appearance="primary"
+          onClick={() => updateStory.mutate()}
+          isDisabled={!isValid || updateStory.isPending}
+          iconBefore={updateStory.isPending ? <Loader2 size="small" /> : undefined}
+        >
+          {updateStory.isPending ? 'Saving...' : 'Save Changes'}
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 };

@@ -678,7 +678,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // available via the column picker (+) but hidden in the factory layout.
   // NOTE: Comments column is banned (2026-05-11), removed from defaults
   // 2026-05-17 jira-compare cycle 2: 'summary' merged into 'key' (Work column).
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'parent', 'status', 'fix_versions', 'assignee', 'created'];
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'status', 'comments', 'parent', 'assignee'];
 
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();

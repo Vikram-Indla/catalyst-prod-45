@@ -4,24 +4,11 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import Select from '@atlaskit/select';
 import { catalystToast as toast } from '@/lib/catalystToast';
 import { Loader2 } from '@/lib/atlaskit-icons';
 
@@ -114,94 +101,107 @@ export const EditFeatureDialog: React.FC<EditFeatureDialogProps> = ({
 
   const isValid = name.trim().length > 0;
 
+  if (!isOpen) return null;
+
   if (featureLoading) {
     return (
-      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="sm:max-w-[500px]">
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <Modal onClose={onClose} width="medium">
+        <ModalBody>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
+            <Loader2 className="animate-spin" size="large" />
           </div>
-        </DialogContent>
-      </Dialog>
+        </ModalBody>
+      </Modal>
     );
   }
 
+  const epicOptions = epics?.map((epic) => ({
+    label: epic.epic_key ? `${epic.epic_key}: ${epic.name}` : epic.name,
+    value: epic.id,
+  })) || [];
+
+  const statusOptions = [
+    { label: 'Active', value: 'active' },
+    { label: 'In Progress', value: 'in_progress' },
+    { label: 'Done', value: 'done' },
+    { label: 'Cancelled', value: 'cancelled' },
+  ];
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Edit Feature {feature?.display_id ? `— ${feature.display_id}` : ''}</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-col gap-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">
-              Name <span className="text-destructive">*</span>
-            </Label>
-            <Input
+    <Modal onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle>Edit Feature {feature?.display_id ? `— ${feature.display_id}` : ''}</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="name" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Name <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            </label>
+            <Textfield
               id="name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e: any) => setName(e.target.value)}
               placeholder="Enter feature name"
-              disabled={updateFeature.isPending}
+              isDisabled={updateFeature.isPending}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="epic">Epic</Label>
-            <Select value={epicId} onValueChange={setEpicId} disabled={epicsLoading || updateFeature.isPending}>
-              <SelectTrigger>
-                <SelectValue placeholder={epicsLoading ? 'Loading epics...' : 'Select parent epic'} />
-              </SelectTrigger>
-              <SelectContent>
-                {epics?.map((epic) => (
-                  <SelectItem key={epic.id} value={epic.id}>
-                    {epic.epic_key ? `${epic.epic_key}: ` : ''}{epic.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="epic" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Epic
+            </label>
+            <Select
+              inputId="epic"
+              options={epicOptions}
+              value={epicOptions.find((o) => o.value === epicId)}
+              onChange={(opt: any) => setEpicId(opt ? opt.value : '')}
+              placeholder={epicsLoading ? 'Loading epics...' : 'Select parent epic'}
+              isDisabled={epicsLoading || updateFeature.isPending}
+            />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
-            <Select value={status} onValueChange={setStatus} disabled={updateFeature.isPending}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="in_progress">In Progress</SelectItem>
-                <SelectItem value="done">Done</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="status" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Status
+            </label>
+            <Select
+              inputId="status"
+              options={statusOptions}
+              value={statusOptions.find((o) => o.value === status)}
+              onChange={(opt: any) => setStatus(opt ? opt.value : '')}
+              isDisabled={updateFeature.isPending}
+            />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="description" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Description
+            </label>
+            <TextArea
               id="description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e: any) => setDescription(e.target.value)}
               placeholder="Enter feature description (optional)"
-              rows={3}
-              disabled={updateFeature.isPending}
+              minimumRows={3}
+              isDisabled={updateFeature.isPending}
             />
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={updateFeature.isPending}>
-            Cancel
-          </Button>
-          <Button
-            onClick={() => updateFeature.mutate()}
-            disabled={!isValid || updateFeature.isPending}
-          >
-            {updateFeature.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save Changes
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose} isDisabled={updateFeature.isPending}>
+          Cancel
+        </Button>
+        <Button
+          appearance="primary"
+          onClick={() => updateFeature.mutate()}
+          isDisabled={!isValid || updateFeature.isPending}
+          iconBefore={updateFeature.isPending ? <Loader2 size="small" /> : undefined}
+        >
+          {updateFeature.isPending ? 'Saving...' : 'Save Changes'}
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 };

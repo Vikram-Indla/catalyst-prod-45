@@ -1,24 +1,11 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import Select from '@atlaskit/select';
 import { catalystToast as toast } from '@/lib/catalystToast';
 import { Loader2 } from '@/lib/atlaskit-icons';
 
@@ -109,76 +96,77 @@ export const CreateFeatureDialog: React.FC<CreateFeatureDialogProps> = ({
     });
   };
 
-  const isValid = name.trim() && epicId;
+  const isValid = name.trim() !== '' && epicId !== '';
+  const epicOptions = epics?.map((e) => ({
+    label: e.epic_key ? `${e.epic_key}: ${e.name}` : e.name,
+    value: e.id,
+  })) || [];
+
+  if (!isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Create Feature</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-col gap-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">
-              Name <span className="text-destructive">*</span>
-            </Label>
-            <Input
+    <Modal onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle>Create Feature</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="name" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Name <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            </label>
+            <Textfield
               id="name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e: any) => setName(e.target.value)}
               placeholder="Enter feature name"
-              disabled={createFeature.isPending}
+              isDisabled={createFeature.isPending}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="epic">
-              Epic <span className="text-destructive">*</span>
-            </Label>
-            <Select value={epicId} onValueChange={setEpicId} disabled={epicsLoading || createFeature.isPending}>
-              <SelectTrigger>
-                <SelectValue placeholder={epicsLoading ? "Loading epics..." : "Select parent epic"} />
-              </SelectTrigger>
-              <SelectContent>
-                {epics?.map((epic) => (
-                  <SelectItem key={epic.id} value={epic.id}>
-                    {epic.epic_key ? `${epic.epic_key}: ` : ''}{epic.name}
-                  </SelectItem>
-                ))}
-                {epics?.length === 0 && (
-                  <div className="px-2 py-3 text-sm text-muted-foreground text-center">
-                    No epics available. Create an epic first.
-                  </div>
-                )}
-              </SelectContent>
-            </Select>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="epic" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Epic <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            </label>
+            <Select
+              inputId="epic"
+              options={epicOptions}
+              value={epicOptions.find((o) => o.value === epicId)}
+              onChange={(opt: any) => setEpicId(opt ? opt.value : '')}
+              placeholder={epicsLoading ? 'Loading epics...' : 'Select parent epic'}
+              isDisabled={epicsLoading || createFeature.isPending}
+              noOptionsMessage={() => 'No epics available. Create an epic first.'}
+            />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="description" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Description
+            </label>
+            <TextArea
               id="description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e: any) => setDescription(e.target.value)}
               placeholder="Enter feature description (optional)"
-              rows={3}
-              disabled={createFeature.isPending}
+              minimumRows={3}
+              isDisabled={createFeature.isPending}
             />
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={createFeature.isPending}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleSubmit} 
-            disabled={!isValid || createFeature.isPending}
-          >
-            {createFeature.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Create Feature
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose} isDisabled={createFeature.isPending}>
+          Cancel
+        </Button>
+        <Button
+          appearance="primary"
+          onClick={handleSubmit}
+          isDisabled={!isValid || createFeature.isPending}
+          iconBefore={createFeature.isPending ? <Loader2 size="small" /> : undefined}
+        >
+          {createFeature.isPending ? 'Creating...' : 'Create Feature'}
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 };

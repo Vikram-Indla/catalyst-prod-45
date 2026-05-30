@@ -1,24 +1,9 @@
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle } from '@/lib/atlaskit-icons';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import Select from '@atlaskit/select';
 import { WorkItem, Priority, StatusCategory } from '../../types';
 
 interface LogIncidentDialogProps {
@@ -95,130 +80,117 @@ export const LogIncidentDialog: React.FC<LogIncidentDialogProps> = ({
     onClose();
   };
 
-  const isValid = summary.trim() && story && quarter && release && priority;
+  const isValid = summary.trim() !== '' && story !== '' && quarter !== '' && release !== '' && priority !== '';
+
+  if (!isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Log Incident</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-col gap-4 py-4">
-          <Alert className="border-amber-200 bg-amber-50">
-            <AlertTriangle className="h-4 w-4 text-amber-600" />
-            <AlertDescription className="text-amber-800 text-sm">
+    <Modal onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle>Log Incident</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0' }}>
+          <div style={{ 
+            display: 'flex', gap: 8, padding: 12, backgroundColor: 'var(--ds-background-warning-subtle, #FFFAE6)', 
+            border: '1px solid var(--ds-border-warning, #FFC400)', borderRadius: 3, alignItems: 'center' 
+          }}>
+            <AlertTriangle primaryColor="var(--ds-icon-warning, #FF991F)" />
+            <span style={{ fontSize: 14, color: 'var(--ds-text-warning, #974F0C)' }}>
               Incidents are production issues that require immediate attention.
-            </AlertDescription>
-          </Alert>
+            </span>
+          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="summary">
-              Summary <span className="text-destructive">*</span>
-            </Label>
-            <Input
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="summary" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Summary <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            </label>
+            <Textfield
               id="summary"
               value={summary}
-              onChange={(e) => setSummary(e.target.value)}
+              onChange={(e: any) => setSummary(e.target.value)}
               placeholder="Enter incident summary"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="story">
-              Story <span className="text-destructive">*</span>
-            </Label>
-            <Select value={story} onValueChange={setStory}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select related story (required)" />
-              </SelectTrigger>
-              <SelectContent>
-                {storyOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="story" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Story <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            </label>
+            <Select
+              inputId="story"
+              options={storyOptions}
+              value={storyOptions.find((o) => o.value === story)}
+              onChange={(opt: any) => setStory(opt ? opt.value : '')}
+              placeholder="Select related story (required)"
+            />
+            <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>
               Incidents must be linked to a Story
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="quarter">
-                Quarter <span className="text-destructive">*</span>
-              </Label>
-              <Select value={quarter} onValueChange={setQuarter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select quarter" />
-                </SelectTrigger>
-                <SelectContent>
-                  {quarterOptions.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <label htmlFor="quarter" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                Quarter <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+              </label>
+              <Select
+                inputId="quarter"
+                options={quarterOptions}
+                value={quarterOptions.find((o) => o.value === quarter)}
+                onChange={(opt: any) => setQuarter(opt ? opt.value : '')}
+                placeholder="Select quarter"
+              />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="release">
-                Release Version <span className="text-destructive">*</span>
-              </Label>
-              <Select value={release} onValueChange={setRelease}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select release" />
-                </SelectTrigger>
-                <SelectContent>
-                  {releaseOptions.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <label htmlFor="release" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                Release Version <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+              </label>
+              <Select
+                inputId="release"
+                options={releaseOptions}
+                value={releaseOptions.find((o) => o.value === release)}
+                onChange={(opt: any) => setRelease(opt ? opt.value : '')}
+                placeholder="Select release"
+              />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="priority">
-              Priority <span className="text-destructive">*</span>
-            </Label>
-            <Select value={priority} onValueChange={setPriority}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select priority" />
-              </SelectTrigger>
-              <SelectContent>
-                {priorityOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="priority" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Priority <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            </label>
+            <Select
+              inputId="priority"
+              options={priorityOptions}
+              value={priorityOptions.find((o) => o.value === priority)}
+              onChange={(opt: any) => setPriority(opt ? opt.value : '')}
+              placeholder="Select priority"
+            />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="description" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Description
+            </label>
+            <TextArea
               id="description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e: any) => setDescription(e.target.value)}
               placeholder="Describe the incident, impact, and any immediate actions taken"
-              rows={4}
+              minimumRows={4}
             />
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={!isValid}>
-            Log Incident
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button appearance="primary" onClick={handleSubmit} isDisabled={!isValid}>
+          Log Incident
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 };

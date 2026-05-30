@@ -1,22 +1,9 @@
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import Select from '@atlaskit/select';
 import { WorkItem, StatusCategory } from '../../types';
 
 interface CreateSubtaskDialogProps {
@@ -63,68 +50,67 @@ export const CreateSubtaskDialog: React.FC<CreateSubtaskDialogProps> = ({
     onClose();
   };
 
-  const isValid = summary.trim() && story;
+  const isValid = summary.trim() !== '' && story !== '';
+
+  if (!isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Create Subtask</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-col gap-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="summary">
-              Summary <span className="text-destructive">*</span>
-            </Label>
-            <Input
+    <Modal onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle>Create Subtask</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="summary" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Summary <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            </label>
+            <Textfield
               id="summary"
               value={summary}
-              onChange={(e) => setSummary(e.target.value)}
+              onChange={(e: any) => setSummary(e.target.value)}
               placeholder="Enter subtask summary"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="story">
-              Story <span className="text-destructive">*</span>
-            </Label>
-            <Select value={story} onValueChange={setStory}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select parent story (required)" />
-              </SelectTrigger>
-              <SelectContent>
-                {storyOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="story" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Story <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            </label>
+            <Select
+              inputId="story"
+              options={storyOptions}
+              value={storyOptions.find((o) => o.value === story)}
+              onChange={(opt: any) => setStory(opt ? opt.value : '')}
+              placeholder="Select parent story (required)"
+            />
+            <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>
               Subtasks must belong to a Story
             </p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="description" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Description
+            </label>
+            <TextArea
               id="description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e: any) => setDescription(e.target.value)}
               placeholder="Enter subtask description"
-              rows={3}
+              minimumRows={3}
             />
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={!isValid}>
-            Create Subtask
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button appearance="primary" onClick={handleSubmit} isDisabled={!isValid}>
+          Create Subtask
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 };
