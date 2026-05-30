@@ -29,9 +29,34 @@ import { TaskItem } from '@tiptap/extension-task-item';
 import {
   Table as BaseTable,
   TableRow,
-  TableHeader,
-  TableCell,
+  TableHeader as BaseTableHeader,
+  TableCell as BaseTableCell,
 } from '@tiptap/extension-table';
+
+// TableCell + TableHeader extended with a `background` attribute the
+// column/row color picker writes. Rendered as inline
+// `background-color` with !important so it beats both the default
+// cell rule and the sunken-bg rule for <th>.
+const CELL_BG_ATTR = {
+  background: {
+    default: null as string | null,
+    parseHTML: (el: HTMLElement) => el.style.backgroundColor || null,
+    renderHTML: (attrs: { background?: string | null }) =>
+      attrs.background
+        ? { style: `background-color: ${attrs.background} !important` }
+        : {},
+  },
+};
+const TableCell = BaseTableCell.extend({
+  addAttributes() {
+    return { ...(this.parent?.() ?? {}), ...CELL_BG_ATTR };
+  },
+});
+const TableHeader = BaseTableHeader.extend({
+  addAttributes() {
+    return { ...(this.parent?.() ?? {}), ...CELL_BG_ATTR };
+  },
+});
 
 // Table extended with a numeric `width` attribute AND a custom
 // NodeView that owns the table DOM. Without the NodeView, the
@@ -39,6 +64,14 @@ import {
 // on every attribute change and strips our inline width. By owning
 // the DOM we apply `width: Npx !important` directly on every update,
 // so the user's resize survives every PM transaction and round-trip.
+// Minimal PM-node shape we walk for column widths — keeps the
+// NodeView free of a direct @tiptap/pm/model dependency.
+interface PMNodeShape {
+  attrs: Record<string, unknown>;
+  firstChild: PMNodeShape | null;
+  forEach: (fn: (child: PMNodeShape) => void) => void;
+}
+
 type TableViewAttrs = {
   width?: number | null;
   headerRow?: boolean;
@@ -115,11 +148,51 @@ const Table = BaseTable.extend({
         if (k === 'style' || v == null) return;
         table.setAttribute(k, String(v));
       });
+      // <colgroup> + <col> per column — the column-resize plugin
+       // updates cell `colwidth` attrs, and we mirror those into the
+       // <col> widths here so the visual column actually resizes when
+       // the user drags the boundary. (prosemirror-tables' default
+       // TableView does this; since we replace it with our own
+       // NodeView, we have to do it ourselves.)
+      const colgroup = document.createElement('colgroup');
+      table.appendChild(colgroup);
       const tbody = document.createElement('tbody');
       table.appendChild(tbody);
       wrapper.appendChild(table);
 
-      const applyAttrs = (n: { attrs: TableViewAttrs }) => {
+      const updateColumns = (n: { firstChild: PMNodeShape | null }) => {
+        const firstRow = n.firstChild as PMNodeShape | null;
+        if (!firstRow) {
+          while (colgroup.firstChild)
+            colgroup.removeChild(colgroup.firstChild);
+          return;
+        }
+        const widths: (number | null)[] = [];
+        firstRow.forEach((cell: PMNodeShape) => {
+          const colspan = (cell.attrs.colspan as number) || 1;
+          const colwidth = cell.attrs.colwidth as number[] | null;
+          for (let i = 0; i < colspan; i++) {
+            widths.push(colwidth?.[i] ?? null);
+          }
+        });
+        // Reconcile <col> elements with the desired widths.
+        while (colgroup.children.length > widths.length) {
+          colgroup.removeChild(colgroup.lastChild!);
+        }
+        while (colgroup.children.length < widths.length) {
+          colgroup.appendChild(document.createElement('col'));
+        }
+        widths.forEach((w, i) => {
+          const col = colgroup.children[i] as HTMLElement;
+          col.style.width = w ? `${w}px` : '';
+        });
+      };
+
+      const applyAttrs = (n: {
+        attrs: TableViewAttrs;
+        firstChild: PMNodeShape | null;
+      }) => {
+        updateColumns(n);
         const a = n.attrs;
         if (typeof a.width === 'number' && a.width > 0) {
           table.style.setProperty('width', `${a.width}px`, 'important');
@@ -148,10 +221,41 @@ const Table = BaseTable.extend({
           return true;
         },
         ignoreMutation(mutation) {
-          return (
-            mutation.type === 'attributes' &&
-            (mutation.target === table || mutation.target === wrapper)
-          );
+          if (mutation.type !== 'attributes') return false;
+          if (mutation.target === table || mutation.target === wrapper) {
+            return true;
+          }
+          // TableInteractions writes inline styles + the
+          // data-catalyst-cell-selected attr on <td>/<th> elements to
+          // drive the column/row highlight. PM would otherwise revert
+          // those marks on the next render.
+          if (mutation.attributeName === 'data-catalyst-cell-selected') {
+            return true;
+          }
+          const tgt = mutation.target as HTMLElement;
+          if (
+            mutation.attributeName === 'style' &&
+            (tgt.tagName === 'TD' || tgt.tagName === 'TH') &&
+            table.contains(tgt)
+          ) {
+            return true;
+          }
+          // ColumnResizeHandles writes inline width on <col> (and
+          // touches <colgroup>) during live column drag. Without this
+          // guard, every mousemove that mutates <col>.style.width is
+          // observed by PM's MutationObserver and triggers a
+          // re-render that runs updateColumns(), which RESETS col
+          // widths from the pre-drag cell.colwidth. The visible
+          // symptom is "only resizes once" + "shifts from both sides"
+          // — PM is fighting the drag tick-by-tick.
+          if (
+            mutation.attributeName === 'style' &&
+            (tgt.tagName === 'COL' || tgt.tagName === 'COLGROUP') &&
+            table.contains(tgt)
+          ) {
+            return true;
+          }
+          return false;
         },
       };
     };
@@ -166,6 +270,8 @@ import { DateNode } from '../extensions/DateNode';
 import { InlineCard, BlockCard } from '../extensions/SmartCard';
 import { UnsupportedBlock, UnsupportedInline } from '../extensions/UnsupportedNode';
 import { SelectionDragCursor } from '../extensions/SelectionDragCursor';
+import { TableSelection } from '../extensions/TableSelection';
+import { TableShortcuts } from '../extensions/TableShortcuts';
 import type { AdfDoc, TiptapDoc } from '../utils/adfToTiptap';
 import { adfToTiptap } from '../utils/adfToTiptap';
 
@@ -233,10 +339,10 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
         // resizable:true enables column-resize handles; the default
         // header-row layout mirrors Jira's "first row is header" behavior.
         Table.configure({
-          // Per-column resize disabled — it runs updateColumnsOnResize
-          // on every transaction and forcibly resets table.style.width,
-          // fighting our whole-table width attribute. Whole-table
-          // resize via TableResizeBar is the supported affordance.
+          // prosemirror-tables' built-in column-resize plugin is
+          // RELEASE-ONLY (commits the width on mouseup). For live /
+          // real-time column resize like the TableResizeBar, we use
+          // our own implementation in TableInteractions instead.
           resizable: false,
           allowTableNodeSelection: true,
           HTMLAttributes: { dir: 'auto' },
@@ -262,6 +368,8 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
         SmallText,
         Mention,
         SelectionDragCursor,
+        TableSelection,
+        TableShortcuts,
       ],
       content: adfToTiptap(options.initialAdf),
       editable: options.editable ?? true,

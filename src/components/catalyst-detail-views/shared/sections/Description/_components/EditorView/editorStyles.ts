@@ -13,7 +13,7 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = 'catalyst-tiptap-editor-styles-v30';
+const STYLE_ID = 'catalyst-tiptap-editor-styles-v33';
 
 export function injectEditorStyles(): void {
   if (typeof document === 'undefined') return;
@@ -287,6 +287,17 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor table[data-header-column="true"] tbody > tr > th:first-child {
       background: var(--ds-surface-sunken, #F7F8F9);
       font-weight: 600;
+    }
+
+    /* Table cell selection (from TableSelection PM plugin).
+       Decorations add the class on cells in the selected column/row.
+       Background goes light blue, the cell's existing 1px border-color
+       is swapped from gray to blue — no extra outline, no overlay,
+       no doubled lines. !important ensures it beats the default
+       table-cell border rule. */
+    .catalyst-tiptap-editor table .catalyst-cell-selected {
+      background: rgba(135, 184, 255, 0.18) !important;
+      border-color: #85B8FF !important;
     }
 
     /* Numbered Rows — rendered as a ::before INSIDE the first cell of

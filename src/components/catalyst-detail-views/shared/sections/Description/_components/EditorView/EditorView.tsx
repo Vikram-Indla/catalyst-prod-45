@@ -18,6 +18,8 @@ import { BlockDragHandle } from '../BlockDragHandle/BlockDragHandle';
 import { SelectionTranslate } from '../SelectionTranslate/SelectionTranslate';
 import { TableResizeBar } from '../TableResizeBar/TableResizeBar';
 import { TableToolbar } from '../TableToolbar/TableToolbar';
+import { TableInteractions } from '../TableInteractions/TableInteractions';
+import { ColumnResizeHandles } from '../ColumnResizeHandles/ColumnResizeHandles';
 
 interface EditorViewProps {
   editor: Editor | null;
@@ -90,7 +92,9 @@ export function EditorView({
             onTranslatingChange={setIsTranslating}
           />
           <TableResizeBar editor={editor} containerRef={bodyRef} />
+          <ColumnResizeHandles editor={editor} containerRef={bodyRef} />
           <TableToolbar editor={editor} containerRef={bodyRef} />
+          <TableInteractions editor={editor} containerRef={bodyRef} />
         </div>
         {overlayActive && bodyOverlay}
       </div>
