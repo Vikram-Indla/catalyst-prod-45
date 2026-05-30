@@ -45,7 +45,6 @@ export function TitleTranslateWrapper({
   const handleTranslate = useCallback(async () => {
     const text = value.trim();
     if (!text || isTranslating) return;
-<<<<<<< HEAD
     originalRef.current = text;
     const result = await translate(text, { issueKey, field, target });
     if (result) {
