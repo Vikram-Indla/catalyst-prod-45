@@ -289,6 +289,8 @@ export function RichTextEditor({
             onMicToggle={handleMicToggle}
             micActive={mic.isActive}
             micSupported={mic.isSupported}
+            voiceMode={voiceMode}
+            onVoiceModeChange={setVoiceMode}
           />
         }
         bodyOverlay={bodyOverlay}
@@ -347,10 +349,11 @@ export function RichTextEditor({
             Cancel
           </button>
 
-          {mic.isActive ? (
+          {mic.isActive && (
             <MicRecordingBar
               isRecording={!mic.isPaused}
               isPaused={mic.isPaused}
+              phase={mic.phase}
               recordedText={mic.recordedText}
               interimText={mic.interimText}
               onPauseResume={() =>
@@ -359,133 +362,7 @@ export function RichTextEditor({
               onStop={mic.stop}
               onCancel={mic.cancel}
             />
-          ) : voice.isSupported ? (
-            <div
-              style={{
-                marginLeft: 'auto',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                fontSize: 12,
-                color: voice.isRecording
-                  ? 'var(--ds-text-information, #0C66E4)'
-                  : 'var(--ds-text-subtlest, #6B778C)',
-                fontWeight: voice.isRecording ? 600 : 400,
-                maxWidth: '50%',
-                minWidth: 0,
-              }}
-            >
-              {voice.isRecording ? (
-                <>
-                  <span
-                    aria-hidden
-                    style={{
-                      flexShrink: 0,
-                      display: 'inline-block',
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      background:
-                        'var(--ds-background-brand-bold, #0C66E4)',
-                      animation:
-                        'catalyst-voice-pulse 1s ease-in-out infinite',
-                    }}
-                  />
-                  <span style={{ flexShrink: 0 }}>Catalyst is listening</span>
-                  {voice.interimText && (
-                    <span
-                      style={{
-                        color: 'var(--ds-text-subtle, #44546F)',
-                        fontStyle: 'italic',
-                        fontWeight: 400,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        minWidth: 0,
-                      }}
-                      title={voice.interimText}
-                    >
-                      "{voice.interimText}"
-                    </span>
-                  )}
-                </>
-              ) : (
-                <>
-                  <span>💡 Hold Ctrl or click the mic to dictate</span>
-                  <span
-                    role="group"
-                    aria-label="Voice language mode"
-                    style={{
-                      display: 'inline-flex',
-                      marginLeft: 8,
-                      padding: 2,
-                      background: 'var(--ds-background-neutral, #F1F2F4)',
-                      borderRadius: 999,
-                      gap: 0,
-                    }}
-                  >
-                    {(
-                      [
-                        { id: 'auto', label: 'Auto' },
-                        { id: 'en', label: 'EN' },
-                        { id: 'ar', label: 'AR' },
-                      ] as Array<{ id: VoiceMode; label: string }>
-                    ).map(({ id, label }) => {
-                      const active = voiceMode === id;
-                      const titleSuffix =
-                        id === 'auto'
-                          ? ` — currently using ${effectiveLang === 'ar-SA' ? 'Arabic' : 'English'}`
-                          : '';
-                      return (
-                        <button
-                          key={id}
-                          type="button"
-                          onClick={() => setVoiceMode(id)}
-                          aria-pressed={active}
-                          title={`${
-                            id === 'auto'
-                              ? 'Auto-detect from text'
-                              : id === 'en'
-                                ? 'English (US)'
-                                : 'Arabic'
-                          }${titleSuffix}`}
-                          style={{
-                            padding: '2px 10px',
-                            border: 'none',
-                            borderRadius: 999,
-                            fontSize: 11,
-                            lineHeight: '16px',
-                            fontWeight: active ? 600 : 500,
-                            background: active
-                              ? 'var(--ds-background-selected, #E9F2FE)'
-                              : 'transparent',
-                            color: active
-                              ? 'var(--ds-text-selected, #0C66E4)'
-                              : 'var(--ds-text-subtle, #6B778C)',
-                            cursor: 'pointer',
-                            transition:
-                              'background 120ms ease, color 120ms ease',
-                          }}
-                          onMouseEnter={(e) => {
-                            if (active) return;
-                            e.currentTarget.style.color =
-                              'var(--ds-text, #292A2E)';
-                          }}
-                          onMouseLeave={(e) => {
-                            if (active) return;
-                            e.currentTarget.style.color =
-                              'var(--ds-text-subtle, #6B778C)';
-                          }}
-                        >
-                          {label}
-                        </button>
-                      );
-                    })}
-                  </span>
-                </>
-              )}
-            </div>
-          ) : null}
+          )}
         </div>
       )}
 

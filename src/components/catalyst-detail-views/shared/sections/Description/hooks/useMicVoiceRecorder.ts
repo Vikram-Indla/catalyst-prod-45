@@ -33,6 +33,9 @@ interface Options {
   lang?: string;
 }
 
+/** Three-phase AI state shown in the "Caty is …" pill. */
+export type MicPhase = 'listening' | 'transcribing' | 'translating';
+
 interface Result {
   isSupported: boolean;
   /** True from start() until stop()/cancel(). */
@@ -43,6 +46,8 @@ interface Result {
   interimText: string;
   /** Finalised transcript accumulated so far in this session (display + insert). */
   recordedText: string;
+  /** Current Caty AI phase for display in the status pill. */
+  phase: MicPhase;
   start: () => void;
   pause: () => void;
   resume: () => void;
@@ -70,9 +75,13 @@ export function useMicVoiceRecorder({
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [interimText, setInterimText] = useState('');
-  // Finalised transcript so far. Mirrored from bufferRef so the UI can
-  // display it (the ref alone wouldn't trigger re-renders).
   const [recordedText, setRecordedText] = useState('');
+  // Phase drives the "Caty is …" pill label.
+  // listening    → mic open, no words heard yet
+  // transcribing → interim or final text is arriving
+  // translating  → auto-lang switched mid-session (brief visual hint)
+  const [phase, setPhase] = useState<MicPhase>('listening');
+  const prevLangRef = useRef<string>(lang);
 
   const recognitionRef = useRef<any>(null);
   // True while we WANT the recognition running — onend uses this to
@@ -143,9 +152,19 @@ export function useMicVoiceRecorder({
         const res = event.results[i];
         const transcript = res[0]?.transcript ?? '';
         if (res.isFinal) {
-          // Append finalised chunk to the session buffer with a space.
           const next = transcript.trim();
           if (next) {
+            // Detect language switch mid-session → show "translating" briefly.
+            const arabic = (next.match(/[؀-ۿ]/g) || []).length;
+            const latin = (next.match(/[A-Za-z]/g) || []).length;
+            const detectedLang = arabic > latin ? 'ar-SA' : 'en-US';
+            if (prevLangRef.current !== detectedLang && bufferRef.current) {
+              setPhase('translating');
+              setTimeout(() => setPhase('transcribing'), 1200);
+            } else {
+              setPhase('transcribing');
+            }
+            prevLangRef.current = detectedLang;
             bufferRef.current = bufferRef.current
               ? `${bufferRef.current} ${next}`
               : next;
@@ -153,6 +172,8 @@ export function useMicVoiceRecorder({
           }
         } else {
           interim += transcript;
+          // As soon as any interim text arrives, move from listening → transcribing.
+          if (interim.trim()) setPhase('transcribing');
         }
       }
       interimRef.current = interim;
@@ -195,8 +216,10 @@ export function useMicVoiceRecorder({
     if (!isSupported || isActive) return;
     bufferRef.current = '';
     interimRef.current = '';
+    prevLangRef.current = langRef.current;
     setInterimText('');
     setRecordedText('');
+    setPhase('listening');
     setIsActive(true);
     setIsPaused(false);
     startRecognition();
@@ -269,6 +292,7 @@ export function useMicVoiceRecorder({
     isPaused,
     interimText,
     recordedText,
+    phase,
     start,
     pause,
     resume,

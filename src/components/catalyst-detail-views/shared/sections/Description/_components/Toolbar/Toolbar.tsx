@@ -40,6 +40,9 @@ export interface ToolbarProps {
   onMicToggle?: () => void;
   micActive?: boolean;
   micSupported?: boolean;
+  /** Current voice language mode — passed down so the hover picker shows selection. */
+  voiceMode?: 'auto' | 'en' | 'ar';
+  onVoiceModeChange?: (mode: 'auto' | 'en' | 'ar') => void;
 }
 
 export function Toolbar({
@@ -53,6 +56,8 @@ export function Toolbar({
   onMicToggle,
   micActive = false,
   micSupported = true,
+  voiceMode = 'auto',
+  onVoiceModeChange,
 }: ToolbarProps) {
   if (!editor) return null;
 
@@ -73,6 +78,14 @@ export function Toolbar({
         flexShrink: 0,
       }}
     >
+      {micSupported && (
+        <MicButton
+          active={micActive}
+          onClick={onMicToggle}
+          voiceMode={voiceMode}
+          onVoiceModeChange={onVoiceModeChange}
+        />
+      )}
       <ImproveButton
         editor={editor}
         onImprove={onImprove}
@@ -92,9 +105,6 @@ export function Toolbar({
       <UndoButton editor={editor} />
       <RedoButton editor={editor} />
       <HistoryButton available={historyAvailable} />
-      {micSupported && (
-        <MicButton active={micActive} onClick={onMicToggle} />
-      )}
     </div>
   );
 }
