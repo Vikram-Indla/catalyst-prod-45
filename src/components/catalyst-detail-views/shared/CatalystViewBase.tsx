@@ -573,7 +573,7 @@ export function CatalystViewBase({
                     </svg>
                   )}
                   label="Open in full page"
-                  onClick={() => navigate(`/browse/${itemKey}`)}
+                  onClick={() => navigate(projectKey ? `/project-hub/${projectKey}/backlog/${itemKey}` : `/browse/${itemKey}`)}
                 />
               </Tooltip>
             )}
