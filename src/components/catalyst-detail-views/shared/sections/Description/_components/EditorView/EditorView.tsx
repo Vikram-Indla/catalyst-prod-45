@@ -21,6 +21,7 @@ import { TableToolbar } from '../TableToolbar/TableToolbar';
 import { TableInteractions } from '../TableInteractions/TableInteractions';
 import { ColumnResizeHandles } from '../ColumnResizeHandles/ColumnResizeHandles';
 import { TableInsertHandles } from '../TableInsertHandles/TableInsertHandles';
+import { CellChevronHandles } from '../CellChevronHandles/CellChevronHandles';
 
 interface EditorViewProps {
   editor: Editor | null;
@@ -95,6 +96,7 @@ export function EditorView({
           <TableResizeBar editor={editor} containerRef={bodyRef} />
           <ColumnResizeHandles editor={editor} containerRef={bodyRef} />
           <TableInsertHandles editor={editor} containerRef={bodyRef} />
+          <CellChevronHandles editor={editor} containerRef={bodyRef} />
           <TableToolbar editor={editor} containerRef={bodyRef} />
           <TableInteractions editor={editor} containerRef={bodyRef} />
         </div>

@@ -462,6 +462,58 @@ export function getCellBackground(
   return ((cell.node.attrs as { background?: string | null }).background) ?? null;
 }
 
+/** Set background on a single cell. */
+export function setCellBackground(
+  editor: Editor,
+  info: TableInfo,
+  row: number,
+  col: number,
+  color: string | null,
+): void {
+  const cell = cellAt(editor, info, row, col);
+  if (!cell) return;
+  const tr = editor.state.tr.setNodeMarkup(cell.pos, undefined, {
+    ...cell.node.attrs,
+    background: color,
+  });
+  editor.view.dispatch(tr);
+}
+
+/** Clear the content of a SINGLE cell — replaces with an empty paragraph. */
+export function clearCellContent(
+  editor: Editor,
+  info: TableInfo,
+  row: number,
+  col: number,
+): void {
+  const cell = cellAt(editor, info, row, col);
+  if (!cell) return;
+  const empty = editor.state.schema.nodes.paragraph.create();
+  const tr = editor.state.tr.replaceWith(
+    cell.pos + 1,
+    cell.pos + 1 + cell.node.content.size,
+    empty,
+  );
+  editor.view.dispatch(tr);
+}
+
+/** True if the cell at (row, col) currently spans more than one
+ *  visual column OR row — i.e. it CAN be split. */
+export function canSplitCell(
+  info: TableInfo,
+  row: number,
+  col: number,
+): boolean {
+  const idx = row * info.map.width + col;
+  const relPos = info.map.map[idx];
+  if (relPos === undefined) return false;
+  const cellNode = info.tableNode.nodeAt(relPos);
+  if (!cellNode) return false;
+  const colspan = (cellNode.attrs.colspan as number) || 1;
+  const rowspan = (cellNode.attrs.rowspan as number) || 1;
+  return colspan > 1 || rowspan > 1;
+}
+
 /** Toggle a boolean attribute on the table node. */
 export function toggleTableAttr(
   editor: Editor,
