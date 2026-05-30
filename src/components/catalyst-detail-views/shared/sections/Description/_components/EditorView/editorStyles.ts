@@ -13,7 +13,7 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = 'catalyst-tiptap-editor-styles-v33';
+const STYLE_ID = 'catalyst-tiptap-editor-styles-v36';
 
 export function injectEditorStyles(): void {
   if (typeof document === 'undefined') return;
@@ -295,9 +295,24 @@ export function injectEditorStyles(): void {
        is swapped from gray to blue — no extra outline, no overlay,
        no doubled lines. !important ensures it beats the default
        table-cell border rule. */
+    /* Use OUTLINE (with negative offset so it overlays the cell's
+       existing 1px gray border) — outlines don't participate in
+       border-collapse so all 4 sides of the highlight always draw,
+       even where the gray neighbour border would otherwise win the
+       collapse resolution. */
     .catalyst-tiptap-editor table .catalyst-cell-selected {
       background: rgba(135, 184, 255, 0.18) !important;
-      border-color: #85B8FF !important;
+      outline: 1px solid #85B8FF !important;
+      outline-offset: -1px !important;
+    }
+    /* Danger / delete-preview highlight — paints cells red. Declared
+       AFTER .catalyst-cell-selected so when both classes apply (the
+       column is blue-selected AND the user is hovering "Delete
+       column"), red wins by source order. */
+    .catalyst-tiptap-editor table .catalyst-cell-danger {
+      background: rgba(255, 86, 48, 0.18) !important;
+      outline: 1px solid #F15B50 !important;
+      outline-offset: -1px !important;
     }
 
     /* Numbered Rows — rendered as a ::before INSIDE the first cell of

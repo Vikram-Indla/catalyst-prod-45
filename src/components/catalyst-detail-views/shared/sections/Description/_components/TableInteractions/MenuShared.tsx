@@ -96,6 +96,9 @@ export interface MenuItemProps {
   disabled?: boolean;
   /** Right-aligned content (color swatch, chevron, toggle…). */
   rightSlot?: ReactNode;
+  /** Fires true on mouseenter, false on mouseleave. Used by the
+   *  Delete / Clear items to preview the target column/row in red. */
+  onHoverChange?: (hovering: boolean) => void;
 }
 
 export function MenuItem({
@@ -105,6 +108,7 @@ export function MenuItem({
   onClick,
   disabled = false,
   rightSlot,
+  onHoverChange,
 }: MenuItemProps) {
   return (
     <button
@@ -138,9 +142,11 @@ export function MenuItem({
         if (disabled) return;
         e.currentTarget.style.background =
           'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+        onHoverChange?.(true);
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.background = 'transparent';
+        onHoverChange?.(false);
       }}
     >
       <span

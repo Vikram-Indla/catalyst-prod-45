@@ -44,6 +44,10 @@ import {
   MenuToggle,
   useMenuDismiss,
 } from './MenuShared';
+import {
+  setTableDangerColumn,
+  clearTableDanger,
+} from '../../extensions/TableSelection';
 
 interface Props {
   editor: Editor;
@@ -170,12 +174,22 @@ export function ColumnMenu({
         label="Clear cells"
         shortcut={['Backspace']}
         onClick={() => run(clearCells)}
+        onHoverChange={(h) =>
+          h
+            ? setTableDangerColumn(editor, tablePos, col)
+            : clearTableDanger(editor)
+        }
       />
       <MenuItem
         icon={<DeleteColumnIcon label="" />}
         label="Delete column"
         shortcut={['Ctrl', 'Backspace']}
         onClick={() => run(deleteCol)}
+        onHoverChange={(h) =>
+          h
+            ? setTableDangerColumn(editor, tablePos, col)
+            : clearTableDanger(editor)
+        }
       />
       <MenuDivider />
       <MenuItem

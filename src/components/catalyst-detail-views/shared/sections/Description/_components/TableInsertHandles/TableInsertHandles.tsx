@@ -18,11 +18,12 @@
 import {
   useCallback,
   useEffect,
-  useMemo,
   useState,
   type RefObject,
 } from 'react';
 import type { Editor } from '@tiptap/react';
+// eslint-disable-next-line no-restricted-imports
+import AddIcon from '@atlaskit/icon/core/add';
 
 interface Props {
   editor: Editor;
@@ -58,7 +59,9 @@ const LINE_THICKNESS = 2;
 const IDLE_DOT_COLOR = '#B3B9C4';
 /** + button border — light gray, matches the table border tone. */
 const BORDER_COLOR = '#DFE1E6';
-/** + icon stroke + active background. */
+/** Idle + icon color (matches the dot). */
+const PLUS_IDLE_COLOR = '#6B778C';
+/** Active hover background — solid blue with white +. */
 const ACCENT_COLOR = '#1868DB';
 
 export function TableInsertHandles({ editor, containerRef }: Props) {
@@ -305,12 +308,22 @@ function ColumnInsertDot({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: activeHover ? '#FFFFFF' : ACCENT_COLOR,
+              color: activeHover ? '#FFFFFF' : PLUS_IDLE_COLOR,
               boxShadow: '0 1px 3px rgba(9,30,66,0.18)',
               transition: 'background-color 80ms ease, color 80ms ease',
+              overflow: 'hidden',
             }}
           >
-            <PlusGlyph />
+            <span
+              style={{
+                display: 'inline-flex',
+                transform: 'scale(0.55)',
+                transformOrigin: 'center',
+                lineHeight: 0,
+              }}
+            >
+              <AddIcon label="" color="currentColor" />
+            </span>
           </button>
         ) : (
           <span
@@ -398,12 +411,22 @@ function RowInsertDot({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: activeHover ? '#FFFFFF' : ACCENT_COLOR,
+              color: activeHover ? '#FFFFFF' : PLUS_IDLE_COLOR,
               boxShadow: '0 1px 3px rgba(9,30,66,0.18)',
               transition: 'background-color 80ms ease, color 80ms ease',
+              overflow: 'hidden',
             }}
           >
-            <PlusGlyph />
+            <span
+              style={{
+                display: 'inline-flex',
+                transform: 'scale(0.55)',
+                transformOrigin: 'center',
+                lineHeight: 0,
+              }}
+            >
+              <AddIcon label="" color="currentColor" />
+            </span>
           </button>
         ) : (
           <span
@@ -418,25 +441,6 @@ function RowInsertDot({
         )}
       </div>
     </>
-  );
-}
-
-function PlusGlyph() {
-  return (
-    <svg
-      width="8"
-      height="8"
-      viewBox="0 0 8 8"
-      fill="none"
-      aria-hidden
-    >
-      <path
-        d="M4 1v6M1 4h6"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
-    </svg>
   );
 }
 
