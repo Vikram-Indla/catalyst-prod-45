@@ -274,6 +274,11 @@ export default function HomeSidebar({
           title: <LocationRowTitle location={loc} />,
           path: loc.path,
           icon: getProjectIconComponent(loc),
+          // Project identity bar: data-driven from ph_projects.color.
+          // Each row carries its project's brand color as a persistent 3px
+          // left spine — instant visual differentiation between projects.
+          // Falls back gracefully to undefined (no bar) when color is null.
+          accentColor: loc.color ?? undefined,
         }));
 
     return {
