@@ -29,7 +29,7 @@
  * keep the diff focused. Cycle 3 may extract them to
  * `src/components/business-requests/shared/` if other consumers need them.
  */
-import { type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Select, { CreatableSelect } from '@atlaskit/select';
 import { Checkbox } from '@atlaskit/checkbox';
@@ -195,9 +195,13 @@ function fmtDate(iso?: string | null) {
 interface Props {
   request: BusinessRequest | null;
   onUpdate: (field: string, value: unknown) => Promise<void>;
+  /** AI improve dropdown — rendered in the right-rail header (C22). */
+  improveDropdown?: React.ReactNode;
+  /** Watchers chip — rendered beside the improve dropdown (C23). */
+  watchersChip?: React.ReactNode;
 }
 
-export function BrSidebarDetails({ request, onUpdate }: Props) {
+export function BrSidebarDetails({ request, onUpdate, improveDropdown, watchersChip }: Props) {
   const { statuses: workflowStatuses, isLoading: statusesLoading } =
     useCatalystWorkflow('Business Request');
   const { data: profiles = [] } = useProfiles();
@@ -216,6 +220,20 @@ export function BrSidebarDetails({ request, onUpdate }: Props) {
       aria-label="Business Request details"
       style={{ display: 'flex', flexDirection: 'column', gap: 4 }}
     >
+      {/* Header action row — watchers chip + improve dropdown (C22/C23) */}
+      {(watchersChip || improveDropdown) && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 4,
+          marginBottom: 8,
+          minHeight: 28,
+        }}>
+          {watchersChip}
+          {improveDropdown}
+        </div>
+      )}
+
       <div
         style={{
           fontSize: 11,

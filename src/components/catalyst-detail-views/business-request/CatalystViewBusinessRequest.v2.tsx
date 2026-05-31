@@ -49,6 +49,8 @@ import { CatalystActivitySection } from '../shared/sections';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import { ImproveIssueDropdown } from '../improve';
+import { WatchersChip } from '../shared/WatchersChip';
 
 export interface CatalystViewBusinessRequestV2Props {
   isOpen: boolean;
@@ -93,6 +95,25 @@ export default function CatalystViewBusinessRequestV2({
   const [showCloneDialog, setShowCloneDialog] = useState(false);
 
   const openDetail = useGlobalSearchStore((s) => s.openDetail);
+
+  // BR-specific improve handlers — write back to business_requests via updateField,
+  // not ph_issues (which is what useImproveApplyHandlers does).
+  const handleApplyDescription = useCallback(
+    async (newDesc: string) => { await updateField('description', newDesc); },
+    [updateField],
+  );
+
+  // Shape that ImproveIssueDropdown needs — mapped from BusinessRequest fields.
+  const brAsIssueLike = useMemo(() => request ? ({
+    id: resolvedId ?? undefined,
+    issue_key: request.request_key,
+    issue_type: 'Business Request',
+    summary: request.title,
+    description_text: typeof request.description === 'string' ? request.description : null,
+    acceptance_criteria: null,
+    project_key: 'MIM',
+    source: 'catalyst' as const,
+  }) : null, [request, resolvedId]);
 
   // ── Header chrome handlers ────────────────────────────────────────────────
   const handlePermalink = useCallback(async () => {
@@ -159,9 +180,19 @@ export default function CatalystViewBusinessRequestV2({
 
   // ── Right rail (sidebar — workflow + assignees + dates + scoring badges) ─
   const rightContent = useMemo(() => (
-    <BrSidebarDetails request={request} onUpdate={updateField} />
+    <BrSidebarDetails
+      request={request}
+      onUpdate={updateField}
+      watchersChip={<WatchersChip issueKey={request?.request_key ?? null} />}
+      improveDropdown={
+        <ImproveIssueDropdown
+          issue={brAsIssueLike}
+          onApplyDescription={handleApplyDescription}
+        />
+      }
+    />
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  ), [request, updateField]);
+  ), [request, updateField, brAsIssueLike, handleApplyDescription]);
 
   return (
     <>
