@@ -1463,7 +1463,7 @@ function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
           }}
         >
           <EditIcon label="" size="small" primaryColor="currentColor" />
-          Ask Caty
+          Ask Caty - Suggest?
         </button>
       </div>
     </div>

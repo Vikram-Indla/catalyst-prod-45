@@ -139,7 +139,7 @@ export default function ReplyComposer({
                 />
                 <path d="M13 1L13.6 3.4L16 4L13.6 4.6L13 7L12.4 4.6L10 4L12.4 3.4L13 1Z" fill="currentColor" opacity="0.6"/>
               </svg>
-              Ask Caty
+              Ask Caty - Suggest?
             </button>
           </div>
         )}
