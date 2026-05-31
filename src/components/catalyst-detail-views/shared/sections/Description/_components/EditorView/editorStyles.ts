@@ -13,7 +13,7 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = "catalyst-tiptap-editor-styles-v48";
+const STYLE_ID = "catalyst-tiptap-editor-styles-v49";
 
 export function injectEditorStyles(): void {
   if (typeof document === "undefined") return;
@@ -280,6 +280,13 @@ export function injectEditorStyles(): void {
       max-width: 95%;
       border-radius: 4px;
       display: block;
+      /* Vertical breathing room so stacked images don't touch AND
+         the resize handles have a clear gap above / below each img
+         (handles are positioned just outside the bottom-right corner;
+         without margin the handle overlaps the next block). margin-block
+         lets the explicit margin-left/right: auto from the alignment
+         rules below still win for horizontal centring. */
+      margin-block: 8px;
     }
     /* Image alignment — driven by data-alignment attr set by CatalystImage.
        'wide' / 'full-width' are read but visually identical to center for v1. */
@@ -303,11 +310,19 @@ export function injectEditorStyles(): void {
       float: right;
       margin: 0 0 8px 16px;
     }
-    /* When the user has explicitly resized the image (width attr present),
-       it should win over the default max-width:100% so the user can
-       intentionally make it wider than the natural fit. */
+    /* Width attribute handling.
+       Both user-resized images AND Jira-synced images carry a 'width'
+       attribute — for the latter, Jira stores the original media pixel
+       width on media.attrs.width and adfToTiptap copies it onto the
+       <img>. If we set max-width: none here, those Jira-native widths
+       (often 1200+ px) push the image edge-to-edge with no room for
+       the resize handle on the right side (PI bug 2026-05-31). Cap at
+       95% so the width attr behaves as a TARGET (the smaller of the
+       attr width and 95% of the editor body) — matches Story which
+       has historically had this padding because Story's images were
+       authored in our editor without a Jira-width prefill. */
     .catalyst-tiptap-editor img[width] {
-      max-width: none;
+      max-width: 95%;
     }
     .catalyst-tiptap-editor img[data-alignment="wide"],
     .catalyst-tiptap-editor img[data-alignment="full-width"] {

@@ -86,6 +86,10 @@ export interface RichTextEditorProps {
   isSaving?: boolean;
   /** Save button label. Defaults to "Save". */
   saveLabel?: string;
+  /** Hide the built-in Save / Cancel row. Use when the host (e.g. a
+   *  Create-issue modal) already provides its own footer actions and
+   *  reads the live ADF via `onChange` instead of `onSave`. */
+  hideActionButtons?: boolean;
 
   /** Render extra content directly below the editor body (above the
    *  Save/Cancel row). Receives the live editor so the slot can dispatch
@@ -109,6 +113,7 @@ export function RichTextEditor({
   minHeight,
   isSaving = false,
   saveLabel = 'Save',
+  hideActionButtons = false,
   belowEditor,
 }: RichTextEditorProps) {
   const [emojiPanelAnchor, setEmojiPanelAnchor] = useState<HTMLElement | null>(
@@ -369,7 +374,7 @@ export function RichTextEditor({
       )}
 
       {/* Save / Cancel row */}
-      {!overlayActive && (
+      {!overlayActive && !hideActionButtons && (
         <div
           style={{
             display: 'flex',

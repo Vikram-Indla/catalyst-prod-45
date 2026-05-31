@@ -36,6 +36,14 @@ const COMPLEX_TYPES = new Set([
   // styles as a chip. The light renderer has no case for it, so without
   // marking the parent doc "complex" the mention would silently drop.
   'mention',
+  // Smart links (Jira "inline card" + "block card") — pasted URLs that
+  // Jira hydrates into a titled chip / preview. Tiptap renders these in
+  // edit mode via the InlineCard/BlockCard extensions; if we don't mark
+  // the doc complex on read, AdfLightRenderer has no case for them and
+  // the entire link disappears from the view (Epic read-mode bug
+  // 2026-05-31). Routing through EpicDescriptionRenderer gives us
+  // Atlaskit's full smart-card rendering with hover preview + icon.
+  'inlineCard', 'blockCard',
 ]);
 
 export function hasComplexAdfNodes(adf: unknown): boolean {

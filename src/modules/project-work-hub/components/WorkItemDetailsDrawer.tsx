@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, Suspense, startTransition, lazy } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,12 +13,7 @@ import Textfield from '@atlaskit/textfield';
 import { WorkItem } from '../types';
 import { WorkTypeIcon } from './WorkTypeIcon';
 import { Avatar, Tooltip } from '@/components/ads';
-const EpicDescriptionEditor = lazy(
-  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
-);
-import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
-import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
-import { prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
+import { Description } from '@/components/catalyst-detail-views/shared/sections/Description';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import {
@@ -46,7 +41,6 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedSummary, setEditedSummary] = useState('');
-  const [isDescriptionEditing, setIsDescriptionEditing] = useState(false);
 
   // jiraData — sync metadata only (sync status badge at the bottom)
   const { data: jiraData } = useQuery({
@@ -70,8 +64,6 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
   // Derived values
   const displaySummary = issue?.summary ?? item?.summary ?? '';
   const canEdit = !!issueKey;
-  const descSource = issue?.description_adf ?? item?.description ?? null;
-  const descIsEmpty = isAdfEmpty(descSource);
   const projectKey = issue?.project_key ?? issueKey?.split('-')[0] ?? item?.key ?? '';
   const itemType = (item?.type?.toLowerCase() ?? 'story') as CatalystItemType;
 
@@ -79,7 +71,6 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
     if (item) {
       setEditedSummary(issue?.summary ?? item.summary);
       setIsEditing(false);
-      setIsDescriptionEditing(false);
     }
   }, [item?.id, issue?.summary]);
 
@@ -104,15 +95,6 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
     if (!canEdit) return;
     mutations.deleteIssue.mutate();
   };
-
-  const handleDescriptionSave = useCallback((adfJson: string) => {
-    mutations.updateField.mutate({ field: 'description_adf', value: adfJson, oldValue: '' });
-    setIsDescriptionEditing(false);
-  }, [mutations.updateField]);
-
-  const handleDescriptionCancel = useCallback(() => {
-    setIsDescriptionEditing(false);
-  }, []);
 
   return (
     <div className="fixed top-0 right-0 bottom-0 w-[480px] bg-background shadow-xl z-[1000] flex flex-col border-l border-border">
@@ -247,72 +229,13 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                 </div>
               </div>
 
-              {/* Description — ADF click-to-edit */}
+              {/* Description — canonical Tiptap surface (click-to-edit,
+                  line-numbered code blocks, Prism highlighting,
+                  mentions, tables, images). Owns its own edit/read
+                  state internally so the drawer just hands it the
+                  PhIssue. */}
               <div className="mb-6">
-                <div
-                  style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}
-                >
-                  <h2
-                    style={{
-                      margin: 0, padding: 0,
-                      fontSize: 14, fontWeight: 500, lineHeight: '19px',
-                      color: 'var(--ds-text-subtle, #505258)',
-                      fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
-                    }}
-                  >
-                    Description
-                  </h2>
-                </div>
-
-                {isDescriptionEditing && canEdit ? (
-                  <div style={{ paddingLeft: 0 }}>
-                    <Suspense fallback={<div style={{ padding: 12, color: 'var(--ds-text-subtlest)', fontSize: 13 }}><Spinner size="small" /></div>}>
-                      <EpicDescriptionEditor
-                        initialContent={descSource}
-                        onSave={handleDescriptionSave}
-                        onCancel={handleDescriptionCancel}
-                        workItemId={item.id}
-                        placeholder="Add a description..."
-                      />
-                    </Suspense>
-                  </div>
-                ) : descIsEmpty ? (
-                  <div
-                    onClick={() => { if (canEdit) startTransition(() => setIsDescriptionEditing(true)); }}
-                    style={{
-                      fontSize: 14, color: 'var(--ds-text-subtlest, #97A0AF)',
-                      fontStyle: 'normal',
-                      minHeight: 40, cursor: canEdit ? 'pointer' : 'default',
-                      borderRadius: 4, padding: '8px 0',
-                      transition: 'background 0.15s',
-                    }}
-                    onMouseEnter={e => { if (canEdit) { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; prefetchEpicEditor(); }}}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                  >
-                    Add a description...
-                  </div>
-                ) : (
-                  <div
-                    role="button"
-                    tabIndex={canEdit ? 0 : -1}
-                    onClick={() => { if (canEdit) startTransition(() => setIsDescriptionEditing(true)); }}
-                    onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && canEdit) { e.preventDefault(); startTransition(() => setIsDescriptionEditing(true)); }}}
-                    onMouseEnter={e => { if (canEdit) { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; prefetchEpicEditor(); }}}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                    style={{
-                      borderRadius: 4, padding: '4px 0', cursor: canEdit ? 'text' : 'default',
-                      transition: 'background 0.15s',
-                    }}
-                    title={canEdit ? 'Click to edit' : undefined}
-                  >
-                    <Suspense fallback={<Spinner size="small" />}>
-                      <EpicDescriptionRenderer
-                        content={item.description ?? null}
-                        issueKey={jiraData?.item_key ?? item.jiraKey ?? item.key ?? undefined}
-                      />
-                    </Suspense>
-                  </div>
-                )}
+                <Description issue={issue ?? null} />
               </div>
 
               {/* Development section permanently banned — CLAUDE.md 2026-05-06 */}

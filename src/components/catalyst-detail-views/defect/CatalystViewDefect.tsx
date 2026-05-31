@@ -12,7 +12,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
-  CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
+  CatalystTitleEditor, CatalystQuickActions, Description, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails,
   KeyDetailsFieldRow, CatalystStatusPill,
 } from '../shared/sections';
@@ -130,7 +130,7 @@ export default function CatalystViewDefect({
 
       <CatalystDefectLongFields />
 
-      <CatalystDescriptionSection issue={issue ?? null} />
+      <Description issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} label="Expected Behavior" />
 
       {issue?.issue_key && (
