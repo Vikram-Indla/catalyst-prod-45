@@ -2,12 +2,14 @@
  * AIIntelligenceButton — "Ask Caty" pill CTA that opens the Catalyst AI
  * (CATY) intelligence panel for the current context.
  *
- * Idle:    brand-blue pill with ⚡ icon + "Ask Caty" label
- * Loading: STATIC rainbow border (no rotation, no animation) wraps the
- *          button + Spinner replaces icon + label flips to "Thinking…".
- *          Static rainbow border is the carve-out exception to the
- *          CLAUDE.md ENTERPRISE UI GUARDRAIL, permitted ONLY on
- *          AI-branded CTAs to signal AI processing.
+ * Visual: ALWAYS wrapped in a static 2px conic-gradient rainbow border.
+ *   - No rotation, no animation — pure colour treatment.
+ *   - Marks this CTA permanently as the AI affordance.
+ *   - This is the CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out, permitted
+ *     ONLY on AI-branded CTAs. Never replicate on generic buttons.
+ *
+ * Idle:    brand-blue pill with ⚡ icon + "Ask Caty" label inside rainbow border
+ * Loading: Spinner replaces icon, label flips to "Thinking…", button non-interactive
  *
  * ENTERPRISE RULE: NO spinning/rotating containers. The rainbow border
  * is purely static — only the background gradient is rendered.
@@ -97,9 +99,10 @@ export function AIIntelligenceButton({
     </button>
   );
 
-  // When loading: wrap in a 2px static rainbow padding-border.
-  // No rotation, no animation — pure colour treatment to signal AI processing.
-  const button = isLoading ? (
+  // Always-on static rainbow border: marks this CTA as the AI affordance.
+  // No rotation, no animation — pure colour treatment.
+  // The isLoading state still drives the spinner/label inside the button.
+  const button = (
     <div
       style={{
         display: 'inline-flex',
@@ -110,8 +113,6 @@ export function AIIntelligenceButton({
     >
       {innerButton}
     </div>
-  ) : (
-    innerButton
   );
 
   return tooltip

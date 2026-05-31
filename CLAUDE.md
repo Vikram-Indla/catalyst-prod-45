@@ -19,19 +19,21 @@ Before implementing any animation, visual effect, or interaction pattern, ask: *
 - ❌ Any animation applied to a wrapper that contains text — text must never rotate, scale, or blur
 - ❌ Rainbow / multi-colour gradient borders on interactive controls (buttons, pills, lozenges) — **EXCEPT the AI CTA carve-out below**
 
-### Carve-out — Static rainbow border on AI CTAs ONLY (added 2026-05-31)
+### Carve-out — Static rainbow border on AI CTAs ONLY (added 2026-05-31, amended same day)
 
-A **static** (non-animated, non-rotating) conic-gradient rainbow border is permitted **exclusively** on AI-branded CTAs (Ask Caty / CATY surfaces) to signal AI processing state. Strict conditions:
+A **static** (non-animated, non-rotating) conic-gradient rainbow border is permitted **exclusively** on AI-branded CTAs (Ask Caty / CATY surfaces) as a permanent visual marker that the control is the AI affordance. Strict conditions:
 
 - ✅ ONLY on `AIIntelligenceButton` and equivalent AI-branded CTAs — NEVER on generic buttons
-- ✅ ONLY visible during `isLoading={true}` (processing state) — NEVER as an always-on decoration
-- ✅ MUST be `animation: none` — pure static gradient, no rotation, no shift, no shimmer
-- ✅ MUST be paired with `@atlaskit/spinner` inside the button + label "Thinking…" + `aria-busy={true}`
+- ✅ ALWAYS visible (idle + processing) — the rainbow is the AI signifier, not a processing indicator
+- ✅ MUST be `animation: none` — pure static gradient, no rotation, no shift, no shimmer, ever
+- ✅ Processing state inside the button uses `@atlaskit/spinner` + label "Thinking…" + `aria-busy={true}` — these are independent of the rainbow border
 - ✅ MUST use 2px padding-wrapper pattern (not negative-inset position:absolute)
 - ❌ NEVER replicate this pattern on non-AI buttons (regular submit, cancel, save, delete, etc.)
 - ❌ NEVER add rotation, animation, or any motion to the gradient
+- ❌ NEVER apply to button text (only to the wrapper background)
 
 Approved reference implementation: `src/components/ui/AIIntelligenceButton.tsx`
+Approved palette: `#FF3CAC → #784BA0 → #2B86C5 → #00C9FF → #92FE9D → #FFD700`
 
 ### Approved loading/processing indicators for buttons:
 - ✅ `@atlaskit/spinner` (`size="small"`, `appearance="invert"`) replacing the icon — the ADS canonical pattern
