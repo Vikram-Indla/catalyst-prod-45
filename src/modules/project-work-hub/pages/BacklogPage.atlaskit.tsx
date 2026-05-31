@@ -106,6 +106,7 @@ import type {
 } from '@/components/shared/JiraTable';
 
 import { useStoryBacklog, useEpicBacklog, useRequestsByKeys, useRequestLinksByEpicKeys } from '../hooks/useBacklogData';
+import { BIZ_SOURCE, type BacklogDataSource } from '../adapters/backlogDataSource';
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
 import { useCatySearch } from '@/components/caty/catySearchStore';
 import { applyCatyFilterBacklog } from '@/components/caty/applyCatyFilterBacklog';
@@ -315,7 +316,7 @@ export interface BacklogItem {
 
 /* ─── Status mapping (shared with Story Backlog) ────────────────────────── */
 
-function statusAppearance(status: string | null | undefined): LozengeAppearance {
+function defaultStatusAppearance(status: string | null | undefined): LozengeAppearance {
   if (!status) return 'default';
   // `STORY_STATUS_LOZENGE.color` is now the Atlaskit appearance token directly
   // (§20 / L41 migration). Pass it through; fall back to 'default' for unknown.
@@ -325,7 +326,7 @@ function statusAppearance(status: string | null | undefined): LozengeAppearance 
 // Jira renders status labels uppercase in the list view DOM (the text content
 // is uppercase, not CSS text-transform). Use the STORY_STATUS_LOZENGE label
 // which is already uppercase; fall back to uppercase raw value for unknowns.
-function statusLabel(status: string | null | undefined): string {
+function defaultStatusLabel(status: string | null | undefined): string {
   if (!status) return '—';
   return STORY_STATUS_LOZENGE[status]?.label ?? status.toUpperCase();
 }
@@ -338,7 +339,7 @@ function statusLabel(status: string | null | undefined): string {
 // workflow + grouping by statusCategory key (new / indeterminate / done)
 // matches what the Jira list-view dropdown shows on
 // digital-transformation.atlassian.net/jira/software/c/projects/BAU/list.
-const STATUS_OPTIONS: StatusOption[] = [
+const DEFAULT_STATUS_OPTIONS: StatusOption[] = [
   // To Do family (statusCategory: new)
   { value: 'To Do', label: 'To Do', appearance: 'default', group: 'To Do' },
   { value: 'Backlog', label: 'Backlog', appearance: 'default', group: 'To Do' },
@@ -369,7 +370,7 @@ const STATUS_OPTIONS: StatusOption[] = [
   { value: 'Ready to Implement', label: 'Ready to Implement', appearance: 'default', group: 'To Do' },
 ];
 // All distinct status values used in BAU — drives the status inline-edit dropdown.
-const ALL_BACKLOG_STATUSES = [
+const DEFAULT_ALL_BACKLOG_STATUSES = [
   'To Do', 'In Requirements', 'In Design', 'Ready for Development',
   'In Development', 'Ready for QA', 'In QA', 'Ready for UAT', 'In UAT',
   'In Production', 'Done', 'Blocked', 'On Hold', 'Closed', 'Cancelled',
@@ -498,7 +499,15 @@ export default function NativeBacklogPage() {
 
 /* ─── The canonical page ───────────────────────────────────────────────── */
 
-export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string }) {
+export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl, dataSource }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string; dataSource?: BacklogDataSource }) {
+  // Optional adapter — when present, BacklogPage reads rows + status vocab
+  // from the adapter (e.g. business_requests for product hub) and routes all
+  // mutations through it. When absent, behavior is identical to today's
+  // project-hub ph_issues path.
+  const STATUS_OPTIONS = dataSource?.statusOptions ?? DEFAULT_STATUS_OPTIONS;
+  const ALL_BACKLOG_STATUSES = dataSource?.allStatuses ?? DEFAULT_ALL_BACKLOG_STATUSES;
+  const statusAppearance = dataSource?.statusAppearance ?? defaultStatusAppearance;
+  const statusLabel = dataSource?.statusLabel ?? defaultStatusLabel;
   // May 12, 2026 (Phase 1.3): CATY hooks for Ask CATY toolbar button.
   const { user } = useAuth();
   const createConversation = useCreateCatyConversation();

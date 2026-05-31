@@ -21,7 +21,7 @@ import { useParams } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { BacklogPage } from '@/modules/project-work-hub/pages/BacklogPage.atlaskit';
-import ProjectAllWorkView from '@/pages/project-hub/jira-list/ProjectAllWorkView';
+import ProductNativeAllWorkPage from '@/pages/product-hub/ProductNativeAllWorkPage';
 
 interface ProductInfo {
   id: string;
@@ -99,18 +99,11 @@ export default function ProductHubBacklogAdapter() {
 }
 
 /* ─── Product All Work ───────────────────────────────────────────────────── */
+/* 2026-06-01: rebuilt as native product-hub surface. Data + fields + status
+   come from CreateBusinessRequestModal canon (business_requests +
+   useCatalystWorkflow('Business Request')). Page does its own product
+   lookup, so this adapter is a thin pass-through. */
 
 export function ProductHubAllWorkAdapter() {
-  const { key } = useParams<{ key: string }>();
-  const { product, loading } = useProductInfo(key);
-
-  if (loading) return <ProductLoadingState />;
-  if (!product && key) return <ProductNotFound code={key} />;
-
-  return (
-    <ProjectAllWorkView
-      projectKey={key ?? ''}
-      projectId={product?.id}
-    />
-  );
+  return <ProductNativeAllWorkPage />;
 }
