@@ -12,7 +12,7 @@
  * Dual-mode added 2026-05-16 so /product-hub/INV/* shows per-product nav.
  */
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { token } from '@atlaskit/tokens';
 import {
   LayoutGrid,
@@ -234,6 +234,12 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
 
   const config: SidebarConfig = isScoped ? buildPerProductConfig(scopedProduct!) : GLOBAL_CONFIG;
 
+  // Navigate to BR backlog with ?create=true so BRBacklogPage auto-opens inline create
+  const handleCreateRequest = useCallback(() => {
+    if (!productCode) return;
+    navigate(`/product-hub/${productCode}/business-requests?create=true`);
+  }, [navigate, productCode]);
+
   // Group BRs by time bucket — TODAY + YESTERDAY, fallback to MOST RECENT when empty
   // H1 gate: show TODAY and YESTERDAY (max 48 hours), then fallback to most recent (capped 15)
   const groupedBrs = useMemo(() => {
@@ -400,6 +406,31 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
     </div>
   ) : null;
 
+  // Per-product create button — shown only when sidebar is expanded and scoped
+  const perProductCreateButton = isScoped && expanded ? (
+    <div style={{ padding: '8px 12px 0' }}>
+      <button
+        onClick={handleCreateRequest}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          width: '100%', padding: '6px 0',
+          background: token('color.background.brand.bold', '#0052CC'),
+          color: token('color.text.inverse', '#FFFFFF'),
+          border: 'none', borderRadius: 4, cursor: 'pointer',
+          fontSize: 13, fontWeight: 500,
+          fontFamily: 'var(--cp-font-body)',
+          transition: 'background 120ms ease',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.brand.bold.hovered', '#0065FF'); }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = token('color.background.brand.bold', '#0052CC'); }}
+        aria-label="Create new business request"
+      >
+        <span style={{ fontSize: 16, lineHeight: 1, marginTop: -1 }}>+</span>
+        Create request
+      </button>
+    </div>
+  ) : null;
+
   return (
     <SidebarBase
       config={config}
@@ -407,7 +438,12 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
       onToggle={onToggle}
       className={className}
     >
-      {isScoped ? perProductRecentsSection : recentsSection}
+      {isScoped ? (
+        <>
+          {perProductCreateButton}
+          {perProductRecentsSection}
+        </>
+      ) : recentsSection}
     </SidebarBase>
   );
 }

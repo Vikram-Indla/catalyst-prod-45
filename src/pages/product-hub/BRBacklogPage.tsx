@@ -11,10 +11,12 @@
  *
  * C13 (table component) + C14 (BR column set) from the Product branch gap report.
  */
-import React, { useMemo, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useMemo, useCallback, useState, useEffect, useRef } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
 import { token } from '@atlaskit/tokens';
+import Textfield from '@atlaskit/textfield';
+import Button from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
@@ -24,7 +26,7 @@ import {
   makePriorityCell,
   type LozengeAppearance,
 } from '@/components/shared/JiraTable';
-import { useBusinessRequests } from '@/hooks/useBusinessRequests';
+import { useBusinessRequests, useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import type { BusinessRequest } from '@/types/business-request';
 
@@ -206,11 +208,76 @@ function buildColumns(
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+// ─── Inline create defaults ───────────────────────────────────────────────────
+const INLINE_DEFAULTS = {
+  platform:   'Other',
+  complexity: 'Medium',
+  urgency:    'Normal',
+} as const;
+
+const MIN_TITLE_LENGTH = 5;
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function BRBacklogPage() {
   const { key } = useParams<{ key: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const openDetail = useGlobalSearchStore((s) => s.openDetail);
 
   const { data: requests = [], isLoading } = useBusinessRequests();
+  const createMutation = useCreateBusinessRequest();
+
+  // Inline create state
+  const [isCreating, setIsCreating] = useState(false);
+  const [draftTitle, setDraftTitle] = useState('');
+  const [createError, setCreateError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-open inline create when ?create=true is in the URL (C19 handshake)
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      setIsCreating(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  // Focus input when inline create opens
+  useEffect(() => {
+    if (isCreating) {
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [isCreating]);
+
+  const handleStartCreate = useCallback(() => {
+    setDraftTitle('');
+    setCreateError(null);
+    setIsCreating(true);
+  }, []);
+
+  const handleCancelCreate = useCallback(() => {
+    setIsCreating(false);
+    setDraftTitle('');
+    setCreateError(null);
+  }, []);
+
+  const handleSubmitCreate = useCallback(async () => {
+    const trimmed = draftTitle.trim();
+    if (trimmed.length < MIN_TITLE_LENGTH) {
+      setCreateError(`Title must be at least ${MIN_TITLE_LENGTH} characters`);
+      return;
+    }
+    setCreateError(null);
+    try {
+      await createMutation.mutateAsync({
+        title: trimmed,
+        ...INLINE_DEFAULTS,
+      });
+      setDraftTitle('');
+      setIsCreating(false);
+    } catch {
+      setCreateError('Failed to create request');
+    }
+  }, [draftTitle, createMutation]);
 
   const handleOpen = useCallback(
     (row: BusinessRequest) => {
@@ -279,7 +346,7 @@ export default function BRBacklogPage() {
 
       {/* Table */}
       <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
-        {requests.length === 0 ? (
+        {requests.length === 0 && !isCreating ? (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             minHeight: 200, flexDirection: 'column', gap: 8,
@@ -287,7 +354,17 @@ export default function BRBacklogPage() {
             fontFamily: 'var(--cp-font-body)',
           }}>
             <span style={{ fontSize: 14 }}>No business requests yet</span>
-            <span style={{ fontSize: 12 }}>Create a request to get started</span>
+            <button
+              onClick={handleStartCreate}
+              style={{
+                fontSize: 13, fontWeight: 500,
+                color: token('color.link', '#0052CC'),
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontFamily: 'var(--cp-font-body)', padding: 0,
+              }}
+            >
+              + Create the first request
+            </button>
           </div>
         ) : (
           <JiraTable
@@ -298,6 +375,79 @@ export default function BRBacklogPage() {
           />
         )}
       </div>
+
+      {/* Inline create row */}
+      {isCreating ? (
+        <div style={{
+          borderTop: `1px solid ${token('color.border', 'var(--cp-border-neutral, #DFE1E6)')}`,
+          padding: '8px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          background: token('color.background.selected', '#E9F2FE'),
+          flexShrink: 0,
+        }}>
+          <div style={{ flex: 1 }}>
+            <Textfield
+              ref={inputRef}
+              value={draftTitle}
+              onChange={(e) => {
+                setDraftTitle((e.target as HTMLInputElement).value);
+                setCreateError(null);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') { void handleSubmitCreate(); }
+                if (e.key === 'Escape') { handleCancelCreate(); }
+              }}
+              placeholder="What needs to be done?"
+              isInvalid={!!createError}
+            />
+            {createError && (
+              <div style={{
+                fontSize: 11, color: token('color.text.danger', '#AE2A19'),
+                marginTop: 2, fontFamily: 'var(--cp-font-body)',
+              }}>
+                {createError}
+              </div>
+            )}
+          </div>
+          <Button
+            appearance="primary"
+            onClick={() => { void handleSubmitCreate(); }}
+            isDisabled={createMutation.isPending}
+          >
+            {createMutation.isPending ? 'Creating…' : 'Create'}
+          </Button>
+          <Button appearance="subtle" onClick={handleCancelCreate}>
+            Cancel
+          </Button>
+        </div>
+      ) : (
+        <button
+          onClick={handleStartCreate}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            width: '100%', padding: '8px 16px',
+            border: 'none', borderTop: `1px solid ${token('color.border', 'var(--cp-border-neutral, #DFE1E6)')}`,
+            background: 'transparent', cursor: 'pointer', textAlign: 'left',
+            fontSize: 13, fontWeight: 400,
+            color: token('color.text.subtlest', '#8590A2'),
+            fontFamily: 'var(--cp-font-body)',
+            flexShrink: 0,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)');
+            e.currentTarget.style.color = token('color.text', '#292A2E');
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = token('color.text.subtlest', '#8590A2');
+          }}
+        >
+          <span style={{ fontSize: 16, lineHeight: 1 }}>+</span>
+          Create request
+        </button>
+      )}
     </div>
   );
 }
