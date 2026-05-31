@@ -231,10 +231,12 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
             })}
           </div>
 
-          {/* Footer */}
-          <div style={{ padding: '10px 16px', borderTop: `1px solid ${T.border()}`, fontSize: 11, color: T.textSubtlest(), textAlign: 'center', fontStyle: 'italic' }}>
-            Click any item to view details
-          </div>
+          {/* Footer — only when there are items the user can click into */}
+          {doneCount > 0 && (
+            <div style={{ padding: '10px 16px', borderTop: `1px solid ${T.border()}`, fontSize: 11, color: T.textSubtlest(), textAlign: 'center', fontStyle: 'italic' }}>
+              Click any item to view details
+            </div>
+          )}
         </div>
       )}
     </div>
