@@ -36,13 +36,27 @@ interface DisplayProps {
 /* FieldRow's value cell measured against Jira on 2026-04-28.         */
 /* ------------------------------------------------------------------ */
 
+/* paddingInlineStart: 8 matches @atlaskit/select's default value-
+ * container padding (2px 8px) that every right-rail editable picker
+ * (EditableAssignee, EditableReporter, EditablePriority,
+ * EditableLabels, EditableFixVersions) inherits. Without it, the
+ * read-only fields render flush left and visually jog 8px to the
+ * LEFT of the editable rows above — the "Actual end" / "Actual
+ * start" / "IR Demo Date" all sat slightly LEFT of the
+ * Assignee/Reporter column. We use 8 (not 6) so the column line up
+ * with the react-select chrome — the hand-rolled CatalystDueDate
+ * button uses 6 internally which is 2px off, but that is the
+ * canonical Atlassian alignment and the picker is the column anchor.
+ * 2026-05-31 right-rail alignment fix (iteration 2). */
 const VALUE_STYLE: React.CSSProperties = {
   fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #292A2E)',
   fontFamily: 'inherit',
+  paddingInlineStart: 8,
 };
 const EMPTY_STYLE: React.CSSProperties = {
   fontSize: 14, lineHeight: '20px', color: 'var(--ds-text-subtle, #6B6E76)',
   fontFamily: 'inherit',
+  paddingInlineStart: 8,
 };
 
 /** Format an ISO date string as Jira's "DD MMM YYYY" (eg "23 Sep 2025"). */
@@ -112,7 +126,7 @@ export function CatalystIRFigmaApprovedDisplay({ issue }: DisplayProps) {
   const values = readMultiCheckboxValues(raw);
   if (values.length === 0) return <span style={EMPTY_STYLE}>None</span>;
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, paddingInlineStart: 8 }}>
       {values.map(v => (
         <Lozenge key={v} appearance={approvalAppearance(v)}>{v}</Lozenge>
       ))}
@@ -125,7 +139,7 @@ export function CatalystIRDemoApprovedDisplay({ issue }: DisplayProps) {
   const values = readMultiCheckboxValues(raw);
   if (values.length === 0) return <span style={EMPTY_STYLE}>None</span>;
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, paddingInlineStart: 8 }}>
       {values.map(v => (
         <Lozenge key={v} appearance={approvalAppearance(v)}>{v}</Lozenge>
       ))}
