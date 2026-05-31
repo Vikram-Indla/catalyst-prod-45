@@ -99,7 +99,7 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
           { id: 'business-requests',  title: 'Business Requests',   path: `${base}/business-requests`,  icon: Inbox,           exact: false },
           { id: 'backlog',            title: 'Product Backlog',     path: `${base}/backlog`,            icon: ClipboardList,   exact: true  },
           { id: 'boards',    title: 'Product Board',     path: `${base}/boards`,    icon: Columns3,        exact: false },
-          { id: 'allwork',   title: 'Product Work',      path: `${base}/allwork`,   icon: Network,         exact: true },
+
           { id: 'filters',   title: 'Filters',           path: `${base}/filters`,   icon: Filter,          exact: false },
         ],
       },
