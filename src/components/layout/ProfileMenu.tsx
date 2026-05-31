@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Settings as SettingsIcon, User as UserIcon, Users, Sun, Moon, Monitor, Palette } from '@/lib/atlaskit-icons';
+import { LogOut, Settings as SettingsIcon, User as UserIcon, Sun, Moon, Monitor, Palette } from '@/lib/atlaskit-icons';
 
 import {
   DropdownMenu,
@@ -16,8 +16,6 @@ import {
 
 import { useAuth } from '@/lib/auth';
 import { useTheme } from '@/hooks/useTheme';
-import { useUserRole } from '@/hooks/useUserRole';
-import { useMyLeadProjects } from '@/hooks/useMyLeadProjects';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { token } from '@atlaskit/tokens';
 
@@ -46,15 +44,10 @@ export function ProfileMenu() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
-  const { canAccessEnterprise } = useUserRole();
-  const { projects } = useMyLeadProjects();
   const [open, setOpen] = useState(false);
-
-  const r360Item = canAccessEnterprise
-    ? { label: 'Resource 360™', path: '/admin/resources' }
-    : projects.length > 0
-    ? { label: 'My Team', path: '/my-team' }
-    : { label: 'My Resource 360°', path: '/me' };
+  // Resource 360 routing logic (canAccessEnterprise / useMyLeadProjects /
+  // r360Item) removed 2026-05-31 alongside the menu entry — see git blame
+  // for the original three-way branch by user role.
 
   const email = user?.email ?? '';
   const name =
@@ -228,16 +221,9 @@ export function ProfileMenu() {
             <UserIcon className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={(e) => {
-              e.preventDefault();
-              go(r360Item.path);
-            }}
-            className="cursor-pointer"
-          >
-            <Users className="mr-2 h-4 w-4" />
-            <span>{r360Item.label}</span>
-          </DropdownMenuItem>
+          {/* Resource 360 entry REMOVED 2026-05-31 — accessible via the
+              For You "Resource 360°" tab and via per-row contextual actions.
+              Profile menu was a redundant entry point cluttering the dropdown. */}
           <DropdownMenuItem
             onSelect={(e) => {
               e.preventDefault();
