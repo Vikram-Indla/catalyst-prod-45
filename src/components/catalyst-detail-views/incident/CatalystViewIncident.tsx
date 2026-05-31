@@ -7,7 +7,7 @@ import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workIte
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
-  CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
+  CatalystTitleEditor, CatalystQuickActions, Description, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails, CatalystStatusPill,
 } from '../shared/sections';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
@@ -75,7 +75,7 @@ export default function CatalystViewIncident({
           </KeyDetailsFieldRow>
         }
       />
-      <CatalystDescriptionSection issue={issue ?? null} />
+      <Description issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} label="Impact / Root Cause" />
 
       {issue?.issue_key && (

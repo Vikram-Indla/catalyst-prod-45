@@ -1,36 +1,26 @@
 /**
- * BrDescriptionSection — collapsed-until-clicked rich-text description.
+ * BrDescriptionSection — Business Request description.
  *
- * Read view: renders the existing description as ADF via the canonical
- * `EpicDescriptionRenderer` (or a plain-text fallback when the value
- * isn't ADF-shaped).
+ * Read view: canonical Tiptap `DisplayView` (same surface used by every
+ * issue type — line-numbered code blocks, Prism syntax highlighting,
+ * mentions, tables, images).
  *
- * Edit view: lazily mounts `@atlaskit/editor-core` via the canonical
- * `EpicDescriptionEditor` (`appearance="comment"` so users get the
- * built-in Save / Cancel buttons that match Jira chrome). Saving writes
- * the serialized ADF JSON string back to `business_requests.description`
+ * Edit view: canonical Tiptap `RichTextEditor` (same surface used by
+ * the issue Description and the comment composer). Saving writes the
+ * serialised ADF JSON string back to `business_requests.description`
  * via the parent's `onUpdate` callback.
  *
- * The collapse-until-clicked pattern matters: the Atlaskit editor bundle
- * is ~500 KB and its own focus-on-mount otherwise steals focus from
- * sibling fields (CLAUDE.md "create-issue modal cycle 1" lesson).
+ * Click-to-edit + collapse-until-clicked are kept here at the section
+ * level because `Description` (the issue-bound wrapper) saves to
+ * `ph_issues`; business_requests is a different table so this section
+ * owns the save mutation through its `onUpdate` prop.
  */
-import { useState, Suspense, lazy } from 'react';
-import Spinner from '@atlaskit/spinner';
+import { useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import type { BusinessRequest } from '@/types/business-request';
-
-const AdfDescriptionField = lazy(
-  () => import('@/components/shared/rich-text/atlaskit/AdfDescriptionField'),
-);
-
-const EpicDescriptionRenderer = lazy(() =>
-  import('@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer').then((m) => ({
-    default:
-      (m as Record<string, unknown>).default
-        ?? (m as Record<string, unknown>).EpicDescriptionRenderer,
-  })) as Promise<{ default: React.ComponentType<{ adf?: unknown; fallbackText?: string | null }> }>,
-);
+import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
+import { DisplayView } from '@/components/catalyst-detail-views/shared/sections/Description/_components/DisplayView/DisplayView';
+import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
 
 interface Props {
   request: BusinessRequest | null;
@@ -39,26 +29,38 @@ interface Props {
 
 export function BrDescriptionSection({ request, onUpdate }: Props) {
   const [editing, setEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  if (!request) return null;
+  // Description column is a string: either serialised ADF or plain text.
+  // The ADF heuristic matches the previous implementation: starts with
+  // `{"type":"doc"…`. Anything else gets wrapped in a single-paragraph
+  // ADF doc so the Tiptap editor opens with the user's text preserved.
+  const description = request?.description ?? '';
+  const hasContent = description.trim().length > 0;
 
-  const description = request.description;
-  const hasContent = !!description && description.trim().length > 0;
-
-  // Heuristic: ADF JSON string starts with `{"type":"doc"`. Otherwise treat
-  // as plain text (the renderer's fallbackText branch handles it).
-  let initialAdf: unknown = null;
-  if (hasContent) {
+  const initialAdf: AdfDoc | null = useMemo(() => {
+    if (!hasContent) return null;
     try {
-      const parsed = JSON.parse(description!);
-      if (parsed && typeof parsed === 'object' && (parsed as { type?: string }).type === 'doc') {
-        initialAdf = parsed;
+      const parsed = JSON.parse(description);
+      if (
+        parsed &&
+        typeof parsed === 'object' &&
+        (parsed as { type?: string }).type === 'doc'
+      ) {
+        return parsed as AdfDoc;
       }
     } catch {
-      // Plain-text — leave initialAdf null so the editor starts empty
-      // BUT the renderer falls back to plain text on read view.
+      /* not JSON — fall through to plain-text wrap */
     }
-  }
+    return {
+      type: 'doc',
+      content: [
+        { type: 'paragraph', content: [{ type: 'text', text: description }] },
+      ],
+    } as AdfDoc;
+  }, [description, hasContent]);
+
+  if (!request) return null;
 
   return (
     <section
@@ -80,32 +82,20 @@ export function BrDescriptionSection({ request, onUpdate }: Props) {
         Description
       </div>
       {editing ? (
-        <Suspense
-          fallback={
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: 160,
-              }}
-            >
-              <Spinner size="medium" />
-            </div>
-          }
-        >
-          <AdfDescriptionField
-            workItemId={request.id}
-            initialContent={initialAdf}
-            placeholder="Describe what this business request covers..."
-            appearance="comment"
-            onSave={async (adfJson: string) => {
+        <RichTextEditor
+          initialAdf={initialAdf}
+          isSaving={isSaving}
+          onSave={async (adfJson) => {
+            setIsSaving(true);
+            try {
               await onUpdate('description', adfJson);
               setEditing(false);
-            }}
-            onCancel={() => setEditing(false)}
-          />
-        </Suspense>
+            } finally {
+              setIsSaving(false);
+            }
+          }}
+          onCancel={() => setEditing(false)}
+        />
       ) : (
         <button
           type="button"
@@ -141,13 +131,7 @@ export function BrDescriptionSection({ request, onUpdate }: Props) {
           }}
         >
           {hasContent ? (
-            initialAdf ? (
-              <Suspense fallback={<span>Loading…</span>}>
-                <EpicDescriptionRenderer adf={initialAdf} fallbackText={description} />
-              </Suspense>
-            ) : (
-              <span style={{ whiteSpace: 'pre-wrap' }}>{description}</span>
-            )
+            <DisplayView adf={initialAdf} />
           ) : (
             'Describe what this business request covers, why it is needed, and the current gap or pain point it addresses…'
           )}

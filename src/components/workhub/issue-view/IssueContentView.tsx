@@ -33,9 +33,11 @@ import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
 import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
 import { ConvertToSubtaskWizard } from './ConvertToSubtaskWizard';
 import { FlagPopover, isFlagged as checkFlagged, CloneWizard, MoveWizard, ArchiveDialog, DeleteDialog } from './IssueActionDialogs';
-// 2026-04-20 — TipTap CatalystRichTextEditor import removed. Atlaskit
-// <EpicDescriptionEditor> is the sole composer (USER DIRECTIVE).
-// AtlaskitBoundary removed along with it — no editor fallback path.
+// 2026-05-31 — Description renderer + composer are now the canonical
+// Catalyst Tiptap surface (`@/components/catalyst-detail-views/shared
+// /sections/Description`). One component owns click-to-edit, empty
+// state, save mutation, and the read view with line-numbered code
+// blocks + Prism syntax highlighting. No Atlaskit editor on this surface.
 /* §19 chokepoint — ALL user-avatar lookups on this surface resolve
    through `resolveAvatarUrl`. Never read `profiles.avatar_url`
    (Gravatar CDN, banned) and never display an external URL. */
@@ -49,7 +51,7 @@ import { ActivityPanelPilot } from './activity/ActivityPanelPilot';
    issue_type is Bug or Defect. */
 import { CatalystDefectFields } from '@/components/catalyst-detail-views/defect/CatalystDefectFields';
 import type { PhIssue } from '@/components/catalyst-detail-views/shared/types';
-import { CatalystDescriptionSection } from '@/components/catalyst-detail-views/shared/sections/CatalystDescriptionSection';
+import { Description } from '@/components/catalyst-detail-views/shared/sections/Description';
 
 
 interface Props {
@@ -636,9 +638,9 @@ export function IssueContentView({
             </div>
           )}
 
-          {/* ── Description — canonical CatalystDescriptionSection (Jira parity: no collapse) ── */}
+          {/* ── Description — canonical Tiptap surface (Jira parity: no collapse) ── */}
           {item && (
-            <CatalystDescriptionSection
+            <Description
               issue={{
                 id: item.id,
                 issue_key: item.issue_key,

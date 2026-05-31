@@ -13,13 +13,13 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = 'catalyst-tiptap-editor-styles-v30';
+const STYLE_ID = "catalyst-tiptap-editor-styles-v49";
 
 export function injectEditorStyles(): void {
-  if (typeof document === 'undefined') return;
+  if (typeof document === "undefined") return;
   if (document.getElementById(STYLE_ID)) return;
 
-  const s = document.createElement('style');
+  const s = document.createElement("style");
   s.id = STYLE_ID;
   s.textContent = `
     .catalyst-tiptap-editor {
@@ -55,14 +55,208 @@ export function injectEditorStyles(): void {
       margin: 8px 0;
       color: var(--ds-text-subtle, #5E6C84);
     }
-    .catalyst-tiptap-editor pre {
+    /* Code block with line-number gutter.
+       Font, font-size and line-height live on the wrapper and are
+       forced via 'font: inherit !important' on both the gutter and
+       the <pre> so the two grid columns share IDENTICAL font metrics.
+
+       padding/margin on the <pre> AND the gutter MUST carry
+       !important — story-detail-extensions.css declares
+       [data-sdm-scope] .ProseMirror pre { padding: 12px 16px;
+       margin: 8px 0 } at specificity 0,2,1 which beats this
+       rule's 0,2,0 without !important. The external padding
+       shifts the code text 4px down + 4px right relative to the
+       gutter and is the proven cause of the line-number
+       misalignment after re-entering edit mode. */
+    .catalyst-tiptap-editor .catalyst-code-block {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: stretch;
       background: var(--ds-surface-sunken, #F7F8F9);
-      padding: 12px;
-      border-radius: 4px;
-      font-size: 13px;
-      overflow-x: auto;
       margin: 4px 0 8px;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      line-height: 20px;
+      border: 0 !important;
+      outline: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block-gutter {
+      background: var(--ds-background-neutral, #E4E6EA);
+      color: var(--ds-text-subtle, #6B778C);
+      padding: 8px 10px !important;
+      margin: 0 !important;
+      text-align: right;
+      user-select: none;
+      -webkit-user-select: none;
+      font: inherit !important;
+      font-variant-numeric: tabular-nums;
+      border: 0 !important;
+      outline: 0 !important;
+      border-radius: 0 !important;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block-ln {
+      display: block;
+      font: inherit !important;
+      line-height: 20px !important;
+      border: 0 !important;
+      outline: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block-pre {
+      background: transparent !important;
+      padding: 8px 12px !important;
+      margin: 0 !important;
+      overflow-x: auto;
+      min-width: 0;
+      font: inherit !important;
+      line-height: 20px !important;
+      border: 0 !important;
+      outline: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    /* Override the global .catalyst-tiptap-editor code rule which
+       sets background, padding 2/4 and border-radius 3 on every
+       code element. We need ZERO of those inside the code block,
+       and we force 'font: inherit' so the code text uses the exact
+       same family + size + line-height as the gutter spans. */
+    .catalyst-tiptap-editor .catalyst-code-block-pre code {
+      background: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      font: inherit !important;
+      line-height: 20px !important;
+      border: 0 !important;
+      outline: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    /* Kill the contenteditable focus outline that ProseMirror adds
+       to the <code> element when the cursor is inside it. */
+    .catalyst-tiptap-editor .catalyst-code-block-pre code:focus,
+    .catalyst-tiptap-editor .catalyst-code-block-pre code:focus-visible,
+    .catalyst-tiptap-editor .catalyst-code-block-pre code:focus-within {
+      outline: 0 !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+    /* ── Prism syntax-highlight theme ──
+       Token class names match Prism's emit. Palette tuned to match
+       Jira's edit-mode code-block colours (subtle, light, AA contrast
+       against the sunken bg). Both the edit decorations and the read
+       renderer use the same .token.* classes so colours are identical
+       across surfaces. */
+    .catalyst-tiptap-editor .catalyst-code-block .token.comment,
+    .catalyst-tiptap-editor .catalyst-code-block .token.prolog,
+    .catalyst-tiptap-editor .catalyst-code-block .token.doctype,
+    .catalyst-tiptap-editor .catalyst-code-block .token.cdata,
+    .adf-light-renderer .catalyst-code-block .token.comment,
+    .adf-light-renderer .catalyst-code-block .token.prolog,
+    .adf-light-renderer .catalyst-code-block .token.doctype,
+    .adf-light-renderer .catalyst-code-block .token.cdata {
+      color: #6B778C;
+      font-style: italic;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.punctuation,
+    .adf-light-renderer .catalyst-code-block .token.punctuation {
+      color: #5E6C84;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.namespace,
+    .adf-light-renderer .catalyst-code-block .token.namespace {
+      opacity: 0.7;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.property,
+    .catalyst-tiptap-editor .catalyst-code-block .token.tag,
+    .catalyst-tiptap-editor .catalyst-code-block .token.constant,
+    .catalyst-tiptap-editor .catalyst-code-block .token.symbol,
+    .catalyst-tiptap-editor .catalyst-code-block .token.deleted,
+    .adf-light-renderer .catalyst-code-block .token.property,
+    .adf-light-renderer .catalyst-code-block .token.tag,
+    .adf-light-renderer .catalyst-code-block .token.constant,
+    .adf-light-renderer .catalyst-code-block .token.symbol,
+    .adf-light-renderer .catalyst-code-block .token.deleted {
+      color: #AE2A19;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.boolean,
+    .catalyst-tiptap-editor .catalyst-code-block .token.number,
+    .adf-light-renderer .catalyst-code-block .token.boolean,
+    .adf-light-renderer .catalyst-code-block .token.number {
+      color: #974F0C;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.selector,
+    .catalyst-tiptap-editor .catalyst-code-block .token.attr-name,
+    .catalyst-tiptap-editor .catalyst-code-block .token.string,
+    .catalyst-tiptap-editor .catalyst-code-block .token.char,
+    .catalyst-tiptap-editor .catalyst-code-block .token.builtin,
+    .catalyst-tiptap-editor .catalyst-code-block .token.inserted,
+    .adf-light-renderer .catalyst-code-block .token.selector,
+    .adf-light-renderer .catalyst-code-block .token.attr-name,
+    .adf-light-renderer .catalyst-code-block .token.string,
+    .adf-light-renderer .catalyst-code-block .token.char,
+    .adf-light-renderer .catalyst-code-block .token.builtin,
+    .adf-light-renderer .catalyst-code-block .token.inserted {
+      color: #216E4E;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.operator,
+    .catalyst-tiptap-editor .catalyst-code-block .token.entity,
+    .catalyst-tiptap-editor .catalyst-code-block .token.url,
+    .catalyst-tiptap-editor .catalyst-code-block .language-css .token.string,
+    .catalyst-tiptap-editor .catalyst-code-block .style .token.string,
+    .adf-light-renderer .catalyst-code-block .token.operator,
+    .adf-light-renderer .catalyst-code-block .token.entity,
+    .adf-light-renderer .catalyst-code-block .token.url {
+      color: #5E4DB2;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.atrule,
+    .catalyst-tiptap-editor .catalyst-code-block .token.attr-value,
+    .catalyst-tiptap-editor .catalyst-code-block .token.keyword,
+    .adf-light-renderer .catalyst-code-block .token.atrule,
+    .adf-light-renderer .catalyst-code-block .token.attr-value,
+    .adf-light-renderer .catalyst-code-block .token.keyword {
+      color: #0055CC;
+      font-weight: 500;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.function,
+    .catalyst-tiptap-editor .catalyst-code-block .token.class-name,
+    .adf-light-renderer .catalyst-code-block .token.function,
+    .adf-light-renderer .catalyst-code-block .token.class-name {
+      color: #5E4DB2;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.regex,
+    .catalyst-tiptap-editor .catalyst-code-block .token.important,
+    .catalyst-tiptap-editor .catalyst-code-block .token.variable,
+    .adf-light-renderer .catalyst-code-block .token.regex,
+    .adf-light-renderer .catalyst-code-block .token.important,
+    .adf-light-renderer .catalyst-code-block .token.variable {
+      color: #B65C02;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.important,
+    .catalyst-tiptap-editor .catalyst-code-block .token.bold,
+    .adf-light-renderer .catalyst-code-block .token.important,
+    .adf-light-renderer .catalyst-code-block .token.bold {
+      font-weight: 600;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.italic,
+    .adf-light-renderer .catalyst-code-block .token.italic {
+      font-style: italic;
+    }
+
+    /* Wrap toggle — when the toolbar wrap icon is ON, the wrapper sets
+       data-wrapped="true" and we soft-wrap both the <pre> and <code>
+       so long lines break at the right edge instead of scrolling
+       horizontally. Default ('false') keeps the original
+       overflow-x: auto behaviour. */
+    .catalyst-tiptap-editor .catalyst-code-block[data-wrapped="true"] .catalyst-code-block-pre {
+      overflow-x: hidden !important;
+      white-space: pre-wrap !important;
+      word-break: break-word !important;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block[data-wrapped="true"] .catalyst-code-block-pre code {
+      white-space: pre-wrap !important;
+      word-break: break-word !important;
     }
     .catalyst-tiptap-editor code {
       background: var(--ds-surface-sunken, #F7F8F9);
@@ -86,6 +280,13 @@ export function injectEditorStyles(): void {
       max-width: 95%;
       border-radius: 4px;
       display: block;
+      /* Vertical breathing room so stacked images don't touch AND
+         the resize handles have a clear gap above / below each img
+         (handles are positioned just outside the bottom-right corner;
+         without margin the handle overlaps the next block). margin-block
+         lets the explicit margin-left/right: auto from the alignment
+         rules below still win for horizontal centring. */
+      margin-block: 8px;
     }
     /* Image alignment — driven by data-alignment attr set by CatalystImage.
        'wide' / 'full-width' are read but visually identical to center for v1. */
@@ -109,11 +310,19 @@ export function injectEditorStyles(): void {
       float: right;
       margin: 0 0 8px 16px;
     }
-    /* When the user has explicitly resized the image (width attr present),
-       it should win over the default max-width:100% so the user can
-       intentionally make it wider than the natural fit. */
+    /* Width attribute handling.
+       Both user-resized images AND Jira-synced images carry a 'width'
+       attribute — for the latter, Jira stores the original media pixel
+       width on media.attrs.width and adfToTiptap copies it onto the
+       <img>. If we set max-width: none here, those Jira-native widths
+       (often 1200+ px) push the image edge-to-edge with no room for
+       the resize handle on the right side (PI bug 2026-05-31). Cap at
+       95% so the width attr behaves as a TARGET (the smaller of the
+       attr width and 95% of the editor body) — matches Story which
+       has historically had this padding because Story's images were
+       authored in our editor without a Jira-width prefill. */
     .catalyst-tiptap-editor img[width] {
-      max-width: none;
+      max-width: 95%;
     }
     .catalyst-tiptap-editor img[data-alignment="wide"],
     .catalyst-tiptap-editor img[data-alignment="full-width"] {
@@ -289,6 +498,32 @@ export function injectEditorStyles(): void {
       font-weight: 600;
     }
 
+    /* Table cell selection (from TableSelection PM plugin).
+       Decorations add the class on cells in the selected column/row.
+       Background goes light blue, the cell's existing 1px border-color
+       is swapped from gray to blue — no extra outline, no overlay,
+       no doubled lines. !important ensures it beats the default
+       table-cell border rule. */
+    /* Use OUTLINE (with negative offset so it overlays the cell's
+       existing 1px gray border) — outlines don't participate in
+       border-collapse so all 4 sides of the highlight always draw,
+       even where the gray neighbour border would otherwise win the
+       collapse resolution. */
+    .catalyst-tiptap-editor table .catalyst-cell-selected {
+      background: rgba(135, 184, 255, 0.18) !important;
+      outline: 1px solid #85B8FF !important;
+      outline-offset: -1px !important;
+    }
+    /* Danger / delete-preview highlight — paints cells red. Declared
+       AFTER .catalyst-cell-selected so when both classes apply (the
+       column is blue-selected AND the user is hovering "Delete
+       column"), red wins by source order. */
+    .catalyst-tiptap-editor table .catalyst-cell-danger {
+      background: rgba(255, 86, 48, 0.18) !important;
+      outline: 1px solid #F15B50 !important;
+      outline-offset: -1px !important;
+    }
+
     /* Numbered Rows — rendered as a ::before INSIDE the first cell of
        each row. Because it's part of the cell, the browser's table
        layout aligns it perfectly with the row — no JS measurement, no
@@ -356,8 +591,12 @@ export function injectEditorStyles(): void {
       margin-inline-start: auto !important;
       margin-inline-end: 0 !important;
     }
+    /* Multi-cell selection (PM's CellSelection class). Matches the
+       grip-selection / chevron-hover blue exactly. */
     .catalyst-tiptap-editor table .selectedCell {
-      background: var(--ds-background-selected, #E9F2FE);
+      background: rgba(135, 184, 255, 0.18) !important;
+      outline: 1px solid #85B8FF !important;
+      outline-offset: -1px !important;
     }
     .catalyst-tiptap-editor table .column-resize-handle {
       position: absolute;

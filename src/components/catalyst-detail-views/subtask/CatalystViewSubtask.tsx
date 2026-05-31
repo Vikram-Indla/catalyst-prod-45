@@ -9,7 +9,7 @@ import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workIte
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
-  CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
+  CatalystTitleEditor, CatalystQuickActions, Description, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystStatusPill,
 } from '../shared/sections';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
@@ -92,7 +92,7 @@ export default function CatalystViewSubtask({
           Sub-task has no extraRows; Parent is shown in the parent-banner
           above + CatalystViewBase header. Priority is hidden on Sub-task
           per Jira parity (BAU-5569 Lane A re-probe). */}
-      <CatalystDescriptionSection issue={issue ?? null} />
+      <Description issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 
       {issue?.issue_key && (

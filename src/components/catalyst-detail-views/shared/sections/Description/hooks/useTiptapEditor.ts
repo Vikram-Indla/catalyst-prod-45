@@ -29,9 +29,142 @@ import { TaskItem } from '@tiptap/extension-task-item';
 import {
   Table as BaseTable,
   TableRow,
-  TableHeader,
-  TableCell,
+  TableHeader as BaseTableHeader,
+  TableCell as BaseTableCell,
 } from '@tiptap/extension-table';
+import { CodeBlock as BaseCodeBlock } from '@tiptap/extension-code-block';
+
+/**
+ * CodeBlock with a built-in line-number gutter — same UX as a code
+ * editor. The NodeView wraps PM's <code> contentDOM with a sibling
+ * gutter <div> (contentEditable=false so PM ignores it) and rewrites
+ * the gutter's contents on every transaction that touches the node.
+ *
+ * No borders — just a darker gray strip on the left for the gutter,
+ * the existing sunken background on the right for the code area.
+ */
+const CodeBlockWithGutter = BaseCodeBlock.extend({
+  /**
+   * Extra attributes beyond StarterKit's `language`:
+   *   - `wrapped` — soft-wrap toggle from the CodeBlockToolbar. Persists
+   *     to ADF as a non-Jira attribute (Jira ignores unknown attrs on
+   *     read-back) so the wrap preference survives save / reload.
+   */
+  addAttributes() {
+    const parent = this.parent?.() ?? {};
+    return {
+      ...parent,
+      wrapped: {
+        default: false,
+        parseHTML: (el) =>
+          (el as HTMLElement).getAttribute('data-wrapped') === 'true',
+        renderHTML: (attrs: { wrapped?: boolean }) =>
+          attrs.wrapped ? { 'data-wrapped': 'true' } : {},
+      },
+    };
+  },
+
+  addNodeView() {
+    return ({ node }) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'catalyst-code-block';
+
+      const gutter = document.createElement('div');
+      gutter.className = 'catalyst-code-block-gutter';
+      gutter.contentEditable = 'false';
+      wrapper.appendChild(gutter);
+
+      const pre = document.createElement('pre');
+      pre.className = 'catalyst-code-block-pre';
+      const code = document.createElement('code');
+      pre.appendChild(code);
+      wrapper.appendChild(pre);
+
+      const renderGutter = (text: string) => {
+        // Always show at least one number even for an empty block.
+        const lineCount = Math.max(1, text.split('\n').length);
+        const frag = document.createDocumentFragment();
+        for (let i = 1; i <= lineCount; i++) {
+          const ln = document.createElement('span');
+          ln.className = 'catalyst-code-block-ln';
+          ln.textContent = String(i);
+          frag.appendChild(ln);
+        }
+        gutter.replaceChildren(frag);
+      };
+
+      const applyAttrs = (n: {
+        attrs: { language?: string | null; wrapped?: boolean };
+      }) => {
+        const wrapped = !!n.attrs.wrapped;
+        wrapper.setAttribute('data-wrapped', wrapped ? 'true' : 'false');
+        const lang = n.attrs.language ?? '';
+        if (lang) wrapper.setAttribute('data-language', lang);
+        else wrapper.removeAttribute('data-language');
+      };
+
+      renderGutter(node.textContent);
+      applyAttrs(node);
+
+      return {
+        dom: wrapper,
+        contentDOM: code,
+        update(updatedNode) {
+          if (updatedNode.type.name !== node.type.name) return false;
+          renderGutter(updatedNode.textContent);
+          applyAttrs(updatedNode);
+          return true;
+        },
+        ignoreMutation(mutation) {
+          // Anything on or under the gutter is OUR DOM — PM never
+          // touches it, so PM should ignore the mutation.
+          if (
+            mutation.target === gutter ||
+            gutter.contains(mutation.target as Node)
+          ) {
+            return true;
+          }
+          // Our own data-* attribute writes on the wrapper come from
+          // applyAttrs and must not trigger PM reconciliation.
+          if (
+            mutation.type === 'attributes' &&
+            mutation.target === wrapper &&
+            (mutation.attributeName === 'data-wrapped' ||
+              mutation.attributeName === 'data-language')
+          ) {
+            return true;
+          }
+          return false;
+        },
+      };
+    };
+  },
+});
+
+// TableCell + TableHeader extended with a `background` attribute the
+// column/row color picker writes. Rendered as inline
+// `background-color` with !important so it beats both the default
+// cell rule and the sunken-bg rule for <th>.
+const CELL_BG_ATTR = {
+  background: {
+    default: null as string | null,
+    parseHTML: (el: HTMLElement) => el.style.backgroundColor || null,
+    renderHTML: (attrs: { background?: string | null }) =>
+      attrs.background
+        ? { style: `background-color: ${attrs.background} !important` }
+        : {},
+  },
+};
+const TableCell = BaseTableCell.extend({
+  addAttributes() {
+    return { ...(this.parent?.() ?? {}), ...CELL_BG_ATTR };
+  },
+});
+const TableHeader = BaseTableHeader.extend({
+  addAttributes() {
+    return { ...(this.parent?.() ?? {}), ...CELL_BG_ATTR };
+  },
+});
 
 // Table extended with a numeric `width` attribute AND a custom
 // NodeView that owns the table DOM. Without the NodeView, the
@@ -39,6 +172,14 @@ import {
 // on every attribute change and strips our inline width. By owning
 // the DOM we apply `width: Npx !important` directly on every update,
 // so the user's resize survives every PM transaction and round-trip.
+// Minimal PM-node shape we walk for column widths — keeps the
+// NodeView free of a direct @tiptap/pm/model dependency.
+interface PMNodeShape {
+  attrs: Record<string, unknown>;
+  firstChild: PMNodeShape | null;
+  forEach: (fn: (child: PMNodeShape) => void) => void;
+}
+
 type TableViewAttrs = {
   width?: number | null;
   headerRow?: boolean;
@@ -115,11 +256,51 @@ const Table = BaseTable.extend({
         if (k === 'style' || v == null) return;
         table.setAttribute(k, String(v));
       });
+      // <colgroup> + <col> per column — the column-resize plugin
+       // updates cell `colwidth` attrs, and we mirror those into the
+       // <col> widths here so the visual column actually resizes when
+       // the user drags the boundary. (prosemirror-tables' default
+       // TableView does this; since we replace it with our own
+       // NodeView, we have to do it ourselves.)
+      const colgroup = document.createElement('colgroup');
+      table.appendChild(colgroup);
       const tbody = document.createElement('tbody');
       table.appendChild(tbody);
       wrapper.appendChild(table);
 
-      const applyAttrs = (n: { attrs: TableViewAttrs }) => {
+      const updateColumns = (n: { firstChild: PMNodeShape | null }) => {
+        const firstRow = n.firstChild as PMNodeShape | null;
+        if (!firstRow) {
+          while (colgroup.firstChild)
+            colgroup.removeChild(colgroup.firstChild);
+          return;
+        }
+        const widths: (number | null)[] = [];
+        firstRow.forEach((cell: PMNodeShape) => {
+          const colspan = (cell.attrs.colspan as number) || 1;
+          const colwidth = cell.attrs.colwidth as number[] | null;
+          for (let i = 0; i < colspan; i++) {
+            widths.push(colwidth?.[i] ?? null);
+          }
+        });
+        // Reconcile <col> elements with the desired widths.
+        while (colgroup.children.length > widths.length) {
+          colgroup.removeChild(colgroup.lastChild!);
+        }
+        while (colgroup.children.length < widths.length) {
+          colgroup.appendChild(document.createElement('col'));
+        }
+        widths.forEach((w, i) => {
+          const col = colgroup.children[i] as HTMLElement;
+          col.style.width = w ? `${w}px` : '';
+        });
+      };
+
+      const applyAttrs = (n: {
+        attrs: TableViewAttrs;
+        firstChild: PMNodeShape | null;
+      }) => {
+        updateColumns(n);
         const a = n.attrs;
         if (typeof a.width === 'number' && a.width > 0) {
           table.style.setProperty('width', `${a.width}px`, 'important');
@@ -148,10 +329,41 @@ const Table = BaseTable.extend({
           return true;
         },
         ignoreMutation(mutation) {
-          return (
-            mutation.type === 'attributes' &&
-            (mutation.target === table || mutation.target === wrapper)
-          );
+          if (mutation.type !== 'attributes') return false;
+          if (mutation.target === table || mutation.target === wrapper) {
+            return true;
+          }
+          // TableInteractions writes inline styles + the
+          // data-catalyst-cell-selected attr on <td>/<th> elements to
+          // drive the column/row highlight. PM would otherwise revert
+          // those marks on the next render.
+          if (mutation.attributeName === 'data-catalyst-cell-selected') {
+            return true;
+          }
+          const tgt = mutation.target as HTMLElement;
+          if (
+            mutation.attributeName === 'style' &&
+            (tgt.tagName === 'TD' || tgt.tagName === 'TH') &&
+            table.contains(tgt)
+          ) {
+            return true;
+          }
+          // ColumnResizeHandles writes inline width on <col> (and
+          // touches <colgroup>) during live column drag. Without this
+          // guard, every mousemove that mutates <col>.style.width is
+          // observed by PM's MutationObserver and triggers a
+          // re-render that runs updateColumns(), which RESETS col
+          // widths from the pre-drag cell.colwidth. The visible
+          // symptom is "only resizes once" + "shifts from both sides"
+          // — PM is fighting the drag tick-by-tick.
+          if (
+            mutation.attributeName === 'style' &&
+            (tgt.tagName === 'COL' || tgt.tagName === 'COLGROUP') &&
+            table.contains(tgt)
+          ) {
+            return true;
+          }
+          return false;
         },
       };
     };
@@ -166,6 +378,9 @@ import { DateNode } from '../extensions/DateNode';
 import { InlineCard, BlockCard } from '../extensions/SmartCard';
 import { UnsupportedBlock, UnsupportedInline } from '../extensions/UnsupportedNode';
 import { SelectionDragCursor } from '../extensions/SelectionDragCursor';
+import { TableSelection } from '../extensions/TableSelection';
+import { TableShortcuts } from '../extensions/TableShortcuts';
+import { CodeBlockHighlight } from '../extensions/CodeBlockHighlight';
 import type { AdfDoc, TiptapDoc } from '../utils/adfToTiptap';
 import { adfToTiptap } from '../utils/adfToTiptap';
 
@@ -208,7 +423,17 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
           bulletList: { HTMLAttributes: { dir: 'auto' } },
           orderedList: { HTMLAttributes: { dir: 'auto' } },
           listItem: { HTMLAttributes: { dir: 'auto' } },
-          codeBlock: { HTMLAttributes: { dir: 'auto' } },
+          // Disable StarterKit's built-in code block — we register
+          // CodeBlockWithGutter below which adds line numbers.
+          codeBlock: false,
+        }),
+        CodeBlockWithGutter.configure({
+          HTMLAttributes: { dir: 'auto' },
+          // Never auto-exit on N empty lines. The block stays as
+          // long as the user types in it, no matter how many empty
+          // lines they add — they exit explicitly (Shift+Enter out,
+          // arrow-down at the end, or click outside).
+          exitOnTripleEnter: false,
         }),
         Underline,
         Subscript,
@@ -233,10 +458,10 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
         // resizable:true enables column-resize handles; the default
         // header-row layout mirrors Jira's "first row is header" behavior.
         Table.configure({
-          // Per-column resize disabled — it runs updateColumnsOnResize
-          // on every transaction and forcibly resets table.style.width,
-          // fighting our whole-table width attribute. Whole-table
-          // resize via TableResizeBar is the supported affordance.
+          // prosemirror-tables' built-in column-resize plugin is
+          // RELEASE-ONLY (commits the width on mouseup). For live /
+          // real-time column resize like the TableResizeBar, we use
+          // our own implementation in TableInteractions instead.
           resizable: false,
           allowTableNodeSelection: true,
           HTMLAttributes: { dir: 'auto' },
@@ -262,6 +487,9 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
         SmallText,
         Mention,
         SelectionDragCursor,
+        TableSelection,
+        TableShortcuts,
+        CodeBlockHighlight,
       ],
       content: adfToTiptap(options.initialAdf),
       editable: options.editable ?? true,

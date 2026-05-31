@@ -8,7 +8,7 @@ import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
-  CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
+  CatalystTitleEditor, CatalystQuickActions, Description, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails, CatalystStatusPill,
 } from '../shared/sections';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
@@ -71,7 +71,7 @@ export default function CatalystViewFeature({
       <CatalystQuickActions />
       {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
       <CatalystKeyDetails issue={issue ?? null} itemId={itemId} itemType="feature" projectKey={projectKey} onOpenItem={onOpenItem} />
-      <CatalystDescriptionSection issue={issue ?? null} />
+      <Description issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 
       {/* FEATURE: Child work items (canonical SubtasksPanel) */}

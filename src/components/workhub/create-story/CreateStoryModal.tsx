@@ -31,7 +31,6 @@ import {
   useMemo,
   useCallback,
   useRef,
-  Suspense,
   type ReactNode,
 } from 'react';
 // @atlaskit/modal-dialog uses @atlaskit/portal which renders empty in this
@@ -48,7 +47,8 @@ import {
 import { Field, ErrorMessage, HelperMessage } from '@atlaskit/form';
 import Select, { AsyncSelect, CreatableSelect } from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
-import EpicDescriptionEditor from '@/components/shared/rich-text/atlaskit/EpicDescriptionEditor';
+import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
+import { tiptapToAdf } from '@/components/catalyst-detail-views/shared/sections/Description/utils/tiptapToAdf';
 import { Checkbox } from '@atlaskit/checkbox';
 import Avatar from '@atlaskit/avatar';
 import Button, { IconButton } from '@atlaskit/button/new';
@@ -894,26 +894,26 @@ export function CreateStoryModal({
                   cs-adf-desc-wrapper class — modal footer owns submission. */}
               <Field name="description" label="Description">
                 {() => (
-                  <div className="cs-adf-desc-wrapper" style={{ border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, borderRadius: 3 }}>
-                    <Suspense fallback={<div style={{ padding: '8px 12px', color: token('color.text.subtlest', '#97A0AF'), fontSize: 14 }}>Loading editor…</div>}>
-                      <EpicDescriptionEditor
-                        key={editorKey}
-                        appearance="comment"
-                        initialContent={null}
-                        workItemId="new"
-                        placeholder="Add a description..."
-                        onChange={(adfJson) => {
-                          try {
-                            const adf = JSON.parse(adfJson);
-                            updateField('descriptionAdf', adf);
-                          } catch {
-                            updateField('descriptionAdf', null);
-                          }
-                        }}
-                        onSave={() => {}}
-                        onCancel={() => {}}
-                      />
-                    </Suspense>
+                  <div className="cs-adf-desc-wrapper">
+                    {/* Canonical Tiptap surface (RichTextEditor) used
+                        headless: the modal owns the Create/Cancel
+                        footer, so we suppress the editor's built-in
+                        Save/Cancel row via hideActionButtons and
+                        capture live ADF through onChange + tiptapToAdf. */}
+                    <RichTextEditor
+                      key={editorKey}
+                      initialAdf={null}
+                      hideActionButtons
+                      onSave={() => {}}
+                      onCancel={() => {}}
+                      onChange={(tiptapJson) => {
+                        try {
+                          updateField('descriptionAdf', tiptapToAdf(tiptapJson));
+                        } catch {
+                          updateField('descriptionAdf', null);
+                        }
+                      }}
+                    />
                   </div>
                 )}
               </Field>

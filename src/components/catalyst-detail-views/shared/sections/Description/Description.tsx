@@ -9,7 +9,7 @@
  * read-mode display + click-to-edit affordance.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { useAuth } from '@/hooks/useAuth';
@@ -51,6 +51,56 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
     const raw = (issue?.description_adf ?? null) as unknown;
     return (raw as AdfDoc) ?? null;
   }, [issue?.description_adf]);
+
+  // Resolve Jira-synced media URLs for edit mode. Jira-uploaded
+  // images store only `media.attrs.id` (no url) — read mode resolves
+  // this via MediaProvidersShell in EpicDescriptionRenderer, but our
+  // Tiptap `adfToTiptap` reads `media.attrs.url` directly so without
+  // pre-resolution every image shows up broken in edit mode. We mirror
+  // the lookup the read renderer uses (atlaskitMediaOverrides.tsx
+  // line 384–422) so the two paths return identical URLs.
+  const { data: attachments } = useQuery({
+    queryKey: ['ph-issue-attachments-edit', issue?.issue_key],
+    enabled: !!issue?.issue_key,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issue_attachments')
+        .select(
+          'jira_attachment_id, filename, mime_type, content_url, thumbnail_url, local_public_url',
+        )
+        .eq('issue_key', issue!.issue_key!);
+      return data ?? [];
+    },
+  });
+
+  const mediaUrlMap = useMemo(() => {
+    const map = new Map<string, string>();
+    const supabaseUrl =
+      (import.meta as unknown as { env?: { VITE_SUPABASE_URL?: string } }).env
+        ?.VITE_SUPABASE_URL || '';
+    for (const att of attachments ?? []) {
+      if (!att.mime_type?.startsWith('image/')) continue;
+      let url = '';
+      if (att.local_public_url) {
+        url = att.local_public_url;
+      } else if (att.jira_attachment_id && supabaseUrl) {
+        url = `${supabaseUrl}/functions/v1/jira-attachment-proxy?id=${att.jira_attachment_id}`;
+      } else {
+        url = att.content_url || att.thumbnail_url || '';
+      }
+      if (url) {
+        if (att.jira_attachment_id) map.set(att.jira_attachment_id, url);
+        if (att.filename) map.set(att.filename, url);
+      }
+    }
+    return map;
+  }, [attachments]);
+
+  const enrichedAdf: AdfDoc | null = useMemo(() => {
+    if (!initialAdf) return initialAdf;
+    if (mediaUrlMap.size === 0) return initialAdf;
+    return injectMediaUrls(initialAdf, mediaUrlMap);
+  }, [initialAdf, mediaUrlMap]);
 
   const isEmpty = isAdfEmpty(initialAdf as unknown);
 
@@ -222,7 +272,7 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
       {(editing || catyActiveForThisIssue) && issue ? (
         <div style={{ padding: '0 16px' }}>
           <RichTextEditor
-            initialAdf={initialAdf}
+            initialAdf={enrichedAdf}
             onSave={(adfJson) => saveMutation.mutate(adfJson)}
             onCancel={() => setEditing(false)}
             isSaving={saveMutation.isPending}
@@ -290,4 +340,60 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
       )}
     </div>
   );
+}
+
+/**
+ * Walk an ADF doc and inject `url` into every `media` node that has an
+ * `id` (Jira-synced upload) but no `url` (so adfToTiptap doesn't render
+ * a broken image in the editor). The map keys are `jira_attachment_id`
+ * AND `filename` — Jira's media node carries either one and we match
+ * by whichever is present, same priority as the read renderer.
+ *
+ * Returns a NEW doc tree (no in-place mutation) so React's useMemo
+ * dependency tracking still works. If no media nodes need injecting
+ * we return the input unchanged to keep referential equality and skip
+ * the editor remount cost.
+ */
+function injectMediaUrls(adf: AdfDoc, urlMap: Map<string, string>): AdfDoc {
+  let mutated = false;
+
+  const walk = (node: unknown): unknown => {
+    if (!node || typeof node !== 'object') return node;
+    const n = node as {
+      type?: string;
+      attrs?: Record<string, unknown>;
+      content?: unknown[];
+    };
+
+    if (n.type === 'media') {
+      const attrs = (n.attrs ?? {}) as {
+        id?: string;
+        url?: string;
+        alt?: string;
+      };
+      const hasUrl = typeof attrs.url === 'string' && attrs.url.length > 0;
+      if (!hasUrl) {
+        const resolved =
+          (attrs.id && urlMap.get(attrs.id)) ||
+          (attrs.alt && urlMap.get(attrs.alt));
+        if (resolved) {
+          mutated = true;
+          return { ...n, attrs: { ...attrs, url: resolved } };
+        }
+      }
+      return n;
+    }
+
+    if (Array.isArray(n.content)) {
+      const nextContent = n.content.map(walk);
+      const childChanged = nextContent.some((c, i) => c !== n.content![i]);
+      if (childChanged) {
+        return { ...n, content: nextContent };
+      }
+    }
+    return n;
+  };
+
+  const out = walk(adf) as AdfDoc;
+  return mutated ? out : adf;
 }

@@ -31,6 +31,9 @@ import AKToggle from '@atlaskit/toggle';
 // are now plain textareas; the canonical Atlaskit EpicDescriptionEditor
 // is the single rich-text surface across Catalyst.
 import { RichTextCommentEditor } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/RichTextCommentEditor';
+import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
+import { DisplayView } from '@/components/catalyst-detail-views/shared/sections/Description/_components/DisplayView/DisplayView';
+import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
 import { StatusLozenge } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 import { UserSelect } from './UserSelect';
 import { BRAssigneePicker } from './BRAssigneePicker';
@@ -591,46 +594,62 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 />
               </div>
 
-              {/* 2. DESCRIPTION — Rich text with view/edit toggle */}
+              {/* 2. DESCRIPTION — canonical Tiptap surface (RichTextEditor
+                  for edit + DisplayView for read). description is stored
+                  as a JSON-stringified ADF doc; legacy plain-text values
+                  are wrapped in a single-paragraph ADF on read so the
+                  view never crashes on un-migrated rows. */}
               <div style={{ marginBottom: 24 }}>
                 <h2 style={{ fontSize: 14, fontWeight: 500, color: 'rgb(80, 82, 88)', lineHeight: '18.67px', margin: '0 0 4px', fontFamily: 'var(--cp-font-body)' }}>Description</h2>
-                {descEditMode ? (
-                  <BRTextareaEditor
-                    initialValue={formData.description || ''}
-                    placeholder="Add a description…"
-                    minHeight={150}
-                    onSave={(text) => {
-                      handleFieldChange('description', text);
-                      setDescEditMode(false);
-                    }}
-                    onCancel={() => setDescEditMode(false)}
-                  />
-                ) : (
-                  <div
-                    onClick={() => setDescEditMode(true)}
-                    style={{
-                      borderRadius: 3, padding: '8px 6px', minHeight: 32, cursor: 'text',
-                      outline: 'none', transition: 'background-color 0.2s',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#F8F8F8')}
-                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-                  >
-                    {formData.description && formData.description.trim() ? (
-                      <div
-                        dangerouslySetInnerHTML={{ __html: formData.description }}
-                        style={{
-                          fontSize: 14, fontWeight: 400, lineHeight: '24px', color: 'rgb(41, 42, 46)',
-                          fontFamily: 'var(--cp-font-body)',
-                        }}
-                        className="jira-desc-view"
-                      />
-                    ) : (
-                      <span style={{ fontSize: 14, color: 'rgb(140, 143, 151)', fontFamily: 'var(--cp-font-body)', padding: '4px 0' }}>
-                        Add a description…
-                      </span>
-                    )}
-                  </div>
-                )}
+                {(() => {
+                  const raw = formData.description ?? '';
+                  const hasContent = raw.trim().length > 0;
+                  let parsedAdf: AdfDoc | null = null;
+                  if (hasContent) {
+                    try {
+                      const p = JSON.parse(raw);
+                      if (p && typeof p === 'object' && (p as { type?: string }).type === 'doc') {
+                        parsedAdf = p as AdfDoc;
+                      }
+                    } catch {
+                      /* not JSON — fall through to plain-text wrap */
+                    }
+                    if (!parsedAdf) {
+                      parsedAdf = {
+                        type: 'doc',
+                        content: [{ type: 'paragraph', content: [{ type: 'text', text: raw }] }],
+                      } as AdfDoc;
+                    }
+                  }
+                  return descEditMode ? (
+                    <RichTextEditor
+                      initialAdf={parsedAdf}
+                      onSave={(adfJson) => {
+                        handleFieldChange('description', adfJson);
+                        setDescEditMode(false);
+                      }}
+                      onCancel={() => setDescEditMode(false)}
+                    />
+                  ) : (
+                    <div
+                      onClick={() => setDescEditMode(true)}
+                      style={{
+                        borderRadius: 3, padding: '8px 6px', minHeight: 32, cursor: 'text',
+                        outline: 'none', transition: 'background-color 0.2s',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#F8F8F8')}
+                      onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    >
+                      {hasContent ? (
+                        <DisplayView adf={parsedAdf} />
+                      ) : (
+                        <span style={{ fontSize: 14, color: 'rgb(140, 143, 151)', fontFamily: 'var(--cp-font-body)', padding: '4px 0' }}>
+                          Add a description…
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* 3. ACCEPTANCE CRITERIA */}

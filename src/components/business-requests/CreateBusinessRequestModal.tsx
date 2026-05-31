@@ -43,8 +43,6 @@ import {
   useEffect,
   useCallback,
   useRef,
-  Suspense,
-  lazy,
   type ChangeEvent,
   type ReactNode,
 } from 'react';
@@ -87,10 +85,10 @@ import {
 // Canonical Catalyst icon — backed by useIconOverrides (admin overrides via /admin/icons).
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 
-// ── ADF editor — lazy, identical to CreateStoryModal ─────────────────────────
-const EpicDescriptionEditor = lazy(
-  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
-);
+// ── ADF editor — canonical Tiptap surface (RichTextEditor), headless
+// mode because the modal owns the Create / Cancel footer. ──────────
+import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
+import { tiptapToAdf } from '@/components/catalyst-detail-views/shared/sections/Description/utils/tiptapToAdf';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Option type (identical to CreateStoryModal)
@@ -230,7 +228,6 @@ const requiredHelperStyles = xcss({ font: 'font.body.small', color: 'color.text.
 const fieldGroupStyles = xcss({ display: 'flex', flexDirection: 'column', gap: 'space.300' });
 const dividerStyles = xcss({ borderBottomWidth: 'border.width', borderBottomStyle: 'solid', borderColor: 'color.border', marginBlock: 'space.100' });
 const editorWrapperStyles = xcss({ borderRadius: 'border.radius', borderWidth: 'border.width', borderStyle: 'solid', borderColor: 'color.border.input', minHeight: '160px', overflow: 'hidden' });
-const editorLoadingStyles = xcss({ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '160px' });
 const footerLeftStyles = xcss({ flex: '1' });
 const footerRightStyles = xcss({ display: 'flex', alignItems: 'center', gap: 'space.100' });
 const errorBannerStyles = xcss({ padding: 'space.150', borderRadius: 'border.radius', backgroundColor: 'color.background.danger', color: 'color.text.danger', font: 'font.body.small' });
@@ -881,21 +878,27 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
                 </p>
               </div>
 
-              {/* ── Description — @atlaskit/editor-core (EpicDescriptionEditor, lazy) ── */}
+              {/* ── Description — canonical RichTextEditor in headless
+                  mode (modal footer owns Create / Cancel). onChange
+                  captures TiptapDoc → tiptapToAdf → form state. ── */}
               <Field name="description" label="Description">
                 {() => (
                   <Box xcss={editorWrapperStyles}>
-                    <Suspense fallback={<Box xcss={editorLoadingStyles}><Spinner size="medium" /></Box>}>
-                      <EpicDescriptionEditor
-                        workItemId="__br_create__"
-                        initialContent={form.descriptionAdf ?? null}
-                        placeholder="Describe what this business request covers, why it is needed, and the current gap or pain point it addresses..."
-                        appearance="full-page"
-                        onSave={(adf: string) => { try { const p = JSON.parse(adf); set('descriptionAdf', p); set('description', adf); } catch { /* noop */ } }}
-                        onChange={(adf: string) => { try { const p = JSON.parse(adf); set('descriptionAdf', p); set('description', adf); } catch { /* noop */ } }}
-                        onCancel={() => undefined}
-                      />
-                    </Suspense>
+                    <RichTextEditor
+                      initialAdf={form.descriptionAdf ?? null}
+                      hideActionButtons
+                      onSave={() => {}}
+                      onCancel={() => {}}
+                      onChange={(tiptapJson) => {
+                        try {
+                          const adf = tiptapToAdf(tiptapJson);
+                          set('descriptionAdf', adf);
+                          set('description', JSON.stringify(adf));
+                        } catch {
+                          /* noop */
+                        }
+                      }}
+                    />
                   </Box>
                 )}
               </Field>
