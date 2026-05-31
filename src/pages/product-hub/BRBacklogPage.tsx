@@ -26,9 +26,11 @@ import {
   makePriorityCell,
   type LozengeAppearance,
 } from '@/components/shared/JiraTable';
+import Select from '@atlaskit/select';
 import { useBusinessRequests, useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import type { BusinessRequest } from '@/types/business-request';
+import type { RowGroup } from '@/components/shared/JiraTable/types';
 
 // ─── Status appearance map ────────────────────────────────────────────────────
 
@@ -208,6 +210,47 @@ function buildColumns(
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+// ─── Group By ─────────────────────────────────────────────────────────────────
+
+type GroupByField = 'none' | 'process_step' | 'request_type' | 'category' | 'urgency';
+
+const GROUP_BY_OPTIONS: { label: string; value: GroupByField }[] = [
+  { label: 'None',     value: 'none'         },
+  { label: 'Status',   value: 'process_step' },
+  { label: 'Type',     value: 'request_type' },
+  { label: 'Category', value: 'category'     },
+  { label: 'Priority', value: 'urgency'      },
+];
+
+function buildGroups(
+  requests: BusinessRequest[],
+  field: Exclude<GroupByField, 'none'>,
+): RowGroup<BusinessRequest>[] {
+  const buckets = new Map<string, BusinessRequest[]>();
+  for (const r of requests) {
+    const raw = (r[field as keyof BusinessRequest] as string | null) ?? '';
+    const key = raw || '(none)';
+    if (!buckets.has(key)) buckets.set(key, []);
+    buckets.get(key)!.push(r);
+  }
+
+  return Array.from(buckets.entries()).map(([key, rows]) => {
+    const label = key === '(none)'
+      ? 'No ' + GROUP_BY_OPTIONS.find((o) => o.value === field)?.label.toLowerCase()
+      : field === 'process_step'
+        ? formatStep(key)
+        : field === 'request_type'
+          ? TYPE_LABEL[key.toLowerCase()] ?? key
+          : key;
+
+    const labelNode = field === 'process_step' ? (
+      <Lozenge appearance={stepAppearance(key)}>{label}</Lozenge>
+    ) : undefined;
+
+    return { id: key, label, rows, labelNode };
+  });
+}
+
 // ─── Inline create defaults ───────────────────────────────────────────────────
 const INLINE_DEFAULTS = {
   platform:   'Other',
@@ -226,6 +269,12 @@ export default function BRBacklogPage() {
 
   const { data: requests = [], isLoading } = useBusinessRequests();
   const createMutation = useCreateBusinessRequest();
+  const [groupBy, setGroupBy] = useState<GroupByField>('none');
+
+  const groups = useMemo<RowGroup<BusinessRequest>[] | undefined>(() => {
+    if (groupBy === 'none') return undefined;
+    return buildGroups(requests, groupBy);
+  }, [requests, groupBy]);
 
   // Inline create state
   const [isCreating, setIsCreating] = useState(false);
