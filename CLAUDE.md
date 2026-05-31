@@ -14,10 +14,24 @@ Before implementing any animation, visual effect, or interaction pattern, ask: *
 
 ### Permanently banned enterprise UI anti-patterns:
 - ❌ **Spinning / rotating containers** — applying `transform: rotate()` or animation to a wrapper that contains text/buttons (the content rotates with the container)
-- ❌ **Rainbow / multi-colour gradient borders** on interactive controls (buttons, pills, lozenges)
-- ❌ **Conic-gradient animations** on buttons, pills, or any clickable surface
+- ❌ **Conic-gradient ANIMATIONS** on buttons, pills, or any clickable surface (the gradient itself or its container rotates/animates)
 - ❌ **Pulsing glows, neon outlines, particle effects, "AI aura" effects**
 - ❌ Any animation applied to a wrapper that contains text — text must never rotate, scale, or blur
+- ❌ Rainbow / multi-colour gradient borders on interactive controls (buttons, pills, lozenges) — **EXCEPT the AI CTA carve-out below**
+
+### Carve-out — Static rainbow border on AI CTAs ONLY (added 2026-05-31)
+
+A **static** (non-animated, non-rotating) conic-gradient rainbow border is permitted **exclusively** on AI-branded CTAs (Ask Caty / CATY surfaces) to signal AI processing state. Strict conditions:
+
+- ✅ ONLY on `AIIntelligenceButton` and equivalent AI-branded CTAs — NEVER on generic buttons
+- ✅ ONLY visible during `isLoading={true}` (processing state) — NEVER as an always-on decoration
+- ✅ MUST be `animation: none` — pure static gradient, no rotation, no shift, no shimmer
+- ✅ MUST be paired with `@atlaskit/spinner` inside the button + label "Thinking…" + `aria-busy={true}`
+- ✅ MUST use 2px padding-wrapper pattern (not negative-inset position:absolute)
+- ❌ NEVER replicate this pattern on non-AI buttons (regular submit, cancel, save, delete, etc.)
+- ❌ NEVER add rotation, animation, or any motion to the gradient
+
+Approved reference implementation: `src/components/ui/AIIntelligenceButton.tsx`
 
 ### Approved loading/processing indicators for buttons:
 - ✅ `@atlaskit/spinner` (`size="small"`, `appearance="invert"`) replacing the icon — the ADS canonical pattern

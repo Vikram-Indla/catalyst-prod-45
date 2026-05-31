@@ -3,11 +3,14 @@
  * (CATY) intelligence panel for the current context.
  *
  * Idle:    brand-blue pill with ⚡ icon + "Ask Caty" label
- * Loading: @atlaskit/spinner replaces the icon, label becomes "Loading…",
- *          button becomes non-interactive (aria-busy=true, disabled).
+ * Loading: STATIC rainbow border (no rotation, no animation) wraps the
+ *          button + Spinner replaces icon + label flips to "Thinking…".
+ *          Static rainbow border is the carve-out exception to the
+ *          CLAUDE.md ENTERPRISE UI GUARDRAIL, permitted ONLY on
+ *          AI-branded CTAs to signal AI processing.
  *
- * ENTERPRISE RULE: NO spinning/rotating containers, NO rainbow borders,
- * NO conic-gradient effects. This is the only approved loading pattern.
+ * ENTERPRISE RULE: NO spinning/rotating containers. The rainbow border
+ * is purely static — only the background gradient is rendered.
  */
 import React from 'react';
 import Tooltip from '@atlaskit/tooltip';
@@ -18,7 +21,7 @@ export interface AIIntelligenceButtonProps {
   /** Visible label. Defaults to "Ask Caty". */
   label?: string;
   isActive?: boolean;
-  /** Show spinner + "Loading…" while CATY is generating. */
+  /** Show static rainbow border + spinner + "Thinking…" while CATY processes. */
   isLoading?: boolean;
   onClick: () => void;
   className?: string;
@@ -26,6 +29,17 @@ export interface AIIntelligenceButtonProps {
   /** Hover/keyboard-focus tooltip. Defaults to "Ask Caty about this view". */
   tooltip?: string;
 }
+
+const STATIC_RAINBOW = `conic-gradient(
+  from 0deg,
+  #FF3CAC 0deg,
+  #784BA0 60deg,
+  #2B86C5 120deg,
+  #00C9FF 180deg,
+  #92FE9D 240deg,
+  #FFD700 300deg,
+  #FF3CAC 360deg
+)`;
 
 export function AIIntelligenceButton({
   label = 'Ask Caty',
@@ -38,12 +52,12 @@ export function AIIntelligenceButton({
 }: AIIntelligenceButtonProps) {
   const isInert = disabled || isLoading;
 
-  const button = (
+  const innerButton = (
     <button
       onClick={isInert ? undefined : onClick}
       className={className}
       disabled={isInert}
-      aria-label={isLoading ? 'Loading…' : tooltip}
+      aria-label={isLoading ? 'Caty is thinking…' : tooltip}
       aria-busy={isLoading || undefined}
       style={{
         background: isInert
@@ -79,9 +93,28 @@ export function AIIntelligenceButton({
       {isLoading
         ? <Spinner size="small" appearance="invert" />
         : <Zap size={13} strokeWidth={2.2} />}
-      {isLoading ? 'Loading…' : label}
+      {isLoading ? 'Thinking…' : label}
     </button>
   );
 
-  return tooltip ? <Tooltip content={isLoading ? 'Loading…' : tooltip}>{button}</Tooltip> : button;
+  // When loading: wrap in a 2px static rainbow padding-border.
+  // No rotation, no animation — pure colour treatment to signal AI processing.
+  const button = isLoading ? (
+    <div
+      style={{
+        display: 'inline-flex',
+        padding: 2,
+        borderRadius: 22,
+        background: STATIC_RAINBOW,
+      }}
+    >
+      {innerButton}
+    </div>
+  ) : (
+    innerButton
+  );
+
+  return tooltip
+    ? <Tooltip content={isLoading ? 'Caty is thinking…' : tooltip}>{button}</Tooltip>
+    : button;
 }
