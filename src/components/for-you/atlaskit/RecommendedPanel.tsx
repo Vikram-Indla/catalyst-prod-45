@@ -2179,7 +2179,7 @@ function renderCommentWithMentions(body: string): React.ReactNode {
         <React.Fragment key={`l${lineIdx}`}>
           {lineIdx > 0 ? '\n' : null}
           {preText ? renderInlineAtMentions(preText) : null}
-          <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)') }}>{`${ccLiteral}: `}</span>
+          <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', marginInlineEnd: 4 }}>CC</span>
           {nameTokens.map((tok, j) => {
             const normalized = tok.startsWith('@') ? tok : `@${tok}`;
             return (
@@ -2215,10 +2215,11 @@ function renderCommentWithMentions(body: string): React.ReactNode {
       {bodyLines.length > 0 ? '\n' : null}
       <span style={{
         color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
-        fontSize: 12,
-        fontWeight: 500,
-        marginInlineEnd: 2,
-      }}>cc: </span>
+        fontSize: 11,
+        fontWeight: 700,
+        letterSpacing: '0.05em',
+        marginInlineEnd: 4,
+      }}>CC</span>
       {mentionLabels.map((chip, i) => (
         <React.Fragment key={`tc-${i}`}>
           {i > 0 ? '  ' : null}
