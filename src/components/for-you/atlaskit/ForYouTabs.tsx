@@ -168,15 +168,16 @@ function TabButton({
       }}
     >
       {showSparkle && (
-        // Caty Focus sparkle — RAINBOW gradient fill on the icon glyph itself
-        // (via inline <linearGradient> def + url(#) reference). The Lucide
-        // Sparkles component sets currentColor on its strokes, which cannot
-        // carry a CSS gradient — must drop down to raw SVG to get the rainbow.
+        // Caty Focus sparkle — RAINBOW gradient fill on the icon glyph.
+        // gradientUnits="userSpaceOnUse" + explicit x1/x2 coords matching the
+        // path's horizontal extent (x=1 → x=13) so the 6 colour stops map
+        // PREDICTABLY across the star's full width — not corner-to-corner
+        // through the cyan mid-range like the default objectBoundingBox.
         // animation:none, AI-branded surface ONLY, per CLAUDE.md guardrail.
         // Palette matches STATIC_RAINBOW (Ask Caty CTAs) — single source of truth.
-        <svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true" style={{ flexShrink: 0 }}>
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style={{ flexShrink: 0 }}>
           <defs>
-            <linearGradient id="caty-focus-rainbow" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id="caty-focus-rainbow" gradientUnits="userSpaceOnUse" x1="1" y1="7" x2="13" y2="7">
               <stop offset="0%" stopColor="#FF3CAC" />
               <stop offset="20%" stopColor="#784BA0" />
               <stop offset="40%" stopColor="#2B86C5" />
@@ -185,7 +186,7 @@ function TabButton({
               <stop offset="100%" stopColor="#FFD700" />
             </linearGradient>
           </defs>
-          {/* 4-point sparkle — canonical Caty AI glyph */}
+          {/* 4-point sparkle — canonical Caty AI glyph, filled with horizontal rainbow */}
           <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" fill="url(#caty-focus-rainbow)" />
         </svg>
       )}
