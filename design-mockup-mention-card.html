@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Mention Card — Before vs After</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #F7F8F9;
+    padding: 32px 24px;
+    color: #292A2E;
+  }
+  h1 { font-size: 18px; font-weight: 600; margin-bottom: 24px; color: #172B4D; }
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    max-width: 1100px;
+  }
+  .col-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #6B778C;
+    margin-bottom: 12px;
+    padding-left: 2px;
+  }
+  .panel {
+    background: #fff;
+    border: 1px solid #DFE1E6;
+    border-radius: 8px;
+    padding: 16px;
+    min-width: 0;
+  }
+
+  /* ─── Shared atoms ─────────────────────────────────── */
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+    color: #fff;
+  }
+  .avatar-sm {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: #fff;
+  }
+  .emoji-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 24px;
+    padding: 0 6px;
+    border: 1px solid #DFE1E6;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    color: #44546F;
+  }
+  .emoji-btn.active {
+    border-color: #0052CC;
+    background: #E9F2FE;
+    color: #0052CC;
+  }
+  .emoji-btn .count { font-size: 12px; font-weight: 500; }
+
+  /* ─── BEFORE card ─────────────────────────────────── */
+  .before-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 4px;
+  }
+  .before-body { flex: 1; min-width: 0; }
+  .before-headline {
+    font-size: 14px;
+    line-height: 20px;
+    color: #292A2E;
+    margin-bottom: 2px;
+    word-break: break-word;
+  }
+  .before-headline strong { font-weight: 600; }
+  .before-issue-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    vertical-align: middle;
+    border: 1px solid rgba(11,18,14,0.14);
+    border-radius: 4px;
+    background: #fff;
+    padding: 0 4px;
+    flex-wrap: wrap;
+  }
+  .before-issue-link {
+    font-weight: 400;
+    color: #0052CC;
+    font-size: 14px;
+  }
+  .before-status-pill {
+    display: inline-block;
+    padding: 2px 4px;
+    background: #DDDEE1;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 653;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #292A2E;
+    white-space: nowrap;
+  }
+  .before-meta {
+    font-size: 12px;
+    color: #44546F;
+    margin-bottom: 6px;
+  }
+  .before-comment-body {
+    font-size: 14px;
+    line-height: 20px;
+    color: #44546F;
+    margin-bottom: 8px;
+    white-space: pre-wrap;
+  }
+  .before-mention-chip {
+    display: inline-block;
+    padding: 0 4px;
+    border-radius: 20px;
+    background: rgba(5,21,36,0.06);
+    color: #505258;
+    font-size: 14px;
+    line-height: 20px;
+    white-space: nowrap;
+  }
+  .before-cc-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6B778C;
+    margin-right: 2px;
+  }
+  .reactions { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+  .add-reaction-btn {
+    width: 24px; height: 24px;
+    border-radius: 4px;
+    border: 1px solid #DFE1E6;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #44546F;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .reply-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .reply-textarea {
+    flex: 1;
+    border: 1px solid #DFE1E6;
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 14px;
+    color: #6B778C;
+    background: #fff;
+    resize: none;
+    height: 32px;
+    font-family: inherit;
+  }
+  .ask-caty-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    color: #292A2E;
+    background: #fff;
+    /* Rainbow border via 2px padding wrapper */
+    background-clip: padding-box;
+    position: relative;
+    border: none;
+    margin-left: 36px;
+  }
+  .ask-caty-wrapper {
+    display: inline-block;
+    padding: 2px;
+    border-radius: 6px;
+    background: conic-gradient(#FF3CAC, #784BA0, #2B86C5, #00C9FF, #92FE9D, #FFD700, #FF3CAC);
+    margin-left: 36px;
+    margin-top: 2px;
+  }
+  .ask-caty-inner {
+    background: #fff;
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #292A2E;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+  }
+  .pencil-icon { font-size: 12px; }
+
+  /* ─── AFTER card ──────────────────────────────────── */
+  .after-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 4px;
+  }
+  .after-body { flex: 1; min-width: 0; }
+
+  /* Row 1: author line */
+  .after-author-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    line-height: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .after-author-name { font-weight: 600; color: #292A2E; }
+  .after-author-verb { color: #44546F; font-weight: 400; }
+
+  /* Issue reference chip — compact key + truncated title + status inside */
+  .after-issue-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid #DFE1E6;
+    border-radius: 4px;
+    background: #F7F8F9;
+    padding: 2px 6px;
+    max-width: 360px;
+    cursor: pointer;
+  }
+  .after-issue-key {
+    font-size: 12px;
+    font-weight: 600;
+    color: #0052CC;
+    white-space: nowrap;
+  }
+  .after-issue-title-text {
+    font-size: 12px;
+    font-weight: 400;
+    color: #0052CC;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+  }
+  .after-status-pill {
+    display: inline-block;
+    padding: 1px 5px;
+    background: #DDDEE1;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #292A2E;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Meta row */
+  .after-meta {
+    font-size: 11px;
+    color: #6B778C;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+  .after-meta-dot { color: #C1C7D0; }
+
+  /* Comment body with left accent */
+  .after-comment-block {
+    border-left: 3px solid #0052CC;
+    padding-left: 10px;
+    margin-bottom: 8px;
+  }
+  .after-comment-text {
+    font-size: 14px;
+    line-height: 20px;
+    color: #44546F;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-bottom: 6px;
+  }
+
+  /* Inline @mention chip — AFTER version */
+  .after-mention-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 6px 0 3px;
+    border-radius: 20px;
+    background: #E9F2FE;
+    color: #0052CC;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 20px;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid rgba(0,82,204,0.18);
+    transition: background 120ms;
+  }
+  .after-mention-chip:hover { background: #CCE0FF; }
+
+  /* CC row */
+  .after-cc-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+  .after-cc-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6B778C;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+
+  /* Footer zone */
+  .after-footer {
+    border-top: 1px solid #F1F2F4;
+    padding-top: 8px;
+    margin-top: 4px;
+  }
+  .after-reactions-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .after-reactions-left { display: flex; align-items: center; gap: 4px; }
+  .reply-ghost-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border: 1px solid #DFE1E6;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    color: #44546F;
+    cursor: pointer;
+  }
+  .reply-ghost-btn:hover { background: #F7F8F9; }
+
+  /* Composer collapsed */
+  .after-composer {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .after-composer-input {
+    flex: 1;
+    border: 1px solid #DFE1E6;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 13px;
+    color: #6B778C;
+    background: #FAFBFC;
+    font-family: inherit;
+    height: 32px;
+    outline: none;
+    resize: none;
+  }
+  .after-composer-input:focus { border-color: #388BFF; background: #fff; }
+
+  /* Bug icon */
+  .bug-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  /* Section divider in panel */
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6B778C;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #F1F2F4;
+  }
+
+  /* X button */
+  .dismiss-btn {
+    position: absolute;
+    top: 8px; right: 4px;
+    width: 22px; height: 22px;
+    border: none; background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: #6B778C; border-radius: 3px;
+    font-size: 14px;
+  }
+
+  /* Annotation callouts */
+  .annotation-box {
+    margin-top: 24px;
+    background: #FFFAE6;
+    border: 1px solid #F5CD47;
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: #172B4D;
+    line-height: 18px;
+  }
+  .annotation-box .ann-title {
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #8B6000;
+    margin-bottom: 6px;
+  }
+  .annotation-box ul { padding-left: 16px; }
+  .annotation-box li { margin-bottom: 4px; }
+
+  .ok-box {
+    margin-top: 16px;
+    background: #E3FCEF;
+    border: 1px solid #57D9A3;
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: #172B4D;
+    line-height: 18px;
+  }
+  .ok-box .ann-title {
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #006644;
+    margin-bottom: 6px;
+  }
+  .ok-box ul { padding-left: 16px; }
+  .ok-box li { margin-bottom: 4px; }
+
+  .after-mention-chip-cc {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 8px 1px 3px;
+    border-radius: 20px;
+    background: #F1F2F4;
+    color: #172B4D;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    border: 1px solid #DFE1E6;
+  }
+
+</style>
+</head>
+<body>
+
+<h1>Mention Card — Design Proposal</h1>
+
+<div class="columns">
+
+  <!-- ═══════════════════════════════════ BEFORE ═══════ -->
+  <div>
+    <div class="col-label">⚠ Current design</div>
+    <div class="panel" style="position:relative;">
+      <div class="section-title">Reply to mentions</div>
+
+      <div class="before-card">
+        <!-- Avatar -->
+        <div class="avatar" style="background:#5243AA;">DK</div>
+
+        <!-- Dismiss -->
+        <button class="dismiss-btn">✕</button>
+
+        <div class="before-body">
+          <!-- Headline: full long title runs the whole width -->
+          <div class="before-headline">
+            <strong>Divyam Kshatriya</strong>
+            <span style="font-weight:400;color:#44546F;"> mentioned you on </span>
+            <span class="before-issue-chip">
+              <span class="bug-icon">🐛</span>
+              <span class="before-issue-link">MWR-947: Logic Issue on showing Initiatives like the title of page industrial Initiatives and the content have all the Initiatives</span>
+              <span class="before-status-pill">REJECTED</span>
+            </span>
+          </div>
+
+          <!-- Meta -->
+          <div class="before-meta">MIM Website Revamp · MWR-947 · 1 week ago</div>
+
+          <!-- Comment body -->
+          <div class="before-comment-body">We can combine the initiatives in the next deployment since we are low on time
+<span class="before-mention-chip">@dalia abdullah</span>
+
+<span class="before-cc-label">cc: </span><span class="before-mention-chip">@vikram indla</span></div>
+
+          <!-- Reactions -->
+          <div class="reactions">
+            <button class="emoji-btn active">🔥 <span class="count">1</span></button>
+            <button class="emoji-btn">❤️</button>
+            <button class="emoji-btn">👏</button>
+            <button class="emoji-btn">👍</button>
+            <button class="emoji-btn">😊</button>
+            <button class="add-reaction-btn">☺</button>
+          </div>
+
+          <!-- Reply composer -->
+          <div class="reply-row">
+            <div class="avatar" style="background:#0052CC;width:28px;height:28px;font-size:11px;">VI</div>
+            <textarea class="reply-textarea" placeholder="Leave a reply"></textarea>
+          </div>
+
+          <!-- Ask Caty -->
+          <div class="ask-caty-wrapper">
+            <span class="ask-caty-inner">
+              <span class="pencil-icon">✏️</span>
+              Ask Caty - Suggest?
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Problem annotations -->
+      <div class="annotation-box">
+        <div class="ann-title">Problems in this design</div>
+        <ul>
+          <li><strong>Long title floods</strong> the headline row — wraps awkwardly, REJECTED badge stranded</li>
+          <li><strong>@mentions look identical to body text</strong> — no avatar, low contrast, hard to spot</li>
+          <li><strong>CC row</strong> has no visual weight — "cc:" is the same font as surrounding text</li>
+          <li><strong>Reactions + composer + Ask Caty</strong> are three separate zones with no grouping</li>
+          <li><strong>Meta line repeats the key</strong> already shown in the headline chip</li>
+          <li><strong>Comment body</strong> has no left-alignment cue — blends into meta text above it</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ AFTER ════════ -->
+  <div>
+    <div class="col-label">✅ Proposed design</div>
+    <div class="panel" style="position:relative;">
+      <div class="section-title">Reply to mentions</div>
+
+      <div class="after-card">
+        <!-- Avatar -->
+        <div class="avatar" style="background:#5243AA;">DK</div>
+
+        <!-- Dismiss -->
+        <button class="dismiss-btn">✕</button>
+
+        <div class="after-body">
+
+          <!-- Row 1: compact author + verb + issue chip inline -->
+          <div class="after-author-row">
+            <span class="after-author-name">Divyam Kshatriya</span>
+            <span class="after-author-verb">mentioned you on</span>
+            <!-- Compact issue chip: key + short title (truncated) + status -->
+            <span class="after-issue-chip">
+              <span class="bug-icon">🐛</span>
+              <span class="after-issue-key">MWR-947</span>
+              <span class="after-issue-title-text">Logic Issue on showing Initiatives like the title…</span>
+              <span class="after-status-pill">Rejected</span>
+            </span>
+          </div>
+
+          <!-- Row 2: slim meta — project + relative time (no repeated key) -->
+          <div class="after-meta">
+            <span>MIM Website Revamp</span>
+            <span class="after-meta-dot">·</span>
+            <span>1 week ago</span>
+          </div>
+
+          <!-- Row 3: Comment body with left accent bar -->
+          <div class="after-comment-block">
+            <div class="after-comment-text">We can combine the initiatives in the next deployment since we are low on time
+<span class="after-mention-chip">
+  <span class="avatar-sm" style="background:#00C9FF;">DA</span>
+  @dalia abdullah
+</span></div>
+
+            <!-- CC row — styled label + CC-flavour chips (neutral, not blue) -->
+            <div class="after-cc-row">
+              <span class="after-cc-label">CC</span>
+              <span class="after-mention-chip-cc">
+                <span class="avatar-sm" style="background:#FF6B4A;">VI</span>
+                @vikram indla
+              </span>
+            </div>
+          </div>
+
+          <!-- Footer: reactions + reply ghost, then collapsed composer -->
+          <div class="after-footer">
+
+            <!-- Reactions row with reply button right-aligned -->
+            <div class="after-reactions-row">
+              <div class="after-reactions-left">
+                <button class="emoji-btn active">🔥 <span class="count">1</span></button>
+                <button class="emoji-btn">❤️</button>
+                <button class="emoji-btn">👏</button>
+                <button class="emoji-btn">👍</button>
+                <button class="emoji-btn">😊</button>
+                <button class="add-reaction-btn">☺</button>
+              </div>
+              <button class="reply-ghost-btn">↩ Reply</button>
+            </div>
+
+            <!-- Composer + Ask Caty on same row -->
+            <div class="after-composer">
+              <div class="avatar" style="background:#0052CC;width:28px;height:28px;font-size:11px;flex-shrink:0;margin-top:2px;">VI</div>
+              <textarea class="after-composer-input" placeholder="Leave a reply…"></textarea>
+              <div class="ask-caty-wrapper" style="margin-left:0;margin-top:0;align-self:center;">
+                <span class="ask-caty-inner">
+                  <span class="pencil-icon">✏️</span>
+                  Ask Caty
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- What changed -->
+      <div class="ok-box">
+        <div class="ann-title">What changed and why</div>
+        <ul>
+          <li><strong>Issue chip</strong> — key bold, title truncated with ellipsis, status pill inside chip. Title no longer floods the row.</li>
+          <li><strong>@mention chips</strong> — blue background (#E9F2FE) + avatar initial + blue text. Immediately scannable in the body.</li>
+          <li><strong>CC chips</strong> — neutral style (grey, not blue) to distinguish CC from direct mention. Labeled "CC" in uppercase 11px.</li>
+          <li><strong>Comment body accent</strong> — 3px left border in brand blue visually groups the "what was said" block away from header metadata.</li>
+          <li><strong>Footer zone</strong> — border-top groups reactions + reply + composer. Reply ghost btn right-aligned for fast action.</li>
+          <li><strong>Ask Caty</strong> — moved inline with the composer (same row), shorter label. Removes the orphaned line below the textarea.</li>
+          <li><strong>Meta row</strong> — drops redundant MWR-947 key (already in chip). Keeps project name + relative time only.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
