@@ -52,7 +52,6 @@ import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
 import AiThemePanel from '@/components/for-you/atlaskit/AiThemePanel';
 import AgeingPanel from '@/components/for-you/atlaskit/AgeingPanel';
 import R360Panel from '@/components/for-you/atlaskit/R360Panel';
-import { R360AccessTile } from '@/components/R360AccessTile';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 const PAGE_SIZE = 20;
@@ -275,15 +274,9 @@ export default function ForYouPageAtlaskit() {
         boxSizing: 'border-box',
       }}
     >
-      {/* Recommended projects strip + R360 access tile — hidden when R360 tab
-          is active so the ring view fills the full viewport without noise. */}
+      {/* Recommended projects strip — hidden when R360 tab is active. */}
       {!isR360Active && (
-        <>
-          <RecommendedProjectsStrip projects={allUserProjects} />
-          <div style={{ marginBlockStart: 12 }}>
-            <R360AccessTile />
-          </div>
-        </>
+        <RecommendedProjectsStrip projects={allUserProjects} />
       )}
 
       {/* Heading + tabs — heading is hidden in R360 full-screen mode; tabs stay
