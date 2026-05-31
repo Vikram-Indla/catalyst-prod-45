@@ -313,7 +313,7 @@
 }
 #r360-root .r3-kpi-card.warn {
   border-color: var(--ds-text-warning, var(--cp-warning, #D97706)) !important;
-  background: #FFFBEB !important;
+  background: var(--ds-background-warning, #FFF7D6) !important;
 }
 #r360-root .r3-kpi-card.neutral {
   border-color: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) !important;
@@ -1574,7 +1574,7 @@
 /* Surface backgrounds — cards sitting on page → var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) */
 .dark #r360-root [style*="background: #EFF6FF"],
 .dark #r360-root [style*="background: #FEF2F2"],
-.dark #r360-root [style*="background: #FFFBEB"],
+.dark #r360-root [style*="background: var(--ds-background-warning"],
 .dark #r360-root [style*="background: #F8FAFC"],
 .dark #r360-root [style*="background: var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))"] {
   background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;

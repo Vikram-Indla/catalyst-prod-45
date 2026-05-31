@@ -6,7 +6,7 @@ import { HighlightText, InlineExpansionPanel, ExpandChevron, useExpandedRow, exp
 const T = {
   bg: '#F5F0EB', surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', text1: 'var(--ds-surface, #0A0A0A)', text2: '#1A1A2E',
   text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9', borderStrong: '#C5BDB3',
-  todo: '#E23636', progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', done: '#0E8A5F', pendHl: '#FFF3E0',
+  todo: '#E23636', progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', done: '#0E8A5F', pendHl: 'var(--ds-background-warning, #FFF7D6)',
   mono: "'JetBrains Mono','SF Mono',monospace",
 };
 
@@ -165,7 +165,7 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                         {item.status.length > 16 ? item.status.slice(0, 14) + '…' : item.status}
                       </span>
                       {/* Age + stale */}
-                      <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, minWidth: 40, textAlign: 'right', color: item.age_days > 14 ? T.todo : item.age_days > 7 ? '#CA8A04' : T.text4 }}>
+                      <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, minWidth: 40, textAlign: 'right', color: item.age_days > 14 ? T.todo : item.age_days > 7 ? 'var(--ds-text-warning, #974F0C)' : T.text4 }}>
                         {item.age_days}d{stale && <span title={stale.label} style={{ fontSize: 10, marginLeft: 2 }}>{stale.icon}</span>}
                       </span>
                     </div>

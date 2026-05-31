@@ -9,18 +9,18 @@ import { resolveStatusCategoryStatic } from '@/hooks/useStatusMappingLookup';
 // ═══════════════════════════════════════════════════
 const SC: Record<string, { dot: string; bg: string; tx: string; label: string }> = {
   // ── Grey: To Do / Waiting ──
-  'To Do':                { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
-  'Open':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
-  'Backlog':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog' },
-  'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
-  'Reopened':             { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
-  'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements' },
-  'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting' },
-  'On Hold':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'On Hold' },
-  'Todo':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
-  'Reported':             { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Reported' },
-  'Ready for Dev':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Dev' },
-  'Ready for Test':       { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Test' },
+  'To Do':                { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do' },
+  'Open':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do' },
+  'Backlog':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Backlog' },
+  'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Re-Open' },
+  'Reopened':             { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Re-Open' },
+  'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Requirements' },
+  'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Awaiting' },
+  'On Hold':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'On Hold' },
+  'Todo':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do' },
+  'Reported':             { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Reported' },
+  'Ready for Dev':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Ready Dev' },
+  'Ready for Test':       { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Ready Test' },
   // ── Blue: In Progress ──
   'In Progress':          { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
   'In Development':       { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
@@ -71,7 +71,7 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
 // Category-level fallbacks (Jira always provides these)
 const CAT_DONE       = { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done' };
 const CAT_INPROGRESS = { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' };
-const CAT_TODO       = { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' };
+const CAT_TODO       = { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do' };
 
 function resolveStatus(item: any) {
   // 1. Try exact status_name match first (most descriptive label)

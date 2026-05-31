@@ -7,7 +7,7 @@ const T = {
   bg: '#F5F0EB', surface: 'var(--bg-app)', text1: 'var(--fg-1)', text2: '#1A1A2E',
   text3: '#3D3D56', text4: 'var(--fg-3)', border: 'var(--divider)', borderStrong: 'var(--divider)',
   todo: '#E23636', progress: 'var(--cp-blue)', done: '#0E8A5F',
-  pendingHighlight: '#FFF3E0',
+  pendingHighlight: 'var(--ds-background-warning, #FFF7D6)',
   shadow: '0 2px 8px rgba(0,0,0,.12)',
   mono: "'JetBrains Mono', 'SF Mono', monospace",
 };
@@ -268,7 +268,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                     <span style={{
                       fontFamily: T.mono, fontSize: 10, fontWeight: 800, minWidth: 28, textAlign: 'right',
                       flexShrink: 0,
-                      color: ageDays > 14 ? T.todo : ageDays > 7 ? '#CA8A04' : T.text4,
+                      color: ageDays > 14 ? T.todo : ageDays > 7 ? 'var(--ds-text-warning, #974F0C)' : T.text4,
                     }}>
                       {ageDays}d
                     </span>

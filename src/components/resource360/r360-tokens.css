@@ -52,7 +52,7 @@
   --r360-pri-critical: #BE123C;
   --r360-pri-highest: var(--ds-text-danger, var(--cp-danger, #DC2626));
   --r360-pri-high: #EA580C;
-  --r360-pri-medium: #CA8A04;
+  --r360-pri-medium: var(--ds-text-warning, #974F0C);
   --r360-pri-low: #57534E;
 
   /* ─── SHADOWS — SUBSTANTIAL ─── */
