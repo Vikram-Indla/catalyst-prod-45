@@ -23,6 +23,7 @@ import { ColumnResizeHandles } from "../ColumnResizeHandles/ColumnResizeHandles"
 import { TableInsertHandles } from "../TableInsertHandles/TableInsertHandles";
 import { CellChevronHandles } from "../CellChevronHandles/CellChevronHandles";
 import { CellMultiSelect } from "../CellMultiSelect/CellMultiSelect";
+import { CodeBlockToolbar } from "../CodeBlockToolbar/CodeBlockToolbar";
 
 interface EditorViewProps {
   editor: Editor | null;
@@ -101,6 +102,7 @@ export function EditorView({
           <CellMultiSelect editor={editor} containerRef={bodyRef} />
           <TableToolbar editor={editor} containerRef={bodyRef} />
           <TableInteractions editor={editor} containerRef={bodyRef} />
+          <CodeBlockToolbar editor={editor} containerRef={bodyRef} />
         </div>
         {overlayActive && bodyOverlay}
       </div>

@@ -17,6 +17,11 @@
  */
 import React from 'react';
 import { token } from '@atlaskit/tokens';
+import {
+  ensureGrammar,
+  highlightToHtml,
+  resolvePrismId,
+} from '@/components/catalyst-detail-views/shared/sections/Description/utils/prismHighlight';
 
 // ─── Complexity classifier ─────────────────────────────────────────────────
 
@@ -221,85 +226,11 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
       // editorStyles.ts (.catalyst-code-block, .catalyst-code-block-pre,
       // .catalyst-code-block-gutter) so toggling between read and edit
       // doesn't shift a single pixel.
+      // Syntax highlight via Prism — see PrismCodeBlock for the
+      // grammar-loading lifecycle (mirrors edit-mode highlighting).
       const lang = String(node.attrs?.language ?? '');
       const text = (node.content ?? []).map(c => c.text ?? '').join('');
-      const lineCount = Math.max(1, text.split('\n').length);
-      const lineNumbers: number[] = [];
-      for (let i = 1; i <= lineCount; i++) lineNumbers.push(i);
-      const monoFamily =
-        'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
-      return (
-        <div
-          key={key}
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'auto 1fr',
-            alignItems: 'stretch',
-            background: token('elevation.surface.sunken', '#F7F8F9'),
-            margin: '4px 0 8px',
-            fontFamily: monoFamily,
-            fontSize: 13,
-            lineHeight: '20px',
-            borderRadius: 0,
-          }}
-        >
-          <div
-            aria-hidden="true"
-            style={{
-              background: token('color.background.neutral', '#E4E6EA'),
-              color: token('color.text.subtle', '#6B778C'),
-              padding: '8px 10px',
-              margin: 0,
-              textAlign: 'right',
-              userSelect: 'none',
-              WebkitUserSelect: 'none',
-              fontFamily: monoFamily,
-              fontSize: 13,
-              lineHeight: '20px',
-              fontVariantNumeric: 'tabular-nums',
-            }}
-          >
-            {lineNumbers.map((n) => (
-              <span
-                key={n}
-                style={{ display: 'block', lineHeight: '20px' }}
-              >
-                {n}
-              </span>
-            ))}
-          </div>
-          <pre
-            style={{
-              background: 'transparent',
-              padding: '8px 12px',
-              margin: 0,
-              overflowX: 'auto',
-              minWidth: 0,
-              fontFamily: monoFamily,
-              fontSize: 13,
-              lineHeight: '20px',
-              border: 0,
-              borderRadius: 0,
-            }}
-          >
-            <code
-              data-language={lang}
-              style={{
-                background: 'none',
-                padding: 0,
-                margin: 0,
-                fontFamily: monoFamily,
-                fontSize: 13,
-                lineHeight: '20px',
-                border: 0,
-                borderRadius: 0,
-              }}
-            >
-              {text}
-            </code>
-          </pre>
-        </div>
-      );
+      return <PrismCodeBlock key={key} text={text} language={lang} />;
     }
 
     case 'rule':
@@ -420,3 +351,127 @@ export function AdfLightRenderer({ adf }: AdfLightRendererProps) {
     </div>
   );
 }
+
+/* ────────────────── PrismCodeBlock ──────────────────
+ *
+ * Read-mode code-block wrapper with line-number gutter + Prism-driven
+ * syntax highlighting. Mirrors the edit-view CodeBlockWithGutter
+ * structure 1:1 (same fonts, paddings, line-height, classes) so users
+ * can't see a layout difference between read and edit.
+ *
+ * Grammar loading: `highlightToHtml` returns escaped text plus an
+ * optional `pendingLoad` promise. When the grammar isn't bundled
+ * eagerly, the first render shows plain text, then re-renders with
+ * coloured tokens once the dynamic import resolves.
+ */
+interface PrismCodeBlockProps {
+  text: string;
+  language: string;
+}
+
+const PrismCodeBlock: React.FC<PrismCodeBlockProps> = ({ text, language }) => {
+  const prismId = React.useMemo(() => resolvePrismId(language), [language]);
+  // version state is bumped whenever the async grammar import resolves,
+  // forcing a re-render with the now-registered grammar.
+  const [version, setVersion] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!prismId) return;
+    let cancelled = false;
+    ensureGrammar(prismId).then(() => {
+      if (!cancelled) setVersion((v) => v + 1);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [prismId]);
+
+  const { html } = React.useMemo(
+    () => highlightToHtml(text, prismId),
+    // version intentionally in deps so the memo re-runs after grammar
+    // loads; html itself is the input we hand to dangerouslySetInnerHTML.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [text, prismId, version],
+  );
+
+  const lineCount = Math.max(1, text.split('\n').length);
+  const lineNumbers: number[] = [];
+  for (let i = 1; i <= lineCount; i++) lineNumbers.push(i);
+  const monoFamily =
+    'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+
+  return (
+    <div
+      className="catalyst-code-block"
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'auto 1fr',
+        alignItems: 'stretch',
+        background: token('elevation.surface.sunken', '#F7F8F9'),
+        margin: '4px 0 8px',
+        fontFamily: monoFamily,
+        fontSize: 13,
+        lineHeight: '20px',
+        borderRadius: 0,
+      }}
+    >
+      <div
+        aria-hidden="true"
+        className="catalyst-code-block-gutter"
+        style={{
+          background: token('color.background.neutral', '#E4E6EA'),
+          color: token('color.text.subtle', '#6B778C'),
+          padding: '8px 10px',
+          margin: 0,
+          textAlign: 'right',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          fontFamily: monoFamily,
+          fontSize: 13,
+          lineHeight: '20px',
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
+        {lineNumbers.map((n) => (
+          <span
+            key={n}
+            className="catalyst-code-block-ln"
+            style={{ display: 'block', lineHeight: '20px' }}
+          >
+            {n}
+          </span>
+        ))}
+      </div>
+      <pre
+        className="catalyst-code-block-pre"
+        style={{
+          background: 'transparent',
+          padding: '8px 12px',
+          margin: 0,
+          overflowX: 'auto',
+          minWidth: 0,
+          fontFamily: monoFamily,
+          fontSize: 13,
+          lineHeight: '20px',
+          border: 0,
+          borderRadius: 0,
+        }}
+      >
+        <code
+          data-language={language}
+          dangerouslySetInnerHTML={{ __html: html }}
+          style={{
+            background: 'none',
+            padding: 0,
+            margin: 0,
+            fontFamily: monoFamily,
+            fontSize: 13,
+            lineHeight: '20px',
+            border: 0,
+            borderRadius: 0,
+          }}
+        />
+      </pre>
+    </div>
+  );
+};

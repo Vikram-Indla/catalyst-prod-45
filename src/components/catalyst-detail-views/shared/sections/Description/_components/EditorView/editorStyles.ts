@@ -13,7 +13,7 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = "catalyst-tiptap-editor-styles-v46";
+const STYLE_ID = "catalyst-tiptap-editor-styles-v48";
 
 export function injectEditorStyles(): void {
   if (typeof document === "undefined") return;
@@ -142,6 +142,121 @@ export function injectEditorStyles(): void {
       outline: 0 !important;
       border: 0 !important;
       box-shadow: none !important;
+    }
+    /* ── Prism syntax-highlight theme ──
+       Token class names match Prism's emit. Palette tuned to match
+       Jira's edit-mode code-block colours (subtle, light, AA contrast
+       against the sunken bg). Both the edit decorations and the read
+       renderer use the same .token.* classes so colours are identical
+       across surfaces. */
+    .catalyst-tiptap-editor .catalyst-code-block .token.comment,
+    .catalyst-tiptap-editor .catalyst-code-block .token.prolog,
+    .catalyst-tiptap-editor .catalyst-code-block .token.doctype,
+    .catalyst-tiptap-editor .catalyst-code-block .token.cdata,
+    .adf-light-renderer .catalyst-code-block .token.comment,
+    .adf-light-renderer .catalyst-code-block .token.prolog,
+    .adf-light-renderer .catalyst-code-block .token.doctype,
+    .adf-light-renderer .catalyst-code-block .token.cdata {
+      color: #6B778C;
+      font-style: italic;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.punctuation,
+    .adf-light-renderer .catalyst-code-block .token.punctuation {
+      color: #5E6C84;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.namespace,
+    .adf-light-renderer .catalyst-code-block .token.namespace {
+      opacity: 0.7;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.property,
+    .catalyst-tiptap-editor .catalyst-code-block .token.tag,
+    .catalyst-tiptap-editor .catalyst-code-block .token.constant,
+    .catalyst-tiptap-editor .catalyst-code-block .token.symbol,
+    .catalyst-tiptap-editor .catalyst-code-block .token.deleted,
+    .adf-light-renderer .catalyst-code-block .token.property,
+    .adf-light-renderer .catalyst-code-block .token.tag,
+    .adf-light-renderer .catalyst-code-block .token.constant,
+    .adf-light-renderer .catalyst-code-block .token.symbol,
+    .adf-light-renderer .catalyst-code-block .token.deleted {
+      color: #AE2A19;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.boolean,
+    .catalyst-tiptap-editor .catalyst-code-block .token.number,
+    .adf-light-renderer .catalyst-code-block .token.boolean,
+    .adf-light-renderer .catalyst-code-block .token.number {
+      color: #974F0C;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.selector,
+    .catalyst-tiptap-editor .catalyst-code-block .token.attr-name,
+    .catalyst-tiptap-editor .catalyst-code-block .token.string,
+    .catalyst-tiptap-editor .catalyst-code-block .token.char,
+    .catalyst-tiptap-editor .catalyst-code-block .token.builtin,
+    .catalyst-tiptap-editor .catalyst-code-block .token.inserted,
+    .adf-light-renderer .catalyst-code-block .token.selector,
+    .adf-light-renderer .catalyst-code-block .token.attr-name,
+    .adf-light-renderer .catalyst-code-block .token.string,
+    .adf-light-renderer .catalyst-code-block .token.char,
+    .adf-light-renderer .catalyst-code-block .token.builtin,
+    .adf-light-renderer .catalyst-code-block .token.inserted {
+      color: #216E4E;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.operator,
+    .catalyst-tiptap-editor .catalyst-code-block .token.entity,
+    .catalyst-tiptap-editor .catalyst-code-block .token.url,
+    .catalyst-tiptap-editor .catalyst-code-block .language-css .token.string,
+    .catalyst-tiptap-editor .catalyst-code-block .style .token.string,
+    .adf-light-renderer .catalyst-code-block .token.operator,
+    .adf-light-renderer .catalyst-code-block .token.entity,
+    .adf-light-renderer .catalyst-code-block .token.url {
+      color: #5E4DB2;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.atrule,
+    .catalyst-tiptap-editor .catalyst-code-block .token.attr-value,
+    .catalyst-tiptap-editor .catalyst-code-block .token.keyword,
+    .adf-light-renderer .catalyst-code-block .token.atrule,
+    .adf-light-renderer .catalyst-code-block .token.attr-value,
+    .adf-light-renderer .catalyst-code-block .token.keyword {
+      color: #0055CC;
+      font-weight: 500;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.function,
+    .catalyst-tiptap-editor .catalyst-code-block .token.class-name,
+    .adf-light-renderer .catalyst-code-block .token.function,
+    .adf-light-renderer .catalyst-code-block .token.class-name {
+      color: #5E4DB2;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.regex,
+    .catalyst-tiptap-editor .catalyst-code-block .token.important,
+    .catalyst-tiptap-editor .catalyst-code-block .token.variable,
+    .adf-light-renderer .catalyst-code-block .token.regex,
+    .adf-light-renderer .catalyst-code-block .token.important,
+    .adf-light-renderer .catalyst-code-block .token.variable {
+      color: #B65C02;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.important,
+    .catalyst-tiptap-editor .catalyst-code-block .token.bold,
+    .adf-light-renderer .catalyst-code-block .token.important,
+    .adf-light-renderer .catalyst-code-block .token.bold {
+      font-weight: 600;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block .token.italic,
+    .adf-light-renderer .catalyst-code-block .token.italic {
+      font-style: italic;
+    }
+
+    /* Wrap toggle — when the toolbar wrap icon is ON, the wrapper sets
+       data-wrapped="true" and we soft-wrap both the <pre> and <code>
+       so long lines break at the right edge instead of scrolling
+       horizontally. Default ('false') keeps the original
+       overflow-x: auto behaviour. */
+    .catalyst-tiptap-editor .catalyst-code-block[data-wrapped="true"] .catalyst-code-block-pre {
+      overflow-x: hidden !important;
+      white-space: pre-wrap !important;
+      word-break: break-word !important;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block[data-wrapped="true"] .catalyst-code-block-pre code {
+      white-space: pre-wrap !important;
+      word-break: break-word !important;
     }
     .catalyst-tiptap-editor code {
       background: var(--ds-surface-sunken, #F7F8F9);

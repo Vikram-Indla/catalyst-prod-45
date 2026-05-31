@@ -44,6 +44,26 @@ import { CodeBlock as BaseCodeBlock } from '@tiptap/extension-code-block';
  * the existing sunken background on the right for the code area.
  */
 const CodeBlockWithGutter = BaseCodeBlock.extend({
+  /**
+   * Extra attributes beyond StarterKit's `language`:
+   *   - `wrapped` — soft-wrap toggle from the CodeBlockToolbar. Persists
+   *     to ADF as a non-Jira attribute (Jira ignores unknown attrs on
+   *     read-back) so the wrap preference survives save / reload.
+   */
+  addAttributes() {
+    const parent = this.parent?.() ?? {};
+    return {
+      ...parent,
+      wrapped: {
+        default: false,
+        parseHTML: (el) =>
+          (el as HTMLElement).getAttribute('data-wrapped') === 'true',
+        renderHTML: (attrs: { wrapped?: boolean }) =>
+          attrs.wrapped ? { 'data-wrapped': 'true' } : {},
+      },
+    };
+  },
+
   addNodeView() {
     return ({ node }) => {
       const wrapper = document.createElement('div');
@@ -72,7 +92,19 @@ const CodeBlockWithGutter = BaseCodeBlock.extend({
         }
         gutter.replaceChildren(frag);
       };
+
+      const applyAttrs = (n: {
+        attrs: { language?: string | null; wrapped?: boolean };
+      }) => {
+        const wrapped = !!n.attrs.wrapped;
+        wrapper.setAttribute('data-wrapped', wrapped ? 'true' : 'false');
+        const lang = n.attrs.language ?? '';
+        if (lang) wrapper.setAttribute('data-language', lang);
+        else wrapper.removeAttribute('data-language');
+      };
+
       renderGutter(node.textContent);
+      applyAttrs(node);
 
       return {
         dom: wrapper,
@@ -80,6 +112,7 @@ const CodeBlockWithGutter = BaseCodeBlock.extend({
         update(updatedNode) {
           if (updatedNode.type.name !== node.type.name) return false;
           renderGutter(updatedNode.textContent);
+          applyAttrs(updatedNode);
           return true;
         },
         ignoreMutation(mutation) {
@@ -88,6 +121,16 @@ const CodeBlockWithGutter = BaseCodeBlock.extend({
           if (
             mutation.target === gutter ||
             gutter.contains(mutation.target as Node)
+          ) {
+            return true;
+          }
+          // Our own data-* attribute writes on the wrapper come from
+          // applyAttrs and must not trigger PM reconciliation.
+          if (
+            mutation.type === 'attributes' &&
+            mutation.target === wrapper &&
+            (mutation.attributeName === 'data-wrapped' ||
+              mutation.attributeName === 'data-language')
           ) {
             return true;
           }
@@ -337,6 +380,7 @@ import { UnsupportedBlock, UnsupportedInline } from '../extensions/UnsupportedNo
 import { SelectionDragCursor } from '../extensions/SelectionDragCursor';
 import { TableSelection } from '../extensions/TableSelection';
 import { TableShortcuts } from '../extensions/TableShortcuts';
+import { CodeBlockHighlight } from '../extensions/CodeBlockHighlight';
 import type { AdfDoc, TiptapDoc } from '../utils/adfToTiptap';
 import { adfToTiptap } from '../utils/adfToTiptap';
 
@@ -445,6 +489,7 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
         SelectionDragCursor,
         TableSelection,
         TableShortcuts,
+        CodeBlockHighlight,
       ],
       content: adfToTiptap(options.initialAdf),
       editable: options.editable ?? true,
