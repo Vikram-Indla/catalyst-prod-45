@@ -53,7 +53,6 @@ import Spinner from '@atlaskit/spinner';
 
 import Tooltip from '@atlaskit/tooltip';
 import TextArea from '@atlaskit/textarea';
-import EditIcon from '@atlaskit/icon/glyph/edit';
 import EmojiAddIcon from '@atlaskit/icon/glyph/emoji-add';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { catalystToast } from '@/lib/catalystToast';
@@ -1353,15 +1352,21 @@ function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 8,
-            padding: '4px 12px',
+            gap: 4,
+            // 2026-05-31: compressed from 14px/500/padding:4-12 → 12px/500/
+            // padding:2-8 so the button matches the secondary-action density
+            // of the surrounding mention card chrome (reaction chips, meta
+            // line). Was visually outweighing the 14px/400 body text.
+            padding: '2px 8px',
             borderRadius: 3,
-            font: `500 14px/20px "Inter", system-ui, sans-serif`,
+            font: `500 12px/16px "Inter", system-ui, sans-serif`,
             color: token('color.text', '#172B4D'),
             background: token('elevation.surface', '#FFFFFF'),
           }}
         >
-          <EditIcon label="" size="small" primaryColor="currentColor" />
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M11.013 1.427a1.75 1.75 0 0 1 2.474 0l1.086 1.086a1.75 1.75 0 0 1 0 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 0 1-.927-.928l.929-3.25a1.75 1.75 0 0 1 .445-.758zm.354 1.06a.75.75 0 0 0-.671.207L2.95 10.44l-.612 2.143 2.143-.612 7.745-7.745a.75.75 0 0 0-.121-1.062z"/>
+          </svg>
           Ask Caty - Suggest?
         </button>
       </div>
