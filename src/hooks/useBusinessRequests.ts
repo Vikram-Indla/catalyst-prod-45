@@ -262,6 +262,7 @@ export function useCreateBusinessRequest() {
           targeted_feature: (data as any).targeted_feature ?? false,
           import_source: (data as any).import_source || 'manual',
           import_ref: (data as any).import_ref || null,
+          product_id: (data as any).product_id || null,
         }])
         .select()
         .single();
@@ -548,5 +549,37 @@ export function useDuplicateBusinessRequest() {
     onError: (error) => {
       toast({ title: 'Failed to duplicate request', description: error.message, variant: 'destructive' });
     },
+  });
+}
+
+export function useBusinessRequestsByProduct(productId: string | null | undefined) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!productId) return;
+    const channel = supabase
+      .channel(`business-requests-product-${productId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'business_requests' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['business-requests-by-product', productId] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [productId, queryClient]);
+
+  return useQuery({
+    queryKey: ['business-requests-by-product', productId],
+    queryFn: async () => {
+      if (!productId) return [];
+      const { data, error } = await typedQuery('business_requests')
+        .select('*')
+        .eq('product_id', productId)
+        .is('deleted_at', null)
+        .order('rank', { ascending: true, nullsFirst: false });
+      if (error) throw error;
+      return ((data || []) as any[]).map(transformRow);
+    },
+    enabled: !!productId,
+    staleTime: 30000,
+    placeholderData: (prev: any) => prev,
   });
 }

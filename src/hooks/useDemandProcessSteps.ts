@@ -58,6 +58,20 @@ export function useDemandProcessStepOptions() {
   return { options, isLoading };
 }
 
+// Maps a DemandProcessStep to an ADS Lozenge appearance.
+// Uses sort_order phase bands + value keywords for terminal states.
+export type StepLozengeAppearance = 'default' | 'inprogress' | 'moved' | 'removed' | 'success';
+
+export function stepToLozengeAppearance(step: DemandProcessStep): StepLozengeAppearance {
+  const v = step.value.toLowerCase();
+  if (v.includes('cancel') || v.includes('reject')) return 'removed';
+  if (v.includes('done') || v.includes('complete') || v.includes('deliver')) return 'success';
+  if (v.includes('hold')) return 'default';
+  if (step.sort_order <= 2) return 'default';   // New / early demand states
+  if (step.sort_order <= 5) return 'moved';      // Approval / analysis states
+  return 'inprogress';                            // Delivery states
+}
+
 // Get process step info helper (replacement for getProcessStepInfo)
 export function useGetProcessStepInfo() {
   const { data: steps = [] } = useActiveDemandProcessSteps();

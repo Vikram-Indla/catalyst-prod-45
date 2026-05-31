@@ -63,7 +63,7 @@ export default function InvestorJourneyDetailPage() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#5E6C84', fontFamily: 'var(--cp-font-body)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'var(--cp-font-body)' }}>
         Loading…
       </div>
     );
@@ -72,14 +72,14 @@ export default function InvestorJourneyDetailPage() {
   if (!issue) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'var(--cp-font-body)', gap: 12 }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: '#344054' }}>Issue not found</span>
-        <span style={{ fontSize: 13, color: '#5E6C84' }}>{issueKey} could not be found.</span>
+        <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Issue not found</span>
+        <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>{issueKey} could not be found.</span>
         {debugInfo && (
-          <span style={{ fontSize: 11, color: '#DE350B', fontFamily: 'var(--cp-font-mono)', maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: '#FFF5F5', border: '1px solid #FFCDD2', borderRadius: 4 }}>
+          <span style={{ fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', fontFamily: 'var(--cp-font-mono)', maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: 'var(--ds-background-danger, #FFECEB)', border: `1px solid var(--ds-border-danger, #FF8F73)`, borderRadius: 4 }}>
             {debugInfo}
           </span>
         )}
-        <button onClick={handleClose} style={{ marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: '#fff', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
+        <button onClick={handleClose} style={{ marginTop: 8, padding: '8px 16px', background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: 3, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
           Back to backlog
         </button>
       </div>
@@ -88,7 +88,7 @@ export default function InvestorJourneyDetailPage() {
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ flexShrink: 0, padding: '8px 24px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+      <div style={{ flexShrink: 0, padding: '8px 24px', background: 'var(--ds-elevation-surface, #FFFFFF)' }}>
         <button
           onClick={handleClose}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', padding: 0, fontSize: 14, color: 'var(--ds-text-subtle, #505258)', cursor: 'pointer', fontFamily: 'inherit' }}

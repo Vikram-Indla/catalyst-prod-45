@@ -606,6 +606,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   const avatarsByName = useProfileAvatarsByName();
   const backlogError = storiesError || epicsError;
 
+  // When dataSource is provided (e.g. product hub → business_requests),
+  // REPLACE ph_issues stories/epics with the adapter's rows. Project hub
+  // (dataSource omitted) is byte-identical to the original — these aliases
+  // resolve to the original arrays and downstream code is unchanged.
+  const effectiveStories = dataSource ? dataSource.extraStories : stories;
+  const effectiveEpics = dataSource ? dataSource.extraEpics : epics;
+
   // Request (Business Request) resolution — per the ProductBacklog ERD,
   // ph_requests.initiative_key appears as ph_issues.parent_key on any
   // Jira issue that belongs to an initiative. So we collect every distinct
@@ -1114,7 +1121,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       });
     }
 
-    epics.forEach((e) => {
+    effectiveEpics.forEach((e) => {
       epicSeen.add(e.id);
       // If this epic's own parent_key resolves to an initiative, link it up
       // so the tree builder nests the epic under the initiative row. As a
@@ -1154,7 +1161,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     // epic object on story.feature.epic with real Jira status/priority/
     // assignee/jira_updated_at (2026-04 wiring fix) so the synthesized
     // rows aren't blank "Set status" ghosts any more.
-    stories.forEach((s) => {
+    effectiveStories.forEach((s) => {
       const ep = s.feature?.epic as (typeof s.feature extends { epic: infer E } ? E : any) & {
         status?: string | null;
         priority?: string | null;
@@ -1205,7 +1212,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       if (it === 'Production Incident') return 'incident';
       return 'story';
     };
-    stories.forEach((s) => {
+    effectiveStories.forEach((s) => {
       const ep = s.feature?.epic;
       // Apr 27, 2026 (L52): fall back to raw parent_key/parent_summary
       // from ph_issues when the parent isn't an Epic (so QA Bug +
@@ -1246,7 +1253,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       });
     });
     return out;
-  }, [epics, stories, initiativesByKey]);
+  }, [effectiveEpics, effectiveStories, initiativesByKey]);
 
   // ── Three-level tree: Request → Epic → Story.
   //   - Items with parent_id go into childrenOf[parent_id].

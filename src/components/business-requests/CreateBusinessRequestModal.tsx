@@ -76,7 +76,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { flag } from '@/components/shared/JiraTable/flags';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
-import { useCatalystWorkflow, type WorkflowStatus } from '@/hooks/useCatalystWorkflow';
+import { useActiveDemandProcessSteps, stepToLozengeAppearance } from '@/hooks/useDemandProcessSteps';
 import {
   THEME_OPTIONS,
   STAKEHOLDER_OPTIONS,
@@ -242,6 +242,7 @@ const translateRowStyles = xcss({ display: 'flex', alignItems: 'flex-start', gap
 export interface CreateBusinessRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
+  productId?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -433,23 +434,15 @@ function MoreActionsButton() {
 
 type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new';
 
-function categoryToLozenge(cat: 'todo' | 'in_progress' | 'done' | undefined): LozengeAppearance {
-  if (cat === 'done') return 'success';
-  if (cat === 'in_progress') return 'inprogress';
-  return 'default';
-}
 
 function BRStatusChip({ status, onChange }: { status: string; onChange: (s: string) => void }) {
-  const { statuses, isLoading } = useCatalystWorkflow('Business Request');
-  const options = statuses.map((s: WorkflowStatus) => ({
-    value: s.slug,
-    label: s.name,
-    category: s.category,
-  }));
+  const { data: steps = [], isLoading } = useActiveDemandProcessSteps();
+  const options = steps.map(s => ({ value: s.value, label: s.label, step: s }));
 
+  const currentStep = steps.find(s => s.value === status);
   const current =
     options.find(o => o.value === status) ??
-    options[0] ?? { value: '', label: isLoading ? 'Loading…' : 'No status', category: 'todo' as const };
+    options[0] ?? { value: '', label: isLoading ? 'Loading…' : 'No status', step: undefined };
 
   return (
     <DropdownMenu
@@ -473,7 +466,7 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
             fontFamily: 'var(--cp-font-body)',
           }}
         >
-          <Lozenge appearance={categoryToLozenge(current.category)} isBold>
+          <Lozenge appearance={currentStep ? stepToLozengeAppearance(currentStep) : 'default'} isBold>
             {current.label}
           </Lozenge>
           <ChevronDownIcon label="" size="small" />
@@ -492,7 +485,7 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
             isSelected={status === opt.value}
             onClick={() => onChange(opt.value)}
           >
-            <Lozenge appearance={categoryToLozenge(opt.category)} isBold>
+            <Lozenge appearance={opt.step ? stepToLozengeAppearance(opt.step) : 'default'} isBold>
               {opt.label}
             </Lozenge>
           </DropdownItem>
@@ -634,7 +627,7 @@ function FieldLabel({ children, required }: { children: ReactNode; required?: bo
 // MAIN
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRequestModalProps) {
+export function CreateBusinessRequestModal({ isOpen, onClose, productId }: CreateBusinessRequestModalProps) {
   const createMutation = useCreateBusinessRequest();
   const { data: profiles = [] } = useProfiles();
   const { data: releaseOptions = [] } = useReleases();
@@ -650,14 +643,14 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
   const [translationPreview, setTranslationPreview] = useState<{ text: string; direction: 'en_to_ar' | 'ar_to_en' } | null>(null);
 
   // Seed initial status from /admin/workflows (Business Request scheme)
-  const { initialStatus: brInitialStatus, statuses: brStatuses } = useCatalystWorkflow('Business Request');
+  const { data: brSteps = [] } = useActiveDemandProcessSteps();
   useEffect(() => {
-    if (!brStatuses.length || !brInitialStatus) return;
-    const validSlugs = brStatuses.map(s => s.slug);
-    if (!validSlugs.includes(form.process_step)) {
-      setForm(prev => ({ ...prev, process_step: brInitialStatus.slug }));
+    if (!brSteps.length) return;
+    const validValues = brSteps.map(s => s.value);
+    if (!validValues.includes(form.process_step)) {
+      setForm(prev => ({ ...prev, process_step: brSteps[0].value }));
     }
-  }, [brInitialStatus, brStatuses, form.process_step]);
+  }, [brSteps, form.process_step]);
 
   const set = useCallback(<K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -727,6 +720,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
         impl_target_end_date: form.end_date || null,
         targeted_feature: form.targeted_feature,
         import_source: 'manual',
+        product_id: productId || null,
       };
       const created = await createMutation.mutateAsync(payload as any);
       if (form.attachments.length && (created as any)?.id) {

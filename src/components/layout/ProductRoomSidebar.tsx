@@ -62,7 +62,6 @@ const GLOBAL_CONFIG: SidebarConfig = {
       title: '',
       items: [
         { id: 'all-products',          title: 'All Products',    path: '/product-hub/products',            icon: LayoutGrid,    exact: true },
-        { id: 'backlog',               title: 'Product Backlog', path: '/product-hub/backlog',             icon: ClipboardList, exact: true },
         { id: 'kanban',                title: 'Product Kanban',  path: '/product-hub/kanban',              icon: Columns3,      exact: true },
         { id: 'roadmap',               title: 'Product Roadmap', path: '/product-hub/roadmap',             icon: GanttChart,    exact: false },
         { id: 'cards',                 title: 'Product Cards',   path: '/product-hub/cards',               icon: LayoutGrid,    exact: true },
