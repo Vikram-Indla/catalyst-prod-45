@@ -704,11 +704,12 @@ function FeedCard({
           onClick={onOpen}
           style={{
             all: 'unset',
+            display: 'block',
+            width: '100%',
             cursor: 'pointer',
             font: `400 14px/20px "Inter", system-ui, sans-serif`,
             color: token('color.text', '#292A2E'),
             textAlign: 'start',
-            wordBreak: 'break-word',
           }}
         >
           {row.headline}
@@ -2049,12 +2050,11 @@ function HeadlineIssueTitle({
     //   hairline border (color.border token), borderRadius 4, white surface bg.
     // The bordered pill is the "grey border on the ticket" the user sees in Jira.
     <span style={{
-      display: 'inline-flex',
+      display: 'flex',
       alignItems: 'center',
       gap: 6,
-      verticalAlign: 'middle',
       overflow: 'hidden',
-      maxWidth: '100%',
+      marginBlockStart: 2,
       border: `1px solid ${token('color.border', 'rgba(11, 18, 14, 0.14)')}`,
       borderRadius: 4,
       backgroundColor: token('elevation.surface', '#FFFFFF'),
