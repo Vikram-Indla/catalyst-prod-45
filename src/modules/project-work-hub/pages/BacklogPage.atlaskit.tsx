@@ -963,6 +963,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // optimistic write reconciles with the authoritative server response.
   const updateField = useMutation({
     mutationFn: async ({ id, source, patch }: { id: string; source?: string; patch: Record<string, unknown> }) => {
+      // Adapter route — for product hub business_requests rows. Skips the
+      // ph_issues write entirely; adapter handles its own table + invalidation.
+      if (dataSource && source === BIZ_SOURCE) {
+        await dataSource.onUpdate(id, patch);
+        return;
+      }
       // Step 1 — local cache write to ph_issues (canonical source of truth).
       // Map any catalyst-style field names in the patch to their ph_issues
       // equivalents (title→summary). updated_at→jira_updated_at.
@@ -997,7 +1003,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         }
       }
     },
-    onMutate: async ({ id, patch }) => {
+    onMutate: async ({ id, source, patch }) => {
+      // Adapter-owned rows don't live in ph_issues caches — skip snapshot/revert.
+      if (dataSource && source === BIZ_SOURCE) return undefined;
       // The actual cache keys used by useStoryBacklog / useEpicBacklog are
       // 3-tuple: ['backlog-*', projectId, projectKey]. The first two
       // elements are stable for this page; we use a partial-match
@@ -1073,6 +1081,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // every projectKey variant of the cache keys).
       queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+      // Also invalidate adapter caches when present (no-op for project hub).
+      if (dataSource) {
+        dataSource.invalidationKeys.forEach(k =>
+          queryClient.invalidateQueries({ queryKey: k as any }),
+        );
+      }
     },
   });
 
@@ -1660,13 +1674,19 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     if (container && projectKey) {
       sessionStorage.setItem(`backlog-scroll-${projectKey}`, Math.max(0, container.scrollTop).toString());
     }
+    // Adapter-owned rows (e.g. business_requests in product hub) route to
+    // their own detail surface via the adapter's onOpenItem hook.
+    if (dataSource && (it as any).source === BIZ_SOURCE) {
+      dataSource.onOpenItem(it.key ?? null, it.id);
+      return;
+    }
     writeTicketOrigin({
       fromUrl: `${resolvedBaseUrl}/backlog`,
       fromLabel: 'Backlog',
       fromType: 'story-backlog',
     });
     navigate(`${resolvedBaseUrl}/backlog/${it.issue_key || it.id}`);
-  }, [projectKey, navigate]);
+  }, [projectKey, navigate, dataSource, resolvedBaseUrl]);
   // Detail callbacks removed 2026-05-12 task E: no longer managing panel state.
 
   // Detail navigation (j/k keys) removed 2026-05-12 task E: detail view now
@@ -1902,6 +1922,21 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         }
 
         try {
+          // Adapter route — for BIZ rows, persist rank via adapter (no ph_issues).
+          if (dataSource && (draggedRow as any).source === BIZ_SOURCE) {
+            if (dataSource.onSetRank) {
+              await dataSource.onSetRank(draggedRow.id, newRankOrder);
+              dataSource.invalidationKeys.forEach(k =>
+                queryClient.invalidateQueries({ queryKey: k as any }),
+              );
+              if (sortKey !== null) {
+                setSortKey(null);
+                setSortDir(null);
+              }
+              flag.success('Reordered', `${draggedRow.key || 'Row'} moved.`);
+            }
+            return;
+          }
           const { error: updErr } = await supabase
             .from('ph_issues')
             .update({ sort_order: newRankOrder, jira_updated_at: new Date().toISOString() })
@@ -2278,6 +2313,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // Delete mutation — wired to @atlaskit/modal-dialog confirmation below.
   const deleteItem = useMutation({
     mutationFn: async (item: BacklogItem) => {
+      // Adapter route — for product hub business_requests rows.
+      if (dataSource && (item as any).source === BIZ_SOURCE) {
+        await dataSource.onDelete(item.id);
+        return;
+      }
       if (item.source !== 'catalyst') {
         throw new Error('Jira-synced items must be deleted in Jira.');
       }
@@ -2299,6 +2339,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       setDeleteTarget(null);
       queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+      if (dataSource) {
+        dataSource.invalidationKeys.forEach(k =>
+          queryClient.invalidateQueries({ queryKey: k as any }),
+        );
+      }
     },
     onError: (e: Error) => flag.error('Delete failed', e.message),
   });
@@ -2327,6 +2372,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   };
   const bulkUpdate = useMutation({
     mutationFn: async ({ ids, patch }: { ids: string[]; patch: Record<string, unknown> }) => {
+      // Adapter route — apply patch row-by-row via adapter for BIZ rows.
+      if (dataSource) {
+        const bizRows = items.filter((it) => ids.includes(it.id) && (it as any).source === BIZ_SOURCE);
+        if (bizRows.length > 0) {
+          await Promise.all(bizRows.map(r => dataSource.onUpdate(r.id, patch)));
+          return { applied: bizRows.length, skipped: ids.length - bizRows.length };
+        }
+      }
       const editable = items.filter((it) => ids.includes(it.id) && it.source === 'catalyst');
       const skipped = ids.length - editable.length;
       if (editable.length === 0) {
@@ -2350,11 +2403,24 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       );
       queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+      if (dataSource) {
+        dataSource.invalidationKeys.forEach(k =>
+          queryClient.invalidateQueries({ queryKey: k as any }),
+        );
+      }
     },
     onError: (e: Error) => flag.error('Bulk update failed', e.message),
   });
   const bulkDelete = useMutation({
     mutationFn: async (ids: string[]) => {
+      // Adapter route — delegate to adapter for BIZ rows.
+      if (dataSource) {
+        const bizRows = items.filter((it) => ids.includes(it.id) && (it as any).source === BIZ_SOURCE);
+        if (bizRows.length > 0) {
+          await dataSource.onBulkDelete(bizRows.map(r => r.id));
+          return { applied: bizRows.length, skipped: ids.length - bizRows.length };
+        }
+      }
       const editable = items.filter((it) => ids.includes(it.id) && it.source === 'catalyst');
       const skipped = ids.length - editable.length;
       if (editable.length === 0) {
@@ -2379,11 +2445,19 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       setSelectedIds(new Set());
       queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+      if (dataSource) {
+        dataSource.invalidationKeys.forEach(k =>
+          queryClient.invalidateQueries({ queryKey: k as any }),
+        );
+      }
     },
     onError: (e: Error) => flag.error('Bulk delete failed', e.message),
   });
 
-  if (storiesLoading || epicsLoading) {
+  // For dataSource (e.g. product hub), gate on adapter loading.
+  // For project hub, gate on the ph_issues hooks.
+  const effectiveLoading = dataSource ? dataSource.isLoading : (storiesLoading || epicsLoading);
+  if (effectiveLoading) {
     return (
       <Box xcss={xcss({ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: 'space.1000' })}>
         <Spinner size="large" label="Loading backlog" />
@@ -2394,7 +2468,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // Error state — shows only when BOTH fetchers failed. If only one errors
   // we still render the table from the partial data; a toast already surfaced
   // the failure via TanStack Query's built-in retry path.
-  if (backlogError && stories.length === 0 && epics.length === 0) {
+  // For dataSource flows, errors surface via the adapter's mutation flags; we
+  // skip the ph_issues error gate when an adapter is provided.
+  if (!dataSource && backlogError && stories.length === 0 && epics.length === 0) {
     return (
       <Box xcss={xcss({ padding: 'space.400', maxWidth: '720px' })}>
         <SectionMessage
@@ -2644,7 +2720,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             horizontal-nav-header.ui.project-header.header. The legacy
             ProjectChromeBand is retained for back-compat by surfaces that
             still mount it directly, but Backlog now uses the chip alone. */}
-        <ProjectHeaderChip projectKey={projectKey} />
+        {dataSource?.ChromeHeader
+          ? <dataSource.ChromeHeader productCode={projectKey} productName={projectDisplayName} />
+          : <ProjectHeaderChip projectKey={projectKey} />}
         {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
         {false && <ProjectChromeBand
           projectName={pageTitle}
@@ -3067,6 +3145,17 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   if (trimmed.length > 255) { flag.error('Summary must be 255 characters or fewer'); return; }
                   setInlineCreateSubmitting(true);
                   try {
+                    // Adapter route — product hub creates via adapter.onCreate.
+                    if (dataSource) {
+                      await dataSource.onCreate({ title: trimmed });
+                      flag.success(`Created — ${trimmed}`);
+                      dataSource.invalidationKeys.forEach(k =>
+                        queryClient.invalidateQueries({ queryKey: k as any }),
+                      );
+                      setFooterCreateActive(false);
+                      setInlineCreateSubmitting(false);
+                      return;
+                    }
                     const issueKey = await generateIssueKey(projectKey);
                     const nowIso = new Date().toISOString();
                     // Default status: first group when grouped by status, else 'To Do'
@@ -3274,7 +3363,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 onCreated={() => {
                   queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
                   queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+                  if (dataSource) {
+                    dataSource.invalidationKeys.forEach(k =>
+                      queryClient.invalidateQueries({ queryKey: k as any }),
+                    );
+                  }
                 }}
+                onCreateOverride={dataSource ? ({ title }) => dataSource.onCreate({ title }) : undefined}
               />
             }
           />
@@ -5578,6 +5673,7 @@ function BottomCreateRow({
   rightOffset = 0,
   leftOffset = 0,
   onCreated,
+  onCreateOverride,
 }: {
   projectKey: string;
   /** Smart default based on the active pill — when user's on "Defects"
@@ -5593,6 +5689,9 @@ function BottomCreateRow({
    *  row aligns with the table column edge. */
   leftOffset?: number;
   onCreated: () => void;
+  /** When provided (e.g. product hub adapter), bypasses the ph_issues
+   *  insert and delegates row creation to this callback instead. */
+  onCreateOverride?: (input: { title: string; issueType: CreatableIssueType }) => Promise<void>;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [summary, setSummary] = useState('');
@@ -5630,6 +5729,14 @@ function BottomCreateRow({
     if (!projectKey) return;
     setIsSubmitting(true);
     try {
+      // Adapter route — delegate to override when provided (product hub).
+      if (onCreateOverride) {
+        await onCreateOverride({ title, issueType });
+        flag.success(`Created — ${title}`);
+        reset();
+        onCreated();
+        return;
+      }
       const issueKey = await generateIssueKey(projectKey);
       const nowIso = new Date().toISOString();
       const { error } = await supabase.from('ph_issues').insert({

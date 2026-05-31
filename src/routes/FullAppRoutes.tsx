@@ -123,7 +123,10 @@ const ProductCardsPage = lazy(() => import("../pages/producthub/CardsPage"));
 // Block C/D (2026-05-01) — All Products listing for /product-hub/products.
 const AllProductsPage = lazy(() => import("../pages/product-hub/AllProductsPage"));
 // 2026-06-01: native product hub pages (business_requests data model)
-const ProductNativeBacklogPage = lazy(() => import("../pages/product-hub/ProductNativeBacklogPage"));
+// 2026-06-01: ProductBacklogPage reuses canonical BacklogPage via dataSource adapter
+// (parallel ProductNativeBacklogPage was deleted to eliminate drift; gap of 30+
+// features had accumulated from the imitation pattern).
+const ProductBacklogPage = lazy(() => import("../pages/product-hub/ProductBacklogPage"));
 const ProductNativeBoardPage = lazy(() => import("../pages/product-hub/ProductNativeBoardPage"));
 const ProductNativeAllWorkPage = lazy(() => import("../pages/product-hub/ProductNativeAllWorkPage"));
 const IdeationPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeationPage")) : () => <FeatureComingSoon title="Ideation" />;
@@ -515,7 +518,7 @@ export default function FullAppRoutes() {
             2026-05-16: renamed :code → :key so canonical components that read
             useParams().key work without adaptation. */}
         {/* Generic per-product routes — native product hub pages (2026-06-01) */}
-        <Route path="/product-hub/:key/backlog" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBacklogPage /></S></MG>} />
+        <Route path="/product-hub/:key/backlog" element={<MG k="producthub" t="ProductHub"><S><ProductBacklogPage /></S></MG>} />
         <Route path="/product-hub/:key/boards" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
         <Route path="/product-hub/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
         <Route path="/product-hub/:key/allwork" element={<MG k="producthub" t="ProductHub"><S><ProductNativeAllWorkPage /></S></MG>} />
