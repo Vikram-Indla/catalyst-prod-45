@@ -2053,7 +2053,8 @@ function HeadlineIssueTitle({
       alignItems: 'center',
       gap: 6,
       verticalAlign: 'middle',
-      flexWrap: 'wrap',
+      overflow: 'hidden',
+      maxWidth: '100%',
       border: `1px solid ${token('color.border', 'rgba(11, 18, 14, 0.14)')}`,
       borderRadius: 4,
       backgroundColor: token('elevation.surface', '#FFFFFF'),
@@ -2062,11 +2063,22 @@ function HeadlineIssueTitle({
       <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
         <WorkItemIcon type={normalizeIconType(issueType)} size={16} />
       </span>
-      {/* Jira parity: entity title renders as a blue link with KEY prefix.
-          DOM probe 2026-05-28: Jira shows "KEY: TITLE" in link color. */}
-      <span style={{ fontWeight: 400, color: token('color.link', '#0052CC') }}>
-        {issueKey ? `${issueKey}: ` : ''}{issueSummary}
+      {/* KEY is bold and always visible; title truncates so the status pill stays in view. */}
+      <span style={{ fontWeight: 600, color: token('color.link', '#0052CC'), whiteSpace: 'nowrap', flexShrink: 0 }}>
+        {issueKey}
       </span>
+      {issueSummary && (
+        <span style={{
+          fontWeight: 400,
+          color: token('color.link', '#0052CC'),
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          minWidth: 0,
+        }}>
+          {issueSummary}
+        </span>
+      )}
       {/* Jira parity: status chip after entity title.
           Uses StatusPill (same component as JiraTable backlog) for exact
           Jira-probed colors: done → #B3DF72, inprogress → #8FB8F6,
