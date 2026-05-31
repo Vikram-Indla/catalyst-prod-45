@@ -113,7 +113,10 @@ export function SummarizeDigestModal({
     const ctrl = new AbortController();
     setStates(Object.fromEntries(mentions.map(m => [m.commentId, { phase: 'loading' as const, summary: '' }])));
 
-    const CONCURRENCY = 5;
+    // Concurrency lowered 5 → 2 (2026-05-31) to avoid backend overload that
+    // caused mid-batch failures in production. The digest can take a few
+    // extra seconds — the trade is worth it for reliable summaries.
+    const CONCURRENCY = 2;
     let cursor = 0;
     const runNext = async (): Promise<void> => {
       const idx = cursor++;
@@ -196,7 +199,8 @@ export function SummarizeDigestModal({
 
           <ModalFooter>
             <span style={{ fontSize: 12, color: token('color.text.subtlest', '#626F86'), marginInlineEnd: 'auto' }}>
-              Powered by Caty · {stats.errors > 0 ? `${stats.errors} failed` : 'all clear'}
+              Powered by Caty
+              {stats.errors > 0 && ` · ${stats.errors} shown as original (AI unavailable)`}
             </span>
             <Button appearance="subtle" onClick={onClose}>Close</Button>
           </ModalFooter>
@@ -279,9 +283,23 @@ function DigestRow({
           )}
           {state.phase === 'done' && (state.summary || mention.commentBody.slice(0, 200))}
           {state.phase === 'error' && (
-            <span style={{ color: token('color.text.danger', '#AE2E24') }}>
-              Caty couldn't summarize this one. Original: {mention.commentBody.slice(0, 120)}…
-            </span>
+            <>
+              {/* Graceful fallback — show the original comment without alarming the user.
+                  AI failure is a backend issue, not something the user did wrong. */}
+              <span style={{ color: token('color.text', '#172B4D') }}>
+                {mention.commentBody.length > 240
+                  ? `${mention.commentBody.slice(0, 240).trim()}…`
+                  : mention.commentBody}
+              </span>
+              <span style={{
+                display: 'block',
+                marginBlockStart: 4,
+                fontSize: 11,
+                color: token('color.text.subtlest', '#626F86'),
+              }}>
+                AI summary unavailable — showing original
+              </span>
+            </>
           )}
         </div>
 

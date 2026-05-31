@@ -613,68 +613,18 @@ function FeedCard({
 }) {
   const [hover, setHover] = React.useState(false);
   const [dismissFocused, setDismissFocused] = React.useState(false);
-  // G-03 — Summarize comments AI button (Jira parity: 24×24 AI icon button alongside dismiss).
-  const [summaryPhase, setSummaryPhase] = React.useState<'idle' | 'loading' | 'error'>('idle');
+  // Per-card "Ask Caty" summarize button REMOVED 2026-05-31 — duplicated the
+  // panel-header digest CTA at the wrong granularity level. Users get one
+  // canonical AI affordance per section ("Ask Caty — summarize N") that
+  // opens the interactive triage modal. The summaryPhase state and
+  // handleSummarize handler that powered the removed button are removed
+  // alongside (see git blame for the original implementation).
   // Local avatar files only — Jira/Gravatar CDN URLs are banned (CLAUDE.md §19)
   // and fail to load due to CORS. Priority: local slug match → Atlaskit initials fallback.
   const avatarSrc = resolveAvatarUrl(row.authorName) || undefined;
   const relative = formatRelativeTimestamp(row.commentCreatedAt);
   // G-04 — Absolute timestamp shown as title attribute (Jira parity: "May 17, 2026 at 3:43 PM").
   const absolute = formatAbsoluteTimestamp(row.commentCreatedAt);
-
-  const handleSummarize = async () => {
-    if (summaryPhase === 'loading') return;
-    setSummaryPhase('loading');
-    try {
-      const res = await fetchFunction('ai-improve-comment', {
-        method: 'POST',
-        // Edge function expects `current_comment` (not `commentBody`) and returns
-        // streaming NDJSON — same format as suggest_reply. Must read line-by-line;
-        // calling res.json() on a streaming response always throws.
-        body: JSON.stringify({
-          current_comment: row.commentBody,
-          issue_summary: row.issueSummary,
-        }),
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
-      const reader = res.body.getReader();
-      const dec = new TextDecoder();
-      let buf = '';
-      let fullText = '';
-      outer: while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        buf += dec.decode(value, { stream: true });
-        let nl;
-        while ((nl = buf.indexOf('\n')) !== -1) {
-          const line = buf.slice(0, nl).trim();
-          buf = buf.slice(nl + 1);
-          if (!line) continue;
-          try {
-            const ev = JSON.parse(line);
-            if (ev.type === 'text' && typeof ev.delta === 'string') {
-              fullText += ev.delta;
-            } else if (ev.type === 'done') {
-              if (ev.full_text) fullText = ev.full_text;
-              break outer;
-            } else if (ev.type === 'error') {
-              throw new Error(ev.message ?? 'AI error');
-            }
-          } catch (parseErr) {
-            if (parseErr instanceof SyntaxError) continue; // malformed chunk — skip
-            throw parseErr;
-          }
-        }
-      }
-      setSummaryPhase('idle');
-      toast.message('Comment summary', { description: fullText || row.commentBody, duration: 12_000 });
-    } catch {
-      setSummaryPhase('error');
-      toast.error('Failed to summarize');
-      setTimeout(() => setSummaryPhase('idle'), 3_000);
-    }
-  };
 
   return (
     <div
@@ -700,61 +650,10 @@ function FeedCard({
         </span>
       </Tooltip>
 
-      {/* Ask Caty — summarize this comment/thread.
-          2026-05-31: upgraded from tiny grey sparkle to rainbow-bordered Ask Caty pill
-          per Vikram's enterprise AI affordance pattern. Static rainbow border (no
-          animation) wraps a compact white pill with sparkle + "Ask Caty" label.
-          See CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out. */}
-      <Tooltip content="Ask Caty to summarize">
-        <div
-          style={{
-            position: 'absolute',
-            top: 8,
-            right: 36,
-            display: 'inline-flex',
-            padding: 2,
-            borderRadius: 14,
-            background: ASK_CATY_RAINBOW,
-          }}
-        >
-          <button
-            type="button"
-            aria-label="Ask Caty to summarize this thread"
-            aria-busy={summaryPhase === 'loading' || undefined}
-            disabled={summaryPhase === 'loading'}
-            onClick={e => { e.stopPropagation(); handleSummarize(); }}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              height: 22,
-              padding: '0 8px 0 6px',
-              border: 'none',
-              borderRadius: 12,
-              background: token('elevation.surface', '#FFFFFF'),
-              cursor: summaryPhase === 'loading' ? 'wait' : 'pointer',
-              color: summaryPhase === 'error'
-                ? token('color.text.danger', '#AE2E24')
-                : token('color.text', '#172B4D'),
-              fontFamily: 'var(--cp-font-body, inherit)',
-              fontSize: 11,
-              fontWeight: 600,
-              lineHeight: 1,
-              outline: 'none',
-            }}
-          >
-            {summaryPhase === 'loading'
-              ? <Spinner size="xsmall" />
-              : (
-                <svg width="11" height="11" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
-                  <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" />
-                </svg>
-              )
-            }
-            Ask Caty
-          </button>
-        </div>
-      </Tooltip>
+      {/* Per-card Ask Caty summarize pill REMOVED 2026-05-31.
+          The panel-header "Ask Caty — summarize N" digest CTA covers the
+          summarize affordance at the right granularity (whole-feed, not
+          per-row noise). Dismiss (X) is now the only top-right action. */}
 
       {/* Dismiss (X) — G-01 Jira parity: always visible (opacity:1), top-right of every feed row.
           DOM probe 2026-05-29: Jira renders dismiss at opacity:1 at all times — no hover gate.
