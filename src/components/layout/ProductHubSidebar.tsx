@@ -12,7 +12,7 @@
  * Dual-mode added 2026-05-16 so /product-hub/INV/* shows per-product nav.
  */
 
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import {
   LayoutGrid,
@@ -25,7 +25,6 @@ import {
   ArrowLeft,
   Settings,
   Filter,
-  Inbox,
 } from '@/lib/atlaskit-icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
@@ -96,11 +95,10 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
         title: 'Planning',
         items: [
           { id: 'dashboard',          title: 'Product Dashboard',   path: `${base}/dashboard`,          icon: LayoutDashboard, exact: true  },
-          { id: 'business-requests',  title: 'Business Requests',   path: `${base}/business-requests`,  icon: Inbox,           exact: false },
           { id: 'backlog',            title: 'Product Backlog',     path: `${base}/backlog`,            icon: ClipboardList,   exact: true  },
           { id: 'boards',    title: 'Product Board',     path: `${base}/boards`,    icon: Columns3,        exact: false },
           { id: 'allwork',   title: 'Product Work',      path: `${base}/allwork`,   icon: Network,         exact: true },
-          { id: 'filters',   title: 'Filters',           path: `${base}/filters`,   icon: Filter,          exact: false },
+          { id: 'filters',   title: 'Product Filters',   path: `${base}/filters`,   icon: Filter,          exact: false },
         ],
       },
     ],
@@ -127,7 +125,7 @@ const GLOBAL_CONFIG: SidebarConfig = {
         },
         {
           id: 'filters',
-          title: 'Filters',
+          title: 'Product Filters',
           path: '/product-hub/filters',
           icon: Filter,
           exact: false,
@@ -234,12 +232,6 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
 
   const config: SidebarConfig = isScoped ? buildPerProductConfig(scopedProduct!) : GLOBAL_CONFIG;
 
-  // Navigate to BR backlog with ?create=true so BRBacklogPage auto-opens inline create
-  const handleCreateRequest = useCallback(() => {
-    if (!productCode) return;
-    navigate(`/product-hub/${productCode}/business-requests?create=true`);
-  }, [navigate, productCode]);
-
   // Group BRs by time bucket — TODAY + YESTERDAY, fallback to MOST RECENT when empty
   // H1 gate: show TODAY and YESTERDAY (max 48 hours), then fallback to most recent (capped 15)
   const groupedBrs = useMemo(() => {
@@ -320,7 +312,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
               {group.items.map((br) => (
                 <div
                   key={br.id}
-                  onClick={() => navigate(`/product-hub/backlog?selectedRequest=${br.request_key}`)}
+                  onClick={() => navigate(`/product-hub/${productCode}/backlog`)}
                   className="group"
                   style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '5px 12px 5px 28px', cursor: 'pointer', borderRadius: 3, margin: '0 4px', transition: 'background 80ms ease' }}
                   onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
@@ -406,31 +398,6 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
     </div>
   ) : null;
 
-  // Per-product create button — shown only when sidebar is expanded and scoped
-  const perProductCreateButton = isScoped && expanded ? (
-    <div style={{ padding: '8px 12px 0' }}>
-      <button
-        onClick={handleCreateRequest}
-        style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-          width: '100%', padding: '6px 0',
-          background: token('color.background.brand.bold', '#0052CC'),
-          color: token('color.text.inverse', '#FFFFFF'),
-          border: 'none', borderRadius: 4, cursor: 'pointer',
-          fontSize: 13, fontWeight: 500,
-          fontFamily: 'var(--cp-font-body)',
-          transition: 'background 120ms ease',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.brand.bold.hovered', '#0065FF'); }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = token('color.background.brand.bold', '#0052CC'); }}
-        aria-label="Create new business request"
-      >
-        <span style={{ fontSize: 16, lineHeight: 1, marginTop: -1 }}>+</span>
-        Create request
-      </button>
-    </div>
-  ) : null;
-
   return (
     <SidebarBase
       config={config}
@@ -438,12 +405,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
       onToggle={onToggle}
       className={className}
     >
-      {isScoped ? (
-        <>
-          {perProductCreateButton}
-          {perProductRecentsSection}
-        </>
-      ) : recentsSection}
+      {isScoped ? perProductRecentsSection : recentsSection}
     </SidebarBase>
   );
 }

@@ -36,7 +36,7 @@ import { Checkbox } from '@atlaskit/checkbox';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
-import { useCatalystWorkflow } from '@/hooks/useCatalystWorkflow';
+import { useDemandProcessStepOptions } from '@/hooks/useDemandProcessSteps';
 import {
   THEME_OPTIONS,
   STAKEHOLDER_OPTIONS,
@@ -202,14 +202,11 @@ interface Props {
 }
 
 export function BrSidebarDetails({ request, onUpdate, improveDropdown, watchersChip }: Props) {
-  const { statuses: workflowStatuses, isLoading: statusesLoading } =
-    useCatalystWorkflow('Business Request');
+  const { options: statusOptions, isLoading: statusesLoading } = useDemandProcessStepOptions();
   const { data: profiles = [] } = useProfiles();
   const { data: releases = [] } = useReleases();
 
   if (!request) return null;
-
-  const statusOptions = workflowStatuses.map((s) => ({ value: s.slug, label: s.name }));
   const requestTypeRaw = (request as unknown as { request_type?: string | null }).request_type ?? null;
   const categoryRaw = (request as unknown as { category?: string | null }).category ?? null;
   const plannedQuarter = request.planned_quarter ?? [];
