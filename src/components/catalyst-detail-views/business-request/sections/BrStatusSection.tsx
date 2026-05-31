@@ -89,7 +89,7 @@ export function BrStatusSection({ request, onUpdate }: Props) {
                 fontFamily: 'var(--cp-font-body)',
               }}
             >
-              <Lozenge appearance={categoryToLozenge(current.category)} isBold>
+              <Lozenge appearance={categoryToLozenge(current.category)}>
                 {current.label}
               </Lozenge>
               <ChevronDownIcon label="" size="small" />
@@ -120,7 +120,7 @@ export function BrStatusSection({ request, onUpdate }: Props) {
                 }
               }}
             >
-              <Lozenge appearance={categoryToLozenge(opt.category)} isBold>
+              <Lozenge appearance={categoryToLozenge(opt.category)}>
                 {opt.label}
               </Lozenge>
             </DropdownItem>

@@ -28,7 +28,7 @@
  * Atlaskit-thin wrappers. No @/components/ui/* (shadcn), no lucide-react
  * (replace with @atlaskit/icon), no bespoke CSS chrome.
  */
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { catalystToast } from '@/lib/catalystToast';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useProductHubBusinessRequest } from './useProductHubBusinessRequest';
@@ -43,6 +43,11 @@ import {
   BrLinkedItemsSection,
   BrSidebarDetails,
 } from './sections';
+import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
+import { CatalystActivitySection } from '../shared/sections';
+import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
+import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 export interface CatalystViewBusinessRequestV2Props {
   isOpen: boolean;
@@ -83,6 +88,10 @@ export default function CatalystViewBusinessRequestV2({
   const { request, resolvedId, isLoading, updateField, deleteRequest } =
     useProductHubBusinessRequest({ requestId, requestKey });
   const duplicateMutation = useDuplicateBusinessRequest();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showCloneDialog, setShowCloneDialog] = useState(false);
+
+  const openDetail = useGlobalSearchStore((s) => s.openDetail);
 
   // ── Header chrome handlers ────────────────────────────────────────────────
   const handlePermalink = useCallback(async () => {
@@ -97,21 +106,22 @@ export default function CatalystViewBusinessRequestV2({
     }
   }, [request?.request_key]);
 
-  const handleClone = useCallback(async () => {
+  const handleCloneConfirm = useCallback(async () => {
     if (!resolvedId) return;
     try {
       const newReq = await duplicateMutation.mutateAsync(resolvedId);
       catalystToast.success(`Duplicated as ${newReq?.request_key ?? 'BR'}`);
+      setShowCloneDialog(false);
     } catch {
       // Hook surfaces its own error toast via useToast — silent here.
     }
   }, [resolvedId, duplicateMutation]);
 
-
-  const handleDelete = useCallback(async () => {
+  const handleDeleteConfirm = useCallback(async () => {
     try {
       await deleteRequest();
       catalystToast.success('Business Request deleted');
+      setShowDeleteDialog(false);
       onClose();
     } catch {
       catalystToast.error('Delete failed');
@@ -130,9 +140,20 @@ export default function CatalystViewBusinessRequestV2({
       <BrScoringSection request={request} onUpdate={updateField} />
       <BrAttachmentsSection request={request} />
       <BrLinkedItemsSection request={request} />
+      {request?.request_key && resolvedId && (
+        <SubtasksPanel
+          storyKey={request.request_key}
+          storyId={resolvedId}
+          projectKey={request.project_key || 'MIM'}
+          onSubtaskClick={(key) => openDetail({ id: key })}
+          parentIssueType="Business Request"
+          parentSummary={request.title ?? ''}
+        />
+      )}
+      <CatalystActivitySection itemId={resolvedId ?? ''} isOpen={isOpen} />
     </>
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  ), [request, updateField]);
+  ), [request, updateField, resolvedId, isOpen, openDetail]);
 
   // ── Right rail (sidebar — workflow + assignees + dates + scoring badges) ─
   const rightContent = useMemo(() => (
@@ -141,28 +162,46 @@ export default function CatalystViewBusinessRequestV2({
   ), [request, updateField]);
 
   return (
-    <CatalystViewBase
-      isOpen={isOpen}
-      onClose={onClose}
-      panelMode={panelMode}
-      fullPageMode={fullPageMode}
-      itemType="Business Request"
-      itemKey={request?.request_key ?? null}
-      projectKey="MIM"
-      projectName="Product Hub"
-      onShare={handlePermalink}
-      moreMenuItems={useMemo(() => [
-        { label: 'Clone', onClick: handleClone },
-        { label: 'Delete', onClick: handleDelete, danger: true },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      ], [handleClone, handleDelete])}
-      onTogglePanelMode={onTogglePanelMode}
-      navigationItems={navigationItems}
-      currentItemId={resolvedId ?? undefined}
-      onNavigate={onNavigate}
-      leftContent={leftContent}
-      rightContent={rightContent}
-      isLoading={isLoading}
-    />
+    <>
+      <CatalystViewBase
+        isOpen={isOpen}
+        onClose={onClose}
+        panelMode={panelMode}
+        fullPageMode={fullPageMode}
+        itemType="Business Request"
+        itemKey={request?.request_key ?? null}
+        projectKey="MIM"
+        projectName="Product Hub"
+        onShare={handlePermalink}
+        moreMenuItems={useMemo(() => [
+          { label: 'Print', onClick: () => window.print() },
+          { label: 'Clone', onClick: () => setShowCloneDialog(true) },
+          { label: 'Delete request', onClick: () => setShowDeleteDialog(true), danger: true },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        ], [])}
+        onTogglePanelMode={onTogglePanelMode}
+        navigationItems={navigationItems}
+        currentItemId={resolvedId ?? undefined}
+        onNavigate={onNavigate}
+        leftContent={leftContent}
+        rightContent={rightContent}
+        isLoading={isLoading}
+      />
+      <ConfirmCloneDialog
+        isOpen={showCloneDialog}
+        onClose={() => setShowCloneDialog(false)}
+        issueKey={request?.request_key}
+        issueSummary={request?.title}
+        onConfirm={handleCloneConfirm}
+      />
+      <ConfirmDeleteDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        issueKey={request?.request_key}
+        issueSummary={request?.title}
+        typeLabel="request"
+        onConfirm={handleDeleteConfirm}
+      />
+    </>
   );
 }
