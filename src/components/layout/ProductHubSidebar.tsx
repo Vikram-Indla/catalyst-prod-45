@@ -25,6 +25,7 @@ import {
   ArrowLeft,
   Settings,
   Filter,
+  Inbox,
 } from '@/lib/atlaskit-icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
@@ -94,8 +95,9 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
       {
         title: 'Planning',
         items: [
-          { id: 'dashboard', title: 'Product Dashboard', path: `${base}/dashboard`, icon: LayoutDashboard, exact: true },
-          { id: 'backlog',   title: 'Product Backlog',   path: `${base}/backlog`,   icon: ClipboardList,   exact: true },
+          { id: 'dashboard',          title: 'Product Dashboard',   path: `${base}/dashboard`,          icon: LayoutDashboard, exact: true  },
+          { id: 'business-requests',  title: 'Business Requests',   path: `${base}/business-requests`,  icon: Inbox,           exact: false },
+          { id: 'backlog',            title: 'Product Backlog',     path: `${base}/backlog`,            icon: ClipboardList,   exact: true  },
           { id: 'boards',    title: 'Product Board',     path: `${base}/boards`,    icon: Columns3,        exact: false },
           { id: 'allwork',   title: 'Product Work',      path: `${base}/allwork`,   icon: Network,         exact: true },
           { id: 'filters',   title: 'Filters',           path: `${base}/filters`,   icon: Filter,          exact: false },

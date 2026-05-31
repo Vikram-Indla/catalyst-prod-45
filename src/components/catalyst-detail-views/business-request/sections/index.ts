@@ -10,6 +10,7 @@
  * back-compat until cycle 4 verifies nothing downstream consumes it.
  */
 export { BrTitleSection } from './BrTitleSection';
+export { BrKeyDetails } from './BrKeyDetails';
 export { BrStatusSection } from './BrStatusSection';
 export { BrArabicTitleSection } from './BrArabicTitleSection';
 export { BrDescriptionSection } from './BrDescriptionSection';

@@ -36,6 +36,7 @@ import { useDuplicateBusinessRequest } from '@/hooks/useBusinessRequests';
 import {
   BrTitleSection,
   BrStatusSection,
+  BrKeyDetails,
   BrArabicTitleSection,
   BrDescriptionSection,
   BrScoringSection,
@@ -135,6 +136,7 @@ export default function CatalystViewBusinessRequestV2({
     <>
       <BrTitleSection request={request} onUpdate={updateField} />
       <BrStatusSection request={request} onUpdate={updateField} />
+      <BrKeyDetails request={request} />
       <BrArabicTitleSection request={request} onUpdate={updateField} />
       <BrDescriptionSection request={request} onUpdate={updateField} />
       <BrScoringSection request={request} onUpdate={updateField} />

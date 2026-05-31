@@ -124,6 +124,7 @@ const ProductCardsPage = lazy(() => import("../pages/producthub/CardsPage"));
 const AllProductsPage = lazy(() => import("../pages/product-hub/AllProductsPage"));
 // 2026-05-16: per-product adapters — resolve products table, mount canonical components
 const ProductHubBacklogAdapter = lazy(() => import("../pages/product-hub/ProductHubPageAdapters"));
+const BRBacklogPage = lazy(() => import("../pages/product-hub/BRBacklogPage"));
 const ProductHubAllWorkAdapter = lazy(() => import("../pages/product-hub/ProductHubPageAdapters").then(m => ({ default: m.ProductHubAllWorkAdapter })));
 // INV product-scoped backlog (legacy — superseded by ProductHubBacklogAdapter 2026-05-16).
 const InvestorJourneyBacklogPage = lazy(() => import("../pages/product-hub/InvestorJourneyBacklogPage"));
@@ -516,6 +517,7 @@ export default function FullAppRoutes() {
             2026-05-16: renamed :code → :key so canonical components that read
             useParams().key work without adaptation. */}
         {/* Generic per-product routes — canonical components, same as project-hub */}
+        <Route path="/product-hub/:key/business-requests" element={<MG k="producthub" t="ProductHub"><S><BRBacklogPage /></S></MG>} />
         <Route path="/product-hub/:key/backlog" element={<MG k="producthub" t="ProductHub"><S><ProductHubBacklogAdapter /></S></MG>} />
         <Route path="/product-hub/:key/boards" element={<MG k="producthub" t="ProductHub"><S><KanbanBoardPageLazy /></S></MG>} />
         <Route path="/product-hub/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><KanbanBoardPageLazy /></S></MG>} />
