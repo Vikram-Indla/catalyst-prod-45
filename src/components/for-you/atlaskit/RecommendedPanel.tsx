@@ -1308,12 +1308,24 @@ function ReplyComposer({
   );
 }
 
-// Suggest-a-reply hover tile — Jira parity measurements (DOM probe 2026-05-28):
+// Ask Caty hover tile — Jira parity measurements (DOM probe 2026-05-28):
 //   Button padding snapped to grid: 4px 12px (Jira raw was off-grid, nearest = 4px)
 //   Button gap: 8px (nearest on-grid to Jira's 6px raw)
-//   Button color: rgb(80,82,88) = color.text.subtle
 //   Tile padding: 8px (on-grid, nearest to Jira's raw 6px)
 //   On hover tile bg: color.background.neutral.subtle.hovered
+//   2026-05-31: Renamed from "Suggest a reply" → "Ask Caty" and wrapped in
+//   the static rainbow border (CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out).
+const ASK_CATY_RAINBOW = `conic-gradient(
+  from 0deg,
+  #FF3CAC 0deg,
+  #784BA0 60deg,
+  #2B86C5 120deg,
+  #00C9FF 180deg,
+  #92FE9D 240deg,
+  #FFD700 300deg,
+  #FF3CAC 360deg
+)`;
+
 function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
   const [hover, setHover] = useState(false);
   return (
@@ -1333,27 +1345,37 @@ function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <button
-        type="button"
-        onClick={onSuggest}
-        aria-label="Suggest a reply using AI"
+      {/* Static rainbow border wrapper — AI affordance signifier.
+          See CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (2026-05-31). */}
+      <div
         style={{
-          all: 'unset',
-          cursor: 'pointer',
           display: 'inline-flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '4px 12px',
-          borderRadius: 3,
-          font: `500 14px/20px "Inter", system-ui, sans-serif`,
-          color: token('color.text.subtle', '#505258'),
-          background: 'transparent',
-          border: `1px solid ${token('color.border', '#DFE1E6')}`,
+          padding: 2,
+          borderRadius: 5,
+          background: ASK_CATY_RAINBOW,
         }}
       >
-        <EditIcon label="" size="small" primaryColor="currentColor" />
-        Suggest a reply
-      </button>
+        <button
+          type="button"
+          onClick={onSuggest}
+          aria-label="Ask Caty to draft a reply"
+          style={{
+            all: 'unset',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '4px 12px',
+            borderRadius: 3,
+            font: `500 14px/20px "Inter", system-ui, sans-serif`,
+            color: token('color.text', '#172B4D'),
+            background: token('elevation.surface', '#FFFFFF'),
+          }}
+        >
+          <EditIcon label="" size="small" primaryColor="currentColor" />
+          Ask Caty
+        </button>
+      </div>
     </div>
   );
 }
