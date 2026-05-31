@@ -122,12 +122,10 @@ const RequirementAssistOutput = ENABLE_AI ? lazy(() => import("../pages/producth
 const ProductCardsPage = lazy(() => import("../pages/producthub/CardsPage"));
 // Block C/D (2026-05-01) — All Products listing for /product-hub/products.
 const AllProductsPage = lazy(() => import("../pages/product-hub/AllProductsPage"));
-// 2026-05-16: per-product adapters — resolve products table, mount canonical components
-const ProductHubBacklogAdapter = lazy(() => import("../pages/product-hub/ProductHubPageAdapters"));
-const BRBacklogPage = lazy(() => import("../pages/product-hub/BRBacklogPage"));
-
-// INV product-scoped backlog (legacy — superseded by ProductHubBacklogAdapter 2026-05-16).
-const InvestorJourneyBacklogPage = lazy(() => import("../pages/product-hub/InvestorJourneyBacklogPage"));
+// 2026-06-01: native product hub pages (business_requests data model)
+const ProductNativeBacklogPage = lazy(() => import("../pages/product-hub/ProductNativeBacklogPage"));
+const ProductNativeBoardPage = lazy(() => import("../pages/product-hub/ProductNativeBoardPage"));
+const ProductNativeAllWorkPage = lazy(() => import("../pages/product-hub/ProductNativeAllWorkPage"));
 const IdeationPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeationPage")) : () => <FeatureComingSoon title="Ideation" />;
 const IdeasRoadmapPage = ENABLE_AI ? lazy(() => import("../pages/product/ideas/IdeasRoadmapPage")) : () => <FeatureComingSoon title="Ideas Roadmap" />;
 const IdeasBacklogPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeasBacklogPage")) : () => <FeatureComingSoon title="Ideas Backlog" />;
@@ -516,11 +514,11 @@ export default function FullAppRoutes() {
             product data (project_key = product code, e.g. 'INV').
             2026-05-16: renamed :code → :key so canonical components that read
             useParams().key work without adaptation. */}
-        {/* Generic per-product routes — canonical components, same as project-hub */}
-        <Route path="/product-hub/:key/business-requests" element={<MG k="producthub" t="ProductHub"><S><BRBacklogPage /></S></MG>} />
-        <Route path="/product-hub/:key/backlog" element={<MG k="producthub" t="ProductHub"><S><ProductHubBacklogAdapter /></S></MG>} />
-        <Route path="/product-hub/:key/boards" element={<MG k="producthub" t="ProductHub"><S><KanbanBoardPageLazy /></S></MG>} />
-        <Route path="/product-hub/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><KanbanBoardPageLazy /></S></MG>} />
+        {/* Generic per-product routes — native product hub pages (2026-06-01) */}
+        <Route path="/product-hub/:key/backlog" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBacklogPage /></S></MG>} />
+        <Route path="/product-hub/:key/boards" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
+        <Route path="/product-hub/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
+        <Route path="/product-hub/:key/allwork" element={<MG k="producthub" t="ProductHub"><S><ProductNativeAllWorkPage /></S></MG>} />
 
         <Route path="/product-hub/:key/dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
         <Route path="/product-hub/:key/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
