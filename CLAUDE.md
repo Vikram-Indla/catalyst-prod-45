@@ -23,7 +23,7 @@ Before implementing any animation, visual effect, or interaction pattern, ask: *
 
 A **static** (non-animated, non-rotating) conic-gradient rainbow border is permitted **exclusively** on AI-branded CTAs (Ask Caty / CATY surfaces) as a permanent visual marker that the control is the AI affordance. Strict conditions:
 
-- ✅ ONLY on AI-branded CTAs — NEVER on generic buttons. Approved components: `AIIntelligenceButton` (R360 toolbar / Ideation page), `AskCatalystPill` (top-nav Ask Caty pill, every route), `SuggestReplyTile` in `RecommendedPanel.tsx` (Ask Caty on mentions), `ReplyComposer.tsx` Ask Caty button (notifications reply composer)
+- ✅ ONLY on AI-branded CTAs — NEVER on generic buttons. Approved components: `AIIntelligenceButton` (R360 toolbar / Ideation page), `SuggestReplyTile` in `RecommendedPanel.tsx` (Ask Caty on mentions), `ReplyComposer.tsx` Ask Caty button (notifications reply composer), per-card "Ask Caty" summarize pill in `RecommendedPanel.tsx`, panel-header "Ask Caty — summarize N" digest CTA in `RecommendedPanel.tsx`, modal header pill in `SummarizeDigestModal.tsx`. `AskCatalystPill` (top-nav) was DELISTED 2026-05-31 when the component was removed from the global header — AI is now strictly contextual, never global.
 - ✅ ALWAYS visible (idle + processing) — the rainbow is the AI signifier, not a processing indicator
 - ✅ MUST be `animation: none` — pure static gradient, no rotation, no shift, no shimmer, ever
 - ✅ Processing state inside the button uses `@atlaskit/spinner` + label "Thinking…" + `aria-busy={true}` — these are independent of the rainbow border

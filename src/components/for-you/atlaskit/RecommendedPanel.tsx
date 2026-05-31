@@ -58,6 +58,7 @@ import EmojiAddIcon from '@atlaskit/icon/glyph/emoji-add';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { catalystToast } from '@/lib/catalystToast';
 import ForYouRow from './ForYouRow';
+import { SummarizeDigestModal, type DigestMention } from './SummarizeDigestModal';
 import { ForYouEmptyState, GroupHeading, groupByRecency, MentionSparkleArt } from './helpers';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
 import { resolveAvatarUrl } from '@/lib/avatars';
@@ -245,6 +246,25 @@ export default function RecommendedPanel({
     [comments, dismissed]
   );
 
+  // ─── Caty's Digest — panel-level "Ask Caty" CTA (outlier feature) ──────────
+  // Council decision 2026-05-31: per-card sparkle = "this one". Panel-header
+  // digest = "all of these, triaged with inline actions". Two complementary
+  // entry points to the same AI affordance.
+  const [digestOpen, setDigestOpen] = useState<'mentions' | 'comments' | null>(null);
+  const digestRows = useMemo((): DigestMention[] => {
+    const src = digestOpen === 'mentions' ? visibleMentions
+              : digestOpen === 'comments' ? visibleComments
+              : [];
+    return src.map(m => ({
+      commentId: m.commentId,
+      mentionerName: 'mentionerName' in m ? m.mentionerName : m.authorName,
+      mentionerAvatarUrl: 'mentionerAvatarUrl' in m ? m.mentionerAvatarUrl : m.authorAvatarUrl,
+      issueKey: m.issueKey,
+      issueSummary: m.issueSummary,
+      commentBody: m.commentBody,
+    }));
+  }, [digestOpen, visibleMentions, visibleComments]);
+
   if (isLoading) {
     return <RecommendedPanelSkeleton />;
   }
@@ -304,6 +324,7 @@ export default function RecommendedPanel({
             }))}
             onOpen={resolveSelect}
             onDismiss={handleDismiss}
+            onOpenDigest={visibleMentions.length >= 2 ? () => setDigestOpen('mentions') : undefined}
           />
         )}
         {hasComments && (
@@ -336,8 +357,22 @@ export default function RecommendedPanel({
             }))}
             onOpen={resolveSelect}
             onDismiss={handleDismiss}
+            onOpenDigest={visibleComments.length >= 2 ? () => setDigestOpen('comments') : undefined}
           />
         )}
+        <SummarizeDigestModal
+          open={digestOpen !== null}
+          onClose={() => setDigestOpen(null)}
+          mentions={digestRows}
+          onReply={(commentId) => {
+            // Reply happens in the original feed card. Modal just closes and
+            // scrolls user back to the card so the existing composer takes over.
+            const el = document.querySelector(`[data-comment-id="${commentId}"]`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }}
+          onDismiss={handleDismiss}
+          onOpenTicket={(issueKey) => resolveSelect(issueKey)}
+        />
       </div>
     );
   }
@@ -394,6 +429,7 @@ function FeedSection({
   onOpen,
   onDismiss,
   currentUserName,
+  onOpenDigest,
 }: {
   label: string;
   intro: string;
@@ -401,6 +437,8 @@ function FeedSection({
   onOpen: (issueKey: string, fallback?: { issueId: string; issueType: string; projectKey: string }) => void;
   onDismiss: (commentId: string) => void;
   currentUserName?: string;
+  /** When provided, renders the rainbow "Ask Caty" digest CTA in the section header. */
+  onOpenDigest?: () => void;
 }) {
   return (
     <section
@@ -417,31 +455,68 @@ function FeedSection({
         background: token('elevation.surface', '#FFFFFF'),
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        {/* Category tile — Jira parity (DOM probe 2026-04-24):
-            32×32 filled purple tile, radius 6, with a 16×16 inline
-            speech-bubble icon (Atlassian SVG path) in near-black.
-            Catalyst previously used an outlined @atlaskit/icon/glyph/comment
-            in discovery purple, which read as a thin stroke rather than
-            Jira's solid badge. This matches Jira's home-recommended-tab
-            category-icon tile pixel-for-pixel. */}
-        <PurpleCategoryTile />
-        <h4
-          style={{
-            // CLAUDE.md 2026-05-12 — Jira section headers measure 16/20.
-            // DOM probe 2026-05-29 confirmed fontWeight 653 (not 600) on
-            // the H4 heading element. 653 is in the ADS allowed-weights list.
-            fontSize: 16,
-            lineHeight: '20px',
-            fontFamily: '"Inter", system-ui, sans-serif',
-            fontWeight: 653,
-            color: token('color.text', '#292A2E'),
-            margin: 0,
-            letterSpacing: 'normal',
-          }}
-        >
-          {label}
-        </h4>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Category tile — Jira parity (DOM probe 2026-04-24):
+              32×32 filled purple tile, radius 6, with a 16×16 inline
+              speech-bubble icon (Atlassian SVG path) in near-black. */}
+          <PurpleCategoryTile />
+          <h4
+            style={{
+              // CLAUDE.md 2026-05-12 — Jira section headers measure 16/20.
+              // DOM probe 2026-05-29 confirmed fontWeight 653 (not 600).
+              fontSize: 16,
+              lineHeight: '20px',
+              fontFamily: '"Inter", system-ui, sans-serif',
+              fontWeight: 653,
+              color: token('color.text', '#292A2E'),
+              margin: 0,
+              letterSpacing: 'normal',
+            }}
+          >
+            {label}
+          </h4>
+        </div>
+        {/* "Ask Caty" digest CTA — opens SummarizeDigestModal with interactive triage.
+            Outlier positioning vs Jira: dynamic count + inline action triage modal.
+            See CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (static rainbow border). */}
+        {onOpenDigest && (
+          <div style={{
+            display: 'inline-flex',
+            padding: 2,
+            borderRadius: 20,
+            background: ASK_CATY_RAINBOW,
+          }}>
+            <button
+              type="button"
+              onClick={onOpenDigest}
+              aria-label={`Ask Caty to summarize ${rows.length} ${rows.length === 1 ? 'item' : 'items'}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                height: 28,
+                padding: '0 12px',
+                border: 'none',
+                borderRadius: 18,
+                background: token('elevation.surface', '#FFFFFF'),
+                cursor: 'pointer',
+                color: token('color.text', '#172B4D'),
+                fontFamily: 'var(--cp-font-body, inherit)',
+                fontSize: 12,
+                fontWeight: 600,
+                lineHeight: 1,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = token('elevation.surface.hovered', '#F1F2F4'); }}
+              onMouseLeave={e => { e.currentTarget.style.background = token('elevation.surface', '#FFFFFF'); }}
+            >
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
+                <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" />
+              </svg>
+              Ask Caty — summarize {rows.length}
+            </button>
+          </div>
+        )}
       </div>
       <p
         style={{
