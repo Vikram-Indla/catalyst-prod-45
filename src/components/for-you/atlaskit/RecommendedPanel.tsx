@@ -1382,11 +1382,7 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error'; onSug
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            // 2026-05-31: compressed from 14px/500/padding:4-12 → 12px/500/
-            // padding:2-8 so the button matches the secondary-action density
-            // of the surrounding mention card chrome (reaction chips, meta
-            // line). Was visually outweighing the 14px/400 body text.
-            padding: '2px 8px',
+            padding: '4px 8px',
             borderRadius: 3,
             font: `500 12px/16px "Inter", system-ui, sans-serif`,
             color: token('color.text', '#172B4D'),
