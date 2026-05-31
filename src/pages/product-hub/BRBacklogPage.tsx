@@ -359,7 +359,7 @@ export default function BRBacklogPage() {
     }}>
       {/* Toolbar */}
       <div style={{
-        padding: '12px 16px',
+        padding: '8px 16px',
         borderBottom: `1px solid ${token('color.border', 'var(--cp-border-neutral, #DFE1E6)')}`,
         display: 'flex',
         alignItems: 'center',
@@ -383,14 +383,34 @@ export default function BRBacklogPage() {
             {key}
           </span>
         )}
-        <span style={{
-          marginLeft: 'auto',
-          fontSize: 12,
-          color: token('color.text.subtlest', '#8590A2'),
-          fontFamily: 'var(--cp-font-body)',
-        }}>
-          {requests.length} requests
-        </span>
+
+        {/* Group By */}
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{
+            fontSize: 12, color: token('color.text.subtlest', '#8590A2'),
+            fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
+          }}>
+            Group by
+          </span>
+          <div style={{ width: 130 }}>
+            <Select<{ label: string; value: GroupByField }>
+              inputId="br-group-by"
+              options={GROUP_BY_OPTIONS}
+              value={GROUP_BY_OPTIONS.find((o) => o.value === groupBy) ?? GROUP_BY_OPTIONS[0]}
+              onChange={(opt) => setGroupBy((opt as { value: GroupByField } | null)?.value ?? 'none')}
+              isClearable={false}
+              isSearchable={false}
+              menuPlacement="auto"
+            />
+          </div>
+          <span style={{
+            fontSize: 12,
+            color: token('color.text.subtlest', '#8590A2'),
+            fontFamily: 'var(--cp-font-body)',
+          }}>
+            {requests.length}
+          </span>
+        </div>
       </div>
 
       {/* Table */}
@@ -416,11 +436,12 @@ export default function BRBacklogPage() {
             </button>
           </div>
         ) : (
-          <JiraTable
-            rows={requests as any[]}
-            columns={columns as any}
-            rowKey={(r: any) => r.id}
-            onRowClick={(r: any) => handleOpen(r as BusinessRequest)}
+          <JiraTable<BusinessRequest>
+            columns={columns}
+            data={groups ? undefined : requests}
+            groups={groups}
+            getRowId={(r) => r.id}
+            onRowClick={handleOpen}
           />
         )}
       </div>

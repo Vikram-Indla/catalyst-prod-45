@@ -110,7 +110,7 @@ export function BrKeyDetails({ request }: Props) {
           {fieldValue(typeLabel)}
         </div>
 
-        {/* Category */}
+        {/* Department */}
         <div style={{
           padding: '8px 10px',
           background: token('elevation.surface.sunken', '#F7F8F9'),
@@ -118,8 +118,8 @@ export function BrKeyDetails({ request }: Props) {
           border: `1px solid ${token('color.border', 'var(--cp-border-neutral, #DFE1E6)')}`,
           minWidth: 0,
         }}>
-          {fieldLabel('Category')}
-          {fieldValue(request.category ?? '—')}
+          {fieldLabel('Department')}
+          {fieldValue((request as any).department ?? '—')}
         </div>
 
         {/* Target date */}
