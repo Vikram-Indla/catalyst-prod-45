@@ -42,7 +42,7 @@ export interface ForYouTabDefinition {
 }
 
 export const FOR_YOU_TAB_ORDER: ForYouTabDefinition[] = [
-  { id: 'ai-theme',    label: 'AI Focus',        showCount: false },
+  { id: 'ai-theme',    label: 'Caty Focus',      showCount: false },
   { id: 'recommended', label: 'Recommended',     showCount: false },
   { id: 'assigned',    label: 'Assigned to me',  showCount: true  },
   { id: 'starred',     label: 'Starred',         showCount: false },
