@@ -13,13 +13,13 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = 'catalyst-tiptap-editor-styles-v37';
+const STYLE_ID = "catalyst-tiptap-editor-styles-v46";
 
 export function injectEditorStyles(): void {
-  if (typeof document === 'undefined') return;
+  if (typeof document === "undefined") return;
   if (document.getElementById(STYLE_ID)) return;
 
-  const s = document.createElement('style');
+  const s = document.createElement("style");
   s.id = STYLE_ID;
   s.textContent = `
     .catalyst-tiptap-editor {
@@ -55,14 +55,93 @@ export function injectEditorStyles(): void {
       margin: 8px 0;
       color: var(--ds-text-subtle, #5E6C84);
     }
-    .catalyst-tiptap-editor pre {
+    /* Code block with line-number gutter.
+       Font, font-size and line-height live on the wrapper and are
+       forced via 'font: inherit !important' on both the gutter and
+       the <pre> so the two grid columns share IDENTICAL font metrics.
+
+       padding/margin on the <pre> AND the gutter MUST carry
+       !important — story-detail-extensions.css declares
+       [data-sdm-scope] .ProseMirror pre { padding: 12px 16px;
+       margin: 8px 0 } at specificity 0,2,1 which beats this
+       rule's 0,2,0 without !important. The external padding
+       shifts the code text 4px down + 4px right relative to the
+       gutter and is the proven cause of the line-number
+       misalignment after re-entering edit mode. */
+    .catalyst-tiptap-editor .catalyst-code-block {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: stretch;
       background: var(--ds-surface-sunken, #F7F8F9);
-      padding: 12px;
-      border-radius: 4px;
-      font-size: 13px;
-      overflow-x: auto;
       margin: 4px 0 8px;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      line-height: 20px;
+      border: 0 !important;
+      outline: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block-gutter {
+      background: var(--ds-background-neutral, #E4E6EA);
+      color: var(--ds-text-subtle, #6B778C);
+      padding: 8px 10px !important;
+      margin: 0 !important;
+      text-align: right;
+      user-select: none;
+      -webkit-user-select: none;
+      font: inherit !important;
+      font-variant-numeric: tabular-nums;
+      border: 0 !important;
+      outline: 0 !important;
+      border-radius: 0 !important;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block-ln {
+      display: block;
+      font: inherit !important;
+      line-height: 20px !important;
+      border: 0 !important;
+      outline: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .catalyst-tiptap-editor .catalyst-code-block-pre {
+      background: transparent !important;
+      padding: 8px 12px !important;
+      margin: 0 !important;
+      overflow-x: auto;
+      min-width: 0;
+      font: inherit !important;
+      line-height: 20px !important;
+      border: 0 !important;
+      outline: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    /* Override the global .catalyst-tiptap-editor code rule which
+       sets background, padding 2/4 and border-radius 3 on every
+       code element. We need ZERO of those inside the code block,
+       and we force 'font: inherit' so the code text uses the exact
+       same family + size + line-height as the gutter spans. */
+    .catalyst-tiptap-editor .catalyst-code-block-pre code {
+      background: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      font: inherit !important;
+      line-height: 20px !important;
+      border: 0 !important;
+      outline: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    /* Kill the contenteditable focus outline that ProseMirror adds
+       to the <code> element when the cursor is inside it. */
+    .catalyst-tiptap-editor .catalyst-code-block-pre code:focus,
+    .catalyst-tiptap-editor .catalyst-code-block-pre code:focus-visible,
+    .catalyst-tiptap-editor .catalyst-code-block-pre code:focus-within {
+      outline: 0 !important;
+      border: 0 !important;
+      box-shadow: none !important;
     }
     .catalyst-tiptap-editor code {
       background: var(--ds-surface-sunken, #F7F8F9);

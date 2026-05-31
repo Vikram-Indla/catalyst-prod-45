@@ -214,17 +214,91 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
       );
 
     case 'codeBlock': {
+      // Read-mode code block — mirrors the edit-view CodeBlockWithGutter
+      // NodeView (useTiptapEditor.ts): a 2-column CSS grid with the
+      // line-number gutter on the left and the code on the right. All
+      // font/line-height/padding values match the edit-mode rules in
+      // editorStyles.ts (.catalyst-code-block, .catalyst-code-block-pre,
+      // .catalyst-code-block-gutter) so toggling between read and edit
+      // doesn't shift a single pixel.
       const lang = String(node.attrs?.language ?? '');
       const text = (node.content ?? []).map(c => c.text ?? '').join('');
+      const lineCount = Math.max(1, text.split('\n').length);
+      const lineNumbers: number[] = [];
+      for (let i = 1; i <= lineCount; i++) lineNumbers.push(i);
+      const monoFamily =
+        'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
       return (
-        <pre key={key} style={{
-          background: token('elevation.surface.sunken', '#F7F8F9'),
-          padding: 12, borderRadius: 4, fontSize: 13,
-          overflowX: 'auto', margin: '4px 0 8px',
-          fontFamily: 'var(--cp-font-mono, ui-monospace, monospace)',
-        }}>
-          <code data-language={lang}>{text}</code>
-        </pre>
+        <div
+          key={key}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'auto 1fr',
+            alignItems: 'stretch',
+            background: token('elevation.surface.sunken', '#F7F8F9'),
+            margin: '4px 0 8px',
+            fontFamily: monoFamily,
+            fontSize: 13,
+            lineHeight: '20px',
+            borderRadius: 0,
+          }}
+        >
+          <div
+            aria-hidden="true"
+            style={{
+              background: token('color.background.neutral', '#E4E6EA'),
+              color: token('color.text.subtle', '#6B778C'),
+              padding: '8px 10px',
+              margin: 0,
+              textAlign: 'right',
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+              fontFamily: monoFamily,
+              fontSize: 13,
+              lineHeight: '20px',
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            {lineNumbers.map((n) => (
+              <span
+                key={n}
+                style={{ display: 'block', lineHeight: '20px' }}
+              >
+                {n}
+              </span>
+            ))}
+          </div>
+          <pre
+            style={{
+              background: 'transparent',
+              padding: '8px 12px',
+              margin: 0,
+              overflowX: 'auto',
+              minWidth: 0,
+              fontFamily: monoFamily,
+              fontSize: 13,
+              lineHeight: '20px',
+              border: 0,
+              borderRadius: 0,
+            }}
+          >
+            <code
+              data-language={lang}
+              style={{
+                background: 'none',
+                padding: 0,
+                margin: 0,
+                fontFamily: monoFamily,
+                fontSize: 13,
+                lineHeight: '20px',
+                border: 0,
+                borderRadius: 0,
+              }}
+            >
+              {text}
+            </code>
+          </pre>
+        </div>
       );
     }
 

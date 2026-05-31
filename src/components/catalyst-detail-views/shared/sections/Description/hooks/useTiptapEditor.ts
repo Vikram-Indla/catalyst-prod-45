@@ -32,6 +32,71 @@ import {
   TableHeader as BaseTableHeader,
   TableCell as BaseTableCell,
 } from '@tiptap/extension-table';
+import { CodeBlock as BaseCodeBlock } from '@tiptap/extension-code-block';
+
+/**
+ * CodeBlock with a built-in line-number gutter — same UX as a code
+ * editor. The NodeView wraps PM's <code> contentDOM with a sibling
+ * gutter <div> (contentEditable=false so PM ignores it) and rewrites
+ * the gutter's contents on every transaction that touches the node.
+ *
+ * No borders — just a darker gray strip on the left for the gutter,
+ * the existing sunken background on the right for the code area.
+ */
+const CodeBlockWithGutter = BaseCodeBlock.extend({
+  addNodeView() {
+    return ({ node }) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'catalyst-code-block';
+
+      const gutter = document.createElement('div');
+      gutter.className = 'catalyst-code-block-gutter';
+      gutter.contentEditable = 'false';
+      wrapper.appendChild(gutter);
+
+      const pre = document.createElement('pre');
+      pre.className = 'catalyst-code-block-pre';
+      const code = document.createElement('code');
+      pre.appendChild(code);
+      wrapper.appendChild(pre);
+
+      const renderGutter = (text: string) => {
+        // Always show at least one number even for an empty block.
+        const lineCount = Math.max(1, text.split('\n').length);
+        const frag = document.createDocumentFragment();
+        for (let i = 1; i <= lineCount; i++) {
+          const ln = document.createElement('span');
+          ln.className = 'catalyst-code-block-ln';
+          ln.textContent = String(i);
+          frag.appendChild(ln);
+        }
+        gutter.replaceChildren(frag);
+      };
+      renderGutter(node.textContent);
+
+      return {
+        dom: wrapper,
+        contentDOM: code,
+        update(updatedNode) {
+          if (updatedNode.type.name !== node.type.name) return false;
+          renderGutter(updatedNode.textContent);
+          return true;
+        },
+        ignoreMutation(mutation) {
+          // Anything on or under the gutter is OUR DOM — PM never
+          // touches it, so PM should ignore the mutation.
+          if (
+            mutation.target === gutter ||
+            gutter.contains(mutation.target as Node)
+          ) {
+            return true;
+          }
+          return false;
+        },
+      };
+    };
+  },
+});
 
 // TableCell + TableHeader extended with a `background` attribute the
 // column/row color picker writes. Rendered as inline
@@ -314,7 +379,17 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
           bulletList: { HTMLAttributes: { dir: 'auto' } },
           orderedList: { HTMLAttributes: { dir: 'auto' } },
           listItem: { HTMLAttributes: { dir: 'auto' } },
-          codeBlock: { HTMLAttributes: { dir: 'auto' } },
+          // Disable StarterKit's built-in code block — we register
+          // CodeBlockWithGutter below which adds line numbers.
+          codeBlock: false,
+        }),
+        CodeBlockWithGutter.configure({
+          HTMLAttributes: { dir: 'auto' },
+          // Never auto-exit on N empty lines. The block stays as
+          // long as the user types in it, no matter how many empty
+          // lines they add — they exit explicitly (Shift+Enter out,
+          // arrow-down at the end, or click outside).
+          exitOnTripleEnter: false,
         }),
         Underline,
         Subscript,
