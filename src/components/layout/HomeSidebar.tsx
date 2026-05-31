@@ -33,7 +33,7 @@ import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
 
-const RECENT_LIMIT = 8;
+const RECENT_LIMIT = 16;
 
 interface HomeSidebarProps {
   expanded?: boolean;
