@@ -756,19 +756,25 @@ function FeedCard({
           </button>
         )}
 
-        {/* Comment body — full text with @-chips rendered inline.
-            Bumped from 13/18 to 14/20 to match Jira's For You card body
-            and to read at the same density as the headline above it. */}
+        {/* Comment body — left accent bar separates "what was said" from card chrome.
+            borderLeft uses color.link token (same blue as @mention chips). */}
         <div
           style={{
-            font: `400 14px/20px "Inter", system-ui, sans-serif`,
-            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
-            marginBlockStart: 2,
+            borderLeft: `3px solid ${token('color.link', '#0052CC')}`,
+            paddingLeft: 8,
+            marginBlockStart: 4,
           }}
         >
-          {renderCommentWithMentions(row.commentBody)}
+          <div
+            style={{
+              font: `400 14px/20px "Inter", system-ui, sans-serif`,
+              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+            }}
+          >
+            {renderCommentWithMentions(row.commentBody)}
+          </div>
         </div>
 
         {/* Emoji reactions — Jira parity (DOM probe: data-testid="render-reactions").
