@@ -1288,9 +1288,11 @@ function ReplyComposer({
       {/* ── "Suggest a reply" tile — HIDDEN in loading/done states ──────────
           Jira parity: tile disappears once the AI flow is active.
           Only shown in idle (and error) states.
-          Button: 2px 12px padding, gap 6px per Jira DOM probe 2026-05-28. */}
+          2026-05-31: pass phase down so the tile can render an INLINE error
+          message when Gemini is rate-limited (was: silent toast that users
+          missed → "nothing happens" UX bug). */}
       {(suggestionPhase === 'idle' || suggestionPhase === 'error') && (
-        <SuggestReplyTile onSuggest={handleSuggestReply} />
+        <SuggestReplyTile phase={suggestionPhase} onSuggest={handleSuggestReply} />
       )}
     </div>
   );
@@ -1314,7 +1316,7 @@ const ASK_CATY_RAINBOW = `conic-gradient(
   #FF3CAC 360deg
 )`;
 
-function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
+function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error'; onSuggest: () => void }) {
   const [hover, setHover] = useState(false);
   return (
     <div
@@ -1322,6 +1324,9 @@ function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
         marginBlockStart: 8,
         marginInlineStart: 34, /* 32 avatar + 2 nudge */
         display: 'inline-flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: 6,
         padding: 8,
         borderRadius: 3,
         background: hover
@@ -1333,6 +1338,30 @@ function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
+      {phase === 'error' && (
+        // Inline error state — visible explanation when Gemini is rate-limited
+        // or otherwise unavailable. Replaces reliance on the transient toast.
+        // Click the button below to retry.
+        <div
+          role="status"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            font: `500 12px/16px "Inter", system-ui, sans-serif`,
+            color: token('color.text.warning-inverse', '#7F5F01'),
+            background: token('color.background.warning', '#FFF7D6'),
+            border: `1px solid ${token('color.border.warning', '#B38600')}`,
+            borderRadius: 4,
+            padding: '4px 8px',
+          }}
+        >
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM7.25 4.75a.75.75 0 0 1 1.5 0v3.5a.75.75 0 0 1-1.5 0v-3.5zM8 11.5a.9.9 0 1 1 0-1.8.9.9 0 0 1 0 1.8z" />
+          </svg>
+          Caty is busy — please wait a moment and click again.
+        </div>
+      )}
       {/* Static rainbow border wrapper — AI affordance signifier.
           See CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (2026-05-31). */}
       <div
