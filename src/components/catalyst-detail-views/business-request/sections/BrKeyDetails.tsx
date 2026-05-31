@@ -8,7 +8,9 @@
  * Read-only chips. Editing is done via BrSidebarDetails (right rail).
  * 100% ADS tokens — no raw hex.
  */
+import { useQuery } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
+import { supabase } from '@/integrations/supabase/client';
 import type { BusinessRequest } from '@/types/business-request';
 
 interface Props {
@@ -67,6 +69,20 @@ function formatDate(iso: string | null): string {
 }
 
 export function BrKeyDetails({ request }: Props) {
+  const { data: productName } = useQuery<string | null>({
+    queryKey: ['br-product-name', request?.product_id],
+    enabled: !!request?.product_id,
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from('products')
+        .select('name')
+        .eq('id', request!.product_id)
+        .maybeSingle();
+      return (data as { name?: string } | null)?.name ?? null;
+    },
+    staleTime: 5 * 60_000,
+  });
+
   if (!request) return null;
 
   const urgencyKey = (request.urgency ?? '').toLowerCase();
@@ -110,7 +126,7 @@ export function BrKeyDetails({ request }: Props) {
           {fieldValue(typeLabel)}
         </div>
 
-        {/* Department */}
+        {/* Product */}
         <div style={{
           padding: '8px 10px',
           background: token('elevation.surface.sunken', '#F7F8F9'),
@@ -118,8 +134,8 @@ export function BrKeyDetails({ request }: Props) {
           border: `1px solid ${token('color.border', 'var(--cp-border-neutral, #DFE1E6)')}`,
           minWidth: 0,
         }}>
-          {fieldLabel('Department')}
-          {fieldValue((request as any).department ?? '—')}
+          {fieldLabel('Product')}
+          {fieldValue(productName ?? '—', productName ? token('color.link', '#0052CC') : undefined)}
         </div>
 
         {/* Target date */}

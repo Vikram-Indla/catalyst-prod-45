@@ -324,6 +324,7 @@ export interface BusinessRequest {
   request_type: string | null;   // 'feature' | 'gap' | 'integration' | 'data_request'
   category: string | null;       // 'Industrial' | 'Ministry Website' | 'Internal Services' | 'Innovation Platform'
   scope_url: string | null;      // Optional canonical URL to the scope doc
+  product_id: string | null;     // FK → products.id (added 2025-12 migration)
 
   // Metadata
   created_at: string;

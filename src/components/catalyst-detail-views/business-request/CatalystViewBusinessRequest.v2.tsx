@@ -51,6 +51,7 @@ import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { ImproveIssueDropdown } from '../improve';
 import { WatchersChip } from '../shared/WatchersChip';
+import { BrMoveProductDialog } from './BrMoveProductDialog';
 
 export interface CatalystViewBusinessRequestV2Props {
   isOpen: boolean;
@@ -93,6 +94,7 @@ export default function CatalystViewBusinessRequestV2({
   const duplicateMutation = useDuplicateBusinessRequest();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showCloneDialog, setShowCloneDialog] = useState(false);
+  const [showMoveDialog, setShowMoveDialog] = useState(false);
 
   const openDetail = useGlobalSearchStore((s) => s.openDetail);
 
@@ -209,6 +211,7 @@ export default function CatalystViewBusinessRequestV2({
         moreMenuItems={useMemo(() => [
           { label: 'Print', onClick: () => window.print() },
           { label: 'Clone', onClick: () => setShowCloneDialog(true) },
+          { label: 'Move to product…', onClick: () => setShowMoveDialog(true) },
           { label: 'Delete request', onClick: () => setShowDeleteDialog(true), danger: true },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         ], [])}
@@ -235,6 +238,17 @@ export default function CatalystViewBusinessRequestV2({
         typeLabel="request"
         onConfirm={handleDeleteConfirm}
       />
+      {showMoveDialog && (
+        <BrMoveProductDialog
+          isOpen={showMoveDialog}
+          onClose={() => setShowMoveDialog(false)}
+          requestKey={request?.request_key}
+          requestTitle={request?.title}
+          currentProductId={request?.product_id ?? null}
+          onUpdate={updateField}
+          onMoved={onClose}
+        />
+      )}
     </>
   );
 }
