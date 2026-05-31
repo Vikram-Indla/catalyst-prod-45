@@ -46,8 +46,12 @@ export const FOR_YOU_TAB_ORDER: ForYouTabDefinition[] = [
   // Assigned panel ("Ask Caty - Themify"). The /for-you/ai-theme route
   // and panel render path are KEPT alive so bookmarked URLs and stale
   // localStorage entries gracefully resolve to the same AiThemePanel.
-  { id: 'recommended', label: 'Recommended',     showCount: false },
+  // 2026-05-31: 'Assigned to me' moved to first position per Vikram —
+  // it's the highest-frequency tab (live work-in-progress) so it earns
+  // pole position. Default landing tab logic is unchanged (separate
+  // setting in useForYouData); only the visible order is reshuffled.
   { id: 'assigned',    label: 'Assigned to me',  showCount: true  },
+  { id: 'recommended', label: 'Recommended',     showCount: false },
   { id: 'starred',     label: 'Starred',         showCount: false },
   { id: 'r360',        label: 'Resource 360°',   showCount: false },
   { id: 'ageing',      label: 'Ageing',          showCount: true  },
