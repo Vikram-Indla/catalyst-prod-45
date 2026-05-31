@@ -29,7 +29,6 @@
  */
 import React from 'react';
 import { token } from '@atlaskit/tokens';
-import { Sparkles } from '@/lib/atlaskit-icons';
 import type { TabType } from '@/hooks/useForYouData';
 import { useAgeingCount } from '@/components/notifications/AgeingTab';
 
@@ -169,35 +168,28 @@ function TabButton({
       }}
     >
       {showSparkle && (
-        <Sparkles
-          size={12}
-          strokeWidth={1.75}
-          // Matches the Ask Catalyst ("Caty") pill chrome — same AI family,
-          // same ink. Uses `color.icon.brand` (#1868DB) instead of the
-          // discovery/purple accent so every Atlaskit-compliant AI surface
-          // in Catalyst reads as the same entity.
-          style={{ color: token('color.icon.brand', '#1868DB'), flexShrink: 0 }}
-        />
+        // Caty Focus sparkle — RAINBOW gradient fill on the icon glyph itself
+        // (via inline <linearGradient> def + url(#) reference). The Lucide
+        // Sparkles component sets currentColor on its strokes, which cannot
+        // carry a CSS gradient — must drop down to raw SVG to get the rainbow.
+        // animation:none, AI-branded surface ONLY, per CLAUDE.md guardrail.
+        // Palette matches STATIC_RAINBOW (Ask Caty CTAs) — single source of truth.
+        <svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true" style={{ flexShrink: 0 }}>
+          <defs>
+            <linearGradient id="caty-focus-rainbow" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FF3CAC" />
+              <stop offset="20%" stopColor="#784BA0" />
+              <stop offset="40%" stopColor="#2B86C5" />
+              <stop offset="60%" stopColor="#00C9FF" />
+              <stop offset="80%" stopColor="#92FE9D" />
+              <stop offset="100%" stopColor="#FFD700" />
+            </linearGradient>
+          </defs>
+          {/* 4-point sparkle — canonical Caty AI glyph */}
+          <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" fill="url(#caty-focus-rainbow)" />
+        </svg>
       )}
-      {showSparkle ? (
-        // "Caty Focus" — rainbow gradient text. Matches the AI affordance
-        // palette used by all Ask Caty CTAs (STATIC_RAINBOW). animation:none.
-        // Static linear-gradient clipped to glyph shapes via background-clip:text.
-        // CLAUDE.md ENTERPRISE UI GUARDRAIL: rainbow ink is permitted ONLY on
-        // AI-branded surfaces (Ask Caty CTAs, Caty Focus tab) — never generic.
-        <span
-          style={{
-            backgroundImage: 'linear-gradient(90deg, #FF3CAC 0%, #784BA0 20%, #2B86C5 40%, #00C9FF 60%, #92FE9D 80%, #FFD700 100%)',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            color: 'transparent',
-            fontWeight: 600,
-          }}
-        >
-          {tab.label}
-        </span>
-      ) : tab.label}
+      {tab.label}
       {showCounter && (
         <span
           style={{
