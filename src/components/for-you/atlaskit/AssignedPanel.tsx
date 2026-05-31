@@ -29,6 +29,9 @@ interface AssignedPanelProps {
   isLoading: boolean;
   onSelect: (item: WorkItem) => void;
   onToggleStar: (id: string) => void;
+  /** When provided, renders the "Ask Caty - Themify" rainbow CTA at top.
+   *  Parent (ForYouPage) owns the modal state that wraps AiThemePanel. */
+  onAskCatyThemify?: () => void;
 }
 
 function isDone(statusCategory?: string, status?: string): boolean {
@@ -46,7 +49,7 @@ function categoryRank(statusCategory?: string): number {
   return 1;
 }
 
-export default function AssignedPanel({ items, isLoading, onSelect, onToggleStar }: AssignedPanelProps) {
+export default function AssignedPanel({ items, isLoading, onSelect, onToggleStar, onAskCatyThemify }: AssignedPanelProps) {
   const [showDone, setShowDone] = useState(false);
 
   const { groups, doneCount } = useMemo(() => {
@@ -87,6 +90,9 @@ export default function AssignedPanel({ items, isLoading, onSelect, onToggleStar
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {onAskCatyThemify && (
+        <AskCatyThemifyButton onClick={onAskCatyThemify} count={items.length} />
+      )}
       {groups.map(group => (
         <div key={group.status}>
           <SectionHeading label={group.status} />
@@ -148,6 +154,79 @@ function SectionHeading({ label }: { label: string }) {
       }}>
         {label}
       </span>
+    </div>
+  );
+}
+
+// ─── "Ask Caty - Themify" rainbow CTA ───────────────────────────────────────
+// Replaces the removed Caty Focus tab as a contextual entry point for the
+// AI Themify functionality. Static rainbow border + rainbow-fill sparkle.
+// CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out — animation:none, AI surfaces ONLY.
+
+const THEMIFY_RAINBOW = `conic-gradient(
+  from 0deg,
+  #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg,
+  #00C9FF 180deg, #92FE9D 240deg, #FFD700 300deg, #FF3CAC 360deg
+)`;
+
+function AskCatyThemifyButton({ onClick, count }: { onClick: () => void; count: number }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <div style={{
+      display: 'flex',
+      justifyContent: 'flex-end',
+      paddingBlockStart: 8,
+      paddingBlockEnd: 12,
+    }}>
+      <div style={{
+        display: 'inline-flex',
+        padding: 2,
+        borderRadius: 20,
+        background: THEMIFY_RAINBOW,
+      }}>
+        <button
+          type="button"
+          onClick={onClick}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          aria-label={`Ask Caty to themify your ${count} assigned items`}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            height: 28,
+            padding: '0 14px',
+            border: 'none',
+            borderRadius: 18,
+            background: hover
+              ? token('elevation.surface.hovered', '#F1F2F4')
+              : token('elevation.surface', '#FFFFFF'),
+            color: token('color.text', '#172B4D'),
+            cursor: 'pointer',
+            fontFamily: 'var(--cp-font-body)',
+            fontSize: 12,
+            fontWeight: 600,
+            lineHeight: 1,
+            transition: 'background 150ms ease',
+          }}
+        >
+          {/* Rainbow-fill sparkle — same userSpaceOnUse pattern as Caty Focus */}
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style={{ flexShrink: 0 }}>
+            <defs>
+              <linearGradient id="themify-rainbow" gradientUnits="userSpaceOnUse" x1="1" y1="7" x2="13" y2="7">
+                <stop offset="0%"   stopColor="#FF3CAC" />
+                <stop offset="20%"  stopColor="#784BA0" />
+                <stop offset="40%"  stopColor="#2B86C5" />
+                <stop offset="60%"  stopColor="#00C9FF" />
+                <stop offset="80%"  stopColor="#92FE9D" />
+                <stop offset="100%" stopColor="#FFD700" />
+              </linearGradient>
+            </defs>
+            <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" fill="url(#themify-rainbow)" />
+          </svg>
+          Ask Caty - Themify
+        </button>
+      </div>
     </div>
   );
 }

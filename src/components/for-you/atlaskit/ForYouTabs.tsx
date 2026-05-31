@@ -41,7 +41,11 @@ export interface ForYouTabDefinition {
 }
 
 export const FOR_YOU_TAB_ORDER: ForYouTabDefinition[] = [
-  { id: 'ai-theme',    label: 'Caty Focus',      showCount: false },
+  // 2026-05-31: 'Caty Focus' (ai-theme) tab REMOVED from visible strip.
+  // The AI Themify functionality is now a contextual button on the
+  // Assigned panel ("Ask Caty - Themify"). The /for-you/ai-theme route
+  // and panel render path are KEPT alive so bookmarked URLs and stale
+  // localStorage entries gracefully resolve to the same AiThemePanel.
   { id: 'recommended', label: 'Recommended',     showCount: false },
   { id: 'assigned',    label: 'Assigned to me',  showCount: true  },
   { id: 'starred',     label: 'Starred',         showCount: false },
@@ -113,7 +117,8 @@ function TabButton({
 }) {
   const [hover, setHover] = React.useState(false);
   const showCounter = tab.showCount && count > 0;
-  const showSparkle = tab.id === 'ai-theme';
+  // 2026-05-31: showSparkle (ai-theme rainbow sparkle) removed alongside
+  // the Caty Focus tab. The rainbow sparkle SVG block is gone too.
   // Ageing uses a red-tinted counter to signal SLA risk, matching the
   // AMBER/RED governance language the panel itself renders.
   // Assigned uses a blue-tinted counter matching Jira's probed badge:
@@ -167,29 +172,9 @@ function TabButton({
         transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.15, 1, 0.3, 1)',
       }}
     >
-      {showSparkle && (
-        // Caty Focus sparkle — RAINBOW gradient fill on the icon glyph.
-        // gradientUnits="userSpaceOnUse" + explicit x1/x2 coords matching the
-        // path's horizontal extent (x=1 → x=13) so the 6 colour stops map
-        // PREDICTABLY across the star's full width — not corner-to-corner
-        // through the cyan mid-range like the default objectBoundingBox.
-        // animation:none, AI-branded surface ONLY, per CLAUDE.md guardrail.
-        // Palette matches STATIC_RAINBOW (Ask Caty CTAs) — single source of truth.
-        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style={{ flexShrink: 0 }}>
-          <defs>
-            <linearGradient id="caty-focus-rainbow" gradientUnits="userSpaceOnUse" x1="1" y1="7" x2="13" y2="7">
-              <stop offset="0%" stopColor="#FF3CAC" />
-              <stop offset="20%" stopColor="#784BA0" />
-              <stop offset="40%" stopColor="#2B86C5" />
-              <stop offset="60%" stopColor="#00C9FF" />
-              <stop offset="80%" stopColor="#92FE9D" />
-              <stop offset="100%" stopColor="#FFD700" />
-            </linearGradient>
-          </defs>
-          {/* 4-point sparkle — canonical Caty AI glyph, filled with horizontal rainbow */}
-          <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" fill="url(#caty-focus-rainbow)" />
-        </svg>
-      )}
+      {/* 2026-05-31: Caty Focus rainbow sparkle removed — tab no longer
+          in strip. The same rainbow-sparkle glyph now lives on the
+          "Ask Caty - Themify" button inside AssignedPanel. */}
       {tab.label}
       {showCounter && (
         <span

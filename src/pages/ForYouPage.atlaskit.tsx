@@ -50,6 +50,8 @@ import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
 // from FOR_YOU_TAB_ORDER because they had low real-world use; keeping the
 // imports around would just be dead wiring.
 import AiThemePanel from '@/components/for-you/atlaskit/AiThemePanel';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
 import AgeingPanel from '@/components/for-you/atlaskit/AgeingPanel';
 import R360Panel from '@/components/for-you/atlaskit/R360Panel';
 import { R360AccessTile } from '@/components/R360AccessTile';
@@ -180,6 +182,12 @@ export default function ForYouPageAtlaskit() {
     });
   }, [trackView]);
 
+  // ─── Ask Caty - Themify modal (replaces former Caty Focus tab) ───────────
+  // The AI Themify functionality used to live as a top-level tab. 2026-05-31:
+  // moved to a contextual rainbow CTA on the Assigned panel that opens
+  // AiThemePanel inside a modal.
+  const [themifyOpen, setThemifyOpen] = useState(false);
+
   // ─── Client-side pagination ─────────────────────────────────────────────
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const visibleItems = useMemo(() => workItems.slice(0, visibleCount), [workItems, visibleCount]);
@@ -237,7 +245,7 @@ export default function ForYouPageAtlaskit() {
       // R360 owns its own data pipeline — no row-feed props.
       case 'r360':        return <R360Panel />;
       case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
-      case 'assigned':    return <AssignedPanel    {...panelProps} />;
+      case 'assigned':    return <AssignedPanel    {...panelProps} onAskCatyThemify={() => setThemifyOpen(true)} />;
       case 'starred':     return <StarredPanel     {...panelProps} onSwitchTab={onSwitchTab} />;
       default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
     }
@@ -371,6 +379,47 @@ export default function ForYouPageAtlaskit() {
       {/* Detail rendering: CatalystShell mounts CatalystDetailRouter
           for the pending item set by handleSelect → openDetail().
           (Bespoke ForYouDetailPanel deleted 2026-05-11.) */}
+
+      {/* Ask Caty - Themify modal — replaces the former Caty Focus tab.
+          Triggered by the rainbow CTA inside AssignedPanel. AiThemePanel
+          renders inside the modal body so the existing AI Themify flow
+          (project/personal scope toggle, theme cards, etc.) is reused
+          intact. */}
+      {themifyOpen && (
+        <ModalDialog onClose={() => setThemifyOpen(false)} width="x-large">
+          <ModalHeader>
+            <div style={{
+              display: 'inline-flex',
+              padding: 2,
+              borderRadius: 8,
+              background: 'conic-gradient(from 0deg, #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg, #00C9FF 180deg, #92FE9D 240deg, #FFD700 300deg, #FF3CAC 360deg)',
+            }}>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '6px 12px',
+                borderRadius: 6,
+                background: token('elevation.surface', '#FFFFFF'),
+                fontSize: 14,
+                fontWeight: 700,
+                color: token('color.text', '#172B4D'),
+              }}>
+                ✦ Ask Caty - Themify
+              </div>
+            </div>
+          </ModalHeader>
+          <ModalBody>
+            <AiThemePanel allUserProjects={allUserProjects} />
+          </ModalBody>
+          <ModalFooter>
+            <span style={{ fontSize: 12, color: token('color.text.subtlest', '#626F86'), marginInlineEnd: 'auto' }}>
+              Powered by Caty
+            </span>
+            <Button appearance="subtle" onClick={() => setThemifyOpen(false)}>Close</Button>
+          </ModalFooter>
+        </ModalDialog>
+      )}
     </div>
   );
 }
