@@ -777,33 +777,30 @@ function FeedCard({
           </div>
         </div>
 
-        {/* Emoji reactions — Jira parity (DOM probe: data-testid="render-reactions").
-            Each chip is 37×24 with a 0.556px border and radius 4. Persisted
-            against `ph_comment_reactions.comment_id` → `ph_comments.id` UUID.
-            When phCommentId is null (no ph_comments row yet), ReactionStrip
-            creates the row on first click via on-demand upsert so the chips
-            are always interactive. */}
-        <ReactionStrip
-          phCommentId={row.phCommentId}
-          jiraCommentId={row.commentId}
-          issueId={row.issueId}
-          commentBody={row.commentBody}
-        />
-
-        {/* Reply composer — Jira parity:
-             Row 1: 32px viewer avatar + a bordered textarea wrapper with
-             "Leave a reply" placeholder. Submits via useWorkItemComments.
-             Row 2: subtle "Suggest a reply" pencil button (separate button
-             below the bordered wrapper, outside the border, per Jira DOM).
-        */}
-        <ReplyComposer
-          issueId={row.issueId}
-          currentUserName={currentUserName}
-          commentBody={row.commentBody}
-          issueSummary={row.issueSummary}
-          issueType={row.issueType}
-          commenterName={row.authorName}
-        />
+        {/* Footer zone — border-top groups reactions + composer into one visual block. */}
+        <div style={{
+          borderTop: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+          paddingTop: 8,
+          marginBlockStart: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+        }}>
+          <ReactionStrip
+            phCommentId={row.phCommentId}
+            jiraCommentId={row.commentId}
+            issueId={row.issueId}
+            commentBody={row.commentBody}
+          />
+          <ReplyComposer
+            issueId={row.issueId}
+            currentUserName={currentUserName}
+            commentBody={row.commentBody}
+            issueSummary={row.issueSummary}
+            issueType={row.issueType}
+            commenterName={row.authorName}
+          />
+        </div>
       </div>
     </div>
   );
