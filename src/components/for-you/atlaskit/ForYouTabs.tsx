@@ -175,13 +175,29 @@ function TabButton({
           // Matches the Ask Catalyst ("Caty") pill chrome — same AI family,
           // same ink. Uses `color.icon.brand` (#1868DB) instead of the
           // discovery/purple accent so every Atlaskit-compliant AI surface
-          // in Catalyst reads as the same entity. See /design-critique
-          // 2026-04-24 callout ⓪ — purple is explicitly off-palette inside
-          // the Atlassian design system and was re-homed to brand blue.
+          // in Catalyst reads as the same entity.
           style={{ color: token('color.icon.brand', '#1868DB'), flexShrink: 0 }}
         />
       )}
-      {tab.label}
+      {showSparkle ? (
+        // "Caty Focus" — rainbow gradient text. Matches the AI affordance
+        // palette used by all Ask Caty CTAs (STATIC_RAINBOW). animation:none.
+        // Static linear-gradient clipped to glyph shapes via background-clip:text.
+        // CLAUDE.md ENTERPRISE UI GUARDRAIL: rainbow ink is permitted ONLY on
+        // AI-branded surfaces (Ask Caty CTAs, Caty Focus tab) — never generic.
+        <span
+          style={{
+            backgroundImage: 'linear-gradient(90deg, #FF3CAC 0%, #784BA0 20%, #2B86C5 40%, #00C9FF 60%, #92FE9D 80%, #FFD700 100%)',
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            color: 'transparent',
+            fontWeight: 600,
+          }}
+        >
+          {tab.label}
+        </span>
+      ) : tab.label}
       {showCounter && (
         <span
           style={{
