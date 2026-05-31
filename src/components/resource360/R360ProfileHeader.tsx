@@ -76,7 +76,7 @@ export const R360ProfileHeader: React.FC<Props> = ({ member, kpis, activeTab, on
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="r3-btn-outline" aria-label="Quarter filter">Q1-2026</button>
-          <button className="r3-btn-intel" aria-label="Open Intelligence panel">
+          <button className="r3-btn-intel" aria-label="Ask Caty">
             <Sparkles size={14} />
             Intelligence
           </button>

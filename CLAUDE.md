@@ -4,6 +4,48 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 🏢 ENTERPRISE UI GUARDRAIL — NEVER IMPLEMENT CONSUMER ANIMATIONS (P0, Non-Negotiable)
+
+**Catalyst is an enterprise work-management platform.** Every UI decision must pass the enterprise benchmark.
+
+### The Rule
+
+Before implementing any animation, visual effect, or interaction pattern, ask: **"Does Jira, Salesforce, Workday, or ServiceNow do this?"** If the answer is no, **STOP and ask Vikram** — do not implement.
+
+### Permanently banned enterprise UI anti-patterns:
+- ❌ **Spinning / rotating containers** — applying `transform: rotate()` or animation to a wrapper that contains text/buttons (the content rotates with the container)
+- ❌ **Rainbow / multi-colour gradient borders** on interactive controls (buttons, pills, lozenges)
+- ❌ **Conic-gradient animations** on buttons, pills, or any clickable surface
+- ❌ **Pulsing glows, neon outlines, particle effects, "AI aura" effects**
+- ❌ Any animation applied to a wrapper that contains text — text must never rotate, scale, or blur
+
+### Approved loading/processing indicators for buttons:
+- ✅ `@atlaskit/spinner` (`size="small"`, `appearance="invert"`) replacing the icon — the ADS canonical pattern
+- ✅ `disabled={true}` + `cursor: not-allowed` while awaiting a response
+- ✅ Label change ("Loading…") with `aria-busy={true}`
+- ✅ `opacity: 0.7` on the button while non-interactive
+- ✅ Subtle hover via `filter: brightness(1.08)` — NOT scale/transform on the button itself
+
+### Incident: 2026-05-31 — Spinning rainbow on "Ask Caty" button
+
+**What happened:** Claude was asked to add a rainbow ring to the Ask Caty button. Instead of flagging that this pattern is consumer/gaming UI (not enterprise), Claude implemented a `conic-gradient` rotating wrapper that caused:
+1. The ENTIRE button including its "Ask Caty" text label to rotate 360° continuously
+2. "Ask Caty" appearing **upside-down and spinning** in the global nav bar
+3. A full revert was required
+
+**What Claude should have done:** Stopped at the request and said: *"A spinning rainbow border is consumer UI. Enterprise apps use `@atlaskit/spinner` for loading state. Do you want a spinner inside the button instead?"* Then asked for confirmation before touching any code.
+
+### Clarify before implementing AI/animation features
+
+If a request involves any visual effect, motion, or AI-state indicator that isn't in the ADS component catalogue, **ask first**:
+- "Which specific button/component should this apply to?"
+- "Enterprise pattern would be X — is that what you want, or something different?"
+- "This would use [pattern] — should I proceed?"
+
+**Never assume consent for a visual pattern because it was mentioned in conversation context.**
+
+---
+
 ## THE FOUR RULES — UNIVERSAL BASELINE (P0, Non-Negotiable)
 
 These four rules govern HOW every other rule in this file is applied. They precede all Catalyst-specific guardrails below. If a project-specific rule and one of these four ever appear to conflict, stop and ask Vikram — do not silently choose.

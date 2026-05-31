@@ -260,11 +260,11 @@ export default function ForYouPageAtlaskit() {
         // `color.text` resolve correctly via --ds-* in both modes natively.
         background: token('elevation.surface', '#FFFFFF'),
         color: token('color.text', '#292A2E'),
-        paddingInline: 'clamp(16px, 3vw, 32px)',
-        paddingBlockStart: 24,
-        paddingBlockEnd: 48,
-        maxWidth: 1280,
-        marginInline: 'auto',
+        paddingInline: isR360Active ? 0 : 'clamp(16px, 3vw, 32px)',
+        paddingBlockStart: isR360Active ? 0 : 24,
+        paddingBlockEnd: isR360Active ? 0 : 48,
+        maxWidth: isR360Active ? 'none' : 1280,
+        marginInline: isR360Active ? 0 : 'auto',
         boxSizing: 'border-box',
       }}
     >

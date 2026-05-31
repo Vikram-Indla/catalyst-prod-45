@@ -435,10 +435,6 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               </div>
             </div>
 
-            {/* Age label below card */}
-            <div style={{ textAlign: 'center', marginTop: 5, fontSize: 10, color: T.textSubtlest(), width: `${CARD_W}px`, pointerEvents: 'none' }}>
-              Updated {item.age_days}d ago
-            </div>
           </div>
         );
       })}

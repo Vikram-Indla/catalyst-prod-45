@@ -1,22 +1,25 @@
 /**
- * AIIntelligenceButton — ADS brand-blue pill that opens the Catalyst AI
- * (CATY) intelligence panel for the current context. Pairs with the
- * sparkle / "Ask Caty" affordances elsewhere in the app so every AI
- * surface reads as the same entity.
+ * AIIntelligenceButton — "Ask Caty" pill CTA that opens the Catalyst AI
+ * (CATY) intelligence panel for the current context.
  *
- * Tooltip default: "Ask Caty about this view". Override with `tooltip`
- * when the calling surface has a more specific framing (e.g. "Ask Caty
- * about Vikram's week"). Design-critique 2026-05-17 H10 P1 — "Intelligence"
- * alone failed the "what does this button do?" test; the tooltip resolves
- * it without changing the visible label.
+ * Idle:    brand-blue pill with ⚡ icon + "Ask Caty" label
+ * Loading: @atlaskit/spinner replaces the icon, label becomes "Loading…",
+ *          button becomes non-interactive (aria-busy=true, disabled).
+ *
+ * ENTERPRISE RULE: NO spinning/rotating containers, NO rainbow borders,
+ * NO conic-gradient effects. This is the only approved loading pattern.
  */
 import React from 'react';
 import Tooltip from '@atlaskit/tooltip';
+import Spinner from '@atlaskit/spinner';
 import { Zap } from '@/lib/atlaskit-icons';
 
 export interface AIIntelligenceButtonProps {
-  label: string;
+  /** Visible label. Defaults to "Ask Caty". */
+  label?: string;
   isActive?: boolean;
+  /** Show spinner + "Loading…" while CATY is generating. */
+  isLoading?: boolean;
   onClick: () => void;
   className?: string;
   disabled?: boolean;
@@ -25,24 +28,30 @@ export interface AIIntelligenceButtonProps {
 }
 
 export function AIIntelligenceButton({
-  label,
+  label = 'Ask Caty',
   isActive = false,
+  isLoading = false,
   onClick,
   className,
   disabled = false,
   tooltip = 'Ask Caty about this view',
 }: AIIntelligenceButtonProps) {
+  const isInert = disabled || isLoading;
+
   const button = (
     <button
-      onClick={disabled ? undefined : onClick}
+      onClick={isInert ? undefined : onClick}
       className={className}
-      disabled={disabled}
-      aria-label={tooltip}
+      disabled={isInert}
+      aria-label={isLoading ? 'Loading…' : tooltip}
+      aria-busy={isLoading || undefined}
       style={{
-        background: disabled
-          ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'
-          : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        background: isInert
+          ? 'var(--ds-background-disabled, #F1F2F4)'
+          : 'var(--ds-background-information-bold, #0052CC)',
+        color: isInert
+          ? 'var(--ds-text-disabled, #8590A2)'
+          : 'var(--ds-text-inverse, #FFFFFF)',
         border: 'none',
         borderRadius: 20,
         padding: '0 16px',
@@ -50,27 +59,29 @@ export function AIIntelligenceButton({
         fontSize: 12,
         fontWeight: 600,
         letterSpacing: '0.3px',
-        cursor: disabled ? 'not-allowed' : 'pointer',
+        cursor: isInert ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.6 : 1,
         display: 'inline-flex',
         alignItems: 'center',
         gap: 6,
-        transition: 'all 200ms ease',
+        transition: 'background 150ms ease, opacity 150ms ease',
         fontFamily: 'var(--cp-font-body)',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.transform = 'scale(1.03)';
-        e.currentTarget.style.boxShadow = '0 0 0 6px rgba(37,99,235,0.15)';
+        if (!isInert) {
+          e.currentTarget.style.filter = 'brightness(1.08)';
+        }
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.transform = 'scale(1)';
-        e.currentTarget.style.boxShadow = '';
+        e.currentTarget.style.filter = '';
       }}
     >
-      <Zap size={13} strokeWidth={2.2} />
-      {label}
+      {isLoading
+        ? <Spinner size="small" appearance="invert" />
+        : <Zap size={13} strokeWidth={2.2} />}
+      {isLoading ? 'Loading…' : label}
     </button>
   );
 
-  return tooltip ? <Tooltip content={tooltip}>{button}</Tooltip> : button;
+  return tooltip ? <Tooltip content={isLoading ? 'Loading…' : tooltip}>{button}</Tooltip> : button;
 }

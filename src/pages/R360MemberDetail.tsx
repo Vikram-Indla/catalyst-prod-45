@@ -561,9 +561,8 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                 <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: token('color.background.neutral', '#F1F2F4'), border: 'none', borderRadius: '6px', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
                   <Calendar size={13} /> {`Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}`}
                 </button>
-                {/* Intelligence — brand blue standard */}
+                {/* Ask Caty — enterprise blue pill, no animations */}
                 <AIIntelligenceButton
-                  label="Intelligence"
                   onClick={() => setAiOpen(true)}
                 />
               </div>

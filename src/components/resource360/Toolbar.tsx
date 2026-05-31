@@ -215,7 +215,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
       {/* AI Intelligence Button */}
       <button
         onClick={onAiClick}
-        aria-label="Open AI Intelligence overlay"
+        aria-label="Ask Caty"
         style={{
           background: 'var(--cp-blue)',
           color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 20,
