@@ -2247,18 +2247,16 @@ function renderInlineAtMentions(text: string): React.ReactNode[] {
 }
 
 function MentionChip({ label }: { label: string }) {
-  // Jira parity — Atlaskit Lozenge-style @-mention chip.
-  // Compact horizontal padding, 20px line-height to match parent comment body.
-  // bg: color.background.neutral. Display-only (no hover-card yet).
   return (
     <span
       style={{
         display: 'inline-block',
         padding: '0 4px',
         borderRadius: 20,
-        background: token('color.background.neutral', 'rgba(5, 21, 36, 0.06)'),
-        color: token('color.text.subtle', '#505258'),
-        font: `400 14px/20px "Inter", system-ui, sans-serif`,
+        background: 'var(--ds-background-information, #DEEBFF)',
+        border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+        color: token('color.link', '#0052CC'),
+        font: `500 13px/20px "Inter", system-ui, sans-serif`,
         whiteSpace: 'nowrap',
       }}
     >
