@@ -625,45 +625,60 @@ function FeedCard({
         </span>
       </Tooltip>
 
-      {/* Summarize comments — G-03 (Jira parity: 24×24 AI icon button alongside dismiss).
-          DOM probe 2026-05-29: always visible at top-right, offset left of the dismiss button.
-          Calls ai-improve-comment with mode:'summarize' and shows result in a toast. */}
-      <Tooltip content="Summarize comments">
-        <button
-          type="button"
-          aria-label="Summarize comments"
-          onClick={e => { e.stopPropagation(); handleSummarize(); }}
+      {/* Ask Caty — summarize this comment/thread.
+          2026-05-31: upgraded from tiny grey sparkle to rainbow-bordered Ask Caty pill
+          per Vikram's enterprise AI affordance pattern. Static rainbow border (no
+          animation) wraps a compact white pill with sparkle + "Ask Caty" label.
+          See CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out. */}
+      <Tooltip content="Ask Caty to summarize">
+        <div
           style={{
             position: 'absolute',
             top: 8,
-            right: 32,
-            width: 24,
-            height: 24,
+            right: 36,
             display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: 'none',
-            background: 'transparent',
-            borderRadius: 3,
-            cursor: summaryPhase === 'loading' ? 'wait' : 'pointer',
-            color: summaryPhase === 'error'
-              ? token('color.text.danger', '#AE2E24')
-              : token('color.text.subtle', '#626F86'),
-            opacity: 1,
-            padding: 0,
-            outline: 'none',
+            padding: 2,
+            borderRadius: 14,
+            background: ASK_CATY_RAINBOW,
           }}
         >
-          {summaryPhase === 'loading'
-            ? <Spinner size="xsmall" />
-            : (
-              // 4-point sparkle — generic AI summarize icon (not Caty branding)
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
-                <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" />
-              </svg>
-            )
-          }
-        </button>
+          <button
+            type="button"
+            aria-label="Ask Caty to summarize this thread"
+            aria-busy={summaryPhase === 'loading' || undefined}
+            disabled={summaryPhase === 'loading'}
+            onClick={e => { e.stopPropagation(); handleSummarize(); }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              height: 22,
+              padding: '0 8px 0 6px',
+              border: 'none',
+              borderRadius: 12,
+              background: token('elevation.surface', '#FFFFFF'),
+              cursor: summaryPhase === 'loading' ? 'wait' : 'pointer',
+              color: summaryPhase === 'error'
+                ? token('color.text.danger', '#AE2E24')
+                : token('color.text', '#172B4D'),
+              fontFamily: 'var(--cp-font-body, inherit)',
+              fontSize: 11,
+              fontWeight: 600,
+              lineHeight: 1,
+              outline: 'none',
+            }}
+          >
+            {summaryPhase === 'loading'
+              ? <Spinner size="xsmall" />
+              : (
+                <svg width="11" height="11" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
+                  <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" />
+                </svg>
+              )
+            }
+            Ask Caty
+          </button>
+        </div>
       </Tooltip>
 
       {/* Dismiss (X) — G-01 Jira parity: always visible (opacity:1), top-right of every feed row.

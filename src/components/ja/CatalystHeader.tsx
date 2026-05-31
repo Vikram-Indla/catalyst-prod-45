@@ -3,7 +3,6 @@ import Tooltip from '@atlaskit/tooltip';
 import SidebarExpandIcon from '@atlaskit/icon/core/sidebar-expand';
 import SidebarCollapseIcon from '@atlaskit/icon/core/sidebar-collapse';
 
-import { AskCatalystPill } from '@/components/layout/AskCatalystPill';
 import { SettingsMenu } from '@/components/layout/SettingsMenu';
 import { ProfileMenu } from '@/components/layout/ProfileMenu';
 import { ThemeToggle } from '@/components/ads';
@@ -212,14 +211,15 @@ export function CatalystHeader() {
       </div>
 
       {/* RIGHT cluster — justifySelf:end pins it to the right screen edge.
-          flexShrink:0 on the cluster + each child defends the right column from
-          overflow bleed coming out of the center 1fr track. Without this,
-          AskCatalystPill (white, raised) renders ON TOP of the Create button
-          when the viewport narrows. (RCA 2026-04-30, /ui-fix.)
           ThemeToggle sits left of NotificationsPanel so the moon/sun lives
           inside the natural reading order before the alert/settings/avatar
           stack. The toggle and ProfileMenu's Theme submenu share state
-          via useThemeMode() — clicking either flips both. (2026-04-28). */}
+          via useThemeMode() — clicking either flips both. (2026-04-28).
+          2026-05-31: AskCatalystPill REMOVED from global top nav per Vikram —
+          AI should only appear in context (per-mention card, per-ticket, etc.).
+          Top-nav global AI was too generic and duplicated contextual entry points.
+          Component file retained at /components/layout/AskCatalystPill.tsx for
+          potential re-use in other surfaces. */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -228,7 +228,6 @@ export function CatalystHeader() {
         flexShrink: 0,
         minWidth: 'max-content',
       }} data-theme-toggle-cluster>
-        {!isNarrow && <AskCatalystPill />}
         {!isNarrow && <ThemeToggle />}
         <NotificationsPanel />
         {!isNarrow && <SettingsMenu />}
