@@ -30,7 +30,11 @@ interface AssignedPanelProps {
   onSelect: (item: WorkItem) => void;
   onToggleStar: (id: string) => void;
   /** When provided, renders the "Ask Caty - Themify" rainbow CTA at top.
-   *  Parent (ForYouPage) owns the modal state that wraps AiThemePanel. */
+   *  Click handler is owned by the parent (ForYouPage) — typically a
+   *  navigation to /for-you/ai-theme so themes appear in the existing
+   *  AiThemePanel surface. Modal-wrap pattern was tried and failed to
+   *  render (likely an @atlaskit/modal-dialog v14 interaction with
+   *  AiThemePanel) — direct navigation is the reliable path. */
   onAskCatyThemify?: () => void;
 }
 
