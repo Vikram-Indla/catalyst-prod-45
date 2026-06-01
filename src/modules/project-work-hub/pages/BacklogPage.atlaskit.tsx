@@ -694,7 +694,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // available via the column picker (+) but hidden in the factory layout.
   // NOTE: Comments column is banned (2026-05-11), removed from defaults
   // 2026-05-17 jira-compare cycle 2: 'summary' merged into 'key' (Work column).
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'status', 'comments', 'parent', 'assignee'];
+  // 2026-06-01: Comments column REMOVED from defaults — CLAUDE.md ban on
+  // comments-in-table (P0). Users can opt back in via the column picker if
+  // they really want it for personal views, but it does NOT ship as default.
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'status', 'parent', 'assignee'];
 
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
@@ -2149,7 +2152,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // width:8 (96px). Icon + count badge is the only content; fits easily.
       width: 8,
       sortable: false,
-      defaultVisible: true,
+      // 2026-06-01: Comments column off-by-default — CLAUDE.md ban on
+      // comments-in-table. Still selectable from the column picker.
+      defaultVisible: false,
       alwaysVisible: false,
       cell: makeCommentsCell(
         (r: BacklogItem) => r.comment_count,
@@ -3346,35 +3351,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 )}
               </div>
             }
-            // Apr 27, 2026 (L70): Create row now renders INSIDE the
-            // table viewport via JiraTable's `bottomSlot` prop —
-            // eliminates the visual gap that the horizontal scrollbar
-            // was creating between the last table row and the floating
-            // Create row. Sticks to the table; horizontal scroll sits
-            // BELOW Create. Smart-default issue type matches the
-            // active type-filter pill.
-            bottomSlot={
-              <BottomCreateRow
-                projectKey={projectKey}
-                defaultIssueType={
-                  typeFilter === 'epic' ? 'Epic'
-                  : typeFilter === 'feature' ? 'Feature'
-                  : typeFilter === 'bug' ? 'QA Bug'
-                  : typeFilter === 'incident' ? 'Production Incident'
-                  : 'Story'
-                }
-                onCreated={() => {
-                  queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
-                  queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
-                  if (dataSource) {
-                    dataSource.invalidationKeys.forEach(k =>
-                      queryClient.invalidateQueries({ queryKey: k as any }),
-                    );
-                  }
-                }}
-                onCreateOverride={dataSource ? ({ title }) => dataSource.onCreate({ title }) : undefined}
-              />
-            }
+            // 2026-06-01: bottomSlot={<BottomCreateRow/>} REMOVED — it
+            // duplicated the canonical sticky footer create row above
+            // (enableStickyCreateFooter + stickyCreateFooter), producing
+            // TWO stacked "+ Create" rows at the table bottom on both
+            // project and product surfaces. Per the 2026-05-17 directive
+            // ("BacklogPage has sticky footer create only"), the sticky
+            // footer is the single canonical entry point. BottomCreateRow
+            // remains in the file as a deprecated component until removed
+            // in a separate cleanup pass.
           />
           </div>
         </div>

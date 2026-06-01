@@ -153,8 +153,12 @@ function bizRequestToBacklogStory(r: BusinessRequest): BacklogStory {
     status: r.process_step ?? null,
     feature_id: null,
     assignee_id: null,
-    assignee_name: r.assignee_name ?? null,
-    reporter_name: r.requestor_name ?? null,
+    // 2026-06-01: business_requests columns are `assignee` and `requestor`
+    // (plain text names). The previous mapping read non-existent
+    // `assignee_name` / `requestor_name` → every row rendered "Unassigned"
+    // (78/78 on INV). Read the real columns instead.
+    assignee_name: (r as any).assignee ?? null,
+    reporter_name: (r as any).requestor ?? null,
     start_date: r.start_date ?? null,
     priority: r.urgency ? r.urgency.toLowerCase() : null,
     deleted_at: null,
