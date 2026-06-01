@@ -272,93 +272,117 @@ export function useCreateBusinessRequest() {
   });
 }
 
+let _cachedActorInfo: { userId: string | null; actorName: string } | null = null;
+
+async function getActorInfo() {
+  if (_cachedActorInfo) return _cachedActorInfo;
+  const { data: { user } } = await supabase.auth.getUser();
+  let actorName = 'System';
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, email')
+      .eq('id', user.id)
+      .single();
+    actorName = profile?.full_name || profile?.email || 'Unknown User';
+  }
+  _cachedActorInfo = { userId: user?.id ?? null, actorName };
+  return _cachedActorInfo;
+}
+
+async function logBrAudit(id: string, data: Partial<BusinessRequest>) {
+  const { data: currentData } = await typedQuery('business_requests')
+    .select('*')
+    .eq('id', id)
+    .single();
+  if (!currentData) return;
+
+  const { userId, actorName } = await getActorInfo();
+  const auditLogs: any[] = [];
+
+  for (const [key, newValue] of Object.entries(data)) {
+    const oldValue = (currentData as any)[key];
+    const oldStr = oldValue === null || oldValue === undefined ? null : String(oldValue);
+    const newStr = newValue === null || newValue === undefined ? null : String(newValue);
+    if (oldStr !== newStr) {
+      auditLogs.push({
+        business_request_id: id,
+        actor_id: userId,
+        actor_name: actorName,
+        action: 'UPDATE',
+        field_changed: key,
+        old_value: oldStr,
+        new_value: newStr,
+      });
+    }
+  }
+
+  if (auditLogs.length > 0) {
+    await typedQuery('business_request_audit_logs').insert(auditLogs);
+  }
+}
+
 export function useUpdateBusinessRequest() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<BusinessRequest> }) => {
-      // Get current user for audit logging
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      // Get profile for actor name
-      let actorName = 'System';
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('full_name, email')
-          .eq('id', user.id)
-          .single();
-        actorName = profile?.full_name || profile?.email || 'Unknown User';
+    onMutate: async ({ id, data }) => {
+      await queryClient.cancelQueries({ queryKey: ['business-request', id] });
+      const prev = queryClient.getQueryData<BusinessRequest>(['business-request', id]);
+      if (prev) {
+        queryClient.setQueryData(['business-request', id], { ...prev, ...data });
       }
-
-      // Get the current data before update for audit logging
-      const { data: currentData } = await typedQuery('business_requests')
-        .select('*')
-        .eq('id', id)
-        .single();
-      
-      // Convert ReadinessChecklist to Json-compatible format
-      // IMPORTANT: Remove system-managed fields AND computed fields from update payload
+      return { prev };
+    },
+    mutationFn: async ({ id, data }: { id: string; data: Partial<BusinessRequest> }) => {
       const updateData: Record<string, any> = { ...data };
 
-      // Remove system-managed fields
       delete updateData.id;
       delete updateData.request_key;
       delete updateData.created_at;
       delete updateData.updated_at;
       delete updateData.deleted_at;
-
-      // Remove internal UI-only fields
       delete updateData._batch;
-
-      // Remove computed/joined fields that don't exist in the database
       delete updateData.requestor_name;
       delete updateData.assignee_name;
       delete updateData.department_name;
       delete updateData.business_owner_name;
       delete updateData.product_name;
-      
+
       if (data.readiness_checklist) {
         updateData.readiness_checklist = data.readiness_checklist as unknown as Json;
       }
-      
-      // Handle forced rank update - need to shift other items
+
       if (data.rank !== undefined) {
         const newRank = data.rank;
-        
+
         if (newRank !== null) {
-          // Get current item's old rank
           const { data: currentItem } = await typedQuery('business_requests')
             .select('rank')
             .eq('id', id)
             .single();
-          
+
           const currentItemTyped = currentItem as any;
-          const oldRank = currentItemTyped?.rank;
-          
-          // Get all items that need to be shifted
+
           const { data: allItems } = await typedQuery('business_requests')
             .select('id, rank')
             .not('id', 'eq', id)
             .not('rank', 'is', null)
             .order('rank', { ascending: true })
             .limit(1000);
-          
+
           const allItemsTyped = (allItems || []) as any[];
-          
+
           if (allItemsTyped.length > 0) {
-            // Shift items to make room for the forced rank
             const itemsToUpdate: { id: string; rank: number }[] = [];
-            
+
             for (const item of allItemsTyped) {
               if (item.rank !== null && item.rank >= newRank) {
-                // Shift item down by 1
                 itemsToUpdate.push({ id: item.id, rank: item.rank + 1 });
               }
             }
-            
-            // Update shifted items
+
             for (const item of itemsToUpdate) {
               await typedQuery('business_requests')
                 .update({ rank: item.rank })
@@ -367,7 +391,7 @@ export function useUpdateBusinessRequest() {
           }
         }
       }
-      
+
       const { data: result, error } = await typedQuery('business_requests')
         .update(updateData)
         .eq('id', id)
@@ -375,45 +399,22 @@ export function useUpdateBusinessRequest() {
         .single();
       if (error) throw error;
 
-      // Create audit log entries for changed fields
-      if (currentData) {
-        const auditLogs: any[] = [];
-        
-        for (const [key, newValue] of Object.entries(data)) {
-          const oldValue = (currentData as any)[key];
-          const oldStr = oldValue === null || oldValue === undefined ? null : String(oldValue);
-          const newStr = newValue === null || newValue === undefined ? null : String(newValue);
-          
-          // Only log if value actually changed
-          if (oldStr !== newStr) {
-            auditLogs.push({
-              business_request_id: id,
-              actor_id: user?.id || null,
-              actor_name: actorName,
-              action: 'UPDATE',
-              field_changed: key,
-              old_value: oldStr,
-              new_value: newStr
-            });
-          }
-        }
-        
-        // Insert all audit logs
-        if (auditLogs.length > 0) {
-          await typedQuery('business_request_audit_logs').insert(auditLogs);
-        }
-      }
+      // Fire-and-forget audit logging — does not block the UI
+      logBrAudit(id, data).catch(() => {});
 
       return result;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['business-request'] });
-      queryClient.invalidateQueries({ queryKey: ['business-request-audit'] });
-      queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
-      // Removed auto-toast - let components handle their own notifications
+      queryClient.invalidateQueries({ queryKey: ['business-request', variables.id] });
+      if (variables.data.rank !== undefined) {
+        queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+        queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
+      }
     },
-    onError: (error) => {
+    onError: (error, variables, context) => {
+      if (context?.prev) {
+        queryClient.setQueryData(['business-request', variables.id], context.prev);
+      }
       toast({ title: 'Failed to update business request', description: error.message, variant: 'destructive' });
     },
   });

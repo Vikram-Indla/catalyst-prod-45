@@ -45,6 +45,12 @@ export default function CatalystViewBusinessRequestV3({
 }: CatalystViewBaseProps) {
   const { request, resolvedId, isLoading, updateField, deleteRequest } =
     useProductHubBusinessRequest({ requestKey: itemId });
+
+  const isNewlyCreated = !!(
+    request &&
+    request.status === 'New' &&
+    !request.description
+  );
   const duplicateMutation = useDuplicateBusinessRequest();
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [showCloneDialog, setShowCloneDialog] = React.useState(false);
@@ -107,9 +113,9 @@ export default function CatalystViewBusinessRequestV3({
         <CatalystQuickActions />
         <BrCenterDetails request={request} onUpdate={updateField} />
         <BrDescriptionSection request={request} onUpdate={updateField} />
-        <BrAttachmentsSection request={request} />
-        <BrLinkedItemsSection request={request} />
-        {request?.request_key && resolvedId && (
+        {!isNewlyCreated && <BrAttachmentsSection request={request} />}
+        {!isNewlyCreated && <BrLinkedItemsSection request={request} />}
+        {!isNewlyCreated && request?.request_key && resolvedId && (
           <SubtasksPanel
             storyKey={request.request_key}
             storyId={resolvedId}
@@ -123,7 +129,7 @@ export default function CatalystViewBusinessRequestV3({
       </>
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [request, updateField, resolvedId, isOpen, openDetail],
+    [request, updateField, resolvedId, isOpen, openDetail, isNewlyCreated],
   );
 
   // ── Right rail — status pill in header, matching Story's pattern ──────────
