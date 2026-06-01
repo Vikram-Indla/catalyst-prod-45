@@ -521,6 +521,27 @@ This applies to ALL git operations in ALL scripts and subagents, no exceptions.
 
 ---
 
+## 🚫 `git add -A` / `git add .` PERMANENTLY BANNED (P0, Non-Negotiable)
+
+**Never run `git add -A`, `git add .`, or `git add --all`.** Stage ONLY the explicit file paths the current task touched: `git add path/to/fileA path/to/fileB`.
+
+### Why this rule exists (2026-06-01 — twice in one session)
+
+The working tree on `main` frequently carries **stale, uncommitted changes** from other sessions / Lovable / linters. `git add -A` stages *everything* in the tree, not just your task's files. Twice in one session this swept an unrelated stale copy of a file into a scoped commit and **silently reverted prior shipped work**:
+
+- Commit `fa5931b8d` ("fix br-view") ran `git add -A` and committed a stale `ProductHubSidebar.tsx` that had no "All Work" nav item — reverting the `Products-producthub-rebuild-01` addition. The user caught the missing menu item in the live UI. Restored in `855fedbfb`.
+
+### The rule
+
+1. **Stage explicit paths only.** `git add src/components/Foo.tsx src/index.css` — never `-A`/`.`/`--all`.
+2. **Always `git status` BEFORE every commit.** If any file you did NOT intend to touch is modified/staged, STOP. Do not commit. Investigate whether it's a stale working-tree change that would revert someone else's work.
+3. **If unexpected modified files exist in the tree**, leave them unstaged. Never assume they're yours. Surface them to Vikram if they block a clean commit.
+4. New files created by the task are staged by explicit path too — `git add src/.../NewFile.tsx`.
+
+**Severity:** P0 — `git add -A` is a silent-regression vector. A scoped commit must contain ONLY the task's files, provably, via `git status` inspection before commit.
+
+---
+
 ## TDD Cycle (non-negotiable)
 
 1. **Write a failing test first.** No implementation code before a test exists.
