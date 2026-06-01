@@ -26,7 +26,7 @@ import {
   Settings,
   Filter,
 } from '@/lib/atlaskit-icons';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -151,7 +151,6 @@ function daysAgo(iso: string): string {
 const BR_ICON_TYPE = 'Business Request';
 
 export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubSidebarProps) {
-  const navigate = useNavigate();
   const { pathname } = useLocation();
   const { isDark } = useTheme();
   const [recentsExpanded, setRecentsExpanded] = useState(true);
@@ -309,7 +308,10 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
               {group.items.map((br) => (
                 <div
                   key={br.id}
-                  onClick={() => navigate(`/product-hub/backlog?selectedRequest=${br.request_key}`)}
+                  onClick={() => {
+                    const { openDetail } = useGlobalSearchStore.getState();
+                    openDetail({ id: br.request_key, itemType: 'business_request' });
+                  }}
                   className="group"
                   style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '5px 12px 5px 28px', cursor: 'pointer', borderRadius: 3, margin: '0 4px', transition: 'background 80ms ease' }}
                   onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
