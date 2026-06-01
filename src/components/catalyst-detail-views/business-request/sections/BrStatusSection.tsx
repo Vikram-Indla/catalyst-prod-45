@@ -22,6 +22,7 @@ import Lozenge from '@atlaskit/lozenge';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { token } from '@atlaskit/tokens';
 import { useCatalystWorkflow } from '@/hooks/useCatalystWorkflow';
+import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import type { BusinessRequest } from '@/types/business-request';
 
 type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new';
@@ -33,6 +34,21 @@ function categoryToLozenge(
   if (cat === 'in_progress') return 'inprogress';
   return 'default';
 }
+
+/**
+ * Canonical header-pill background palette — copied verbatim from
+ * CatalystStatusPill (the project status pill). Keyed by statusToLozenge
+ * appearance so the BR pill renders IDENTICALLY to project: solid
+ * category colour, 14px/500/none dark text, 32px tall, 0 10px padding.
+ */
+const PILL_BG: Record<string, string> = {
+  success:    'rgb(148, 199, 72)',
+  inprogress: 'rgb(143, 184, 246)',
+  moved:      'rgb(243, 214, 100)',
+  removed:    'rgb(221, 222, 225)',
+  new:        'rgb(184, 172, 246)',
+  default:    'rgb(221, 222, 225)',
+};
 
 interface Props {
   request: BusinessRequest | null;
@@ -70,6 +86,7 @@ export function BrStatusSection({ request, onUpdate }: Props) {
         trigger={({ triggerRef, ...triggerProps }) => {
           const { isSelected: _isSelected, testId: _innerTestId, ...rest } =
             triggerProps as Record<string, unknown>;
+          const appearance = statusToLozenge(current.label, current.category);
           return (
             <button
               {...rest}
@@ -78,21 +95,39 @@ export function BrStatusSection({ request, onUpdate }: Props) {
               data-testid="br-view--status-pill"
               aria-label={`${current.label} — Change status`}
               style={{
-                background: 'transparent',
-                border: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
                 padding: 0,
+                border: 'none',
+                background: 'transparent',
                 cursor: 'pointer',
+                fontFamily: 'inherit',
+                outline: 'none',
+                transition: 'filter 0.1s',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.88)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
+            >
+              {/* Canonical header pill — IDENTICAL to CatalystStatusPill:
+                  32px / 14px / 500 / none / padding 0 10px / category bg / dark text. */}
+              <span style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 4,
-                outline: 'none',
-                fontFamily: 'var(--cp-font-body)',
-              }}
-            >
-              <Lozenge appearance={categoryToLozenge(current.category)}>
+                height: 32,
+                lineHeight: '32px',
+                padding: '0 10px',
+                borderRadius: 3,
+                fontSize: 14,
+                fontWeight: 500,
+                textTransform: 'none',
+                letterSpacing: 'normal',
+                background: PILL_BG[appearance] ?? PILL_BG.default,
+                color: 'rgb(41, 42, 46)',
+              }}>
                 {current.label}
-              </Lozenge>
-              <ChevronDownIcon label="" size="small" />
+                <ChevronDownIcon label="" size="small" />
+              </span>
             </button>
           );
         }}
