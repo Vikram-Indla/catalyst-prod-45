@@ -1,9 +1,10 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import { Search, SlidersHorizontal, Plus } from '@/lib/atlaskit-icons';
+import Lozenge from '@atlaskit/lozenge';
+import { Search, SlidersHorizontal, Plus, Star } from '@/lib/atlaskit-icons';
 import { useBoards } from '@/hooks/useBoards';
-import { useDeleteBoard, useMoveBoard, useCopyBoard } from '@/hooks/useBoardMutations';
+import { useDeleteBoard, useMoveBoard, useCopyBoard, useToggleBoardStar } from '@/hooks/useBoardMutations';
 import { useProjects } from '@/hooks/useProjectHub';
 import { JiraTable } from '@/components/shared/JiraTable';
 import { makeSummaryCell, makeAssigneeCell } from '@/components/shared/JiraTable/cells';
@@ -33,6 +34,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
   const deleteBoard = useDeleteBoard();
   const moveBoard = useMoveBoard();
   const copyBoard = useCopyBoard();
+  const toggleStar = useToggleBoardStar();
   const { data: allProjects = [] } = useProjects();
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
@@ -82,12 +84,47 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
 
   const columns: Column<BoardListItem>[] = useMemo(() => [
     {
+      id: '__star',
+      label: '',
+      width: 4,
+      alwaysVisible: true,
+      accessor: (b) => b.isStarred,
+      cell: ({ row }) => (
+        <button
+          data-jira-table-editor
+          onClick={(e) => {
+            e.stopPropagation();
+            if (projectId) toggleStar.mutate({ boardId: row.id, projectId, isStarred: !row.isStarred });
+          }}
+          title={row.isStarred ? 'Unstar board' : 'Star board'}
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24,
+            color: row.isStarred ? 'var(--ds-icon-warning, #E2B203)' : 'var(--ds-text-subtlest, #6B778C)',
+          }}
+        >
+          <Star size={14} fill={row.isStarred ? 'currentColor' : 'none'} />
+        </button>
+      ),
+    },
+    {
       id: 'name',
       label: 'Board name',
       flex: true,
       alwaysVisible: true,
       accessor: (b) => b.name,
       cell: makeSummaryCell((b) => b.name),
+    },
+    {
+      id: 'type',
+      label: 'Type',
+      width: 12,
+      accessor: (b) => b.boardType,
+      cell: ({ row }) => (
+        <Lozenge appearance={row.boardType === 'scrum' ? 'inprogress' : 'default'}>
+          {row.boardType === 'scrum' ? 'Scrum' : 'Kanban'}
+        </Lozenge>
+      ),
     },
     {
       id: 'lead',
@@ -129,7 +166,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
         />
       ),
     },
-  ], [locationLabel, handleDelete]);
+  ], [locationLabel, handleDelete, projectId, toggleStar]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--ds-surface, #FFFFFF)' }}>
@@ -161,7 +198,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
               <input
                 value={search} onChange={e => setSearch(e.target.value)}
                 onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)}
-                placeholder="Search boards…"
+                placeholder="Search boards…" aria-label="Search boards"
                 style={{
                   border: 'none', outline: 'none', background: 'transparent', flex: 1,
                   fontSize: 14, color: 'var(--ds-text, #172B4D)',
@@ -230,7 +267,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
           </div>
         ) : (
           <JiraTable
-            rows={filtered}
+            data={filtered}
             columns={columns}
             getRowId={(b) => b.id}
             onRowClick={(b) => navigate(`${boardBasePath}/${b.id}`)}
