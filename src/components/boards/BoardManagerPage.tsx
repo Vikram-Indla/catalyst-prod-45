@@ -1,7 +1,9 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { Search, Plus, Star, MoreHorizontal } from '@/lib/atlaskit-icons';
+import { token } from '@atlaskit/tokens';
 import { useBoards } from '@/hooks/useBoards';
 import { useDeleteBoard, useMoveBoard, useCopyBoard, useToggleBoardStar } from '@/hooks/useBoardMutations';
 import { useProjects } from '@/hooks/useProjectHub';
@@ -376,7 +378,9 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
 }
 
 // ─── Board row kebab menu ────────────────────────────────────────────────────
-// CLAUDE.md 2026-05-10: uses @atlaskit/dropdown-menu, not a hand-rolled menu.
+// Uses the same portal pattern as cells.tsx makeStatusEditCellAkPopup:
+// position:absolute + window.scrollY offset instead of Popper position:fixed,
+// which avoids the overflow:clip containing-block bug in this page's layout.
 function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy }: {
   board: BoardListItem;
   onEditSettings: () => void;
@@ -384,45 +388,129 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy }: {
   onMove: () => void;
   onCopy: () => void;
 }) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  // Click-outside to close — same pattern as cells.tsx
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (
+        triggerRef.current?.contains(e.target as Node) ||
+        popupRef.current?.contains(e.target as Node)
+      ) return;
+      setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const handleOpen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const rect = triggerRef.current?.getBoundingClientRect();
+    if (rect) {
+      // position:absolute relative to document root — avoids overflow:clip issue
+      setPos({ top: rect.bottom + window.scrollY + 4, left: rect.right + window.scrollX - 180 });
+    }
+    setOpen(o => !o);
+  };
+
+  const handleItem = (cb: () => void) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setOpen(false);
+    cb();
+  };
+
   return (
-    <DropdownMenu
-      trigger={({ triggerRef, onClick: triggerOnClick, ...triggerProps }) => (
-        <button
-          {...triggerProps}
-          ref={triggerRef as React.Ref<HTMLButtonElement>}
-          type="button"
-          onClick={(e) => { e.stopPropagation(); triggerOnClick?.(e as React.MouseEvent<HTMLElement>); }}
-          aria-label={`More actions for ${board.name}`}
-          className="jira-row-menu-trigger"
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-label={`More actions for ${board.name}`}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className="jira-row-menu-trigger"
+        onClick={handleOpen}
+        style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: 32, height: 32, padding: 0, border: 'none', borderRadius: 3,
+          background: 'transparent', color: token('color.text.subtle', '#42526E'),
+          cursor: 'pointer', opacity: 0, transition: 'opacity 120ms ease, background 100ms ease',
+        }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
+          (e.currentTarget as HTMLElement).style.opacity = '1';
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLElement).style.background = 'transparent';
+        }}
+      >
+        <MoreHorizontal size={16} />
+      </button>
+
+      {open && typeof document !== 'undefined' && ReactDOM.createPortal(
+        <div
+          ref={popupRef}
+          role="menu"
           style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 32, height: 32, padding: 0, border: 'none', borderRadius: 3,
-            background: 'transparent', color: 'var(--ds-text-subtle, #42526E)',
-            cursor: 'pointer', opacity: 0, transition: 'opacity 120ms ease',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)';
-            (e.currentTarget as HTMLElement).style.opacity = '1';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.background = 'transparent';
+            position: 'absolute',
+            top: pos.top,
+            left: pos.left,
+            zIndex: 9999,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            borderRadius: 4,
+            boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,.25), 0 0 0 1px rgba(9,30,66,.08)'),
+            minWidth: 180,
+            padding: '4px 0',
           }}
         >
-          <MoreHorizontal size={16} />
-        </button>
+          {/* Standard actions */}
+          {[
+            { label: 'Edit settings', cb: onEditSettings },
+            { label: 'Move to project…', cb: onMove },
+            { label: 'Copy board…', cb: onCopy },
+          ].map(({ label, cb }) => (
+            <button
+              key={label}
+              type="button"
+              role="menuitem"
+              onClick={handleItem(cb)}
+              style={{
+                display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px',
+                border: 'none', background: 'transparent', cursor: 'pointer',
+                textAlign: 'left', fontSize: 14,
+                color: token('color.text', '#172B4D'),
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+            >
+              {label}
+            </button>
+          ))}
+          {/* Divider */}
+          <div style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '4px 0' }} />
+          {/* Danger action */}
+          <button
+            type="button"
+            role="menuitem"
+            onClick={handleItem(onDelete)}
+            style={{
+              display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px',
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              textAlign: 'left', fontSize: 14,
+              color: token('color.text.danger', '#AE2A19'),
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+          >
+            Delete
+          </button>
+        </div>,
+        document.body
       )}
-    >
-      <DropdownItemGroup>
-        <DropdownItem onClick={onEditSettings}>Edit settings</DropdownItem>
-        <DropdownItem onClick={onMove}>Move to project…</DropdownItem>
-        <DropdownItem onClick={onCopy}>Copy board…</DropdownItem>
-      </DropdownItemGroup>
-      <DropdownItemGroup>
-        <DropdownItem onClick={onDelete}>
-          <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>Delete</span>
-        </DropdownItem>
-      </DropdownItemGroup>
-    </DropdownMenu>
+    </>
   );
 }
 
