@@ -165,13 +165,13 @@ function bizRequestToBacklogStory(r: BusinessRequest): BacklogStory {
     status: r.process_step ?? null,
     feature_id: null,
     assignee_id: null,
-    // 2026-06-01: business_requests columns are `assignee` and `requestor`
-    // (plain text names). The previous mapping read non-existent
-    // `assignee_name` / `requestor_name` → every row rendered "Unassigned"
-    // (78/78 on INV). Read the real columns instead.
-    assignee_name: (r as any).assignee ?? null,
-    reporter_name: (r as any).requestor ?? null,
-    start_date: r.start_date ?? null,
+    // 2026-06-01: business_requests slimmed to 22 cols. The legacy `assignee`
+    // and `requestor` text columns were dropped. BR ownership lives on
+    // project_manager_user_id (Delivery Manager) + po_user_id (Product Owner),
+    // resolved to display names via the profiles JOIN in useBusinessRequests.
+    assignee_name: raw.delivery_manager?.full_name ?? null,
+    reporter_name: raw.product_owner?.full_name ?? null,
+    start_date: null,                                  // start_date dropped
     priority: r.urgency ? r.urgency.toLowerCase() : null,
     deleted_at: null,
     jira_created_at: raw.created_at ?? null,
@@ -186,6 +186,20 @@ function bizRequestToBacklogStory(r: BusinessRequest): BacklogStory {
     fix_versions: null,
     rank_order: typeof r.rank === 'number' ? r.rank : null,
     feature: null,
+    // ── BR-specific fields (project hub rows leave these undefined) ──────
+    request_type: raw.request_type ?? null,
+    category: raw.category ?? null,
+    theme: raw.theme ?? null,
+    urgency: r.urgency ?? null,
+    planned_quarter: Array.isArray(raw.planned_quarter) ? raw.planned_quarter : null,
+    target_date: raw.end_date ?? null,
+    delivery_manager_id: raw.project_manager_user_id ?? null,
+    delivery_manager_name: raw.delivery_manager?.full_name ?? null,
+    product_owner_id: raw.po_user_id ?? null,
+    product_owner_name: raw.product_owner?.full_name ?? null,
+    stakeholders: Array.isArray(raw.stakeholders) ? raw.stakeholders : null,
+    targeted_feature: typeof raw.targeted_feature === 'boolean' ? raw.targeted_feature : null,
+    arabic_title: raw.arabic_title ?? null,
   };
 }
 

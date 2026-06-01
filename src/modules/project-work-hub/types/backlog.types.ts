@@ -94,6 +94,24 @@ export interface BacklogStory {
   labels?: string[] | null;
   fix_versions?: string[] | null;
   rank_order?: number | null;
+  // 2026-06-01 — Business Request adapter-only fields. Always undefined on
+  // ph_issues rows; populated by bizRequestToBacklogStory for biz rows so
+  // BacklogPage's product-flavored columns (Theme, Stakeholders, …) can read
+  // them. Each is optional + undefined-safe so project hub callers are
+  // unaffected.
+  request_type?: string | null;
+  category?: string | null;
+  theme?: string | null;
+  urgency?: string | null;
+  planned_quarter?: string[] | null;
+  target_date?: string | null;
+  delivery_manager_id?: string | null;
+  delivery_manager_name?: string | null;
+  product_owner_id?: string | null;
+  product_owner_name?: string | null;
+  stakeholders?: string[] | null;
+  targeted_feature?: boolean | null;
+  arabic_title?: string | null;
   feature?: {
     id: string;
     display_id: string | null;

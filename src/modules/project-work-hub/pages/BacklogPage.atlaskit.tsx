@@ -313,6 +313,22 @@ export interface BacklogItem {
   labels: string[] | null;
   fix_versions: string[] | null;
   rank_order: number | null;
+  // 2026-06-01 — Business Request adapter fields (always null on Jira rows).
+  // Surface only via the product backlog (ProductBacklogPage's adapter sets
+  // allowedColumnIds to expose them).
+  request_type?: string | null;
+  category?: string | null;
+  theme?: string | null;
+  urgency?: string | null;
+  planned_quarter?: string[] | null;
+  target_date?: string | null;
+  delivery_manager_id?: string | null;
+  delivery_manager_name?: string | null;
+  product_owner_id?: string | null;
+  product_owner_name?: string | null;
+  stakeholders?: string[] | null;
+  targeted_feature?: boolean | null;
+  arabic_title?: string | null;
 }
 
 /* ─── Status mapping (shared with Story Backlog) ────────────────────────── */
@@ -411,6 +427,31 @@ const ALLOWED_COLUMN_IDS = new Set([
   'reporter',
   '__drag',
   '__actions',
+  // 2026-06-01 — Business Request adapter-only columns. ProductBacklogPage's
+  // adapter sets `allowedColumnIds` to whitelist them; project hub never
+  // exposes them (gated below via PRODUCT_ONLY_COLUMN_IDS).
+  'request_type',
+  'category',
+  'theme',
+  'urgency',
+  'planned_quarter',
+  'target_date',
+  'delivery_manager',
+  'product_owner',
+  'stakeholders',
+  'targeted_feature',
+  'arabic_title',
+]);
+
+/**
+ * Columns that only make sense when an adapter is in play (= product backlog
+ * on business_requests). When no `dataSource` is provided BacklogPage is
+ * driven by ph_issues and these columns are NOT shown in the picker.
+ */
+const PRODUCT_ONLY_COLUMN_IDS = new Set([
+  'request_type', 'category', 'theme', 'urgency', 'planned_quarter',
+  'target_date', 'delivery_manager', 'product_owner', 'stakeholders',
+  'targeted_feature', 'arabic_title',
 ]);
 
 // Permanently banned fields that must NEVER appear in column picker
@@ -1269,6 +1310,22 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         labels: (s as any).labels ?? null,
         fix_versions: (s as any).fix_versions ?? null,
         rank_order: (s as any).rank_order ?? null,
+        // 2026-06-01: BR-specific fields surfaced via the product adapter
+        // (project hub rows leave them undefined, which is fine — these
+        // columns are only visible when allowedColumnIds whitelists them).
+        request_type: (s as any).request_type ?? null,
+        category: (s as any).category ?? null,
+        theme: (s as any).theme ?? null,
+        urgency: (s as any).urgency ?? null,
+        planned_quarter: (s as any).planned_quarter ?? null,
+        target_date: (s as any).target_date ?? null,
+        delivery_manager_id: (s as any).delivery_manager_id ?? null,
+        delivery_manager_name: (s as any).delivery_manager_name ?? null,
+        product_owner_id: (s as any).product_owner_id ?? null,
+        product_owner_name: (s as any).product_owner_name ?? null,
+        stakeholders: (s as any).stakeholders ?? null,
+        targeted_feature: (s as any).targeted_feature ?? null,
+        arabic_title: (s as any).arabic_title ?? null,
       });
     });
     return out;
@@ -2291,6 +2348,147 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           : null,
       ),
     },
+    // ── 2026-06-01 Business Request adapter-only columns ────────────────
+    // Surfaced only when ProductBacklogPage's adapter sets allowedColumnIds.
+    // Project hub never sees these (PRODUCT_ONLY_COLUMN_IDS gate above).
+    // All `defaultVisible: false` — opt-in via the picker.
+    {
+      id: 'request_type',
+      label: 'Type',
+      width: 8,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.request_type || '',
+      cell: (r: BacklogItem) => (
+        <span style={{ color: 'var(--ds-text, #172B4D)', textTransform: 'capitalize' }}>
+          {r.request_type || '—'}
+        </span>
+      ),
+    },
+    {
+      id: 'category',
+      label: 'Category',
+      width: 10,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.category || '',
+      cell: (r: BacklogItem) => (
+        <span style={{ color: 'var(--ds-text, #172B4D)' }}>{r.category || '—'}</span>
+      ),
+    },
+    {
+      id: 'theme',
+      label: 'Theme',
+      width: 12,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.theme || '',
+      cell: (r: BacklogItem) => (
+        <span style={{ color: 'var(--ds-text, #172B4D)' }}>{r.theme || '—'}</span>
+      ),
+    },
+    {
+      id: 'urgency',
+      label: 'Priority',
+      width: 7,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.urgency || '',
+      cell: (r: BacklogItem) => (
+        <span style={{ color: 'var(--ds-text, #172B4D)' }}>{r.urgency || '—'}</span>
+      ),
+    },
+    {
+      id: 'planned_quarter',
+      label: 'Planned release',
+      width: 12,
+      sortable: false,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => (r.planned_quarter || []).join(', '),
+      cell: (r: BacklogItem) => {
+        const list = r.planned_quarter || [];
+        if (list.length === 0) return <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>;
+        const visible = list.slice(0, 2).join(', ');
+        const extra = list.length > 2 ? ` +${list.length - 2}` : '';
+        return <span style={{ color: 'var(--ds-text, #172B4D)' }}>{visible}{extra}</span>;
+      },
+    },
+    {
+      id: 'target_date',
+      label: 'Target date',
+      width: 9,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.target_date || '',
+      cell: makeDateCell((r: BacklogItem) => r.target_date ?? null),
+    },
+    {
+      id: 'delivery_manager',
+      label: 'Delivery Manager',
+      width: 11,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.delivery_manager_name || '',
+      cell: makeAssigneeCell((r: BacklogItem) =>
+        r.delivery_manager_name
+          ? { name: r.delivery_manager_name, avatarUrl: resolveAvatarUrl(r.delivery_manager_name) ?? null }
+          : null,
+      ),
+    },
+    {
+      id: 'product_owner',
+      label: 'Product Owner',
+      width: 11,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.product_owner_name || '',
+      cell: makeAssigneeCell((r: BacklogItem) =>
+        r.product_owner_name
+          ? { name: r.product_owner_name, avatarUrl: resolveAvatarUrl(r.product_owner_name) ?? null }
+          : null,
+      ),
+    },
+    {
+      id: 'stakeholders',
+      label: 'Stakeholders',
+      width: 14,
+      sortable: false,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => (r.stakeholders || []).join(', '),
+      cell: (r: BacklogItem) => {
+        const list = r.stakeholders || [];
+        if (list.length === 0) return <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>;
+        const visible = list.slice(0, 2).join(', ');
+        const extra = list.length > 2 ? ` +${list.length - 2}` : '';
+        return <span style={{ color: 'var(--ds-text, #172B4D)' }}>{visible}{extra}</span>;
+      },
+    },
+    {
+      id: 'targeted_feature',
+      label: 'Targeted feature',
+      width: 9,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => (r.targeted_feature ? '1' : '0'),
+      cell: (r: BacklogItem) => (
+        <span style={{ color: r.targeted_feature ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #6B778C)' }}>
+          {r.targeted_feature ? 'Yes' : '—'}
+        </span>
+      ),
+    },
+    {
+      id: 'arabic_title',
+      label: 'Arabic title',
+      width: 14,
+      sortable: false,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.arabic_title || '',
+      cell: (r: BacklogItem) => (
+        <span style={{ color: 'var(--ds-text, #172B4D)', direction: 'rtl', textAlign: 'right', display: 'block' }}>
+          {r.arabic_title || '—'}
+        </span>
+      ),
+    },
     {
       id: '__actions',
       label: '',
@@ -2318,11 +2516,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     const adapterAllow = dataSource?.allowedColumnIds
       ? new Set([...dataSource.allowedColumnIds, '__drag', '__actions'])
       : null;
-    return columns.filter((col) =>
-      ALLOWED_COLUMN_IDS.has(col.id) &&
-      !BANNED_COLUMN_IDS.has(col.id) &&
-      (adapterAllow === null || adapterAllow.has(col.id))
-    );
+    return columns.filter((col) => {
+      if (!ALLOWED_COLUMN_IDS.has(col.id)) return false;
+      if (BANNED_COLUMN_IDS.has(col.id)) return false;
+      // BR-specific columns: only when an adapter explicitly whitelists them.
+      if (PRODUCT_ONLY_COLUMN_IDS.has(col.id) && !adapterAllow) return false;
+      // Adapter whitelist (when set) is the final gate.
+      if (adapterAllow && !adapterAllow.has(col.id)) return false;
+      return true;
+    });
   }, [columns, dataSource?.allowedColumnIds]);
 
 

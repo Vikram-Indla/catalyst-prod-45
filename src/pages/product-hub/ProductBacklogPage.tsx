@@ -111,7 +111,23 @@ export default function ProductBacklogPage() {
   const adapterWithChrome = {
     ...adapter,
     ChromeHeader: ProductChromeHeader,
-    allowedColumnIds: ['key', 'status', 'created', 'updated'] as const,
+    allowedColumnIds: [
+      'key',
+      'status',
+      'request_type',
+      'category',
+      'theme',
+      'urgency',
+      'planned_quarter',
+      'target_date',
+      'delivery_manager',
+      'product_owner',
+      'stakeholders',
+      'targeted_feature',
+      'arabic_title',
+      'created',
+      'updated',
+    ] as const,
   };
 
   return (

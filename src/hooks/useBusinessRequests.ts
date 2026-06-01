@@ -70,8 +70,16 @@ export function useBusinessRequests(searchQuery?: string) {
     queryKey: ['business-requests', searchQuery],
     queryFn: async () => {
       // Performance optimization: limit to 200 rows for fast initial load
+      // 2026-06-01: select * + JOIN profiles for Delivery Manager
+      // (project_manager_user_id) and Product Owner (po_user_id) so the
+      // product backlog adapter can surface their display names without a
+      // second round-trip.
       let query = typedQuery('business_requests')
-        .select('*')
+        .select(
+          '*,' +
+          'delivery_manager:project_manager_user_id(id, full_name, avatar_url),' +
+          'product_owner:po_user_id(id, full_name, avatar_url)'
+        )
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
         .limit(200);
