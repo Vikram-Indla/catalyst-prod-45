@@ -148,19 +148,15 @@ function ReadOnlyValue({ value }: { value: string }) {
   );
 }
 
+// Matches Story's fmtJiraDate exactly: "May 11, 2026 at 11:42 PM"
+// (CatalystSidebarDetails.tsx fmtJiraDate — full month, "at" separator).
 function fmtDate(iso?: string | null) {
   if (!iso) return '—';
-  try {
-    return new Date(iso).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
-  } catch {
-    return iso;
-  }
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const date = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  return `${date} at ${time}`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -191,10 +187,11 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
   const plannedQuarter = request.planned_quarter ?? [];
 
   return (
-    <aside
+    <div
       data-cv-section="br-sidebar-details"
+      role="complementary"
       aria-label="Business Request details"
-      style={{ display: 'flex', flexDirection: 'column', gap: 4 }}
+      style={{ display: 'flex', flexDirection: 'column', gap: 4, background: 'transparent' }}
     >
       {/* Header action row — status pill (V3) + watchers chip + improve dropdown */}
       {(statusPill || watchersChip || improveDropdown) && (
@@ -352,7 +349,7 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
         </>
       )}
       </div>
-    </aside>
+    </div>
   );
 }
 

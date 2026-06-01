@@ -139,8 +139,8 @@ export interface BacklogDataSource {
  *   internally via the rows closure.
  * - source = BIZ_SOURCE ('biz') so BacklogPage routes all mutations to the
  *   adapter instead of ph_issues.
- * - issue_type = request_type → leafTypeFromIssueType falls back to 'story',
- *   rendering a Story icon. Override via adapter.getTypeIcon if needed.
+ * - issue_type = request_type. BacklogPage's getIcon callback checks
+ *   source === 'biz' first and renders the Business Request icon directly.
  */
 function bizRequestToBacklogStory(r: BusinessRequest): BacklogStory {
   const raw = r as any;

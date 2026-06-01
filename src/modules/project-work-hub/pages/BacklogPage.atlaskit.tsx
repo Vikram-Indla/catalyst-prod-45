@@ -2000,6 +2000,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           (r: BacklogItem) => openDetail(r),
           (r: BacklogItem) => `/project-hub/${projectKey}/backlog/${r.key || r.id}`,
           (it: BacklogItem) => {
+          if ((it as any).source === 'biz') {
+            return <JiraIssueTypeIcon type="Business Request" size={16} />;
+          }
           if (it.type === 'initiative') {
             const init = initiativesByKey?.get(it.key || '');
             const bg = init?.initiative_type_color_hex || '#904EE2';
