@@ -386,11 +386,12 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy }: {
 }) {
   return (
     <DropdownMenu
-      trigger={({ triggerRef, ...triggerProps }) => (
+      trigger={({ triggerRef, onClick: triggerOnClick, ...triggerProps }) => (
         <button
           {...triggerProps}
           ref={triggerRef as React.Ref<HTMLButtonElement>}
           type="button"
+          onClick={(e) => { e.stopPropagation(); triggerOnClick?.(e as React.MouseEvent<HTMLElement>); }}
           aria-label={`More actions for ${board.name}`}
           className="jira-row-menu-trigger"
           style={{
