@@ -292,6 +292,12 @@ export interface AllWorkPaginationState {
    *  current page. Null while loading. Used by the footer to show the real size
    *  instead of implying the 25-row page is the whole list. */
   totalCount: number | null;
+  /** Current page, 1-indexed (matches @atlaskit/pagination's selectedIndex+1). */
+  page: number;
+  /** Jump to a 1-indexed page (clamped to [1, pageCount]). */
+  setPage: (n: number) => void;
+  /** Total number of pages = ceil(totalCount / rowsPerPage). Min 1. */
+  pageCount: number;
 }
 
 const DEFAULT_ALL_WORK_ROWS_PER_PAGE = 25;
@@ -301,23 +307,32 @@ export function useProjectAllWorkItems(
   filter?: FilterState,
 ): AllWorkPaginationState {
   const { user } = useAuth();
-  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ALL_WORK_ROWS_PER_PAGE);
-  const [cursor, setCursor] = useState<{ timestamp: string; key: string } | null>(null);
-  const [hasNextPage, setHasNextPage] = useState(false);
+  const [rowsPerPage, setRowsPerPageState] = useState(DEFAULT_ALL_WORK_ROWS_PER_PAGE);
+  // Offset/range pagination (2026-06-02): replaced the keyset cursor, which was
+  // broken — the cursor `.or()` collided with the 2026-gate `.or()` (PostgREST
+  // collapses two top-level `or=` params), so Next never advanced. Offset/range
+  // is deterministic and pairs cleanly with @atlaskit/pagination + totalCount.
+  const [page, setPageState] = useState(1); // 1-indexed
 
   // Reset to page 1 whenever the filter changes so the user sees the first
-  // page of the filtered result set (not a stale cursor into the unfiltered set).
+  // page of the filtered result set (not a stale offset into the old set).
   const prevFilterRef = useRef<string>('');
   const filterKey = JSON.stringify(filter ?? {});
   useEffect(() => {
     if (filterKey !== prevFilterRef.current) {
       prevFilterRef.current = filterKey;
-      setCursor(null);
+      setPageState(1);
     }
   }, [filterKey]);
 
+  // Changing page size invalidates the current offset — reset to page 1.
+  const setRowsPerPage = useCallback((n: number) => {
+    setRowsPerPageState(n);
+    setPageState(1);
+  }, []);
+
   const { data = [], isLoading, error } = useQuery({
-    queryKey: ['project-all-work-items-keyset', projectKey, cursor, rowsPerPage, filterKey],
+    queryKey: ['project-all-work-items-offset', projectKey, page, rowsPerPage, filterKey],
     queryFn: async (): Promise<WorkItem[]> => {
       if (!projectKey) return [];
 
@@ -330,37 +345,23 @@ export function useProjectAllWorkItems(
         .is('jira_removed_at', null)
         .is('archived_at', null);
 
-      // Apply server-side filter predicates BEFORE ordering and limiting.
-      // This ensures LIMIT 25 operates on the filtered result set, so page 1
-      // always contains the first 25 matching rows — not 25 random rows with
-      // the filter applied client-side on that tiny window.
+      // Server-side filter predicates BEFORE ordering + range, so the page
+      // window operates on the filtered result set.
       qb = applyServerFilter(qb, filter);
 
       qb = qb
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .order('issue_key', { ascending: false });
 
-      // Keyset pagination: if we have a cursor, filter to rows AFTER the cursor
-      // Composite-key boundary: fetch rows where (jira_updated_at < cursor.timestamp)
-      // OR (jira_updated_at = cursor.timestamp AND issue_key < cursor.key)
-      // This handles timestamp collisions (bulk-synced data) correctly
-      if (cursor) {
-        qb = qb.or(
-          `jira_updated_at.lt.${cursor.timestamp},and(jira_updated_at.eq.${cursor.timestamp},issue_key.lt.${cursor.key})`
-        );
-      }
-
-      // Fetch one extra row to determine if there's a next page
-      const { data: rows, error: err } = await qb.limit(rowsPerPage + 1);
+      // Offset/range window for the current page. .range() is inclusive on
+      // both ends. No `.or()` cursor — avoids the PostgREST double-or collision
+      // that silently dropped the keyset boundary.
+      const start = (page - 1) * rowsPerPage;
+      const end = start + rowsPerPage - 1;
+      const { data: rows, error: err } = await qb.range(start, end);
       if (err) throw err;
 
-      // Determine if there's a next page
-      const hasMore = (rows?.length ?? 0) > rowsPerPage;
-      setHasNextPage(hasMore);
-
-      // Return only the requested number of rows
-      const resultRows = (rows ?? []).slice(0, rowsPerPage);
-      return resultRows.map(mapPhIssue);
+      return (rows ?? []).map(mapPhIssue);
     },
     enabled: !!projectKey && !!user,
     staleTime: 30_000,
@@ -390,19 +391,26 @@ export function useProjectAllWorkItems(
     staleTime: 30_000,
   });
 
+  const pageCount = totalCount != null
+    ? Math.max(1, Math.ceil(totalCount / rowsPerPage))
+    : 1;
+
+  const setPage = useCallback((n: number) => {
+    setPageState((prev) => {
+      const clamped = Math.max(1, Math.min(n, Math.max(1, pageCount)));
+      return clamped === prev ? prev : clamped;
+    });
+  }, [pageCount]);
+
+  const hasNextPage = page < pageCount;
+  const hasPrevPage = page > 1;
+
   const fetchNextPage = useCallback(() => {
-    if (data.length === 0 || !hasNextPage) return;
-    const lastRow = data[data.length - 1];
-    if (lastRow && lastRow.updatedAt) {
-      setCursor({
-        timestamp: lastRow.updatedAt,
-        key: lastRow.jiraKey,
-      });
-    }
-  }, [data, hasNextPage]);
+    setPageState((p) => (p < pageCount ? p + 1 : p));
+  }, [pageCount]);
 
   const fetchPrevPage = useCallback(() => {
-    setCursor(null);  // Reset to first page
+    setPageState((p) => (p > 1 ? p - 1 : p));
   }, []);
 
   return {
@@ -410,12 +418,15 @@ export function useProjectAllWorkItems(
     rowsPerPage,
     setRowsPerPage,
     hasNextPage,
-    hasPrevPage: cursor !== null,
+    hasPrevPage,
     fetchNextPage,
     fetchPrevPage,
     isLoading,
     error: error ?? null,
     totalCount,
+    page,
+    setPage,
+    pageCount,
   };
 }
 

@@ -19,8 +19,8 @@
  */
 import React, { lazy, Suspense, useState, useCallback, useRef, useEffect, useMemo } from 'react';
 // (token import removed — switched to var(--cp-*) for proper dark-mode flip)
-import Button from '@atlaskit/button/new';
 import Select from '@atlaskit/select';
+import Pagination from '@atlaskit/pagination';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -78,11 +78,10 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     items = [],
     rowsPerPage,
     setRowsPerPage,
-    hasNextPage,
-    hasPrevPage,
-    fetchNextPage,
-    fetchPrevPage,
     totalCount,
+    page,
+    setPage,
+    pageCount,
   } = useProjectAllWorkItems(projectKey, toolbarFilters);
 
   /* ── Filter URL params ────────────────────────────────────────────────────
@@ -453,9 +452,16 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                  toolbarQuery so the inner search hides and the rail filters
                  by the toolbar input. */
               externalQuery={toolbarQuery}
+              /* 2026-06-02: AllWork owns the canonical @atlaskit/pagination
+                 footer — suppress WorkListPanel's competing "N of M" count. */
+              hideFooter
             />
 
-            {/* Pagination footer — keyset pagination controls. */}
+            {/* Pagination footer — offset/range pagination (2026-06-02).
+                Single source of truth: @atlaskit/pagination numbered pages
+                driven by page/setPage/pageCount + a Jira-style range label.
+                Replaced the broken keyset Previous/Next (cursor never advanced)
+                and removed the competing WorkListPanel "N of M" footer. */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -468,32 +474,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
               fontSize: '12px',
               color: 'var(--cp-text-secondary, var(--cp-text-tertiary, #6B778C))',
             }}>
-              {/* Pagination buttons */}
-              <div style={{ display: 'flex', gap: '4px' }}>
-                <Button
-                  appearance="subtle"
-                  size="small"
-                  isDisabled={!hasPrevPage}
-                  onClick={fetchPrevPage}
-                  aria-label="Previous page"
-                >
-                  Previous
-                </Button>
-                <Button
-                  appearance="subtle"
-                  size="small"
-                  isDisabled={!hasNextPage}
-                  onClick={fetchNextPage}
-                  aria-label="Next page"
-                >
-                  Next
-                </Button>
-              </div>
-
-              {/* design-critique 2026-05-21 — H6 P1: count chip.
-                  2026-06-02: now shows "<page> of <total> items" using the
-                  cursor-independent totalCount so the footer reflects the full
-                  filtered result set (e.g. "25 of 656"), not just the page. */}
+              {/* Jira-style range label: "1–25 of 656" */}
               <span
                 data-testid="allwork-pagination-count"
                 style={{
@@ -504,10 +485,22 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                   flexShrink: 0,
                 }}
               >
-                {totalCount != null
-                  ? `${filteredItems.length} of ${totalCount} items`
-                  : `${filteredItems.length}${hasNextPage ? '+' : ''} items`}
+                {totalCount != null && totalCount > 0
+                  ? `${(page - 1) * rowsPerPage + 1}–${Math.min(page * rowsPerPage, totalCount)} of ${totalCount}`
+                  : `${filteredItems.length} items`}
               </span>
+
+              {/* @atlaskit/pagination — numbered pages with built-in truncation
+                  (1 … 5 6 7 … N). selectedIndex is 0-based; onChange yields the
+                  1-based page value. Only rendered when there's more than 1 page. */}
+              {pageCount > 1 && (
+                <Pagination
+                  pages={Array.from({ length: pageCount }, (_, i) => i + 1)}
+                  selectedIndex={page - 1}
+                  onChange={(_e, newPage) => setPage(newPage as number)}
+                  label="Page"
+                />
+              )}
 
               {/* Rows per page dropdown */}
               <Select

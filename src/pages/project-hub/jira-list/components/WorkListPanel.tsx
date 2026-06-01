@@ -67,6 +67,13 @@ interface Props {
    * cannot write back. CLAUDE.md canonical-component rule: parameterise, don't fork.
    */
   disableAssigneePicker?: boolean;
+  /**
+   * Suppress the panel's own "N of M" footer. Set when a parent owns the
+   * canonical pagination footer (e.g. ProjectAllWorkView's @atlaskit/pagination)
+   * so the two counts don't compete — the panel renders a 25-row page, not the
+   * whole dataset, so its internal count is misleading there.
+   */
+  hideFooter?: boolean;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -79,6 +86,7 @@ export function WorkListPanel({
   projectId,
   externalQuery,
   disableAssigneePicker = false,
+  hideFooter = false,
 }: Props) {
   const [innerQuery, setInnerQuery] = useState('');
   const query = externalQuery !== undefined ? externalQuery : innerQuery;
@@ -615,27 +623,30 @@ export function WorkListPanel({
         )}
       </div>
 
-      {/* ── Footer (40px sticky) — "N of 1000+" mixed weight ── */}
-      <div
-        style={{
-          height: 40,
-          flexShrink: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderTop: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
-          background: 'var(--ds-surface, #FFFFFF)',
-          fontSize: 13,
-          gap: 4,
-        }}
-      >
-        <span style={{ color: 'var(--ds-text-subtle, #626F86)', fontWeight: 400 }}>
-          {visibleCount} of
-        </span>
-        <span style={{ color: 'var(--ds-link, #0C66E4)', fontWeight: 700 }}>
-          {totalLabel}
-        </span>
-      </div>
+      {/* ── Footer (40px sticky) — "N of 1000+" mixed weight ──
+          Suppressed when a parent owns the canonical pagination footer. */}
+      {!hideFooter && (
+        <div
+          style={{
+            height: 40,
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderTop: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
+            background: 'var(--ds-surface, #FFFFFF)',
+            fontSize: 13,
+            gap: 4,
+          }}
+        >
+          <span style={{ color: 'var(--ds-text-subtle, #626F86)', fontWeight: 400 }}>
+            {visibleCount} of
+          </span>
+          <span style={{ color: 'var(--ds-link, #0C66E4)', fontWeight: 700 }}>
+            {totalLabel}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
