@@ -10,8 +10,6 @@ export function useBoards(projectId: string | undefined) {
       const { data: { user } } = await supabase.auth.getUser();
       const uid = user?.id;
 
-      console.log('[useBoards] projectId:', projectId, 'userId:', uid);
-
       const { data, error } = await typedQuery('boards')
         .select(`
           *,
@@ -24,7 +22,24 @@ export function useBoards(projectId: string | undefined) {
         .order('sort_order', { ascending: true });
 
       if (error) { console.error('[useBoards] query error:', error); throw error; }
-      console.log('[useBoards] fetched', data?.length, 'boards');
+
+      // Batch-fetch filter owners for the Lead column.
+      // Two-step avoids FK alias uncertainty in typedQuery.
+      const filterIds = (data ?? []).map((b: any) => b.filter_id).filter(Boolean) as string[];
+      const filterOwnerMap: Record<string, { name: string | null; avatarUrl: string | null }> = {};
+      if (filterIds.length > 0) {
+        const { data: filters } = await supabase
+          .from('ph_saved_filters')
+          .select('id, owner:profiles!ph_saved_filters_owner_id_fkey(full_name, avatar_url)')
+          .in('id', filterIds);
+        (filters ?? []).forEach((f: any) => {
+          filterOwnerMap[f.id] = {
+            name: f.owner?.full_name ?? null,
+            avatarUrl: f.owner?.avatar_url ?? null,
+          };
+        });
+      }
+
       return (data ?? []).map((b: any) => ({
         id: b.id,
         name: b.name,
@@ -49,6 +64,9 @@ export function useBoards(projectId: string | undefined) {
         columnCount: b.board_columns?.length ?? 0,
         issueCount: b.board_issue_rank?.length ?? 0,
         createdByName: null,
+        filterId: b.filter_id ?? null,
+        leadName: b.filter_id ? (filterOwnerMap[b.filter_id]?.name ?? null) : null,
+        leadAvatarUrl: b.filter_id ? (filterOwnerMap[b.filter_id]?.avatarUrl ?? null) : null,
       }));
     },
     enabled: !!projectId,

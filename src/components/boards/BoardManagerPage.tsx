@@ -87,9 +87,8 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
       id: 'lead',
       label: 'Lead',
       width: 18,
-      accessor: () => null,
-      // Lead is wired in Phase B (filter owner). Shows unassigned for now.
-      cell: makeAssigneeCell(() => null),
+      accessor: (b) => b.leadName,
+      cell: makeAssigneeCell((b) => b.leadName ? { name: b.leadName, avatarUrl: b.leadAvatarUrl } : null),
     },
     {
       id: 'location',
@@ -235,7 +234,11 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
         <CreateBoardModal projectId={projectId!} basePath={boardBasePath} onClose={() => setCreateOpen(false)} />
       )}
       {settingsBoard && (
-        <BoardSettingsDrawer board={settingsBoard} onClose={() => setSettingsBoard(null)} />
+        <BoardSettingsDrawer
+          board={settingsBoard}
+          projectKey={projectKey}
+          onClose={() => setSettingsBoard(null)}
+        />
       )}
     </div>
   );

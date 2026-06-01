@@ -42,6 +42,11 @@ export interface BoardListItem extends Board {
   columnCount: number;
   issueCount: number;
   createdByName: string | null;
+  /** FK boards.filter_id → ph_saved_filters.id */
+  filterId: string | null;
+  /** Display name of the filter owner (board Lead) */
+  leadName: string | null;
+  leadAvatarUrl: string | null;
 }
 
 export interface BoardColumn {

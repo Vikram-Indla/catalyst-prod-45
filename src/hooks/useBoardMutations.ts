@@ -47,6 +47,7 @@ export function useUpdateBoard() {
       swimlane_type?: SwimlaneType;
       show_swimlanes?: boolean;
       board_query?: string | null;
+      filter_id?: string | null;
     }) => {
       const update: Record<string, any> = { updated_at: new Date().toISOString() };
       if (fields.name !== undefined) update.name = fields.name;
@@ -57,6 +58,7 @@ export function useUpdateBoard() {
       if (fields.swimlane_type !== undefined) update.swimlane_type = fields.swimlane_type;
       if (fields.show_swimlanes !== undefined) update.show_swimlanes = fields.show_swimlanes;
       if (fields.board_query !== undefined) update.board_query = fields.board_query;
+      if (fields.filter_id !== undefined) update.filter_id = fields.filter_id;
 
       const { error } = await typedQuery('boards')
         .update(update)

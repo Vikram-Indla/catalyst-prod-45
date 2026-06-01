@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, GripVertical, Trash2, Plus, AlertTriangle } from '@/lib/atlaskit-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -6,10 +6,13 @@ import type { BoardListItem, BoardVisibility, SwimlaneType, BoardQuickFilter } f
 import { useBoard } from '@/hooks/useBoard';
 import { useUpdateBoard, useDeleteBoard, useAddColumn, useDeleteColumn, useAddQuickFilter, useDeleteQuickFilter } from '@/hooks/useBoardMutations';
 import { typedQuery } from '@/integrations/supabase/client';
+import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
 
 interface Props {
   board: BoardListItem;
   onClose: () => void;
+  /** Project key for the filter picker — passed by BoardManagerPage */
+  projectKey?: string;
 }
 
 type SettingsTab = 'general' | 'query' | 'columns' | 'swimlanes' | 'access';
@@ -46,7 +49,7 @@ const SWIMLANE_OPTIONS: { value: SwimlaneType; label: string; desc: string }[] =
   { value: 'epic', label: 'Group by Epic', desc: 'One swimlane per parent epic' },
 ];
 
-export default function BoardSettingsDrawer({ board, onClose }: Props) {
+export default function BoardSettingsDrawer({ board, onClose, projectKey }: Props) {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const [tab, setTab] = useState<SettingsTab>('general');
@@ -62,8 +65,10 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
   const [newFilterName, setNewFilterName] = useState('');
   const [newFilterJql, setNewFilterJql] = useState('');
   const [addingFilter, setAddingFilter] = useState(false);
+  const [selectedFilterId, setSelectedFilterId] = useState<string>(board.filterId ?? '');
 
   const { data: boardData } = useBoard(board.id);
+  const { data: availableFilters = [] } = useFiltersForProject(projectKey, 'project');
   const updateBoard = useUpdateBoard();
   const deleteBoard = useDeleteBoard();
   const addColumn = useAddColumn();
@@ -98,7 +103,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
 
   const isDirty = name !== board.name || description !== (board.description ?? '') ||
     color !== board.color || visibility !== board.visibility || swimlane !== board.swimlaneType ||
-    boardQuery !== (board.boardQuery ?? '');
+    boardQuery !== (board.boardQuery ?? '') || selectedFilterId !== (board.filterId ?? '');
 
   const columns = boardData?.columns ?? [];
 
@@ -113,6 +118,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
       visibility: visibility !== board.visibility ? visibility : undefined,
       swimlane_type: swimlane !== board.swimlaneType ? swimlane : undefined,
       board_query: boardQuery !== (board.boardQuery ?? '') ? boardQuery : undefined,
+      filter_id: selectedFilterId !== (board.filterId ?? '') ? (selectedFilterId || null) : undefined,
     });
     onClose();
   };
@@ -219,6 +225,28 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                     }} />
                   ))}
                 </div>
+              </Section>
+
+              <Section label="Linked filter">
+                <p style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', margin: '0 0 8px', lineHeight: 1.5 }}>
+                  The board shows issues matching this saved filter. The filter owner is displayed as the board lead.
+                </p>
+                <select
+                  value={selectedFilterId}
+                  onChange={e => setSelectedFilterId(e.target.value)}
+                  style={{
+                    width: '100%', height: 32, padding: '0 8px', boxSizing: 'border-box',
+                    border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+                    fontSize: 14, color: 'var(--ds-text, #172B4D)',
+                    background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+                    outline: 'none', appearance: 'auto',
+                  }}
+                >
+                  <option value="">— None —</option>
+                  {availableFilters.map(f => (
+                    <option key={f.id} value={f.id}>{f.name}</option>
+                  ))}
+                </select>
               </Section>
 
               <Section label="Visibility">
