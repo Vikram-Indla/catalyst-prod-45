@@ -451,6 +451,24 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                   <Plus size={13} /> Add
                 </button>
               </div>
+              {projectKey && (
+                <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
+                  <p style={{ margin: '0 0 8px', fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', lineHeight: 1.5 }}>
+                    Map workflow statuses to columns to control which issues appear in each column.
+                  </p>
+                  <button
+                    onClick={() => { onClose(); navigate(`/project-hub/${projectKey}/boards/map-statuses`); }}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
+                      background: 'var(--ds-background-neutral, #F1F2F4)', border: '2px solid transparent',
+                      borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 500,
+                      color: 'var(--ds-text, #172B4D)',
+                    }}
+                  >
+                    Configure status mapping →
+                  </button>
+                </div>
+              )}
             </>
           )}
 
