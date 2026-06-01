@@ -195,13 +195,17 @@ function fmtDate(iso?: string | null) {
 interface Props {
   request: BusinessRequest | null;
   onUpdate: (field: string, value: unknown) => Promise<void>;
+  /** Status pill — rendered in the right-rail header (V3 Story-parity pattern).
+   *  When provided, the Status Select row is hidden from the Details section
+   *  since the pill in the header already handles status changes. */
+  statusPill?: React.ReactNode;
   /** AI improve dropdown — rendered in the right-rail header (C22). */
   improveDropdown?: React.ReactNode;
   /** Watchers chip — rendered beside the improve dropdown (C23). */
   watchersChip?: React.ReactNode;
 }
 
-export function BrSidebarDetails({ request, onUpdate, improveDropdown, watchersChip }: Props) {
+export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdown, watchersChip }: Props) {
   const { options: statusOptions, isLoading: statusesLoading } = useDemandProcessStepOptions();
   const { data: profiles = [] } = useProfiles();
   const { data: releases = [] } = useReleases();
@@ -217,15 +221,17 @@ export function BrSidebarDetails({ request, onUpdate, improveDropdown, watchersC
       aria-label="Business Request details"
       style={{ display: 'flex', flexDirection: 'column', gap: 4 }}
     >
-      {/* Header action row — watchers chip + improve dropdown (C22/C23) */}
-      {(watchersChip || improveDropdown) && (
+      {/* Header action row — status pill (V3) + watchers chip + improve dropdown */}
+      {(statusPill || watchersChip || improveDropdown) && (
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: 4,
           marginBottom: 8,
           minHeight: 28,
+          flexWrap: 'wrap',
         }}>
+          {statusPill}
           {watchersChip}
           {improveDropdown}
         </div>
@@ -245,22 +251,28 @@ export function BrSidebarDetails({ request, onUpdate, improveDropdown, watchersC
         Details
       </div>
 
-      <SidebarRow label="Status">
-        <Select
-          inputId="br-view--status"
-          options={statusOptions}
-          value={statusOptions.find((o) => o.value === request.process_step) ?? null}
-          onChange={(opt) => void onUpdate('process_step', (opt as { value: string } | null)?.value ?? null)}
-          isClearable={false}
-          isSearchable={false}
-          isLoading={statusesLoading}
-          placeholder="Select status"
-        />
-      </SidebarRow>
+      {/* Status row — hidden when statusPill is in the header (V3 Story-parity).
+          V2 callers that don't pass statusPill continue to see the Select row. */}
+      {!statusPill && (
+        <SidebarRow label="Status">
+          <Select
+            inputId="br-view--status"
+            classNamePrefix="cv-br-select"
+            options={statusOptions}
+            value={statusOptions.find((o) => o.value === request.process_step) ?? null}
+            onChange={(opt) => void onUpdate('process_step', (opt as { value: string } | null)?.value ?? null)}
+            isClearable={false}
+            isSearchable={false}
+            isLoading={statusesLoading}
+            placeholder="Select status"
+          />
+        </SidebarRow>
+      )}
 
       <SidebarRow label="Type">
         <Select
           inputId="br-view--type"
+          classNamePrefix="cv-br-select"
           options={TYPE_SELECT_OPTIONS}
           value={TYPE_SELECT_OPTIONS.find((o) => o.value === requestTypeRaw) ?? null}
           onChange={(opt) => void onUpdate('request_type', (opt as { value: string } | null)?.value ?? null)}
@@ -273,6 +285,7 @@ export function BrSidebarDetails({ request, onUpdate, improveDropdown, watchersC
       <SidebarRow label="Priority">
         <Select
           inputId="br-view--priority"
+          classNamePrefix="cv-br-select"
           options={PRIORITY_OPTIONS}
           value={PRIORITY_OPTIONS.find((o) => o.value === request.urgency) ?? null}
           onChange={(opt) => void onUpdate('urgency', (opt as { value: string } | null)?.value ?? null)}
@@ -285,6 +298,7 @@ export function BrSidebarDetails({ request, onUpdate, improveDropdown, watchersC
       <SidebarRow label="Category">
         <Select
           inputId="br-view--category"
+          classNamePrefix="cv-br-select"
           options={CATEGORY_OPTIONS}
           value={CATEGORY_OPTIONS.find((o) => o.value === categoryRaw) ?? null}
           onChange={(opt) => void onUpdate('category', (opt as { value: string } | null)?.value ?? null)}
@@ -297,6 +311,7 @@ export function BrSidebarDetails({ request, onUpdate, improveDropdown, watchersC
       <SidebarRow label="Theme">
         <Select
           inputId="br-view--theme"
+          classNamePrefix="cv-br-select"
           options={THEME_SELECT_OPTIONS}
           value={THEME_SELECT_OPTIONS.find((o) => o.value === request.theme) ?? null}
           onChange={(opt) => void onUpdate('theme', (opt as { value: string } | null)?.value ?? null)}
@@ -309,6 +324,7 @@ export function BrSidebarDetails({ request, onUpdate, improveDropdown, watchersC
       <SidebarRow label="Delivery Manager">
         <Select
           inputId="br-view--dm"
+          classNamePrefix="cv-br-select"
           options={profiles}
           value={profiles.find((p) => p.value === request.project_manager_user_id) ?? null}
           onChange={(opt) =>
@@ -323,6 +339,7 @@ export function BrSidebarDetails({ request, onUpdate, improveDropdown, watchersC
       <SidebarRow label="Product Owner">
         <Select
           inputId="br-view--po"
+          classNamePrefix="cv-br-select"
           options={profiles}
           value={profiles.find((p) => p.value === request.po_user_id) ?? null}
           onChange={(opt) =>
@@ -337,6 +354,7 @@ export function BrSidebarDetails({ request, onUpdate, improveDropdown, watchersC
       <SidebarRow label="Stakeholders">
         <CreatableSelect
           inputId="br-view--stakeholders"
+          classNamePrefix="cv-br-select"
           isMulti
           isClearable={false}
           options={STAKEHOLDER_SELECT_OPTIONS}
@@ -362,6 +380,7 @@ export function BrSidebarDetails({ request, onUpdate, improveDropdown, watchersC
       <SidebarRow label="Planned release">
         <CreatableSelect
           inputId="br-view--planned-release"
+          classNamePrefix="cv-br-select"
           isMulti
           isClearable
           options={releases}
@@ -381,12 +400,14 @@ export function BrSidebarDetails({ request, onUpdate, improveDropdown, watchersC
       </SidebarRow>
 
       <SidebarRow label="Target date">
-        <DatePicker
-          value={request.end_date || undefined}
-          onChange={(val: string) => void onUpdate('end_date', val || null)}
-          placeholder="Select date"
-          dateFormat="DD/MM/YYYY"
-        />
+        <div className="cv-date-field">
+          <DatePicker
+            value={request.end_date || undefined}
+            onChange={(val: string) => void onUpdate('end_date', val || null)}
+            placeholder="Select date"
+            dateFormat="DD/MM/YYYY"
+          />
+        </div>
       </SidebarRow>
 
       <SidebarRow label="Targeted feature">
