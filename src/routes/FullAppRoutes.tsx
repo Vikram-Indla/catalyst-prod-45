@@ -112,7 +112,6 @@ const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindo
 
 const StrategicThemesPage = lazy(() => import("../modules-dormant/strategyhub/StrategicThemesPage"));
 const GoalsKeyResultsPage = lazy(() => import("../modules-dormant/strategyhub/GoalsKeyResultsPage"));
-const RequestListingPage = lazy(() => import("../pages/producthub/RequestListingPage"));
 const RoadmapPage = lazy(() => import("../pages/producthub/RoadmapPage"));
 const ProductKanbanPage = lazy(() => import("../pages/producthub/KanbanPage"));
 const RequirementAssistWorkspace = ENABLE_AI ? lazy(() => import("../pages/producthub/requirement-assist/index")) : () => <FeatureComingSoon title="Requirement Assist" />;
@@ -504,7 +503,8 @@ export default function FullAppRoutes() {
             (same pattern as ProducthubLegacyRedirect). Drilldowns happen at
             /product-hub/{KEY}/dashboard|backlog|kanban|... */}
         <Route path="/product-hub/products" element={<MG k="producthub" t="ProductHub"><S><AllProductsPage /></S></MG>} />
-        <Route path="/product-hub/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
+        {/* /product-hub/backlog redirect handled in App.tsx OUTSIDE the shell —
+            in-shell Navigate is swallowed by CatalystShell's re-render loop. */}
         <Route path="/product-hub/table" element={<MG k="producthub" t="ProductHub"><S><CatalystDemandTable /></S></MG>} />
         <Route path="/product-hub/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
         {/* /product-hub/dashboard deprecated 2026-05-16 — redirects to products list */}
