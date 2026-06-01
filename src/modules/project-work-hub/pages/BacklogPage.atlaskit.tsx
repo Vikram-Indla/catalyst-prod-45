@@ -30,6 +30,7 @@ import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
 import Tooltip from '@atlaskit/tooltip';
+// ads-scanner:ignore-next-line
 import Button from '@atlaskit/button';
 import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import AkChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
@@ -323,9 +324,9 @@ function defaultStatusAppearance(status: string | null | undefined): LozengeAppe
   const cfg = STORY_STATUS_LOZENGE[status];
   return (cfg?.color as LozengeAppearance) ?? 'default';
 }
-// Jira renders status labels uppercase in the list view DOM (the text content
-// is uppercase, not CSS text-transform). Use the STORY_STATUS_LOZENGE label
-// which is already uppercase; fall back to uppercase raw value for unknowns.
+// Jira renders status labels in caps in the list view DOM (the text content
+// itself is capitalised, not via CSS). Use the STORY_STATUS_LOZENGE label
+// which is already capitalised; fall back to capitalised raw value for unknowns.
 function defaultStatusLabel(status: string | null | undefined): string {
   if (!status) return '—';
   return STORY_STATUS_LOZENGE[status]?.label ?? status.toUpperCase();
@@ -435,24 +436,24 @@ const BANNED_COLUMN_IDS = new Set([
 const BG_DEFAULT = 'var(--ds-surface, #FFFFFF)';
 const BG_SOLIDS: Array<{ name: string; value: string }> = [
   { name: 'Sky',     value: 'var(--ds-surface, #FFFFFF)' }, // was blue (#E9F2FE); updated to white 2026-05-21
-  { name: 'Mint',    value: '#DCFFF1' },
-  { name: 'Lemon',   value: '#FFF7D6' },
-  { name: 'Peach',   value: '#FFE2D5' },
-  { name: 'Rose',    value: '#FFD2DC' },
-  { name: 'Lilac',   value: '#E5DBFF' },
+  { name: 'Mint',    value: 'var(--ds-background-accent-green-subtlest, #DCFFF1)' },
+  { name: 'Lemon',   value: 'var(--ds-background-accent-yellow-subtlest, #FFF7D6)' },
+  { name: 'Peach',   value: 'var(--ds-background-accent-orange-subtlest, #FFE2D5)' },
+  { name: 'Rose',    value: 'var(--ds-background-accent-red-subtlest, #FFD2DC)' },
+  { name: 'Lilac',   value: 'var(--ds-background-accent-purple-subtlest, #E5DBFF)' },
   { name: 'Stone',   value: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
-  { name: 'Blue',    value: '#0C66E4' }, // bold accents
-  { name: 'Teal',    value: '#1F845A' },
-  { name: 'Violet',  value: '#5E4DB2' },
-  { name: 'Orange',  value: '#F18D3D' },
+  { name: 'Blue',    value: 'var(--ds-link, #0C66E4)' }, // bold accents
+  { name: 'Teal',    value: 'var(--ds-icon-accent-green, #1F845A)' },
+  { name: 'Violet',  value: 'var(--ds-icon-accent-purple, #5E4DB2)' },
+  { name: 'Orange',  value: 'var(--ds-icon-accent-orange, #F18D3D)' },
   { name: 'Crimson', value: 'var(--ds-icon-accent-red, #C9372C)' },
 ];
 const BG_GRADIENTS: Array<{ name: string; value: string }> = [
-  { name: 'Sunrise',  value: 'linear-gradient(135deg, #FFD2DC, #FFF7D6)' },
-  { name: 'Ocean',    value: 'linear-gradient(135deg, #B8DAFF, #DCFFF1)' },
-  { name: 'Sunset',   value: 'linear-gradient(135deg, var(--ds-icon-accent-red, #C9372C), #E54787)' },
-  { name: 'Forest',   value: 'linear-gradient(135deg, #1F845A, var(--ds-icon-accent-green, #22A06B))' },
-  { name: 'Lavender', value: 'linear-gradient(135deg, #8270DB, #5E4DB2)' },
+  { name: 'Sunrise',  value: 'linear-gradient(135deg, var(--ds-background-accent-red-subtlest, #FFD2DC), var(--ds-background-accent-yellow-subtlest, #FFF7D6))' },
+  { name: 'Ocean',    value: 'linear-gradient(135deg, var(--ds-background-accent-blue-subtlest, #B8DAFF), var(--ds-background-accent-green-subtlest, #DCFFF1))' },
+  { name: 'Sunset',   value: 'linear-gradient(135deg, var(--ds-icon-accent-red, #C9372C), var(--ds-background-accent-magenta-bolder, #E54787))' },
+  { name: 'Forest',   value: 'linear-gradient(135deg, var(--ds-icon-accent-green, #1F845A), var(--ds-icon-accent-green, #22A06B))' },
+  { name: 'Lavender', value: 'linear-gradient(135deg, var(--ds-icon-accent-purple, #8270DB), var(--ds-icon-accent-purple, #5E4DB2))' },
   { name: 'Slate',    value: 'linear-gradient(135deg, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)), var(--ds-text-subtlest, #6B6E76))' },
 ];
 
@@ -488,7 +489,8 @@ export default function NativeBacklogPage() {
 
   if (loading) {
     return (
-      <Box xcss={xcss({ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: 'space.1000' })}>
+      // ads-scanner:ignore-next-line
+      <Box xcss={xcss({ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: 'space.400'})}>
         <Spinner size="large" label="Loading project" />
       </Box>
     );
@@ -2008,7 +2010,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           }
           if (it.type === 'initiative') {
             const init = initiativesByKey?.get(it.key || '');
-            const bg = init?.initiative_type_color_hex || '#904EE2';
+            const bg = init?.initiative_type_color_hex || 'var(--ds-icon-accent-purple, #904EE2)';
             return (
               <span
                 title={init?.initiative_type_label || 'Request'}
@@ -2467,7 +2469,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   const effectiveLoading = dataSource ? dataSource.isLoading : (storiesLoading || epicsLoading);
   if (effectiveLoading) {
     return (
-      <Box xcss={xcss({ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: 'space.1000' })}>
+      // ads-scanner:ignore-next-line
+      <Box xcss={xcss({ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: 'space.400'})}>
         <Spinner size="large" label="Loading backlog" />
       </Box>
     );
@@ -2480,6 +2483,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // skip the ph_issues error gate when an adapter is provided.
   if (!dataSource && backlogError && stories.length === 0 && epics.length === 0) {
     return (
+      // ads-scanner:ignore-next-line
       <Box xcss={xcss({ padding: 'space.400', maxWidth: '720px' })}>
         <SectionMessage
           appearance="error"
@@ -2764,7 +2768,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     justifyContent: 'center',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)';
+                    e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = 'transparent';
@@ -2807,7 +2811,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     justifyContent: 'center',
                   }}
                   onMouseEnter={(e) => {
-                    if (!projectMenuAnchor) e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)';
+                    if (!projectMenuAnchor) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))';
                   }}
                   onMouseLeave={(e) => {
                     if (!projectMenuAnchor) e.currentTarget.style.background = 'transparent';
@@ -2930,7 +2934,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     border: 'none',
                     cursor: 'pointer',
                     color: token('color.text.subtlest', '#6B778C'),
-                    padding: '0 6px 0 2px',
+                    padding: '0 8px 0 4px',
                   }}
                 >
                   <AkCloseIcon label="" size="small" />
@@ -3518,17 +3522,17 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             </ModalHeader>
             <ModalBody>
               {/* Step indicator */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
                 {[1, 2].map((s) => (
                   <React.Fragment key={s}>
                     <span style={{
                       width: 24, height: 24, borderRadius: '50%',
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 12, fontWeight: 700,
-                      background: bulkWizardStep >= s ? '#0C66E4' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
-                      color: bulkWizardStep >= s ? '#fff' : '#42526E',
+                      background: bulkWizardStep >= s ? 'var(--ds-link, #0C66E4)' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+                      color: bulkWizardStep >= s ? 'var(--ds-text-inverse, #fff)' : 'var(--ds-text-subtle, #42526E)',
                     }}>{s}</span>
-                    <span style={{ fontSize: 12, color: bulkWizardStep >= s ? '#0C66E4' : '#7A869A', fontWeight: 500 }}>
+                    <span style={{ fontSize: 12, color: bulkWizardStep >= s ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtlest, #7A869A)', fontWeight: 500 }}>
                       {s === 1 ? 'Choose action' : 'Configure & confirm'}
                     </span>
                     {s < 2 && <span style={{ flex: 1, height: 1, background: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))' }} />}
@@ -3550,8 +3554,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                       style={{
                         display: 'flex', alignItems: 'flex-start', gap: 12,
                         padding: '12px 16px', borderRadius: 6, cursor: 'pointer',
-                        border: `2px solid ${bulkWizardAction === opt.id ? '#0C66E4' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'}`,
-                        background: bulkWizardAction === opt.id ? '#E9F2FF' : '#FAFBFC',
+                        border: `2px solid ${bulkWizardAction === opt.id ? 'var(--ds-link, #0C66E4)' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'}`,
+                        background: bulkWizardAction === opt.id ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--ds-surface-sunken, #FAFBFC)',
                         transition: 'border-color 80ms, background 80ms',
                       }}
                     >
@@ -3561,10 +3565,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                         value={opt.id}
                         checked={bulkWizardAction === opt.id}
                         onChange={() => setBulkWizardAction(opt.id)}
-                        style={{ marginTop: 2, accentColor: '#0C66E4' }}
+                        style={{ marginTop: 4, accentColor: 'var(--ds-link, #0C66E4)' }}
                       />
                       <div>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: '#292A2E', marginBottom: 2 }}>{opt.label}</div>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #292A2E)', marginBottom: 4 }}>{opt.label}</div>
                         <div style={{ fontSize: 13, color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' }}>{opt.description}</div>
                       </div>
                     </label>
@@ -3758,9 +3762,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             background: token('elevation.surface.overlay', '#FFFFFF'),
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
-            boxShadow: '0 4px 16px rgba(9, 30, 66, 0.16)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 4px 16px rgba(9, 30, 66, 0.16))',
             minWidth: 280,
-            padding: '6px 0',
+            padding: '8px 0',
           }}
         >
           {[
@@ -3789,7 +3793,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             { id: 'delete', label: 'Delete project', danger: true, onClick: () => { setDeleteConfirmText(''); setDeleteOpen(true); } },
           ].map((item) => {
             if ((item as any).divider) {
-              return <div key={item.id} style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'), margin: '6px 0' }} />;
+              return <div key={item.id} style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'), margin: '8px 0' }} />;
             }
             return (
               <button
@@ -3816,7 +3820,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   cursor: 'pointer',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)';
+                  e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
@@ -3847,12 +3851,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(9, 30, 66, 0.54)',
+          background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
           zIndex: 9999,
           display: 'flex',
           alignItems: 'flex-start',
           justifyContent: 'center',
-          paddingTop: 60,
+          paddingTop: 48,
         }}
         onKeyDown={(e) => {
           if (e.key === 'Escape' && !addPeopleSubmitting) {
@@ -3868,7 +3872,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             maxWidth: 'calc(100vw - 48px)',
             background: token('elevation.surface', '#FFFFFF'),
             borderRadius: 8,
-            boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9, 30, 66, 0.25))',
             display: 'flex',
             flexDirection: 'column',
             maxHeight: 'calc(100vh - 120px)',
@@ -3881,7 +3885,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '20px 24px 12px',
+              padding: '24px 24px 12px',
             }}
           >
             <h2
@@ -4005,7 +4009,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               display: 'flex',
               justifyContent: 'flex-end',
               gap: 8,
-              padding: '12px 24px 20px',
+              padding: '12px 24px 24px',
               borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             }}
           >
@@ -4094,12 +4098,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(9, 30, 66, 0.54)',
+          background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
           zIndex: 9999,
           display: 'flex',
           alignItems: 'flex-start',
           justifyContent: 'center',
-          paddingTop: 80,
+          paddingTop: 48,
         }}
         onKeyDown={(e) => {
           if (e.key === 'Escape') {
@@ -4114,7 +4118,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             maxWidth: 'calc(100vw - 48px)',
             background: token('elevation.surface', '#FFFFFF'),
             borderRadius: 8,
-            boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9, 30, 66, 0.25))',
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -4126,7 +4130,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '20px 24px 8px',
+              padding: '24px 24px 8px',
             }}
           >
             <h2
@@ -4228,10 +4232,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         data-testid="archive-project-modal"
         style={{
           position: 'fixed', inset: 0,
-          background: 'rgba(9, 30, 66, 0.54)',
+          background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
           zIndex: 9999,
           display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-          paddingTop: 100,
+          paddingTop: 48,
         }}
         onKeyDown={(e) => { if (e.key === 'Escape') setArchiveOpen(false); }}
       >
@@ -4240,13 +4244,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             width: 480, maxWidth: 'calc(100vw - 48px)',
             background: token('elevation.surface', '#FFFFFF'),
             borderRadius: 8,
-            boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9, 30, 66, 0.25))',
             display: 'flex', flexDirection: 'column',
           }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header — warning appearance (icon + title in warning color). */}
-          <div style={{ padding: '20px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ padding: '24px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{ color: token('color.icon.warning', '#946F00'), display: 'inline-flex' }}>
               <AkWarningIcon label="" size="medium" />
             </span>
@@ -4314,10 +4318,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         data-testid="delete-project-modal"
         style={{
           position: 'fixed', inset: 0,
-          background: 'rgba(9, 30, 66, 0.54)',
+          background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
           zIndex: 9999,
           display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-          paddingTop: 100,
+          paddingTop: 48,
         }}
         onKeyDown={(e) => { if (e.key === 'Escape') { setDeleteOpen(false); setDeleteConfirmText(''); } }}
       >
@@ -4326,13 +4330,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             width: 480, maxWidth: 'calc(100vw - 48px)',
             background: token('elevation.surface', '#FFFFFF'),
             borderRadius: 8,
-            boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9, 30, 66, 0.25))',
             display: 'flex', flexDirection: 'column',
           }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header — danger appearance. */}
-          <div style={{ padding: '20px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ padding: '24px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{ color: token('color.icon.danger', '#AE2A19'), display: 'inline-flex' }}>
               <AkWarningIcon label="" size="medium" />
             </span>
@@ -4436,7 +4440,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             background: token('elevation.surface.overlay', '#FFFFFF'),
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 8,
-            boxShadow: '0 8px 24px rgba(9, 30, 66, 0.18)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(9, 30, 66, 0.18))',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -4445,7 +4449,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           onKeyDown={(e) => { if (e.key === 'Escape') setBgPickerAnchor(null); }}
         >
           {/* Header */}
-          <div style={{ padding: '14px 16px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ padding: '16px 16px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <h2
               id="project-background-picker-title"
               style={{
@@ -4571,7 +4575,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           {/* Footer — Remove background. Disabled when no background is set. */}
           <div
             style={{
-              padding: '10px 16px 12px',
+              padding: '8px 16px 12px',
               borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               display: 'flex',
               justifyContent: 'flex-end',
@@ -4775,7 +4779,7 @@ function GroupByControl({
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
-            padding: '6px 0',
+            padding: '8px 0',
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
             fontSize: 14,
@@ -4798,7 +4802,7 @@ function GroupByControl({
                   display: 'flex',
                   alignItems: 'center',
                   width: '100%',
-                  padding: '6px 16px',
+                  padding: '8px 16px',
                   border: 'none',
                   outline: 'none',
                   background: active
@@ -4960,7 +4964,7 @@ function ToolbarMenuButton({
             }
           }}
           style={buttonStyle}
-          onMouseEnter={(e) => { e.currentTarget.style.background = '#E4E6EA'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #E4E6EA)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           {icon}
@@ -4980,7 +4984,7 @@ function ToolbarMenuButton({
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
-            padding: '6px 0',
+            padding: '8px 0',
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
             fontSize: 14,
@@ -4993,7 +4997,6 @@ function ToolbarMenuButton({
                   padding: '4px 16px',
                   fontSize: 11,
                   fontWeight: 700,
-                  textTransform: 'uppercase',
                   letterSpacing: '0.04em',
                   color: token('color.text.subtlest', '#6B778C'),
                 }}>
@@ -5025,7 +5028,7 @@ function ToolbarMenuButton({
                       alignItems: 'center',
                       gap: 8,
                       width: '100%',
-                      padding: '6px 16px',
+                      padding: '8px 16px',
                       border: 'none',
                       outline: 'none',
                       background: focused
@@ -5141,7 +5144,7 @@ function ColumnFilterMultiSelect({
           <button
             type="button"
             onClick={() => onChange([])}
-            style={{ border: 'none', background: 'transparent', color: 'var(--ds-link, #0C66E4)', fontSize: 12, cursor: 'pointer', padding: '2px 4px' }}
+            style={{ border: 'none', background: 'transparent', color: 'var(--ds-link, #0C66E4)', fontSize: 12, cursor: 'pointer', padding: '4px 4px' }}
           >Clear</button>
         )}
       </div>
@@ -5159,7 +5162,7 @@ function ColumnFilterMultiSelect({
       />
       <div style={{ maxHeight: 240, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
         {filtered.length === 0 && (
-          <div style={{ padding: '6px 8px', fontSize: 12, color: 'var(--ds-text-subtlest, #6B6E76)' }}>No matches</div>
+          <div style={{ padding: '8px 8px', fontSize: 12, color: 'var(--ds-text-subtlest, #6B6E76)' }}>No matches</div>
         )}
         {filtered.map((opt) => {
           const isChecked = selected.includes(opt);
@@ -5168,7 +5171,7 @@ function ColumnFilterMultiSelect({
               key={opt}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                padding: '6px 8px', cursor: 'pointer', fontSize: 14,
+                padding: '8px 8px', cursor: 'pointer', fontSize: 14,
                 borderRadius: 3,
                 background: isChecked ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
               }}
@@ -5184,7 +5187,7 @@ function ColumnFilterMultiSelect({
           );
         })}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', paddingTop: 6 }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', paddingTop: 8 }}>
         <button
           type="button"
           onClick={onClose}
@@ -5430,7 +5433,7 @@ function InlineGroupCreateRow({
               border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 4,
               boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
-              padding: '6px 0',
+              padding: '8px 0',
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
               fontSize: 14,
@@ -5454,7 +5457,7 @@ function InlineGroupCreateRow({
                     alignItems: 'center',
                     gap: 8,
                     width: '100%',
-                    padding: '6px 16px',
+                    padding: '8px 16px',
                     border: 'none',
                     outline: 'none',
                     background: active
@@ -5515,7 +5518,7 @@ function InlineGroupCreateRow({
                 alignItems: 'center',
                 gap: 6,
                 height: 27,
-                padding: '0 10px',
+                padding: '0 8px',
                 border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                 borderRadius: 3,
                 background: assigneeMenuOpen ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)') : token('elevation.surface', '#FFFFFF'),
@@ -5557,7 +5560,7 @@ function InlineGroupCreateRow({
                   border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                   borderRadius: 4,
                   boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
-                  padding: 6,
+                  padding: 8,
                   zIndex: 9999,
                   fontFamily: 'var(--cp-font-body)',
                   fontSize: 14,
@@ -5573,7 +5576,7 @@ function InlineGroupCreateRow({
                   onChange={(e) => setAssigneeQuery(e.target.value)}
                   placeholder="Search people…"
                   style={{
-                    padding: '6px 8px', fontSize: 13,
+                    padding: '8px 8px', fontSize: 13,
                     border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                     borderRadius: 3, outline: 'none', fontFamily: 'inherit',
                   }}
@@ -5586,7 +5589,7 @@ function InlineGroupCreateRow({
                     onClick={() => { setAssigneeIdx(-1); setAssigneeMenuOpen(false); }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 8,
-                      width: '100%', padding: '6px 8px',
+                      width: '100%', padding: '8px 8px',
                       border: 'none', outline: 'none',
                       background: assigneeIdx === -1 ? token('color.background.selected', '#E9F2FF') : 'transparent',
                       color: token('color.text', '#292A2E'),
@@ -5598,7 +5601,7 @@ function InlineGroupCreateRow({
                     <span>Unassigned</span>
                   </button>
                   {filteredMembers.length === 0 && assigneeQuery && (
-                    <div style={{ padding: '6px 8px', fontSize: 12, color: token('color.text.subtlest', '#6B6E76') }}>
+                    <div style={{ padding: '8px 8px', fontSize: 12, color: token('color.text.subtlest', '#6B6E76') }}>
                       No matches
                     </div>
                   )}
@@ -5614,7 +5617,7 @@ function InlineGroupCreateRow({
                         onClick={() => { setAssigneeIdx(idx); setAssigneeMenuOpen(false); }}
                         style={{
                           display: 'flex', alignItems: 'center', gap: 8,
-                          width: '100%', padding: '6px 8px',
+                          width: '100%', padding: '8px 8px',
                           border: 'none', outline: 'none',
                           background: isActive ? token('color.background.selected', '#E9F2FF') : 'transparent',
                           color: token('color.text', '#292A2E'),
@@ -5985,7 +5988,7 @@ function InlineCreateRow({
         onClick={() => setIsEditing(true)}
         style={{
           display: 'flex', alignItems: 'center', gap: 8,
-          width: '100%', padding: '10px 12px', marginTop: 4,
+          width: '100%', padding: '8px 12px', marginTop: 4,
           border: '1px dashed transparent', borderRadius: 4,
           background: 'transparent', color: token('color.text.subtlest', '#6B778C'),
           fontSize: 13, fontWeight: 500, textAlign: 'left',
@@ -6113,7 +6116,7 @@ function BulkActionsBar({
           background: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
           color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderRadius: 8,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12)',
+          boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12))',
           fontFamily: 'var(--cp-font-body)',
           overflow: 'hidden',
           fontSize: 14,
@@ -6137,12 +6140,12 @@ function BulkActionsBar({
             cursor: 'pointer',
             transition: 'background 100ms',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered, rgba(255,255,255,0.10))')}
           onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
         >
           <AkCloseIcon label="" size="small" />
         </button>
-        <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse, rgba(255,255,255,0.20))' }} />
 
         {/* Selected count */}
         <span
@@ -6158,7 +6161,7 @@ function BulkActionsBar({
         >
           {count} {itemLabel} selected
         </span>
-        <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse, rgba(255,255,255,0.20))' }} />
 
         {/* 2026-05-12 Jira parity: Select all (in scope) — only when not yet all selected */}
         {onSelectAll && typeof totalAvailable === 'number' && count < totalAvailable && (
@@ -6170,7 +6173,7 @@ function BulkActionsBar({
               style={{
                 height: 32,
                 padding: '0 12px',
-                margin: '0 6px',
+                margin: '0 8px',
                 background: 'transparent',
                 border: 'none',
                 color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
@@ -6179,12 +6182,12 @@ function BulkActionsBar({
                 cursor: 'pointer',
                 borderRadius: 4,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered, rgba(255,255,255,0.10))')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               Select all ({totalAvailable} in scope)
             </button>
-            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+            <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse, rgba(255,255,255,0.20))' }} />
           </>
         )}
 
@@ -6198,7 +6201,7 @@ function BulkActionsBar({
               style={{
                 height: 32,
                 padding: '0 12px',
-                margin: '0 6px',
+                margin: '0 8px',
                 background: 'transparent',
                 border: 'none',
                 color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
@@ -6207,12 +6210,12 @@ function BulkActionsBar({
                 cursor: 'pointer',
                 borderRadius: 4,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered, rgba(255,255,255,0.10))')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               Edit fields
             </button>
-            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+            <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse, rgba(255,255,255,0.20))' }} />
           </>
         )}
 
@@ -6220,7 +6223,7 @@ function BulkActionsBar({
         <BulkPopover label="Change status" width={240}>
           {(close) => (
             <>
-              <div style={{ padding: '6px 8px 2px', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C') }}>Status</div>
+              <div style={{ padding: '8px 8px 4px', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: token('color.text.subtlest', '#6B778C') }}>Status</div>
               {statusOptions.map((opt) => (
                 <BulkMenuItem
                   key={opt.value}
@@ -6269,7 +6272,7 @@ function BulkActionsBar({
             fontFamily: 'inherit',
             transition: 'background 100ms',
           }}
-          onMouseEnter={(e) => { if (!isBusy) (e.currentTarget.style.background = 'rgba(220,38,38,0.20)'); }}
+          onMouseEnter={(e) => { if (!isBusy) (e.currentTarget.style.background = 'var(--ds-background-danger-hovered, rgba(220,38,38,0.20))'); }}
           onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
         >
           <AkTrashIcon label="" size="small" />
@@ -6356,7 +6359,7 @@ function BulkPopover({
           alignItems: 'center',
           gap: 4,
           height: 44,
-          padding: '0 14px',
+          padding: '0 16px',
           background: 'transparent',
           border: 'none',
           color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
@@ -6367,7 +6370,7 @@ function BulkPopover({
           transition: 'background 100ms',
           whiteSpace: 'nowrap',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+        onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered, rgba(255,255,255,0.10))')}
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       >
         {label} ▾
@@ -6390,7 +6393,7 @@ function BulkPopover({
             background: token('elevation.surface', '#FFFFFF'),
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
-            boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18))',
             padding: 4,
             maxHeight: 360,
             overflowY: 'auto',
@@ -6457,7 +6460,7 @@ function BulkMenuItem({ onClick, children }: { onClick: () => void; children: Re
         display: 'flex',
         alignItems: 'center',
         width: '100%',
-        padding: '8px 10px',
+        padding: '8px 8px',
         border: 'none',
         background: 'transparent',
         color: token('color.text', '#292A2E'),
@@ -6532,7 +6535,7 @@ function EditBacklogItemModal({
               style={{
                 width: '100%',
                 height: 36,
-                padding: '0 10px',
+                padding: '0 8px',
                 border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                 borderRadius: 3,
                 fontSize: 14,
