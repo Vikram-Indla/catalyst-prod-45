@@ -28,12 +28,47 @@ import { useToggleStar, useStarredItemIds } from '@/hooks/home/useStarredItems';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { PersonAddIcon, EditorMoreIcon } from './ProjectHeaderChipIcons';
 
-interface Props {
-  /** ph_jira_projects.project_key — e.g. "BAU". */
-  projectKey: string;
+/**
+ * Resolved entity shape produced by the adapter. Mirrors what the default
+ * project query returns so the rendering path stays identical.
+ */
+export interface HeaderEntity {
+  id: string | null;
+  name: string | null;
+  avatar_url: string | null;
+  icon: string | null;
+  color: string | null;
 }
 
-export function ProjectHeaderChip({ projectKey }: Props) {
+/**
+ * Adapter — lets THIS canonical component (rather than a fork) render on
+ * any entity surface (project, product, future hubs). The default behavior
+ * (project, ph_jira_projects + ph_projects, /project-hub/:key/settings)
+ * is preserved when adapter is omitted. See CLAUDE.md "Adopt canonical
+ * components, never reimplement" (2026-06-01).
+ */
+export interface HeaderAdapter {
+  /** Async fetcher returning the resolved entity. Replaces the internal
+   *  ph_jira_projects + ph_projects query. */
+  fetchEntity: () => Promise<HeaderEntity>;
+  /** Stable cache key for the entity query (React Query). */
+  cacheKey: readonly unknown[];
+  /** Identifier passed to ProjectIcon (was projectKey under the project default). */
+  iconKey: string;
+  /** Where the meatball "Settings" item navigates. */
+  settingsHref: string;
+  /** Star toggle target (passed to useToggleStar). */
+  starItemType: 'project' | 'product';
+}
+
+interface Props {
+  /** Legacy project-only call path. Required when `adapter` is NOT provided. */
+  projectKey?: string;
+  /** Override the entity data source for non-project surfaces (e.g. product hub). */
+  adapter?: HeaderAdapter;
+}
+
+export function ProjectHeaderChip({ projectKey, adapter }: Props) {
   const navigate = useNavigate();
 
   // Three-dots menu: bespoke portal popup (replaces @atlaskit/dropdown-menu
@@ -49,11 +84,20 @@ export function ProjectHeaderChip({ projectKey }: Props) {
   const toggleStarMutation = useToggleStar();
   const { data: starredIds } = useStarredItemIds();
 
+  // Resolve identity context — adapter (e.g. product hub) takes precedence; else fall back
+  // to the project default (CLAUDE.md "Adopt canonical, parameterise — don't fork").
+  const iconKey = adapter?.iconKey ?? projectKey ?? '';
+  const settingsHref = adapter?.settingsHref ?? `/project-hub/${projectKey}/settings`;
+  const starItemType: 'project' | 'product' = adapter?.starItemType ?? 'project';
+
   const { data: project } = useQuery({
-    queryKey: ['project-header-chip', projectKey],
-    enabled: !!projectKey,
+    queryKey: adapter?.cacheKey ?? ['project-header-chip', projectKey],
+    enabled: adapter ? true : !!projectKey,
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
+      // When an adapter is supplied, defer entirely to its fetcher.
+      if (adapter) return adapter.fetchEntity();
+      // Default: project entity from ph_jira_projects + ph_projects.
       const [jiraRes, phRes] = await Promise.all([
         (supabase as any).from('ph_jira_projects')
           .select('id, project_key, name, avatar_url, color')
@@ -74,7 +118,7 @@ export function ProjectHeaderChip({ projectKey }: Props) {
     },
   });
 
-  const projectName = project?.name ?? projectKey;
+  const projectName = project?.name ?? iconKey;
 
   const handleAddPeople = () => { setMenuAnchor(null); setAddPeopleOpen(true); };
 
@@ -159,7 +203,7 @@ export function ProjectHeaderChip({ projectKey }: Props) {
         <span style={{ display: 'inline-flex' }}>
           <ProjectIcon
             size="small"
-            projectKey={projectKey}
+            projectKey={iconKey}
             avatarUrl={project?.avatar_url}
             iconName={project?.icon || 'mountain'}
             color={project?.color || '#2563EB'}
@@ -230,16 +274,18 @@ export function ProjectHeaderChip({ projectKey }: Props) {
             }}
           >
             {[
-              { id: 'settings', label: 'Project settings', onClick: () => navigate(`/project-hub/${projectKey}/settings`) },
+              { id: 'settings', label: `${starItemType === 'product' ? 'Product' : 'Project'} settings`, onClick: () => navigate(settingsHref) },
               { id: 'people', label: 'Manage people', onClick: handleAddPeople },
               { id: 'divider1', divider: true },
               {
                 id: 'star',
-                label: (project?.id && starredIds?.has(project.id)) ? 'Unstar project' : 'Star project',
+                label: (project?.id && starredIds?.has(project.id))
+                  ? `Unstar ${starItemType}`
+                  : `Star ${starItemType}`,
                 onClick: () => {
                   if (!project?.id) return;
                   const isCurrentlyStarred = starredIds?.has(project.id) ?? false;
-                  toggleStarMutation.mutate({ itemId: project.id, itemType: 'project', isCurrentlyStarred });
+                  toggleStarMutation.mutate({ itemId: project.id, itemType: starItemType, isCurrentlyStarred });
                 },
               },
             ].map((item) => {

@@ -19,7 +19,7 @@
 import React, {
   lazy, Suspense, useState, useCallback, useRef, useEffect, useMemo,
 } from 'react';
-import { ProjectIcon } from '@/components/shared/ProjectIcon';
+import { ProductHeaderChip } from '@/components/layout/ProductHeaderChip';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -256,21 +256,11 @@ export default function ProductAllWorkView({ productCode, productId, productName
       flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden',
       background: 'var(--cp-bg-elevated, #ffffff)',
     }}>
-      {/* Product header chip — replaces ProjectHeaderChip */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        padding: '8px 12px', flexShrink: 0,
-        borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-        background: 'var(--ds-surface, #FFFFFF)',
-      }}>
-        <ProjectIcon projectKey={productCode} size="small" name={productName || productCode} />
-        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--cp-font-body)' }}>
-          {productName || productCode}
-        </span>
-        <span style={{ fontSize: 11, fontFamily: 'var(--cp-font-mono)', color: 'var(--ds-text-subtlest, #626F86)', marginLeft: 2 }}>
-          {productCode}
-        </span>
-      </div>
+      {/* Adopt canonical ProjectHeaderChip via product adapter — gets the
+          full action strip (Add people, meatball with Settings/Manage people/Star)
+          identical to /project-hub/:key/* surfaces. Per CLAUDE.md "Adopt
+          canonical components" rule (2026-06-01). */}
+      <ProductHeaderChip productCode={productCode} />
 
       {/* Filter context banner */}
       {(activeFilter || isCreateMode) && (
