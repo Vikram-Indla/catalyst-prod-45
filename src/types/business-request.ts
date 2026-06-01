@@ -16,8 +16,8 @@ import { z } from 'zod';
 
 // ─── Option vocabularies (kept fields only) ─────────────────────────────────
 
-/** Priority — maps to `business_requests.urgency`. */
-export const URGENCY_OPTIONS = ['Low', 'Normal', 'High', 'Critical'] as const;
+/** Priority — matches Jira's 5-level scale for parity with project hub. */
+export const URGENCY_OPTIONS = ['Lowest', 'Low', 'Medium', 'High', 'Highest'] as const;
 
 /** Category — 4 buckets used in Create + product backlog inline-edit. */
 export const CATEGORY_OPTIONS: { value: string; label: string }[] = [
@@ -117,7 +117,6 @@ export interface BusinessRequest {
 
   // Content
   title: string;
-  arabic_title: string | null;
   description: string | null;
 
   // Key details (left rail)
@@ -140,7 +139,6 @@ export interface BusinessRequest {
 
 export const createBusinessRequestSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
-  arabic_title: z.string().optional(),
   description: z.string().max(2000).optional(),
   request_type: z.string().optional(),
   category: z.string().optional(),
