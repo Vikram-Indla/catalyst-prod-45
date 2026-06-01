@@ -173,6 +173,7 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
         .select('id, entity_type, entity_id, entity_key, display_summary, nav_path, visited_at, project_id')
         .eq('user_id', user.id)
         .neq('entity_type', 'subtask')
+        .neq('entity_type', 'project')
         .order('visited_at', { ascending: false })
         .limit(75);
       if (error) { console.warn('global recents error:', error.message); return []; }
@@ -184,7 +185,7 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
           .from('ph_issues')
           .select('issue_key')
           .in('issue_key', entityKeys)
-          .eq('status_category', 'Done');
+          .in('status_category', ['Done', 'done', 'Canceled', 'canceled']);
         if (doneRows) doneKeys = new Set(doneRows.map((r: any) => r.issue_key));
       }
       // Deduplicate by nav_path — rows are newest-first so first occurrence = most recent visit.
@@ -330,13 +331,8 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
                   onMouseEnter={e => e.currentTarget.style.background = token('color.background.neutral.subtle.hovered')}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
-                  {/* Icon: ProjectIcon for project entities, JiraIssueTypeIcon for work items */}
                   <span style={{ flexShrink: 0, marginTop: 2, lineHeight: 0 }}>
-                    {item.entity_type === 'project' ? (
-                      <ProjectIcon projectKey={item.entity_key ?? ''} size="xsmall" />
-                    ) : (
-                      <JiraIssueTypeIcon type={item.entity_type} size={14} />
-                    )}
+                    <JiraIssueTypeIcon type={item.entity_type} size={14} />
                   </span>
                   {/* Two-line block: summary (primary) + key (secondary)
                       Strip leading bracket tags e.g. "[CRUD-H] Story" → "Story"
