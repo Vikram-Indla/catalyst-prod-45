@@ -99,7 +99,8 @@ export type R360WorkItemType =
   | 'Test Case' | 'Test Plan' | 'Incident' | 'Release' | 'Requirement';
 
 export type R360StatusCategory = 'todo' | 'progress' | 'done';
-export type R360Priority = 'Critical' | 'High' | 'Medium' | 'Low';
+/** @deprecated Use CatalystPriority from '@/lib/catalyst-priority' instead. */
+export type R360Priority = 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
 export type R360ResourceRole = 'assigned' | 'reported';
 export type R360ContractType = 'Fixed' | 'Variable' | 'Freelance';
 export type R360LocationType = 'Onsite' | 'Off-Shore' | 'Hybrid';

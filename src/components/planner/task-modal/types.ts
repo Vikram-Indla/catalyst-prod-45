@@ -3,7 +3,8 @@
 // ============================================================================
 
 export type TaskStatus = 'Backlog' | 'Planned' | 'In Progress' | 'In Review' | 'Done';
-export type TaskPriority = 'Critical' | 'High' | 'Medium' | 'Low';
+/** @deprecated Use CatalystPriority from '@/lib/catalyst-priority' instead. */
+export type TaskPriority = 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
 export type TaskWorkstream = 'Catalyst' | 'Data & AI' | 'Delivery' | 'MIM' | 'Senaei';
 
 export interface Assignee {

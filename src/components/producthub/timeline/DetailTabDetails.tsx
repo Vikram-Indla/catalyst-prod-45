@@ -48,7 +48,7 @@ const STATUS_OPTIONS = [
 
 const EA_OPTS = ['Not Required', 'Pending', 'In Review', 'Approved', 'Rejected'];
 const BV_OPTS = ['High', 'Medium', 'Low'];
-const PRIO_OPTS = ['Critical', 'High', 'Medium', 'Low'];
+const PRIO_OPTS = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
 
 interface DetailTabDetailsProps {
   request: TimelineRequest;

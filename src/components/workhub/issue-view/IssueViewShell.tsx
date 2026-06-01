@@ -61,7 +61,7 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
     const types = [...new Set(items.map(i => i.issue_type).filter(Boolean))].sort();
     const assignees = [...new Set(items.map(i => i.assignee_display_name).filter(Boolean))].sort();
 
-    const canonicalPriorityOrder = ['Critical', 'High', 'Medium', 'Low'] as const;
+    const canonicalPriorityOrder = ['Highest', 'High', 'Medium', 'Low', 'Lowest'] as const;
     const seenPriorities = new Set<string>();
     items.forEach(i => {
       if (!i.priority) return;

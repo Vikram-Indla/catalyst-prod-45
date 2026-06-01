@@ -41,9 +41,5 @@ export const SUBTASK_TYPES = [
   { type: 'figma' as const, label: 'Figma', icon: 'Figma', color: '#a259ff', bgColor: 'rgba(162, 89, 255, 0.12)' },
 ] as const;
 
-export const PRIORITY_OPTIONS = [
-  { value: 'critical', label: 'Critical', color: '#ef4444' },
-  { value: 'high', label: 'High', color: '#f59e0b' },
-  { value: 'medium', label: 'Medium', color: '#3b82f6' },
-  { value: 'low', label: 'Low', color: '#737373' },
-] as const;
+/** @deprecated Use CATALYST_PRIORITY_OPTIONS from '@/lib/catalyst-priority' instead. */
+export { CATALYST_PRIORITY_OPTIONS as PRIORITY_OPTIONS } from '@/lib/catalyst-priority';

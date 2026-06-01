@@ -68,7 +68,7 @@ export const WORKSTREAM_COLORS: Record<string, string> = {
 
 // Options Arrays
 export const STATUSES = ['Backlog', 'Planned', 'In Progress', 'In Review', 'Done'] as const;
-export const PRIORITIES = ['Critical', 'High', 'Medium', 'Low'] as const;
+export { CATALYST_PRIORITIES as PRIORITIES } from '@/lib/catalyst-priority';
 export const WORKSTREAMS = ['Catalyst', 'Data & AI', 'Delivery', 'MIM', 'Senaei'] as const;
 
 export const DEFAULT_ASSIGNEES = [

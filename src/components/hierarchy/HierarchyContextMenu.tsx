@@ -35,7 +35,7 @@ interface HierarchyContextMenuProps {
 
 type SubMenu = 'status' | 'priority' | 'assignee' | null;
 
-const PRIORITIES = ['Critical', 'High', 'Medium', 'Low', 'None'];
+const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest', 'None'];
 
 export function HierarchyContextMenu({
   x, y, itemKey, currentStatus, currentPriority, currentAssignee,
