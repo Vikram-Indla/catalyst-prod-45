@@ -5971,6 +5971,36 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
   border-color: transparent !important;
 }
 
+/* ─── Center-column "Details" section (BrCenterDetails) ─────────────────────
+   Mirrors the .cv-drawer-sidebar borderless-select rules so the BR center
+   Details fields (Type/Category/Theme/Stakeholders) render as plain text in
+   idle state — no grey box, no border — exactly like the right rail.
+   Scoped to [data-cv-section="br-center-details"] so it never bleeds into
+   other center-column selects. */
+[data-cv-section="br-center-details"] [class$="__dropdown-indicator"],
+[data-cv-section="br-center-details"] [class*="-select__dropdown-indicator"] {
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+[data-cv-section="br-center-details"] [class$="__control"]:hover [class$="__dropdown-indicator"],
+[data-cv-section="br-center-details"] [class*="-select__control"]:hover [class*="-select__dropdown-indicator"],
+[data-cv-section="br-center-details"] [class$="__control--is-focused"] [class$="__dropdown-indicator"],
+[data-cv-section="br-center-details"] [class*="-select__control--is-focused"] [class*="-select__dropdown-indicator"] {
+  opacity: 1;
+}
+[data-cv-section="br-center-details"] [class$="__control"],
+[data-cv-section="br-center-details"] [class*="-select__control"] {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  min-height: 32px;
+}
+[data-cv-section="br-center-details"] [class$="__control"]:hover,
+[data-cv-section="br-center-details"] [class*="-select__control"]:hover {
+  background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7)) !important;
+  border-color: transparent !important;
+}
+
 /* @atlaskit/datetime-picker v17 uses compiled CSS with obfuscated class names.
    Target via the cv-date-field wrapper class added to EpicDueDateField. */
 .cv-drawer-sidebar .cv-date-field input,
