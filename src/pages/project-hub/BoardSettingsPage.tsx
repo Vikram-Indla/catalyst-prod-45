@@ -1,19 +1,15 @@
 /**
- * BoardSettingsPage — full-page board settings matching Jira's layout:
- *   Left sidebar (240px) with vertical nav + content area (flex-1)
- *   Route: /project-hub/:key/boards/:boardId/settings/:section?
- *
- * Replaces the BoardSettingsDrawer side-panel (which was wrong — Jira uses a full page).
+ * BoardSettingsPage — full-page board settings matching Jira layout.
+ * Nav: Details | Working Days | Timeline | Layout▾(Columns, Swimlanes, Card colors, Card layout, Quick filters)
+ * Route: /project-hub/:key/boards/:boardId/settings/:section?
  */
 import React, { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { GripVertical, Trash2, Plus, AlertTriangle, ChevronLeft } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
 import { useBoard } from '@/hooks/useBoard';
 import {
   useUpdateBoard,
-  useDeleteBoard,
   useAddColumn,
   useDeleteColumn,
   useAddQuickFilter,
@@ -21,100 +17,369 @@ import {
 } from '@/hooks/useBoardMutations';
 import { typedQuery } from '@/integrations/supabase/client';
 import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
-import type { BoardListItem, BoardVisibility, SwimlaneType, BoardQuickFilter } from '@/types/board';
+import type {
+  BoardListItem,
+  SwimlaneType,
+  CardColorMethod,
+  EpicDisplayMode,
+  ColumnConstraintType,
+  WorkingDaysConfig,
+  BoardQuickFilter,
+} from '@/types/board';
 
-// ─── Nav sections ────────────────────────────────────────────────────────────
+// ─── Nav ──────────────────────────────────────────────────────────────────────
 
-type Section = 'general' | 'filter' | 'columns' | 'swimlanes' | 'access';
+type Section = 'details' | 'working-days' | 'timeline' | 'columns' | 'swimlanes' | 'card-colors' | 'card-layout' | 'quick-filters';
 
-const NAV_ITEMS: { key: Section; label: string }[] = [
-  { key: 'general',   label: 'General'      },
-  { key: 'filter',    label: 'Board filter' },
-  { key: 'columns',   label: 'Columns'      },
-  { key: 'swimlanes', label: 'Swimlanes'    },
-  { key: 'access',    label: 'Access'       },
+const NAV_TOP: { key: Section; label: string }[] = [
+  { key: 'details',       label: 'Details'      },
+  { key: 'working-days',  label: 'Working days' },
+  { key: 'timeline',      label: 'Timeline'     },
 ];
 
-// ─── Constants (from BoardSettingsDrawer) ────────────────────────────────────
-
-const COLOR_SWATCHES = [
-  token('color.text.brand',    '#0052CC'),
-  token('color.text.success',  '#216E4E'),
-  'var(--ds-icon-accent-purple, #6E5DC6)',
-  token('color.text.danger',   '#AE2A19'),
-  token('color.text.warning',  '#974F0C'),
-  'var(--ds-icon-accent.teal,  #206B74)',
-  token('color.icon',          '#44546F'),
-  token('color.background.information.bold', '#0055CC'),
+const NAV_LAYOUT: { key: Section; label: string }[] = [
+  { key: 'columns',       label: 'Columns and statuses' },
+  { key: 'swimlanes',     label: 'Swimlanes'            },
+  { key: 'card-colors',   label: 'Card colors'          },
+  { key: 'card-layout',   label: 'Card layout'          },
+  { key: 'quick-filters', label: 'Quick filters'        },
 ];
 
-const VISIBILITY_OPTIONS: { value: BoardVisibility; label: string; desc: string; warning?: boolean }[] = [
-  { value: 'project', label: 'Project Board',       desc: 'Visible to all project members' },
-  { value: 'private', label: '🔒 Private',          desc: 'Only you can see this board' },
-  { value: 'global',  label: 'Organisation-wide',   desc: 'Visible to all users in the organisation. Use with caution.', warning: true },
+// ─── Completed-work presets (Jira parity) ────────────────────────────────────
+
+const COMPLETED_CUTOFFS = [
+  { value: '-1d',  label: 'For 1 day'    },
+  { value: '-3d',  label: 'For 3 days'   },
+  { value: '-1w',  label: 'For 1 week'   },
+  { value: '-2w',  label: 'For 2 weeks'  },
+  { value: '-4w',  label: 'For 4 weeks'  },
+  { value: 'none', label: 'Always hide'  },
 ];
 
-const SWIMLANE_OPTIONS: { value: SwimlaneType; label: string; desc: string }[] = [
-  { value: 'none',     label: 'No Swimlanes',        desc: 'All issues in a single flat list' },
-  { value: 'release',  label: 'Group by Release',    desc: 'One swimlane per release / fix version' },
-  { value: 'assignee', label: 'Group by Assignee',   desc: 'One swimlane per team member' },
-  { value: 'epic',     label: 'Group by Epic',       desc: 'One swimlane per parent epic' },
+const SWIMLANE_OPTIONS: { value: SwimlaneType; label: string }[] = [
+  { value: 'none',     label: 'None'          },
+  { value: 'stories',  label: 'Stories'       },
+  { value: 'assignee', label: 'Assignee'      },
+  { value: 'epic',     label: 'Epics'         },
+  { value: 'project',  label: 'Project'       },
+  { value: 'jql',      label: 'Custom JQL'    },
 ];
 
-const QUERY_PRESETS = [
-  { label: 'All issues',    jql: (k?: string | null) => k ? `project = ${k} ORDER BY Rank ASC` : 'ORDER BY Rank ASC' },
-  { label: 'Open sprints',  jql: (k?: string | null) => k ? `project = ${k} AND sprint in openSprints() ORDER BY Rank ASC` : 'sprint in openSprints() ORDER BY Rank ASC' },
-  { label: 'My issues',     jql: (k?: string | null) => k ? `project = ${k} AND assignee = currentUser() ORDER BY Rank ASC` : 'assignee = currentUser() ORDER BY Rank ASC' },
-  { label: 'Bugs only',     jql: (k?: string | null) => k ? `project = ${k} AND issuetype = "QA Bug" ORDER BY priority DESC` : 'issuetype = "QA Bug" ORDER BY priority DESC' },
+const CARD_COLOR_METHODS: { value: CardColorMethod; label: string }[] = [
+  { value: 'none',        label: 'None'        },
+  { value: 'issue_type',  label: 'Issue type'  },
+  { value: 'priorities',  label: 'Priorities'  },
+  { value: 'assignees',   label: 'Assignees'   },
+  { value: 'jql',         label: 'JQL'         },
 ];
 
-// ads-scanner:ignore-next-line — data value for <input type="color">, not a CSS style
+// ads-scanner:ignore-next-line — input[type=color] data value, not CSS style
 const DEFAULT_CARD_COLOR = '#0052CC';
 
-// ─── Main page ────────────────────────────────────────────────────────────────
+const DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+// ─── Shared styles (ADS tokens) ───────────────────────────────────────────────
+
+const S = {
+  page: {
+    display: 'flex',
+    height: '100%',
+    overflow: 'hidden',
+    background: token('color.background.input', 'var(--ds-surface-sunken, #F7F8F9)'),
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  } as React.CSSProperties,
+
+  sidebar: {
+    width: 240,
+    flexShrink: 0,
+    borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+    padding: '24px 0',
+    overflowY: 'auto' as const,
+    background: token('color.background.input', 'var(--ds-surface, #FFFFFF)'),
+  } as React.CSSProperties,
+
+  content: {
+    flex: 1,
+    overflowY: 'auto' as const,
+    padding: '32px 40px',
+    background: token('color.background.input', 'var(--ds-surface, #FFFFFF)'),
+  } as React.CSSProperties,
+
+  sectionLabel: {
+    fontSize: 12,
+    fontWeight: 653,
+    color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+    padding: '8px 16px 4px',
+    display: 'block',
+  } as React.CSSProperties,
+
+  navItem: (active: boolean): React.CSSProperties => ({
+    display: 'block',
+    width: '100%',
+    textAlign: 'left',
+    border: 'none',
+    background: active
+      ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FE)')
+      : 'transparent',
+    color: active
+      ? token('color.text.selected', 'var(--ds-text-selected, #0052CC)')
+      : token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+    fontSize: 14,
+    fontWeight: active ? 600 : 400,
+    padding: '8px 16px',
+    cursor: 'pointer',
+    borderLeft: active ? `2px solid ${token('color.border.focused', 'var(--ds-border-focused, #0052CC)')}` : '2px solid transparent',
+    boxSizing: 'border-box',
+  }),
+
+  h1: {
+    fontSize: 24,
+    fontWeight: 653,
+    color: token('color.text', 'var(--ds-text, #172B4D)'),
+    margin: '0 0 4px',
+    lineHeight: '28px',
+  } as React.CSSProperties,
+
+  subtitle: {
+    fontSize: 14,
+    color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+    margin: '0 0 24px',
+  } as React.CSSProperties,
+
+  fieldRow: {
+    display: 'grid',
+    gridTemplateColumns: '200px 1fr',
+    gap: 16,
+    alignItems: 'start',
+    padding: '12px 0',
+    borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+  } as React.CSSProperties,
+
+  fieldLabel: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: token('color.text', 'var(--ds-text, #172B4D)'),
+    paddingTop: 4,
+  } as React.CSSProperties,
+
+  fieldHint: {
+    fontSize: 12,
+    color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+    marginTop: 4,
+  } as React.CSSProperties,
+
+  input: {
+    width: '100%',
+    height: 36,
+    border: `2px solid ${token('color.border.input', 'var(--ds-border-input, #DFE1E6)')}`,
+    borderRadius: 4,
+    padding: '0 8px',
+    fontSize: 14,
+    color: token('color.text', 'var(--ds-text, #172B4D)'),
+    background: token('color.background.input', 'var(--ds-background-input, #FAFBFC)'),
+    boxSizing: 'border-box' as const,
+    outline: 'none',
+  } as React.CSSProperties,
+
+  textarea: {
+    width: '100%',
+    minHeight: 80,
+    border: `2px solid ${token('color.border.input', 'var(--ds-border-input, #DFE1E6)')}`,
+    borderRadius: 4,
+    padding: 8,
+    fontSize: 14,
+    color: token('color.text', 'var(--ds-text, #172B4D)'),
+    background: token('color.background.input', 'var(--ds-background-input, #FAFBFC)'),
+    boxSizing: 'border-box' as const,
+    resize: 'vertical' as const,
+    outline: 'none',
+    fontFamily: 'inherit',
+  } as React.CSSProperties,
+
+  select: {
+    height: 36,
+    border: `2px solid ${token('color.border.input', 'var(--ds-border-input, #DFE1E6)')}`,
+    borderRadius: 4,
+    padding: '0 8px',
+    fontSize: 14,
+    color: token('color.text', 'var(--ds-text, #172B4D)'),
+    background: token('color.background.input', 'var(--ds-background-input, #FAFBFC)'),
+    cursor: 'pointer',
+    outline: 'none',
+  } as React.CSSProperties,
+
+  btnPrimary: {
+    height: 32,
+    padding: '0 16px',
+    background: token('color.background.brand.bold', 'var(--ds-background-brand-bold, #0052CC)'),
+    color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
+    border: 'none',
+    borderRadius: 4,
+    fontSize: 14,
+    fontWeight: 500,
+    cursor: 'pointer',
+  } as React.CSSProperties,
+
+  btnSubtle: {
+    height: 32,
+    padding: '0 12px',
+    background: 'transparent',
+    color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+    border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+    borderRadius: 4,
+    fontSize: 14,
+    fontWeight: 500,
+    cursor: 'pointer',
+  } as React.CSSProperties,
+
+  btnLink: {
+    background: 'none',
+    border: 'none',
+    color: token('color.link', 'var(--ds-link, #0052CC)'),
+    fontSize: 14,
+    cursor: 'pointer',
+    padding: 0,
+    textDecoration: 'underline',
+  } as React.CSSProperties,
+
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse' as const,
+    fontSize: 14,
+  } as React.CSSProperties,
+
+  th: {
+    textAlign: 'left' as const,
+    fontSize: 12,
+    fontWeight: 653,
+    color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+    padding: '4px 8px 4px 0',
+    borderBottom: `1.67px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+  } as React.CSSProperties,
+
+  td: {
+    padding: '8px 8px 8px 0',
+    color: token('color.text', 'var(--ds-text, #172B4D)'),
+    verticalAlign: 'top' as const,
+    borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+  } as React.CSSProperties,
+
+  toggle: (on: boolean): React.CSSProperties => ({
+    width: 40,
+    height: 20,
+    borderRadius: 10,
+    background: on
+      ? token('color.background.brand.bold', 'var(--ds-background-brand-bold, #0052CC)')
+      : token('color.background.neutral', 'var(--ds-background-neutral, #DFE1E6)'),
+    position: 'relative',
+    cursor: 'pointer',
+    border: 'none',
+    flexShrink: 0,
+    transition: 'background 0.15s',
+  }),
+
+  toggleThumb: (on: boolean): React.CSSProperties => ({
+    position: 'absolute',
+    width: 16,
+    height: 16,
+    borderRadius: '50%',
+    background: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
+    top: 2,
+    left: on ? 22 : 2,
+    transition: 'left 0.15s',
+  }),
+};
+
+// ─── Reusable Toggle ──────────────────────────────────────────────────────────
+
+function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      role="switch"
+      aria-checked={on}
+      style={S.toggle(on)}
+      onClick={() => onChange(!on)}
+    >
+      <span style={S.toggleThumb(on)} />
+    </button>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
 
 interface BoardSettingsPageProps {
-  /** Board object passed from the manager page (avoids double fetch) */
   board: BoardListItem;
-  /** Project key for filter picker + back-link */
   projectKey: string;
 }
 
 export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPageProps) {
-  const { section = 'general' } = useParams<{ section?: Section }>();
+  const { section = 'details' } = useParams<{ section?: string }>();
   const navigate = useNavigate();
-  const activeSection = (section as Section) || 'general';
+  const activeSection = section as Section;
 
   const backPath = `/project-hub/${projectKey}/boards`;
 
-  // ── Form state (mirrors BoardSettingsDrawer) ──────────────────────────────
+  // ── Form state ───────────────────────────────────────────────────────────
+
+  // Details
   const [name,              setName]              = useState(board.name);
-  const [description,       setDescription]       = useState(board.description ?? '');
-  const [color,             setColor]             = useState(board.color);
-  const [visibility,        setVisibility]        = useState<BoardVisibility>(board.visibility);
-  const [swimlane,          setSwimlane]          = useState<SwimlaneType>(board.swimlaneType);
-  const [deleteConfirm,     setDeleteConfirm]     = useState('');
-  const [showDelete,        setShowDelete]        = useState(false);
-  const [newColName,        setNewColName]        = useState('');
   const [boardQuery,        setBoardQuery]        = useState(board.boardQuery ?? '');
-  const [newFilterName,     setNewFilterName]     = useState('');
-  const [newFilterJql,      setNewFilterJql]      = useState('');
-  const [addingFilter,      setAddingFilter]      = useState(false);
+  const [subFilterQuery,    setSubFilterQuery]    = useState(board.subFilterQuery ?? '');
+  const [completedCutoff,   setCompletedCutoff]   = useState(board.completedIssuesCutoff ?? '-2w');
   const [selectedFilterId,  setSelectedFilterId]  = useState<string>(board.filterId ?? '');
-  const [cardLayout,        setCardLayout]        = useState<'default' | 'compact'>(board.cardLayout ?? 'default');
-  const [cardColors,        setCardColors]        = useState<Array<{ id: string; label: string; jql: string; color: string }>>(board.cardColors ?? []);
+
+  // Working days
+  const [workingDays, setWorkingDays] = useState<WorkingDaysConfig>(
+    board.workingDaysConfig ?? {
+      region: 'System default',
+      timezone: '',
+      workdays: [true, true, true, true, true, false, false],
+      nonWorkingDates: [],
+    }
+  );
+
+  // Timeline
+  const [timelineEnabled,         setTimelineEnabled]         = useState(board.timelineEnabled ?? false);
+  const [timelineIncludeChildren, setTimelineIncludeChildren] = useState(board.timelineIncludeChildren ?? false);
+
+  // Columns
+  const [newColName,          setNewColName]          = useState('');
+  const [columnConstraint,    setColumnConstraint]    = useState<ColumnConstraintType>(board.columnConstraintType ?? 'none');
+  const [epicDisplayMode,     setEpicDisplayMode]     = useState<EpicDisplayMode>(board.epicDisplayMode ?? 'board');
+  const [kanbanBacklog,       setKanbanBacklog]       = useState(board.kanbanBacklogEnabled ?? false);
+
+  // Swimlanes
+  const [swimlane,     setSwimlane]     = useState<SwimlaneType>(board.swimlaneType ?? 'none');
+  const [swimlaneJql,  setSwimlaneJql]  = useState(board.swimlaneJql ?? '');
+
+  // Card colors
+  const [cardColorMethod, setCardColorMethod] = useState<CardColorMethod>(board.cardColorMethod ?? 'none');
+  const [cardColors,      setCardColors]      = useState<Array<{ id: string; label: string; jql: string; color: string }>>(board.cardColors ?? []);
   const [addingCardColor,   setAddingCardColor]   = useState(false);
   const [newCardColorLabel, setNewCardColorLabel] = useState('');
   const [newCardColorJql,   setNewCardColorJql]   = useState('');
   const [newCardColorHex,   setNewCardColorHex]   = useState(DEFAULT_CARD_COLOR);
 
-  // ── Data ─────────────────────────────────────────────────────────────────
-  const { data: boardData }           = useBoard(board.id);
+  // Card layout
+  const [cardLayout,          setCardLayout]          = useState<'default' | 'compact'>(board.cardLayout ?? 'default');
+  const [cardExtraFields,     setCardExtraFields]     = useState<string[]>(board.cardExtraFields ?? []);
+  const [daysInColumn,        setDaysInColumn]        = useState(board.daysInColumnEnabled ?? false);
+  const [newExtraField,       setNewExtraField]       = useState('');
+  const [addingExtraField,    setAddingExtraField]    = useState(false);
+
+  // Quick filters
+  const [newFilterName,     setNewFilterName]     = useState('');
+  const [newFilterJql,      setNewFilterJql]      = useState('');
+  const [newFilterDesc,     setNewFilterDesc]     = useState('');
+  const [addingFilter,      setAddingFilter]      = useState(false);
+
+  // ── Data fetching ─────────────────────────────────────────────────────────
+
+  const { data: boardData }             = useBoard(board.id);
   const { data: availableFilters = [] } = useFiltersForProject(projectKey, 'project');
-  const updateBoard   = useUpdateBoard();
-  const deleteBoard   = useDeleteBoard();
-  const addColumn     = useAddColumn();
-  const deleteCol     = useDeleteColumn();
+  const updateBoard       = useUpdateBoard();
+  const addColumn         = useAddColumn();
+  const deleteCol         = useDeleteColumn();
   const addQuickFilter    = useAddQuickFilter();
   const deleteQuickFilter = useDeleteQuickFilter();
   const qc = useQueryClient();
@@ -130,6 +395,8 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
       return (data ?? []).map((f: any) => ({
         id: f.id, boardId: f.board_id, name: f.name,
         filterType: f.filter_type, filterValue: f.filter_value ?? {},
+        jqlQuery: f.jql_query ?? null,
+        description: f.description ?? null,
         isSystem: f.is_system, sortOrder: f.sort_order, createdAt: f.created_at,
       }));
     },
@@ -137,704 +404,804 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
 
   const columns = boardData?.columns ?? [];
 
-  const isDirty =
-    name !== board.name ||
-    description !== (board.description ?? '') ||
-    color !== board.color ||
-    visibility !== board.visibility ||
-    swimlane !== board.swimlaneType ||
-    boardQuery !== (board.boardQuery ?? '') ||
-    selectedFilterId !== (board.filterId ?? '') ||
-    cardLayout !== (board.cardLayout ?? 'default') ||
-    JSON.stringify(cardColors) !== JSON.stringify(board.cardColors ?? []);
+  // ── Save helpers ──────────────────────────────────────────────────────────
 
-  // ── Handlers ─────────────────────────────────────────────────────────────
-  const handleSave = async () => {
-    if (!isDirty) return;
-    await updateBoard.mutateAsync({
-      boardId: board.id,
-      projectId: board.projectId ?? undefined,
-      name:        name        !== board.name                        ? name        : undefined,
-      description: description !== (board.description ?? '')        ? description : undefined,
-      color:       color       !== board.color                      ? color       : undefined,
-      visibility:  visibility  !== board.visibility                 ? visibility  : undefined,
-      swimlane_type: swimlane  !== board.swimlaneType               ? swimlane    : undefined,
-      board_query: boardQuery  !== (board.boardQuery ?? '')         ? boardQuery  : undefined,
-      filter_id:   selectedFilterId !== (board.filterId ?? '')      ? (selectedFilterId || null) : undefined,
-      card_layout: cardLayout  !== (board.cardLayout ?? 'default')  ? cardLayout  : undefined,
-      card_colors: JSON.stringify(cardColors) !== JSON.stringify(board.cardColors ?? []) ? cardColors : undefined,
+  const saveField = (patch: Record<string, unknown>) =>
+    updateBoard.mutateAsync({ boardId: board.id, projectId: board.projectId ?? undefined, ...patch });
+
+  const saveDetails = () =>
+    saveField({
+      name:                     name              !== board.name              ? name              : undefined,
+      board_query:              boardQuery        !== (board.boardQuery ?? '') ? boardQuery        : undefined,
+      sub_filter_query:         subFilterQuery    !== (board.subFilterQuery ?? '') ? subFilterQuery : undefined,
+      completed_issues_cutoff:  completedCutoff   !== (board.completedIssuesCutoff ?? '-2w') ? completedCutoff : undefined,
+      filter_id:                selectedFilterId  !== (board.filterId ?? '')  ? (selectedFilterId || null) : undefined,
     });
-  };
 
-  const handleAddFilter = async () => {
-    if (!newFilterName.trim() || !newFilterJql.trim()) return;
-    await addQuickFilter.mutateAsync({ boardId: board.id, name: newFilterName.trim(), jql: newFilterJql.trim() });
-    setNewFilterName(''); setNewFilterJql(''); setAddingFilter(false);
-  };
+  const saveWorkingDays = () =>
+    saveField({ working_days_config: workingDays });
 
-  const handleDelete = async () => {
-    if (deleteConfirm !== board.name) return;
-    await deleteBoard.mutateAsync({ boardId: board.id, projectId: board.projectId ?? '' });
-    navigate(backPath);
-  };
+  const saveTimeline = () =>
+    saveField({ timeline_enabled: timelineEnabled, timeline_include_children: timelineIncludeChildren });
 
-  const handleAddColumn = async () => {
-    if (!newColName.trim()) return;
-    await addColumn.mutateAsync({ boardId: board.id, name: newColName.trim(), position: columns.length });
-    setNewColName('');
-  };
+  const saveColumns = () =>
+    saveField({
+      column_constraint_type: columnConstraint,
+      epic_display_mode:      epicDisplayMode,
+      kanban_backlog_enabled: kanbanBacklog,
+    });
 
-  const navTo = (s: Section) => navigate(`/project-hub/${projectKey}/boards/${board.id}/settings/${s}`);
+  const saveSwimlanes = () =>
+    saveField({ swimlane_type: swimlane, swimlane_jql: swimlaneJql || null });
 
-  // ─────────────────────────────────────────────────────────────────────────
-  return (
-    <div style={{ display: 'flex', height: '100%', background: token('elevation.surface', '#FFFFFF') }}>
+  const saveCardColors = () =>
+    saveField({ card_color_method: cardColorMethod, card_colors: cardColors });
 
-      {/* ── Left sidebar ── */}
-      <div style={{
-        width: 240, flexShrink: 0,
-        borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
-        padding: '16px 0',
-        overflowY: 'auto',
-      }}>
-        {/* Sidebar header — back nav + title (matches Jira sidebar top) */}
-        <div style={{
-          padding: '0 16px 12px',
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-          marginBottom: 8,
-        }}>
-          <button
-            type="button"
-            onClick={() => navigate(backPath)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 4,
-              background: 'none', border: 'none', cursor: 'pointer',
-              padding: '0 0 8px', fontSize: 14,
-              color: token('color.text.subtle', '#42526E'),
-            }}
-          >
-            <ChevronLeft size={14} />
-            Board settings
-          </button>
-          <p style={{
-            margin: 0, fontSize: 14, fontWeight: 500,
-            color: token('color.text', '#172B4D'),
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          }}>
-            {board.name}
-          </p>
+  const saveCardLayout = () =>
+    saveField({ card_layout: cardLayout, card_extra_fields: cardExtraFields, days_in_column_enabled: daysInColumn });
+
+  // ── Section content ───────────────────────────────────────────────────────
+
+  const renderDetails = () => (
+    <div>
+      {/* ads-scanner:ignore-next-line */}
+      <h1 style={S.h1}>Details</h1>
+      <p style={S.subtitle}>Configure the name, filter, and query for this board.</p>
+
+      {/* Name */}
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Name <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>*</span></div>
         </div>
-
-        {/* Nav items */}
-        <nav aria-label="Board settings navigation">
-          {NAV_ITEMS.map(item => {
-            const active = activeSection === item.key;
-            return (
-              <button
-                key={item.key}
-                type="button"
-                aria-current={active ? 'page' : undefined}
-                onClick={() => navTo(item.key)}
-                style={{
-                  display: 'block', width: '100%',
-                  padding: '8px 12px',
-                  border: 'none', borderRadius: 3,
-                  borderLeft: active ? `2px solid ${token('color.link', '#0052CC')}` : '2px solid transparent',
-                  textAlign: 'left', cursor: 'pointer',
-                  fontSize: 14, fontWeight: 400,
-                  color: active ? token('color.link', '#0052CC') : token('color.text.subtle', '#42526E'),
-                  background: 'transparent',
-                  transition: 'background 80ms, border-left 80ms',
-                }}
-                onMouseEnter={e => {
-                  if (!active) (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9');
-                }}
-                onMouseLeave={e => {
-                  if (!active) (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                }}
-              >
-                {item.label}
-              </button>
-            );
-          })}
-        </nav>
+        <div>
+          <input
+            style={S.input}
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Board name"
+          />
+        </div>
       </div>
 
-      {/* ── Content area ── */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
-        <div style={{ maxWidth: 720, padding: '32px 40px' }}>
+      {/* Location (read-only) */}
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Location</div>
+          <div style={S.fieldHint}>Read-only</div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 4 }}>
+          <span style={{ fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+            {projectKey} project
+          </span>
+        </div>
+      </div>
 
-          {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8, fontSize: 14, color: token('color.text.subtle', '#42526E') }}>
-            <Link to={backPath} style={{ color: token('color.text.subtle', '#42526E'), textDecoration: 'none' }}>
-              Boards
-            </Link>
-            <span style={{ color: token('color.text.subtlest', '#6B778C') }}> / </span>
-            <span style={{ color: token('color.text', '#172B4D') }}>{board.name}</span>
-          </nav>
+      {/* Board filter */}
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Board filter <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>*</span></div>
+          <div style={S.fieldHint}>Issues shown on the board are controlled by the linked filter</div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <select
+            style={{ ...S.select, width: '100%' }}
+            value={selectedFilterId}
+            onChange={e => setSelectedFilterId(e.target.value)}
+          >
+            <option value="">— Select a filter —</option>
+            {availableFilters.map((f: any) => (
+              <option key={f.id} value={f.id}>{f.name}</option>
+            ))}
+          </select>
+          {selectedFilterId && (
+            <button style={S.btnLink}>Edit filter query</button>
+          )}
+        </div>
+      </div>
 
-          {/* H1 row + Back to board */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
-            <h1 style={{
-              margin: 0, fontSize: 24, fontWeight: 653,
-              color: token('color.text', '#172B4D'),
-              fontFamily: 'var(--ds-font-family-heading, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)',
-            }}>
-              Settings for {board.name}
-            </h1>
-            <Link
-              to={backPath}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 4,
-                fontSize: 14, color: token('color.text.subtle', '#42526E'),
-                textDecoration: 'none', flexShrink: 0, marginTop: 4,
+      {/* Filter query */}
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Filter query</div>
+          <div style={S.fieldHint}>JQL query used to populate this board</div>
+        </div>
+        <textarea
+          style={S.textarea}
+          value={boardQuery}
+          onChange={e => setBoardQuery(e.target.value)}
+          placeholder="project = BAU ORDER BY Rank ASC"
+          rows={3}
+        />
+      </div>
+
+      {/* Sub-filter */}
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Board sub-filter</div>
+          <div style={S.fieldHint}>Additional JQL to further limit the board, without modifying the saved filter</div>
+        </div>
+        <textarea
+          style={S.textarea}
+          value={subFilterQuery}
+          onChange={e => setSubFilterQuery(e.target.value)}
+          placeholder="e.g. assignee = currentUser()"
+          rows={2}
+        />
+      </div>
+
+      {/* Completed items */}
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Completed work items</div>
+          <div style={S.fieldHint}>How long to keep completed issues visible before hiding them</div>
+        </div>
+        <select
+          style={{ ...S.select, width: 200 }}
+          value={completedCutoff}
+          onChange={e => setCompletedCutoff(e.target.value)}
+        >
+          {COMPLETED_CUTOFFS.map(o => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, paddingTop: 16 }}>
+        <button style={S.btnPrimary} onClick={saveDetails} disabled={updateBoard.isPending}>
+          {updateBoard.isPending ? 'Saving…' : 'Save changes'}
+        </button>
+        <button style={S.btnSubtle} onClick={() => navigate(backPath)}>Cancel</button>
+      </div>
+    </div>
+  );
+
+  const renderWorkingDays = () => (
+    <div>
+      {/* ads-scanner:ignore-next-line */}
+      <h1 style={S.h1}>Working days</h1>
+      <p style={S.subtitle}>Configure the working week for this board. Used in time-based reports and planning.</p>
+
+      {/* Region */}
+      <div style={S.fieldRow}>
+        <div style={S.fieldLabel}>Region</div>
+        <input
+          style={S.input}
+          value={workingDays.region}
+          onChange={e => setWorkingDays(prev => ({ ...prev, region: e.target.value }))}
+          placeholder="System default"
+        />
+      </div>
+
+      {/* Timezone */}
+      <div style={S.fieldRow}>
+        <div style={S.fieldLabel}>Timezone</div>
+        <input
+          style={S.input}
+          value={workingDays.timezone}
+          onChange={e => setWorkingDays(prev => ({ ...prev, timezone: e.target.value }))}
+          placeholder="e.g. Asia/Riyadh"
+        />
+      </div>
+
+      {/* Working days checkboxes */}
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Work days</div>
+          <div style={S.fieldHint}>Select the days that count as working days</div>
+        </div>
+        <div style={{ display: 'flex', gap: 16 }}>
+          {DAYS_OF_WEEK.map((day, idx) => (
+            <label key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, fontSize: 12, cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={workingDays.workdays[idx]}
+                onChange={e => {
+                  const next = [...workingDays.workdays] as WorkingDaysConfig['workdays'];
+                  next[idx] = e.target.checked;
+                  setWorkingDays(prev => ({ ...prev, workdays: next }));
+                }}
+              />
+              {day}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Non-working dates */}
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Non-working dates</div>
+          <div style={S.fieldHint}>Public holidays or planned shutdowns (YYYY-MM-DD)</div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {workingDays.nonWorkingDates.map((d, i) => (
+            <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input
+                style={{ ...S.input, width: 160 }}
+                type="date"
+                value={d}
+                onChange={e => {
+                  const next = [...workingDays.nonWorkingDates];
+                  next[i] = e.target.value;
+                  setWorkingDays(prev => ({ ...prev, nonWorkingDates: next }));
+                }}
+              />
+              <button
+                style={S.btnSubtle}
+                onClick={() => setWorkingDays(prev => ({ ...prev, nonWorkingDates: prev.nonWorkingDates.filter((_, j) => j !== i) }))}
+              >Remove</button>
+            </div>
+          ))}
+          <button
+            style={S.btnSubtle}
+            onClick={() => setWorkingDays(prev => ({ ...prev, nonWorkingDates: [...prev.nonWorkingDates, ''] }))}
+          >+ Add date</button>
+        </div>
+      </div>
+
+      <div style={{ paddingTop: 16 }}>
+        <button style={S.btnPrimary} onClick={saveWorkingDays} disabled={updateBoard.isPending}>
+          {updateBoard.isPending ? 'Saving…' : 'Save changes'}
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderTimeline = () => (
+    <div>
+      {/* ads-scanner:ignore-next-line */}
+      <h1 style={S.h1}>Timeline</h1>
+      <p style={S.subtitle}>Configure the timeline (roadmap) view for this board.</p>
+
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Enable timeline</div>
+          <div style={S.fieldHint}>Show a timeline view for this board</div>
+        </div>
+        <Toggle on={timelineEnabled} onChange={v => { setTimelineEnabled(v); if (!v) setTimelineIncludeChildren(false); }} />
+      </div>
+
+      {timelineEnabled && (
+        <div style={S.fieldRow}>
+          <div>
+            <div style={S.fieldLabel}>Include child-level work items</div>
+            <div style={S.fieldHint}>Show sub-tasks and child issues on the timeline</div>
+          </div>
+          <Toggle on={timelineIncludeChildren} onChange={setTimelineIncludeChildren} />
+        </div>
+      )}
+
+      <div style={{ paddingTop: 16 }}>
+        <button style={S.btnPrimary} onClick={saveTimeline} disabled={updateBoard.isPending}>
+          {updateBoard.isPending ? 'Saving…' : 'Save changes'}
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderColumns = () => (
+    <div>
+      {/* ads-scanner:ignore-next-line */}
+      <h1 style={S.h1}>Columns and statuses</h1>
+      <p style={S.subtitle}>Manage board columns and map issue statuses to them.</p>
+
+      {/* Workflow type (read-only) */}
+      <div style={S.fieldRow}>
+        <div style={S.fieldLabel}>Workflow type</div>
+        <span style={{ fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)'), paddingTop: 4 }}>
+          {board.boardType === 'scrum' ? 'Scrum' : 'Kanban'}
+        </span>
+      </div>
+
+      {/* Column constraints */}
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Column constraint</div>
+          <div style={S.fieldHint}>Limit the number of issues that can be in each column</div>
+        </div>
+        <select
+          style={{ ...S.select, width: 200 }}
+          value={columnConstraint}
+          onChange={e => setColumnConstraint(e.target.value as ColumnConstraintType)}
+        >
+          <option value="none">None</option>
+          <option value="issue_count">Issue count</option>
+        </select>
+      </div>
+
+      {/* Epic work items */}
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Epic work items</div>
+          <div style={S.fieldHint}>How epics are displayed on the board</div>
+        </div>
+        <select
+          style={{ ...S.select, width: 200 }}
+          value={epicDisplayMode}
+          onChange={e => setEpicDisplayMode(e.target.value as EpicDisplayMode)}
+        >
+          <option value="board">Show epics on board</option>
+          <option value="panel">Show epics in panel</option>
+        </select>
+      </div>
+
+      {/* Kanban backlog */}
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Kanban backlog</div>
+          <div style={S.fieldHint}>Enable a separate backlog column for unstarted issues</div>
+        </div>
+        <Toggle on={kanbanBacklog} onChange={setKanbanBacklog} />
+      </div>
+
+      <div style={{ paddingTop: 16, paddingBottom: 24 }}>
+        <button style={S.btnPrimary} onClick={saveColumns} disabled={updateBoard.isPending}>
+          {updateBoard.isPending ? 'Saving…' : 'Save changes'}
+        </button>
+      </div>
+
+      {/* Column list */}
+      <h2 style={{ fontSize: 16, fontWeight: 653, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: '24px 0 12px' }}>
+        Board columns
+      </h2>
+      <table style={S.table}>
+        <thead>
+          <tr>
+            <th style={S.th}>Column name</th>
+            <th style={S.th}>Mapped statuses</th>
+            <th style={S.th}>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {columns.map((col: any) => (
+            <tr key={col.id}>
+              <td style={S.td}>{col.name}{col.isBacklog ? ' (Backlog)' : ''}{col.isDone ? ' (Done)' : ''}</td>
+              <td style={S.td}>
+                {(col.statusIds ?? []).length > 0
+                  ? <span style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>{col.statusIds.length} status(es)</span>
+                  : <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>No statuses mapped</span>
+                }
+              </td>
+              <td style={S.td}>
+                {!col.isBacklog && !col.isDone && (
+                  <button
+                    style={{ ...S.btnSubtle, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}
+                    onClick={() => deleteCol.mutateAsync({ columnId: col.id, boardId: board.id })}
+                  >Delete</button>
+                )}
+              </td>
+            </tr>
+          ))}
+          {columns.length === 0 && (
+            <tr>
+              <td style={{ ...S.td, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }} colSpan={3}>
+                No columns defined
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      {/* Add column */}
+      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+        <input
+          style={{ ...S.input, width: 200 }}
+          placeholder="New column name"
+          value={newColName}
+          onChange={e => setNewColName(e.target.value)}
+        />
+        <button
+          style={S.btnPrimary}
+          disabled={!newColName.trim() || addColumn.isPending}
+          onClick={async () => {
+            if (!newColName.trim()) return;
+            await addColumn.mutateAsync({ boardId: board.id, name: newColName.trim(), position: columns.length });
+            setNewColName('');
+          }}
+        >Add column</button>
+      </div>
+    </div>
+  );
+
+  const renderSwimlanes = () => (
+    <div>
+      {/* ads-scanner:ignore-next-line */}
+      <h1 style={S.h1}>Swimlanes</h1>
+      <p style={S.subtitle}>Group issues into horizontal swimlanes.</p>
+
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Swimlane method</div>
+          <div style={S.fieldHint}>How to group issues into swimlanes</div>
+        </div>
+        <select
+          style={{ ...S.select, width: 220 }}
+          value={swimlane}
+          onChange={e => setSwimlane(e.target.value as SwimlaneType)}
+        >
+          {SWIMLANE_OPTIONS.map(o => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      </div>
+
+      {swimlane === 'jql' && (
+        <div style={S.fieldRow}>
+          <div>
+            <div style={S.fieldLabel}>JQL query</div>
+            <div style={S.fieldHint}>One swimlane per matching result</div>
+          </div>
+          <textarea
+            style={S.textarea}
+            value={swimlaneJql}
+            onChange={e => setSwimlaneJql(e.target.value)}
+            placeholder="e.g. assignee in (user1, user2)"
+            rows={3}
+          />
+        </div>
+      )}
+
+      <div style={{ paddingTop: 16 }}>
+        <button style={S.btnPrimary} onClick={saveSwimlanes} disabled={updateBoard.isPending}>
+          {updateBoard.isPending ? 'Saving…' : 'Save changes'}
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderCardColors = () => (
+    <div>
+      {/* ads-scanner:ignore-next-line */}
+      <h1 style={S.h1}>Card colors</h1>
+      <p style={S.subtitle}>Colour-code cards on the board to highlight patterns.</p>
+
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Colour method</div>
+          <div style={S.fieldHint}>How card colours are assigned</div>
+        </div>
+        <select
+          style={{ ...S.select, width: 220 }}
+          value={cardColorMethod}
+          onChange={e => setCardColorMethod(e.target.value as CardColorMethod)}
+        >
+          {CARD_COLOR_METHODS.map(o => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      </div>
+
+      {cardColorMethod === 'jql' && (
+        <>
+          <div style={{ marginTop: 24, marginBottom: 12 }}>
+            <h2 style={{ fontSize: 16, fontWeight: 653, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: '0 0 4px' }}>
+              Colour rules
+            </h2>
+            <p style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), margin: 0 }}>
+              Issues matching the first applicable JQL rule will use that colour.
+            </p>
+          </div>
+
+          <table style={S.table}>
+            <thead>
+              <tr>
+                <th style={{ ...S.th, width: 32 }}></th>
+                <th style={S.th}>Label</th>
+                <th style={S.th}>JQL</th>
+                <th style={S.th}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cardColors.map((cc, idx) => (
+                <tr key={cc.id}>
+                  <td style={S.td}>
+                    <span style={{ display: 'inline-block', width: 16, height: 16, borderRadius: 2, background: cc.color }} />
+                  </td>
+                  <td style={S.td}>{cc.label}</td>
+                  <td style={{ ...S.td, fontFamily: 'monospace', fontSize: 12 }}>{cc.jql}</td>
+                  <td style={S.td}>
+                    <button
+                      style={{ ...S.btnSubtle, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}
+                      onClick={() => setCardColors(prev => prev.filter((_, i) => i !== idx))}
+                    >Delete</button>
+                  </td>
+                </tr>
+              ))}
+              {cardColors.length === 0 && (
+                <tr>
+                  <td colSpan={4} style={{ ...S.td, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+                    No colour rules defined
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          {addingCardColor ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                {/* ads-scanner:ignore-next-line */}
+                <input type="color" value={newCardColorHex} onChange={e => setNewCardColorHex(e.target.value)} style={{ width: 36, height: 36, border: 'none', cursor: 'pointer' }} />
+                <input style={{ ...S.input, width: 160 }} placeholder="Label" value={newCardColorLabel} onChange={e => setNewCardColorLabel(e.target.value)} />
+                <input style={{ ...S.input, flex: 1 }} placeholder="JQL e.g. priority = High" value={newCardColorJql} onChange={e => setNewCardColorJql(e.target.value)} />
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  style={S.btnPrimary}
+                  disabled={!newCardColorLabel.trim() || !newCardColorJql.trim()}
+                  onClick={() => {
+                    setCardColors(prev => [...prev, { id: crypto.randomUUID(), label: newCardColorLabel.trim(), jql: newCardColorJql.trim(), color: newCardColorHex }]);
+                    setAddingCardColor(false); setNewCardColorLabel(''); setNewCardColorJql(''); setNewCardColorHex(DEFAULT_CARD_COLOR);
+                  }}
+                >Add</button>
+                <button style={S.btnSubtle} onClick={() => setAddingCardColor(false)}>Cancel</button>
+              </div>
+            </div>
+          ) : (
+            <button style={{ ...S.btnSubtle, marginTop: 12 }} onClick={() => setAddingCardColor(true)}>
+              + Add colour rule
+            </button>
+          )}
+        </>
+      )}
+
+      <div style={{ paddingTop: 16 }}>
+        <button style={S.btnPrimary} onClick={saveCardColors} disabled={updateBoard.isPending}>
+          {updateBoard.isPending ? 'Saving…' : 'Save changes'}
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderCardLayout = () => (
+    <div>
+      {/* ads-scanner:ignore-next-line */}
+      <h1 style={S.h1}>Card layout</h1>
+      <p style={S.subtitle}>Configure which fields appear on board cards.</p>
+
+      {/* Card display density */}
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Card display</div>
+          <div style={S.fieldHint}>Default or compact card height</div>
+        </div>
+        <div style={{ display: 'flex', gap: 24 }}>
+          {(['default', 'compact'] as const).map(v => (
+            <label key={v} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14 }}>
+              <input type="radio" name="cardLayout" checked={cardLayout === v} onChange={() => setCardLayout(v)} />
+              {v === 'default' ? 'Default' : 'Compact'}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Days in column */}
+      <div style={S.fieldRow}>
+        <div>
+          <div style={S.fieldLabel}>Days in column</div>
+          <div style={S.fieldHint}>Show how many days each issue has been in its current column</div>
+        </div>
+        <Toggle on={daysInColumn} onChange={setDaysInColumn} />
+      </div>
+
+      {/* Extra fields */}
+      <div style={{ marginTop: 24, marginBottom: 12 }}>
+        <h2 style={{ fontSize: 16, fontWeight: 653, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: '0 0 4px' }}>
+          Extra fields
+        </h2>
+        <p style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), margin: 0 }}>
+          Show up to 3 additional fields on each card.
+        </p>
+      </div>
+
+      <table style={S.table}>
+        <thead>
+          <tr>
+            <th style={S.th}>Field</th>
+            <th style={S.th}>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {cardExtraFields.map((f, idx) => (
+            <tr key={idx}>
+              <td style={S.td}>{f}</td>
+              <td style={S.td}>
+                <button
+                  style={{ ...S.btnSubtle, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}
+                  onClick={() => setCardExtraFields(prev => prev.filter((_, i) => i !== idx))}
+                >Delete</button>
+              </td>
+            </tr>
+          ))}
+          {cardExtraFields.length === 0 && (
+            <tr>
+              <td colSpan={2} style={{ ...S.td, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+                No extra fields added
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      {cardExtraFields.length < 3 && (
+        addingExtraField ? (
+          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <input
+              style={{ ...S.input, width: 220 }}
+              placeholder="Field name (e.g. Priority)"
+              value={newExtraField}
+              onChange={e => setNewExtraField(e.target.value)}
+            />
+            <button
+              style={S.btnPrimary}
+              disabled={!newExtraField.trim()}
+              onClick={() => {
+                if (newExtraField.trim()) {
+                  setCardExtraFields(prev => [...prev, newExtraField.trim()]);
+                  setNewExtraField(''); setAddingExtraField(false);
+                }
+              }}
+            >Add</button>
+            <button style={S.btnSubtle} onClick={() => setAddingExtraField(false)}>Cancel</button>
+          </div>
+        ) : (
+          <button style={{ ...S.btnSubtle, marginTop: 12 }} onClick={() => setAddingExtraField(true)}>
+            + Add field
+          </button>
+        )
+      )}
+
+      <div style={{ paddingTop: 16 }}>
+        <button style={S.btnPrimary} onClick={saveCardLayout} disabled={updateBoard.isPending}>
+          {updateBoard.isPending ? 'Saving…' : 'Save changes'}
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderQuickFilters = () => (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <div>
+          {/* ads-scanner:ignore-next-line */}
+      <h1 style={S.h1}>Quick filters</h1>
+          <p style={{ ...S.subtitle, marginBottom: 0 }}>Shortcut filters shown on the board toolbar.</p>
+        </div>
+        <button style={S.btnPrimary} onClick={() => setAddingFilter(true)}>
+          Create quick filter
+        </button>
+      </div>
+
+      <table style={S.table}>
+        <thead>
+          <tr>
+            <th style={S.th}>Name</th>
+            <th style={S.th}>JQL</th>
+            <th style={S.th}>Description</th>
+            <th style={S.th}>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {quickFilters.map((qf: BoardQuickFilter) => (
+            <tr key={qf.id}>
+              <td style={S.td}>{qf.name}</td>
+              <td style={{ ...S.td, fontFamily: 'monospace', fontSize: 12 }}>{qf.jqlQuery ?? qf.filterValue?.jql as string ?? ''}</td>
+              <td style={{ ...S.td, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>{qf.description ?? ''}</td>
+              <td style={S.td}>
+                {!qf.isSystem && (
+                  <button
+                    style={{ ...S.btnSubtle, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}
+                    onClick={() => deleteQuickFilter.mutateAsync({ filterId: qf.id, boardId: board.id })}
+                  >Delete</button>
+                )}
+              </td>
+            </tr>
+          ))}
+          {quickFilters.length === 0 && (
+            <tr>
+              <td colSpan={4} style={{ ...S.td, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+                No quick filters defined
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      {addingFilter && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16, padding: 16, border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, borderRadius: 4 }}>
+          <h3 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+            New quick filter
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <input style={S.input} placeholder="Name *" value={newFilterName} onChange={e => setNewFilterName(e.target.value)} />
+            <input style={S.input} placeholder="JQL query *" value={newFilterJql} onChange={e => setNewFilterJql(e.target.value)} />
+            <input style={S.input} placeholder="Description (optional)" value={newFilterDesc} onChange={e => setNewFilterDesc(e.target.value)} />
+          </div>
+          <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+            <button
+              style={S.btnPrimary}
+              disabled={!newFilterName.trim() || !newFilterJql.trim() || addQuickFilter.isPending}
+              onClick={async () => {
+                await addQuickFilter.mutateAsync({ boardId: board.id, name: newFilterName.trim(), jql: newFilterJql.trim(), description: newFilterDesc.trim() || undefined });
+                setNewFilterName(''); setNewFilterJql(''); setNewFilterDesc(''); setAddingFilter(false);
+                qc.invalidateQueries({ queryKey: ['board-quick-filters', board.id] });
               }}
             >
-              <ChevronLeft size={14} />
-              Back to board
-            </Link>
-          </div>
-
-          {/* ── Section content ── */}
-
-          {activeSection === 'general' && (
-            <GeneralSection
-              name={name} setName={setName}
-              description={description} setDescription={setDescription}
-              color={color} setColor={setColor}
-              visibility={visibility} setVisibility={setVisibility}
-              showDelete={showDelete} setShowDelete={setShowDelete}
-              deleteConfirm={deleteConfirm} setDeleteConfirm={setDeleteConfirm}
-              boardName={board.name}
-              onDelete={handleDelete}
-              deleteBoard={deleteBoard}
-            />
-          )}
-
-          {activeSection === 'filter' && (
-            <FilterSection
-              boardQuery={boardQuery} setBoardQuery={setBoardQuery}
-              selectedFilterId={selectedFilterId} setSelectedFilterId={setSelectedFilterId}
-              availableFilters={availableFilters}
-              quickFilters={quickFilters}
-              addingFilter={addingFilter} setAddingFilter={setAddingFilter}
-              newFilterName={newFilterName} setNewFilterName={setNewFilterName}
-              newFilterJql={newFilterJql} setNewFilterJql={setNewFilterJql}
-              onAddFilter={handleAddFilter}
-              onDeleteFilter={(filterId: string) => deleteQuickFilter.mutate({ filterId, boardId: board.id })}
-              projectKey={projectKey}
-            />
-          )}
-
-          {activeSection === 'columns' && (
-            <ColumnsSection
-              columns={columns}
-              newColName={newColName} setNewColName={setNewColName}
-              onAddColumn={handleAddColumn}
-              onDeleteColumn={(columnId: string) => deleteCol.mutate({ columnId, boardId: board.id })}
-              projectKey={projectKey}
-              onNavigateMapStatuses={() => navigate(`/project-hub/${projectKey}/boards/map-statuses`)}
-            />
-          )}
-
-          {activeSection === 'swimlanes' && (
-            <SwimlanesSection
-              swimlane={swimlane} setSwimlane={setSwimlane}
-              cardLayout={cardLayout} setCardLayout={setCardLayout}
-              cardColors={cardColors} setCardColors={setCardColors}
-              addingCardColor={addingCardColor} setAddingCardColor={setAddingCardColor}
-              newCardColorLabel={newCardColorLabel} setNewCardColorLabel={setNewCardColorLabel}
-              newCardColorJql={newCardColorJql} setNewCardColorJql={setNewCardColorJql}
-              newCardColorHex={newCardColorHex} setNewCardColorHex={setNewCardColorHex}
-            />
-          )}
-
-          {activeSection === 'access' && (
-            <AccessSection />
-          )}
-
-          {/* Save / Cancel footer */}
-          {(activeSection !== 'columns' && activeSection !== 'access') && (
-            <div style={{
-              display: 'flex', gap: 8, marginTop: 32, paddingTop: 16,
-              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
-            }}>
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={!isDirty || updateBoard.isPending}
-                style={{
-                  height: 32, padding: '0 16px', borderRadius: 3, border: 'none', cursor: isDirty ? 'pointer' : 'not-allowed',
-                  background: isDirty ? token('color.background.brand.bold', '#0052CC') : token('color.background.neutral', '#F1F2F4'),
-                  color: isDirty ? token('color.text.inverse', '#FFFFFF') : token('color.text.disabled', '#A5ADBA'),
-                  fontSize: 14, fontWeight: 500,
-                }}
-              >
-                {updateBoard.isPending ? 'Saving…' : 'Save changes'}
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate(backPath)}
-                style={{
-                  height: 32, padding: '0 16px', borderRadius: 3,
-                  border: `2px solid ${token('color.border', '#DFE1E6')}`,
-                  background: 'transparent', cursor: 'pointer',
-                  fontSize: 14, color: token('color.text', '#172B4D'),
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Section components ───────────────────────────────────────────────────────
-
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 style={{
-      margin: '0 0 16px', fontSize: 16, fontWeight: 653,
-      color: token('color.text', '#172B4D'),
-      fontFamily: 'var(--ds-font-family-heading, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)',
-    }}>
-      {children}
-    </h2>
-  );
-}
-
-function SubHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h3 style={{
-      margin: '24px 0 8px', fontSize: 16, fontWeight: 653,
-      color: token('color.text', '#172B4D'),
-    }}>
-      {children}
-    </h3>
-  );
-}
-
-function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
-  return (
-    <label style={{
-      display: 'block', fontSize: 12, fontWeight: 653,
-      color: token('color.text.subtle', '#42526E'), marginBottom: 4,
-    }}>
-      {children}{required && <span style={{ color: token('color.text.danger', '#AE2A19') }}> *</span>}
-    </label>
-  );
-}
-
-const inputStyle: React.CSSProperties = {
-  width: '100%', height: 40, padding: '0 8px',
-  boxSizing: 'border-box',
-  border: `2px solid ${token('color.border', '#DFE1E6')}`,
-  borderRadius: 3, fontSize: 14,
-  color: token('color.text', '#172B4D'),
-  background: token('elevation.surface.sunken', '#F7F8F9'),
-  outline: 'none',
-};
-
-// ── General ──
-
-function GeneralSection({ name, setName, description, setDescription, color, setColor, visibility, setVisibility, showDelete, setShowDelete, deleteConfirm, setDeleteConfirm, boardName, onDelete, deleteBoard }: any) {
-  return (
-    <>
-      <SectionHeading>General settings</SectionHeading>
-      <p style={{ margin: '0 0 24px', fontSize: 14, color: token('color.text.subtle', '#42526E') }}>
-        Required fields are marked with an asterisk *
-      </p>
-
-      <div style={{ marginBottom: 16 }}>
-        <FieldLabel required>Board name</FieldLabel>
-        <input value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
-      </div>
-      <div style={{ marginBottom: 24 }}>
-        <FieldLabel>Description</FieldLabel>
-        <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3}
-          style={{ ...inputStyle, height: 'auto', padding: '8px', resize: 'vertical' }} />
-      </div>
-
-      <FieldLabel>Board color</FieldLabel>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24, marginTop: 4 }}>
-        {COLOR_SWATCHES.map(c => (
-          <button key={c} type="button" onClick={() => setColor(c)} style={{
-            width: 28, height: 28, borderRadius: 4, border: 'none',
-            background: c, cursor: 'pointer',
-            outline: color === c ? `2px solid ${token('color.link', '#0052CC')}` : 'none',
-            outlineOffset: color === c ? 2 : 0,
-          }} />
-        ))}
-      </div>
-
-      <FieldLabel>Visibility</FieldLabel>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24, marginTop: 4 }}>
-        {VISIBILITY_OPTIONS.map(opt => (
-          <button key={opt.value} type="button" onClick={() => setVisibility(opt.value)} style={{
-            display: 'flex', alignItems: 'flex-start', gap: 12, padding: 12,
-            borderRadius: 3, cursor: 'pointer', textAlign: 'left',
-            border: `2px solid ${visibility === opt.value ? token('color.link', '#0052CC') : token('color.border', '#DFE1E6')}`,
-            background: visibility === opt.value ? token('color.background.selected', '#E9F2FE') : token('elevation.surface', '#FFFFFF'),
-          }}>
-            <RadioCircle selected={visibility === opt.value} />
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ fontSize: 14, fontWeight: 500, color: token('color.text', '#172B4D') }}>{opt.label}</span>
-                {opt.warning && <AlertTriangle size={14} color={token('color.icon.warning', '#974F0C')} />}
-              </div>
-              <div style={{ fontSize: 12, color: token('color.text.subtle', '#42526E'), marginTop: 4 }}>{opt.desc}</div>
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {/* Danger zone — red border wrapper (Jira parity) */}
-      <div style={{
-        marginTop: 32, padding: 16,
-        border: `1px solid ${token('color.border.danger', '#FF5630')}`,
-        borderRadius: 3,
-      }}>
-        <h3 style={{ margin: '0 0 12px', fontSize: 14, fontWeight: 600, color: token('color.text.danger', '#AE2A19') }}>
-          Danger zone
-        </h3>
-      {!showDelete ? (
-        <button type="button" onClick={() => setShowDelete(true)} style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 12px',
-          background: token('color.background.danger', '#FFEDEB'),
-          border: `2px solid ${token('color.border.danger', '#FF5630')}`,
-          borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 500,
-          color: token('color.text.danger', '#AE2A19'),
-        }}>
-          <Trash2 size={14} /> Delete board
-        </button>
-      ) : (
-        <div style={{ padding: 16, background: token('color.background.danger', '#FFEDEB'), borderRadius: 3, border: `2px solid ${token('color.border.danger', '#FF5630')}` }}>
-          <p style={{ fontSize: 14, color: token('color.text.danger', '#AE2A19'), margin: '0 0 8px' }}>
-            Type <strong>{boardName}</strong> to confirm deletion:
-          </p>
-          <input value={deleteConfirm} onChange={e => setDeleteConfirm(e.target.value)}
-            placeholder={boardName} style={{ ...inputStyle, marginBottom: 8 }} />
-          <button type="button" onClick={onDelete}
-            disabled={deleteConfirm !== boardName || deleteBoard.isPending}
-            style={{
-              height: 32, padding: '0 12px', borderRadius: 3, border: 'none',
-              background: deleteConfirm === boardName ? token('color.background.danger.bold', '#AE2A19') : token('color.background.neutral', '#F1F2F4'),
-              color: deleteConfirm === boardName ? token('color.text.inverse', '#FFFFFF') : token('color.text.disabled', '#A5ADBA'),
-              fontSize: 14, fontWeight: 500, cursor: deleteConfirm === boardName ? 'pointer' : 'not-allowed',
-            }}>
-            {deleteBoard.isPending ? 'Deleting…' : 'Delete board'}
-          </button>
-        </div>
-      )}
-      </div>{/* end danger zone wrapper */}
-    </>
-  );
-}
-
-// ── Filter ──
-
-function FilterSection({ boardQuery, setBoardQuery, selectedFilterId, setSelectedFilterId, availableFilters, quickFilters, addingFilter, setAddingFilter, newFilterName, setNewFilterName, newFilterJql, setNewFilterJql, onAddFilter, onDeleteFilter, projectKey }: any) {
-  return (
-    <>
-      <SectionHeading>Board filter</SectionHeading>
-      <p style={{ margin: '0 0 24px', fontSize: 14, color: token('color.text.subtle', '#42526E'), lineHeight: '1.5' }}>
-        The board filter determines the work items that appear on your board. It is based on JQL and can include issues from one or more projects.
-      </p>
-
-      <SubHeading>Linked filter</SubHeading>
-      <p style={{ margin: '0 0 8px', fontSize: 14, color: token('color.text.subtle', '#42526E'), lineHeight: 1.5 }}>
-        The board shows issues matching this saved filter. The filter owner is displayed as the board lead.
-      </p>
-      <select value={selectedFilterId} onChange={e => setSelectedFilterId(e.target.value)}
-        style={{ ...inputStyle, height: 40, appearance: 'auto', marginBottom: 24 }}>
-        <option value="">— None —</option>
-        {availableFilters.map((f: any) => <option key={f.id} value={f.id}>{f.name}</option>)}
-      </select>
-
-      <SubHeading>Board query (JQL)</SubHeading>
-      <p style={{ margin: '0 0 8px', fontSize: 14, color: token('color.text.subtle', '#42526E') }}>
-        Issues matching this query will appear on the board.
-      </p>
-      <textarea value={boardQuery} onChange={e => setBoardQuery(e.target.value)} rows={3}
-        style={{ ...inputStyle, height: 'auto', padding: 8, resize: 'vertical', fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 12, background: token('elevation.surface.sunken', '#F7F8F9'), marginBottom: 8 }} />
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 24 }}>
-        {QUERY_PRESETS.map(p => (
-          <button key={p.label} type="button" onClick={() => setBoardQuery(p.jql(projectKey))} style={{
-            fontSize: 12, padding: '4px 8px', borderRadius: 12,
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            background: token('elevation.surface', '#FFFFFF'),
-            color: token('color.link', '#0052CC'), cursor: 'pointer',
-          }}>
-            {p.label}
-          </button>
-        ))}
-      </div>
-
-      <SubHeading>Quick filters</SubHeading>
-      <p style={{ margin: '0 0 8px', fontSize: 14, color: token('color.text.subtle', '#42526E') }}>
-        Filter chips shown in the board toolbar.
-      </p>
-      {quickFilters.map((f: any) => (
-        <div key={f.id} style={{
-          display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
-          borderRadius: 3, marginBottom: 8,
-          border: `1px solid ${token('color.border', '#DFE1E6')}`,
-          background: token('elevation.surface', '#FFFFFF'),
-        }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', '#172B4D') }}>
-              {f.name}
-              {f.isSystem && <span style={{ marginLeft: 8, fontSize: 11, color: token('color.text.subtlest', '#6B778C') }}>system</span>}
-            </div>
-            {f.filterType === 'jql' && (
-              <div style={{ fontSize: 11, color: token('color.text.subtlest', '#6B778C'), fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {String((f.filterValue as any).jql ?? '')}
-              </div>
-            )}
-          </div>
-          {!f.isSystem && (
-            <button type="button" onClick={() => onDeleteFilter(f.id)} style={{ width: 24, height: 24, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Trash2 size={14} color={token('color.icon.subtle', '#626F86')} />
+              {addQuickFilter.isPending ? 'Saving…' : 'Create'}
             </button>
-          )}
-        </div>
-      ))}
-      {addingFilter ? (
-        <div style={{ padding: 12, border: `1px solid ${token('color.border', '#DFE1E6')}`, borderRadius: 3, background: token('elevation.surface.sunken', '#F7F8F9'), marginTop: 8 }}>
-          <FieldLabel>Filter label</FieldLabel>
-          <input value={newFilterName} onChange={e => setNewFilterName(e.target.value)} placeholder="e.g. My Issues…"
-            style={{ ...inputStyle, marginBottom: 8 }} />
-          <FieldLabel>JQL clause</FieldLabel>
-          <input value={newFilterJql} onChange={e => setNewFilterJql(e.target.value)} placeholder="assignee = currentUser()"
-            onKeyDown={e => e.key === 'Enter' && onAddFilter()}
-            style={{ ...inputStyle, fontFamily: 'monospace', fontSize: 12, marginBottom: 8 }} />
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button type="button" onClick={() => setAddingFilter(false)} style={{ height: 32, padding: '0 12px', borderRadius: 3, border: `2px solid ${token('color.border', '#DFE1E6')}`, background: 'transparent', fontSize: 14, cursor: 'pointer', color: token('color.text', '#172B4D') }}>Cancel</button>
-            <button type="button" onClick={onAddFilter} disabled={!newFilterName.trim() || !newFilterJql.trim()} style={{
-              height: 32, padding: '0 12px', borderRadius: 3, border: 'none', fontSize: 14, fontWeight: 500,
-              background: newFilterName.trim() && newFilterJql.trim() ? token('color.background.brand.bold', '#0052CC') : token('color.background.neutral', '#F1F2F4'),
-              color: newFilterName.trim() && newFilterJql.trim() ? token('color.text.inverse', '#FFFFFF') : token('color.text.disabled', '#A5ADBA'),
-              cursor: newFilterName.trim() && newFilterJql.trim() ? 'pointer' : 'not-allowed',
-            }}>Add filter</button>
-          </div>
-        </div>
-      ) : (
-        <button type="button" onClick={() => setAddingFilter(true)} style={{
-          display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
-          border: `1px dashed ${token('color.border', '#DFE1E6')}`, borderRadius: 3,
-          background: 'transparent', cursor: 'pointer',
-          fontSize: 14, color: token('color.text.subtle', '#42526E'), marginTop: 8,
-        }}>
-          <Plus size={14} /> Add quick filter
-        </button>
-      )}
-    </>
-  );
-}
-
-// ── Columns ──
-
-function ColumnsSection({ columns, newColName, setNewColName, onAddColumn, onDeleteColumn, projectKey, onNavigateMapStatuses }: any) {
-  return (
-    <>
-      <SectionHeading>Columns</SectionHeading>
-      <p style={{ margin: '0 0 16px', fontSize: 14, color: token('color.text.subtle', '#42526E') }}>
-        Manage the columns that appear on this board. Drag to reorder.
-      </p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
-        {columns.map((col: any) => (
-          <div key={col.id} style={{
-            display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
-            border: `1px solid ${col.statusIds?.length === 0 ? token('color.border.warning', '#FFB900') : token('color.border', '#DFE1E6')}`,
-            borderRadius: 3, background: token('elevation.surface', '#FFFFFF'),
-            borderLeftWidth: col.statusIds?.length === 0 ? 4 : 1,
-          }}>
-            <GripVertical size={14} color={token('color.icon.subtle', '#626F86')} style={{ cursor: 'grab', flexShrink: 0 }} />
-            <span style={{ flex: 1, fontSize: 14, fontWeight: 500, color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {col.name}
-            </span>
-            {col.isBacklog && <ColumnBadge bg={token('color.background.brand.subtlest', '#E9F2FE')} color={token('color.link', '#0052CC')}>Backlog</ColumnBadge>}
-            {col.isDone   && <ColumnBadge bg={token('color.background.success', '#DCFFF1')} color={token('color.text.success', '#216E4E')}>Done</ColumnBadge>}
-            <button type="button" onClick={() => onDeleteColumn(col.id)} style={{ width: 24, height: 24, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Trash2 size={14} color={token('color.icon.subtle', '#626F86')} />
+            <button style={S.btnSubtle} onClick={() => { setAddingFilter(false); setNewFilterName(''); setNewFilterJql(''); setNewFilterDesc(''); }}>
+              Cancel
             </button>
           </div>
-        ))}
-      </div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-        <input value={newColName} onChange={e => setNewColName(e.target.value)}
-          placeholder="New column name…"
-          onKeyDown={e => e.key === 'Enter' && onAddColumn()}
-          style={{ ...inputStyle, flex: 1 }} />
-        <button type="button" onClick={onAddColumn} disabled={!newColName.trim()} style={{
-          height: 40, padding: '0 16px', borderRadius: 3, border: 'none',
-          background: newColName.trim() ? token('color.background.brand.bold', '#0052CC') : token('color.background.neutral', '#F1F2F4'),
-          color: newColName.trim() ? token('color.text.inverse', '#FFFFFF') : token('color.text.disabled', '#A5ADBA'),
-          fontSize: 14, fontWeight: 500, cursor: newColName.trim() ? 'pointer' : 'not-allowed',
-        }}>
-          Add
-        </button>
-      </div>
-      {projectKey && (
-        <div style={{ paddingTop: 16, borderTop: `1px solid ${token('color.border', '#DFE1E6')}` }}>
-          <p style={{ margin: '0 0 8px', fontSize: 14, color: token('color.text.subtle', '#42526E'), lineHeight: 1.5 }}>
-            Map workflow statuses to columns to control which issues appear in each column.
-          </p>
-          <button type="button" onClick={onNavigateMapStatuses} style={{
-            display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
-            background: token('color.background.neutral', '#F1F2F4'), border: `2px solid transparent`,
-            borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 500,
-            color: token('color.text', '#172B4D'),
-          }}>
-            Configure status mapping →
-          </button>
         </div>
       )}
-    </>
-  );
-}
-
-// ── Swimlanes ──
-
-function SwimlanesSection({ swimlane, setSwimlane, cardLayout, setCardLayout, cardColors, setCardColors, addingCardColor, setAddingCardColor, newCardColorLabel, setNewCardColorLabel, newCardColorJql, setNewCardColorJql, newCardColorHex, setNewCardColorHex }: any) {
-  return (
-    <>
-      <SectionHeading>Swimlanes</SectionHeading>
-
-      <SubHeading>Swimlane type</SubHeading>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
-        {SWIMLANE_OPTIONS.map(opt => (
-          <button key={opt.value} type="button" onClick={() => setSwimlane(opt.value)} style={{
-            display: 'flex', alignItems: 'flex-start', gap: 12, padding: 12,
-            borderRadius: 3, cursor: 'pointer', textAlign: 'left',
-            border: `2px solid ${swimlane === opt.value ? token('color.link', '#0052CC') : token('color.border', '#DFE1E6')}`,
-            background: swimlane === opt.value ? token('color.background.selected', '#E9F2FE') : token('elevation.surface', '#FFFFFF'),
-          }}>
-            <RadioCircle selected={swimlane === opt.value} />
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', '#172B4D') }}>{opt.label}</div>
-              <div style={{ fontSize: 12, color: token('color.text.subtle', '#42526E'), marginTop: 4 }}>{opt.desc}</div>
-            </div>
-          </button>
-        ))}
-      </div>
-
-      <SubHeading>Card layout</SubHeading>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-        {(['default', 'compact'] as const).map(layout => (
-          <button key={layout} type="button" onClick={() => setCardLayout(layout)} style={{
-            flex: 1, padding: 12, borderRadius: 3, cursor: 'pointer', textAlign: 'center',
-            border: `2px solid ${cardLayout === layout ? token('color.link', '#0052CC') : token('color.border', '#DFE1E6')}`,
-            background: cardLayout === layout ? token('color.background.selected', '#E9F2FE') : token('elevation.surface', '#FFFFFF'),
-            fontSize: 14, fontWeight: 500, color: token('color.text', '#172B4D'),
-          }}>
-            {layout === 'default' ? 'Default' : 'Compact'}
-          </button>
-        ))}
-      </div>
-      <p style={{ margin: '-16px 0 24px', fontSize: 12, color: token('color.text.subtle', '#42526E') }}>
-        {cardLayout === 'compact' ? 'Show only the issue key and summary.' : 'Show assignee, priority, and labels on each card.'}
-      </p>
-
-      <SubHeading>Card colors</SubHeading>
-      <p style={{ margin: '0 0 8px', fontSize: 14, color: token('color.text.subtle', '#42526E') }}>
-        Highlight cards matching a JQL clause with a left-border color.
-      </p>
-      {cardColors.map((rule: any) => (
-        <div key={rule.id} style={{
-          display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
-          border: `1px solid ${token('color.border', '#DFE1E6')}`, borderRadius: 3, marginBottom: 8,
-          borderLeft: `4px solid ${rule.color}`,
-        }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rule.label}</div>
-            <div style={{ fontSize: 11, color: token('color.text.subtle', '#42526E'), fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rule.jql}</div>
-          </div>
-          <button type="button" onClick={() => setCardColors((prev: any[]) => prev.filter(r => r.id !== rule.id))} style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Trash2 size={14} color={token('color.icon.subtle', '#626F86')} />
-          </button>
-        </div>
-      ))}
-      {addingCardColor ? (
-        <div style={{ padding: 12, border: `1px solid ${token('color.border', '#DFE1E6')}`, borderRadius: 3, marginBottom: 8 }}>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-            <input value={newCardColorLabel} onChange={e => setNewCardColorLabel(e.target.value)}
-              placeholder="Label (e.g. Blocked)" style={{ ...inputStyle, flex: 1 }} />
-            <input type="color" value={newCardColorHex} onChange={e => setNewCardColorHex(e.target.value)}
-              style={{ width: 40, height: 40, padding: 0, border: `2px solid ${token('color.border', '#DFE1E6')}`, borderRadius: 3, cursor: 'pointer' }} />
-          </div>
-          <input value={newCardColorJql} onChange={e => setNewCardColorJql(e.target.value)}
-            placeholder="JQL: priority = Critical"
-            style={{ ...inputStyle, fontFamily: 'monospace', fontSize: 12, marginBottom: 8 }} />
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button type="button" onClick={() => { setAddingCardColor(false); setNewCardColorLabel(''); setNewCardColorJql(''); setNewCardColorHex(DEFAULT_CARD_COLOR); }} style={{ height: 32, padding: '0 12px', border: `2px solid ${token('color.border', '#DFE1E6')}`, borderRadius: 3, background: 'transparent', cursor: 'pointer', fontSize: 14, color: token('color.text', '#172B4D') }}>Cancel</button>
-            <button type="button" disabled={!newCardColorLabel.trim() || !newCardColorJql.trim()} onClick={() => {
-              if (!newCardColorLabel.trim() || !newCardColorJql.trim()) return;
-              setCardColors((prev: any[]) => [...prev, { id: crypto.randomUUID(), label: newCardColorLabel.trim(), jql: newCardColorJql.trim(), color: newCardColorHex }]);
-              setAddingCardColor(false); setNewCardColorLabel(''); setNewCardColorJql(''); setNewCardColorHex(DEFAULT_CARD_COLOR);
-            }} style={{
-              height: 32, padding: '0 12px', border: 'none', borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 500,
-              background: token('color.background.brand.bold', '#0052CC'), color: token('color.text.inverse', '#FFFFFF'),
-            }}>Add</button>
-          </div>
-        </div>
-      ) : (
-        <button type="button" onClick={() => setAddingCardColor(true)} style={{
-          display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
-          border: `1px dashed ${token('color.border', '#DFE1E6')}`, borderRadius: 3,
-          background: 'transparent', cursor: 'pointer', fontSize: 14, color: token('color.text.subtle', '#42526E'),
-        }}>
-          <Plus size={14} /> Add color rule
-        </button>
-      )}
-    </>
-  );
-}
-
-// ── Access ──
-
-function AccessSection() {
-  return (
-    <>
-      <SectionHeading>Access</SectionHeading>
-      <p style={{ margin: '0 0 16px', fontSize: 14, color: token('color.text.subtle', '#42526E') }}>
-        Manage who has access to this board and their roles.
-      </p>
-      <button type="button" style={{
-        display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
-        background: token('color.background.brand.bold', '#0052CC'), border: 'none',
-        borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 500,
-        color: token('color.text.inverse', '#FFFFFF'),
-      }}>
-        <Plus size={14} /> Add member
-      </button>
-    </>
-  );
-}
-
-// ── Shared primitives ──
-
-function RadioCircle({ selected }: { selected: boolean }) {
-  return (
-    <div style={{
-      width: 16, height: 16, borderRadius: '50%', flexShrink: 0, marginTop: 4,
-      border: `2px solid ${selected ? token('color.link', '#0052CC') : token('color.border', '#DFE1E6')}`,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: selected ? token('color.background.brand.bold', '#0052CC') : 'transparent',
-    }}>
-      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: token('color.text.inverse', '#FFFFFF') }} />}
     </div>
   );
-}
 
-function ColumnBadge({ children, bg, color }: { children: React.ReactNode; bg: string; color: string }) {
+  // ── Section renderer ──────────────────────────────────────────────────────
+
+  const renderSection = () => {
+    switch (activeSection) {
+      case 'details':       return renderDetails();
+      case 'working-days':  return renderWorkingDays();
+      case 'timeline':      return renderTimeline();
+      case 'columns':       return renderColumns();
+      case 'swimlanes':     return renderSwimlanes();
+      case 'card-colors':   return renderCardColors();
+      case 'card-layout':   return renderCardLayout();
+      case 'quick-filters': return renderQuickFilters();
+      default:              return renderDetails();
+    }
+  };
+
+  // ── Layout ────────────────────────────────────────────────────────────────
+
+  const boardSettingsPath = `/project-hub/${projectKey}/boards/${board.id}/settings`;
+
+  const navTo = (s: Section) => navigate(`${boardSettingsPath}/${s}`);
+
   return (
-    <span style={{
-      display: 'inline-flex', height: 16, padding: '0 4px', borderRadius: 2,
-      fontSize: 11, fontWeight: 700, background: bg, color, alignItems: 'center', flexShrink: 0,
-    }}>{children}</span>
+    <div style={S.page}>
+      {/* Left nav */}
+      <nav style={S.sidebar} aria-label="Board settings navigation">
+        <div style={{ padding: '0 16px 16px', borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, marginBottom: 8 }}>
+          <button
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: token('color.link', 'var(--ds-link, #0052CC)'), fontSize: 14, display: 'flex', alignItems: 'center', gap: 4 }}
+            onClick={() => navigate(backPath)}
+          >
+            ← Back to boards
+          </button>
+          <div style={{ fontSize: 16, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginTop: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {board.name}
+          </div>
+        </div>
+
+        {NAV_TOP.map(item => (
+          <button
+            key={item.key}
+            style={S.navItem(activeSection === item.key)}
+            onClick={() => navTo(item.key)}
+          >
+            {item.label}
+          </button>
+        ))}
+
+        <span style={S.sectionLabel}>Layout</span>
+        {NAV_LAYOUT.map(item => (
+          <button
+            key={item.key}
+            style={S.navItem(activeSection === item.key)}
+            onClick={() => navTo(item.key)}
+          >
+            {item.label}
+          </button>
+        ))}
+      </nav>
+
+      {/* Content */}
+      <main style={S.content}>
+        {renderSection()}
+      </main>
+    </div>
   );
 }

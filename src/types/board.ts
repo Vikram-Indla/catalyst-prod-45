@@ -2,7 +2,18 @@
 // ProjectHub Kanban Board system
 
 export type BoardVisibility = 'private' | 'project' | 'global';
-export type SwimlaneType = 'release' | 'assignee' | 'epic' | 'none';
+export type SwimlaneType = 'none' | 'release' | 'assignee' | 'epic' | 'stories' | 'project' | 'jql';
+export type CardColorMethod = 'none' | 'issue_type' | 'priorities' | 'assignees' | 'jql';
+export type EpicDisplayMode = 'board' | 'panel';
+export type ColumnConstraintType = 'none' | 'issue_count';
+
+export interface WorkingDaysConfig {
+  region: string;
+  timezone: string;
+  /** [Mon, Tue, Wed, Thu, Fri, Sat, Sun] */
+  workdays: [boolean, boolean, boolean, boolean, boolean, boolean, boolean];
+  nonWorkingDates: string[];
+}
 
 export interface Board {
   id: string;
@@ -15,12 +26,24 @@ export interface Board {
   visibility: BoardVisibility;
   boardType: 'kanban' | 'scrum';
   swimlaneType: SwimlaneType;
+  swimlaneJql: string | null;
   showSwimlanes: boolean;
   filterProjectIds: string[];
   filterConfig: Record<string, unknown>;
   boardQuery: string | null;
+  subFilterQuery: string | null;
+  completedIssuesCutoff: string | null;
   cardLayout: 'default' | 'compact';
   cardColors: Array<{ id: string; label: string; jql: string; color: string }>;
+  cardColorMethod: CardColorMethod;
+  cardExtraFields: string[];
+  daysInColumnEnabled: boolean;
+  workingDaysConfig: WorkingDaysConfig;
+  timelineEnabled: boolean;
+  timelineIncludeChildren: boolean;
+  kanbanBacklogEnabled: boolean;
+  epicDisplayMode: EpicDisplayMode;
+  columnConstraintType: ColumnConstraintType;
   isStarred: boolean;
   sortOrder: number;
   lastViewedAt: string | null;
@@ -35,6 +58,9 @@ export interface BoardQuickFilter {
   name: string;
   filterType: string;
   filterValue: Record<string, unknown>;
+  /** JQL query string (also mirrored in filterValue.jql for legacy compat) */
+  jqlQuery: string | null;
+  description: string | null;
   isSystem: boolean;
   sortOrder: number;
   createdAt: string;

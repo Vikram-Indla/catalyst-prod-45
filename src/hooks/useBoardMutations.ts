@@ -2,7 +2,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
-import type { CreateBoardInput, BoardVisibility, SwimlaneType } from '@/types/board';
+import type { CreateBoardInput, BoardVisibility, SwimlaneType, CardColorMethod, EpicDisplayMode, ColumnConstraintType, WorkingDaysConfig } from '@/types/board';
 
 export function useCreateBoard() {
   const qc = useQueryClient();
@@ -45,11 +45,23 @@ export function useUpdateBoard() {
       visibility?: BoardVisibility;
       board_type?: 'kanban' | 'scrum';
       swimlane_type?: SwimlaneType;
+      swimlane_jql?: string | null;
       show_swimlanes?: boolean;
       board_query?: string | null;
+      sub_filter_query?: string | null;
+      completed_issues_cutoff?: string | null;
       filter_id?: string | null;
       card_layout?: 'default' | 'compact';
       card_colors?: Array<{ id: string; label: string; jql: string; color: string }>;
+      card_color_method?: CardColorMethod;
+      card_extra_fields?: string[];
+      days_in_column_enabled?: boolean;
+      working_days_config?: WorkingDaysConfig;
+      timeline_enabled?: boolean;
+      timeline_include_children?: boolean;
+      kanban_backlog_enabled?: boolean;
+      epic_display_mode?: EpicDisplayMode;
+      column_constraint_type?: ColumnConstraintType;
     }) => {
       const update: Record<string, any> = { updated_at: new Date().toISOString() };
       if (fields.name !== undefined) update.name = fields.name;
@@ -58,11 +70,22 @@ export function useUpdateBoard() {
       if (fields.visibility !== undefined) update.visibility = fields.visibility;
       if (fields.board_type !== undefined) update.board_type = fields.board_type;
       if (fields.swimlane_type !== undefined) update.swimlane_type = fields.swimlane_type;
+      if (fields.swimlane_jql !== undefined) update.swimlane_jql = fields.swimlane_jql;
       if (fields.show_swimlanes !== undefined) update.show_swimlanes = fields.show_swimlanes;
       if (fields.board_query !== undefined) update.board_query = fields.board_query;
+      if (fields.sub_filter_query !== undefined) update.sub_filter_query = fields.sub_filter_query;
+      if (fields.completed_issues_cutoff !== undefined) update.completed_issues_cutoff = fields.completed_issues_cutoff;
       if (fields.filter_id !== undefined) update.filter_id = fields.filter_id;
       if (fields.card_layout !== undefined) update.card_layout = fields.card_layout;
       if (fields.card_colors !== undefined) update.card_colors = fields.card_colors;
+      if (fields.card_extra_fields !== undefined) update.card_extra_fields = fields.card_extra_fields;
+      if (fields.days_in_column_enabled !== undefined) update.days_in_column_enabled = fields.days_in_column_enabled;
+      if (fields.working_days_config !== undefined) update.working_days_config = fields.working_days_config;
+      if (fields.timeline_enabled !== undefined) update.timeline_enabled = fields.timeline_enabled;
+      if (fields.timeline_include_children !== undefined) update.timeline_include_children = fields.timeline_include_children;
+      if (fields.kanban_backlog_enabled !== undefined) update.kanban_backlog_enabled = fields.kanban_backlog_enabled;
+      if (fields.epic_display_mode !== undefined) update.epic_display_mode = fields.epic_display_mode;
+      if (fields.column_constraint_type !== undefined) update.column_constraint_type = fields.column_constraint_type;
 
       const { error } = await typedQuery('boards')
         .update(update)
@@ -264,13 +287,15 @@ export function useUpdateCardRank() {
 export function useAddQuickFilter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ boardId, name, jql }: { boardId: string; name: string; jql: string }) => {
+    mutationFn: async ({ boardId, name, jql, description }: { boardId: string; name: string; jql: string; description?: string }) => {
       const { error } = await typedQuery('board_quick_filters' as any)
         .insert({
           board_id: boardId,
           name,
           filter_type: 'jql',
           filter_value: { jql },
+          jql_query: jql,
+          description: description ?? null,
           is_system: false,
           sort_order: Date.now(),
         });
