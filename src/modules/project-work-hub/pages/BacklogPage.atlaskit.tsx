@@ -334,7 +334,6 @@ export interface BacklogItem {
   product_owner_name?: string | null;
   stakeholders?: string[] | null;
   targeted_feature?: boolean | null;
-  arabic_title?: string | null;
 }
 
 /* ─── Status mapping (shared with Story Backlog) ────────────────────────── */
@@ -446,7 +445,6 @@ const ALLOWED_COLUMN_IDS = new Set([
   'product_owner',
   'stakeholders',
   'targeted_feature',
-  'arabic_title',
 ]);
 
 /**
@@ -457,7 +455,7 @@ const ALLOWED_COLUMN_IDS = new Set([
 const PRODUCT_ONLY_COLUMN_IDS = new Set([
   'request_type', 'category', 'theme', 'urgency', 'planned_quarter',
   'target_date', 'delivery_manager', 'product_owner', 'stakeholders',
-  'targeted_feature', 'arabic_title',
+  'targeted_feature',
 ]);
 
 // Permanently banned fields that must NEVER appear in column picker
@@ -1331,7 +1329,6 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         product_owner_name: (s as any).product_owner_name ?? null,
         stakeholders: (s as any).stakeholders ?? null,
         targeted_feature: (s as any).targeted_feature ?? null,
-        arabic_title: (s as any).arabic_title ?? null,
       });
     });
     return out;
@@ -2579,42 +2576,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         </div>
       ),
     },
-    {
-      id: 'arabic_title',
-      label: 'Arabic title',
-      width: 16,
-      sortable: false,
-      defaultVisible: false,
-      accessor: (r: BacklogItem) => r.arabic_title || '',
-      // Bespoke RTL inline-edit (matches BrArabicTitleSection pattern) since
-      // makeSummaryInlineEditCell doesn't expose `dir` / `placeholder` props.
-      cell: ({ row: r }: { row: BacklogItem }) => {
-        const value = r.arabic_title ?? '';
-        return (
-          <InlineEdit<string>
-            defaultValue={value}
-            label="Arabic title"
-            editView={({ errorMessage: _e, ...fp }: any) => (
-              <Textfield {...fp} autoFocus placeholder="اسم طلب الأعمال" />
-            )}
-            readView={() => (
-              <div dir="rtl" style={{
-                padding: '4px 8px', textAlign: 'right', cursor: 'pointer',
-                color: 'var(--ds-text, #172B4D)',
-              }}>
-                {value || <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>Click to add</span>}
-              </div>
-            )}
-            onConfirm={(next) => {
-              const trimmed = (next ?? '').trim();
-              if (trimmed === value) return;
-              updateField.mutate({ id: r.id, source: r.source, patch: { arabic_title: trimmed || null } });
-            }}
-            keepEditViewOpenOnBlur={false}
-          />
-        );
-      },
-    },
+    // 2026-06-01: Arabic title column removed — arabic_title DB column dropped.
     {
       id: '__actions',
       label: '',

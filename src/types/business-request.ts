@@ -16,8 +16,8 @@ import { z } from 'zod';
 
 // ─── Option vocabularies (kept fields only) ─────────────────────────────────
 
-/** Priority — matches Jira's 5-level scale for parity with project hub. */
-export const URGENCY_OPTIONS = ['Lowest', 'Low', 'Medium', 'High', 'Highest'] as const;
+/** @deprecated Use CATALYST_PRIORITIES from '@/lib/catalyst-priority' instead. */
+export { CATALYST_PRIORITIES as URGENCY_OPTIONS } from '@/lib/catalyst-priority';
 
 /** Category — 4 buckets used in Create + product backlog inline-edit. */
 export const CATEGORY_OPTIONS: { value: string; label: string }[] = [

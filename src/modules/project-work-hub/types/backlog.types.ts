@@ -111,7 +111,6 @@ export interface BacklogStory {
   product_owner_name?: string | null;
   stakeholders?: string[] | null;
   targeted_feature?: boolean | null;
-  arabic_title?: string | null;
   feature?: {
     id: string;
     display_id: string | null;

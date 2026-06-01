@@ -64,7 +64,7 @@ const BIZ_PATCH_MAP: Record<string, string> = {
   product_owner_id: 'po_user_id',                  // Product Owner → PO uuid
   stakeholders: 'stakeholders',
   targeted_feature: 'targeted_feature',
-  arabic_title: 'arabic_title',
+  // arabic_title dropped 2026-06-01 — single-language English titles only.
 };
 
 // ─── Public types ─────────────────────────────────────────────────────────────
@@ -217,7 +217,6 @@ function bizRequestToBacklogStory(r: BusinessRequest): BacklogStory {
     product_owner_name: raw.product_owner?.full_name ?? null,
     stakeholders: Array.isArray(raw.stakeholders) ? raw.stakeholders : null,
     targeted_feature: typeof raw.targeted_feature === 'boolean' ? raw.targeted_feature : null,
-    arabic_title: raw.arabic_title ?? null,
   };
 }
 

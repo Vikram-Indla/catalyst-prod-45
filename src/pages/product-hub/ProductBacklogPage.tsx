@@ -124,7 +124,6 @@ export default function ProductBacklogPage() {
       'product_owner',
       'stakeholders',
       'targeted_feature',
-      'arabic_title',
       'created',
       'updated',
     ] as const,

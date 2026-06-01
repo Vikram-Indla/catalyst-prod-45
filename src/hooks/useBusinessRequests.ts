@@ -236,7 +236,6 @@ export function useCreateBusinessRequest() {
           request_key: requestKey,
           planned_quarter: data.planned_quarter || null,
           end_date: (data as any).end_date || null,
-          arabic_title: (data as any).arabic_title || null,
           request_type: (data as any).request_type || null,
           category: (data as any).category || null,
           theme: (data as any).theme || null,

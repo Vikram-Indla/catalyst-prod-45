@@ -2337,6 +2337,8 @@ export type Database = {
         Row: {
           board_id: string
           color: string | null
+          constraint_max: number | null
+          constraint_min: number | null
           created_at: string
           id: string
           is_backlog: boolean
@@ -2350,6 +2352,8 @@ export type Database = {
         Insert: {
           board_id: string
           color?: string | null
+          constraint_max?: number | null
+          constraint_min?: number | null
           created_at?: string
           id?: string
           is_backlog?: boolean
@@ -2363,6 +2367,8 @@ export type Database = {
         Update: {
           board_id?: string
           color?: string | null
+          constraint_max?: number | null
+          constraint_min?: number | null
           created_at?: string
           id?: string
           is_backlog?: boolean
@@ -2500,30 +2506,36 @@ export type Database = {
         Row: {
           board_id: string
           created_at: string
+          description: string | null
           filter_type: string
           filter_value: Json
           id: string
           is_system: boolean
+          jql_query: string | null
           name: string
           sort_order: number
         }
         Insert: {
           board_id: string
           created_at?: string
+          description?: string | null
           filter_type: string
           filter_value?: Json
           id?: string
           is_system?: boolean
+          jql_query?: string | null
           name: string
           sort_order?: number
         }
         Update: {
           board_id?: string
           created_at?: string
+          description?: string | null
           filter_type?: string
           filter_value?: Json
           id?: string
           is_system?: boolean
+          jql_query?: string | null
           name?: string
           sort_order?: number
         }
@@ -2600,12 +2612,17 @@ export type Database = {
           board_query: string | null
           board_type: string
           card_colors: Json
+          card_extra_fields: Json
           card_layout: string
           color: string | null
+          column_constraint_type: string
+          completed_issues_cutoff: string | null
           created_at: string
           created_by: string
+          days_in_column_enabled: boolean
           deleted_at: string | null
           description: string | null
+          epic_display_mode: string
           filter_config: Json
           filter_id: string | null
           filter_project_ids: string[]
@@ -2616,27 +2633,38 @@ export type Database = {
           jira_board_id: string | null
           jira_project_key: string | null
           jira_sync_enabled: boolean | null
+          kanban_backlog_enabled: boolean
           last_jira_sync: string | null
           last_viewed_at: string | null
           name: string
           project_id: string | null
           show_swimlanes: boolean
           sort_order: number
+          sub_filter_query: string | null
+          swimlane_jql: string | null
           swimlane_type: string
+          timeline_enabled: boolean
+          timeline_include_children: boolean
           updated_at: string
           updated_by: string | null
           visibility: string
+          working_days_config: Json
         }
         Insert: {
           board_query?: string | null
           board_type?: string
           card_colors?: Json
+          card_extra_fields?: Json
           card_layout?: string
           color?: string | null
+          column_constraint_type?: string
+          completed_issues_cutoff?: string | null
           created_at?: string
           created_by: string
+          days_in_column_enabled?: boolean
           deleted_at?: string | null
           description?: string | null
+          epic_display_mode?: string
           filter_config?: Json
           filter_id?: string | null
           filter_project_ids?: string[]
@@ -2647,27 +2675,38 @@ export type Database = {
           jira_board_id?: string | null
           jira_project_key?: string | null
           jira_sync_enabled?: boolean | null
+          kanban_backlog_enabled?: boolean
           last_jira_sync?: string | null
           last_viewed_at?: string | null
           name: string
           project_id?: string | null
           show_swimlanes?: boolean
           sort_order?: number
+          sub_filter_query?: string | null
+          swimlane_jql?: string | null
           swimlane_type?: string
+          timeline_enabled?: boolean
+          timeline_include_children?: boolean
           updated_at?: string
           updated_by?: string | null
           visibility?: string
+          working_days_config?: Json
         }
         Update: {
           board_query?: string | null
           board_type?: string
           card_colors?: Json
+          card_extra_fields?: Json
           card_layout?: string
           color?: string | null
+          column_constraint_type?: string
+          completed_issues_cutoff?: string | null
           created_at?: string
           created_by?: string
+          days_in_column_enabled?: boolean
           deleted_at?: string | null
           description?: string | null
+          epic_display_mode?: string
           filter_config?: Json
           filter_id?: string | null
           filter_project_ids?: string[]
@@ -2678,16 +2717,22 @@ export type Database = {
           jira_board_id?: string | null
           jira_project_key?: string | null
           jira_sync_enabled?: boolean | null
+          kanban_backlog_enabled?: boolean
           last_jira_sync?: string | null
           last_viewed_at?: string | null
           name?: string
           project_id?: string | null
           show_swimlanes?: boolean
           sort_order?: number
+          sub_filter_query?: string | null
+          swimlane_jql?: string | null
           swimlane_type?: string
+          timeline_enabled?: boolean
+          timeline_include_children?: boolean
           updated_at?: string
           updated_by?: string | null
           visibility?: string
+          working_days_config?: Json
         }
         Relationships: [
           {
@@ -3237,7 +3282,6 @@ export type Database = {
       }
       business_requests: {
         Row: {
-          arabic_title: string | null
           category: string | null
           created_at: string
           created_by: string | null
@@ -3261,7 +3305,6 @@ export type Database = {
           urgency: string | null
         }
         Insert: {
-          arabic_title?: string | null
           category?: string | null
           created_at?: string
           created_by?: string | null
@@ -3285,7 +3328,6 @@ export type Database = {
           urgency?: string | null
         }
         Update: {
-          arabic_title?: string | null
           category?: string | null
           created_at?: string
           created_by?: string | null

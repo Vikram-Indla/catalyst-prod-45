@@ -76,8 +76,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { flag } from '@/components/shared/JiraTable/flags';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
-import { TitleTranslateWrapper } from '@/components/shared/title-translate/TitleTranslateWrapper';
-import { containsArabic } from '@/lib/detectArabic';
+// 2026-06-01: TitleTranslateWrapper + containsArabic removed — Arabic title field deprecated.
 import { useActiveDemandProcessSteps, stepToLozengeAppearance } from '@/hooks/useDemandProcessSteps';
 import {
   THEME_OPTIONS,
@@ -252,7 +251,6 @@ export interface CreateBusinessRequestModalProps {
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface FormState {
-  arabic_title: string;
   title: string;
   descriptionAdf: object | null;
   description: string;
@@ -271,7 +269,7 @@ interface FormState {
 }
 
 const INITIAL: FormState = {
-  arabic_title: '', title: '', descriptionAdf: null, description: '',
+  title: '', descriptionAdf: null, description: '',
   process_step: 'new_request', request_type: '', urgency: '', category: '',
   theme: '', project_manager_user_id: '', po_user_id: '', stakeholders: [],
   planned_quarter: '', end_date: '', targeted_feature: false, attachments: [],
@@ -640,12 +638,6 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
   const [formError, setFormError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  // 2026-06-01: single bilingual title field mirroring the view (image 2).
-  // bilingualValue is what's currently in the input — its language is auto-
-  // detected to decide which slot (`title` English / `arabic_title` Arabic)
-  // to populate. TitleTranslateWrapper handles the "Translate to X" link.
-  const [bilingualValue, setBilingualValue] = useState('');
-
   // Seed initial status from /admin/workflows (Business Request scheme)
   const { data: brSteps = [] } = useActiveDemandProcessSteps();
   useEffect(() => {
@@ -668,52 +660,13 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
   const isTouched = (field: string) => touchedFields.has(field) || submitAttempted;
 
   // ── Validation ─────────────────────────────────────────────────────────────
-  // 2026-06-01: title (English) remains the canonical name. arabic_title is
-  // optional — the view's BrArabicTitleSection handles a null Arabic title
-  // with a "Click to add Arabic title" placeholder. Users who type Arabic
-  // first must click "Translate to English" before submit, which populates
-  // form.title via handleBilingualTranslated below.
+  // 2026-06-01: arabic_title deprecated. Single English title required.
   const validate = () => {
     if (!form.title.trim()) return false;
     if (!form.request_type) return false;
     if (!form.urgency) return false;
     return true;
   };
-
-  // ── Bilingual title handlers (TitleTranslateWrapper pattern) ──────────────
-  // Mirrors image 2: single field, auto-detect language, "Translate to {other}"
-  // blue link below. On every keystroke we route the value to title (English)
-  // or arabic_title (Arabic) based on script detection. On translate, both
-  // slots are populated atomically.
-  const handleBilingualChange = useCallback((val: string) => {
-    setBilingualValue(val);
-    if (containsArabic(val)) {
-      setForm(p => ({ ...p, arabic_title: val }));
-    } else {
-      setForm(p => ({ ...p, title: val }));
-    }
-  }, []);
-
-  const handleBilingualTranslated = useCallback(({ original, translated, direction }: {
-    original: string;
-    translated: string;
-    direction: 'en_to_ar' | 'ar_to_en';
-  }) => {
-    if (direction === 'en_to_ar') {
-      setForm(p => ({ ...p, title: original, arabic_title: translated }));
-    } else {
-      setForm(p => ({ ...p, arabic_title: original, title: translated }));
-    }
-  }, []);
-
-  // Stub kept to satisfy any stale ref; will be tree-shaken if unused.
-  const applyTranslation = useCallback(() => {
-    /* @deprecated 2026-06-01 — replaced by TitleTranslateWrapper inline apply. */
-    if (false) {
-      set('arabic_title', '');
-      set('title', '');
-    }
-  }, [set]);
 
   // ── Submit ──────────────────────────────────────────────────────────────────
   const handleCreate = useCallback(async () => {
@@ -723,7 +676,6 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
     try {
       const payload: Record<string, unknown> = {
         title: form.title.trim(),
-        arabic_title: form.arabic_title.trim() || null,
         description: form.description || null,
         process_step: form.process_step,
         request_type: form.request_type || null,
@@ -750,7 +702,6 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
       const key = (created as any)?.request_key || 'BR';
       flag.success(`${key} created`, `"${form.title.slice(0, 60)}"`);
       setForm(INITIAL);
-      setBilingualValue('');
       setSubmitAttempted(false);
       setTitleBlurred(false);
       setTouchedFields(new Set());
@@ -763,7 +714,6 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
 
   const handleClose = useCallback(() => {
     setForm(INITIAL);
-    setBilingualValue('');
     setSubmitAttempted(false);
     setTitleBlurred(false);
     setTouchedFields(new Set());
@@ -811,46 +761,28 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
 
             <Box xcss={fieldGroupStyles}>
 
-              {/* ── 2026-06-01: Single bilingual title field (mirrors view) ─
-                  TitleTranslateWrapper auto-detects script and shows a
-                  "Translate to {other}" blue text link. Both `title` and
-                  `arabic_title` slots are populated atomically — on type via
-                  containsArabic routing, on translate via onTranslated. */}
+              {/* ── 2026-06-01: Single English title field — Arabic title
+                  deprecated. The bilingual TitleTranslateWrapper pattern
+                  collapsed when arabic_title was dropped from the DB. */}
               <Field name="title" label="Business request name" isRequired>
                 {({ fieldProps }) => (
                   <>
-                    <TitleTranslateWrapper
-                      value={bilingualValue}
-                      onValueChange={handleBilingualChange}
-                      onTranslated={handleBilingualTranslated}
-                      issueKey=""
-                      field="title"
-                    >
-                      {({ dir }) => (
-                        <Textfield
-                          {...(fieldProps as any)}
-                          value={bilingualValue}
-                          onChange={(e: any) => handleBilingualChange(e.target.value)}
-                          onBlur={() => setTitleBlurred(true)}
-                          placeholder={dir === 'rtl' ? 'اسم طلب الأعمال' : 'English name of the business request'}
-                          maxLength={TITLE_MAX}
-                          isInvalid={!!titleError}
-                          testId="br-bilingual-title"
-                          aria-label="Business Request name"
-                        />
-                      )}
-                    </TitleTranslateWrapper>
-                    <style>{`
-                      [data-testid="br-bilingual-title"] { font-size: 15px; }
-                      .ttw-root[data-dir="rtl"] [data-testid="br-bilingual-title"] {
-                        direction: rtl;
-                        text-align: right;
-                      }
-                    `}</style>
+                    <Textfield
+                      {...(fieldProps as any)}
+                      value={form.title}
+                      onChange={(e: any) => set('title', e.target.value)}
+                      onBlur={() => setTitleBlurred(true)}
+                      placeholder="English name of the business request"
+                      maxLength={TITLE_MAX}
+                      isInvalid={!!titleError}
+                      testId="br-title"
+                      aria-label="Business Request name"
+                    />
+                    <style>{`[data-testid="br-title"] { font-size: 15px; }`}</style>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
                       {titleError ? <ErrorMessage>{titleError}</ErrorMessage> : <span />}
                       <span style={{ fontSize: 11, color: token('color.text.disabled', '#8590A2'), fontFamily: 'var(--cp-font-body)', marginLeft: 'auto' }}>
-                        {bilingualValue.length} / {TITLE_MAX}
+                        {form.title.length} / {TITLE_MAX}
                       </span>
                     </div>
                   </>
