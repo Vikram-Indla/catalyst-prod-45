@@ -460,6 +460,7 @@ All Catalyst team members have access to **184 shared personas** (committed to `
 
 **Available skills:**
 - `/catalyst-agent <task>` — probe-first router for engineering tasks (see `./.claude/skills/catalyst-agent/SKILL.md`)
+- `/clone {source-url} {target-url}` — 10-phase end-to-end clone protocol. Works **both ways** — Catalyst↔Catalyst (project→product) AND Jira→Catalyst (external Jira link → internal surface). Probe-before-code with ability matrix, 5-axis variation map, canonical-component gate, field-binding contract, interaction probe plan, ADS pre-validation, L1-L10 + G1-G10 guardrails, surgical patch, live verification, and mandatory lesson auto-log to CLAUDE.md. See `./.claude/skills/catalyst-clone/SKILL.md`. (2026-06-01)
 - `/preflight` — 8-phase strategic planner with multi-agent council
 - `/jira-compare` — CRUD parity audits with acceptance gates
 - `/design-intelligence` — 1000-IQ design intelligence layer
