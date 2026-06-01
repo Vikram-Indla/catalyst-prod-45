@@ -42,7 +42,21 @@
       "uncommitted_files": 0,
       "handoff_to": "khan.jahanara@gmail.com",
       "description": "Home/R360 enterprise UX pass: ADS token sweep, remove left padding, fix washed-out ring colors, rename Intelligence→Ask Caty, remove ghost Updated-ago text, add enterprise loading state (NO animations). Prior session attempted but commits never landed on disk — needs full restart. Critical lesson logged: NEVER spin/rotate container elements, NEVER use rainbow borders on enterprise UI. Add P0 ENTERPRISE UI GUARDRAIL to CLAUDE.md."
+    },
+    "04": {
+      "name": "Projects-boards-manager-01",
+      "project": "Projects",
+      "menu": "boards",
+      "component": "manager",
+      "status": "planning_complete",
+      "progress": 0,
+      "phase": "ready_for_execution",
+      "created": "2026-06-01T00:00:00Z",
+      "last_saved": "2026-06-01T00:00:00Z",
+      "local_commits": 0,
+      "uncommitted_files": 0,
+      "description": "Project Board Manager (project-exclusive). Mirror Jira /jira/boards. Listing table (Name/Lead/Location) via JiraTable+useBoards. BIG DIVERGENCE: non-JQL filter picker from ph_saved_filters wired to boards.filter_id. Map statuses reuse MapStatusesPage. Kebab Edit/Copy/Move/Delete (Move=same-type project only, never product, guard via location.projectTypeKey). Star->user_starred_items bridge for 4U/Home. Live Jira board 29 config + filter 10070 captured. New RPCs needed: move_board, copy_board. 6 phases A-F. Token verified working then exposed in chat (rotate)."
     }
   },
-  "last_updated": "2026-05-31T18:00:00Z"
+  "last_updated": "2026-06-01T00:00:00Z"
 }

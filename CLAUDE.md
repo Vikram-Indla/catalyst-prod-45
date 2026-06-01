@@ -4,47 +4,17 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
-## 2026-06-01 — Catalyst Clone (inaugural): /product-hub/INV/backlog from /project-hub/BAU/backlog
+## 📵 SCREENSHOT CHECKS BANNED FOR FUNCTIONALITY BUILDING (P0, Non-Negotiable)
 
-**Mode:** Catalyst↔Catalyst
-**Surfaces:** source `/project-hub/BAU/backlog` (ph_issues) → target `/product-hub/INV/backlog` (business_requests via adapter)
-**Scope axes:** data-source · vocabulary · field-shape
-**Abilities cloned:** 11 inline-edit cells (request_type, category, theme, urgency, planned_quarter, target_date, delivery_manager, product_owner, stakeholders, targeted_feature, arabic_title)
-**Variations:**
-- Identical: 1 (Product Owner picker — same factory, new field)
-- Vocab-different: 2 (urgency vs priority, stakeholders vs labels)
-- Schema-different: 6 (target_date↔end_date, delivery_manager↔project_manager_user_id, product_owner↔po_user_id, theme↔theme, etc.)
-- Type-conditional: 0
-- Excluded: 8 (Comments, Parent, Fix versions, Labels, Assignee, Due date, Priority-project, Reporter)
-**Gates:** G1-G10 ✓ (canonical factories used everywhere) · L1-L10 ✓ (no parallel components; explicit field map; no `as any`; no `git add -A`) · ADS ✓ (0 violations on planned files)
+**When building or verifying any FUNCTIONAL behavior, use MCP / DOM / CSS / Atlassian REST / Supabase probes — NEVER screenshots.**
 
-### What landed
-- **Adapter contract extended** — `BIZ_PATCH_MAP` in `backlogDataSource.ts` adds 11 BR field id → DB column mappings (target_date → end_date, delivery_manager_id → project_manager_user_id, product_owner_id → po_user_id, plus 8 1:1 mappings). `onUpdate` routes every cell edit through this map.
-- **11 column defs replaced** — each plain `<span>` swapped for the canonical edit factory:
-  - request_type / category / theme → `InlineEdit + @atlaskit/select` single-select with `menuPortalTarget=document.body`
-  - urgency → `makePriorityEditCell` with URGENCY_OPTIONS (DB stores capitalized, picker lower-cases for icon match)
-  - planned_quarter / stakeholders → `makeLabelsEditCell` (canonical multi-select)
-  - target_date → `makeDateEditCell` (same factory as project Due date)
-  - delivery_manager / product_owner → `makeAssigneeEditCell` (same user-picker as project Assignee)
-  - targeted_feature → bespoke `@atlaskit/checkbox` cell
-  - arabic_title → bespoke `InlineEdit + Textfield` with `dir="rtl"` (matches BrArabicTitleSection)
-- **CATEGORY_OPTIONS + PLANNED_QUARTER_OPTIONS** added to `types/business-request.ts` as shared exports.
+- ❌ Do NOT use screenshots to verify wiring, data flow, CRUD, routing, state, or any functional logic.
+- ✅ Use: Atlassian REST (`/rest/agile/1.0/*`, `/rest/api/3/*`), Chrome MCP DOM/`getComputedStyle` probes, Supabase MCP (`execute_sql`, `list_tables`), code archaeology.
+- ✅ Screenshots permitted ONLY for **cosmetic text changes** or **color/visual-only changes**.
 
-### NEW LESSON — promoted to permanent guard
+**Why:** Functional defects (broken handlers, undefined fields, RLS 403s, wrong FK targets) are invisible to a screenshot — they require structural probing. A screenshot proves appearance, never behavior. (Vikram, 2026-06-01)
 
-**L11 — NEVER ship column cells as read-only `<span>` when the canonical surface has inline edits.**
-The Phase B commit (22fbbd0d8) added 11 BR columns as plain spans because the rushed approach didn't compare against the project canonical first. Project columns use `make*EditCell` factories — every clone target MUST too. Halt if you find yourself writing `cell: (r) => <span>{r.x}</span>` without first checking how the source surface renders the same column.
-
-**L12 — When cloning a table, the FIRST grep is for `make*EditCell` factories in the source file.**
-Reading column registries top-to-bottom and asking "what factory does each cell use?" is the parity contract. The factory IS the spec — same factory in target = inline editing works for free. Different factory or no factory = broken clone.
-
-**L13 — `makeSummaryInlineEditCell` does NOT expose `placeholder` / `dir` props.**
-For RTL or custom-placeholder text columns, write a bespoke `<InlineEdit><Textfield dir="rtl">...` cell (matches BrArabicTitleSection pattern) — do NOT invent factory props that don't exist. Add this to L1 anti-parallel-component rules: even read+write the canonical factory's signature before instantiating.
-
-**L14 — When the adapter exposes a label/options translator the canonical factory doesn't accept, EXTEND the factory with an optional prop — never fork.**
-2026-06-01: `BacklogDataSource.statusLabel` mapped `demand_approved` → "Demand approved" correctly, but `makeStatusEditCell` in `cells.tsx` had no `labelFor` prop and rendered raw slugs in the dropdown. Fix was additive — added `labelFor?: (s: string) => string` with identity fallthrough (project hub unaffected). Same pattern applies to `optionsBy{Field,Type}`, `iconByValue`, `colorByValue` etc. when a future clone needs them. Halt if you find yourself about to copy a factory just to swap one branch of its render logic.
-
-**Commit:** to be added below at push time.
+**Severity:** P0 — a "looks right" screenshot is not evidence a feature works.
 
 ---
 
@@ -504,7 +474,6 @@ All Catalyst team members have access to **184 shared personas** (committed to `
 
 **Available skills:**
 - `/catalyst-agent <task>` — probe-first router for engineering tasks (see `./.claude/skills/catalyst-agent/SKILL.md`)
-- `/clone {source-url} {target-url}` — 10-phase end-to-end clone protocol. Works **both ways** — Catalyst↔Catalyst (project→product) AND Jira→Catalyst (external Jira link → internal surface). Probe-before-code with ability matrix, 5-axis variation map, canonical-component gate, field-binding contract, interaction probe plan, ADS pre-validation, L1-L10 + G1-G10 guardrails, surgical patch, live verification, and mandatory lesson auto-log to CLAUDE.md. See `./.claude/skills/catalyst-clone/SKILL.md`. (2026-06-01)
 - `/preflight` — 8-phase strategic planner with multi-agent council
 - `/jira-compare` — CRUD parity audits with acceptance gates
 - `/design-intelligence` — 1000-IQ design intelligence layer
