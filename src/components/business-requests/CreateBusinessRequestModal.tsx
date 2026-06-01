@@ -76,6 +76,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { flag } from '@/components/shared/JiraTable/flags';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
+import { TitleTranslateWrapper } from '@/components/shared/title-translate/TitleTranslateWrapper';
+import { containsArabic } from '@/lib/detectArabic';
 import { useActiveDemandProcessSteps, stepToLozengeAppearance } from '@/hooks/useDemandProcessSteps';
 import {
   THEME_OPTIONS,
@@ -631,16 +633,18 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
   const createMutation = useCreateBusinessRequest();
   const { data: profiles = [] } = useProfiles();
   const { data: releaseOptions = [] } = useReleases();
-  const { translate, translating } = useTranslate();
-
   const [form, setForm] = useState<FormState>(INITIAL);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [titleBlurred, setTitleBlurred] = useState(false);
-  const [arabicBlurred, setArabicBlurred] = useState(false);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [formError, setFormError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [translationPreview, setTranslationPreview] = useState<{ text: string; direction: 'en_to_ar' | 'ar_to_en' } | null>(null);
+
+  // 2026-06-01: single bilingual title field mirroring the view (image 2).
+  // bilingualValue is what's currently in the input — its language is auto-
+  // detected to decide which slot (`title` English / `arabic_title` Arabic)
+  // to populate. TitleTranslateWrapper handles the "Translate to X" link.
+  const [bilingualValue, setBilingualValue] = useState('');
 
   // Seed initial status from /admin/workflows (Business Request scheme)
   const { data: brSteps = [] } = useActiveDemandProcessSteps();
@@ -664,38 +668,52 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
   const isTouched = (field: string) => touchedFields.has(field) || submitAttempted;
 
   // ── Validation ─────────────────────────────────────────────────────────────
+  // 2026-06-01: title (English) remains the canonical name. arabic_title is
+  // optional — the view's BrArabicTitleSection handles a null Arabic title
+  // with a "Click to add Arabic title" placeholder. Users who type Arabic
+  // first must click "Translate to English" before submit, which populates
+  // form.title via handleBilingualTranslated below.
   const validate = () => {
-    if (!form.arabic_title.trim()) return false;
     if (!form.title.trim()) return false;
     if (!form.request_type) return false;
     if (!form.urgency) return false;
     return true;
   };
 
-  // ── AI Translation handlers ────────────────────────────────────────────────
-  const handleTranslateToArabic = useCallback(async () => {
-    if (!form.title.trim()) return;
-    const result = await translate(form.title, 'en_to_ar');
-    if (result) setTranslationPreview({ text: result, direction: 'en_to_ar' });
-    else flag.warning('Translation unavailable', 'Please enter the Arabic name manually');
-  }, [form.title, translate]);
-
-  const handleTranslateToEnglish = useCallback(async () => {
-    if (!form.arabic_title.trim()) return;
-    const result = await translate(form.arabic_title, 'ar_to_en');
-    if (result) setTranslationPreview({ text: result, direction: 'ar_to_en' });
-    else flag.warning('Translation unavailable', 'Please enter the Arabic name manually');
-  }, [form.arabic_title, translate]);
-
-  const applyTranslation = useCallback(() => {
-    if (!translationPreview) return;
-    if (translationPreview.direction === 'en_to_ar') {
-      set('arabic_title', translationPreview.text);
+  // ── Bilingual title handlers (TitleTranslateWrapper pattern) ──────────────
+  // Mirrors image 2: single field, auto-detect language, "Translate to {other}"
+  // blue link below. On every keystroke we route the value to title (English)
+  // or arabic_title (Arabic) based on script detection. On translate, both
+  // slots are populated atomically.
+  const handleBilingualChange = useCallback((val: string) => {
+    setBilingualValue(val);
+    if (containsArabic(val)) {
+      setForm(p => ({ ...p, arabic_title: val }));
     } else {
-      set('title', translationPreview.text);
+      setForm(p => ({ ...p, title: val }));
     }
-    setTranslationPreview(null);
-  }, [translationPreview, set]);
+  }, []);
+
+  const handleBilingualTranslated = useCallback(({ original, translated, direction }: {
+    original: string;
+    translated: string;
+    direction: 'en_to_ar' | 'ar_to_en';
+  }) => {
+    if (direction === 'en_to_ar') {
+      setForm(p => ({ ...p, title: original, arabic_title: translated }));
+    } else {
+      setForm(p => ({ ...p, arabic_title: original, title: translated }));
+    }
+  }, []);
+
+  // Stub kept to satisfy any stale ref; will be tree-shaken if unused.
+  const applyTranslation = useCallback(() => {
+    /* @deprecated 2026-06-01 — replaced by TitleTranslateWrapper inline apply. */
+    if (false) {
+      set('arabic_title', '');
+      set('title', '');
+    }
+  }, [set]);
 
   // ── Submit ──────────────────────────────────────────────────────────────────
   const handleCreate = useCallback(async () => {
@@ -732,9 +750,9 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
       const key = (created as any)?.request_key || 'BR';
       flag.success(`${key} created`, `"${form.title.slice(0, 60)}"`);
       setForm(INITIAL);
+      setBilingualValue('');
       setSubmitAttempted(false);
       setTitleBlurred(false);
-      setArabicBlurred(false);
       setTouchedFields(new Set());
       onClose();
     } catch (err: any) {
@@ -745,16 +763,17 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
 
   const handleClose = useCallback(() => {
     setForm(INITIAL);
+    setBilingualValue('');
     setSubmitAttempted(false);
     setTitleBlurred(false);
-    setArabicBlurred(false);
     setTouchedFields(new Set());
     setFormError(null);
     onClose();
   }, [onClose]);
 
-  const arabicError = (submitAttempted || arabicBlurred) && !form.arabic_title.trim() ? 'Arabic name is required' : undefined;
-  const titleError = (submitAttempted || titleBlurred) && !form.title.trim() ? 'English name is required' : undefined;
+  // 2026-06-01: titleError checks form.title (canonical English). If user
+  // typed only Arabic without translating, form.title is empty → blocks submit.
+  const titleError = (submitAttempted || titleBlurred) && !form.title.trim() ? 'Business request name is required (English)' : undefined;
   const isSubmitting = createMutation.isPending || uploading;
 
   // ── Render ──────────────────────────────────────────────────────────────────
@@ -792,71 +811,48 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
 
             <Box xcss={fieldGroupStyles}>
 
-              {/* ── English title + translate-to-Arabic button ───────────── */}
-              {/* @atlaskit/textfield — Textfield */}
-              <Field name="title" label="Business Request name (English)" isRequired>
+              {/* ── 2026-06-01: Single bilingual title field (mirrors view) ─
+                  TitleTranslateWrapper auto-detects script and shows a
+                  "Translate to {other}" blue text link. Both `title` and
+                  `arabic_title` slots are populated atomically — on type via
+                  containsArabic routing, on translate via onTranslated. */}
+              <Field name="title" label="Business request name" isRequired>
                 {({ fieldProps }) => (
                   <>
-                    <Box xcss={translateRowStyles}>
-                      <div style={{ flex: 1 }}>
+                    <TitleTranslateWrapper
+                      value={bilingualValue}
+                      onValueChange={handleBilingualChange}
+                      onTranslated={handleBilingualTranslated}
+                      issueKey=""
+                      field="title"
+                    >
+                      {({ dir }) => (
                         <Textfield
                           {...(fieldProps as any)}
-                          value={form.title}
-                          onChange={(e: any) => set('title', e.target.value)}
+                          value={bilingualValue}
+                          onChange={(e: any) => handleBilingualChange(e.target.value)}
                           onBlur={() => setTitleBlurred(true)}
-                          placeholder="English name of the business request"
+                          placeholder={dir === 'rtl' ? 'اسم طلب الأعمال' : 'English name of the business request'}
                           maxLength={TITLE_MAX}
                           isInvalid={!!titleError}
+                          testId="br-bilingual-title"
+                          aria-label="Business Request name"
                         />
-                      </div>
-                      <TranslateButton
-                        loading={translating === 'en_to_ar'}
-                        label="Translate English → Arabic"
-                        onClick={handleTranslateToArabic}
-                      />
-                    </Box>
+                      )}
+                    </TitleTranslateWrapper>
+                    <style>{`
+                      [data-testid="br-bilingual-title"] { font-size: 15px; }
+                      .ttw-root[data-dir="rtl"] [data-testid="br-bilingual-title"] {
+                        direction: rtl;
+                        text-align: right;
+                      }
+                    `}</style>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
                       {titleError ? <ErrorMessage>{titleError}</ErrorMessage> : <span />}
                       <span style={{ fontSize: 11, color: token('color.text.disabled', '#8590A2'), fontFamily: 'var(--cp-font-body)', marginLeft: 'auto' }}>
-                        {form.title.length} / {TITLE_MAX}
+                        {bilingualValue.length} / {TITLE_MAX}
                       </span>
                     </div>
-                    {!titleError && <HelperMessage>Click ✦ to auto-translate to Arabic.</HelperMessage>}
-                  </>
-                )}
-              </Field>
-
-              {/* ── Arabic title + translate-to-English button ────────────── */}
-              {/* @atlaskit/textfield — Textfield with dir="rtl" HTML attribute */}
-              <Field name="arabic_title" label="Business Request name (Arabic)" isRequired>
-                {({ fieldProps }) => (
-                  <>
-                    <Box xcss={translateRowStyles}>
-                      <div style={{ flex: 1 }}>
-                        <Textfield
-                          {...(fieldProps as any)}
-                          value={form.arabic_title}
-                          onChange={(e: any) => set('arabic_title', e.target.value)}
-                          onBlur={() => setArabicBlurred(true)}
-                          placeholder="اسم طلب الأعمال"
-                          isInvalid={!!arabicError}
-                          // dir attribute on the inner <input> — Textfield forwards arbitrary HTML attrs
-                          aria-label="Business Request name in Arabic"
-                          testId="br-arabic-title"
-                        />
-                        {/* Apply RTL via a style tag scoped to this input's testId */}
-                        <style>{`[data-testid="br-arabic-title"] { direction: rtl; text-align: right; font-size: 15px; }`}</style>
-                      </div>
-                      <TranslateButton
-                        loading={translating === 'ar_to_en'}
-                        label="Translate Arabic → English"
-                        onClick={handleTranslateToEnglish}
-                      />
-                    </Box>
-                    {arabicError
-                      ? <ErrorMessage>{arabicError}</ErrorMessage>
-                      : <HelperMessage>Official Arabic name as it appears in the ministry system. Click ✦ to auto-translate to English.</HelperMessage>
-                    }
                   </>
                 )}
               </Field>
@@ -1077,46 +1073,9 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
             </Box>
           </ModalBody>
 
-          {/* ── Translation Preview Dialog ──────────────────────────────────── */}
-          {translationPreview && (
-            <ModalTransition>
-              <ModalDialog onClose={() => setTranslationPreview(null)} width="large" shouldScrollInViewport>
-                <ModalHeader>
-                  <ModalTitle>Confirm translation</ModalTitle>
-                </ModalHeader>
-                <ModalBody>
-                  <Box xcss={fieldGroupStyles}>
-                    <p style={{ fontSize: 13, color: token('color.text', '#292A2E'), fontFamily: 'var(--cp-font-body)', marginBottom: 8 }}>
-                      {translationPreview.direction === 'en_to_ar'
-                        ? 'English text will be translated to Arabic:'
-                        : 'Arabic text will be translated to English:'}
-                    </p>
-                    <div style={{
-                      padding: 12,
-                      background: token('color.background.neutral', '#F4F5F7'),
-                      borderRadius: 3,
-                      fontFamily: 'var(--cp-font-body)',
-                      fontSize: 14,
-                      color: token('color.text', '#292A2E'),
-                      direction: translationPreview.direction === 'en_to_ar' ? 'rtl' : 'ltr',
-                      textAlign: translationPreview.direction === 'en_to_ar' ? 'right' : 'left',
-                      lineHeight: '20px',
-                      wordBreak: 'break-word'
-                    }}>
-                      {translationPreview.text}
-                    </div>
-                  </Box>
-                </ModalBody>
-                <ModalFooter>
-                  <Box xcss={footerLeftStyles} />
-                  <Box xcss={footerRightStyles}>
-                    <Button appearance="subtle" onClick={() => setTranslationPreview(null)}>Keep original</Button>
-                    <Button appearance="primary" onClick={applyTranslation}>Use translation</Button>
-                  </Box>
-                </ModalFooter>
-              </ModalDialog>
-            </ModalTransition>
-          )}
+          {/* Translation preview modal removed 2026-06-01 — TitleTranslateWrapper
+              applies translations inline (with a "↩ Show original" revert
+              affordance), matching the view surface (image 2). */}
 
           {/* ── Footer ─────────────────────────────────────────────────────── */}
           <ModalFooter>
