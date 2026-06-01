@@ -64,6 +64,7 @@ import MoreIcon from '@atlaskit/icon/glyph/more';
 
 import './create-story.css';
 
+import { TitleTranslateWrapper } from '@/components/shared/title-translate/TitleTranslateWrapper';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 // Canonical Atlaskit flag wrapper (pure @atlaskit/flag + Atlaskit icons,
@@ -237,6 +238,26 @@ const footerRightStyles = xcss({
   display: 'flex',
   alignItems: 'center',
   gap: 'space.100',
+});
+
+const statusHelperStyles = xcss({
+  marginBlockStart: 'space.025',
+});
+
+const assignToMeStyles = xcss({
+  marginTop: 'space.075',
+});
+
+const flexOneStyles = xcss({
+  flex: '1',
+});
+
+const errorBannerStyles = xcss({
+  padding: 'space.150',
+  borderRadius: 'border.radius',
+  backgroundColor: 'color.background.danger',
+  color: 'color.text.danger',
+  font: 'font.body.small',
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -743,10 +764,10 @@ export function CreateStoryModal({
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: 4,
-                            background: 'rgba(5,21,36,0.06)',
+                            background: token('color.background.neutral.subtle', 'rgba(5,21,36,0.06)'),
                             border: 'none',
                             borderRadius: 3,
-                            padding: '4px 10px',
+                            padding: '4px 8px',
                             fontSize: 14,
                             fontWeight: 500,
                             color: token('color.text', '#292A2E'),
@@ -772,7 +793,7 @@ export function CreateStoryModal({
                         ))}
                       </DropdownItemGroup>
                     </DropdownMenu>
-                    <Box xcss={xcss({ marginBlockStart: 'space.025' })}>
+                    <Box xcss={statusHelperStyles}>
                       <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
                         This is the initial status upon creation
                       </span>
@@ -781,20 +802,29 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── Summary — required ─────────────────────────────── */}
+              {/* ── Summary — required, with RTL auto-detect + CATY translate ── */}
               <Field name="summary" label="Summary" isRequired>
                 {({ fieldProps }) => (
                   <>
-                    <Textfield
-                      {...(fieldProps as any)}
-                      autoFocus
-                      isInvalid={!!summaryError}
+                    <TitleTranslateWrapper
                       value={form.summary}
-                      onChange={(e: any) =>
-                        updateField('summary', e.target.value)
-                      }
-                      maxLength={200}
-                    />
+                      onValueChange={(next) => updateField('summary', next)}
+                      field="summary"
+                    >
+                      {({ dir }) => (
+                        <Textfield
+                          {...(fieldProps as any)}
+                          autoFocus
+                          isInvalid={!!summaryError}
+                          value={form.summary}
+                          onChange={(e: any) =>
+                            updateField('summary', e.target.value)
+                          }
+                          maxLength={200}
+                          dir={dir}
+                        />
+                      )}
+                    </TitleTranslateWrapper>
                     {summaryError && (
                       <ErrorMessage>{summaryError}</ErrorMessage>
                     )}
@@ -947,7 +977,7 @@ export function CreateStoryModal({
                 {({ fieldProps }) => (
                   <>
                     <Inline alignBlock="center" spread="space-between">
-                      <Box xcss={xcss({ flex: '1' })}>
+                      <Box xcss={flexOneStyles}>
                         <Select<IconOption>
                           {...fieldProps}
                           inputId="cs-assignee"
@@ -983,7 +1013,7 @@ export function CreateStoryModal({
                         />
                       </Box>
                     </Inline>
-                    <Box xcss={xcss({ marginTop: 'space.075' })}>
+                    <Box xcss={assignToMeStyles}>
                       <Button
                         appearance="subtle"
                         spacing="compact"
@@ -1062,15 +1092,7 @@ export function CreateStoryModal({
 
 
               {formError && (
-                <Box
-                  xcss={xcss({
-                    padding: 'space.150',
-                    borderRadius: 'border.radius',
-                    backgroundColor: 'color.background.danger',
-                    color: 'color.text.danger',
-                    font: 'font.body.small',
-                  })}
-                >
+                <Box xcss={errorBannerStyles}>
                   {formError}
                 </Box>
               )}

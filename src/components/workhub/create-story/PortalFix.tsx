@@ -80,7 +80,7 @@ export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialog
             zIndex: 400,
             background: token('elevation.surface.overlay', '#FFF'),
             borderRadius: '8px 8px 0 0',
-            boxShadow: '0 -2px 8px rgba(9,30,66,0.20)',
+            boxShadow: token('elevation.shadow.overlay', '0 -2px 8px rgba(9,30,66,0.20)'),
             display: 'flex',
             alignItems: 'center',
             gap: 8,
@@ -95,14 +95,14 @@ export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialog
           tabIndex={0}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setMinimized(false); }}
         >
-          <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 500, color: token('color.text', '#292A2E'), flex: 1 }}>
+          <span style={{ fontSize: 14, fontWeight: 500, color: token('color.text', '#292A2E'), flex: 1 }}>
             Create Story
           </span>
           <button
             type="button"
             aria-label="Close"
             onClick={(e) => { e.stopPropagation(); onClose?.(); }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', '#8590A2'), padding: 2, display: 'flex' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', '#8590A2'), padding: 4, display: 'flex' }}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
           </button>
@@ -117,7 +117,7 @@ export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialog
             position: 'fixed',
             inset: 0,
             zIndex: 300,
-            background: 'rgba(9,30,66,0.54)',
+            background: token('color.blanket', 'rgba(9,30,66,0.54)'),
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -137,7 +137,7 @@ export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialog
               position: 'relative',
               background: token('elevation.surface.overlay', '#FFFFFF'),
               borderRadius: 8,
-              boxShadow: '0 8px 16px -4px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px -4px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
               width: fullscreen ? '90vw' : '100%',
               maxWidth: fullscreen ? '90vw' : maxW,
               height: fullscreen ? '90vh' : 'auto',
@@ -159,7 +159,7 @@ export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialog
 // ── ModalHeader ──────────────────────────────────────────────────────────────
 export function ModalHeader({ children }: { children: ReactNode }) {
   return (
-    <div style={{ padding: '20px 24px 0', flexShrink: 0 }}>
+    <div style={{ padding: '24px 24px 0', flexShrink: 0 }}>
       {children}
     </div>
   );
@@ -171,7 +171,6 @@ export function ModalTitle({ children }: { children: ReactNode }) {
     <h1
       id="create-story-modal-title"
       style={{
-        fontFamily: 'var(--cp-font-heading)',
         fontSize: 20,
         fontWeight: 600,
         color: token('color.text', '#292A2E'),
@@ -206,7 +205,7 @@ export function ModalFooter({ children }: { children: ReactNode }) {
   return (
     <div style={{
       padding: '16px 24px',
-      borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+      borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
       display: 'flex',
       alignItems: 'center',
       gap: 8,

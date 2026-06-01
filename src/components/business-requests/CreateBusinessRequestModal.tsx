@@ -59,6 +59,7 @@ import { Field, ErrorMessage, HelperMessage } from '@atlaskit/form';
 import Select, { CreatableSelect } from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
 import { Checkbox } from '@atlaskit/checkbox';
+import Avatar from '@atlaskit/avatar';
 import Button, { IconButton } from '@atlaskit/button/new';
 import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
@@ -76,15 +77,18 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { flag } from '@/components/shared/JiraTable/flags';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
-// 2026-06-01: TitleTranslateWrapper + containsArabic removed — Arabic title field deprecated.
+import { TitleTranslateWrapper } from '@/components/shared/title-translate/TitleTranslateWrapper';
 import { useActiveDemandProcessSteps, stepToLozengeAppearance } from '@/hooks/useDemandProcessSteps';
 import {
+  CATEGORY_OPTIONS,
   THEME_OPTIONS,
   STAKEHOLDER_OPTIONS,
   REQUEST_TYPE_OPTIONS,
 } from '@/types/business-request';
 // Canonical Catalyst icon — backed by useIconOverrides (admin overrides via /admin/icons).
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
+import { PriorityIcon as CanonicalPriorityIcon } from '@/components/icons/PriorityIcon';
+import { CATALYST_PRIORITIES } from '@/lib/catalyst-priority';
 
 // ── ADF editor — canonical Tiptap surface (RichTextEditor), headless
 // mode because the modal owns the Create / Cancel footer. ──────────
@@ -108,62 +112,15 @@ interface IconOption {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function MiniAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string | null }) {
-  const initial = name?.trim()?.charAt(0)?.toUpperCase() ?? '?';
-  if (avatarUrl) {
-    return (
-      <img
-        src={avatarUrl}
-        alt={name}
-        aria-hidden="true"
-        style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
-      />
-    );
-  }
   return (
-    <span
-      aria-hidden="true"
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 24,
-        height: 24,
-        borderRadius: '50%',
-        background: token('color.background.neutral'),
-        color: token('color.text.subtle'),
-        font: token('font.body.small'),
-        fontWeight: 600,
-        flexShrink: 0,
-      }}
-    >
-      {initial}
-    </span>
+    <Avatar
+      size="xsmall"
+      name={name}
+      src={avatarUrl ?? undefined}
+    />
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PriorityIcon — copied verbatim from CreateStoryModal
-// ─────────────────────────────────────────────────────────────────────────────
-
-function PriorityIcon({ name }: { name: string }) {
-  const stroke =
-    name === 'Highest' || name === 'High'
-      ? token('color.icon.danger', '#C9372C')
-      : name === 'Medium'
-        ? token('color.icon.warning', '#B38600')
-        : token('color.icon.information', '#1868DB');
-  const paths: Record<string, ReactNode> = {
-    High:   <path d="M3 10l5-5 5 5" />,
-    Medium: <><path d="M3 6h10" /><path d="M3 10h10" /></>,
-    Low:    <path d="M3 6l5 5 5-5" />,
-  };
-  return (
-    <svg width={14} height={14} viewBox="0 0 16 16" fill="none"
-      stroke={stroke} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {paths[name]}
-    </svg>
-  );
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // formatIconOption — copied verbatim from CreateStoryModal
@@ -187,19 +144,14 @@ const formatIconOption = (option: IconOption) => (
 
 const TITLE_MAX = 255;
 
-const CATEGORY_OPTIONS = [
-  { value: 'Industrial',          label: 'Industrial' },
-  { value: 'Ministry Website',    label: 'Ministry Website' },
-  { value: 'Internal Services',   label: 'Internal Services' },
-  { value: 'Innovation Platform', label: 'Innovation Platform' },
-];
+// CATEGORY_OPTIONS imported from @/types/business-request
 
-// Priority — maps to `urgency` column — Select<IconOption> same as CreateStoryModal
-const PRIORITY_OPTIONS: IconOption[] = [
-  { value: 'High',   label: 'High',   icon: <PriorityIcon name="High" /> },
-  { value: 'Normal', label: 'Medium', icon: <PriorityIcon name="Medium" /> },
-  { value: 'Low',    label: 'Low',    icon: <PriorityIcon name="Low" /> },
-];
+// Priority — canonical 5-level scale from catalyst-priority.ts
+const PRIORITY_OPTIONS: IconOption[] = CATALYST_PRIORITIES.map((p) => ({
+  value: p,
+  label: p,
+  icon: <CanonicalPriorityIcon level={p} size={14} />,
+}));
 
 // Status options for process_step are sourced from /admin/workflows
 // (catalyst_workflow_schemes for issue_type='Business Request').
@@ -394,37 +346,25 @@ function FullscreenToggleButton() {
 }
 
 function MoreActionsButton() {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, [open]);
   return (
-    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
-      <IconButton appearance="subtle" spacing="default" label="More actions"
-        icon={(p) => <MoreIcon {...p} label="" />}
-        onClick={() => setOpen(o => !o)} isSelected={open}
-      />
-      {open && (
-        <div role="menu" style={{
-          position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 10,
-          background: token('elevation.surface.overlay', '#FFF'),
-          border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-          borderRadius: 4, boxShadow: '0 4px 12px rgba(9,30,66,0.15)', minWidth: 160, padding: '4px 0',
-        }}>
-          <button role="menuitem" type="button" onClick={() => setOpen(false)}
-            style={{ display: 'block', width: '100%', padding: '8px 14px', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontSize: 14, color: token('color.text', '#292A2E'), textAlign: 'left' }}
-            onMouseEnter={e => (e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)'))}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            View keyboard shortcuts
-          </button>
-        </div>
+    <DropdownMenu
+      trigger={({ triggerRef, ...triggerProps }) => (
+        <IconButton
+          {...triggerProps}
+          ref={triggerRef}
+          appearance="subtle"
+          spacing="default"
+          label="More actions"
+          icon={(iconProps) => <MoreIcon {...iconProps} label="" />}
+        />
       )}
-    </div>
+      placement="bottom-end"
+    >
+      <DropdownItemGroup>
+        <DropdownItem>Give feedback</DropdownItem>
+        <DropdownItem>Help</DropdownItem>
+      </DropdownItemGroup>
+    </DropdownMenu>
   );
 }
 
@@ -463,7 +403,6 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
             alignItems: 'center',
             gap: 4,
             outline: 'none',
-            fontFamily: 'var(--cp-font-body)',
           }}
         >
           <Lozenge appearance={currentStep ? stepToLozengeAppearance(currentStep) : 'default'} isBold>
@@ -475,7 +414,7 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
     >
       <DropdownItemGroup title="Change status">
         {options.length === 0 && (
-          <div style={{ padding: '8px 12px', fontSize: 13, color: token('color.text.subtlest', '#8590A2') }}>
+          <div style={{ padding: '8px 12px', fontSize: 12, color: token('color.text.subtlest', '#8590A2') }}>
             {isLoading ? 'Loading…' : 'No statuses configured'}
           </div>
         )}
@@ -528,8 +467,8 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         style={{
-          border: `2px dashed ${dragOver ? token('color.border.brand', '#1868DB') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-          borderRadius: 4, padding: '20px 16px', textAlign: 'center', cursor: 'pointer',
+          border: `2px dashed ${dragOver ? token('color.border.brand', '#1868DB') : token('color.border', '#DFE1E6')}`,
+          borderRadius: 4, padding: '24px 16px', textAlign: 'center', cursor: 'pointer',
           background: dragOver ? token('color.background.selected', '#E9F2FF') : token('color.background.input', '#FAFBFC'),
           transition: 'border-color 120ms, background 120ms',
         }}
@@ -538,13 +477,13 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ margin: '0 auto 8px', display: 'block', color: token('color.text.subtlest', '#626F86') }}>
           <path d="M12 4v12m-4-4l4-4 4 4M4 20h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        <p style={{ fontSize: 13, fontWeight: 600, color: token('color.text', '#292A2E'), margin: '0 0 4px', fontFamily: 'var(--cp-font-body)' }}>Drop BRD files here or click to browse</p>
-        <p style={{ fontSize: 12, color: token('color.text.subtlest', '#626F86'), margin: 0, fontFamily: 'var(--cp-font-body)' }}>PDF, DOCX, XLSX — max 25 MB per file</p>
+        <p style={{ fontSize: 12, fontWeight: 600, color: token('color.text', '#292A2E'), margin: '0 0 4px' }}>Drop BRD files here or click to browse</p>
+        <p style={{ fontSize: 12, color: token('color.text.subtlest', '#626F86'), margin: 0 }}>PDF, DOCX, XLSX — max 25 MB per file</p>
       </div>
       {files.length > 0 && (
         <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
           {files.map((f, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', background: token('color.background.neutral', '#F4F5F7'), borderRadius: 3, fontSize: 12, fontFamily: 'var(--cp-font-body)' }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px', background: token('color.background.neutral', '#F4F5F7'), borderRadius: 3, fontSize: 12 }}>
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                 <path d="M9 1.5H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5.5L9 1.5z" stroke={token('color.text.brand', '#1868DB')} strokeWidth="1.2" fill="none"/>
                 <path d="M9 1.5V5.5h4" stroke={token('color.text.brand', '#1868DB')} strokeWidth="1.2" fill="none"/>
@@ -552,7 +491,7 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
               <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', '#292A2E') }}>{f.name}</span>
               <span style={{ color: token('color.text.subtlest', '#626F86'), whiteSpace: 'nowrap' }}>{fmt(f.size)}</span>
               <button type="button" onClick={() => remove(i)} aria-label={`Remove ${f.name}`}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', '#626F86'), padding: 2, display: 'flex', flexShrink: 0 }}>
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', '#626F86'), padding: 4, display: 'flex', flexShrink: 0 }}>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                   <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
@@ -571,57 +510,21 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
 
 function TranslateButton({ loading, label, onClick }: { loading: boolean; label: string; onClick: () => void }) {
   return (
-    <button
-      type="button"
+    <IconButton
+      appearance="subtle"
+      spacing="default"
+      label={label}
+      isLoading={loading}
       onClick={onClick}
-      disabled={loading}
-      title={label}
-      aria-label={label}
-      style={{
-        flexShrink: 0,
-        width: 32,
-        height: 40, // matches ADS Textfield height
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: loading ? token('color.background.neutral', '#F4F5F7') : token('color.background.neutral', '#F4F5F7'),
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-        borderRadius: 3,
-        cursor: loading ? 'default' : 'pointer',
-        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-        transition: 'background 120ms',
-        outline: 'none',
-      }}
-      onMouseEnter={e => { if (!loading) e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)'); }}
-      onMouseLeave={e => { e.currentTarget.style.background = token('color.background.neutral', '#F4F5F7'); }}
-    >
-      {loading ? (
-        <Spinner size="small" />
-      ) : (
-        // AI sparkle icon — purple (var(--cp-purple-60, #7C3AED)) reserved for AI per CLAUDE.md §8
+      icon={() => (
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M8 1l1.5 4H14l-3.5 2.5 1.5 4L8 9l-4 2.5 1.5-4L2 5h4.5L8 1z" fill="var(--cp-purple-60, #7C3AED)"/>
+          <path d="M8 1l1.5 4H14l-3.5 2.5 1.5 4L8 9l-4 2.5 1.5-4L2 5h4.5L8 1z" fill={token('color.icon.brand', '#7C3AED')}/>
         </svg>
       )}
-    </button>
+    />
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ADS field label helper (matches @atlaskit/form Field label styling)
-// ─────────────────────────────────────────────────────────────────────────────
-
-function FieldLabel({ children, required }: { children: ReactNode; required?: boolean }) {
-  return (
-    <label style={{
-      fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600,
-      color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), display: 'block', marginBottom: 4, lineHeight: '16px',
-    }}>
-      {required && <span aria-hidden="true" style={{ color: token('color.text.danger'), marginRight: 4 }}>*</span>}
-      {children}
-    </label>
-  );
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN
@@ -767,21 +670,29 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
               <Field name="title" label="Business request name" isRequired>
                 {({ fieldProps }) => (
                   <>
-                    <Textfield
-                      {...(fieldProps as any)}
+                    <TitleTranslateWrapper
                       value={form.title}
-                      onChange={(e: any) => set('title', e.target.value)}
-                      onBlur={() => setTitleBlurred(true)}
-                      placeholder="English name of the business request"
-                      maxLength={TITLE_MAX}
-                      isInvalid={!!titleError}
-                      testId="br-title"
-                      aria-label="Business Request name"
-                    />
-                    <style>{`[data-testid="br-title"] { font-size: 15px; }`}</style>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+                      onValueChange={(next) => set('title', next)}
+                      field="summary"
+                    >
+                      {({ dir }) => (
+                        <Textfield
+                          {...(fieldProps as any)}
+                          value={form.title}
+                          onChange={(e: any) => set('title', e.target.value)}
+                          onBlur={() => setTitleBlurred(true)}
+                          placeholder="Name of the business request"
+                          maxLength={TITLE_MAX}
+                          isInvalid={!!titleError}
+                          testId="br-title"
+                          aria-label="Business Request name"
+                          dir={dir}
+                        />
+                      )}
+                    </TitleTranslateWrapper>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
                       {titleError ? <ErrorMessage>{titleError}</ErrorMessage> : <span />}
-                      <span style={{ fontSize: 11, color: token('color.text.disabled', '#8590A2'), fontFamily: 'var(--cp-font-body)', marginLeft: 'auto' }}>
+                      <span style={{ fontSize: 11, color: token('color.text.disabled', '#8590A2'), marginLeft: 'auto' }}>
                         {form.title.length} / {TITLE_MAX}
                       </span>
                     </div>
@@ -791,14 +702,15 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
 
               <Box xcss={dividerStyles} />
 
-              {/* ── Status — @atlaskit/button/new inside BRStatusChip ─────── */}
-              <div>
-                <FieldLabel>Status</FieldLabel>
-                <BRStatusChip status={form.process_step} onChange={s => set('process_step', s)} />
-                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: token('color.text.subtlest', '#8590A2'), marginTop: 4, lineHeight: '16px' }}>
-                  This is the initial status upon creation
-                </p>
-              </div>
+              {/* ── Status — @atlaskit/form Field + BRStatusChip ─────── */}
+              <Field name="status" label="Status">
+                {() => (
+                  <>
+                    <BRStatusChip status={form.process_step} onChange={s => set('process_step', s)} />
+                    <HelperMessage>This is the initial status upon creation</HelperMessage>
+                  </>
+                )}
+              </Field>
 
               {/* ── Description — canonical RichTextEditor in headless
                   mode (modal footer owns Create / Cancel). onChange
