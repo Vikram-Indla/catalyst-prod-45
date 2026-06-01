@@ -279,15 +279,11 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
       )}
 
       <SidebarRow label="Priority">
-        {/* ADOPT canonical EditablePriority (CLAUDE.md §"adopt canonical components"):
-            same component the project Story rail mounts. Parameterised with BR's
-            3-level option set and a custom onChange that writes business_requests.urgency.
-            BR DB stores 'Normal' but the UI shows 'Medium' (matching the canonical label set),
-            so we remap on both read and write. */}
+        {/* Canonical EditablePriority — uses default 5-level Jira scale
+            (Highest/High/Medium/Low/Lowest) from catalyst-priority.ts. */}
         <EditablePriority
-          currentPriority={request.urgency === 'Normal' ? 'Medium' : (request.urgency ?? '')}
-          options={['High', 'Medium', 'Low']}
-          onChange={(v) => onUpdate('urgency', v === 'Medium' ? 'Normal' : v)}
+          currentPriority={request.urgency ?? ''}
+          onChange={(v) => onUpdate('urgency', v)}
           onUpdate={() => { /* parent re-fetch handled via onUpdate's invalidation */ }}
         />
       </SidebarRow>
