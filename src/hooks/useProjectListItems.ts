@@ -3,10 +3,11 @@
  * Reads from ph_issues (the actual synced Jira data) keyed by project_key
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import type { WorkItem, WorkItemType, WorkItemStatus, WorkItemPriority } from '@/types/workItem.types';
+import type { FilterState } from '@/pages/project-hub/jira-list/components/AllWorkToolbar';
 
 /* ── helpers ── */
 
@@ -150,6 +151,57 @@ function mapPhIssue(row: any): WorkItem {
 
 const PH_ISSUES_SELECT = 'id, issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, severity, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name, is_flagged, flag_reason, raw_json';
 
+/* ── Server-side filter application ──────────────────────────────────
+   Maps FilterState facets to PostgREST predicates on ph_issues columns.
+   Only non-empty facets are applied, so an EMPTY_FILTERS state is a no-op.
+   The DB column mapping mirrors filterStateToJql in AllWorkToolbar.tsx.
+*/
+function applyServerFilter(qb: any, filter: FilterState | undefined): any {
+  if (!filter) return qb;
+
+  // workType → issue_type (e.g. ["Epic", "Story"])
+  if (filter.workType?.length > 0) {
+    qb = qb.in('issue_type', filter.workType);
+  }
+  // status → status (e.g. ["In Requirements", "In Progress"])
+  if (filter.status?.length > 0) {
+    qb = qb.in('status', filter.status);
+  }
+  // assignee → assignee_account_id (Jira account IDs)
+  if (filter.assignee?.length > 0) {
+    qb = qb.in('assignee_account_id', filter.assignee);
+  }
+  // priority → priority
+  if (filter.priority?.length > 0) {
+    qb = qb.in('priority', filter.priority);
+  }
+  // labels → labels (array column — use overlaps)
+  if (filter.labels?.length > 0) {
+    qb = qb.overlaps('labels', filter.labels);
+  }
+  // fixVersions → fix_versions (array column — use overlaps)
+  if (filter.fixVersions?.length > 0) {
+    qb = qb.overlaps('fix_versions', filter.fixVersions);
+  }
+  // resolution → resolution
+  if (filter.resolution?.length > 0) {
+    qb = qb.in('resolution', filter.resolution);
+  }
+  // sprint → sprint_name
+  if (filter.sprint?.length > 0) {
+    qb = qb.in('sprint_name', filter.sprint);
+  }
+  // severity → severity
+  if (filter.severity?.length > 0) {
+    qb = qb.in('severity', filter.severity);
+  }
+  // parent → parent_key
+  if (filter.parent?.length > 0) {
+    qb = qb.in('parent_key', filter.parent);
+  }
+  return qb;
+}
+
 /* ── Paginated ph_issues fetch ────────────────────────────────────────
    PostgREST applies a server-side max-rows cap (typically 1000) that
    .limit(N) cannot exceed. The /allwork view needs every row for the
@@ -236,14 +288,28 @@ export interface AllWorkPaginationState {
 
 const DEFAULT_ALL_WORK_ROWS_PER_PAGE = 25;
 
-export function useProjectAllWorkItems(projectKey: string | undefined): AllWorkPaginationState {
+export function useProjectAllWorkItems(
+  projectKey: string | undefined,
+  filter?: FilterState,
+): AllWorkPaginationState {
   const { user } = useAuth();
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ALL_WORK_ROWS_PER_PAGE);
   const [cursor, setCursor] = useState<{ timestamp: string; key: string } | null>(null);
   const [hasNextPage, setHasNextPage] = useState(false);
 
+  // Reset to page 1 whenever the filter changes so the user sees the first
+  // page of the filtered result set (not a stale cursor into the unfiltered set).
+  const prevFilterRef = useRef<string>('');
+  const filterKey = JSON.stringify(filter ?? {});
+  useEffect(() => {
+    if (filterKey !== prevFilterRef.current) {
+      prevFilterRef.current = filterKey;
+      setCursor(null);
+    }
+  }, [filterKey]);
+
   const { data = [], isLoading, error } = useQuery({
-    queryKey: ['project-all-work-items-keyset', projectKey, cursor, rowsPerPage],
+    queryKey: ['project-all-work-items-keyset', projectKey, cursor, rowsPerPage, filterKey],
     queryFn: async (): Promise<WorkItem[]> => {
       if (!projectKey) return [];
 
@@ -252,7 +318,15 @@ export function useProjectAllWorkItems(projectKey: string | undefined): AllWorkP
         .select(PH_ISSUES_SELECT)
         .eq('project_key', projectKey)
         .is('jira_removed_at', null)
-        .is('deleted_at', null)
+        .is('deleted_at', null);
+
+      // Apply server-side filter predicates BEFORE ordering and limiting.
+      // This ensures LIMIT 25 operates on the filtered result set, so page 1
+      // always contains the first 25 matching rows — not 25 random rows with
+      // the filter applied client-side on that tiny window.
+      qb = applyServerFilter(qb, filter);
+
+      qb = qb
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .order('issue_key', { ascending: false });
 

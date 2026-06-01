@@ -33,7 +33,6 @@ import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 import {
   AllWorkToolbar,
   EMPTY_FILTERS,
-  itemPassesFilters,
   type AllWorkView,
   type FilterState,
 } from './components/AllWorkToolbar';
@@ -65,7 +64,16 @@ interface Props {
 const SPLIT_BREAKPOINT_PX = 1120;
 
 export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
-  // PERF: useProjectAllWorkItems now returns paginated results with keyset cursor
+  // PERF: useProjectAllWorkItems now returns paginated results with keyset cursor.
+  // toolbarFilters is forwarded so server-side predicates are applied before LIMIT,
+  // ensuring page 1 = first 25 of ALL matching rows, not 25 random rows filtered client-side.
+  // We declare toolbarFilters before the hook call so the hook can depend on it.
+  // (The useState initialisation below sets it to EMPTY_FILTERS so both decls are safe.)
+  const [toolbarFilters, setToolbarFilters] = useState<FilterState>(EMPTY_FILTERS);
+
+  // Hook call moved here so toolbarFilters is in scope.
+  // Server-side filter predicates are applied before LIMIT 25, so page 1 =
+  // first 25 matching rows for the active filter, not 25 unfiltered rows.
   const {
     items = [],
     rowsPerPage,
@@ -74,7 +82,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     hasPrevPage,
     fetchNextPage,
     fetchPrevPage,
-  } = useProjectAllWorkItems(projectKey);
+  } = useProjectAllWorkItems(projectKey, toolbarFilters);
 
   /* ── Filter URL params ────────────────────────────────────────────────────
      ?filterId=<uuid>    — navigated here by clicking a saved filter name
@@ -115,7 +123,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
      filters the rail. */
   const [toolbarQuery, setToolbarQuery] = useState('');
   const [toolbarView, setToolbarView] = useState<AllWorkView>('split');
-  const [toolbarFilters, setToolbarFilters] = useState<FilterState>(EMPTY_FILTERS);
+  // toolbarFilters declared above the hook call (before the URL params block)
   const [toolbarAssignees, setToolbarAssignees] = useState<string[]>([]);
   // Open the filter panel by default when entering create-filter mode
   const [filterOpen, setFilterOpen] = useState(isCreateMode);
@@ -164,18 +172,15 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     catyStoreProjectKey === projectKey &&
     catyFilter !== null;
 
-  /* Client-side filter pass — paginated useProjectAllWorkItems already
-     fetches the whole project (1000s of rows), so a per-render .filter()
-     on the items array is the right scope. Pushing the predicate into
-     the SQL would force a refetch on every chip click.
+  /* Filter pass — toolbar filters are now applied server-side in useProjectAllWorkItems,
+     so `items` already contains only matching rows for the current page.
+     We keep the client-side pass only for the Caty AI filter path (which has no
+     server-side equivalent) and the secondary text search within Caty results.
 
-     When Caty is active, we additionally apply the in-result "Search
-     work" substring filter (matched against summary AND issue key) so
-     the user can drill into a large AI-narrowed list. */
+     When Caty is inactive, filteredItems === items (server already filtered). */
   const filteredItems = useMemo(() => {
-    let next: WorkItem[];
     if (catyActive && catyFilter) {
-      next = applyCatyFilter(items, catyFilter);
+      let next = applyCatyFilter(items, catyFilter);
       const q = catySecondaryQuery.trim().toLowerCase();
       if (q.length > 0) {
         next = next.filter((i) => {
@@ -184,11 +189,11 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
           return sum.includes(q) || key.includes(q);
         });
       }
-    } else {
-      next = items.filter((i) => itemPassesFilters(i, toolbarFilters));
+      return next;
     }
-    return next;
-  }, [items, toolbarFilters, catyActive, catyFilter, catySecondaryQuery]);
+    // Server-side filter already applied; return items as-is.
+    return items;
+  }, [items, catyActive, catyFilter, catySecondaryQuery]);
 
   /** In narrow mode the middle panel is hidden — clicking a card opens
    *  StoryDetailModal as a full overlay instead (Jira parity). */
