@@ -16,8 +16,9 @@ import { z } from 'zod';
 
 // ─── Option vocabularies (kept fields only) ─────────────────────────────────
 
+import { CATALYST_PRIORITIES } from '@/lib/catalyst-priority';
 /** @deprecated Use CATALYST_PRIORITIES from '@/lib/catalyst-priority' instead. */
-export { CATALYST_PRIORITIES as URGENCY_OPTIONS } from '@/lib/catalyst-priority';
+export const URGENCY_OPTIONS = CATALYST_PRIORITIES;
 
 /** Category — 4 buckets used in Create + product backlog inline-edit. */
 export const CATEGORY_OPTIONS: { value: string; label: string }[] = [
