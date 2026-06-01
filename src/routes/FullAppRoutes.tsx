@@ -125,6 +125,7 @@ const AllProductsPage = lazy(() => import("../pages/product-hub/AllProductsPage"
 // (parallel ProductNativeBacklogPage was deleted to eliminate drift; gap of 30+
 // features had accumulated from the imitation pattern).
 const ProductBacklogPage = lazy(() => import("../pages/product-hub/ProductBacklogPage"));
+const ProductBacklogDetailPage = lazy(() => import("../pages/product-hub/InvestorJourneyDetailPage"));
 const ProductNativeBoardPage = lazy(() => import("../pages/product-hub/ProductNativeBoardPage"));
 const ProductNativeAllWorkPage = lazy(() => import("../pages/product-hub/ProductNativeAllWorkPage"));
 const IdeationPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeationPage")) : () => <FeatureComingSoon title="Ideation" />;
@@ -510,6 +511,7 @@ export default function FullAppRoutes() {
             2026-05-16: renamed :code → :key so canonical components that read
             useParams().key work without adaptation. */}
         {/* Generic per-product routes — native product hub pages (2026-06-01) */}
+        <Route path="/product-hub/:key/backlog/:issueKey" element={<MG k="producthub" t="ProductHub"><S><ProductBacklogDetailPage /></S></MG>} />
         <Route path="/product-hub/:key/backlog" element={<MG k="producthub" t="ProductHub"><S><ProductBacklogPage /></S></MG>} />
         <Route path="/product-hub/:key/boards" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
         <Route path="/product-hub/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
