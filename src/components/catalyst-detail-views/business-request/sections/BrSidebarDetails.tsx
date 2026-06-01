@@ -37,7 +37,7 @@ import { CatalystDueDateField } from '@/components/shared/CatalystDueDateField';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useDemandProcessStepOptions } from '@/hooks/useDemandProcessSteps';
-import { PriorityIcon } from '@/components/icons';
+import { EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { useAuth } from '@/lib/auth';
 import type { BusinessRequest } from '@/types/business-request';
@@ -94,21 +94,9 @@ function useReleases() {
 // Static option vocabularies (mirror CreateBusinessRequestModal)
 // ─────────────────────────────────────────────────────────────────────────────
 
-// iconLevel maps DB urgency value → PriorityIcon level string
-const PRIORITY_OPTIONS = [
-  { value: 'High',   label: 'High',   iconLevel: 'High' },
-  { value: 'Normal', label: 'Medium', iconLevel: 'Medium' },
-  { value: 'Low',    label: 'Low',    iconLevel: 'Low' },
-];
-
-function PriorityOptionLabel({ opt }: { opt: typeof PRIORITY_OPTIONS[number] }) {
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-      <PriorityIcon level={opt.iconLevel} size={16} label="" />
-      <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>{opt.label}</span>
-    </span>
-  );
-}
+// Priority options + chip rendering now live in the canonical EditablePriority
+// (src/modules/.../EditableFields.tsx). BR mounts that component with its 3-level
+// option set ['High','Medium','Low'] — see Priority row below.
 
 function PersonOptionLabel({ opt }: { opt: ProfileOption }) {
   return (
@@ -291,18 +279,16 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
       )}
 
       <SidebarRow label="Priority">
-        <Select
-          inputId="br-view--priority"
-          classNamePrefix="br-sidebar-select"
-          appearance="subtle"
-          spacing="compact"
-          options={PRIORITY_OPTIONS}
-          value={PRIORITY_OPTIONS.find((o) => o.value === request.urgency) ?? null}
-          onChange={(opt) => void onUpdate('urgency', (opt as { value: string } | null)?.value ?? null)}
-          isClearable
-          isSearchable={false}
-          placeholder="Select priority"
-          formatOptionLabel={(opt) => <PriorityOptionLabel opt={opt as typeof PRIORITY_OPTIONS[number]} />}
+        {/* ADOPT canonical EditablePriority (CLAUDE.md §"adopt canonical components"):
+            same component the project Story rail mounts. Parameterised with BR's
+            3-level option set and a custom onChange that writes business_requests.urgency.
+            BR DB stores 'Normal' but the UI shows 'Medium' (matching the canonical label set),
+            so we remap on both read and write. */}
+        <EditablePriority
+          currentPriority={request.urgency === 'Normal' ? 'Medium' : (request.urgency ?? '')}
+          options={['High', 'Medium', 'Low']}
+          onChange={(v) => onUpdate('urgency', v === 'Medium' ? 'Normal' : v)}
+          onUpdate={() => { /* parent re-fetch handled via onUpdate's invalidation */ }}
         />
       </SidebarRow>
 

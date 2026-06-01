@@ -754,11 +754,21 @@ export function EditablePriority({
   issueKey,
   currentPriority,
   onUpdate,
+  options,
+  onChange,
 }: {
-  issueId: string;
+  /** ph_issues row id — required only when `onChange` is NOT provided (default ph_issues write path). */
+  issueId?: string;
   issueKey?: string;
   currentPriority: string;
   onUpdate: () => void;
+  /** Custom priority option list. Defaults to PRIORITY_LIST (5-level Jira: Highest/High/Medium/Low/Lowest).
+   *  Other data sources (e.g. business_requests.urgency with 3 levels) pass their own option set here. */
+  options?: string[];
+  /** Custom write callback. When provided, called INSTEAD of the default ph_issues mutation.
+   *  Receives the selected value (or null on clear). Enables this canonical component to write to
+   *  ANY data source without forking — see CLAUDE.md "Adopt canonical components" rule (2026-06-01). */
+  onChange?: (value: string | null) => Promise<void> | void;
 }) {
   const [showPicker, setShowPicker] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -771,6 +781,12 @@ export function EditablePriority({
 
   const updateMutation = useMutation({
     mutationFn: async (priority: string | null) => {
+      // If a custom onChange is provided, the call site owns the write (e.g. business_requests.urgency).
+      // Otherwise fall back to the canonical ph_issues mutation.
+      if (onChange) {
+        await onChange(priority);
+        return;
+      }
       const query = issueKey
         ? supabase
             .from("ph_issues")
@@ -952,7 +968,7 @@ export function EditablePriority({
               padding: "6px 0",
             }}
           >
-            {PRIORITY_LIST.map((p) => {
+            {(options ?? PRIORITY_LIST).map((p) => {
               const isSelected = currentPriority === p;
               return (
                 <div
