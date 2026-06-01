@@ -144,9 +144,35 @@ function SidebarRow({ label, children }: { label: string; children: ReactNode })
       >
         {label}
       </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div
+        className="cv-rail-value"
+        style={{
+          flex: 1,
+          minWidth: 0,
+          fontSize: 14,
+          lineHeight: '20px',
+          color: 'var(--ds-text, #292A2E)',
+        }}
+      >
         {children}
       </div>
+    </div>
+  );
+}
+
+// "Assign to me" link — rendered as a sub-row below DM/PO so the field row
+// itself stays 32px (label centers against the Select, not the link).
+// paddingLeft aligns the link under the value column: 128 label + 8 gap + 4 pad.
+function AssignToMeLink({ onClick }: { onClick: () => void }) {
+  return (
+    <div style={{ paddingLeft: 140, marginTop: -2, marginBottom: 2 }}>
+      <button
+        type="button"
+        onClick={onClick}
+        style={{ fontSize: 11, color: 'var(--ds-link, #0052CC)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px', fontFamily: 'inherit' }}
+      >
+        Assign to me
+      </button>
     </div>
   );
 }
@@ -284,62 +310,46 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
       </SidebarRow>
 
       <SidebarRow label="Delivery Manager">
-        <div>
-          <Select
-            inputId="br-view--dm"
-            classNamePrefix="br-sidebar-select"
-            appearance="subtle"
-            spacing="compact"
-            options={profiles}
-            value={profiles.find((p) => p.value === request.project_manager_user_id) ?? null}
-            onChange={(opt) =>
-              void onUpdate('project_manager_user_id', (opt as ProfileOption | null)?.value ?? null)
-            }
-            isClearable
-            isSearchable
-            placeholder="Unassigned"
-            formatOptionLabel={(opt) => <PersonOptionLabel opt={opt as ProfileOption} />}
-          />
-          {user?.id && user.id !== request.project_manager_user_id && (
-            <button
-              type="button"
-              onClick={() => void onUpdate('project_manager_user_id', user.id)}
-              style={{ fontSize: 11, color: 'var(--ds-link, #0052CC)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px', fontFamily: 'inherit' }}
-            >
-              Assign to me
-            </button>
-          )}
-        </div>
+        <Select
+          inputId="br-view--dm"
+          classNamePrefix="br-sidebar-select"
+          appearance="subtle"
+          spacing="compact"
+          options={profiles}
+          value={profiles.find((p) => p.value === request.project_manager_user_id) ?? null}
+          onChange={(opt) =>
+            void onUpdate('project_manager_user_id', (opt as ProfileOption | null)?.value ?? null)
+          }
+          isClearable
+          isSearchable
+          placeholder="Unassigned"
+          formatOptionLabel={(opt) => <PersonOptionLabel opt={opt as ProfileOption} />}
+        />
       </SidebarRow>
+      {user?.id && user.id !== request.project_manager_user_id && (
+        <AssignToMeLink onClick={() => void onUpdate('project_manager_user_id', user.id)} />
+      )}
 
       <SidebarRow label="Product Owner">
-        <div>
-          <Select
-            inputId="br-view--po"
-            classNamePrefix="br-sidebar-select"
-            appearance="subtle"
-            spacing="compact"
-            options={profiles}
-            value={profiles.find((p) => p.value === request.po_user_id) ?? null}
-            onChange={(opt) =>
-              void onUpdate('po_user_id', (opt as ProfileOption | null)?.value ?? null)
-            }
-            isClearable
-            isSearchable
-            placeholder="Unassigned"
-            formatOptionLabel={(opt) => <PersonOptionLabel opt={opt as ProfileOption} />}
-          />
-          {user?.id && user.id !== request.po_user_id && (
-            <button
-              type="button"
-              onClick={() => void onUpdate('po_user_id', user.id)}
-              style={{ fontSize: 11, color: 'var(--ds-link, #0052CC)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px', fontFamily: 'inherit' }}
-            >
-              Assign to me
-            </button>
-          )}
-        </div>
+        <Select
+          inputId="br-view--po"
+          classNamePrefix="br-sidebar-select"
+          appearance="subtle"
+          spacing="compact"
+          options={profiles}
+          value={profiles.find((p) => p.value === request.po_user_id) ?? null}
+          onChange={(opt) =>
+            void onUpdate('po_user_id', (opt as ProfileOption | null)?.value ?? null)
+          }
+          isClearable
+          isSearchable
+          placeholder="Unassigned"
+          formatOptionLabel={(opt) => <PersonOptionLabel opt={opt as ProfileOption} />}
+        />
       </SidebarRow>
+      {user?.id && user.id !== request.po_user_id && (
+        <AssignToMeLink onClick={() => void onUpdate('po_user_id', user.id)} />
+      )}
 
       <SidebarRow label="Planned release">
         <CreatableSelect
