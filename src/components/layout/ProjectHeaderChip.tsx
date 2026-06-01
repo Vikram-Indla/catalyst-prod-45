@@ -17,7 +17,7 @@
  */
 import React, { useState, useRef } from 'react';
 import ReactDOM from 'react-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import Button, { IconButton } from '@atlaskit/button/new';
@@ -47,6 +47,17 @@ export interface HeaderEntity {
  * is preserved when adapter is omitted. See CLAUDE.md "Adopt canonical
  * components, never reimplement" (2026-06-01).
  */
+/** A single row in the entity's member list, hydrated with profile data for display. */
+export interface MemberRow {
+  /** project_members.id or product_members.id (used for delete). */
+  id: string;
+  user_id: string;
+  name: string;
+  email: string;
+  avatar_url: string | null;
+  role: string;
+}
+
 export interface HeaderAdapter {
   /** Async fetcher returning the resolved entity. Replaces the internal
    *  ph_jira_projects + ph_projects query. */
@@ -59,6 +70,14 @@ export interface HeaderAdapter {
   settingsHref: string;
   /** Star toggle target (passed to useToggleStar). */
   starItemType: 'project' | 'product';
+  /** Stable cache key for the members query. */
+  membersCacheKey: readonly unknown[];
+  /** Load the current member list (hydrated with profile rows for display). */
+  fetchMembers: () => Promise<MemberRow[]>;
+  /** Insert a user into the entity's members table. */
+  addMember: (userId: string) => Promise<void>;
+  /** Delete a member row by its id. */
+  removeMember: (memberId: string) => Promise<void>;
 }
 
 interface Props {
@@ -78,7 +97,6 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
 
   // Modal states
   const [addPeopleOpen, setAddPeopleOpen] = useState(false);
-  const [invitedEmails, setInvitedEmails] = useState<string[]>([]);
   const [inviteEmail, setInviteEmail] = useState('');
 
   const toggleStarMutation = useToggleStar();
@@ -120,18 +138,103 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
 
   const projectName = project?.name ?? iconKey;
 
+  // ── Member CRUD — resolved against the adapter (default = project_members
+  //    when no adapter is supplied; product wrapper supplies its own). ────────
+  const queryClient = useQueryClient();
+  const entityId = project?.id ?? null;
+
+  /** Default-project member CRUD (used when no adapter is provided). All
+   *  three callbacks resolve against project_members + profiles for email lookup. */
+  const defaultProjectMembers = {
+    membersCacheKey: ['project-header-chip-members', projectKey] as const,
+    fetchMembers: async (): Promise<MemberRow[]> => {
+      if (!entityId) return [];
+      const { data } = await (supabase as any)
+        .from('project_members')
+        .select('id, user_id, role, profiles:user_id(full_name, email, avatar_url)')
+        .eq('project_id', entityId);
+      return ((data ?? []) as any[]).map((r) => ({
+        id: r.id, user_id: r.user_id, role: r.role,
+        name: r.profiles?.full_name ?? r.profiles?.email ?? r.user_id,
+        email: r.profiles?.email ?? '',
+        avatar_url: r.profiles?.avatar_url ?? null,
+      }));
+    },
+    addMember: async (userId: string) => {
+      if (!entityId) throw new Error('Project not loaded');
+      const { error } = await (supabase as any).from('project_members').insert({
+        project_id: entityId, user_id: userId, role: 'member',
+      });
+      if (error && error.code !== '23505') throw error;  // 23505 = unique violation (already a member)
+    },
+    removeMember: async (memberId: string) => {
+      const { error } = await (supabase as any).from('project_members').delete().eq('id', memberId);
+      if (error) throw error;
+    },
+  };
+
+  const resolvedMembers = adapter
+    ? {
+        membersCacheKey: adapter.membersCacheKey,
+        fetchMembers: adapter.fetchMembers,
+        addMember: adapter.addMember,
+        removeMember: adapter.removeMember,
+      }
+    : defaultProjectMembers;
+
+  const { data: members = [] } = useQuery<MemberRow[]>({
+    queryKey: [...resolvedMembers.membersCacheKey],
+    enabled: addPeopleOpen && (adapter ? true : !!entityId),
+    queryFn: resolvedMembers.fetchMembers,
+    staleTime: 30_000,
+  });
+
+  const addMemberMutation = useMutation({
+    mutationFn: async (email: string) => {
+      // Look up profile by email
+      const { data: profile } = await (supabase as any)
+        .from('profiles')
+        .select('id, full_name, email')
+        .ilike('email', email.trim())
+        .maybeSingle();
+      if (!profile?.id) throw new Error('NOT_FOUND');
+      // Idempotent insert via adapter
+      await resolvedMembers.addMember(profile.id);
+      return profile;
+    },
+    onSuccess: (profile) => {
+      catalystToast.success(`Added ${profile.full_name ?? profile.email}`);
+      setInviteEmail('');
+      queryClient.invalidateQueries({ queryKey: [...resolvedMembers.membersCacheKey] });
+    },
+    onError: (err: Error) => {
+      if (err.message === 'NOT_FOUND') {
+        catalystToast.error('No registered user with that email');
+      } else {
+        catalystToast.error(`Add failed: ${err.message}`);
+      }
+    },
+  });
+
+  const removeMemberMutation = useMutation({
+    mutationFn: (memberId: string) => resolvedMembers.removeMember(memberId),
+    onSuccess: () => {
+      catalystToast.success('Removed from team');
+      queryClient.invalidateQueries({ queryKey: [...resolvedMembers.membersCacheKey] });
+    },
+    onError: (err: Error) => catalystToast.error(`Remove failed: ${err.message}`),
+  });
+
   const handleAddPeople = () => { setMenuAnchor(null); setAddPeopleOpen(true); };
 
   const isValidEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
   const submitInvite = () => {
     const e = inviteEmail.trim();
     if (!isValidEmail(e)) { catalystToast.error('Enter a valid email address'); return; }
-    if (invitedEmails.includes(e)) { catalystToast.error('Already invited'); return; }
-    setInvitedEmails(prev => [...prev, e]);
-    setInviteEmail('');
-    catalystToast.success(`Invitation queued for ${e}`);
+    if (addMemberMutation.isPending) return;
+    addMemberMutation.mutate(e);
   };
-  const closeAddPeople = () => { setAddPeopleOpen(false); setInviteEmail(''); setInvitedEmails([]); };
+  const closeAddPeople = () => { setAddPeopleOpen(false); setInviteEmail(''); };
 
   const toggleMenu = () => {
     if (menuAnchor) {
@@ -333,7 +436,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
             </div>
             <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ fontSize: 13, color: token('color.text.subtle', '#626F86') }}>
-                Invite teammates by email. They'll receive an invitation to join this project.
+                Add a registered user by email. Press Enter or click Add.
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <div style={{ flex: 1 }}>
@@ -343,29 +446,71 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
                     onChange={(e) => setInviteEmail((e.target as HTMLInputElement).value)}
                     onKeyDown={(e) => { if ((e as React.KeyboardEvent).key === 'Enter') submitInvite(); }}
                     autoFocus
+                    isDisabled={addMemberMutation.isPending}
                     testId="phc-add-people.email-input"
                   />
                 </div>
-                <Button appearance="primary" onClick={submitInvite} testId="phc-add-people.submit">
-                  Invite
+                <Button
+                  appearance="primary"
+                  onClick={submitInvite}
+                  isDisabled={addMemberMutation.isPending || !inviteEmail.trim()}
+                  testId="phc-add-people.submit"
+                >
+                  {addMemberMutation.isPending ? 'Adding…' : 'Add'}
                 </Button>
               </div>
-              {invitedEmails.length > 0 && (
-                <div>
-                  <div style={{ fontSize: 12, color: token('color.text.subtle', '#626F86'), marginBottom: 6 }}>
-                    Invited this session ({invitedEmails.length}):
+
+              {/* Current members list (live from project_members / product_members) */}
+              <div style={{ marginTop: 4 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#626F86'), marginBottom: 8 }}>
+                  Members ({members.length})
+                </div>
+                {members.length === 0 ? (
+                  <div style={{ fontSize: 13, color: token('color.text.subtle', '#626F86'), padding: '8px 0' }}>
+                    No members yet. Add someone above.
                   </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                    {invitedEmails.map(e => (
-                      <span key={e} style={{
-                        background: 'var(--ds-background-neutral, #F1F2F4)',
-                        color: 'var(--ds-text, #292A2E)',
-                        padding: '2px 8px', borderRadius: 3, fontSize: 12,
-                      }}>{e}</span>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 280, overflowY: 'auto' }}>
+                    {members.map((m) => (
+                      <div
+                        key={m.id}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 10,
+                          padding: '6px 8px', borderRadius: 4,
+                          background: token('elevation.surface', '#FFFFFF'),
+                        }}
+                      >
+                        <div style={{
+                          width: 28, height: 28, borderRadius: '50%',
+                          background: token('color.background.accent.blue.subtler', '#CCE0FF'),
+                          color: token('color.text', '#172B4D'),
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: 11, fontWeight: 700, flexShrink: 0,
+                        }}>
+                          {(m.name || m.email || '?').slice(0, 2).toUpperCase()}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 13, color: token('color.text', '#292A2E'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {m.name}
+                          </div>
+                          <div style={{ fontSize: 11, color: token('color.text.subtle', '#626F86'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {m.email} · {m.role}
+                          </div>
+                        </div>
+                        <Button
+                          appearance="subtle"
+                          spacing="compact"
+                          isDisabled={removeMemberMutation.isPending}
+                          onClick={() => removeMemberMutation.mutate(m.id)}
+                          testId={`phc-add-people.remove-${m.id}`}
+                        >
+                          Remove
+                        </Button>
+                      </div>
                     ))}
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
             <div style={modalFooterStyle}>
               <Button appearance="subtle" onClick={closeAddPeople}>Done</Button>
