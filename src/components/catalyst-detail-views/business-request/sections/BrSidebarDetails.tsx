@@ -38,6 +38,7 @@ import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useDemandProcessStepOptions } from '@/hooks/useDemandProcessSteps';
 import { EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import Avatar from '@atlaskit/avatar';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { useAuth } from '@/lib/auth';
 import type { BusinessRequest } from '@/types/business-request';
@@ -101,14 +102,8 @@ function useReleases() {
 function PersonOptionLabel({ opt }: { opt: ProfileOption }) {
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-      {opt.avatarUrl ? (
-        <img src={opt.avatarUrl} alt={opt.label} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-      ) : (
-        <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 10, fontWeight: 700, color: 'var(--ds-text-inverse, #fff)' }}>
-          {opt.label.charAt(0).toUpperCase()}
-        </div>
-      )}
-      <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt.label}</span>
+      <Avatar size="small" name={opt.label} />
+      <span style={{ fontSize: 14, color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt.label}</span>
     </span>
   );
 }
