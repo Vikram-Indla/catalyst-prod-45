@@ -541,6 +541,17 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         padding-right: 2px;
         transition: color 80ms ease;
       }
+      /* 2026-06-01 (catalyst-clone F1 fix): hide Atlaskit InlineEdit's
+         built-in <label> when the cell is wrapped in this class. The label
+         is required for a11y but visually duplicates the column header in
+         every row. Scoped to table cells so right-rail InlineEdits keep
+         their label. */
+      .cv-cell-inline-edit-no-label label {
+        display: none !important;
+      }
+      .cv-cell-inline-edit-no-label > div {
+        padding: 0;
+      }
       .jira-table-grid table tbody > tr:hover [data-jira-cell-ghost] {
         color: #5E6C84;
       }
