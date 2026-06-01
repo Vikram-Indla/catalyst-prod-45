@@ -459,6 +459,13 @@ export function makeStatusEditCell<T>(opts: {
   getStatus: (row: T) => string | null;
   options: string[];
   appearanceFor: (s: string | null) => LozengeAppearance;
+  /**
+   * 2026-06-01 (catalyst-clone L11/L12 follow-up): map raw status value → pretty label.
+   * Defaults to identity (project hub keeps showing the value as-is).
+   * Product hub adapter passes `dataSource.statusLabel` so the dropdown
+   * renders "Demand approved" instead of raw slug `demand_approved`.
+   */
+  labelFor?: (s: string) => string;
   onChange: (row: T, next: string) => void;
   canEdit?: (row: T) => boolean;
 }) {
@@ -506,7 +513,7 @@ export function makeStatusEditCell<T>(opts: {
           }}
         >
           <StatusPill appearance={opts.appearanceFor(status)}>
-            {status ?? '—'}
+            {status ? (opts.labelFor ? opts.labelFor(status) : status) : '—'}
           </StatusPill>
           {editable && (
             <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden style={{ flexShrink: 0, opacity: 0.55, marginLeft: 1 }}>
@@ -581,7 +588,7 @@ export function makeStatusEditCell<T>(opts: {
                       border: ap === 'default' ? '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' : 'none',
                     }}
                   />
-                  <span style={{ flex: 1 }}>{s}</span>
+                  <span style={{ flex: 1 }}>{opts.labelFor ? opts.labelFor(s) : s}</span>
                   {/* Checkmark on selected item */}
                   {isActive && (
                     <span style={{ marginLeft: 4, color: token('color.icon.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>

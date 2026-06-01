@@ -2192,6 +2192,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         getStatus: (r) => r.status,
         options: ALL_BACKLOG_STATUSES,
         appearanceFor: (s) => statusAppearance(s) as LozengeAppearance,
+        // 2026-06-01 (catalyst-clone): when an adapter provides statusLabel
+        // (product hub on business_requests does — it maps demand_approved
+        // → "Demand approved" via demand_process_steps), use it so the
+        // dropdown shows pretty labels instead of raw enum slugs. Project
+        // hub passes ALL_BACKLOG_STATUSES which are already pretty strings,
+        // so identity fallthrough is correct there.
+        labelFor: dataSource?.statusLabel
+          ? (s) => dataSource.statusLabel!(s)
+          : undefined,
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { status: next } }),
       }),
       // 2026-05-10 Jira-parity per-column filter chevron.
