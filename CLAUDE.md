@@ -4,6 +4,47 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 2026-06-01 — Catalyst Clone (inaugural): /product-hub/INV/backlog from /project-hub/BAU/backlog
+
+**Mode:** Catalyst↔Catalyst
+**Surfaces:** source `/project-hub/BAU/backlog` (ph_issues) → target `/product-hub/INV/backlog` (business_requests via adapter)
+**Scope axes:** data-source · vocabulary · field-shape
+**Abilities cloned:** 11 inline-edit cells (request_type, category, theme, urgency, planned_quarter, target_date, delivery_manager, product_owner, stakeholders, targeted_feature, arabic_title)
+**Variations:**
+- Identical: 1 (Product Owner picker — same factory, new field)
+- Vocab-different: 2 (urgency vs priority, stakeholders vs labels)
+- Schema-different: 6 (target_date↔end_date, delivery_manager↔project_manager_user_id, product_owner↔po_user_id, theme↔theme, etc.)
+- Type-conditional: 0
+- Excluded: 8 (Comments, Parent, Fix versions, Labels, Assignee, Due date, Priority-project, Reporter)
+**Gates:** G1-G10 ✓ (canonical factories used everywhere) · L1-L10 ✓ (no parallel components; explicit field map; no `as any`; no `git add -A`) · ADS ✓ (0 violations on planned files)
+
+### What landed
+- **Adapter contract extended** — `BIZ_PATCH_MAP` in `backlogDataSource.ts` adds 11 BR field id → DB column mappings (target_date → end_date, delivery_manager_id → project_manager_user_id, product_owner_id → po_user_id, plus 8 1:1 mappings). `onUpdate` routes every cell edit through this map.
+- **11 column defs replaced** — each plain `<span>` swapped for the canonical edit factory:
+  - request_type / category / theme → `InlineEdit + @atlaskit/select` single-select with `menuPortalTarget=document.body`
+  - urgency → `makePriorityEditCell` with URGENCY_OPTIONS (DB stores capitalized, picker lower-cases for icon match)
+  - planned_quarter / stakeholders → `makeLabelsEditCell` (canonical multi-select)
+  - target_date → `makeDateEditCell` (same factory as project Due date)
+  - delivery_manager / product_owner → `makeAssigneeEditCell` (same user-picker as project Assignee)
+  - targeted_feature → bespoke `@atlaskit/checkbox` cell
+  - arabic_title → bespoke `InlineEdit + Textfield` with `dir="rtl"` (matches BrArabicTitleSection)
+- **CATEGORY_OPTIONS + PLANNED_QUARTER_OPTIONS** added to `types/business-request.ts` as shared exports.
+
+### NEW LESSON — promoted to permanent guard
+
+**L11 — NEVER ship column cells as read-only `<span>` when the canonical surface has inline edits.**
+The Phase B commit (22fbbd0d8) added 11 BR columns as plain spans because the rushed approach didn't compare against the project canonical first. Project columns use `make*EditCell` factories — every clone target MUST too. Halt if you find yourself writing `cell: (r) => <span>{r.x}</span>` without first checking how the source surface renders the same column.
+
+**L12 — When cloning a table, the FIRST grep is for `make*EditCell` factories in the source file.**
+Reading column registries top-to-bottom and asking "what factory does each cell use?" is the parity contract. The factory IS the spec — same factory in target = inline editing works for free. Different factory or no factory = broken clone.
+
+**L13 — `makeSummaryInlineEditCell` does NOT expose `placeholder` / `dir` props.**
+For RTL or custom-placeholder text columns, write a bespoke `<InlineEdit><Textfield dir="rtl">...` cell (matches BrArabicTitleSection pattern) — do NOT invent factory props that don't exist. Add this to L1 anti-parallel-component rules: even read+write the canonical factory's signature before instantiating.
+
+**Commit:** to be added below at push time.
+
+---
+
 ## 🔁 ADOPT CANONICAL COMPONENTS — DO NOT REIMPLEMENT (P0, Non-Negotiable)
 
 **When a product-hub surface must "look exactly like" a project-hub surface, REUSE the canonical interactive components via a data adapter. NEVER build a parallel reimplementation.**

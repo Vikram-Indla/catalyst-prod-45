@@ -15,6 +15,12 @@
  * ReleaseHub, TestHub, IncidentHub boards that want a Jira-style list view.
  */
 import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+// 2026-06-01 (catalyst-clone): BR vocabulary imports for inline-edit cells on
+// the product-flavored columns. Keeps the column registry colocated with the
+// canonical edit factories from JiraTable.
+import { URGENCY_OPTIONS, REQUEST_TYPE_OPTIONS, THEME_OPTIONS, STAKEHOLDER_OPTIONS, CATEGORY_OPTIONS, PLANNED_QUARTER_OPTIONS } from '@/types/business-request';
+import { Checkbox as AkCheckbox } from '@atlaskit/checkbox';
+import InlineEdit from '@atlaskit/inline-edit';
 import ReactDOM from 'react-dom';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
@@ -2352,66 +2358,136 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     // Surfaced only when ProductBacklogPage's adapter sets allowedColumnIds.
     // Project hub never sees these (PRODUCT_ONLY_COLUMN_IDS gate above).
     // All `defaultVisible: false` — opt-in via the picker.
+    //
+    // 2026-06-01 (catalyst-clone inaugural run): every cell is now an INLINE
+    // EDIT cell wired through dataSource.onUpdate → BIZ_PATCH_MAP →
+    // business_requests UPDATE. Mirrors the project canonical edit factories
+    // exactly — no parallel implementations (L1 compliance).
     {
       id: 'request_type',
       label: 'Type',
-      width: 8,
+      width: 10,
       sortable: true,
       defaultVisible: false,
       accessor: (r: BacklogItem) => r.request_type || '',
-      cell: (r: BacklogItem) => (
-        <span style={{ color: 'var(--ds-text, #172B4D)', textTransform: 'capitalize' }}>
-          {r.request_type || '—'}
-        </span>
+      cell: ({ row: r }: { row: BacklogItem }) => (
+        <InlineEdit<string | null>
+          defaultValue={r.request_type ?? null}
+          label="Type"
+          editView={({ errorMessage: _e, ...fp }: any) => (
+            <Select
+              {...fp}
+              autoFocus
+              options={REQUEST_TYPE_OPTIONS}
+              value={REQUEST_TYPE_OPTIONS.find(o => o.value === (r.request_type ?? '')) ?? null}
+              onChange={(opt: any) => fp.onChange(opt?.value ?? null)}
+              menuPortalTarget={document.body}
+              styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+            />
+          )}
+          readView={() => (
+            <div style={{ padding: '4px 8px', cursor: 'pointer', color: 'var(--ds-text, #172B4D)', textTransform: 'capitalize' }}>
+              {r.request_type || <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>}
+            </div>
+          )}
+          onConfirm={(next) => updateField.mutate({ id: r.id, source: r.source, patch: { request_type: next ?? null } })}
+        />
       ),
     },
     {
       id: 'category',
       label: 'Category',
-      width: 10,
+      width: 11,
       sortable: true,
       defaultVisible: false,
       accessor: (r: BacklogItem) => r.category || '',
-      cell: (r: BacklogItem) => (
-        <span style={{ color: 'var(--ds-text, #172B4D)' }}>{r.category || '—'}</span>
+      cell: ({ row: r }: { row: BacklogItem }) => (
+        <InlineEdit<string | null>
+          defaultValue={r.category ?? null}
+          label="Category"
+          editView={({ errorMessage: _e, ...fp }: any) => (
+            <Select
+              {...fp}
+              autoFocus
+              options={CATEGORY_OPTIONS}
+              value={CATEGORY_OPTIONS.find(o => o.value === (r.category ?? '')) ?? null}
+              onChange={(opt: any) => fp.onChange(opt?.value ?? null)}
+              menuPortalTarget={document.body}
+              styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+            />
+          )}
+          readView={() => (
+            <div style={{ padding: '4px 8px', cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}>
+              {r.category || <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>}
+            </div>
+          )}
+          onConfirm={(next) => updateField.mutate({ id: r.id, source: r.source, patch: { category: next ?? null } })}
+        />
       ),
     },
     {
       id: 'theme',
       label: 'Theme',
-      width: 12,
+      width: 14,
       sortable: true,
       defaultVisible: false,
       accessor: (r: BacklogItem) => r.theme || '',
-      cell: (r: BacklogItem) => (
-        <span style={{ color: 'var(--ds-text, #172B4D)' }}>{r.theme || '—'}</span>
-      ),
+      cell: ({ row: r }: { row: BacklogItem }) => {
+        const current = THEME_OPTIONS.find(o => o.value === (r.theme ?? '')) ?? null;
+        return (
+          <InlineEdit<string | null>
+            defaultValue={r.theme ?? null}
+            label="Theme"
+            editView={({ errorMessage: _e, ...fp }: any) => (
+              <Select
+                {...fp}
+                autoFocus
+                options={THEME_OPTIONS}
+                value={current}
+                onChange={(opt: any) => fp.onChange(opt?.value ?? null)}
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+              />
+            )}
+            readView={() => (
+              <div style={{ padding: '4px 8px', cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}>
+                {current ? (current.labelEn ?? current.label) : <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>}
+              </div>
+            )}
+            onConfirm={(next) => updateField.mutate({ id: r.id, source: r.source, patch: { theme: next ?? null } })}
+          />
+        );
+      },
     },
     {
       id: 'urgency',
       label: 'Priority',
+      // Mirrors project Priority width:6 — Low/Normal/High/Critical all ≤8 chars
       width: 7,
       sortable: true,
       defaultVisible: false,
-      accessor: (r: BacklogItem) => r.urgency || '',
-      cell: (r: BacklogItem) => (
-        <span style={{ color: 'var(--ds-text, #172B4D)' }}>{r.urgency || '—'}</span>
-      ),
+      cell: makePriorityEditCell<BacklogItem>({
+        getPriority: (r) => r.urgency,
+        options: URGENCY_OPTIONS.map(v => v.toLowerCase()),
+        onChange: (row, next) => updateField.mutate({
+          id: row.id, source: row.source,
+          // Re-capitalize: DB stores 'High' / 'Normal' / 'Low' / 'Critical'
+          patch: { urgency: next ? next.charAt(0).toUpperCase() + next.slice(1) : null },
+        }),
+      }),
     },
     {
       id: 'planned_quarter',
       label: 'Planned release',
-      width: 12,
+      width: 13,
       sortable: false,
       defaultVisible: false,
       accessor: (r: BacklogItem) => (r.planned_quarter || []).join(', '),
-      cell: (r: BacklogItem) => {
-        const list = r.planned_quarter || [];
-        if (list.length === 0) return <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>;
-        const visible = list.slice(0, 2).join(', ');
-        const extra = list.length > 2 ? ` +${list.length - 2}` : '';
-        return <span style={{ color: 'var(--ds-text, #172B4D)' }}>{visible}{extra}</span>;
-      },
+      cell: makeLabelsEditCell<BacklogItem>({
+        getLabels: (r) => r.planned_quarter,
+        options: PLANNED_QUARTER_OPTIONS.map(o => o.value),
+        onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { planned_quarter: next } }),
+      }),
     },
     {
       id: 'target_date',
@@ -2420,74 +2496,115 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       sortable: true,
       defaultVisible: false,
       accessor: (r: BacklogItem) => r.target_date || '',
-      cell: makeDateCell((r: BacklogItem) => r.target_date ?? null),
+      cell: makeDateEditCell<BacklogItem>({
+        getDate: (r) => r.target_date ?? null,
+        onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { target_date: next } }),
+      }),
     },
     {
       id: 'delivery_manager',
       label: 'Delivery Manager',
-      width: 11,
+      width: 12,
       sortable: true,
       defaultVisible: false,
       accessor: (r: BacklogItem) => r.delivery_manager_name || '',
-      cell: makeAssigneeCell((r: BacklogItem) =>
-        r.delivery_manager_name
-          ? { name: r.delivery_manager_name, avatarUrl: resolveAvatarUrl(r.delivery_manager_name) ?? null }
+      cell: makeAssigneeEditCell<BacklogItem>({
+        getAssignee: (r) => r.delivery_manager_name
+          ? { id: r.delivery_manager_id ?? r.delivery_manager_name, name: r.delivery_manager_name, avatarUrl: resolveAvatarUrl(r.delivery_manager_name) ?? avatarsByName.get(r.delivery_manager_name.toLowerCase()) ?? null }
           : null,
-      ),
+        options: assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null })),
+        onChange: (row, next) => updateField.mutate({
+          id: row.id, source: row.source,
+          patch: { delivery_manager_id: next?.id ?? null, delivery_manager_name: next?.name ?? null },
+        }),
+      }),
     },
     {
       id: 'product_owner',
       label: 'Product Owner',
-      width: 11,
+      width: 12,
       sortable: true,
       defaultVisible: false,
       accessor: (r: BacklogItem) => r.product_owner_name || '',
-      cell: makeAssigneeCell((r: BacklogItem) =>
-        r.product_owner_name
-          ? { name: r.product_owner_name, avatarUrl: resolveAvatarUrl(r.product_owner_name) ?? null }
+      cell: makeAssigneeEditCell<BacklogItem>({
+        getAssignee: (r) => r.product_owner_name
+          ? { id: r.product_owner_id ?? r.product_owner_name, name: r.product_owner_name, avatarUrl: resolveAvatarUrl(r.product_owner_name) ?? avatarsByName.get(r.product_owner_name.toLowerCase()) ?? null }
           : null,
-      ),
+        options: assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null })),
+        onChange: (row, next) => updateField.mutate({
+          id: row.id, source: row.source,
+          patch: { product_owner_id: next?.id ?? null, product_owner_name: next?.name ?? null },
+        }),
+      }),
     },
     {
       id: 'stakeholders',
       label: 'Stakeholders',
-      width: 14,
+      width: 16,
       sortable: false,
       defaultVisible: false,
       accessor: (r: BacklogItem) => (r.stakeholders || []).join(', '),
-      cell: (r: BacklogItem) => {
-        const list = r.stakeholders || [];
-        if (list.length === 0) return <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>;
-        const visible = list.slice(0, 2).join(', ');
-        const extra = list.length > 2 ? ` +${list.length - 2}` : '';
-        return <span style={{ color: 'var(--ds-text, #172B4D)' }}>{visible}{extra}</span>;
-      },
+      cell: makeLabelsEditCell<BacklogItem>({
+        getLabels: (r) => r.stakeholders,
+        options: STAKEHOLDER_OPTIONS.map(o => o.value),
+        onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { stakeholders: next } }),
+      }),
     },
     {
       id: 'targeted_feature',
       label: 'Targeted feature',
-      width: 9,
+      width: 10,
       sortable: true,
       defaultVisible: false,
       accessor: (r: BacklogItem) => (r.targeted_feature ? '1' : '0'),
-      cell: (r: BacklogItem) => (
-        <span style={{ color: r.targeted_feature ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #6B778C)' }}>
-          {r.targeted_feature ? 'Yes' : '—'}
-        </span>
+      cell: ({ row: r }: { row: BacklogItem }) => (
+        <div style={{ padding: '4px 8px' }}>
+          <AkCheckbox
+            isChecked={!!r.targeted_feature}
+            onChange={(e) => updateField.mutate({
+              id: r.id, source: r.source,
+              patch: { targeted_feature: e.currentTarget.checked },
+            })}
+            label={r.targeted_feature ? 'Yes' : ''}
+          />
+        </div>
       ),
     },
     {
       id: 'arabic_title',
       label: 'Arabic title',
-      width: 14,
+      width: 16,
       sortable: false,
       defaultVisible: false,
       accessor: (r: BacklogItem) => r.arabic_title || '',
-      cell: (r: BacklogItem) => (
-        <span style={{ color: 'var(--ds-text, #172B4D)', direction: 'rtl', textAlign: 'right', display: 'block' }}>
-          {r.arabic_title || '—'}
-        </span>
-      ),
+      // Bespoke RTL inline-edit (matches BrArabicTitleSection pattern) since
+      // makeSummaryInlineEditCell doesn't expose `dir` / `placeholder` props.
+      cell: ({ row: r }: { row: BacklogItem }) => {
+        const value = r.arabic_title ?? '';
+        return (
+          <InlineEdit<string>
+            defaultValue={value}
+            label="Arabic title"
+            editView={({ errorMessage: _e, ...fp }: any) => (
+              <Textfield {...fp} autoFocus placeholder="اسم طلب الأعمال" />
+            )}
+            readView={() => (
+              <div dir="rtl" style={{
+                padding: '4px 8px', textAlign: 'right', cursor: 'pointer',
+                color: 'var(--ds-text, #172B4D)',
+              }}>
+                {value || <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>Click to add</span>}
+              </div>
+            )}
+            onConfirm={(next) => {
+              const trimmed = (next ?? '').trim();
+              if (trimmed === value) return;
+              updateField.mutate({ id: r.id, source: r.source, patch: { arabic_title: trimmed || null } });
+            }}
+            keepEditViewOpenOnBlur={false}
+          />
+        );
+      },
     },
     {
       id: '__actions',

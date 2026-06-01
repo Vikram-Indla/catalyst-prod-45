@@ -42,11 +42,29 @@ export const BIZ_SOURCE = 'biz' as const;
 // Field map: BacklogPage patch key → business_requests column name.
 // Only explicitly listed keys are written; unknown keys are silently dropped
 // to prevent Supabase errors from non-existent columns.
+//
+// 2026-06-01 (catalyst-clone Phase 4): extended with BR-specific column
+// patches so the product backlog supports inline edits for every field
+// the picker exposes. Mirrors src/types/business-request.ts canonical 22-col
+// schema; every entry has a 1:1 DB column on business_requests.
 const BIZ_PATCH_MAP: Record<string, string> = {
+  // Pre-existing (project-flavored field id → BR column):
   title: 'title',
   status: 'process_step',
   priority: 'urgency',
   due_date: 'end_date',
+  // 2026-06-01 BR-specific column edits:
+  request_type: 'request_type',
+  category: 'category',
+  theme: 'theme',
+  urgency: 'urgency',
+  planned_quarter: 'planned_quarter',
+  target_date: 'end_date',                        // "Target date" column → end_date
+  delivery_manager_id: 'project_manager_user_id', // Delivery Manager → PM uuid
+  product_owner_id: 'po_user_id',                  // Product Owner → PO uuid
+  stakeholders: 'stakeholders',
+  targeted_feature: 'targeted_feature',
+  arabic_title: 'arabic_title',
 };
 
 // ─── Public types ─────────────────────────────────────────────────────────────

@@ -19,6 +19,21 @@ import { z } from 'zod';
 /** Priority — maps to `business_requests.urgency`. */
 export const URGENCY_OPTIONS = ['Low', 'Normal', 'High', 'Critical'] as const;
 
+/** Category — 4 buckets used in Create + product backlog inline-edit. */
+export const CATEGORY_OPTIONS: { value: string; label: string }[] = [
+  { value: 'Industrial',          label: 'Industrial' },
+  { value: 'Ministry Website',    label: 'Ministry Website' },
+  { value: 'Internal Services',   label: 'Internal Services' },
+  { value: 'Innovation Platform', label: 'Innovation Platform' },
+];
+
+/** Planned-release quarters — product backlog inline-edit multi-select. */
+export const PLANNED_QUARTER_OPTIONS: { value: string; label: string }[] = [
+  { value: 'Q1 2026', label: 'Q1 2026' }, { value: 'Q2 2026', label: 'Q2 2026' },
+  { value: 'Q3 2026', label: 'Q3 2026' }, { value: 'Q4 2026', label: 'Q4 2026' },
+  { value: 'Q1 2027', label: 'Q1 2027' }, { value: 'Q2 2027', label: 'Q2 2027' },
+];
+
 /**
  * Strategic themes — Notion ⭐ Features (18 values, mostly Arabic).
  * Stored on `business_requests.theme` as freeform TEXT.
