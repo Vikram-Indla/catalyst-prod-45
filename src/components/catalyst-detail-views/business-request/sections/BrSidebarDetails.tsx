@@ -14,7 +14,7 @@
  *   - Product Owner     → po_user_id (UserSelect — profiles)
  *   - Stakeholders      → stakeholders (CreatableSelect, multi)
  *   - Planned release   → planned_quarter (CreatableSelect, multi)
- *   - Target date       → end_date (Atlaskit DatePicker)
+ *   - Target date       → end_date (CatalystDueDateField — canonical inline-edit)
  *   - Targeted feature  → targeted_feature (Checkbox)
  *
  *  Read-only:
@@ -33,7 +33,7 @@ import React, { type ReactNode, useState } from 'react';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { useQuery } from '@tanstack/react-query';
 import Select, { CreatableSelect } from '@atlaskit/select';
-import { DatePicker } from '@atlaskit/datetime-picker';
+import { CatalystDueDateField } from '@/components/shared/CatalystDueDateField';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useDemandProcessStepOptions } from '@/hooks/useDemandProcessSteps';
@@ -319,14 +319,10 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
       </SidebarRow>
 
       <SidebarRow label="Target date">
-        <div className="cv-date-field">
-          <DatePicker
-            value={request.end_date || undefined}
-            onChange={(val: string) => void onUpdate('end_date', val || null)}
-            placeholder="Select date"
-            dateFormat="DD/MM/YYYY"
-          />
-        </div>
+        <CatalystDueDateField
+          value={request.end_date ?? null}
+          onSave={(val) => onUpdate('end_date', val)}
+        />
       </SidebarRow>
 
       <div

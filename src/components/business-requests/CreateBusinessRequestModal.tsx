@@ -26,7 +26,7 @@
  * Product Owner     @atlaskit/select         Select<IconOption> + MiniAvatar formatOptionLabel
  * Stakeholders      @atlaskit/select         CreatableSelect (multi)
  * Planned release   @atlaskit/select         Select
- * Target date       @atlaskit/datetime-picker DatePicker
+ * Target date       CatalystDatePicker         (canonical form-context date)
  * Targeted feature  @atlaskit/checkbox       Checkbox
  * BRD upload        Custom drag-drop         No ADS equivalent — retained
  * Error banner      @atlaskit/primitives     Box xcss
@@ -67,7 +67,7 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
-import { DatePicker } from '@atlaskit/datetime-picker';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import DropdownMenu, { DropdownItemGroup, DropdownItem } from '@atlaskit/dropdown-menu';
 import Lozenge from '@atlaskit/lozenge';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
@@ -1040,14 +1040,14 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
                 )}
               </Field>
 
-              {/* ── Target date — @atlaskit/datetime-picker DatePicker ────── */}
+              {/* ── Target date — CatalystDatePicker (canonical form-context date) ── */}
               <Field name="end_date" label="Target date">
                 {() => (
-                  <DatePicker
-                    value={form.end_date || undefined}
-                    onChange={(val: string) => set('end_date', val || '')}
+                  <CatalystDatePicker
+                    value={form.end_date || null}
+                    onChange={(val: any) => set('end_date', val || '')}
                     placeholder="Select date"
-                    dateFormat="DD/MM/YYYY"
+                    showTodayButton={false}
                   />
                 )}
               </Field>
