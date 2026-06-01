@@ -24,7 +24,8 @@ export type IssueType =
   | 'Backend'
   | 'Design'
   | 'Defect'
-  | 'Production Incident';
+  | 'Production Incident'
+  | 'Business Request';
 
 /** A single status node in a workflow */
 export interface WorkflowState {
