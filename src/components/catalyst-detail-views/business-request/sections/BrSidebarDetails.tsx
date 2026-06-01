@@ -37,6 +37,9 @@ import { CatalystDueDateField } from '@/components/shared/CatalystDueDateField';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useDemandProcessStepOptions } from '@/hooks/useDemandProcessSteps';
+import { PriorityIcon } from '@/components/icons';
+import { resolveAvatarUrl } from '@/lib/avatars';
+import { useAuth } from '@/lib/auth';
 import type { BusinessRequest } from '@/types/business-request';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -46,6 +49,7 @@ import type { BusinessRequest } from '@/types/business-request';
 interface ProfileOption {
   value: string;
   label: string;
+  avatarUrl: string | null;
 }
 
 function useProfiles() {
@@ -54,11 +58,16 @@ function useProfiles() {
     queryFn: async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('id, full_name, email')
+        .select('id, full_name, email, avatar_url')
         .order('full_name');
       return (data ?? []).map((p) => ({
         value: p.id,
         label: p.full_name || p.email || p.id,
+        // CLAUDE.md §19: external avatar URLs (gravatar/cdn/supabase storage) are
+        // BANNED — they 404 / CORS-fail / load late, showing a broken-image icon.
+        // Use ONLY the bundled-local resolver; null → initials fallback (instant,
+        // no network). profiles.avatar_url is deliberately NOT consulted.
+        avatarUrl: resolveAvatarUrl(p.full_name ?? p.email) ?? null,
       }));
     },
     staleTime: 5 * 60 * 1000,
@@ -85,11 +94,36 @@ function useReleases() {
 // Static option vocabularies (mirror CreateBusinessRequestModal)
 // ─────────────────────────────────────────────────────────────────────────────
 
+// iconLevel maps DB urgency value → PriorityIcon level string
 const PRIORITY_OPTIONS = [
-  { value: 'High', label: 'High' },
-  { value: 'Normal', label: 'Medium' },
-  { value: 'Low', label: 'Low' },
+  { value: 'High',   label: 'High',   iconLevel: 'High' },
+  { value: 'Normal', label: 'Medium', iconLevel: 'Medium' },
+  { value: 'Low',    label: 'Low',    iconLevel: 'Low' },
 ];
+
+function PriorityOptionLabel({ opt }: { opt: typeof PRIORITY_OPTIONS[number] }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+      <PriorityIcon level={opt.iconLevel} size={16} label="" />
+      <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>{opt.label}</span>
+    </span>
+  );
+}
+
+function PersonOptionLabel({ opt }: { opt: ProfileOption }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+      {opt.avatarUrl ? (
+        <img src={opt.avatarUrl} alt={opt.label} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+      ) : (
+        <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 10, fontWeight: 700, color: 'var(--ds-text-inverse, #fff)' }}>
+          {opt.label.charAt(0).toUpperCase()}
+        </div>
+      )}
+      <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt.label}</span>
+    </span>
+  );
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Status appearance bridge
@@ -108,25 +142,26 @@ function SidebarRow({ label, children }: { label: string; children: ReactNode })
     <div
       style={{
         display: 'flex',
-        gap: 12,
-        alignItems: 'flex-start',
-        padding: '6px 0',
+        gap: 8,
+        alignItems: 'center',
+        padding: '4px 4px',
+        minHeight: 32,
       }}
     >
       <div
         style={{
-          width: 110,
+          width: 128,
           flexShrink: 0,
-          paddingTop: 8,
           fontSize: 12,
-          fontWeight: 600,
-          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-          fontFamily: 'var(--cp-font-body)',
+          fontWeight: 500,
+          lineHeight: '20px',
+          color: 'var(--ds-text-subtle, #505258)',
+          alignSelf: 'center',
         }}
       >
         {label}
       </div>
-      <div style={{ flex: 1, minWidth: 0, fontFamily: 'var(--cp-font-body)' }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
         {children}
       </div>
     </div>
@@ -137,10 +172,9 @@ function ReadOnlyValue({ value }: { value: string }) {
   return (
     <div
       style={{
-        padding: '6px 0',
-        fontSize: 13,
+        padding: '4px 0',
+        fontSize: 14,
         color: token('color.text', '#292A2E'),
-        fontFamily: 'var(--cp-font-body)',
       }}
     >
       {value}
@@ -180,6 +214,7 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
   const { options: statusOptions, isLoading: statusesLoading } = useDemandProcessStepOptions();
   const { data: profiles = [] } = useProfiles();
   const { data: releases = [] } = useReleases();
+  const { user } = useAuth();
   // Collapsible "Details" section — mirrors CatalystSidebarDetails exact pattern
   const [detailsCollapsed, setDetailsCollapsed] = useState(false);
 
@@ -241,7 +276,9 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
         <SidebarRow label="Status">
           <Select
             inputId="br-view--status"
-            classNamePrefix="cv-br-select"
+            classNamePrefix="br-sidebar-select"
+            appearance="subtle"
+            spacing="compact"
             options={statusOptions}
             value={statusOptions.find((o) => o.value === request.process_step) ?? null}
             onChange={(opt) => void onUpdate('process_step', (opt as { value: string } | null)?.value ?? null)}
@@ -256,50 +293,83 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
       <SidebarRow label="Priority">
         <Select
           inputId="br-view--priority"
-          classNamePrefix="cv-br-select"
+          classNamePrefix="br-sidebar-select"
+          appearance="subtle"
+          spacing="compact"
           options={PRIORITY_OPTIONS}
           value={PRIORITY_OPTIONS.find((o) => o.value === request.urgency) ?? null}
           onChange={(opt) => void onUpdate('urgency', (opt as { value: string } | null)?.value ?? null)}
           isClearable
           isSearchable={false}
           placeholder="Select priority"
+          formatOptionLabel={(opt) => <PriorityOptionLabel opt={opt as typeof PRIORITY_OPTIONS[number]} />}
         />
       </SidebarRow>
 
       <SidebarRow label="Delivery Manager">
-        <Select
-          inputId="br-view--dm"
-          classNamePrefix="cv-br-select"
-          options={profiles}
-          value={profiles.find((p) => p.value === request.project_manager_user_id) ?? null}
-          onChange={(opt) =>
-            void onUpdate('project_manager_user_id', (opt as { value: string } | null)?.value ?? null)
-          }
-          isClearable
-          isSearchable
-          placeholder="Unassigned"
-        />
+        <div>
+          <Select
+            inputId="br-view--dm"
+            classNamePrefix="br-sidebar-select"
+            appearance="subtle"
+            spacing="compact"
+            options={profiles}
+            value={profiles.find((p) => p.value === request.project_manager_user_id) ?? null}
+            onChange={(opt) =>
+              void onUpdate('project_manager_user_id', (opt as ProfileOption | null)?.value ?? null)
+            }
+            isClearable
+            isSearchable
+            placeholder="Unassigned"
+            formatOptionLabel={(opt) => <PersonOptionLabel opt={opt as ProfileOption} />}
+          />
+          {user?.id && user.id !== request.project_manager_user_id && (
+            <button
+              type="button"
+              onClick={() => void onUpdate('project_manager_user_id', user.id)}
+              style={{ fontSize: 11, color: 'var(--ds-link, #0052CC)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px', fontFamily: 'inherit' }}
+            >
+              Assign to me
+            </button>
+          )}
+        </div>
       </SidebarRow>
 
       <SidebarRow label="Product Owner">
-        <Select
-          inputId="br-view--po"
-          classNamePrefix="cv-br-select"
-          options={profiles}
-          value={profiles.find((p) => p.value === request.po_user_id) ?? null}
-          onChange={(opt) =>
-            void onUpdate('po_user_id', (opt as { value: string } | null)?.value ?? null)
-          }
-          isClearable
-          isSearchable
-          placeholder="Unassigned"
-        />
+        <div>
+          <Select
+            inputId="br-view--po"
+            classNamePrefix="br-sidebar-select"
+            appearance="subtle"
+            spacing="compact"
+            options={profiles}
+            value={profiles.find((p) => p.value === request.po_user_id) ?? null}
+            onChange={(opt) =>
+              void onUpdate('po_user_id', (opt as ProfileOption | null)?.value ?? null)
+            }
+            isClearable
+            isSearchable
+            placeholder="Unassigned"
+            formatOptionLabel={(opt) => <PersonOptionLabel opt={opt as ProfileOption} />}
+          />
+          {user?.id && user.id !== request.po_user_id && (
+            <button
+              type="button"
+              onClick={() => void onUpdate('po_user_id', user.id)}
+              style={{ fontSize: 11, color: 'var(--ds-link, #0052CC)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px', fontFamily: 'inherit' }}
+            >
+              Assign to me
+            </button>
+          )}
+        </div>
       </SidebarRow>
 
       <SidebarRow label="Planned release">
         <CreatableSelect
           inputId="br-view--planned-release"
-          classNamePrefix="cv-br-select"
+          classNamePrefix="br-sidebar-select"
+          appearance="subtle"
+          spacing="compact"
           isMulti
           isClearable
           options={releases}
@@ -329,7 +399,7 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
         style={{
           marginTop: 16,
           paddingTop: 12,
-          borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+          borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
           display: 'flex',
           flexDirection: 'column',
           gap: 4,

@@ -42,20 +42,20 @@ const MAX_FILE_SIZE = 6 * 1024 * 1024; // 6 MB / file
 const MAX_TOTAL = 30 * 1024 * 1024; // 30 MB / BR
 
 const FILE_TYPE_MAP: Record<string, { label: string; color: string; bg: string }> = {
-  pdf: { label: 'PDF', color: '#D92525', bg: '#D9252512' },
-  xls: { label: 'XLS', color: '#0D7331', bg: '#0D733112' },
-  xlsx: { label: 'XLS', color: '#0D7331', bg: '#0D733112' },
-  csv: { label: 'XLS', color: '#0D7331', bg: '#0D733112' },
-  doc: { label: 'DOC', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: '#2563EB12' },
-  docx: { label: 'DOC', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: '#2563EB12' },
-  png: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
-  jpg: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
-  jpeg: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
-  gif: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
-  webp: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
-  svg: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
+  pdf: { label: 'PDF', color: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
+  xls: { label: 'XLS', color: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
+  xlsx: { label: 'XLS', color: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
+  csv: { label: 'XLS', color: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
+  doc: { label: 'DOC', color: 'var(--ds-text-information, #0055CC)', bg: 'var(--ds-background-information, #E9F2FF)' },
+  docx: { label: 'DOC', color: 'var(--ds-text-information, #0055CC)', bg: 'var(--ds-background-information, #E9F2FF)' },
+  png: { label: 'IMG', color: 'var(--ds-text-discovery, #5E4DB2)', bg: 'var(--ds-background-discovery, #F3F0FF)' },
+  jpg: { label: 'IMG', color: 'var(--ds-text-discovery, #5E4DB2)', bg: 'var(--ds-background-discovery, #F3F0FF)' },
+  jpeg: { label: 'IMG', color: 'var(--ds-text-discovery, #5E4DB2)', bg: 'var(--ds-background-discovery, #F3F0FF)' },
+  gif: { label: 'IMG', color: 'var(--ds-text-discovery, #5E4DB2)', bg: 'var(--ds-background-discovery, #F3F0FF)' },
+  webp: { label: 'IMG', color: 'var(--ds-text-discovery, #5E4DB2)', bg: 'var(--ds-background-discovery, #F3F0FF)' },
+  svg: { label: 'IMG', color: 'var(--ds-text-discovery, #5E4DB2)', bg: 'var(--ds-background-discovery, #F3F0FF)' },
 };
-const DEFAULT_TYPE = { label: 'FILE', color: '#71717A', bg: '#71717A12' };
+const DEFAULT_TYPE = { label: 'FILE', color: 'var(--ds-text-subtlest, #626F86)', bg: 'var(--ds-background-neutral, #F1F2F4)' };
 
 function getFileType(name: string) {
   const ext = (name.split('.').pop() || '').toLowerCase();

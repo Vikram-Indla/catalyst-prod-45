@@ -19,6 +19,7 @@
 import React, {
   lazy, Suspense, useState, useCallback, useRef, useEffect, useMemo,
 } from 'react';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,7 +30,7 @@ import {
   type AllWorkView,
   type FilterState,
 } from '@/pages/project-hub/jira-list/components/AllWorkToolbar';
-import { BrListPanel } from './components/BrListPanel';
+import { WorkListPanel } from '@/pages/project-hub/jira-list/components/WorkListPanel';
 import { makeOpenItemHandler } from '@/pages/project-hub/jira-list/openItemDispatch';
 import { useItemSelection } from '@/hooks/useItemSelection';
 import { useBusinessRequestsByProduct } from '@/hooks/useBusinessRequests';
@@ -262,14 +263,7 @@ export default function ProductAllWorkView({ productCode, productId, productName
         borderBottom: '1px solid var(--ds-border, #DFE1E6)',
         background: 'var(--ds-surface, #FFFFFF)',
       }}>
-        <div style={{
-          width: 24, height: 24, borderRadius: 4, flexShrink: 0,
-          background: 'var(--ds-background-brand-bold, #0052CC)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 11, fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)',
-        }}>
-          {productCode.slice(0, 2)}
-        </div>
+        <ProjectIcon projectKey={productCode} size="small" name={productName || productCode} />
         <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--cp-font-body)' }}>
           {productName || productCode}
         </span>
@@ -335,7 +329,7 @@ export default function ProductAllWorkView({ productCode, productId, productName
           borderRight: '1px solid var(--ds-border, #DFE1E6)',
           overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: 0,
         }}>
-          <BrListPanel
+          <WorkListPanel
             items={filteredItems}
             selectedKey={activeItem?.id ?? null}
             onSelect={id => {
@@ -347,6 +341,7 @@ export default function ProductAllWorkView({ productCode, productId, productName
               else selectItem(id);
             }}
             externalQuery={toolbarQuery}
+            disableAssigneePicker
           />
           {/* Footer count (mirrors ProjectAllWorkView pagination footer) */}
           <div style={{

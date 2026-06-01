@@ -57,16 +57,14 @@ export function BrArabicTitleSection({ request, onUpdate }: Props) {
           fontSize: 11,
           color: token('color.text.subtle', '#6B6E76'),
           fontWeight: 600,
-          textTransform: 'uppercase',
           marginBottom: 6,
-          letterSpacing: '0.04em',
           fontFamily: 'var(--cp-font-body)',
         }}
       >
         Arabic title
       </div>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ flex: 1, minWidth: 0 }} className="cv-title-edit-hide-label">
           <InlineEdit<string>
             label="Arabic title"
             defaultValue={value}

@@ -21,7 +21,6 @@ import { useProductHubBusinessRequest } from './useProductHubBusinessRequest';
 import { useDuplicateBusinessRequest } from '@/hooks/useBusinessRequests';
 import {
   BrTitleSection,
-  BrArabicTitleSection,
   BrCenterDetails,
   BrDescriptionSection,
   BrAttachmentsSection,
@@ -41,6 +40,7 @@ import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewBusinessRequestV3({
   isOpen, onClose, itemId,
+  projectKey,
   panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
 }: CatalystViewBaseProps) {
   const { request, resolvedId, isLoading, updateField, deleteRequest } =
@@ -104,7 +104,6 @@ export default function CatalystViewBusinessRequestV3({
     () => (
       <>
         <BrTitleSection request={request} onUpdate={updateField} />
-        <BrArabicTitleSection request={request} onUpdate={updateField} />
         <CatalystQuickActions />
         <BrCenterDetails request={request} onUpdate={updateField} />
         <BrDescriptionSection request={request} onUpdate={updateField} />
@@ -156,7 +155,7 @@ export default function CatalystViewBusinessRequestV3({
         fullPageMode={fullPageMode}
         itemType="Business Request"
         itemKey={request?.request_key ?? null}
-        projectKey="MIM"
+        projectKey={projectKey ?? request?.project_key ?? 'MIM'}
         projectName="Product Hub"
         moreMenuItems={useMemo(
           () => [

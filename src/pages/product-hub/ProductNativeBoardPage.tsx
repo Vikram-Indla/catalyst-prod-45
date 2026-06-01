@@ -15,6 +15,7 @@
  * dark mode, density, group-by, filters, keyboard nav — is unchanged.
  */
 import React, { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Button from '@atlaskit/button/new';
@@ -729,14 +730,7 @@ export default function ProductNativeBoardPage() {
           padding: '6px 16px', borderBottom: `1px solid ${tk.borderSubtle}`,
           background: tk.pageBg, flexShrink: 0,
         }}>
-          <div style={{
-            width: 20, height: 20, borderRadius: 3, flexShrink: 0,
-            background: 'var(--ds-background-brand-bold, #0052CC)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 10, fontWeight: 700, color: '#fff',
-          }}>
-            {productMeta.code.slice(0, 2)}
-          </div>
+          <ProjectIcon projectKey={productMeta.code} size="small" name={productMeta.name} />
           <span style={{ fontSize: 13, fontWeight: 500, color: tk.textSecondary, fontFamily: 'var(--cp-font-body)' }}>
             {productMeta.name}
           </span>
