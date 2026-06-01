@@ -1,20 +1,16 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import Lozenge from '@atlaskit/lozenge';
-import { Search, SlidersHorizontal, Plus, Star } from '@/lib/atlaskit-icons';
+import { Search, Plus, Star } from '@/lib/atlaskit-icons';
 import { useBoards } from '@/hooks/useBoards';
 import { useDeleteBoard, useMoveBoard, useCopyBoard, useToggleBoardStar } from '@/hooks/useBoardMutations';
 import { useProjects } from '@/hooks/useProjectHub';
 import { JiraTable } from '@/components/shared/JiraTable';
-import { makeSummaryCell, makeAssigneeCell } from '@/components/shared/JiraTable/cells';
 import type { Column } from '@/components/shared/JiraTable/types';
 import CreateBoardModal from './CreateBoardModal';
 import BoardSettingsDrawer from './BoardSettingsDrawer';
 import Spinner from '@atlaskit/spinner';
 import type { BoardListItem } from '@/types/board';
-
-type TabFilter = 'all' | 'project' | 'personal' | 'starred';
 
 interface BoardManagerPageProps {
   projectIdOverride?: string;
@@ -37,12 +33,30 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
   const toggleStar = useToggleBoardStar();
   const { data: allProjects = [] } = useProjects();
   const [search, setSearch] = useState('');
-  const [activeTab, setActiveTab] = useState<TabFilter>('all');
+  const [spaceFilter, setSpaceFilter] = useState<string | null>(null);
+  const [userFilter, setUserFilter] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [settingsBoard, setSettingsBoard] = useState<BoardListItem | null>(null);
   const [searchFocused, setSearchFocused] = useState(false);
   const [moveTarget, setMoveTarget] = useState<BoardListItem | null>(null);
   const [copyTarget, setCopyTarget] = useState<BoardListItem | null>(null);
+
+  // Unique space labels for Space dropdown
+  const spaceOptions = useMemo(() => {
+    const seen = new Set<string>();
+    boards.forEach(b => {
+      const label = b.projectId ?? '';
+      if (label) seen.add(label);
+    });
+    return Array.from(seen);
+  }, [boards]);
+
+  // Unique admin (lead) names for User dropdown
+  const userOptions = useMemo(() => {
+    const seen = new Set<string>();
+    boards.forEach(b => { if (b.leadName) seen.add(b.leadName); });
+    return Array.from(seen);
+  }, [boards]);
 
   const filtered = useMemo(() => {
     let list = boards;
@@ -50,27 +64,14 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
       const q = search.toLowerCase();
       list = list.filter(b => b.name.toLowerCase().includes(q));
     }
-    switch (activeTab) {
-      case 'project': return list.filter(b => !b.isPersonal);
-      case 'personal': return list.filter(b => b.isPersonal);
-      case 'starred': return list.filter(b => b.isStarred);
-      default: return list;
+    if (spaceFilter) {
+      list = list.filter(b => b.projectId === spaceFilter);
     }
-  }, [boards, search, activeTab]);
-
-  const tabCounts = useMemo(() => ({
-    all: boards.length,
-    project: boards.filter(b => !b.isPersonal).length,
-    personal: boards.filter(b => b.isPersonal).length,
-    starred: boards.filter(b => b.isStarred).length,
-  }), [boards]);
-
-  const tabs: { key: TabFilter; label: string }[] = [
-    { key: 'all', label: 'All boards' },
-    { key: 'project', label: 'Project boards' },
-    { key: 'personal', label: 'Personal' },
-    { key: 'starred', label: 'Starred' },
-  ];
+    if (userFilter) {
+      list = list.filter(b => b.leadName === userFilter);
+    }
+    return list;
+  }, [boards, search, spaceFilter, userFilter]);
 
   const handleDelete = useCallback((board: BoardListItem) => {
     if (!projectId) return;
@@ -81,6 +82,9 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
   const locationLabel = projectName
     ? `${projectName}${projectKey ? ` (${projectKey})` : ''}`
     : (projectKey ?? '—');
+
+  // Project avatar initial letter + color for Location column
+  const locationInitial = (projectName ?? projectKey ?? '?')[0]?.toUpperCase() ?? '?';
 
   const columns: Column<BoardListItem>[] = useMemo(() => [
     {
@@ -109,29 +113,50 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
     },
     {
       id: 'name',
-      label: 'Board name',
+      label: 'Name',
       flex: true,
       alwaysVisible: true,
       accessor: (b) => b.name,
-      cell: makeSummaryCell((b) => b.name),
-    },
-    {
-      id: 'type',
-      label: 'Type',
-      width: 12,
-      accessor: (b) => b.boardType,
       cell: ({ row }) => (
-        <Lozenge appearance={row.boardType === 'scrum' ? 'inprogress' : 'default'}>
-          {row.boardType === 'scrum' ? 'Scrum' : 'Kanban'}
-        </Lozenge>
+        <span style={{
+          color: 'var(--ds-link, #0052CC)',
+          fontSize: 14,
+          fontWeight: 400,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          cursor: 'pointer',
+        }}>
+          {row.name}
+        </span>
       ),
     },
     {
-      id: 'lead',
-      label: 'Lead',
+      id: 'admin',
+      label: 'Admin',
       width: 18,
       accessor: (b) => b.leadName,
-      cell: makeAssigneeCell((b) => b.leadName ? { name: b.leadName, avatarUrl: b.leadAvatarUrl } : null),
+      cell: ({ row }) => row.leadName ? (
+        <span style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          fontSize: 14, color: 'var(--ds-text, #172B4D)',
+        }}>
+          <span style={{
+            width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+            background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
+            color: 'var(--ds-text-accent-blue, #0055CC)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 11, fontWeight: 600,
+          }}>
+            {row.leadName[0]?.toUpperCase()}
+          </span>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {row.leadName}
+          </span>
+        </span>
+      ) : (
+        <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>
+      ),
     },
     {
       id: 'location',
@@ -140,13 +165,23 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
       accessor: () => locationLabel,
       cell: () => (
         <span style={{
-          color: 'var(--ds-text-subtle, #505258)',
-          fontSize: 14,
+          display: 'flex', alignItems: 'center', gap: 8,
+          fontSize: 14, color: 'var(--ds-text-subtle, #505258)',
           overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
         }}>
-          {locationLabel}
+          {/* Project avatar */}
+          <span style={{
+            width: 16, height: 16, borderRadius: 2, flexShrink: 0,
+            background: 'var(--ds-background-accent-teal-subtler, #C6EDFB)',
+            color: 'var(--ds-text-accent-teal, #164555)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 10, fontWeight: 700,
+          }}>
+            {locationInitial}
+          </span>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {locationLabel}
+          </span>
         </span>
       ),
     },
@@ -166,7 +201,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
         />
       ),
     },
-  ], [locationLabel, handleDelete, projectId, toggleStar]);
+  ], [locationLabel, locationInitial, handleDelete, projectId, toggleStar]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--ds-surface, #FFFFFF)' }}>
@@ -177,17 +212,24 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
       )}
       {/* Header */}
       <div style={{ background: 'var(--ds-surface, #FFFFFF)', borderBottom: '1px solid var(--ds-border, #DFE1E6)', flexShrink: 0 }}>
-        <div style={{ padding: '16px 24px 0' }}>
-          <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 8 }}>
-            Project hub › Boards
+        <div style={{ padding: '16px 24px 12px' }}>
+          {/* Title row — h1 left, Create board right (Jira pattern) */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
+              Boards
+            </h1>
+            <button onClick={() => setCreateOpen(true)} style={{
+              display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
+              background: 'var(--ds-background-brand-bold, #0052CC)', border: '2px solid transparent',
+              borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 500,
+              color: 'var(--ds-text-inverse, #FFFFFF)',
+            }}>
+              <Plus size={14} strokeWidth={2.5} /> Create board
+            </button>
           </div>
-          <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: '0 0 4px' }}>
-            Boards
-          </h1>
-          <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '0 0 12px' }}>
-            {boards.length} board{boards.length !== 1 ? 's' : ''} in this project
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          {/* Toolbar — search + Space dropdown + User dropdown */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {/* Search */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8, height: 32, padding: '0 8px',
               background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
@@ -205,43 +247,63 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
                 }}
               />
             </div>
-            <button style={{
-              display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
-              background: 'var(--ds-background-neutral, #F1F2F4)', border: '2px solid transparent',
-              borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 500,
-              color: 'var(--ds-text, #172B4D)',
-            }}>
-              <SlidersHorizontal size={14} /> Filter
-            </button>
-            <button onClick={() => setCreateOpen(true)} style={{
-              display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
-              background: 'var(--ds-background-brand-bold, #0052CC)', border: '2px solid transparent',
-              borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 500, color: 'var(--ds-text-inverse, #FFFFFF)',
-            }}>
-              <Plus size={14} strokeWidth={2.5} /> Create board
-            </button>
-          </div>
-          <div style={{ display: 'flex', gap: 0, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
-            {tabs.map(tab => {
-              const active = activeTab === tab.key;
-              return (
-                <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
-                  display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px',
-                  border: 'none', background: 'transparent', cursor: 'pointer',
-                  fontSize: 14, fontWeight: active ? 600 : 400,
-                  color: active ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
-                  borderBottom: active ? '2px solid var(--ds-link, #0052CC)' : '2px solid transparent',
-                  marginBottom: 0,
-                }}>
-                  {tab.label}
-                  <span style={{
-                    fontSize: 11, fontWeight: 600, padding: '0 8px', borderRadius: 12,
-                    background: active ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-background-neutral, #F1F2F4)',
-                    color: active ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtlest, #6B778C)',
-                  }}>{tabCounts[tab.key]}</span>
+            {/* Space dropdown */}
+            <DropdownMenu
+              trigger={({ triggerRef, ...triggerProps }) => (
+                <button
+                  {...triggerProps}
+                  ref={triggerRef as React.Ref<HTMLButtonElement>}
+                  type="button"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 4, height: 32,
+                    background: spaceFilter ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-background-neutral, #F1F2F4)',
+                    border: `2px solid ${spaceFilter ? 'var(--ds-border-selected, #388BFF)' : 'transparent'}`,
+                    borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 400,
+                    padding: '0 12px',
+                    color: spaceFilter ? 'var(--ds-link, #0052CC)' : 'var(--ds-text, #172B4D)',
+                  }}
+                >
+                  Space {spaceFilter ? `· ${spaceFilter.slice(0, 8)}` : ''}
                 </button>
-              );
-            })}
+              )}
+            >
+              <DropdownItemGroup>
+                <DropdownItem onClick={() => setSpaceFilter(null)}>All spaces</DropdownItem>
+                {spaceOptions.map(s => (
+                  <DropdownItem key={s} onClick={() => setSpaceFilter(s)}>
+                    {s}
+                  </DropdownItem>
+                ))}
+              </DropdownItemGroup>
+            </DropdownMenu>
+            {/* User dropdown */}
+            <DropdownMenu
+              trigger={({ triggerRef, ...triggerProps }) => (
+                <button
+                  {...triggerProps}
+                  ref={triggerRef as React.Ref<HTMLButtonElement>}
+                  type="button"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 4, height: 32,
+                    background: userFilter ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-background-neutral, #F1F2F4)',
+                    border: `2px solid ${userFilter ? 'var(--ds-border-selected, #388BFF)' : 'transparent'}`,
+                    borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 400,
+                    color: userFilter ? 'var(--ds-link, #0052CC)' : 'var(--ds-text, #172B4D)',
+                  }}
+                >
+                  User {userFilter ? `· ${userFilter.split(' ')[0]}` : ''}
+                </button>
+              )}
+            >
+              <DropdownItemGroup>
+                <DropdownItem onClick={() => setUserFilter(null)}>All users</DropdownItem>
+                {userOptions.map(u => (
+                  <DropdownItem key={u} onClick={() => setUserFilter(u)}>
+                    {u}
+                  </DropdownItem>
+                ))}
+              </DropdownItemGroup>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -314,7 +376,6 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
 }
 
 // ─── Board row kebab menu ────────────────────────────────────────────────────
-// Separate component so it can use top-level imports cleanly.
 // CLAUDE.md 2026-05-10: uses @atlaskit/dropdown-menu, not a hand-rolled menu.
 function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy }: {
   board: BoardListItem;
