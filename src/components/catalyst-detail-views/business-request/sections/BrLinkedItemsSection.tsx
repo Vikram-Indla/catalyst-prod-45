@@ -43,9 +43,7 @@ export function BrLinkedItemsSection({ request, projectKey = 'MIM' }: Props) {
           fontSize: 11,
           color: token('color.text.subtle', '#6B6E76'),
           fontWeight: 600,
-          textTransform: 'uppercase',
           marginBottom: 8,
-          letterSpacing: '0.04em',
           fontFamily: 'var(--cp-font-body)',
         }}
       >

@@ -103,23 +103,25 @@ export function WatchersChip({ issueKey }: Props) {
         />
       </Tooltip>
 
-      {/* Count — click opens watcher list popover (Jira parity) */}
-      <Tooltip content={`${count} watcher${count === 1 ? '' : 's'} — click to view`} position="bottom">
-        <button
-          ref={countRef}
-          onClick={() => setListOpen(o => !o)}
-          style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            padding: '0 6px', minWidth: 16, textAlign: 'center',
-            fontSize: 14, fontWeight: 500, color: 'var(--ds-text-subtle, #505258)',
-            fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
-            lineHeight: '32px', borderRadius: 3,
-          }}
-          aria-label={`${count} watchers — open list`}
-        >
-          {count}
-        </button>
-      </Tooltip>
+      {/* Count — only rendered when there are watchers; clicking opens the list popover */}
+      {count > 0 && (
+        <Tooltip content={`${count} watcher${count === 1 ? '' : 's'} — click to view`} position="bottom">
+          <button
+            ref={countRef}
+            onClick={() => setListOpen(o => !o)}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              padding: '0 6px', minWidth: 16, textAlign: 'center',
+              fontSize: 14, fontWeight: 500, color: 'var(--ds-text-subtle, #505258)',
+              fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+              lineHeight: '32px', borderRadius: 3,
+            }}
+            aria-label={`${count} watchers — open list`}
+          >
+            {count}
+          </button>
+        </Tooltip>
+      )}
 
       {/* Watcher list popover — opens from count click */}
       {listOpen && (
