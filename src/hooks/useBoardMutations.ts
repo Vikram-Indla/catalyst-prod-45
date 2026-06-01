@@ -113,6 +113,22 @@ export function useToggleBoardStar() {
           role: 'viewer',
         }, { onConflict: 'board_id,user_id' });
       if (error) throw error;
+
+      // Bridge to user_starred_items so the board surfaces on Home/For You
+      if (isStarred) {
+        await supabase.from('user_starred_items').upsert({
+          user_id: user.id,
+          item_id: boardId,
+          item_type: 'board',
+          starred_at: new Date().toISOString(),
+        }, { onConflict: 'user_id,item_id,item_type' });
+      } else {
+        await supabase.from('user_starred_items')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('item_id', boardId)
+          .eq('item_type', 'board');
+      }
       return { projectId };
     },
     onMutate: async ({ boardId, projectId, isStarred }) => {
