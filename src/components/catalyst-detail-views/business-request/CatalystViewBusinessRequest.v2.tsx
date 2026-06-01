@@ -39,7 +39,6 @@ import {
   BrKeyDetails,
   BrArabicTitleSection,
   BrDescriptionSection,
-  BrScoringSection,
   BrAttachmentsSection,
   BrLinkedItemsSection,
   BrSidebarDetails,
@@ -162,7 +161,6 @@ export default function CatalystViewBusinessRequestV2({
       <BrKeyDetails request={request} />
       <BrArabicTitleSection request={request} onUpdate={updateField} />
       <BrDescriptionSection request={request} onUpdate={updateField} />
-      <BrScoringSection request={request} onUpdate={updateField} />
       <BrAttachmentsSection request={request} />
       <BrLinkedItemsSection request={request} />
       {request?.request_key && resolvedId && (

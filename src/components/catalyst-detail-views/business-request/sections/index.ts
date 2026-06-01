@@ -14,6 +14,7 @@ export { BrKeyDetails } from './BrKeyDetails';
 export { BrStatusSection } from './BrStatusSection';
 export { BrArabicTitleSection } from './BrArabicTitleSection';
 export { BrDescriptionSection } from './BrDescriptionSection';
+/** @deprecated Scoring fields (business_value/complexity/executive_urgency/business_score) removed — not in the canonical BR field set. Do not re-add. */
 export { BrScoringSection } from './BrScoringSection';
 export { BrAttachmentsSection } from './BrAttachmentsSection';
 /** @deprecated cycle 3 — folded into BrAttachmentsSection. Delete after cycle 4. */
