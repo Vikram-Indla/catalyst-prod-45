@@ -25,13 +25,14 @@
  *   Download → @atlaskit/icon/glyph/download
  *   Trash    → @atlaskit/icon/glyph/trash
  */
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { IconButton } from '@atlaskit/button/new';
 import UploadIcon from '@atlaskit/icon/glyph/upload';
 import AttachmentIcon from '@atlaskit/icon/glyph/attachment';
 import DownloadIcon from '@atlaskit/icon/glyph/download';
 import TrashIcon from '@atlaskit/icon/glyph/trash';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { token } from '@atlaskit/tokens';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { flag } from '@/components/shared/JiraTable/flags';
@@ -87,6 +88,8 @@ export function BrAttachmentsSection({ request }: Props) {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
+  // Collapsible — mirrors Story AttachmentsSection (default collapsed when empty)
+  const [collapsed, setCollapsed] = useState(true);
 
   const requestId = request?.id ?? null;
 
@@ -114,6 +117,11 @@ export function BrAttachmentsSection({ request }: Props) {
       }>;
     },
   });
+
+  // Auto-expand once attachments exist (parity with Story's collapse-when-empty default)
+  useEffect(() => {
+    if (files.length > 0) setCollapsed(false);
+  }, [files.length]);
 
   const totalUsed = useMemo(
     () => files.reduce((s, f) => s + (f.file_size || 0), 0),
@@ -204,20 +212,33 @@ export function BrAttachmentsSection({ request }: Props) {
       style={{ marginBottom: 20 }}
       aria-label="Attachments"
     >
+      {/* Section header — exact Story spec (16px/653, ChevronRight toggle, no uppercase) */}
       <div
+        onClick={() => setCollapsed(c => !c)}
         style={{
-          fontSize: 11,
-          color: token('color.text.subtle', '#6B6E76'),
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          marginBottom: 8,
-          letterSpacing: '0.04em',
-          fontFamily: 'var(--cp-font-body)',
+          display: 'flex', alignItems: 'center', gap: 6, height: 40,
+          background: 'transparent', cursor: 'pointer', userSelect: 'none',
         }}
       >
-        Attachments
+        <span style={{
+          display: 'inline-flex',
+          transition: 'transform 0.15s ease',
+          transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
+          color: 'var(--ds-icon-subtle, #626F86)',
+        }}>
+          <ChevronRightIcon size="small" primaryColor="currentColor" />
+        </span>
+        <div style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>
+          Attachments
+        </div>
+        {files.length > 0 && (
+          <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--ds-text-subtlest, #8590A2)', marginLeft: 4 }}>
+            {files.length}
+          </span>
+        )}
       </div>
 
+      {!collapsed && (<>
       {/* Drop zone */}
       <div
         onDragOver={(e) => {
@@ -434,6 +455,7 @@ export function BrAttachmentsSection({ request }: Props) {
           })
         )}
       </div>
+      </>)}
     </section>
   );
 }

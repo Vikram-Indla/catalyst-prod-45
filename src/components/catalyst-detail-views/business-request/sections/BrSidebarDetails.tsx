@@ -29,7 +29,8 @@
  * keep the diff focused. Cycle 3 may extract them to
  * `src/components/business-requests/shared/` if other consumers need them.
  */
-import React, { type ReactNode } from 'react';
+import React, { type ReactNode, useState } from 'react';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { useQuery } from '@tanstack/react-query';
 import Select, { CreatableSelect } from '@atlaskit/select';
 import { Checkbox } from '@atlaskit/checkbox';
@@ -209,6 +210,8 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
   const { options: statusOptions, isLoading: statusesLoading } = useDemandProcessStepOptions();
   const { data: profiles = [] } = useProfiles();
   const { data: releases = [] } = useReleases();
+  // Collapsible "Details" section — mirrors CatalystSidebarDetails exact pattern
+  const [detailsCollapsed, setDetailsCollapsed] = useState(false);
 
   if (!request) return null;
   const requestTypeRaw = (request as unknown as { request_type?: string | null }).request_type ?? null;
@@ -237,19 +240,31 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
         </div>
       )}
 
-      <div
-        style={{
-          fontSize: 11,
-          color: token('color.text.subtle', '#6B6E76'),
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          letterSpacing: '0.04em',
-          fontFamily: 'var(--cp-font-body)',
-          marginBottom: 8,
-        }}
-      >
-        Details
-      </div>
+      {/* "Details" section header — exact Story spec (CatalystSidebarDetails.tsx:560-574):
+          16px/653/var(--ds-text,#292A2E), ChevronRight toggle, 40px height, no uppercase */}
+      <div style={{ marginBottom: 8 }}>
+        <div
+          onClick={() => setDetailsCollapsed(c => !c)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6, height: 40,
+            padding: '0 0', background: 'transparent', cursor: 'pointer', userSelect: 'none',
+          }}
+        >
+          <span style={{
+            display: 'inline-flex',
+            transition: 'transform 0.15s ease',
+            transform: detailsCollapsed ? 'rotate(0deg)' : 'rotate(90deg)',
+            color: 'var(--ds-icon-subtle, #626F86)',
+          }}>
+            <ChevronRightIcon size="small" primaryColor="currentColor" />
+          </span>
+          <div style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>
+            Details
+          </div>
+        </div>
+
+      {!detailsCollapsed && (
+      <>
 
       {/* Status row — hidden when statusPill is in the header (V3 Story-parity).
           V2 callers that don't pass statusPill continue to see the Select row. */}
@@ -439,6 +454,9 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
         <SidebarRow label="Updated">
           <ReadOnlyValue value={fmtDate(request.updated_at)} />
         </SidebarRow>
+      </div>
+        </>
+      )}
       </div>
     </aside>
   );

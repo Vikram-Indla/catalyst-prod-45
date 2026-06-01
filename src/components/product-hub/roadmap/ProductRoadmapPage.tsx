@@ -13,10 +13,7 @@ import { RoadmapKPIStrip } from './RoadmapKPIStrip';
 import { RoadmapToolbar } from './RoadmapToolbar';
 import { RoadmapFilters } from './RoadmapFilters';
 import { RoadmapTimeline } from './RoadmapTimeline';
-// jira-compare cycle 4 — RequestDetailPanel replaced by CatalystViewBusinessRequestV2.
-// Legacy import retained as commented sunset breadcrumb.
-// import { RequestDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
-import CatalystViewBusinessRequestV2 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v2';
+import CatalystViewBusinessRequestV3 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v3';
 import type { TimelineRequest } from '@/types/producthub/request';
 
 import { AddRequestModal } from './AddRequestModal';
@@ -314,14 +311,14 @@ export function ProductRoadmapPage() {
       )}
 
       {isDetailOpen && selectedAsTimeline && (
-        <CatalystViewBusinessRequestV2
+        <CatalystViewBusinessRequestV3
           isOpen={isDetailOpen}
           onClose={() => setIsDetailOpen(false)}
-          requestKey={
+          itemId={
             (selectedAsTimeline as { request_key?: string | null; initiative_key?: string | null })
               .request_key ??
             (selectedAsTimeline as { initiative_key?: string | null }).initiative_key ??
-            null
+            ''
           }
         />
       )}

@@ -5,7 +5,7 @@
  *   - Global (/product-hub/products, /product-hub/backlog, etc.):
  *       Shows "All Products" nav link + Recent BRs section.
  *   - Per-product (/product-hub/{CODE}/*):
- *       Shows product name header + Dashboard / Backlog / Boards / All Work nav
+ *       Shows product name header + Dashboard / Backlog / Boards / Product Filters nav
  *       + "← All Products" back link.
  *
  * Added 2026-05-16 for /product-hub/products.
@@ -21,7 +21,6 @@ import {
   LayoutDashboard,
   ClipboardList,
   Columns3,
-  Network,
   ArrowLeft,
   Settings,
   Filter,
@@ -96,9 +95,8 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
         items: [
           { id: 'dashboard', title: 'Product Dashboard', path: `${base}/dashboard`, icon: LayoutDashboard, exact: true  },
           { id: 'backlog',   title: 'Product Backlog',   path: `${base}/backlog`,   icon: ClipboardList,   exact: true  },
-          { id: 'allwork',   title: 'All Work',          path: `${base}/allwork`,   icon: Network,         exact: false },
           { id: 'boards',    title: 'Product Board',     path: `${base}/boards`,    icon: Columns3,        exact: false },
-          { id: 'filters',   title: 'Filters',           path: `${base}/filters`,   icon: Filter,          exact: false },
+          { id: 'filters',   title: 'Product Filters',   path: `${base}/filters`,   icon: Filter,          exact: false },
         ],
       },
     ],
@@ -125,7 +123,7 @@ const GLOBAL_CONFIG: SidebarConfig = {
         },
         {
           id: 'filters',
-          title: 'Filters',
+          title: 'Product Filters',
           path: '/product-hub/filters',
           icon: Filter,
           exact: false,

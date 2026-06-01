@@ -2,10 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Search, Plus, Download, LayoutList, LayoutGrid, Columns3, Package } from '@/lib/atlaskit-icons';
 import { useRequestsBacklog } from '@/hooks/useRequestsBacklog';
-// jira-compare cycle 4 — RequestDetailPanel replaced by CatalystViewBusinessRequestV2.
-// Legacy import retained as commented sunset breadcrumb.
-// import { RequestDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
-import CatalystViewBusinessRequestV2 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v2';
+import CatalystViewBusinessRequestV3 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v3';
 import { CreateRequestDrawer } from '@/components/producthub/shared/CreateRequestDrawer';
 import { PCRequestCard } from '@/components/producthub/cards/PCRequestCard';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -320,16 +317,15 @@ const CardsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Detail panel — canonical CatalystViewBusinessRequestV2 (cycle 4 swap). */}
       {selectedInitiative && (
-        <CatalystViewBusinessRequestV2
+        <CatalystViewBusinessRequestV3
           isOpen={!!selectedInitiative}
           onClose={() => setSelectedId(null)}
-          requestKey={
+          itemId={
             (selectedInitiative as { request_key?: string | null; initiative_key?: string | null })
               .request_key ??
             (selectedInitiative as { initiative_key?: string | null }).initiative_key ??
-            null
+            ''
           }
         />
       )}
