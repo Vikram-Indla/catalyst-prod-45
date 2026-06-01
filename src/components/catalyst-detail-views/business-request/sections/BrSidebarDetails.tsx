@@ -102,7 +102,7 @@ function useReleases() {
 function PersonOptionLabel({ opt }: { opt: ProfileOption }) {
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-      <Avatar size="small" name={opt.label} />
+      <Avatar size="small" name={opt.label} src={opt.avatarUrl ?? undefined} />
       <span style={{ fontSize: 14, color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt.label}</span>
     </span>
   );

@@ -87,6 +87,7 @@ import {
 } from '@/types/business-request';
 // Canonical Catalyst icon — backed by useIconOverrides (admin overrides via /admin/icons).
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { PriorityIcon as CanonicalPriorityIcon } from '@/components/icons/PriorityIcon';
 import { CATALYST_PRIORITIES } from '@/lib/catalyst-priority';
 
@@ -116,6 +117,7 @@ function MiniAvatar({ name }: { name: string; avatarUrl?: string | null }) {
     <Avatar
       size="small"
       name={name}
+      src={resolveAvatarUrl(name) ?? undefined}
     />
   );
 }

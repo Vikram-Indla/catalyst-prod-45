@@ -74,6 +74,7 @@ import { useAuth } from '@/hooks/useAuth';
 // WorkItemTypeIcon is the canonical Catalyst icon — backed by useIconOverrides
 // so /admin/icons overrides are honoured automatically (Bucket C, 2026-05-09).
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import ProjectIcon from '@/components/shared/ProjectIcon';
 // Canonical priority icon — respects admin overrides + bundled registry.
 // Replaces inline custom SVG that bypassed the override system.
@@ -365,6 +366,7 @@ function MiniAvatar({ name }: { name: string; avatarUrl?: string | null }) {
     <Avatar
       size="small"
       name={name}
+      src={resolveAvatarUrl(name) ?? undefined}
     />
   );
 }
