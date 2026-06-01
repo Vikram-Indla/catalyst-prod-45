@@ -2377,6 +2377,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       defaultVisible: false,
       accessor: (r: BacklogItem) => r.request_type || '',
       cell: ({ row: r }: { row: BacklogItem }) => (
+        <div className="cv-cell-inline-edit-no-label">
         <InlineEdit<string | null>
           defaultValue={r.request_type ?? null}
           label="Type"
@@ -2393,11 +2394,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           )}
           readView={() => (
             <div style={{ padding: '4px 8px', cursor: 'pointer', color: 'var(--ds-text, #172B4D)', textTransform: 'capitalize' }}>
-              {r.request_type || <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>}
+              {r.request_type || <span data-jira-cell-ghost>Add type</span>}
             </div>
           )}
           onConfirm={(next) => updateField.mutate({ id: r.id, source: r.source, patch: { request_type: next ?? null } })}
         />
+        </div>
       ),
     },
     {
@@ -2408,6 +2410,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       defaultVisible: false,
       accessor: (r: BacklogItem) => r.category || '',
       cell: ({ row: r }: { row: BacklogItem }) => (
+        <div className="cv-cell-inline-edit-no-label">
         <InlineEdit<string | null>
           defaultValue={r.category ?? null}
           label="Category"
@@ -2424,11 +2427,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           )}
           readView={() => (
             <div style={{ padding: '4px 8px', cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}>
-              {r.category || <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>}
+              {r.category || <span data-jira-cell-ghost>Add category</span>}
             </div>
           )}
           onConfirm={(next) => updateField.mutate({ id: r.id, source: r.source, patch: { category: next ?? null } })}
         />
+        </div>
       ),
     },
     {
@@ -2441,6 +2445,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       cell: ({ row: r }: { row: BacklogItem }) => {
         const current = THEME_OPTIONS.find(o => o.value === (r.theme ?? '')) ?? null;
         return (
+          <div className="cv-cell-inline-edit-no-label">
           <InlineEdit<string | null>
             defaultValue={r.theme ?? null}
             label="Theme"
@@ -2457,11 +2462,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             )}
             readView={() => (
               <div style={{ padding: '4px 8px', cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}>
-                {current ? (current.labelEn ?? current.label) : <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>}
+                {current ? (current.labelEn ?? current.label) : <span data-jira-cell-ghost>Add theme</span>}
               </div>
             )}
             onConfirm={(next) => updateField.mutate({ id: r.id, source: r.source, patch: { theme: next ?? null } })}
           />
+          </div>
         );
       },
     },
@@ -3274,29 +3280,38 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             from items + avatarsByName). maxCount=5 with appearance="stack"
             matches Jira's stacked-circle pattern. The "Add people" CTA is a
             future addition; for cycle 1 we ship read-only avatar stack. */}
-        {assigneeOptions.length > 0 && (
-          <AvatarGroup
-            appearance="stack"
-            size="small"
-            maxCount={5}
-            label="Filter by assignee"
-            data={assigneeOptions.map((a) => ({
-              key: a.id,
-              name: a.name,
-              src: a.avatarUrl ?? undefined,
-            }))}
-            onAvatarClick={(_event, _analytics, index) => {
-              const a = assigneeOptions[index];
-              if (!a) return;
-              setFilterValue((prev) => ({
-                ...prev,
-                assignees: prev.assignees.includes(a.name)
-                  ? prev.assignees.filter((x) => x !== a.name)
-                  : [...prev.assignees, a.name],
-              }));
-            }}
-          />
-        )}
+        {/* 2026-06-01 (catalyst-clone F9): filter toolbar avatar group to
+            assignees with a resolved avatar (i.e. active profile match).
+            Stops the +24 overflow chip from including ex-employees /
+            deleted accounts that have no profile but a stale name string
+            in legacy rows. */}
+        {(() => {
+          const activeAssignees = assigneeOptions.filter((a) => a.avatarUrl);
+          if (!activeAssignees.length) return null;
+          return (
+            <AvatarGroup
+              appearance="stack"
+              size="small"
+              maxCount={5}
+              label="Filter by assignee"
+              data={activeAssignees.map((a) => ({
+                key: a.id,
+                name: a.name,
+                src: a.avatarUrl ?? undefined,
+              }))}
+              onAvatarClick={(_event, _analytics, index) => {
+                const a = activeAssignees[index];
+                if (!a) return;
+                setFilterValue((prev) => ({
+                  ...prev,
+                  assignees: prev.assignees.includes(a.name)
+                    ? prev.assignees.filter((x) => x !== a.name)
+                    : [...prev.assignees, a.name],
+                }));
+              }}
+            />
+          );
+        })()}
 
         {/* Apr 27, 2026 — jira-compare audit P0 #2 / P1 #3:
             Two-flex-cluster toolbar. LEFT cluster (above this spacer)
