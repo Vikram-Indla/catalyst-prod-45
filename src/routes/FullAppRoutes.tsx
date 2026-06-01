@@ -113,12 +113,10 @@ const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindo
 const StrategicThemesPage = lazy(() => import("../modules-dormant/strategyhub/StrategicThemesPage"));
 const GoalsKeyResultsPage = lazy(() => import("../modules-dormant/strategyhub/GoalsKeyResultsPage"));
 const RoadmapPage = lazy(() => import("../pages/producthub/RoadmapPage"));
-const ProductKanbanPage = lazy(() => import("../pages/producthub/KanbanPage"));
 const RequirementAssistWorkspace = ENABLE_AI ? lazy(() => import("../pages/producthub/requirement-assist/index")) : () => <FeatureComingSoon title="Requirement Assist" />;
 const RequirementAssistCompose = ENABLE_AI ? lazy(() => import("../pages/producthub/requirement-assist/compose")) : () => <FeatureComingSoon title="Requirement Assist" />;
 const RequirementAssistCategories = ENABLE_AI ? lazy(() => import("../pages/producthub/requirement-assist/categories")) : () => <FeatureComingSoon title="Requirement Assist" />;
 const RequirementAssistOutput = ENABLE_AI ? lazy(() => import("../pages/producthub/requirement-assist/output")) : () => <FeatureComingSoon title="Requirement Assist" />;
-const ProductCardsPage = lazy(() => import("../pages/producthub/CardsPage"));
 // Block C/D (2026-05-01) — All Products listing for /product-hub/products.
 const AllProductsPage = lazy(() => import("../pages/product-hub/AllProductsPage"));
 // 2026-06-01: native product hub pages (business_requests data model)
@@ -371,24 +369,17 @@ const WorkHubCatyPage = ENABLE_AI ? lazy(() => import("../components/workhub/cat
 
 const ProductRoadmapPage = lazy(() => import("../pages/ProductRoadmapPage"));
 const ProductRoadmapV2Page = lazy(() => import("../pages/ProductRoadmapV2Page"));
-const IndustryRoadmapPage = lazy(() => import("../pages/industry/IndustryRoadmapPage"));
 const WorkTreePage = lazy(() => import("../pages/work-tree").then(m => ({ default: m.WorkTreePage })));
 const WorkManager = lazy(() => import("../pages/WorkManager"));
 const SkillsInventory = ENABLE_HEAVY_EXPORTS ? lazy(() => import("../pages/SkillsInventory")) : () => <FeatureComingSoon title="Skills Inventory" />;
 const StarredPage = lazy(() => import("../pages/StarredPage"));
 const WorkHubAllWork = lazy(() => import("../pages/workhub/AllWork"));
-const BusinessRequests = lazy(() => import("../pages/enterprise/BusinessRequests"));
 const MiningComingSoon = lazy(() => import("../pages/enterprise/MiningComingSoon"));
-const IndustryPage = lazy(() => import("../pages/enterprise/DemandIntakeCatalyst"));
 const IndustryComingSoon = lazy(() => import("../pages/enterprise/IndustryComingSoon"));
 const DemandSummaryPage = lazy(() => import("../pages/enterprise/DemandSummaryPage"));
 const ProductDashboardPageV2 = lazy(() => import("../components/product-dashboard/ProductDashboardPage").then(m => ({ default: m.ProductDashboardPage })));
 const ProductRoomPage = lazy(() => import("../pages/ProductRoomPage"));
 const CapacityPlanningPage = lazy(() => import("../pages/CapacityPlanningPage"));
-// CatalystDemandKanban removed during Kanban consolidation (Phase 8); route was never wired.
-const CatalystDemandList = lazy(() => import("../modules/product-backlog/pages/CatalystDemandList"));
-const CatalystDemandTable = lazy(() => import("../modules/product-backlog/pages/CatalystDemandTable"));
-const SubmitDemandRequest = lazy(() => import("../pages/SubmitDemandRequest"));
 const TeamComingSoon = lazy(() => import("../pages/team/ComingSoon"));
 const UnauthorizedPage = lazy(() => import("../pages/UnauthorizedPage"));
 const KanbanBoardView = lazy(() => import("../pages/KanbanBoardView"));
@@ -505,8 +496,8 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/products" element={<MG k="producthub" t="ProductHub"><S><AllProductsPage /></S></MG>} />
         {/* /product-hub/backlog redirect handled in App.tsx OUTSIDE the shell —
             in-shell Navigate is swallowed by CatalystShell's re-render loop. */}
-        <Route path="/product-hub/table" element={<MG k="producthub" t="ProductHub"><S><CatalystDemandTable /></S></MG>} />
-        <Route path="/product-hub/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
+        <Route path="/product-hub/table" element={<Navigate to="/product-hub/products" replace />} />
+        <Route path="/product-hub/kanban" element={<Navigate to="/product-hub/products" replace />} />
         {/* /product-hub/dashboard deprecated 2026-05-16 — redirects to products list */}
         <Route path="/product-hub/dashboard" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/product-dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
@@ -525,7 +516,7 @@ export default function FullAppRoutes() {
 
         <Route path="/product-hub/:key/dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
         <Route path="/product-hub/:key/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
-        <Route path="/product-hub/:key/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
+        <Route path="/product-hub/:key/cards" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:key/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />
         <Route path="/product-hub/:key/filters/create" element={<MG k="producthub" t="ProductHub"><S><CreateFilterPageLazy hubType="product" /></S></MG>} />
@@ -535,10 +526,10 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/filters" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/filters/create" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
-        <Route path="/product-hub/roadmaps-v1" element={<MG k="producthub" t="ProductHub"><S><IndustryRoadmapPage /></S></MG>} />
+        <Route path="/product-hub/roadmaps-v1" element={<Navigate to="/product-hub/roadmap" replace />} />
         <Route path="/product-hub/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />
         <Route path="/product-hub/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
-        <Route path="/product-hub/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
+        <Route path="/product-hub/cards" element={<Navigate to="/product-hub/products" replace />} />
         {/* Phase 6 (2026-05-02) — Ideation lifted out of Product Hub.
             /product-hub/ideation now redirects to the canonical peer hub
             at /ideation/intelligence. Submitters and reviewers no longer

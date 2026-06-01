@@ -39,7 +39,6 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const InviteAcceptPage = lazy(() => import("./pages/InviteAcceptPage"));
 const DeactivatedPage = lazy(() => import("./pages/DeactivatedPage"));
-const SubmitDemandRequest = lazy(() => import("./pages/SubmitDemandRequest"));
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
 const CleanupPage = lazy(() => import("./pages/CleanupPage"));
 const AuditTrailPage = lazy(() => import("./pages/AuditTrailPage"));
@@ -147,7 +146,6 @@ function App() {
               <Routes>
                 <Route path="/auth" element={<S><CatalystLoginPageLazy /></S>} />
                 <Route path="/auth/slack/callback" element={<S><SlackOAuthCallback /></S>} />
-                <Route path="/submit-request" element={<S><SubmitDemandRequest /></S>} />
                 <Route path="/reset-password" element={<S><ResetPassword /></S>} />
                 <Route path="/invite/accept" element={<S><InviteAcceptPage /></S>} />
                 <Route path="/deactivated" element={<S><DeactivatedPage /></S>} />

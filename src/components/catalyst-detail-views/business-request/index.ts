@@ -1,1 +1,1 @@
-export { default as CatalystViewBusinessRequest } from './CatalystViewBusinessRequest';
+export { default as CatalystViewBusinessRequest } from './CatalystViewBusinessRequest.v3';

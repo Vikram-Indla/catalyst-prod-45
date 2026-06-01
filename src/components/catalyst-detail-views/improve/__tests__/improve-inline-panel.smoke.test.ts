@@ -35,7 +35,7 @@ const DIALOG_FILES = [
 
 const VIEW_FILES_WITH_IMPROVE = [
   'defect/CatalystViewDefect.tsx',
-  'business-request/CatalystViewBusinessRequest.tsx',
+  'business-request/CatalystViewBusinessRequest.v3.tsx',
   'epic/CatalystViewEpic.tsx',
   'task/CatalystViewTask.tsx',
   'incident/CatalystViewIncident.tsx',

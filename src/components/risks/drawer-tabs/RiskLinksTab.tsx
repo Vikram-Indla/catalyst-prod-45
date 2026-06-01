@@ -44,7 +44,6 @@ import { cn } from '@/lib/utils';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { CatalystThemeDrawer } from '@/components/backlog/CatalystThemeDrawer';
 import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
 
 interface RiskLinksTabProps {
   riskId: string;
@@ -864,12 +863,7 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
       onClose={() => setOpenObjectiveId(null)}
     />
 
-    {/* Business Request Detail Modal */}
-    <BusinessRequestDetailModal
-      isOpen={!!openBusinessRequestId}
-      onClose={() => setOpenBusinessRequestId(null)}
-      requestId={openBusinessRequestId}
-    />
+    {/* BR detail modal removed 2026-06-01 — canonical view is CatalystViewBusinessRequestV3 (open via CatalystDetailRouter). */}
     </>
   );
 }
