@@ -26,6 +26,7 @@ const ISSUE_TYPES = [
   { key: 'Feature', label: 'Feature' },
   { key: 'Sub-task', label: 'Sub-task' },
   { key: 'QA Bug', label: 'QA Bug' },
+  { key: 'Business Request', label: 'Business Request' },
 ];
 
 type ViewMode = 'editor' | 'diagram';

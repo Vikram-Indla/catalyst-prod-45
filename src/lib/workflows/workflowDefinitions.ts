@@ -148,10 +148,53 @@ const BUG_WORKFLOW: Workflow = {
   ],
 };
 
+// ─── Business Request workflow (10 statuses, image-1 spec) ─────────────────
+// Demand phase (blue):   New → Demand Approved → Analysis
+// Approval phase (orange): Ready for Development → Under Implementation
+// Delivery phase (purple): Implementation Review → Pending Testing
+// Closure phase (green):  Done | On Hold | Canceled
+const BUSINESS_REQUEST_WORKFLOW: Workflow = {
+  id: 'business_request',
+  name: 'Business Request',
+  initialStateId: 'new',
+  issueTypes: ['Business Request'],
+  states: [
+    // Demand phase — blue (inprogress)
+    { id: 'new',                     name: 'New',                     category: 'inprogress' },
+    { id: 'demand_approved',         name: 'Demand Approved',         category: 'inprogress' },
+    { id: 'analysis',                name: 'Analysis',                category: 'inprogress' },
+    // Approval phase — orange (moved)
+    { id: 'ready_for_development',   name: 'Ready for Development',   category: 'moved' },
+    { id: 'under_implementation',    name: 'Under Implementation',    category: 'moved' },
+    // Delivery phase — purple (new)
+    { id: 'implementation_review',   name: 'Implementation Review',   category: 'new' },
+    { id: 'pending_testing',         name: 'Pending Testing',         category: 'new' },
+    // Closure — green (success), grey (default), red (removed)
+    { id: 'done',                    name: 'Done',                    category: 'success', anyToThis: true },
+    { id: 'on_hold',                 name: 'On Hold',                 category: 'default', anyToThis: true },
+    { id: 'canceled',                name: 'Canceled',                category: 'removed', anyToThis: true },
+  ],
+  transitions: [
+    { from: 'new',                   to: 'demand_approved',       verb: 'Approve demand'    },
+    { from: 'demand_approved',       to: 'analysis',              verb: 'Begin analysis'    },
+    { from: 'analysis',              to: 'ready_for_development', verb: 'Ready for dev'     },
+    { from: 'ready_for_development', to: 'under_implementation',  verb: 'Start implementation' },
+    { from: 'under_implementation',  to: 'implementation_review', verb: 'Submit for review' },
+    { from: 'implementation_review', to: 'pending_testing',       verb: 'Send to testing'   },
+    { from: 'pending_testing',       to: 'done',                  verb: 'Mark done'         },
+    // Back-transitions
+    { from: 'demand_approved',       to: 'new',                   verb: 'Return to new'     },
+    { from: 'analysis',              to: 'demand_approved',       verb: 'Return to approved' },
+    { from: 'implementation_review', to: 'under_implementation',  verb: 'Return to implementation' },
+    { from: 'pending_testing',       to: 'implementation_review', verb: 'Return to review'  },
+  ],
+};
+
 export const DEFAULT_WORKFLOWS: Workflow[] = [
   SDLC_WORKFLOW,
   SIMPLE_WORKFLOW,
   BUG_WORKFLOW,
+  BUSINESS_REQUEST_WORKFLOW,
 ];
 
-export { SDLC_WORKFLOW, SIMPLE_WORKFLOW, BUG_WORKFLOW };
+export { SDLC_WORKFLOW, SIMPLE_WORKFLOW, BUG_WORKFLOW, BUSINESS_REQUEST_WORKFLOW };
