@@ -1,4 +1,9 @@
 /**
+ * @deprecated Scoring section removed from Business Request detail view.
+ * The scoring fields (business_value, complexity_score, executive_urgency,
+ * business_score) are not part of the canonical Create Business Request
+ * field set. This file is kept for reference only — do not render it.
+ *
  * BrScoringSection — Business Request scoring rows (WSJF-ish components).
  *
  * Real implementation as of cycle 3. Renders four numeric InlineEdit
