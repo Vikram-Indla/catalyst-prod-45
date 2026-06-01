@@ -1023,14 +1023,16 @@ function SaveFilterModal({
         return;
       }
       const { error } = await (supabase as any)
-        .from("allwork_saved_filters")
+        .from("ph_saved_filters")
         .insert({
+          owner_id: authData.user.id,
           user_id: authData.user.id,
           project_key: projectKey,
           name: trimmed,
           description: description.trim() || null,
-          state: currentState,
+          filter_config: currentState,
           is_shared: isShared,
+          hub_scope: 'project',
         });
       if (error) {
         if (error.code === "23505") {
@@ -1159,9 +1161,9 @@ interface SavedFilterRow {
   id: string;
   name: string;
   description: string | null;
-  state: FilterState;
+  filter_config: FilterState;
   is_shared: boolean;
-  user_id: string;
+  owner_id: string;
 }
 
 function SavedFiltersDropdown({
@@ -1176,8 +1178,8 @@ function SavedFiltersDropdown({
     staleTime: 30 * 1000,
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from("allwork_saved_filters")
-        .select("id,name,description,state,is_shared,user_id")
+        .from("ph_saved_filters")
+        .select("id,name,description,filter_config,is_shared,owner_id")
         .eq("project_key", projectKey)
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -1189,7 +1191,7 @@ function SavedFiltersDropdown({
     const ok = window.confirm(`Delete saved filter "${name}"?`);
     if (!ok) return;
     const { error } = await (supabase as any)
-      .from("allwork_saved_filters")
+      .from("ph_saved_filters")
       .delete()
       .eq("id", id);
     if (error) {
@@ -1220,7 +1222,7 @@ function SavedFiltersDropdown({
           <DropdownItem
             key={row.id}
             onClick={() => {
-              onApply(row.state);
+              onApply(row.filter_config);
               onShowFlag(`Applied "${row.name}"`, "success");
             }}
             elemAfter={
