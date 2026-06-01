@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { BusinessRequest, CreateBusinessRequestFormData, ReadinessChecklist } from '@/types/business-request';
+import { BusinessRequest, CreateBusinessRequestFormData } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { Json } from '@/integrations/supabase/types';
 
@@ -38,16 +38,7 @@ const generateRequestKey = async (): Promise<string> => {
 };
 
 // Helper to transform DB row to BusinessRequest
-const transformRow = (row: any): BusinessRequest => ({
-  ...row,
-  readiness_checklist: (row.readiness_checklist as ReadinessChecklist) || {
-    requirements_documented: false,
-    technical_design_approved: false,
-    resources_allocated: false,
-    environment_ready: false,
-    test_cases_prepared: false,
-  },
-});
+const transformRow = (row: any): BusinessRequest => ({ ...row });
 
 export function useBusinessRequests(searchQuery?: string) {
   const queryClient = useQueryClient();

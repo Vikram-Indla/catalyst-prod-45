@@ -12,7 +12,6 @@ const EnterpriseObjectives = lazy(() => import("../pages/enterprise/EnterpriseOb
 const EnterpriseDependencies = lazy(() => import("../pages/enterprise/EnterpriseDependencies"));
 const EnterpriseReleaseVehicles = lazy(() => import("../pages/enterprise/EnterpriseReleaseVehicles"));
 const EnterpriseSuccessCriteria = lazy(() => import("../pages/enterprise/EnterpriseSuccessCriteria"));
-const EnterpriseRisks = lazy(() => import("../pages/enterprise/EnterpriseRisks"));
 const EnterpriseComingSoon = lazy(() => import("../pages/enterprise/ComingSoon"));
 const SkillsInventory = lazy(() => import("../pages/SkillsInventory"));
 const WorkTreePage = lazy(() => import("../pages/work-tree").then(m => ({ default: m.WorkTreePage })));
