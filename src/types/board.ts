@@ -19,6 +19,8 @@ export interface Board {
   filterProjectIds: string[];
   filterConfig: Record<string, unknown>;
   boardQuery: string | null;
+  cardLayout: 'default' | 'compact';
+  cardColors: Array<{ id: string; label: string; jql: string; color: string }>;
   isStarred: boolean;
   sortOrder: number;
   lastViewedAt: string | null;

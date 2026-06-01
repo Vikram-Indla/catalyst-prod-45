@@ -32,6 +32,9 @@ const QUERY_PRESETS = [
   { label: 'Bugs only', jql: (key?: string | null) => key ? `project = ${key} AND issuetype = "QA Bug" ORDER BY priority DESC` : 'issuetype = "QA Bug" ORDER BY priority DESC' },
 ];
 
+// ads-scanner:ignore-next-line — data value for <input type="color">, not a CSS style
+const DEFAULT_CARD_COLOR = '#0052CC';
+
 const COLOR_SWATCHES = [
   'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-icon, #525252)', 'var(--ds-background-information-bold, #0284C7)',
 ];
@@ -66,6 +69,12 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
   const [newFilterJql, setNewFilterJql] = useState('');
   const [addingFilter, setAddingFilter] = useState(false);
   const [selectedFilterId, setSelectedFilterId] = useState<string>(board.filterId ?? '');
+  const [cardLayout, setCardLayout] = useState<'default' | 'compact'>(board.cardLayout ?? 'default');
+  const [cardColors, setCardColors] = useState<Array<{ id: string; label: string; jql: string; color: string }>>(board.cardColors ?? []);
+  const [addingCardColor, setAddingCardColor] = useState(false);
+  const [newCardColorLabel, setNewCardColorLabel] = useState('');
+  const [newCardColorJql, setNewCardColorJql] = useState('');
+  const [newCardColorHex, setNewCardColorHex] = useState(DEFAULT_CARD_COLOR);
 
   const { data: boardData } = useBoard(board.id);
   const { data: availableFilters = [] } = useFiltersForProject(projectKey, 'project');
@@ -103,7 +112,9 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
 
   const isDirty = name !== board.name || description !== (board.description ?? '') ||
     color !== board.color || visibility !== board.visibility || swimlane !== board.swimlaneType ||
-    boardQuery !== (board.boardQuery ?? '') || selectedFilterId !== (board.filterId ?? '');
+    boardQuery !== (board.boardQuery ?? '') || selectedFilterId !== (board.filterId ?? '') ||
+    cardLayout !== (board.cardLayout ?? 'default') ||
+    JSON.stringify(cardColors) !== JSON.stringify(board.cardColors ?? []);
 
   const columns = boardData?.columns ?? [];
 
@@ -119,6 +130,8 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
       swimlane_type: swimlane !== board.swimlaneType ? swimlane : undefined,
       board_query: boardQuery !== (board.boardQuery ?? '') ? boardQuery : undefined,
       filter_id: selectedFilterId !== (board.filterId ?? '') ? (selectedFilterId || null) : undefined,
+      card_layout: cardLayout !== (board.cardLayout ?? 'default') ? cardLayout : undefined,
+      card_colors: JSON.stringify(cardColors) !== JSON.stringify(board.cardColors ?? []) ? cardColors : undefined,
     });
     onClose();
   };
@@ -490,6 +503,89 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                     </div>
                   </button>
                 ))}
+              </div>
+
+              <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
+                <FieldLabel>Card layout</FieldLabel>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {(['default', 'compact'] as const).map(layout => (
+                    <button key={layout} onClick={() => setCardLayout(layout)} style={{
+                      flex: 1, padding: '8px', borderRadius: 6, cursor: 'pointer', textAlign: 'center',
+                      border: `0.75px solid ${cardLayout === layout ? 'var(--cp-blue)' : 'var(--ds-border, rgba(15,23,42,0.12))'}`,
+                      background: cardLayout === layout ? 'var(--ds-background-selected, rgba(37,99,235,0.04))' : 'var(--ds-surface, #FFFFFF)',
+                      fontSize: 12, fontWeight: 500, color: 'var(--ds-text, #172B4D)',
+                    }}>
+                      {layout === 'default' ? 'Default' : 'Compact'}
+                    </button>
+                  ))}
+                </div>
+                <p style={{ margin: '8px 0 0', fontSize: 11, color: 'var(--ds-text-subtle, #42526E)' }}>
+                  {cardLayout === 'compact' ? 'Show only the issue key and summary.' : 'Show assignee, priority, and labels on each card.'}
+                </p>
+              </div>
+
+              <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
+                <FieldLabel>Card colors</FieldLabel>
+                <p style={{ margin: '0 0 8px', fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
+                  Highlight cards matching a JQL clause with a left-border color.
+                </p>
+                {cardColors.map(rule => (
+                  <div key={rule.id} style={{
+                    display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px',
+                    border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, marginBottom: 8,
+                    borderLeft: `4px solid ${rule.color}`,
+                  }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rule.label}</div>
+                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rule.jql}</div>
+                    </div>
+                    <button onClick={() => setCardColors(prev => prev.filter(r => r.id !== rule.id))} style={{
+                      width: 22, height: 22, border: 'none', background: 'transparent', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <Trash2 size={12} color="var(--ds-text-subtlest, #6B778C)" />
+                    </button>
+                  </div>
+                ))}
+                {addingCardColor ? (
+                  <div style={{ padding: 8, border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4 }}>
+                    <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                      <input value={newCardColorLabel} onChange={e => setNewCardColorLabel(e.target.value)}
+                        placeholder="Label (e.g. Blocked)"
+                        style={{ flex: 1, height: 32, padding: '0 8px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, fontSize: 13, color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', outline: 'none', boxSizing: 'border-box' as const }} />
+                      <input type="color" value={newCardColorHex} onChange={e => setNewCardColorHex(e.target.value)}
+                        style={{ width: 32, height: 32, padding: 0, border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, cursor: 'pointer' }} />
+                    </div>
+                    <input value={newCardColorJql} onChange={e => setNewCardColorJql(e.target.value)}
+                      placeholder="JQL: priority = Critical"
+                      style={{ width: '100%', height: 32, padding: '0 8px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, fontSize: 12, fontFamily: 'monospace', color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', outline: 'none', boxSizing: 'border-box' as const, marginBottom: 8 }} />
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button onClick={() => { setAddingCardColor(false); setNewCardColorLabel(''); setNewCardColorJql(''); setNewCardColorHex(DEFAULT_CARD_COLOR); }} style={{
+                        height: 28, padding: '0 12px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'transparent', cursor: 'pointer', fontSize: 12, color: 'var(--ds-text, #172B4D)',
+                      }}>Cancel</button>
+                      <button
+                        disabled={!newCardColorLabel.trim() || !newCardColorJql.trim()}
+                        onClick={() => {
+                          if (!newCardColorLabel.trim() || !newCardColorJql.trim()) return;
+                          setCardColors(prev => [...prev, { id: crypto.randomUUID(), label: newCardColorLabel.trim(), jql: newCardColorJql.trim(), color: newCardColorHex }]);
+                          setAddingCardColor(false); setNewCardColorLabel(''); setNewCardColorJql(''); setNewCardColorHex(DEFAULT_CARD_COLOR);
+                        }}
+                        style={{
+                          height: 28, padding: '0 12px', border: '2px solid transparent', borderRadius: 3, cursor: 'pointer', fontSize: 12, fontWeight: 500,
+                          background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-text-inverse, #FFFFFF)',
+                        }}
+                      >Add</button>
+                    </div>
+                  </div>
+                ) : (
+                  <button onClick={() => setAddingCardColor(true)} style={{
+                    display: 'flex', alignItems: 'center', gap: 4, height: 28, padding: '0 8px',
+                    border: '1px dashed var(--ds-border, #DFE1E6)', borderRadius: 4, background: 'transparent',
+                    cursor: 'pointer', fontSize: 12, color: 'var(--ds-text-subtle, #42526E)',
+                  }}>
+                    <Plus size={13} /> Add color rule
+                  </button>
+                )}
               </div>
             </>
           )}

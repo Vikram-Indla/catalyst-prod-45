@@ -61,6 +61,8 @@ export function useBoards(projectId: string | undefined) {
         createdAt: b.created_at,
         updatedAt: b.updated_at,
         boardQuery: b.board_query ?? null,
+        cardLayout: b.card_layout ?? 'default',
+        cardColors: b.card_colors ?? [],
         columnCount: b.board_columns?.length ?? 0,
         issueCount: b.board_issue_rank?.length ?? 0,
         createdByName: null,

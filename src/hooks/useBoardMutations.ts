@@ -48,6 +48,8 @@ export function useUpdateBoard() {
       show_swimlanes?: boolean;
       board_query?: string | null;
       filter_id?: string | null;
+      card_layout?: 'default' | 'compact';
+      card_colors?: Array<{ id: string; label: string; jql: string; color: string }>;
     }) => {
       const update: Record<string, any> = { updated_at: new Date().toISOString() };
       if (fields.name !== undefined) update.name = fields.name;
@@ -59,6 +61,8 @@ export function useUpdateBoard() {
       if (fields.show_swimlanes !== undefined) update.show_swimlanes = fields.show_swimlanes;
       if (fields.board_query !== undefined) update.board_query = fields.board_query;
       if (fields.filter_id !== undefined) update.filter_id = fields.filter_id;
+      if (fields.card_layout !== undefined) update.card_layout = fields.card_layout;
+      if (fields.card_colors !== undefined) update.card_colors = fields.card_colors;
 
       const { error } = await typedQuery('boards')
         .update(update)
