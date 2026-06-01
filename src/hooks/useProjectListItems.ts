@@ -161,6 +161,8 @@ const PH_ISSUES_SELECT = 'id, issue_key, project_key, issue_type, summary, statu
    Task ..." 2026-04-28). PH_ISSUES_PAGE_SIZE matches the typical
    PostgREST max-rows ceiling; bump only if the server config is raised.
 */
+const YEAR_2026_START = '2026-01-01T00:00:00Z';
+const ALLOWED_ISSUE_TYPES = ['Story', 'Backend', 'Frontend', 'Sub-task', 'Epic', 'Feature'];
 const PH_ISSUES_PAGE_SIZE = 1000;
 const PH_ISSUES_MAX_ROWS = 20000; // safety stop; one project << this in practice
 
@@ -189,8 +191,10 @@ export function useProjectListItems(projectKey: string | undefined) {
       if (!projectKey) return [];
       const rows = await fetchAllPhIssues((qb) => qb
         .eq('project_key', projectKey)
+        .in('issue_type', ALLOWED_ISSUE_TYPES)
+        .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
-        .is('deleted_at', null)
+        .is('archived_at', null)
         .order('jira_updated_at', { ascending: false, nullsFirst: false }),
       );
       return rows.map(mapPhIssue);
@@ -251,8 +255,10 @@ export function useProjectAllWorkItems(projectKey: string | undefined): AllWorkP
         .from('ph_issues')
         .select(PH_ISSUES_SELECT)
         .eq('project_key', projectKey)
+        .in('issue_type', ALLOWED_ISSUE_TYPES)
+        .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
-        .is('deleted_at', null)
+        .is('archived_at', null)
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .order('issue_key', { ascending: false });
 
@@ -323,7 +329,7 @@ export function useWorkItemChildren(parentKey: string | undefined, enabled: bool
         .select(PH_ISSUES_SELECT)
         .eq('parent_key', parentKey)
         .is('jira_removed_at', null)
-        .is('deleted_at', null)
+        .is('archived_at', null)
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(500);
       if (error) throw error;
@@ -348,7 +354,7 @@ export function useWorkItem(itemId: string | undefined) {
         .select(PH_ISSUES_SELECT)
         .eq('issue_key', itemId)
         .is('jira_removed_at', null)
-        .is('deleted_at', null)
+        .is('archived_at', null)
         .maybeSingle();
       if (error) throw error;
       if (!data) return null;
@@ -373,7 +379,7 @@ export function useSearchWorkItems(projectKey: string | undefined, query: string
         .select(PH_ISSUES_SELECT)
         .eq('project_key', projectKey)
         .is('jira_removed_at', null)
-        .is('deleted_at', null)
+        .is('archived_at', null)
         .or(`summary.ilike.%${query}%,issue_key.ilike.%${query}%`)
         .limit(20);
       if (error) throw error;
