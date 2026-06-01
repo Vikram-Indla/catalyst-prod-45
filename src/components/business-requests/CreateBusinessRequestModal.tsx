@@ -893,9 +893,9 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
               </Field>
 
               {/* ── Targeted feature — @atlaskit/checkbox Checkbox ────────── */}
-              <div style={{ paddingTop: 4 }}>
+              <div style={{ padding: '4px 0' }}>
                 <Checkbox
-                  label="Targeted feature — priority feature for the current cycle"
+                  label="Targeted feature"
                   isChecked={form.targeted_feature}
                   onChange={(e: any) => set('targeted_feature', e.target.checked)}
                   name="targeted_feature"

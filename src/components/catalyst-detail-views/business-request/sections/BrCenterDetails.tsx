@@ -174,16 +174,16 @@ export function BrCenterDetails({ request, onUpdate }: Props) {
             />
           </DetailRow>
 
-          <DetailRow label="Targeted feature">
+          <div style={{ padding: '4px 0' }}>
             <Checkbox
               isChecked={!!request.targeted_feature}
               onChange={(e) =>
                 void onUpdate('targeted_feature', (e.target as HTMLInputElement).checked)
               }
-              label="Priority feature for the current cycle"
+              label="Targeted feature"
               name="br-center--targeted-feature"
             />
-          </DetailRow>
+          </div>
         </div>
       )}
     </section>
