@@ -1,4 +1,5 @@
 import React from "react";
+import { setBooleanFeatureFlagResolver } from '@atlaskit/platform-feature-flags';
 import { createRoot } from "react-dom/client";
 // Variable fonts — `Inter Variable` registers the continuous 100-900
 // weight axis used by the heading/metric/bold-body slots at weight 653.
@@ -67,6 +68,20 @@ window.addEventListener('unhandledrejection', (event) => {
   if (isStaleChunkMessage(msg)) {
     void purgeAndReload();
   }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Atlaskit React 18 portal fix
+// By default @atlaskit/portal uses useEffect to mount the portal container,
+// which defers DOM commit until after paint (async). In React 18 concurrent
+// mode this means the modal appears only after a tab-switch / visibility flush.
+// Enabling this flag switches @atlaskit/portal to InternalPortalNew which uses
+// useIsomorphicLayoutEffect (synchronous, before paint) — modal commits on the
+// same frame as the state update that opens it.
+// ─────────────────────────────────────────────────────────────────────────────
+setBooleanFeatureFlagResolver((flagKey: string) => {
+  if (flagKey === 'platform_design_system_team_portal_logic_r18_fix') return true;
+  return false;
 });
 
 const el = document.getElementById("root");
