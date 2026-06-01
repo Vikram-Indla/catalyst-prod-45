@@ -60,6 +60,7 @@ export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: Rec
       const { data } = await supabase
         .from('products')
         .select('id, code, name, color')
+        .eq('is_active', true)
         .order('name');
       return data ?? [];
     },
