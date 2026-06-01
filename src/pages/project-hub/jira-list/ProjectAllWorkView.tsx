@@ -82,6 +82,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     hasPrevPage,
     fetchNextPage,
     fetchPrevPage,
+    totalCount,
   } = useProjectAllWorkItems(projectKey, toolbarFilters);
 
   /* ── Filter URL params ────────────────────────────────────────────────────
@@ -489,9 +490,10 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                 </Button>
               </div>
 
-              {/* design-critique 2026-05-21 — H6 P1: count chip — shows
-                  how many items are on the current page and whether more exist.
-                  Jira parity: "50 of 1000+" — hasNextPage drives the + suffix. */}
+              {/* design-critique 2026-05-21 — H6 P1: count chip.
+                  2026-06-02: now shows "<page> of <total> items" using the
+                  cursor-independent totalCount so the footer reflects the full
+                  filtered result set (e.g. "25 of 656"), not just the page. */}
               <span
                 data-testid="allwork-pagination-count"
                 style={{
@@ -502,7 +504,9 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                   flexShrink: 0,
                 }}
               >
-                {filteredItems.length}{hasNextPage ? '+' : ''} items
+                {totalCount != null
+                  ? `${filteredItems.length} of ${totalCount} items`
+                  : `${filteredItems.length}${hasNextPage ? '+' : ''} items`}
               </span>
 
               {/* Rows per page dropdown */}

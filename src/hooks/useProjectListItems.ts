@@ -288,6 +288,10 @@ export interface AllWorkPaginationState {
   fetchPrevPage: () => void;
   isLoading: boolean;
   error: Error | null;
+  /** Total rows matching the current filters (across all pages), not just the
+   *  current page. Null while loading. Used by the footer to show the real size
+   *  instead of implying the 25-row page is the whole list. */
+  totalCount: number | null;
 }
 
 const DEFAULT_ALL_WORK_ROWS_PER_PAGE = 25;
@@ -362,6 +366,30 @@ export function useProjectAllWorkItems(
     staleTime: 30_000,
   });
 
+  // Total count across ALL pages for the current filter set. Cursor-independent
+  // (no keyset boundary) so it reflects the full filtered total, not one page.
+  // head:true → COUNT only, zero rows transferred.
+  const { data: totalCount = null } = useQuery({
+    queryKey: ['project-all-work-count', projectKey, filterKey],
+    queryFn: async (): Promise<number | null> => {
+      if (!projectKey) return null;
+      let qb = supabase
+        .from('ph_issues')
+        .select('*', { count: 'exact', head: true })
+        .eq('project_key', projectKey)
+        .in('issue_type', ALLOWED_ISSUE_TYPES)
+        .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
+        .is('jira_removed_at', null)
+        .is('archived_at', null);
+      qb = applyServerFilter(qb, filter);
+      const { count, error: err } = await qb;
+      if (err) throw err;
+      return count ?? 0;
+    },
+    enabled: !!projectKey && !!user,
+    staleTime: 30_000,
+  });
+
   const fetchNextPage = useCallback(() => {
     if (data.length === 0 || !hasNextPage) return;
     const lastRow = data[data.length - 1];
@@ -387,6 +415,7 @@ export function useProjectAllWorkItems(
     fetchPrevPage,
     isLoading,
     error: error ?? null,
+    totalCount,
   };
 }
 
