@@ -10,7 +10,6 @@ import { useProjects } from '@/hooks/useProjectHub';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
 import CreateBoardModal from './CreateBoardModal';
-import BoardSettingsDrawer from './BoardSettingsDrawer';
 import Spinner from '@atlaskit/spinner';
 import type { BoardListItem } from '@/types/board';
 
@@ -38,7 +37,6 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
   const [spaceFilter, setSpaceFilter] = useState<string | null>(null);
   const [userFilter, setUserFilter] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
-  const [settingsBoard, setSettingsBoard] = useState<BoardListItem | null>(null);
   const [searchFocused, setSearchFocused] = useState(false);
   const [moveTarget, setMoveTarget] = useState<BoardListItem | null>(null);
   const [copyTarget, setCopyTarget] = useState<BoardListItem | null>(null);
@@ -196,7 +194,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
       cell: ({ row }) => (
         <BoardRowMenu
           board={row}
-          onEditSettings={() => setSettingsBoard(row)}
+          onEditSettings={() => navigate(projectKey ? `/project-hub/${projectKey}/boards/${row.id}/settings` : `${boardBasePath}/${row.id}/settings`)}
           onDelete={() => handleDelete(row)}
           onMove={() => setMoveTarget(row)}
           onCopy={() => setCopyTarget(row)}
@@ -342,13 +340,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
       {createOpen && (
         <CreateBoardModal projectId={projectId!} basePath={boardBasePath} onClose={() => setCreateOpen(false)} />
       )}
-      {settingsBoard && (
-        <BoardSettingsDrawer
-          board={settingsBoard}
-          projectKey={projectKey}
-          onClose={() => setSettingsBoard(null)}
-        />
-      )}
+
       {moveTarget && (
         <MoveBoardDialog
           board={moveTarget}

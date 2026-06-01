@@ -54,6 +54,7 @@ const WorkItemsListPageLazy = lazy(() => import("../pages/project-hub/WorkItemsL
 const ProjectBoardPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardPage"));
 const ProjectBoardManagerPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardManagerPage"));
 const ProjectBoardCanvasPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardCanvasPage"));
+const ProjectBoardSettingsPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardSettingsPage"));
 const KanbanBoardPageLazy = lazy(() => import("../pages/project-hub/KanbanBoardPage"));
 const MapStatusesPageLazy = lazy(() => import("../pages/project-hub/MapStatusesPage"));
 const AllProjectsPageLazy = lazy(() => import("../pages/project-hub/AllProjectsPage"));
@@ -959,6 +960,8 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/board" element={<S><ProjectBoardPageLazy /></S>} />
         <Route path="/project-hub/:key/boards" element={<S><ProjectBoardManagerPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/map-statuses" element={<S><MapStatusesPageLazy /></S>} />
+        <Route path="/project-hub/:key/boards/:boardId/settings" element={<S><ProjectBoardSettingsPageLazy /></S>} />
+        <Route path="/project-hub/:key/boards/:boardId/settings/:section" element={<S><ProjectBoardSettingsPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardId" element={<S><KanbanBoardPageLazy /></S>} />
         <Route path="/project-hub/:key/hierarchy/allwork" element={<HierarchyAllWorkRedirect />} />
         <Route path="/project-hub/:key/hierarchy" element={<Navigate to="../allwork" replace />} />
