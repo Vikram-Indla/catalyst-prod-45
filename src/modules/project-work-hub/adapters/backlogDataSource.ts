@@ -123,6 +123,18 @@ export interface BacklogDataSource {
    */
   ChromeHeader?: FC<{ productCode: string; productName: string }>;
 
+  /**
+   * Optional whitelist of column ids the picker is allowed to expose.
+   * When set, BacklogPage hides every column NOT in this list (in addition
+   * to its own ALLOWED_COLUMN_IDS + BANNED_COLUMN_IDS gates). Structural
+   * columns ('__drag', '__actions') are always allowed regardless.
+   *
+   * Product hub uses this to hide project-only columns (parent, fix_versions,
+   * labels, assignee, due_date, priority, reporter, comments) which don't
+   * apply to the slim 22-column business_requests schema.
+   */
+  allowedColumnIds?: readonly string[];
+
   /** Product UUID — forwarded to CreateBusinessRequestModal. */
   productId: string;
 }

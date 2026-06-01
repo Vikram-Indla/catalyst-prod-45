@@ -100,9 +100,18 @@ export default function ProductBacklogPage() {
 
   // Inject ChromeHeader into the adapter at render time so it stays in sync
   // with product changes (without forcing the adapter hook to depend on JSX).
+  //
+  // 2026-06-01: `allowedColumnIds` gates the column picker to ONLY columns
+  // that apply to business_requests (the slim 22-column schema). Hides the
+  // project-only columns (parent, fix_versions, labels, assignee, due_date,
+  // priority, reporter, comments) inherited from the project hub registry.
+  // BR-specific columns (theme, stakeholders, urgency-as-Priority, etc.)
+  // will be added to the registry in a follow-up PR; for now the product
+  // picker exposes only the columns that already exist AND apply to BRs.
   const adapterWithChrome = {
     ...adapter,
     ChromeHeader: ProductChromeHeader,
+    allowedColumnIds: ['key', 'status', 'created', 'updated'] as const,
   };
 
   return (

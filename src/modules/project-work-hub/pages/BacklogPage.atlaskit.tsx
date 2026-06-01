@@ -2308,10 +2308,22 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // Filter columns to only allowed standard Jira fields (2026-05-12).
   // Prevents type-specific custom fields and banned fields from appearing
   // in the column picker. See ALLOWED_COLUMN_IDS + BANNED_COLUMN_IDS above.
-  const filteredCols = useMemo(() =>
-    columns.filter((col) => ALLOWED_COLUMN_IDS.has(col.id) && !BANNED_COLUMN_IDS.has(col.id)),
-    [columns, ALLOWED_COLUMN_IDS, BANNED_COLUMN_IDS]
-  );
+  //
+  // 2026-06-01: when an adapter provides `allowedColumnIds`, also restrict
+  // to that whitelist. Product hub (business_requests) uses this to hide
+  // project-only columns (parent, fix_versions, labels, assignee, due_date,
+  // priority, reporter, comments) that don't apply to the slim BR schema.
+  // Structural columns ('__drag', '__actions') are always allowed.
+  const filteredCols = useMemo(() => {
+    const adapterAllow = dataSource?.allowedColumnIds
+      ? new Set([...dataSource.allowedColumnIds, '__drag', '__actions'])
+      : null;
+    return columns.filter((col) =>
+      ALLOWED_COLUMN_IDS.has(col.id) &&
+      !BANNED_COLUMN_IDS.has(col.id) &&
+      (adapterAllow === null || adapterAllow.has(col.id))
+    );
+  }, [columns, dataSource?.allowedColumnIds]);
 
 
   // Editing state — used by EditBacklogItemModal below.
