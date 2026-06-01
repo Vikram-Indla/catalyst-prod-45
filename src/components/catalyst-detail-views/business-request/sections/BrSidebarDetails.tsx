@@ -63,7 +63,11 @@ function useProfiles() {
       return (data ?? []).map((p) => ({
         value: p.id,
         label: p.full_name || p.email || p.id,
-        avatarUrl: (p as any).avatar_url ?? resolveAvatarUrl(p.full_name ?? p.email) ?? null,
+        // CLAUDE.md §19: external avatar URLs (gravatar/cdn/supabase storage) are
+        // BANNED — they 404 / CORS-fail / load late, showing a broken-image icon.
+        // Use ONLY the bundled-local resolver; null → initials fallback (instant,
+        // no network). profiles.avatar_url is deliberately NOT consulted.
+        avatarUrl: resolveAvatarUrl(p.full_name ?? p.email) ?? null,
       }));
     },
     staleTime: 5 * 60 * 1000,
@@ -272,6 +276,7 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
         <SidebarRow label="Status">
           <Select
             inputId="br-view--status"
+            classNamePrefix="br-sidebar-select"
             appearance="subtle"
             spacing="compact"
             options={statusOptions}
@@ -288,6 +293,7 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
       <SidebarRow label="Priority">
         <Select
           inputId="br-view--priority"
+          classNamePrefix="br-sidebar-select"
           appearance="subtle"
           spacing="compact"
           options={PRIORITY_OPTIONS}
@@ -304,6 +310,7 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
         <div>
           <Select
             inputId="br-view--dm"
+            classNamePrefix="br-sidebar-select"
             appearance="subtle"
             spacing="compact"
             options={profiles}
@@ -332,6 +339,7 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
         <div>
           <Select
             inputId="br-view--po"
+            classNamePrefix="br-sidebar-select"
             appearance="subtle"
             spacing="compact"
             options={profiles}
@@ -359,6 +367,7 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
       <SidebarRow label="Planned release">
         <CreatableSelect
           inputId="br-view--planned-release"
+          classNamePrefix="br-sidebar-select"
           appearance="subtle"
           spacing="compact"
           isMulti
