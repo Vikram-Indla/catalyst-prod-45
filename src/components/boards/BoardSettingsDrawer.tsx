@@ -86,8 +86,6 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
   const deleteQuickFilter = useDeleteQuickFilter();
   const qc = useQueryClient();
 
-  // Resolve project key for query presets
-  const projectKey = board.projectId ? undefined : undefined; // resolved from boardData if available
 
   const { data: quickFilters = [] } = useQuery<BoardQuickFilter[]>({
     queryKey: ['board-quick-filters', board.id],
