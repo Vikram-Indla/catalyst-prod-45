@@ -203,7 +203,7 @@ export function useCreateBusinessRequest() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (data: CreateBusinessRequestFormData & { delivery_platform?: string; planned_quarter?: string[] | null; assignee?: string | null; end_date_locked?: boolean; end_date_locked_by?: string | null; end_date_locked_at?: string | null }) => {
+    mutationFn: async (data: CreateBusinessRequestFormData & { planned_quarter?: string[] | null }) => {
       // Get current user for audit logging
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -221,46 +221,29 @@ export function useCreateBusinessRequest() {
       // Generate request key in MIM-XXX format
       const requestKey = await generateRequestKey();
       
+      // Insert only columns that exist in the slimmed 22-column schema.
+      // Dropped columns (platform, complexity, track, requestor,
+      // business_justification, delivery_platform, department, department_id,
+      // business_owner, business_owner_id, start_date, impl_start_date,
+      // impl_target_end_date, assignee, end_date_locked, end_date_locked_by,
+      // end_date_locked_at, scope_url, import_source, import_ref) were removed
+      // in the 2026-06-01 schema slim-down.
       const { data: result, error } = await typedQuery('business_requests')
         .insert([{
           title: data.title,
           description: data.description || null,
-          platform: data.platform,
-          complexity: data.complexity,
-          urgency: data.urgency,
-          track: data.track || null,
-          requestor: data.requestor || null,
-          business_justification: data.business_justification || null,
+          urgency: data.urgency || null,
           request_key: requestKey,
-          delivery_platform: data.delivery_platform || null,
           planned_quarter: data.planned_quarter || null,
-          department: (data as any).department || null,
-          department_id: (data as any).department_id || null,
-          business_owner: (data as any).business_owner || null,
-          business_owner_id: (data as any).business_owner_id || null,
-          // Date fields
-          start_date: (data as any).start_date || null,
           end_date: (data as any).end_date || null,
-          impl_start_date: (data as any).impl_start_date || null,
-          // Many views use impl_target_end_date as "Target Complete"; keep it in sync on create
-          impl_target_end_date: (data as any).impl_target_end_date || (data as any).end_date || null,
-          // Assignee
-          assignee: (data as any).assignee || null,
-          // Lock fields
-          end_date_locked: (data as any).end_date_locked || false,
-          end_date_locked_by: (data as any).end_date_locked_by || null,
-          end_date_locked_at: (data as any).end_date_locked_at || null,
-          // Feature unification fields (migration: 20260428090000)
           arabic_title: (data as any).arabic_title || null,
           request_type: (data as any).request_type || null,
           category: (data as any).category || null,
           theme: (data as any).theme || null,
-          scope_url: (data as any).scope_url || null,
           stakeholders: (data as any).stakeholders || [],
           po_user_id: (data as any).po_user_id || null,
+          project_manager_user_id: (data as any).project_manager_user_id || null,
           targeted_feature: (data as any).targeted_feature ?? false,
-          import_source: (data as any).import_source || 'manual',
-          import_ref: (data as any).import_ref || null,
           product_id: (data as any).product_id || null,
         }])
         .select()
