@@ -197,19 +197,32 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
         padding: '16px 0',
         overflowY: 'auto',
       }}>
-        {/* Sidebar header */}
+        {/* Sidebar header — back nav + title (matches Jira sidebar top) */}
         <div style={{
           padding: '0 16px 12px',
           borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
           marginBottom: 8,
         }}>
-          <h2 style={{
-            margin: 0, fontSize: 16, fontWeight: 653,
-            color: token('color.text', '#172B4D'),
-            fontFamily: 'var(--ds-font-family-heading, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)',
-          }}>
+          <button
+            type="button"
+            onClick={() => navigate(backPath)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 4,
+              background: 'none', border: 'none', cursor: 'pointer',
+              padding: '0 0 8px', fontSize: 14,
+              color: token('color.text.subtle', '#42526E'),
+            }}
+          >
+            <ChevronLeft size={14} />
             Board settings
-          </h2>
+          </button>
+          <p style={{
+            margin: 0, fontSize: 14, fontWeight: 500,
+            color: token('color.text', '#172B4D'),
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>
+            {board.name}
+          </p>
         </div>
 
         {/* Nav items */}
@@ -224,13 +237,14 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
                 onClick={() => navTo(item.key)}
                 style={{
                   display: 'block', width: '100%',
-                  padding: '8px 16px',
+                  padding: '8px 12px',
                   border: 'none', borderRadius: 3,
+                  borderLeft: active ? `2px solid ${token('color.link', '#0052CC')}` : '2px solid transparent',
                   textAlign: 'left', cursor: 'pointer',
                   fontSize: 14, fontWeight: 400,
                   color: active ? token('color.link', '#0052CC') : token('color.text.subtle', '#42526E'),
-                  background: active ? token('color.background.selected', '#E9F2FE') : 'transparent',
-                  transition: 'background 80ms',
+                  background: 'transparent',
+                  transition: 'background 80ms, border-left 80ms',
                 }}
                 onMouseEnter={e => {
                   if (!active) (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9');
@@ -255,7 +269,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
             <Link to={backPath} style={{ color: token('color.text.subtle', '#42526E'), textDecoration: 'none' }}>
               Boards
             </Link>
-            <span style={{ color: token('color.text.subtlest', '#6B778C') }}>/</span>
+            <span style={{ color: token('color.text.subtlest', '#6B778C') }}> / </span>
             <span style={{ color: token('color.text', '#172B4D') }}>{board.name}</span>
           </nav>
 
@@ -356,7 +370,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
                   fontSize: 14, fontWeight: 500,
                 }}
               >
-                {updateBoard.isPending ? 'Saving…' : 'Save'}
+                {updateBoard.isPending ? 'Saving…' : 'Save changes'}
               </button>
               <button
                 type="button"
@@ -383,7 +397,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
     <h2 style={{
-      margin: '0 0 16px', fontSize: 20, fontWeight: 653,
+      margin: '0 0 16px', fontSize: 16, fontWeight: 653,
       color: token('color.text', '#172B4D'),
       fontFamily: 'var(--ds-font-family-heading, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)',
     }}>
@@ -434,7 +448,6 @@ function GeneralSection({ name, setName, description, setDescription, color, set
         Required fields are marked with an asterisk *
       </p>
 
-      <SubHeading>Board identity</SubHeading>
       <div style={{ marginBottom: 16 }}>
         <FieldLabel required>Board name</FieldLabel>
         <input value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
@@ -445,8 +458,8 @@ function GeneralSection({ name, setName, description, setDescription, color, set
           style={{ ...inputStyle, height: 'auto', padding: '8px', resize: 'vertical' }} />
       </div>
 
-      <SubHeading>Board color</SubHeading>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
+      <FieldLabel>Board color</FieldLabel>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24, marginTop: 4 }}>
         {COLOR_SWATCHES.map(c => (
           <button key={c} type="button" onClick={() => setColor(c)} style={{
             width: 28, height: 28, borderRadius: 4, border: 'none',
@@ -457,8 +470,8 @@ function GeneralSection({ name, setName, description, setDescription, color, set
         ))}
       </div>
 
-      <SubHeading>Visibility</SubHeading>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
+      <FieldLabel>Visibility</FieldLabel>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24, marginTop: 4 }}>
         {VISIBILITY_OPTIONS.map(opt => (
           <button key={opt.value} type="button" onClick={() => setVisibility(opt.value)} style={{
             display: 'flex', alignItems: 'flex-start', gap: 12, padding: 12,
@@ -478,7 +491,15 @@ function GeneralSection({ name, setName, description, setDescription, color, set
         ))}
       </div>
 
-      <SubHeading>Danger zone</SubHeading>
+      {/* Danger zone — red border wrapper (Jira parity) */}
+      <div style={{
+        marginTop: 32, padding: 16,
+        border: `1px solid ${token('color.border.danger', '#FF5630')}`,
+        borderRadius: 3,
+      }}>
+        <h3 style={{ margin: '0 0 12px', fontSize: 14, fontWeight: 600, color: token('color.text.danger', '#AE2A19') }}>
+          Danger zone
+        </h3>
       {!showDelete ? (
         <button type="button" onClick={() => setShowDelete(true)} style={{
           display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 12px',
@@ -508,6 +529,7 @@ function GeneralSection({ name, setName, description, setDescription, color, set
           </button>
         </div>
       )}
+      </div>{/* end danger zone wrapper */}
     </>
   );
 }
