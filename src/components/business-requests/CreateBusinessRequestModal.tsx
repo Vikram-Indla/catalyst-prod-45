@@ -111,12 +111,11 @@ interface IconOption {
 // Used for DM and PO Select options, identical to Assignee/Reporter pattern.
 // ─────────────────────────────────────────────────────────────────────────────
 
-function MiniAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string | null }) {
+function MiniAvatar({ name }: { name: string; avatarUrl?: string | null }) {
   return (
     <Avatar
-      size="xsmall"
+      size="small"
       name={name}
-      src={avatarUrl ?? undefined}
     />
   );
 }
