@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { Search, SlidersHorizontal, Plus } from '@/lib/atlaskit-icons';
 import { useBoards } from '@/hooks/useBoards';
-import { useDeleteBoard } from '@/hooks/useBoardMutations';
+import { useDeleteBoard, useMoveBoard, useCopyBoard } from '@/hooks/useBoardMutations';
+import { useProjects } from '@/hooks/useProjectHub';
 import { JiraTable } from '@/components/shared/JiraTable';
 import { makeSummaryCell, makeAssigneeCell } from '@/components/shared/JiraTable/cells';
 import type { Column } from '@/components/shared/JiraTable/types';
@@ -30,11 +31,16 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
   const navigate = useNavigate();
   const { data: boards = [], isLoading, error } = useBoards(projectId);
   const deleteBoard = useDeleteBoard();
+  const moveBoard = useMoveBoard();
+  const copyBoard = useCopyBoard();
+  const { data: allProjects = [] } = useProjects();
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
   const [createOpen, setCreateOpen] = useState(false);
   const [settingsBoard, setSettingsBoard] = useState<BoardListItem | null>(null);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [moveTarget, setMoveTarget] = useState<BoardListItem | null>(null);
+  const [copyTarget, setCopyTarget] = useState<BoardListItem | null>(null);
 
   const filtered = useMemo(() => {
     let list = boards;
@@ -118,6 +124,8 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
           board={row}
           onEditSettings={() => setSettingsBoard(row)}
           onDelete={() => handleDelete(row)}
+          onMove={() => setMoveTarget(row)}
+          onCopy={() => setCopyTarget(row)}
         />
       ),
     },
@@ -240,6 +248,30 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
           onClose={() => setSettingsBoard(null)}
         />
       )}
+      {moveTarget && (
+        <MoveBoardDialog
+          board={moveTarget}
+          projects={allProjects}
+          currentProjectId={moveTarget.projectId ?? ''}
+          onConfirm={(toProjectId) => {
+            moveBoard.mutate({ boardId: moveTarget.id, fromProjectId: moveTarget.projectId ?? '', toProjectId });
+            setMoveTarget(null);
+          }}
+          onClose={() => setMoveTarget(null)}
+        />
+      )}
+      {copyTarget && (
+        <CopyBoardDialog
+          board={copyTarget}
+          projects={allProjects}
+          currentProjectId={copyTarget.projectId ?? ''}
+          onConfirm={(toProjectId, newName) => {
+            copyBoard.mutate({ boardId: copyTarget.id, toProjectId, newName });
+            setCopyTarget(null);
+          }}
+          onClose={() => setCopyTarget(null)}
+        />
+      )}
     </div>
   );
 }
@@ -247,10 +279,12 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
 // ─── Board row kebab menu ────────────────────────────────────────────────────
 // Separate component so it can use top-level imports cleanly.
 // CLAUDE.md 2026-05-10: uses @atlaskit/dropdown-menu, not a hand-rolled menu.
-function BoardRowMenu({ board, onEditSettings, onDelete }: {
+function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy }: {
   board: BoardListItem;
   onEditSettings: () => void;
   onDelete: () => void;
+  onMove: () => void;
+  onCopy: () => void;
 }) {
   return (
     <DropdownMenu
@@ -281,9 +315,9 @@ function BoardRowMenu({ board, onEditSettings, onDelete }: {
       )}
     >
       <DropdownItemGroup>
-        <DropdownItem onClick={onEditSettings}>
-          Edit settings
-        </DropdownItem>
+        <DropdownItem onClick={onEditSettings}>Edit settings</DropdownItem>
+        <DropdownItem onClick={onMove}>Move to project…</DropdownItem>
+        <DropdownItem onClick={onCopy}>Copy board…</DropdownItem>
       </DropdownItemGroup>
       <DropdownItemGroup>
         <DropdownItem onClick={onDelete}>
@@ -291,5 +325,154 @@ function BoardRowMenu({ board, onEditSettings, onDelete }: {
         </DropdownItem>
       </DropdownItemGroup>
     </DropdownMenu>
+  );
+}
+
+// ─── Shared dialog chrome ────────────────────────────────────────────────────
+function DialogOverlay({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+  return (
+    <div
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 1000,
+        background: 'var(--ds-blanket, rgba(9,30,66,0.54))',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}
+    >
+      <div style={{
+        background: 'var(--ds-surface-overlay, #FFFFFF)', borderRadius: 4,
+        padding: 24, minWidth: 360, maxWidth: 480, width: '100%',
+        boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9,30,66,0.24))',
+      }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ─── Move board dialog ───────────────────────────────────────────────────────
+function MoveBoardDialog({ board, projects, currentProjectId, onConfirm, onClose }: {
+  board: BoardListItem;
+  projects: Array<{ id: string; name: string; project_key: string }>;
+  currentProjectId: string;
+  onConfirm: (toProjectId: string) => void;
+  onClose: () => void;
+}) {
+  const [selected, setSelected] = React.useState('');
+  const eligible = projects.filter(p => p.id !== currentProjectId);
+  return (
+    <DialogOverlay onClose={onClose}>
+      <h2 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        Move "{board.name}"
+      </h2>
+      <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text-subtle, #42526E)' }}>
+        Select the destination project.
+      </p>
+      <select
+        value={selected}
+        onChange={e => setSelected(e.target.value)}
+        style={{
+          width: '100%', height: 32, padding: '0 8px', boxSizing: 'border-box',
+          border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+          fontSize: 14, color: 'var(--ds-text, #172B4D)',
+          background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+          outline: 'none', marginBottom: 16,
+        }}
+      >
+        <option value="">— Choose project —</option>
+        {eligible.map(p => (
+          <option key={p.id} value={p.id}>{p.name} ({p.project_key})</option>
+        ))}
+      </select>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+        <button onClick={onClose} style={{
+          height: 32, padding: '0 12px', border: '2px solid var(--ds-border, #DFE1E6)',
+          borderRadius: 3, background: 'transparent', cursor: 'pointer',
+          fontSize: 14, color: 'var(--ds-text, #172B4D)',
+        }}>
+          Cancel
+        </button>
+        <button onClick={() => selected && onConfirm(selected)} disabled={!selected} style={{
+          height: 32, padding: '0 12px', border: '2px solid transparent',
+          borderRadius: 3, cursor: selected ? 'pointer' : 'not-allowed',
+          fontSize: 14, fontWeight: 500, color: 'var(--ds-text-inverse, #FFFFFF)',
+          background: selected ? 'var(--ds-background-brand-bold, #0052CC)' : 'var(--ds-background-disabled, #091E420F)',
+        }}>
+          Move
+        </button>
+      </div>
+    </DialogOverlay>
+  );
+}
+
+// ─── Copy board dialog ───────────────────────────────────────────────────────
+function CopyBoardDialog({ board, projects, currentProjectId, onConfirm, onClose }: {
+  board: BoardListItem;
+  projects: Array<{ id: string; name: string; project_key: string }>;
+  currentProjectId: string;
+  onConfirm: (toProjectId: string, newName: string) => void;
+  onClose: () => void;
+}) {
+  const [selected, setSelected] = React.useState(currentProjectId);
+  const [name, setName] = React.useState(`Copy of ${board.name}`);
+  const valid = !!selected && name.trim().length > 0;
+  return (
+    <DialogOverlay onClose={onClose}>
+      <h2 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        Copy "{board.name}"
+      </h2>
+      <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text-subtle, #42526E)' }}>
+        Creates a new board with the same configuration. Issues are not copied.
+      </p>
+      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 4 }}>
+        Board name
+      </label>
+      <input
+        value={name}
+        onChange={e => setName(e.target.value)}
+        style={{
+          width: '100%', height: 32, padding: '0 8px', boxSizing: 'border-box',
+          border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+          fontSize: 14, color: 'var(--ds-text, #172B4D)',
+          background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+          outline: 'none', marginBottom: 12,
+        }}
+      />
+      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 4 }}>
+        Destination project
+      </label>
+      <select
+        value={selected}
+        onChange={e => setSelected(e.target.value)}
+        style={{
+          width: '100%', height: 32, padding: '0 8px', boxSizing: 'border-box',
+          border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+          fontSize: 14, color: 'var(--ds-text, #172B4D)',
+          background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+          outline: 'none', marginBottom: 16,
+        }}
+      >
+        {projects.map(p => (
+          <option key={p.id} value={p.id}>{p.name} ({p.project_key})</option>
+        ))}
+      </select>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+        <button onClick={onClose} style={{
+          height: 32, padding: '0 12px', border: '2px solid var(--ds-border, #DFE1E6)',
+          borderRadius: 3, background: 'transparent', cursor: 'pointer',
+          fontSize: 14, color: 'var(--ds-text, #172B4D)',
+        }}>
+          Cancel
+        </button>
+        <button onClick={() => valid && onConfirm(selected, name.trim())} disabled={!valid} style={{
+          height: 32, padding: '0 12px', border: '2px solid transparent',
+          borderRadius: 3, cursor: valid ? 'pointer' : 'not-allowed',
+          fontSize: 14, fontWeight: 500, color: 'var(--ds-text-inverse, #FFFFFF)',
+          background: valid ? 'var(--ds-background-brand-bold, #0052CC)' : 'var(--ds-background-disabled, #091E420F)',
+        }}>
+          Copy
+        </button>
+      </div>
+    </DialogOverlay>
   );
 }

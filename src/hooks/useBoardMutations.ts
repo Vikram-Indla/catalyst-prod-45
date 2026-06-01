@@ -291,6 +291,85 @@ export function useDeleteQuickFilter() {
   });
 }
 
+export function useMoveBoard() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ boardId, fromProjectId, toProjectId }: { boardId: string; fromProjectId: string; toProjectId: string }) => {
+      const { error } = await typedQuery('boards')
+        .update({ project_id: toProjectId, updated_at: new Date().toISOString() })
+        .eq('id', boardId);
+      if (error) throw error;
+      return { boardId, fromProjectId, toProjectId };
+    },
+    onSuccess: (result) => {
+      qc.invalidateQueries({ queryKey: ['boards', result.fromProjectId] });
+      qc.invalidateQueries({ queryKey: ['boards', result.toProjectId] });
+      catalystToast.success('Board moved');
+    },
+    onError: (err: Error) => {
+      catalystToast.error(`Failed to move board: ${err.message}`);
+    },
+  });
+}
+
+export function useCopyBoard() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ boardId, toProjectId, newName }: { boardId: string; toProjectId: string; newName: string }) => {
+      // Fetch the source board and its columns
+      const { data: src, error: srcErr } = await typedQuery('boards').select('*').eq('id', boardId).single();
+      if (srcErr || !src) throw srcErr ?? new Error('Board not found');
+
+      const { data: cols, error: colsErr } = await typedQuery('board_columns')
+        .select('name, position, color, status_ids, is_backlog, is_done')
+        .eq('board_id', boardId)
+        .order('position', { ascending: true });
+      if (colsErr) throw colsErr;
+
+      // Create the new board (config copy — no issue_rank rows)
+      const { data: newBoard, error: boardErr } = await typedRpc('create_board', {
+        p_name: newName,
+        p_project_id: toProjectId,
+        p_is_personal: (src as any).is_personal ?? false,
+        p_visibility: (src as any).visibility ?? 'project',
+        p_board_type: (src as any).board_type ?? 'kanban',
+        p_swimlane_type: (src as any).swimlane_type ?? 'none',
+        p_color: (src as any).color ?? '#2563EB',
+        p_columns: null,
+        p_board_query: (src as any).board_query ?? null,
+        p_user_id: null,
+      });
+      if (boardErr) throw boardErr;
+
+      const newBoardId = newBoard as string;
+
+      // Copy columns if any
+      if (cols && cols.length > 0) {
+        const colInserts = cols.map((c: any) => ({
+          board_id: newBoardId,
+          name: c.name,
+          position: c.position,
+          color: c.color,
+          status_ids: c.status_ids ?? [],
+          is_backlog: c.is_backlog ?? false,
+          is_done: c.is_done ?? false,
+        }));
+        const { error: colInsertErr } = await typedQuery('board_columns').insert(colInserts);
+        if (colInsertErr) throw colInsertErr;
+      }
+
+      return { toProjectId, newBoardId };
+    },
+    onSuccess: (result) => {
+      qc.invalidateQueries({ queryKey: ['boards', result.toProjectId] });
+      catalystToast.success('Board copied');
+    },
+    onError: (err: Error) => {
+      catalystToast.error(`Failed to copy board: ${err.message}`);
+    },
+  });
+}
+
 export function useBoardMutations() {
   const createBoard = useCreateBoard();
   const deleteBoard = useDeleteBoard();
