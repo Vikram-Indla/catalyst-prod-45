@@ -21,6 +21,7 @@ import {
   LayoutDashboard,
   ClipboardList,
   Columns3,
+  Network,
   ArrowLeft,
   Settings,
   Filter,
@@ -95,6 +96,7 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
         items: [
           { id: 'dashboard', title: 'Product Dashboard', path: `${base}/dashboard`, icon: LayoutDashboard, exact: true  },
           { id: 'backlog',   title: 'Product Backlog',   path: `${base}/backlog`,   icon: ClipboardList,   exact: true  },
+          { id: 'allwork',   title: 'All Work',          path: `${base}/allwork`,   icon: Network,         exact: false },
           { id: 'boards',    title: 'Product Board',     path: `${base}/boards`,    icon: Columns3,        exact: false },
           { id: 'filters',   title: 'Product Filters',   path: `${base}/filters`,   icon: Filter,          exact: false },
         ],
