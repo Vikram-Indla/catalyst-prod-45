@@ -79,7 +79,11 @@ function toBoardIssue(r: any): BoardIssue {
     id: r.id,
     issueKey: r.request_key ?? r.id,
     summary: r.title ?? '',
-    issueType: r.request_type ?? 'feature',
+    // LOCKED REGISTRY (CLAUDE.md): every Business Request renders the amber
+    // lightbulb via JiraIssueTypeIcon type='Business Request'. request_type
+    // (feature/gap/integration/data_request) is a FIELD VALUE, not a work
+    // item type — passing it here produced the wrong Feature glyph.
+    issueType: 'Business Request',
     priority: r.urgency ?? 'Medium',
     status: r.process_step ?? '',           // ← product status lives here
     statusCategory: 'inprogress',
