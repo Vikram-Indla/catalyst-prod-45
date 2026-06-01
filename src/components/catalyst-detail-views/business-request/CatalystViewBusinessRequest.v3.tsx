@@ -169,7 +169,11 @@ export default function CatalystViewBusinessRequestV3({
         )}
         onTogglePanelMode={onTogglePanelMode}
         navigationItems={navigationItems}
-        currentItemId={resolvedId ?? undefined}
+        /* MUST match navigationItems[i].id — which is `request_key` (e.g. "MDT-740"),
+           NOT `resolvedId` (the business_requests UUID). Mirror project Story:
+           `currentItemId={itemId}`. Previously this passed resolvedId, so
+           findIndex returned -1 and the prev/next chevrons were disabled. */
+        currentItemId={itemId}
         onNavigate={onNavigate}
         leftContent={leftContent}
         rightContent={rightContent}
