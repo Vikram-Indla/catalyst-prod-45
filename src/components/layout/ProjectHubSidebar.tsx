@@ -176,10 +176,22 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
         .order('visited_at', { ascending: false })
         .limit(75);
       if (error) { console.warn('global recents error:', error.message); return []; }
+      // Filter out done/canceled issues by cross-referencing entity_key against ph_issues
+      const entityKeys = (data ?? []).map((d: any) => d.entity_key).filter(Boolean);
+      let doneKeys = new Set<string>();
+      if (entityKeys.length > 0) {
+        const { data: doneRows } = await supabase
+          .from('ph_issues')
+          .select('issue_key')
+          .in('issue_key', entityKeys)
+          .eq('status_category', 'Done');
+        if (doneRows) doneKeys = new Set(doneRows.map((r: any) => r.issue_key));
+      }
       // Deduplicate by nav_path — rows are newest-first so first occurrence = most recent visit.
       const seen = new Set<string>();
       const deduped: typeof data = [];
       for (const item of data ?? []) {
+        if (doneKeys.has(item.entity_key)) continue;
         if (!seen.has(item.nav_path)) {
           seen.add(item.nav_path);
           deduped.push(item);

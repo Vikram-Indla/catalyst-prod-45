@@ -181,6 +181,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
       const { data, error } = await (supabase as any)
         .from('business_requests')
         .select('id, title, request_key, request_type, updated_at')
+        .not('process_step', 'in', '("done","canceled")')
         .order('updated_at', { ascending: false })
         .limit(15);
       if (error) { console.warn('[ProductHubSidebar] recent BRs error:', error.message); return []; }
@@ -207,10 +208,22 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
         .order('visited_at', { ascending: false })
         .limit(50);
       if (error) { console.warn('[ProductHubSidebar] per-product recents error:', error.message); return []; }
-      // Deduplicate by nav_path — newest-first, cap at 15
+      // Filter out done/canceled BRs by cross-referencing entity_key
+      const entityKeys = (data ?? []).map((d: any) => d.entity_key).filter(Boolean);
+      let doneKeys = new Set<string>();
+      if (entityKeys.length > 0) {
+        const { data: doneRows } = await supabase
+          .from('business_requests')
+          .select('request_key')
+          .in('request_key', entityKeys)
+          .in('process_step', ['done', 'canceled']);
+        if (doneRows) doneKeys = new Set(doneRows.map((r: any) => r.request_key));
+      }
+      // Deduplicate by nav_path — newest-first, cap at 15, exclude done/canceled
       const seen = new Set<string>();
       const deduped: RecentItemRow[] = [];
       for (const item of data ?? []) {
+        if (doneKeys.has(item.entity_key)) continue;
         if (!seen.has(item.nav_path)) {
           seen.add(item.nav_path);
           deduped.push(item as RecentItemRow);
