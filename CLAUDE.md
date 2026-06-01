@@ -41,6 +41,9 @@ Reading column registries top-to-bottom and asking "what factory does each cell 
 **L13 — `makeSummaryInlineEditCell` does NOT expose `placeholder` / `dir` props.**
 For RTL or custom-placeholder text columns, write a bespoke `<InlineEdit><Textfield dir="rtl">...` cell (matches BrArabicTitleSection pattern) — do NOT invent factory props that don't exist. Add this to L1 anti-parallel-component rules: even read+write the canonical factory's signature before instantiating.
 
+**L14 — When the adapter exposes a label/options translator the canonical factory doesn't accept, EXTEND the factory with an optional prop — never fork.**
+2026-06-01: `BacklogDataSource.statusLabel` mapped `demand_approved` → "Demand approved" correctly, but `makeStatusEditCell` in `cells.tsx` had no `labelFor` prop and rendered raw slugs in the dropdown. Fix was additive — added `labelFor?: (s: string) => string` with identity fallthrough (project hub unaffected). Same pattern applies to `optionsBy{Field,Type}`, `iconByValue`, `colorByValue` etc. when a future clone needs them. Halt if you find yourself about to copy a factory just to swap one branch of its render logic.
+
 **Commit:** to be added below at push time.
 
 ---
