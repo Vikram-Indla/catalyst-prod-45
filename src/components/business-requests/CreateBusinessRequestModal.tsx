@@ -179,7 +179,7 @@ function brStatusAppearance(category: 'todo' | 'in_progress' | 'done' | undefine
 const headerWrapperStyles = xcss({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 'space.200' });
 const headerActionsStyles = xcss({ display: 'flex', alignItems: 'center', gap: 'space.050', flexShrink: 0 });
 const requiredHelperStyles = xcss({ font: 'font.body.small', color: 'color.text.subtlest', marginBottom: 'space.300' });
-const fieldGroupStyles = xcss({ display: 'flex', flexDirection: 'column', gap: 'space.300' });
+const fieldGroupStyles = xcss({ display: 'flex', flexDirection: 'column', gap: 'space.200' });
 const dividerStyles = xcss({ borderBottomWidth: 'border.width', borderBottomStyle: 'solid', borderColor: 'color.border', marginBlock: 'space.100' });
 const editorWrapperStyles = xcss({ borderRadius: 'border.radius', borderWidth: 'border.width', borderStyle: 'solid', borderColor: 'color.border.input', minHeight: '160px', overflow: 'hidden' });
 const footerLeftStyles = xcss({ flex: '1' });
@@ -888,7 +888,6 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
                     value={form.end_date || null}
                     onChange={(val: any) => set('end_date', val || '')}
                     placeholder="Select date"
-                    showTodayButton={false}
                   />
                 )}
               </Field>

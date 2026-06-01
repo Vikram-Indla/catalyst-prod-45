@@ -217,7 +217,7 @@ const requiredHelperStyles = xcss({
 const fieldGroupStyles = xcss({
   display: 'flex',
   flexDirection: 'column',
-  gap: 'space.300',
+  gap: 'space.200',
 });
 
 const dividerStyles = xcss({
