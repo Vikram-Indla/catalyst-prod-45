@@ -530,10 +530,15 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       }
       /* Empty-cell ghost affordance (e.g. "Set status" / "Add parent" /
          "Unassigned" placeholder). Faded by default; reads as full text on
-         row hover so users discover the cell is editable. */
+         row hover so users discover the cell is editable.
+         2026-06-01: padding-right reserves space for the trailing glyph's
+         italic overhang. Without it, parents using overflow:hidden clip
+         the final character (the d of Unassigned rendered as Unassignea
+         was the reported defect). */
       [data-jira-cell-ghost] {
         color: #97A0AF;
         font-style: italic;
+        padding-right: 2px;
         transition: color 80ms ease;
       }
       .jira-table-grid table tbody > tr:hover [data-jira-cell-ghost] {
