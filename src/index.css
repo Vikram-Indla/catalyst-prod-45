@@ -6014,9 +6014,30 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
   box-shadow: none !important;
   background: transparent !important;
 }
-.cv-drawer-sidebar .cv-date-field:hover > div,
+/* @atlaskit/datetime-picker v17 paints its border on a DEEP compiled-class
+   node (e.g. ._12ji1r31), not the > div. Flatten EVERY descendant so the
+   field reads as plain text in idle — matches Story's Due date (no box). */
+.cv-drawer-sidebar .cv-date-field div,
+.cv-drawer-sidebar .cv-date-field [class*="_"] {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+/* Hide the calendar glyph in idle; reveal on hover/focus (Jira inline-edit). */
+.cv-drawer-sidebar .cv-date-field button,
+.cv-drawer-sidebar .cv-date-field [role="presentation"] svg {
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+.cv-drawer-sidebar .cv-date-field:hover button,
+.cv-drawer-sidebar .cv-date-field:hover [role="presentation"] svg,
+.cv-drawer-sidebar .cv-date-field:focus-within button,
+.cv-drawer-sidebar .cv-date-field:focus-within [role="presentation"] svg {
+  opacity: 1;
+}
+.cv-drawer-sidebar .cv-date-field:hover div,
 .cv-drawer-sidebar .cv-date-field:hover input {
-  background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7)) !important;
+  background-color: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7)) !important;
 }
 
 /* ─── Fix Versions pill styling (right rail) ────────────────────────────────
