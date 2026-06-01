@@ -29,6 +29,7 @@ import RefreshIcon from '@atlaskit/icon/glyph/refresh';
 import Spinner from '@atlaskit/spinner';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { WorkCardAssigneePicker } from './WorkCardAssigneePicker';
+import Avatar from '@atlaskit/avatar';
 import type { WorkItem } from '@/types/workItem.types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -59,6 +60,13 @@ interface Props {
    *  When externalQuery is provided, the rail filters by it and the
    *  inner search input is hidden. */
   externalQuery?: string;
+  /**
+   * When true, the assignee avatar renders as a display-only @atlaskit/avatar
+   * instead of the interactive WorkCardAssigneePicker. Use for entity types
+   * (e.g. business_requests) whose data lives outside ph_issues so the picker
+   * cannot write back. CLAUDE.md canonical-component rule: parameterise, don't fork.
+   */
+  disableAssigneePicker?: boolean;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -70,6 +78,7 @@ export function WorkListPanel({
   onKeyClick,
   projectId,
   externalQuery,
+  disableAssigneePicker = false,
 }: Props) {
   const [innerQuery, setInnerQuery] = useState('');
   const query = externalQuery !== undefined ? externalQuery : innerQuery;
@@ -373,25 +382,36 @@ export function WorkListPanel({
               )}
             </span>
 
-            {/* AssigneeAvatar — WorkCardAssigneePicker wraps @atlaskit/avatar internally */}
+            {/* AssigneeAvatar — display-only when disableAssigneePicker=true */}
             <div style={{ display: 'inline-flex', alignItems: 'center' }}>
-              <WorkCardAssigneePicker
-                dbId={item.dbId || item.id}
-                currentAssigneeId={item.assignee?.id ?? null}
-                currentAssigneeName={item.assignee?.name ?? null}
-                projectId={projectId}
-                fallbackInitials={item.assignee?.initials || 'NA'}
-                fallbackColor={
-                  item.assignee?.color ||
-                  'var(--ds-background-accent-purple-subtle, #6554C0)'
-                }
-              />
+              {disableAssigneePicker ? (
+                item.assignee ? (
+                  <Avatar
+                    size="small"
+                    name={item.assignee.name}
+                    src={item.assignee.avatarUrl ?? undefined}
+                    appearance="circle"
+                  />
+                ) : null
+              ) : (
+                <WorkCardAssigneePicker
+                  dbId={item.dbId || item.id}
+                  currentAssigneeId={item.assignee?.id ?? null}
+                  currentAssigneeName={item.assignee?.name ?? null}
+                  projectId={projectId}
+                  fallbackInitials={item.assignee?.initials || 'NA'}
+                  fallbackColor={
+                    item.assignee?.color ||
+                    'var(--ds-background-accent-purple-subtle, #6554C0)'
+                  }
+                />
+              )}
             </div>
           </div>
         </div>
       );
     },
-    [selectedKey, onSelect, onKeyClick, projectId],
+    [selectedKey, onSelect, onKeyClick, projectId, disableAssigneePicker],
   );
 
   // ── Render ────────────────────────────────────────────────────────────────

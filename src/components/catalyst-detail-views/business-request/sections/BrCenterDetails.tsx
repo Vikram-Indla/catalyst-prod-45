@@ -103,7 +103,7 @@ export function BrCenterDetails({ request, onUpdate }: Props) {
           <ChevronRightIcon size="small" primaryColor="currentColor" />
         </span>
         <div style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>
-          Details
+          Key details
         </div>
       </div>
 
@@ -118,7 +118,7 @@ export function BrCenterDetails({ request, onUpdate }: Props) {
               onChange={(opt) => void onUpdate('request_type', (opt as { value: string } | null)?.value ?? null)}
               isClearable
               isSearchable={false}
-              placeholder="Feature · Gap · Integration · Data Request"
+              placeholder="Select type"
             />
           </DetailRow>
 

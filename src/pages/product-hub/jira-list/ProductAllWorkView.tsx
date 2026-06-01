@@ -30,7 +30,7 @@ import {
   type AllWorkView,
   type FilterState,
 } from '@/pages/project-hub/jira-list/components/AllWorkToolbar';
-import { BrListPanel } from './components/BrListPanel';
+import { WorkListPanel } from '@/pages/project-hub/jira-list/components/WorkListPanel';
 import { makeOpenItemHandler } from '@/pages/project-hub/jira-list/openItemDispatch';
 import { useItemSelection } from '@/hooks/useItemSelection';
 import { useBusinessRequestsByProduct } from '@/hooks/useBusinessRequests';
@@ -329,7 +329,7 @@ export default function ProductAllWorkView({ productCode, productId, productName
           borderRight: '1px solid var(--ds-border, #DFE1E6)',
           overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: 0,
         }}>
-          <BrListPanel
+          <WorkListPanel
             items={filteredItems}
             selectedKey={activeItem?.id ?? null}
             onSelect={id => {
@@ -341,6 +341,7 @@ export default function ProductAllWorkView({ productCode, productId, productName
               else selectItem(id);
             }}
             externalQuery={toolbarQuery}
+            disableAssigneePicker
           />
           {/* Footer count (mirrors ProjectAllWorkView pagination footer) */}
           <div style={{
