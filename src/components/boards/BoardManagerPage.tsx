@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import { Search, Plus, Star, MoreVertical } from '@/lib/atlaskit-icons';
+import { Search, Plus, Star, MoreHorizontal } from '@/lib/atlaskit-icons';
 import { useBoards } from '@/hooks/useBoards';
 import { useDeleteBoard, useMoveBoard, useCopyBoard, useToggleBoardStar } from '@/hooks/useBoardMutations';
 import { useProjects } from '@/hooks/useProjectHub';
@@ -408,7 +408,7 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy }: {
             (e.currentTarget as HTMLElement).style.background = 'transparent';
           }}
         >
-          <MoreVertical size={16} />
+          <MoreHorizontal size={16} />
         </button>
       )}
     >
