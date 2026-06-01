@@ -57,11 +57,10 @@ function DetailRow({ label, children }: { label: string; children: ReactNode }) 
         fontSize: 12, fontWeight: 500, lineHeight: '20px',
         color: 'var(--ds-text-subtle, #505258)',
         flexShrink: 0, width: 128, alignSelf: 'center',
-        fontFamily: 'var(--cp-font-body)',
       }}>
         {label}
       </div>
-      <div style={{ flex: 1, minWidth: 0, fontFamily: 'var(--cp-font-body)' }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
         {children}
       </div>
     </div>
@@ -113,7 +112,7 @@ export function BrCenterDetails({ request, onUpdate }: Props) {
           <DetailRow label="Type">
             <Select
               inputId="br-center--type"
-              classNamePrefix="cv-br-center-select"
+              appearance="subtle"
               options={TYPE_SELECT_OPTIONS}
               value={TYPE_SELECT_OPTIONS.find((o) => o.value === requestTypeRaw) ?? null}
               onChange={(opt) => void onUpdate('request_type', (opt as { value: string } | null)?.value ?? null)}
@@ -126,7 +125,7 @@ export function BrCenterDetails({ request, onUpdate }: Props) {
           <DetailRow label="Category">
             <Select
               inputId="br-center--category"
-              classNamePrefix="cv-br-center-select"
+              appearance="subtle"
               options={CATEGORY_OPTIONS}
               value={CATEGORY_OPTIONS.find((o) => o.value === categoryRaw) ?? null}
               onChange={(opt) => void onUpdate('category', (opt as { value: string } | null)?.value ?? null)}
@@ -139,7 +138,7 @@ export function BrCenterDetails({ request, onUpdate }: Props) {
           <DetailRow label="Theme">
             <Select
               inputId="br-center--theme"
-              classNamePrefix="cv-br-center-select"
+              appearance="subtle"
               options={THEME_SELECT_OPTIONS}
               value={THEME_SELECT_OPTIONS.find((o) => o.value === request.theme) ?? null}
               onChange={(opt) => void onUpdate('theme', (opt as { value: string } | null)?.value ?? null)}
@@ -152,7 +151,7 @@ export function BrCenterDetails({ request, onUpdate }: Props) {
           <DetailRow label="Stakeholders">
             <CreatableSelect
               inputId="br-center--stakeholders"
-              classNamePrefix="cv-br-center-select"
+              appearance="subtle"
               isMulti
               isClearable={false}
               options={STAKEHOLDER_SELECT_OPTIONS}

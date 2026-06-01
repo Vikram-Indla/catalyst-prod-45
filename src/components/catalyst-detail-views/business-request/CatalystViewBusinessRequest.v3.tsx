@@ -16,6 +16,8 @@
  */
 import React, { useCallback, useMemo } from 'react';
 import { catalystToast } from '@/lib/catalystToast';
+import { containsArabic } from '@/lib/detectArabic';
+import FileIcon from '@atlaskit/icon/glyph/document';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useProductHubBusinessRequest } from './useProductHubBusinessRequest';
 import { useDuplicateBusinessRequest } from '@/hooks/useBusinessRequests';
@@ -41,6 +43,7 @@ import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewBusinessRequestV3({
   isOpen, onClose, itemId,
+  projectKey,
   panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
 }: CatalystViewBaseProps) {
   const { request, resolvedId, isLoading, updateField, deleteRequest } =
@@ -100,11 +103,24 @@ export default function CatalystViewBusinessRequestV3({
   }, [deleteRequest, onClose]);
 
   // ── Left rail (mirrors Story's leftContent slot) ──────────────────────────
+  const titleIsArabic = containsArabic(request?.title ?? '');
+
   const leftContent = useMemo(
     () => (
       <>
+        {/* Type badge — mirrors v1 BR-UNIQUE pattern */}
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px',
+          background: 'var(--ds-background-information, #E9F2FE)', borderRadius: 4, marginBottom: 12,
+          fontSize: 12, fontWeight: 600, color: 'var(--ds-link, #0052CC)',
+        }}>
+          <FileIcon size="small" primaryColor="var(--ds-link, #0052CC)" />
+          Business Request
+        </div>
+
         <BrTitleSection request={request} onUpdate={updateField} />
-        <BrArabicTitleSection request={request} onUpdate={updateField} />
+        {/* Only show Arabic title field when main title is NOT already Arabic */}
+        {!titleIsArabic && <BrArabicTitleSection request={request} onUpdate={updateField} />}
         <CatalystQuickActions />
         <BrCenterDetails request={request} onUpdate={updateField} />
         <BrDescriptionSection request={request} onUpdate={updateField} />
@@ -124,7 +140,7 @@ export default function CatalystViewBusinessRequestV3({
       </>
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [request, updateField, resolvedId, isOpen, openDetail],
+    [request, updateField, resolvedId, isOpen, openDetail, titleIsArabic],
   );
 
   // ── Right rail — status pill in header, matching Story's pattern ──────────
@@ -156,7 +172,7 @@ export default function CatalystViewBusinessRequestV3({
         fullPageMode={fullPageMode}
         itemType="Business Request"
         itemKey={request?.request_key ?? null}
-        projectKey="MIM"
+        projectKey={projectKey ?? request?.project_key ?? 'MIM'}
         projectName="Product Hub"
         moreMenuItems={useMemo(
           () => [
