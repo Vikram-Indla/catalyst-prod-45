@@ -11,6 +11,7 @@
  */
 export { BrTitleSection } from './BrTitleSection';
 export { BrKeyDetails } from './BrKeyDetails';
+export { BrCenterDetails } from './BrCenterDetails';
 export { BrStatusSection } from './BrStatusSection';
 export { BrArabicTitleSection } from './BrArabicTitleSection';
 export { BrDescriptionSection } from './BrDescriptionSection';

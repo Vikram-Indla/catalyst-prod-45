@@ -33,16 +33,10 @@ import React, { type ReactNode, useState } from 'react';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { useQuery } from '@tanstack/react-query';
 import Select, { CreatableSelect } from '@atlaskit/select';
-import { Checkbox } from '@atlaskit/checkbox';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useDemandProcessStepOptions } from '@/hooks/useDemandProcessSteps';
-import {
-  THEME_OPTIONS,
-  STAKEHOLDER_OPTIONS,
-  REQUEST_TYPE_OPTIONS,
-} from '@/types/business-request';
 import type { BusinessRequest } from '@/types/business-request';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -91,31 +85,11 @@ function useReleases() {
 // Static option vocabularies (mirror CreateBusinessRequestModal)
 // ─────────────────────────────────────────────────────────────────────────────
 
-const CATEGORY_OPTIONS = [
-  { value: 'Industrial', label: 'Industrial' },
-  { value: 'Ministry Website', label: 'Ministry Website' },
-  { value: 'Internal Services', label: 'Internal Services' },
-  { value: 'Innovation Platform', label: 'Innovation Platform' },
-];
-
 const PRIORITY_OPTIONS = [
   { value: 'High', label: 'High' },
   { value: 'Normal', label: 'Medium' },
   { value: 'Low', label: 'Low' },
 ];
-
-const THEME_SELECT_OPTIONS = THEME_OPTIONS.map((t) => ({
-  value: t.value,
-  label: t.labelEn ?? t.label,
-}));
-const STAKEHOLDER_SELECT_OPTIONS = STAKEHOLDER_OPTIONS.map((s) => ({
-  value: s.value,
-  label: s.label,
-}));
-const TYPE_SELECT_OPTIONS = REQUEST_TYPE_OPTIONS.map((t) => ({
-  value: t.value,
-  label: t.label,
-}));
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Status appearance bridge
@@ -214,8 +188,6 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
   const [detailsCollapsed, setDetailsCollapsed] = useState(false);
 
   if (!request) return null;
-  const requestTypeRaw = (request as unknown as { request_type?: string | null }).request_type ?? null;
-  const categoryRaw = (request as unknown as { category?: string | null }).category ?? null;
   const plannedQuarter = request.planned_quarter ?? [];
 
   return (
@@ -284,19 +256,6 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
         </SidebarRow>
       )}
 
-      <SidebarRow label="Type">
-        <Select
-          inputId="br-view--type"
-          classNamePrefix="cv-br-select"
-          options={TYPE_SELECT_OPTIONS}
-          value={TYPE_SELECT_OPTIONS.find((o) => o.value === requestTypeRaw) ?? null}
-          onChange={(opt) => void onUpdate('request_type', (opt as { value: string } | null)?.value ?? null)}
-          isClearable
-          isSearchable={false}
-          placeholder="Feature · Gap · Integration · Data Request"
-        />
-      </SidebarRow>
-
       <SidebarRow label="Priority">
         <Select
           inputId="br-view--priority"
@@ -307,32 +266,6 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
           isClearable
           isSearchable={false}
           placeholder="Select priority"
-        />
-      </SidebarRow>
-
-      <SidebarRow label="Category">
-        <Select
-          inputId="br-view--category"
-          classNamePrefix="cv-br-select"
-          options={CATEGORY_OPTIONS}
-          value={CATEGORY_OPTIONS.find((o) => o.value === categoryRaw) ?? null}
-          onChange={(opt) => void onUpdate('category', (opt as { value: string } | null)?.value ?? null)}
-          isClearable
-          isSearchable={false}
-          placeholder="Select category"
-        />
-      </SidebarRow>
-
-      <SidebarRow label="Theme">
-        <Select
-          inputId="br-view--theme"
-          classNamePrefix="cv-br-select"
-          options={THEME_SELECT_OPTIONS}
-          value={THEME_SELECT_OPTIONS.find((o) => o.value === request.theme) ?? null}
-          onChange={(opt) => void onUpdate('theme', (opt as { value: string } | null)?.value ?? null)}
-          isClearable
-          isSearchable
-          placeholder="Select theme"
         />
       </SidebarRow>
 
@@ -366,32 +299,6 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
         />
       </SidebarRow>
 
-      <SidebarRow label="Stakeholders">
-        <CreatableSelect
-          inputId="br-view--stakeholders"
-          classNamePrefix="cv-br-select"
-          isMulti
-          isClearable={false}
-          options={STAKEHOLDER_SELECT_OPTIONS}
-          value={[
-            ...STAKEHOLDER_SELECT_OPTIONS.filter((o) =>
-              (request.stakeholders ?? []).includes(o.value),
-            ),
-            ...(request.stakeholders ?? [])
-              .filter((v) => !STAKEHOLDER_SELECT_OPTIONS.find((o) => o.value === v))
-              .map((v) => ({ value: v, label: v })),
-          ]}
-          onChange={(vals) =>
-            void onUpdate(
-              'stakeholders',
-              (Array.from(vals ?? []) as { value: string }[]).map((v) => v.value),
-            )
-          }
-          placeholder="+ Add stakeholder"
-          formatCreateLabel={(input: string) => `Add "${input}"`}
-        />
-      </SidebarRow>
-
       <SidebarRow label="Planned release">
         <CreatableSelect
           inputId="br-view--planned-release"
@@ -421,19 +328,6 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
             onChange={(val: string) => void onUpdate('end_date', val || null)}
             placeholder="Select date"
             dateFormat="DD/MM/YYYY"
-          />
-        </div>
-      </SidebarRow>
-
-      <SidebarRow label="Targeted feature">
-        <div style={{ paddingTop: 8 }}>
-          <Checkbox
-            isChecked={!!request.targeted_feature}
-            onChange={(e) =>
-              void onUpdate('targeted_feature', (e.target as HTMLInputElement).checked)
-            }
-            label="Priority feature for the current cycle"
-            name="br-view--targeted-feature"
           />
         </div>
       </SidebarRow>
