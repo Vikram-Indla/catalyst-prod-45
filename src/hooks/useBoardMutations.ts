@@ -21,7 +21,14 @@ export function useCreateBoard() {
         p_user_id: null,
       });
       if (error) throw error;
-      return { boardId: data as string, name: input.name, projectId: input.projectId };
+      const boardId = data as string;
+      // Wire filter_id post-creation (create_board RPC has no p_filter_id param)
+      if (input.filterId && boardId) {
+        await (typedQuery as any)('boards')
+          .update({ filter_id: input.filterId, updated_at: new Date().toISOString() })
+          .eq('id', boardId);
+      }
+      return { boardId, name: input.name, projectId: input.projectId };
     },
     onSuccess: (result) => {
       qc.invalidateQueries({ queryKey: ['boards', result.projectId] });

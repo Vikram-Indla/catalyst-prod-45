@@ -125,5 +125,6 @@ export interface CreateBoardInput {
   swimlaneType?: SwimlaneType;
   color?: string;
   boardQuery?: string;
+  filterId?: string;
   columns?: Array<{ name: string; isBacklog?: boolean; isDone?: boolean }>;
 }
