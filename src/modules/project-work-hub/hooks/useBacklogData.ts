@@ -200,8 +200,8 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
   // leaf rows in the backlog. BAU has no 'Business Request' rows, so this
   // filter extension is a no-op for normal project-hub usage.
   const issueTypeFilter = forceProjectKey
-    ? ['Story', 'QA Bug', 'Production Incident', 'Business Request']
-    : ['Story', 'QA Bug', 'Production Incident'];
+    ? ['Story', 'Backend', 'Frontend', 'Sub-task', 'Feature', 'Business Request']
+    : ['Story', 'Backend', 'Frontend', 'Sub-task', 'Feature'];
 
   return useQuery({
     queryKey: hasAssigneeOverride
