@@ -88,6 +88,44 @@ If a request involves any visual effect, motion, or AI-state indicator that isn'
 
 ---
 
+## 🔒 WORK ITEM TYPE ICONS — LOCKED REGISTRY (P0, Non-Negotiable)
+
+**Every work item type icon in Catalyst is rendered by `JiraIssueTypeIcon` from `src/lib/jira-issue-type-icons.tsx`. The type string passed to the `type` prop MUST match the canonical registry. No guessing, no mapping from subtypes.**
+
+### Canonical icon registry (source of truth: `/admin/icons`)
+
+| Work item type | `type` prop value | Icon | Asset |
+|---|---|---|---|
+| Story | `'Story'` | Blue bookmark | `story.svg` |
+| Epic | `'Epic'` | Purple lightning | `epic.svg` |
+| Feature | `'Feature'` | Green hexagon | `feature.svg` |
+| Task | `'Task'` | Blue checkbox | `task.svg` |
+| Sub-task | `'Sub-task'` | Blue mini-checkbox | `sub-task.svg` |
+| QA Bug / Defect | `'QA Bug'` or `'Defect'` | Red circle | `qa-bug.svg` |
+| Production Incident | `'Production Incident'` | Red flame | `production-incident.svg` |
+| Change Request | `'Change Request'` | Amber arrows | `change-request.svg` |
+| **Business Request** | **`'Business Request'`** | **Amber lightbulb** | `business-request.svg` |
+| Business Gap | `'Business Gap'` | Orange gap | `business-gap.svg` |
+| Backend | `'Backend'` | Grey gear | `backend.svg` |
+| Frontend | `'Frontend'` | Blue monitor | `frontend.svg` |
+| Integration | `'Integration'` | Blue chain | `integration.svg` |
+| Idea | `'Idea'` | Yellow bulb | `idea.svg` |
+
+### Rules
+
+1. **ALL Business Requests use `type='Business Request'` (amber lightbulb).** Never pass the `request_type` subtype (feature/gap/integration/data_request) — those are field values, not work item types.
+2. **Sidebar recent items, navigator cards, table key cells, detail view headers** — every surface that shows a work item icon MUST use `JiraIssueTypeIcon` with the canonical `type` string from the table above.
+3. **When in doubt about which icon to use:** open `/admin/icons` in the browser and match the visual. The registry in `jira-issue-type-icons.tsx` is authoritative.
+4. **Never add a new type icon without updating this table** and the registry file simultaneously.
+
+### Why this rule exists (2026-06-01)
+
+`ProductHubSidebar` had a `mapBrTypeToIconType` function that mapped `request_type` values (`'feature'`→Feature icon, `'gap'`→Business Gap icon, etc.) — showing the wrong icon for every BR. A Feature-type BR showed the blue Feature checkbox instead of the amber BR lightbulb. The function was a wrong abstraction: `request_type` is a field inside a Business Request, not a work item type.
+
+**Severity:** P0 — wrong icons break type recognition across the entire product module.
+
+---
+
 ## THE FOUR RULES — UNIVERSAL BASELINE (P0, Non-Negotiable)
 
 These four rules govern HOW every other rule in this file is applied. They precede all Catalyst-specific guardrails below. If a project-specific rule and one of these four ever appear to conflict, stop and ask Vikram — do not silently choose.
