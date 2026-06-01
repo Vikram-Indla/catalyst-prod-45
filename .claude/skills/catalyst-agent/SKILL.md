@@ -240,6 +240,125 @@ HALT — CLAUDE.md ban hit
 
 ---
 
+## 🔒 CLONE-PARITY PRE-FLIGHT (mandatory — runs at Step 4.0, BEFORE code archaeology)
+
+**For any task on a surface that mirrors another (product↔project, child hub↔parent, mobile↔web), the FIRST step is the Clone-Parity Pre-Flight. It blocks Step 4 (probe) until all 10 checks pass. No screenshot-driven fixes, no "let me just adjust the styling" — adopt the canonical component or halt.**
+
+This pre-flight fires WHENEVER the task involves any of these signals:
+- "looks like / matches / same as / clone / mirror" the {other} module
+- product-hub, product-work, product-backlog (mirrors of project-* surfaces)
+- "build X exactly like Y"
+
+### The 10 gates (ALL must pass before Step 4 probe runs)
+
+```
+G1 [identify reference]   Name the EXACT reference surface + route + file
+                          (e.g. /project-hub/BAU/allwork →
+                          src/pages/project-hub/jira-list/ProjectAllWorkView.tsx)
+                          FAIL → halt, ask user.
+
+G2 [enumerate components] grep the reference file's top-level imports;
+                          list EVERY shared component the reference mounts
+                          (CatalystSidebarDetails, EditablePriority, etc.).
+                          FAIL → halt, re-read reference.
+
+G3 [data-source check]    For each component in G2, grep its source for
+                          hardwired Supabase calls (e.g. .from('ph_issues')).
+                          If it is hardwired, the fix is to ADD A PROP
+                          (onUpdate, options) — NEVER to fork it.
+                          FAIL → halt, write the parameterise plan.
+
+G4 [no-fork rule]         Confirm there is no plan to create a file named
+                          `{Br|Pr|Prod}{Sidebar,Field,Section,Panel}*` that
+                          shadows a canonical. If such a file exists from
+                          a prior session, plan to DELETE it as part of
+                          this task.
+                          FAIL → halt, restate plan.
+
+G5 [naming map]           Produce a 1:1 label substitution map for nav
+                          items, section headers, and labels. "Project X"
+                          → "Product X", word-for-word. No invented names.
+                          FAIL → halt, fix map.
+
+G6 [icon registry]        For every work-item-type icon: confirm the
+                          `type` prop value comes from CLAUDE.md's locked
+                          registry. Confirm no `map*ToIconType` helper is
+                          being written.
+                          FAIL → halt.
+
+G7 [external image ban]   Confirm zero `<img src={external_url}>` for
+                          avatars. ONLY `resolveAvatarUrl` or null. DB
+                          rows with external URLs are IGNORED.
+                          FAIL → halt.
+
+G8 [DOM tag discipline]   Root elements of panels/sections MUST be
+                          `<div>`. Never `<aside>` / `<section>` / `<nav>`
+                          (global @layer rules paint them).
+                          FAIL → halt.
+
+G9 [duplicate-field ban]  Verify no field appears in both center column
+                          AND right rail. If the reference shows it in
+                          the rail, the clone shows it in the rail only.
+                          FAIL → halt.
+
+G10 [scoped git plan]     State the EXACT file paths the task will touch.
+                          Confirm the commit will use
+                          `git add <explicit-paths>`, NEVER `-A` or `.`.
+                          Confirm a `git status` check before commit.
+                          FAIL → halt.
+```
+
+### Output block (mandatory, prints before Step 4 probe)
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔒 catalyst-agent · CLONE-PARITY PRE-FLIGHT — {N}/10 pass
+   Reference:  {file:line}
+   Clone:      {file:line}
+   Canonical components to MOUNT (not rebuild):
+     - CatalystSidebarDetails
+     - EditablePriority (will add `options` + `onUpdate` props)
+     - EditableAssignee (will add `onUpdate` prop)
+     - ...
+   Naming map: Project X → Product X (word-for-word)
+   Files to TOUCH: <explicit list>
+   Files to DELETE: <forks to remove>
+   git plan: `git add {explicit paths}` — no -A
+   Verdict: {READY for Step 4 / HALT — fix G{n}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+If ANY gate fails, the activation block at Step 7 is BLOCKED. No probe, no agent dispatch, no commit until all 10 pass.
+
+---
+
+## 🚫 TEN ANTI-PATTERNS — HALT IF YOU CATCH YOURSELF DOING THESE
+
+These are documented failure modes from a single session (2026-06-01) that reproduced ALL TEN in sequence. Each one cost re-work that exceeded the original task budget. **If you find yourself doing any of these, STOP and re-run the Clone-Parity Pre-Flight.**
+
+| # | Anti-pattern | What you're doing wrong | Correct move |
+|---|---|---|---|
+| L1 | Building a parallel section component (`BrSidebarDetails`, `ProdField...`) | Forking instead of parameterising the canonical | Read the canonical, add the prop, mount it |
+| L2 | Writing `map{Foo}TypeToIconType()` | Treating a field value as a work-item-type | Pass the literal `'Business Request'` from the registry |
+| L3 | `<img src={profile.avatar_url}>` | Trusting external URLs in DB rows (banned by CLAUDE.md §19) | `resolveAvatarUrl(name)` only |
+| L4 | `git add -A` / `git add .` | Sweeping stale parallel files into your commit | Explicit paths + `git status` check |
+| L5 | "I matched the visual" (without click test) | Stopping at appearance, skipping interaction | `dispatchEvent('click')` → assert popover opens |
+| L6 | Editing the file without re-reading relevant CLAUDE.md | Lessons logged this session are not in working memory by default | Re-grep CLAUDE.md for the section name before editing |
+| L7 | `<aside data-cv-section=…>` | Global `@layer components` rule paints aside grey | Use `<div role="complementary">` |
+| L8 | Inventing nav labels ("All Work" when ref says "Project Work") | Not mirroring reference naming role-for-role | 1-word substitution only |
+| L9 | A 2×2 card grid of fields that also exist in the right rail | Duplicating fields across columns | One field, one place |
+| L10 | Choosing "no shared-component change" over "parameterise once" | Optimising for the next 30 min, not the next 6 hours | If you'll redo it next month, do it right now |
+
+### The single test that catches all 10
+
+**Before any commit on a clone surface, answer in chat (the user reads this):**
+
+> "If I shipped this clone today, then next month a third surface needed the same field — would I be able to mount the SAME component I just edited? Or would I have to copy-paste my code again?"
+
+If the answer is "I'd have to copy-paste again" → you forked. Halt, parameterise, retry.
+
+---
+
 ## Flags reference
 
 | Flag | Effect |
@@ -294,6 +413,10 @@ Why:     <which classifier marker fired>
 2. Read working code — exact endpoint, auth, pagination, data transform patterns
 3. Replicate working pattern exactly before probing or debugging
 4. Document findings in gap report (Step 5)
+
+#### Step 4.0.1 — Clone-Parity Pre-Flight (BLOCKING — see "🔒 CLONE-PARITY PRE-FLIGHT" section above)
+
+If task signals reveal a clone relationship (product↔project, child↔parent hub, any "looks like / matches / same as / mirror" verb), run the **10-gate Clone-Parity Pre-Flight** before Step 4.1. Print the verdict block. Halt on any gate failure. No probe, no agent dispatch, no code until verdict = READY.
 
 #### Step 4.1 — Parallel probe lanes
 
@@ -534,6 +657,16 @@ CLAUDE.md "Chrome MCP only for Lane B" is **suspended** under /catalyst-agent. C
 - [ ] Port 8080 used for all Lane B probes (never 8081)
 - [ ] Re-probe count ≤ 3 (if exceeded → escalated to user)
 - [ ] Context Guard checked at every phase boundary
+- [ ] **Clone-Parity Pre-Flight 10/10 pass (Step 4.0.1)** — if task is on a clone surface
+- [ ] **No `git add -A` / `git add .` used; explicit paths only** (L4)
+- [ ] **`git status` checked before commit; unexpected files not staged** (L4)
+- [ ] **No new `Br*` / `Pr*` / `Prod*` section components created** (L1) — if so, halt and adopt canonical
+- [ ] **No `map*ToIconType` helper** in the diff (L2) — icon `type` props use the locked CLAUDE.md registry only
+- [ ] **No `<img src={external_url}>`** for avatars (L3) — `resolveAvatarUrl` or null only
+- [ ] **Interaction tested, not just visual** (L5) — `dispatchEvent('click')` → DOM assertion (popover opens, aria-expanded flips)
+- [ ] **Root element of new panels is `<div>`**, never `<aside>`/`<section>`/`<nav>` (L7)
+- [ ] **No field rendered in two places** (L9) — center XOR rail, not both
+- [ ] **Self-test answered**: "If a third surface needed this same field next month, could I mount the SAME component?" (L10) — if no, halt and parameterise
 
 ## Evidence block (print after every implementation action)
 
