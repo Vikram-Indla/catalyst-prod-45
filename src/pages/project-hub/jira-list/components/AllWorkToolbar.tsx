@@ -960,6 +960,51 @@ function FilterChip({
 }
 
 /**
+ * Convert a FilterState to a Jira-style JQL string.
+ * Exported so FilterSaveModal can auto-populate JQL when editing a filter
+ * that was saved with filter_config but no jql_query (legacy AllWork saves).
+ * Each active facet becomes an IN clause; clauses are joined with AND.
+ * The project clause is always prepended when projectKey is provided.
+ */
+export function filterStateToJql(state: FilterState, projectKey?: string): string {
+  const FACET_JQL: Record<FilterFacet, string> = {
+    assignee:    'assignee',
+    reporter:    'reporter',
+    status:      'status',
+    priority:    'priority',
+    workType:    'issuetype',
+    labels:      'labels',
+    fixVersions: 'fixVersion',
+    parent:      'parent',
+    resolution:  'resolution',
+    sprint:      'sprint',
+    storyPoints: 'storyPoints',
+    severity:    'cf[10125]',
+  };
+
+  const clauses: string[] = [];
+
+  if (projectKey) {
+    clauses.push(`project = "${projectKey}"`);
+  }
+
+  for (const facet of FACET_ORDER) {
+    const vals = state[facet];
+    if (!vals || vals.length === 0) continue;
+    const field = FACET_JQL[facet];
+    if (!field) continue;
+    if (vals.length === 1) {
+      clauses.push(`${field} = "${vals[0]}"`);
+    } else {
+      const quoted = vals.map(v => `"${v}"`).join(', ');
+      clauses.push(`${field} in (${quoted})`);
+    }
+  }
+
+  return clauses.join(' AND ');
+}
+
+/**
  * SaveFilterModal — persists current FilterState as a named saved view.
  *
  * Atlaskit primitives: @atlaskit/modal-dialog (https://atlassian.design/components/modal-dialog),
@@ -1022,6 +1067,7 @@ function SaveFilterModal({
         setSaving(false);
         return;
       }
+      const jqlQuery = filterStateToJql(currentState, projectKey) || null;
       const { error } = await (supabase as any)
         .from("ph_saved_filters")
         .insert({
@@ -1031,6 +1077,7 @@ function SaveFilterModal({
           name: trimmed,
           description: description.trim() || null,
           filter_config: currentState,
+          jql_query: jqlQuery,
           is_shared: isShared,
           hub_scope: 'project',
         });
