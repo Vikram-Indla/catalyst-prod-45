@@ -4,6 +4,32 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 🔁 ADOPT CANONICAL COMPONENTS — DO NOT REIMPLEMENT (P0, Non-Negotiable)
+
+**When a product-hub surface must "look exactly like" a project-hub surface, REUSE the canonical interactive components via a data adapter. NEVER build a parallel reimplementation.**
+
+### Why this rule exists (2026-06-01)
+
+The product All Work + Business Request detail view were built as **parallel reimplementations** (`BrSidebarDetails`, `BrListPanel`) using raw `@atlaskit/Select` + plain `Avatar` + a non-interactive status `<span>`. A DOM/CSS probe vs the project reference (`/project-hub/BAU/allwork`) found **18 evidence-backed parity defects** from this one decision:
+- Right-rail fields rendered as always-open react-select controls instead of click-to-edit inline (project uses `EditableAssignee` / `EditablePriority` / `EditableReporter` / `CatalystDueDateField`).
+- Status pill was a non-interactive `<span>` (could not change status) instead of the functional `StatusTransitionDropdown`; wrong colour (`rgb(239,255,214)`), double-rendered, wrong width.
+- Navigator cards lost the assignee avatar that `WorkListPanel` shows.
+- Priority lost its `PriorityIcon`; Assignee/Reporter lost their avatars; "Assign to me" link absent.
+
+A "visual clone" that re-creates markup instead of mounting the real component will ALWAYS drift — it has none of the canonical component's icons, affordances, colours, or behaviour.
+
+### The rule
+
+1. **Identify the canonical component the project surface uses** (`CatalystSidebarDetails`, `StatusTransitionDropdown`, `WorkListPanel`, `EditableAssignee/Priority/Reporter`, `CatalystDueDateField`, `JiraTable`, etc.).
+2. **Mount that exact component** on the product surface, feeding it product data through an adapter (map `business_requests` → the component's expected props). Do NOT re-create its markup with raw `@atlaskit/*` primitives.
+3. **If the canonical component is hardwired to `ph_issues`**, the correct fix is to parameterise its data source (adapter/prop), NOT to fork it. Forking = drift.
+4. **Naming parity:** product nav/labels mirror project labels by role — "Project Work" → **"Product Work"** (not "All Work"); "Project Backlog" → "Product Backlog"; etc.
+5. **Verify by DOM/CSS probe against the project reference** before declaring parity — same selectors, side-by-side, measured values. "Looks similar" is not parity.
+
+**Severity:** P0 — superficial cloning is the documented cause of repeated product-module regressions. Adopt, don't reimplement.
+
+---
+
 ## 🏢 ENTERPRISE UI GUARDRAIL — NEVER IMPLEMENT CONSUMER ANIMATIONS (P0, Non-Negotiable)
 
 **Catalyst is an enterprise work-management platform.** Every UI decision must pass the enterprise benchmark.
