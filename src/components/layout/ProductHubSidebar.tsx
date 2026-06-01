@@ -123,13 +123,11 @@ const GLOBAL_CONFIG: SidebarConfig = {
           icon: LayoutGrid,
           exact: false,
         },
-        {
-          id: 'filters',
-          title: 'Product Filters',
-          path: '/product-hub/filters',
-          icon: Filter,
-          exact: false,
-        },
+        // Product Filters intentionally NOT mounted in GLOBAL_CONFIG —
+        // filters are a per-product concept and live in the per-product
+        // sidebar (PRODUCT_CONFIG above). A global "Product Filters" entry
+        // duplicated the per-product link and produced an "any-product"
+        // surface that doesn't exist. Removed 2026-06-01 (design-critique).
       ],
     },
   ],

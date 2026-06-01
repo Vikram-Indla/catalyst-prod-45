@@ -529,8 +529,11 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:key/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />
         <Route path="/product-hub/:key/filters/create" element={<MG k="producthub" t="ProductHub"><S><CreateFilterPageLazy hubType="product" /></S></MG>} />
-        <Route path="/product-hub/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />
-        <Route path="/product-hub/filters/create" element={<MG k="producthub" t="ProductHub"><S><CreateFilterPageLazy hubType="product" /></S></MG>} />
+        {/* Global /product-hub/filters[/create] retired 2026-06-01 — filters are
+            per-product. Anyone deep-linking to the old global path lands on the
+            products listing. Per-product filters still live at /product-hub/:key/filters. */}
+        <Route path="/product-hub/filters" element={<Navigate to="/product-hub/products" replace />} />
+        <Route path="/product-hub/filters/create" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
         <Route path="/product-hub/roadmaps-v1" element={<MG k="producthub" t="ProductHub"><S><IndustryRoadmapPage /></S></MG>} />
         <Route path="/product-hub/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />
