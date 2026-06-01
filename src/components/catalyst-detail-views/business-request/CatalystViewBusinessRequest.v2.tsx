@@ -1,4 +1,9 @@
 /**
+ * @deprecated Use CatalystViewBusinessRequest.v3 instead.
+ * V3 accepts the standard CatalystViewBaseProps (itemId = request key),
+ * matches Story's component structure, and is wired into all mount sites.
+ * This file is kept for reference only — do not add new mount sites.
+ *
  * CatalystViewBusinessRequest v2 — canonical Product Hub Business Request
  * detail view, ADS-only, on the CatalystViewBase shell.
  *
@@ -36,7 +41,6 @@ import { useDuplicateBusinessRequest } from '@/hooks/useBusinessRequests';
 import {
   BrTitleSection,
   BrStatusSection,
-  BrKeyDetails,
   BrArabicTitleSection,
   BrDescriptionSection,
   BrAttachmentsSection,
@@ -158,7 +162,6 @@ export default function CatalystViewBusinessRequestV2({
     <>
       <BrTitleSection request={request} onUpdate={updateField} />
       <BrStatusSection request={request} onUpdate={updateField} />
-      <BrKeyDetails request={request} />
       <BrArabicTitleSection request={request} onUpdate={updateField} />
       <BrDescriptionSection request={request} onUpdate={updateField} />
       <BrAttachmentsSection request={request} />

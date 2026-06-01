@@ -14,11 +14,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { RequestTable } from '@/components/producthub/listing/RequestTable';
 import { Pagination } from '@/components/producthub/listing/Pagination';
-// jira-compare cycle 4 — RequestDetailPanel replaced by CatalystViewBusinessRequestV2.
-// Legacy import kept here only so a sunset grep finds it; remove after cycle 5
-// confirms BR-domain mounts also migrated.
-// import { RequestDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
-import CatalystViewBusinessRequestV2 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v2';
+import CatalystViewBusinessRequestV3 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v3';
 import type { TimelineRequest } from '@/types/producthub/request';
 import { ContextMenu } from '@/components/requests/ContextMenu';
 import { CreateRequestDrawer } from '@/components/producthub/shared/CreateRequestDrawer';
@@ -818,14 +814,14 @@ export default function RequestListingPage() {
       />
 
       {detailOpen && detailInitiative && (
-        <CatalystViewBusinessRequestV2
+        <CatalystViewBusinessRequestV3
           isOpen={detailOpen}
           onClose={() => setDetailOpen(false)}
-          requestKey={
+          itemId={
             (detailInitiative as { request_key?: string | null; initiative_key?: string | null })
               .request_key ??
             (detailInitiative as { initiative_key?: string | null }).initiative_key ??
-            null
+            ''
           }
         />
       )}

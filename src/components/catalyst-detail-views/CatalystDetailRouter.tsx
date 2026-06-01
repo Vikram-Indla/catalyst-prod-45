@@ -15,7 +15,7 @@ const CatalystViewEpic = lazy(() => import('./epic/CatalystViewEpic'));
 const CatalystViewDefect = lazy(() => import('./defect/CatalystViewDefect'));
 const CatalystViewIncident = lazy(() => import('./incident/CatalystViewIncident'));
 const CatalystViewTask = lazy(() => import('./task/CatalystViewTask'));
-const CatalystViewBusinessRequest = lazy(() => import('./business-request/CatalystViewBusinessRequest.v2'));
+const CatalystViewBusinessRequest = lazy(() => import('./business-request/CatalystViewBusinessRequest.v3'));
 const CatalystViewSubtask = lazy(() => import('./subtask/CatalystViewSubtask'));
 const CatalystViewFeature = lazy(() => import('./feature/CatalystViewFeature'));
 // Phase 6 (2026-05-02) — Idea is its own entity backed by ph_ideas, not
@@ -102,18 +102,7 @@ export default function CatalystDetailRouter({
       {resolved === 'defect' && <CatalystViewDefect {...sharedProps} />}
       {resolved === 'incident' && <CatalystViewIncident {...sharedProps} />}
       {resolved === 'task' && <CatalystViewTask {...sharedProps} />}
-      {resolved === 'business_request' && (
-        <CatalystViewBusinessRequest
-          isOpen={isOpen}
-          onClose={onClose}
-          requestKey={itemId}
-          panelMode={panelMode}
-          fullPageMode={fullPageMode}
-          onTogglePanelMode={onTogglePanelMode}
-          navigationItems={navigationItems}
-          onNavigate={onNavigate}
-        />
-      )}
+      {resolved === 'business_request' && <CatalystViewBusinessRequest {...sharedProps} />}
       {resolved === 'subtask' && <CatalystViewSubtask {...sharedProps} />}
       {resolved === 'idea' && <CatalystViewIdea {...sharedProps} />}
       {(resolved === 'story' || !resolved) && <CatalystViewStory {...sharedProps} />}
