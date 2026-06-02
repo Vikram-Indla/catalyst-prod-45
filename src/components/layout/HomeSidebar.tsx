@@ -33,7 +33,7 @@ import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
 
-const RECENT_LIMIT = 8;
+const RECENT_LIMIT = 16;
 
 interface HomeSidebarProps {
   expanded?: boolean;
@@ -229,6 +229,43 @@ function getProjectIconComponent(location: RecentLocation) {
   return Component;
 }
 
+// ─── Time-bucketing helpers ───────────────────────────────────────────────────
+
+type TimeBucket = 'today' | 'yesterday' | 'day-before' | 'older';
+
+function timeBucket(visitedAt: number): TimeBucket {
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const dayMs = 86_400_000;
+  const t = todayStart.getTime();
+  if (visitedAt >= t) return 'today';
+  if (visitedAt >= t - dayMs) return 'yesterday';
+  if (visitedAt >= t - 2 * dayMs) return 'day-before';
+  return 'older';
+}
+
+const BUCKET_LABELS: Record<TimeBucket, string> = {
+  today: 'Today',
+  yesterday: 'Yesterday',
+  'day-before': 'Day before',
+  older: 'Older',
+};
+
+const BUCKET_ORDER: TimeBucket[] = ['today', 'yesterday', 'day-before', 'older'];
+
+/** Group locations by space (hub:key) preserving the most-recent-space-first
+ *  ordering, so within a time bucket same-space entries cluster together. */
+function groupBySpace(locs: RecentLocation[]): RecentLocation[] {
+  const order: string[] = [];
+  const groups = new Map<string, RecentLocation[]>();
+  for (const loc of locs) {
+    const k = `${loc.hub}:${loc.projectKey}`;
+    if (!groups.has(k)) { groups.set(k, []); order.push(k); }
+    groups.get(k)!.push(loc);
+  }
+  return order.flatMap((k) => groups.get(k)!);
+}
+
 export default function HomeSidebar({
   expanded = true,
   onToggle = () => {},
@@ -237,26 +274,41 @@ export default function HomeSidebar({
   const { recentLocations, loading } = useRecentProjects(RECENT_LIMIT);
 
   const config: SidebarConfig = useMemo(() => {
-    const items: SidebarMenuItem[] = loading
-      ? [
-          {
-            id: 'recent-loading-label',
-            title: (
-              <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '11px' }}>
-                Loading recent pages...
-              </span>
-            ),
-            path: '#recent-loading-label',
-            icon: FolderOpenIcon,
-            onClick: () => {},
-          },
-          { id: 'recent-skel-1', title: <SkeletonRowTitle />, path: '#recent-skel-1', icon: FolderOpenIcon },
-          { id: 'recent-skel-2', title: <SkeletonRowTitle />, path: '#recent-skel-2', icon: FolderOpenIcon },
-          { id: 'recent-skel-3', title: <SkeletonRowTitle />, path: '#recent-skel-3', icon: FolderOpenIcon },
-        ]
-      : recentLocations.length === 0
-      ? [
-          {
+    if (loading) {
+      return {
+        badge: null,
+        label: 'Home',
+        showFavorites: false,
+        sections: [{
+          title: 'Recent',
+          items: [
+            {
+              id: 'recent-loading-label',
+              title: (
+                <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '11px' }}>
+                  Loading recent pages...
+                </span>
+              ),
+              path: '#recent-loading-label',
+              icon: FolderOpenIcon,
+              onClick: () => {},
+            },
+            { id: 'recent-skel-1', title: <SkeletonRowTitle />, path: '#recent-skel-1', icon: FolderOpenIcon },
+            { id: 'recent-skel-2', title: <SkeletonRowTitle />, path: '#recent-skel-2', icon: FolderOpenIcon },
+            { id: 'recent-skel-3', title: <SkeletonRowTitle />, path: '#recent-skel-3', icon: FolderOpenIcon },
+          ],
+        }],
+      };
+    }
+
+    if (recentLocations.length === 0) {
+      return {
+        badge: null,
+        label: 'Home',
+        showFavorites: false,
+        sections: [{
+          title: 'Recent',
+          items: [{
             id: 'recent-placeholder',
             title: (
               <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '12px' }}>
@@ -266,26 +318,39 @@ export default function HomeSidebar({
             path: '#',
             icon: ClockIcon,
             onClick: (e) => e.preventDefault(),
-          },
-        ]
-      : recentLocations.map((loc) => ({
-          // Path is the dedupe key in storage, so it's unique here too.
-          id: `recent-${loc.path}`,
-          title: <LocationRowTitle location={loc} />,
-          path: loc.path,
-          icon: getProjectIconComponent(loc),
-          // Project identity bar: data-driven from ph_projects.color.
-          // Each row carries its project's brand color as a persistent 3px
-          // left spine — instant visual differentiation between projects.
-          // Falls back gracefully to undefined (no bar) when color is null.
-          accentColor: loc.color ?? undefined,
-        }));
+          }],
+        }],
+      };
+    }
+
+    // Group locations into time buckets, then cluster same-space entries within each bucket.
+    const bucketMap = new Map<TimeBucket, RecentLocation[]>();
+    for (const loc of recentLocations) {
+      const b = timeBucket(loc.visitedAt);
+      if (!bucketMap.has(b)) bucketMap.set(b, []);
+      bucketMap.get(b)!.push(loc);
+    }
+
+    const toItem = (loc: RecentLocation): SidebarMenuItem => ({
+      id: `recent-${loc.path}`,
+      title: <LocationRowTitle location={loc} />,
+      path: loc.path,
+      icon: getProjectIconComponent(loc),
+      accentColor: loc.color ?? undefined,
+    });
+
+    const sections = BUCKET_ORDER
+      .filter((b) => bucketMap.has(b))
+      .map((b) => ({
+        title: BUCKET_LABELS[b],
+        items: groupBySpace(bucketMap.get(b)!).map(toItem),
+      }));
 
     return {
       badge: null,
       label: 'Home',
       showFavorites: false,
-      sections: [{ title: 'Recent', items }],
+      sections,
     };
   }, [recentLocations, loading]);
 

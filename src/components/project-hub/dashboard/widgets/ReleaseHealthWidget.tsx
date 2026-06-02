@@ -16,7 +16,7 @@
  *     ~64px even on narrow widgets.
  *
  * Wiring strictly preserved:
- *   - openAll → openUWV with all release fixVersions for cross-release view.
+ *   - openAll → openUWV with all release sprintReleases for cross-release view.
  *   - Header expand uses the same handler.
  *   - WidgetGearButton in headerBadges.
  *   - useDashboardFilter (page-level) + useGadgetSettings (per-gadget)
@@ -90,7 +90,7 @@ export default function ReleaseHealthWidget({
       hubSource: ['projecthub'],
       dataType: 'epics',
       title: `Release Health · ${projectKey}`,
-      fixVersions: all.map((r: any) => r.name).filter(Boolean),
+      sprintReleases: all.map((r: any) => r.name).filter(Boolean),
     });
 
   const headerExtras = (

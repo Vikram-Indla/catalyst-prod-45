@@ -9,69 +9,69 @@ import { resolveStatusCategoryStatic } from '@/hooks/useStatusMappingLookup';
 // ═══════════════════════════════════════════════════
 const SC: Record<string, { dot: string; bg: string; tx: string; label: string }> = {
   // ── Grey: To Do / Waiting ──
-  'To Do':                { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
-  'Open':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
-  'Backlog':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog' },
-  'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
-  'Reopened':             { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
-  'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements' },
-  'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting' },
-  'On Hold':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'On Hold' },
-  'Todo':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
-  'Reported':             { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Reported' },
-  'Ready for Dev':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Dev' },
-  'Ready for Test':       { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Test' },
+  'To Do':                { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do' },
+  'Open':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do' },
+  'Backlog':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Backlog' },
+  'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Re-Open' },
+  'Reopened':             { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Re-Open' },
+  'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Requirements' },
+  'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Awaiting' },
+  'On Hold':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'On Hold' },
+  'Todo':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do' },
+  'Reported':             { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Reported' },
+  'Ready for Dev':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Ready Dev' },
+  'Ready for Test':       { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Ready Test' },
   // ── Blue: In Progress ──
-  'In Progress':          { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
-  'In Development':       { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
-  'Under Implementation': { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
-  'In Design':            { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Design' },
-  'Ready for Development':{ dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'Ready Dev' },
-  'In Entity Integration':{ dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'Integration' },
-  'Deferred for Int':     { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'Deferred' },
-  'In Beta':              { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Beta' },
-  'In Production':        { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Prod' },
-  'In Investigation':     { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'Investigating' },
-  'In Fix':               { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Fix' },
-  'In Execution':         { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Execution' },
-  'Fix in Progress':      { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'Fixing' },
+  'In Progress':          { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Progress' },
+  'In Development':       { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Progress' },
+  'Under Implementation': { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Progress' },
+  'In Design':            { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Design' },
+  'Ready for Development':{ dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'Ready Dev' },
+  'In Entity Integration':{ dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'Integration' },
+  'Deferred for Int':     { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'Deferred' },
+  'In Beta':              { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Beta' },
+  'In Production':        { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Prod' },
+  'In Investigation':     { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'Investigating' },
+  'In Fix':               { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Fix' },
+  'In Execution':         { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Execution' },
+  'Fix in Progress':      { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'Fixing' },
   // ── Teal: Review / QA ──
-  'In Review':            { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
-  'In QA':                { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA' },
-  'Ready for QA':         { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA' },
-  'Retest':               { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'Retest' },
-  'Code Review':          { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
-  'Technical Validation': { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'Validation' },
-  'End to End Testing':   { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'E2E Testing' },
-  'In Testing':           { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'Testing' },
-  'QA Pass':              { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'QA Pass' },
-  'QA Fail':              { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'QA Fail' },
+  'In Review':            { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'In Review' },
+  'In QA':                { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'In QA' },
+  'Ready for QA':         { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Ready QA' },
+  'Retest':               { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Retest' },
+  'Code Review':          { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'In Review' },
+  'Technical Validation': { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Validation' },
+  'End to End Testing':   { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'E2E Testing' },
+  'In Testing':           { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Testing' },
+  'QA Pass':              { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'QA Pass' },
+  'QA Fail':              { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'QA Fail' },
   // ── Purple: UAT ──
-  'In UAT':               { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
-  'UAT Ready':            { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
+  'In UAT':               { dot: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--ds-surface, #F5F3FF)', tx: 'var(--ds-text, #4C1D95)', label: 'In UAT' },
+  'UAT Ready':            { dot: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--ds-surface, #F5F3FF)', tx: 'var(--ds-text, #4C1D95)', label: 'UAT Ready' },
   // ── Green: Done ──
-  'Done':                 { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Closed':               { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Resolved':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Ready for Production': { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Ready Prod' },
-  'Beta Ready':           { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Beta Ready' },
-  'Production Ready':     { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Prod Ready' },
-  'Monitor':              { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Monitor' },
-  'Released':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Released' },
-  'Verified':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Verified' },
-  'Approved':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Approved' },
-  'Complete':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
-  'Completed':            { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
+  'Done':                 { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Done' },
+  'Closed':               { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Done' },
+  'Resolved':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Done' },
+  'Ready for Production': { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Ready Prod' },
+  'Beta Ready':           { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Beta Ready' },
+  'Production Ready':     { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Prod Ready' },
+  'Monitor':              { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Monitor' },
+  'Released':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Released' },
+  'Verified':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Verified' },
+  'Approved':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Approved' },
+  'Complete':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Complete' },
+  'Completed':            { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Complete' },
   // ── Red: Blocked / Rejected ──
-  'Blocked':              { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Blocked' },
-  'Rejected':             { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Rejected' },
-  'Impediment':           { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Impediment' },
+  'Blocked':              { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: 'var(--ds-text-danger, #7F1D1D)', label: 'Blocked' },
+  'Rejected':             { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: 'var(--ds-text-danger, #7F1D1D)', label: 'Rejected' },
+  'Impediment':           { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: 'var(--ds-text-danger, #7F1D1D)', label: 'Impediment' },
 };
 
 // Category-level fallbacks (Jira always provides these)
-const CAT_DONE       = { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done' };
-const CAT_INPROGRESS = { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' };
-const CAT_TODO       = { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' };
+const CAT_DONE       = { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Done' };
+const CAT_INPROGRESS = { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Progress' };
+const CAT_TODO       = { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do' };
 
 function resolveStatus(item: any) {
   // 1. Try exact status_name match first (most descriptive label)
@@ -87,7 +87,7 @@ function resolveStatus(item: any) {
   const cat5 = resolveStatusCategoryStatic(name, item.status_category);
   if (cat5 === 'Done') return CAT_DONE;
   if (cat5 === 'In Progress' || cat5 === 'In Review') return CAT_INPROGRESS;
-  if (cat5 === 'Blocked') return { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: name || 'Blocked' };
+  if (cat5 === 'Blocked') return { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: 'var(--ds-text-danger, #7F1D1D)', label: name || 'Blocked' };
 
   // 4. Final fallback: To Do (never "Unknown")
   return CAT_TODO;
@@ -168,14 +168,14 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--bg-3)', color: 'var(--fg-2)', textTransform: 'capitalize' }}>
               {item.priority || '—'}
             </span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--ds-background-danger, #FEF2F2)', color: '#7F1D1D' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #7F1D1D)' }}>
               {getJiraIcon(item.item_type)} <span style={{ textTransform: 'uppercase' }}>{item.item_type}</span>
             </span>
             {item.project_key && (
               <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: projColor }}>{item.project_key}</span>
             )}
           </div>
-          <div style={{ fontSize: '16px', fontWeight: 600, color: '#020617', lineHeight: '1.4' }}>{item.title}</div>
+          <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #020617)', lineHeight: '1.4' }}>{item.title}</div>
         </div>
 
         {/* Scrollable body */}
@@ -204,7 +204,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '7px', fontWeight: 700, color: 'white', flexShrink: 0,
                     }}>{initials(cell.value as string)}</div>
-                    <span style={{ fontSize: '13px', fontWeight: 500, color: '#020617' }}>{cell.value}</span>
+                    <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text, #020617)' }}>{cell.value}</span>
                   </div>
                 ) : cell.isBar ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -220,7 +220,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                   </div>
                 ) : (
                   <div>
-                    <div style={{ fontSize: '13px', fontWeight: 500, color: '#020617', wordBreak: 'break-word' }}>{cell.value}</div>
+                    <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text, #020617)', wordBreak: 'break-word' }}>{cell.value}</div>
                     {cell.sub && <div style={{ fontSize: '11px', color: 'var(--fg-2)', marginTop: '2px' }}>{cell.sub}</div>}
                   </div>
                 )}
@@ -248,7 +248,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                   {getJiraIcon(item.item_type)}
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', color: 'var(--cp-blue)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.item_key}</span>
                   <span style={{
-                    fontSize: '13px', fontWeight: 500, color: '#020617',
+                    fontSize: '13px', fontWeight: 500, color: 'var(--ds-text, #020617)',
                     overflow: 'hidden', display: '-webkit-box',
                     WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                   } as React.CSSProperties}>{item.title}</span>
@@ -266,7 +266,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Siblings</span>
                 <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '12px' }}>{doneSiblings}/{siblings.length} done</span>
               </div>
-              <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#CBD5E1 transparent', maxHeight: '320px' }}>
+              <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: 'var(--ds-border, #CBD5E1) transparent', maxHeight: '320px' }}>
                 {siblings.map(sib => {
                   const sibS = resolveStatus(sib);
                   const sibLabel = sib.status_name || sib.status || 'To Do';
@@ -292,7 +292,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                         <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: sibS.dot, flexShrink: 0 }} />
                         {sibLabel}
                       </span>
-                      <span style={{ fontSize: '12px', fontWeight: 500, color: '#020617', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sib.title}</span>
+                      <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, #020617)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sib.title}</span>
                       <span style={{ fontSize: '11px', fontWeight: 600, color: ageCol(sib.age_days ?? 0), fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{sib.age_days ?? 0}d</span>
                     </div>
                   );

@@ -14,7 +14,7 @@ import { MultiSelectDropdown, type MultiSelectOption } from './MultiSelectDropdo
 import {
   useAvailableProjects, useForceSync, useSyncConfig,
   useSaveFilterSettings, useAvailableIssueTypes, useSyncHealth,
-  useAvailableFixVersions,
+  useAvailableSprintReleases,
   type SyncLogEntry,
 } from '../hooks/useSyncEngine';
 import toast from 'react-hot-toast';
@@ -41,7 +41,7 @@ export interface ProjectSyncConfig {
   lookback_months: number;
   status_categories: string[];
   issue_types: string[];
-  fix_versions: string[];
+  sprint_release: string[];
 }
 
 /** Sync progress phases per project */
@@ -60,7 +60,7 @@ export function SyncConfigPanel() {
   const { data: syncConfig, isLoading: configLoading } = useSyncConfig();
   const { data: syncHealth } = useSyncHealth();
   const { data: issueTypes = [], isLoading: typesLoading } = useAvailableIssueTypes();
-  const { data: fixVersionsRaw = [] } = useAvailableFixVersions();
+  const { data: sprintReleasesRaw = [] } = useAvailableSprintReleases();
   const forceSync = useForceSync();
   const saveFilters = useSaveFilterSettings();
 
@@ -95,7 +95,7 @@ export function SyncConfigPanel() {
             lookback_months: val.lookback_months || 3,
             status_categories: val.status_categories || [],
             issue_types: val.issue_types || [],
-            fix_versions: val.fix_versions || [],
+            sprint_release: val.sprint_release || [],
           };
         });
         setProjectConfigs(migrated);
@@ -110,7 +110,7 @@ export function SyncConfigPanel() {
       let changed = false;
       selectedProjects.forEach(pk => {
         if (!next[pk]) {
-          next[pk] = { lookback_months: 3, status_categories: [], issue_types: [], fix_versions: [] };
+          next[pk] = { lookback_months: 3, status_categories: [], issue_types: [], sprint_release: [] };
           changed = true;
         }
       });
@@ -130,10 +130,10 @@ export function SyncConfigPanel() {
 
   const issueTypeOptions: MultiSelectOption[] = issueTypes.map(t => ({ value: t, label: t }));
 
-  // Fix versions grouped by project
-  const fixVersionsByProject = useMemo(() => {
+  // Sprint/Releases grouped by project
+  const sprintReleasesByProject = useMemo(() => {
     const map: Record<string, MultiSelectOption[]> = {};
-    fixVersionsRaw.forEach(v => {
+    sprintReleasesRaw.forEach(v => {
       if (!map[v.project_key]) {
         map[v.project_key] = [{ value: '__NO_VERSION__', label: 'No version', sublabel: 'Unassigned to any release' }];
       }
@@ -150,7 +150,7 @@ export function SyncConfigPanel() {
       }
     });
     return map;
-  }, [fixVersionsRaw, selectedProjects]);
+  }, [sprintReleasesRaw, selectedProjects]);
 
   const handleProjectChange = (newSelected: string[]) => {
     setSelectedProjects(newSelected);
@@ -298,7 +298,7 @@ export function SyncConfigPanel() {
     parts.push(config.lookback_months === 0 ? 'Lifetime' : `${config.lookback_months}mo`);
     parts.push(config.status_categories.length === 0 ? 'All categories' : `${config.status_categories.length} cat.`);
     parts.push(config.issue_types.length === 0 ? 'All types' : `${config.issue_types.length} types`);
-    parts.push(config.fix_versions.length === 0 ? 'All releases' : `${config.fix_versions.length} rel.`);
+    parts.push(config.sprint_release.length === 0 ? 'All releases' : `${config.sprint_release.length} rel.`);
     return parts.join(' · ');
   };
 
@@ -353,10 +353,10 @@ export function SyncConfigPanel() {
               </label>
 
               {selectedProjects.map(pk => {
-                const config = projectConfigs[pk] || { lookback_months: 3, status_categories: [], issue_types: [], fix_versions: [] };
+                const config = projectConfigs[pk] || { lookback_months: 3, status_categories: [], issue_types: [], sprint_release: [] };
                 const isExpanded = expandedProject === pk;
                 const projectInfo = availableProjects.find(p => p.key === pk);
-                const projectVersions = fixVersionsByProject[pk] || [];
+                const projectVersions = sprintReleasesByProject[pk] || [];
 
                 return (
                   <div
@@ -472,21 +472,21 @@ export function SyncConfigPanel() {
                           </p>
                         </div>
 
-                        {/* Fix Versions / Releases */}
+                        {/* Sprint/Releases */}
                         <div style={{ overflow: 'visible' }}>
                           <MultiSelectDropdown
                             label={`Releases for ${pk}`}
                             options={projectVersions}
-                            selected={config.fix_versions}
-                            onChange={(vals) => updateProjectConfig(pk, { fix_versions: vals })}
+                            selected={config.sprint_release}
+                            onChange={(vals) => updateProjectConfig(pk, { sprint_release: vals })}
                             placeholder="All releases (no filter)"
                             emptyMessage={`No versions found for ${pk}. Sync first to discover releases.`}
                             accentColor="var(--quality-high, #059669)"
                           />
                           <p style={{ fontSize: 10, color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
-                            {config.fix_versions.length === 0
+                            {config.sprint_release.length === 0
                               ? 'No filter — all releases will be synced.'
-                              : `Only ${config.fix_versions.length} release(s) will be synced for ${pk}.`}
+                              : `Only ${config.sprint_release.length} release(s) will be synced for ${pk}.`}
                           </p>
                         </div>
                       </div>

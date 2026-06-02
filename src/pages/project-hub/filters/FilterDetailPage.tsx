@@ -10,6 +10,7 @@ import { FilterVersionHistory } from '@/components/filters/FilterVersionHistory'
 import { FilterUsageSparkline } from '@/components/filters/FilterUsageSparkline';
 import { type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
 import { ArrowLeft, Edit, Clock } from '@/lib/atlaskit-icons';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 interface BoardInfo { id: string; name: string; }
 
@@ -114,23 +115,14 @@ export default function FilterDetailPage() {
         borderBottom: `1px solid ${token('color.border')}`,
         flexShrink: 0,
       }}>
-        <button
+        <Button
+          appearance="subtle"
+          spacing="compact"
+          iconBefore={ArrowLeft}
           onClick={() => navigate(backHref)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: token('color.text.subtle'),
-            fontSize: 13,
-            padding: '4px 0',
-          }}
         >
-          <ArrowLeft size="small" />
           Filters
-        </button>
+        </Button>
         <span style={{ color: token('color.text.subtlest'), fontSize: 13 }}>/</span>
         <span style={{ fontSize: 13, color: token('color.text.subtle') }}>{filter.name}</span>
       </div>
@@ -144,7 +136,7 @@ export default function FilterDetailPage() {
             <h1 style={{
               margin: 0,
               fontSize: 24,
-              fontWeight: token('font.weight.bold'),
+              fontWeight: 653,
               color: token('color.text'),
               lineHeight: '28px',
             }}>
@@ -232,7 +224,7 @@ export default function FilterDetailPage() {
             {filter.owner ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <AkAvatar
-                  src={filter.owner.avatar_url ?? undefined}
+                  src={resolveAvatarUrl(filter.owner.full_name)}
                   name={filter.owner.full_name ?? 'Unknown'}
                   size="xsmall"
                 />
@@ -301,7 +293,7 @@ export default function FilterDetailPage() {
               background: token('elevation.surface.sunken'),
               borderRadius: 4,
               border: `1px solid ${token('color.border')}`,
-              fontFamily: 'var(--cp-font-mono, monospace)',
+              fontFamily: 'var(--ds-font-family-monospace, monospace)',
               fontSize: 13,
               color: token('color.text'),
               whiteSpace: 'pre-wrap',
@@ -321,12 +313,13 @@ export default function FilterDetailPage() {
             fontSize: 14,
             marginBottom: 24,
           }}>
-            No JQL query saved — <button
+            No JQL query saved — <Button
+              appearance="link"
+              spacing="none"
               onClick={() => setEditOpen(true)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.link'), fontSize: 14 }}
             >
               add one now
-            </button>
+            </Button>
           </div>
         )}
 

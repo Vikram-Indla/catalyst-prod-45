@@ -1,22 +1,39 @@
 /**
- * AIIntelligenceButton — ADS brand-blue pill that opens the Catalyst AI
- * (CATY) intelligence panel for the current context. Pairs with the
- * sparkle / "Ask Caty" affordances elsewhere in the app so every AI
- * surface reads as the same entity.
+ * AIIntelligenceButton — canonical "Ask Caty" pill CTA.
  *
- * Tooltip default: "Ask Caty about this view". Override with `tooltip`
- * when the calling surface has a more specific framing (e.g. "Ask Caty
- * about Vikram's week"). Design-critique 2026-05-17 H10 P1 — "Intelligence"
- * alone failed the "what does this button do?" test; the tooltip resolves
- * it without changing the visible label.
+ * Visual (2026-05-31 unified): WHITE pill with 4-point sparkle icon (✦)
+ * wrapped in a static 2px conic-gradient rainbow border. Matches the
+ * panel-header digest CTA and AskCatalystPill style for one consistent
+ * AI affordance across the entire app — no more solid-blue ⚡ variant.
+ *
+ * Visual rules:
+ *   - ALWAYS wrapped in the static rainbow border (animation:none)
+ *   - White background, dark text — never blue/inverse
+ *   - Sparkle (✦) icon, NOT lightning bolt — sparkle = AI universally
+ *   - No rotation, no shimmer, no motion on the gradient
+ *
+ * Idle:    white pill with ✦ icon + label inside rainbow border
+ * Loading: spinner replaces icon, label flips to "Thinking…",
+ *          button non-interactive (disabled + aria-busy)
+ *
+ * Label defaults to "Ask Caty". Callers should pass a verb-qualified
+ * label when the context is specific, e.g.:
+ *   - <AIIntelligenceButton label="Ask Caty - Profile" />  (R360)
+ *   - <AIIntelligenceButton label="Ask Caty - Triage" />   (future)
+ *
+ * CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out applies.
  */
 import React from 'react';
 import Tooltip from '@atlaskit/tooltip';
-import { Zap } from '@/lib/atlaskit-icons';
+import Spinner from '@atlaskit/spinner';
+import { token } from '@atlaskit/tokens';
 
 export interface AIIntelligenceButtonProps {
-  label: string;
+  /** Visible label. Defaults to "Ask Caty". */
+  label?: string;
   isActive?: boolean;
+  /** Show static rainbow border + spinner + "Thinking…" while CATY processes. */
+  isLoading?: boolean;
   onClick: () => void;
   className?: string;
   disabled?: boolean;
@@ -24,53 +41,108 @@ export interface AIIntelligenceButtonProps {
   tooltip?: string;
 }
 
+const STATIC_RAINBOW = `conic-gradient(
+  from 0deg,
+  #FF3CAC 0deg,
+  #784BA0 60deg,
+  #2B86C5 120deg,
+  #00C9FF 180deg,
+  #92FE9D 240deg,
+  #FFD700 300deg,
+  #FF3CAC 360deg
+)`;
+
 export function AIIntelligenceButton({
-  label,
+  label = 'Ask Caty',
   isActive = false,
+  isLoading = false,
   onClick,
   className,
   disabled = false,
   tooltip = 'Ask Caty about this view',
 }: AIIntelligenceButtonProps) {
-  const button = (
+  const isInert = disabled || isLoading;
+
+  const innerButton = (
     <button
-      onClick={disabled ? undefined : onClick}
+      onClick={isInert ? undefined : onClick}
       className={className}
-      disabled={disabled}
-      aria-label={tooltip}
+      disabled={isInert}
+      aria-label={isLoading ? 'Caty is thinking…' : tooltip}
+      aria-busy={isLoading || undefined}
       style={{
-        background: disabled
-          ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'
-          : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        // White pill — matches panel-header digest CTA + AskCatalystPill.
+        // Single source of visual truth for AI affordances across the app.
+        // isActive (e.g. toggle keeping a CATY panel open) uses the ADS
+        // selected token so the open state reads without losing the ring.
+        background: isInert
+          ? token('color.background.disabled', '#F1F2F4')
+          : isActive
+            ? token('color.background.selected', '#E9F2FE')
+            : token('elevation.surface', '#FFFFFF'),
+        color: isInert
+          ? token('color.text.disabled', '#8590A2')
+          : isActive
+            ? token('color.text.selected', '#0C66E4')
+            : token('color.text', '#172B4D'),
         border: 'none',
-        borderRadius: 20,
-        padding: '0 16px',
-        height: 32,
+        borderRadius: 18,
+        padding: '0 14px',
+        height: 28,
         fontSize: 12,
         fontWeight: 600,
-        letterSpacing: '0.3px',
-        cursor: disabled ? 'not-allowed' : 'pointer',
+        letterSpacing: 'normal',
+        cursor: isInert ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.6 : 1,
         display: 'inline-flex',
         alignItems: 'center',
         gap: 6,
-        transition: 'all 200ms ease',
+        transition: 'background 150ms ease, opacity 150ms ease',
         fontFamily: 'var(--cp-font-body)',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.transform = 'scale(1.03)';
-        e.currentTarget.style.boxShadow = '0 0 0 6px rgba(37,99,235,0.15)';
+        if (!isInert) {
+          e.currentTarget.style.background = isActive
+            ? token('color.background.selected.hovered', '#CCE0FF')
+            : token('elevation.surface.hovered', '#F1F2F4');
+        }
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.transform = 'scale(1)';
-        e.currentTarget.style.boxShadow = '';
+        if (!isInert) {
+          e.currentTarget.style.background = isActive
+            ? token('color.background.selected', '#E9F2FE')
+            : token('elevation.surface', '#FFFFFF');
+        }
       }}
     >
-      <Zap size={13} strokeWidth={2.2} />
-      {label}
+      {isLoading
+        ? <Spinner size="xsmall" />
+        : (
+          // 4-point sparkle — canonical AI glyph (matches digest CTA).
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
+            <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" />
+          </svg>
+        )}
+      {isLoading ? 'Thinking…' : label}
     </button>
   );
 
-  return tooltip ? <Tooltip content={tooltip}>{button}</Tooltip> : button;
+  // Always-on static rainbow border: marks this CTA as the AI affordance.
+  // No rotation, no animation — pure colour treatment.
+  const button = (
+    <div
+      style={{
+        display: 'inline-flex',
+        padding: 2,
+        borderRadius: 20,
+        background: STATIC_RAINBOW,
+      }}
+    >
+      {innerButton}
+    </div>
+  );
+
+  return tooltip
+    ? <Tooltip content={isLoading ? 'Caty is thinking…' : tooltip}>{button}</Tooltip>
+    : button;
 }

@@ -16,7 +16,7 @@ const ROOT = resolve(__dirname, '../../..');
 
 const VIEW_FILES = [
   'defect/CatalystViewDefect.tsx',
-  'business-request/CatalystViewBusinessRequest.tsx',
+  'business-request/CatalystViewBusinessRequest.v3.tsx',
   'epic/CatalystViewEpic.tsx',
   'task/CatalystViewTask.tsx',
   'incident/CatalystViewIncident.tsx',

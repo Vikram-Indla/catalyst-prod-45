@@ -403,13 +403,13 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             let Icon: typeof CheckCircle2;
 
             if (isPass) {
-              bgColor = '#E3FCEF'; borderColor = '#36B37E'; labelColor = '#006644'; detailColor = '#0F7B4D';
+              bgColor = 'var(--ds-background-success, #E3FCEF)'; borderColor = 'var(--ds-text-success, #36B37E)'; labelColor = 'var(--ds-text-success, #006644)'; detailColor = 'var(--ds-text-success, #0F7B4D)';
               Icon = CheckCircle2;
             } else if (isFail) {
-              bgColor = '#FFEBE6'; borderColor = '#FF5630'; labelColor = '#BF2600'; detailColor = '#7A2300';
+              bgColor = 'var(--ds-background-danger, #FFEBE6)'; borderColor = 'var(--ds-text-danger, #FF5630)'; labelColor = 'var(--ds-text-danger, #BF2600)'; detailColor = 'var(--ds-text-danger, #7A2300)';
               Icon = XCircle;
             } else {
-              bgColor = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; borderColor = 'var(--ds-border-disabled, #C1C7D0)'; labelColor = '#42526E'; detailColor = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))';
+              bgColor = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; borderColor = 'var(--ds-border-disabled, #C1C7D0)'; labelColor = 'var(--ds-text-subtle, #42526E)'; detailColor = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))';
               Icon = Minus;
             }
 
@@ -447,7 +447,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
           <button
             onClick={generateReleaseNotes}
             disabled={notesState === 'loading'}
-            className="inline-flex items-center gap-1 bg-[var(--cp-purple-60, #7C3AED)] hover:bg-[#6D28D9] text-white text-xs px-3 py-1.5 rounded font-medium disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
+            className="inline-flex items-center gap-1 bg-[var(--cp-purple-60, #7C3AED)] hover:bg-[var(--ds-background-discovery-bold-hovered,#6D28D9)] text-white text-xs px-3 py-1.5 rounded font-medium disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
           >
             <Sparkles size={12} />
             {notesState === 'success' ? 'Regenerate' : 'Generate'}
@@ -476,7 +476,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]">
               <button
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[12px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
+                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[12px] font-medium text-[var(--ds-text-subtle,var(--ds-text-subtle,#475569))] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
               >
                 <Copy size={12} />
                 {copied ? 'Copied!' : 'Copy'}

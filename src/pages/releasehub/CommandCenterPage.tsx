@@ -143,8 +143,8 @@ export default function CommandCenterPage() {
       (signoffRate * 0.35 + testPassRate * 0.30 + deployRate * 0.20 + changeCompletionRate * 0.15) * 100
     );
 
-    const scoreColor = readinessScore >= 75 ? '#006644' : readinessScore >= 50 ? '#B45309' : '#AE2A19';
-    const scoreBg = readinessScore >= 75 ? '#E3FCEF' : readinessScore >= 50 ? '#FFF7ED' : '#FFEBE6';
+    const scoreColor = readinessScore >= 75 ? 'var(--ds-text-success, #006644)' : readinessScore >= 50 ? 'var(--ds-text-warning, #B45309)' : 'var(--ds-text-danger, #AE2A19)';
+    const scoreBg = readinessScore >= 75 ? 'var(--ds-surface, #E3FCEF)' : readinessScore >= 50 ? 'var(--ds-surface, #FFF7ED)' : 'var(--ds-surface, #FFEBE6)';
 
     // Post-deploy summary
     const lastSuccessEvent = [...productionEvents]
@@ -234,7 +234,7 @@ export default function CommandCenterPage() {
   const alertBorderColor = computed.alertSeverity === 'destructive' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))'
     : computed.alertSeverity === 'warning' ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-success, var(--cp-success, #16A34A))';
   const alertBgColor = computed.alertSeverity === 'destructive' ? 'var(--ds-background-danger, #FEF2F2)'
-    : computed.alertSeverity === 'warning' ? '#FFFBEB' : '#F0FDF4';
+    : computed.alertSeverity === 'warning' ? 'var(--ds-surface, #FFFBEB)' : 'var(--ds-surface, #F0FDF4)';
 
   return (
     <div className="p-6" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>

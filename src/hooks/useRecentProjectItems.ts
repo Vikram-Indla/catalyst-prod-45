@@ -36,11 +36,24 @@ export function useRecentProjectItems(projectId: string | undefined) {
         return [];
       }
 
+      // Filter out done/canceled issues
+      const entityKeys = (data ?? []).map((d: any) => d.entity_key).filter(Boolean);
+      let doneKeys = new Set<string>();
+      if (entityKeys.length > 0) {
+        const { data: doneRows } = await supabase
+          .from('ph_issues')
+          .select('issue_key')
+          .in('issue_key', entityKeys)
+          .in('status_category', ['Done', 'done', 'Canceled', 'canceled']);
+        if (doneRows) doneKeys = new Set(doneRows.map((r: any) => r.issue_key));
+      }
+
       // Deduplicate by nav_path — rows are ordered newest-first so the first
       // occurrence of each path is the most recent visit.
       const seen = new Set<string>();
       const deduped: RecentProjectItem[] = [];
       for (const item of (data ?? []) as RecentProjectItem[]) {
+        if (item.entity_key && doneKeys.has(item.entity_key)) continue;
         if (!seen.has(item.nav_path)) {
           seen.add(item.nav_path);
           deduped.push(item);
@@ -128,6 +141,8 @@ export function useTrackRecentItem() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['recent-project-items'] });
       qc.invalidateQueries({ queryKey: ['global-recent-items'] });
+      qc.invalidateQueries({ queryKey: ['global-recent-projects'] });
+      qc.invalidateQueries({ queryKey: ['product-hub-recent-products'] });
     },
   });
 }
@@ -146,6 +161,8 @@ export function useRemoveRecentItem() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['recent-project-items'] });
       qc.invalidateQueries({ queryKey: ['global-recent-items'] });
+      qc.invalidateQueries({ queryKey: ['global-recent-projects'] });
+      qc.invalidateQueries({ queryKey: ['product-hub-recent-products'] });
     },
   });
 }

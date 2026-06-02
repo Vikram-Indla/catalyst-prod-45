@@ -60,7 +60,7 @@ interface Props {
 const STATUS_GROUPS = [
   {
     label: 'To do',
-    dot: '#7A869A',
+    dot: 'var(--ds-text-subtlest, #7A869A)',
     statuses: ['BACKLOG', 'TO DO', 'IN REQUIREMENTS', 'IN DESIGN', 'READY FOR DEV', 'TECH VALIDATION', 'PORTFOLIO REVIEW'],
   },
   {
@@ -70,22 +70,22 @@ const STATUS_GROUPS = [
   },
   {
     label: 'Paused',
-    dot: '#FFAB00',
+    dot: 'var(--ds-text-warning, #FFAB00)',
     statuses: ['ON HOLD', 'BLOCKED', 'AWAITING INFO', 'HOLD'],
   },
   {
     label: 'Done',
-    dot: '#36B37E',
+    dot: 'var(--ds-text-success, #36B37E)',
     statuses: ['PRODUCTION READY', 'BETA READY', 'IN PRODUCTION', 'DONE', 'CLOSED'],
   },
 ];
 
 const PRIORITY_OPTIONS = [
-  { value: 'Highest', label: 'Highest', icon: '↑↑', color: '#DE350B' },
-  { value: 'High', label: 'High', icon: '↑', color: '#FF8B00' },
-  { value: 'Medium', label: 'Medium', icon: '—', color: '#FFAB00' },
-  { value: 'Low', label: 'Low', icon: '↓', color: '#0065FF' },
-  { value: 'Lowest', label: 'Lowest', icon: '↓↓', color: '#7A869A' },
+  { value: 'Highest', label: 'Highest', icon: '↑↑', color: 'var(--ds-text-danger, #DE350B)' },
+  { value: 'High', label: 'High', icon: '↑', color: 'var(--ds-text-warning, #FF8B00)' },
+  { value: 'Medium', label: 'Medium', icon: '—', color: 'var(--ds-text-warning, #FFAB00)' },
+  { value: 'Low', label: 'Low', icon: '↓', color: 'var(--ds-link, #0065FF)' },
+  { value: 'Lowest', label: 'Lowest', icon: '↓↓', color: 'var(--ds-text-subtlest, #7A869A)' },
 ];
 
 // ITEM_TYPES are fetched dynamically from ph_issues per project (see useQuery
@@ -212,7 +212,7 @@ export default function GadgetSettingsPanel({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '12px 14px 8px',
-          borderBottom: '1px solid #F1F2F4',
+          borderBottom: '1px solid var(--ds-background-neutral, #F1F2F4)',
         }}
       >
         <div>
@@ -245,7 +245,7 @@ export default function GadgetSettingsPanel({
           <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
                           display: 'flex', alignItems: 'center', gap: 6 }}>
             Date range
-            <span style={{ fontSize: 9, fontWeight: 700, background: '#DEEBFF',
+            <span style={{ fontSize: 9, fontWeight: 700, background: 'var(--ds-background-selected, #DEEBFF)',
                            color: 'var(--cp-primary-60, #0052CC)', padding: '0 5px', borderRadius: 2 }}>
               NEW
             </span>
@@ -255,7 +255,7 @@ export default function GadgetSettingsPanel({
             onClick={() => toggleField('date')}
             style={{
               display: 'flex', alignItems: 'center', minHeight: 36,
-              border: openField === 'date' ? '2px solid #4C9AFF' : '2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+              border: openField === 'date' ? '2px solid var(--ds-border-focused, #4C9AFF)' : '2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
               boxShadow: openField === 'date' ? '0 0 0 2px rgba(76,154,255,.25)' : 'none',
               borderRadius: 3, background: openField === 'date' ? 'var(--ds-surface, #fff)' : 'var(--ds-surface-sunken, #FAFBFC)',
               padding: '0 8px', cursor: 'pointer', width: '100%', gap: 8,
@@ -263,19 +263,19 @@ export default function GadgetSettingsPanel({
           >
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
               <rect x="1" y="2" width="14" height="13" rx="2"
-                stroke={openField === 'date' ? 'var(--cp-primary-60, #0052CC)' : '#7A869A'} strokeWidth="1.5"/>
+                stroke={openField === 'date' ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text-subtlest, #7A869A)'} strokeWidth="1.5"/>
               <path d="M1 6h14M5 1v2M11 1v2"
-                stroke={openField === 'date' ? 'var(--cp-primary-60, #0052CC)' : '#7A869A'}
+                stroke={openField === 'date' ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text-subtlest, #7A869A)'}
                 strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
             <span style={{ flex: 1, textAlign: 'left', fontSize: 13,
-                           color: draft.datePreset === 'all' ? '#7A869A' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+                           color: draft.datePreset === 'all' ? 'var(--ds-text-subtlest, #7A869A)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                            fontWeight: draft.datePreset === 'all' ? 400 : 500 }}>
               {draft.dateLabel || 'Select period'}
             </span>
             <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
               <path d={openField === 'date' ? 'M2 8l4-4 4 4' : 'M2 4l4 4 4-4'}
-                stroke="#7A869A" strokeWidth="1.5" strokeLinecap="round"/>
+                stroke="var(--ds-text-subtlest, #7A869A)" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           </button>
 
@@ -284,7 +284,7 @@ export default function GadgetSettingsPanel({
                           borderRadius: 3, boxShadow: '0 6px 16px rgba(9,30,66,.15)',
                           overflow: 'hidden' }}>
               {/* This period group */}
-              <div style={{ borderBottom: '1px solid #EBECF0' }}>
+              <div style={{ borderBottom: '1px solid var(--ds-border, #EBECF0)' }}>
                 {(['thisQuarter', 'thisYear'] as DatePreset[]).map((p) => {
                   const r = resolvePreset(p);
                   const active = draft.datePreset === p;
@@ -296,14 +296,14 @@ export default function GadgetSettingsPanel({
                     }}
                       style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                padding: '8px 12px', width: '100%', border: 0, textAlign: 'left',
-                               background: active ? '#EAF0FB' : 'transparent', cursor: 'pointer',
+                               background: active ? 'var(--ds-background-selected, #EAF0FB)' : 'transparent', cursor: 'pointer',
                                borderLeft: active ? '3px solid var(--cp-primary-60, #0052CC)' : '3px solid transparent' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                         <span style={{ fontSize: 13, color: active ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                                        fontWeight: active ? 500 : 400 }}>
                           {p === 'thisQuarter' ? 'This quarter' : 'This year'}
                         </span>
-                        <span style={{ fontSize: 11, color: '#7A869A' }}>
+                        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #7A869A)' }}>
                           {r.dateLabel.split('·')[1]?.trim()}
                         </span>
                       </div>
@@ -314,12 +314,12 @@ export default function GadgetSettingsPanel({
               </div>
 
               {/* Quarters group */}
-              <div style={{ borderBottom: '1px solid #EBECF0' }}>
+              <div style={{ borderBottom: '1px solid var(--ds-border, #EBECF0)' }}>
                 <div style={{ padding: '7px 12px 3px', fontSize: 10, fontWeight: 700,
-                              color: '#7A869A', textTransform: 'uppercase', letterSpacing: '.05em',
+                              color: 'var(--ds-text-subtlest, #7A869A)', textTransform: 'uppercase', letterSpacing: '.05em',
                               display: 'flex', alignItems: 'center', gap: 6 }}>
                   Quarters
-                  <span style={{ background: '#EAF0FB', color: 'var(--cp-primary-60, #0052CC)', fontSize: 10,
+                  <span style={{ background: 'var(--ds-background-selected, #EAF0FB)', color: 'var(--cp-primary-60, #0052CC)', fontSize: 10,
                                  fontWeight: 600, padding: '0 6px', borderRadius: 10 }}>2026</span>
                 </div>
                 {(['Q1', 'Q2', 'Q3', 'Q4'] as DatePreset[]).map((q) => {
@@ -333,11 +333,11 @@ export default function GadgetSettingsPanel({
                     }}
                       style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                padding: '7px 12px', width: '100%', border: 0, textAlign: 'left',
-                               background: active ? '#EAF0FB' : 'transparent', cursor: 'pointer',
+                               background: active ? 'var(--ds-background-selected, #EAF0FB)' : 'transparent', cursor: 'pointer',
                                borderLeft: active ? '3px solid var(--cp-primary-60, #0052CC)' : '3px solid transparent' }}>
                       <span style={{ fontSize: 13, color: active ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                                      fontWeight: active ? 500 : 400 }}>{q} 2026</span>
-                      <span style={{ fontSize: 11, color: active ? 'var(--cp-primary-60, #0052CC)' : '#7A869A' }}>
+                      <span style={{ fontSize: 11, color: active ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text-subtlest, #7A869A)' }}>
                         {range?.trim()}
                       </span>
                     </button>
@@ -353,13 +353,13 @@ export default function GadgetSettingsPanel({
                 }}
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                            padding: '7px 12px', width: '100%', border: 0, textAlign: 'left',
-                           background: draft.datePreset === 'all' ? '#EAF0FB' : 'transparent',
+                           background: draft.datePreset === 'all' ? 'var(--ds-background-selected, #EAF0FB)' : 'transparent',
                            cursor: 'pointer',
                            borderLeft: draft.datePreset === 'all' ? '3px solid var(--cp-primary-60, #0052CC)' : '3px solid transparent' }}>
                   <span style={{ fontSize: 13, color: draft.datePreset === 'all' ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                     All active
                   </span>
-                  <span style={{ fontSize: 11, color: '#7A869A' }}>No date filter</span>
+                  <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #7A869A)' }}>No date filter</span>
                 </button>
               </div>
             </div>
@@ -370,18 +370,18 @@ export default function GadgetSettingsPanel({
             <input type="checkbox" checked={applyToAll}
               onChange={(e) => setApplyToAll(e.target.checked)}
               style={{ width: 13, height: 13, accentColor: 'var(--cp-primary-60, #0052CC)', cursor: 'pointer' }}/>
-            <span style={{ fontSize: 11, color: '#42526E' }}>
+            <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)' }}>
               Apply this date to <strong style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>all gadgets</strong> on this dashboard
             </span>
           </label>
 
-          <span style={{ fontSize: 10, color: '#7A869A', fontFamily: 'monospace',
+          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #7A869A)', fontFamily: 'monospace',
                          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', padding: '2px 6px', borderRadius: 3 }}>
             filters on: {GADGET_DATE_FIELD[gadgetType]}
           </span>
         </div>
 
-        <div style={{ height: '0.5px', background: '#EBECF0' }} />
+        <div style={{ height: '0.5px', background: 'var(--ds-border, #EBECF0)' }} />
 
         <Field label="Status">
           {gadgetType === 'items' ? (
@@ -392,7 +392,7 @@ export default function GadgetSettingsPanel({
                 border: '2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 3,
                 background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', padding: '0 10px',
                 cursor: 'not-allowed', opacity: 0.6,
-                fontSize: 13, color: '#7A869A', fontStyle: 'italic',
+                fontSize: 13, color: 'var(--ds-text-subtlest, #7A869A)', fontStyle: 'italic',
               }}
             >
               All statuses (by design)
@@ -505,8 +505,8 @@ export default function GadgetSettingsPanel({
                       borderRadius: 3,
                       cursor: 'pointer',
                       border: active ? '1px solid var(--cp-primary-60, #0052CC)' : '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
-                      background: active ? '#DEEBFF' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
-                      color: active ? 'var(--cp-primary-60, #0052CC)' : '#42526E',
+                      background: active ? 'var(--ds-background-selected, #DEEBFF)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
+                      color: active ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
                       fontWeight: active ? 500 : 400,
                       textAlign: 'left',
                     }}
@@ -566,7 +566,7 @@ export default function GadgetSettingsPanel({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '10px 14px',
-          borderTop: '1px solid #F1F2F4',
+          borderTop: '1px solid var(--ds-background-neutral, #F1F2F4)',
           background: 'var(--ds-surface-sunken, #FAFBFC)',
         }}
       >
@@ -599,7 +599,7 @@ export default function GadgetSettingsPanel({
               background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontSize: 12,
               cursor: 'pointer',
-              color: '#42526E',
+              color: 'var(--ds-text-subtle, #42526E)',
             }}
           >
             Cancel
@@ -649,7 +649,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
           fontSize: 10,
           fontWeight: 700,
           textTransform: 'uppercase',
-          color: '#7A869A',
+          color: 'var(--ds-text-subtlest, #7A869A)',
           letterSpacing: '0.04em',
         }}
       >
@@ -699,7 +699,7 @@ function MultiSelectGeneric({
           minHeight: 32,
           width: '100%',
           padding: '4px 6px',
-          border: open ? '2px solid #4C9AFF' : '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+          border: open ? '2px solid var(--ds-border-focused, #4C9AFF)' : '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           background: 'var(--ds-surface-sunken, #FAFBFC)',
           borderRadius: 3,
           textAlign: 'left',
@@ -711,14 +711,14 @@ function MultiSelectGeneric({
         }}
       >
         {value.length === 0 ? (
-          <span style={{ color: '#7A869A', fontSize: 12 }}>{placeholder}</span>
+          <span style={{ color: 'var(--ds-text-subtlest, #7A869A)', fontSize: 12 }}>{placeholder}</span>
         ) : (
           value.map((v) => (
             <span
               key={v}
               style={{
-                background: '#EBECF0',
-                color: '#42526E',
+                background: 'var(--ds-border, #EBECF0)',
+                color: 'var(--ds-text-subtle, #42526E)',
                 fontSize: 11,
                 padding: '0 6px',
                 height: 20,
@@ -742,7 +742,7 @@ function MultiSelectGeneric({
             </span>
           ))
         )}
-        <ChevronDown size={12} style={{ marginLeft: 'auto', color: '#7A869A' }} />
+        <ChevronDown size={12} style={{ marginLeft: 'auto', color: 'var(--ds-text-subtlest, #7A869A)' }} />
       </button>
       {open && (
         <div
@@ -761,7 +761,7 @@ function MultiSelectGeneric({
           }}
         >
           {options.length === 0 && (
-            <div style={{ padding: 10, fontSize: 12, color: '#7A869A' }}>No options</div>
+            <div style={{ padding: 10, fontSize: 12, color: 'var(--ds-text-subtlest, #7A869A)' }}>No options</div>
           )}
           {options.map((opt) => {
             const sel = selected.has(opt.value);
@@ -776,7 +776,7 @@ function MultiSelectGeneric({
                   gap: 8,
                   width: '100%',
                   padding: '6px 10px',
-                  background: sel ? '#EAF0FB' : 'transparent',
+                  background: sel ? 'var(--ds-background-selected, #EAF0FB)' : 'transparent',
                   border: 0,
                   cursor: 'pointer',
                   fontSize: 12,
@@ -795,7 +795,7 @@ function MultiSelectGeneric({
                     width: 14,
                     height: 14,
                     borderRadius: 3,
-                    border: '1px solid #B3BAC5',
+                    border: '1px solid var(--ds-border, #B3BAC5)',
                     background: sel ? 'var(--cp-primary-60, #0052CC)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -849,7 +849,7 @@ function MultiSelectStatus({
           minHeight: 32,
           width: '100%',
           padding: '4px 6px',
-          border: open ? '2px solid #4C9AFF' : '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+          border: open ? '2px solid var(--ds-border-focused, #4C9AFF)' : '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           background: 'var(--ds-surface-sunken, #FAFBFC)',
           borderRadius: 3,
           textAlign: 'left',
@@ -861,18 +861,18 @@ function MultiSelectStatus({
         }}
       >
         {value.length === 0 ? (
-          <span style={{ color: '#7A869A', fontSize: 12 }}>All statuses</span>
+          <span style={{ color: 'var(--ds-text-subtlest, #7A869A)', fontSize: 12 }}>All statuses</span>
         ) : (
           value.map((v) => {
             const grp = STATUS_GROUPS.find((g) => g.statuses.includes(v));
             const palette =
               grp?.label === 'Done'
-                ? { bg: '#E3FCEF', fg: '#006644' }
+                ? { bg: 'var(--ds-background-success, #E3FCEF)', fg: 'var(--ds-text-success, #006644)' }
                 : grp?.label === 'In progress'
-                ? { bg: '#DEEBFF', fg: '#0747A6' }
+                ? { bg: 'var(--ds-background-selected, #DEEBFF)', fg: 'var(--ds-background-information-bold, #0747A6)' }
                 : grp?.label === 'Paused'
-                ? { bg: '#FFF0B3', fg: '#974F0C' }
-                : { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', fg: '#42526E' };
+                ? { bg: 'var(--ds-background-warning, #FFF0B3)', fg: 'var(--ds-text-warning, #974F0C)' }
+                : { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', fg: 'var(--ds-text-subtle, #42526E)' };
             return (
               <span
                 key={v}
@@ -906,7 +906,7 @@ function MultiSelectStatus({
             );
           })
         )}
-        <ChevronDown size={12} style={{ marginLeft: 'auto', color: '#7A869A' }} />
+        <ChevronDown size={12} style={{ marginLeft: 'auto', color: 'var(--ds-text-subtlest, #7A869A)' }} />
       </button>
       {open && (
         <div
@@ -936,7 +936,7 @@ function MultiSelectStatus({
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
-                  color: '#7A869A',
+                  color: 'var(--ds-text-subtlest, #7A869A)',
                   background: 'var(--ds-surface-sunken, #FAFBFC)',
                 }}
               >
@@ -975,7 +975,7 @@ function MultiSelectStatus({
                       gap: 8,
                       width: '100%',
                       padding: '6px 10px',
-                      background: sel ? '#EAF0FB' : 'transparent',
+                      background: sel ? 'var(--ds-background-selected, #EAF0FB)' : 'transparent',
                       border: 0,
                       cursor: 'pointer',
                       fontSize: 12,
@@ -988,7 +988,7 @@ function MultiSelectStatus({
                         width: 14,
                         height: 14,
                         borderRadius: 3,
-                        border: '1px solid #B3BAC5',
+                        border: '1px solid var(--ds-border, #B3BAC5)',
                         background: sel ? 'var(--cp-primary-60, #0052CC)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -1035,7 +1035,7 @@ function GadgetSpecific({
     fontSize: 10,
     fontWeight: 700,
     textTransform: 'uppercase',
-    color: '#7A869A',
+    color: 'var(--ds-text-subtlest, #7A869A)',
     letterSpacing: '0.04em',
   };
 
@@ -1052,7 +1052,7 @@ function GadgetSpecific({
           value={v}
           onChange={(e) => onChange('atRiskDays', Number(e.currentTarget.value))}
         />
-        <span style={{ fontSize: 11, color: '#5E6C84' }}>
+        <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #5E6C84)' }}>
           Flag items with {v} day{v === 1 ? '' : 's'} or fewer remaining
         </span>
       </div>
@@ -1072,7 +1072,7 @@ function GadgetSpecific({
           value={v}
           onChange={(e) => onChange('maxRows', Number(e.currentTarget.value))}
         />
-        <span style={{ fontSize: 11, color: '#5E6C84' }}>Show {v} releases</span>
+        <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #5E6C84)' }}>Show {v} releases</span>
       </div>
     );
   }
@@ -1102,7 +1102,7 @@ function GadgetSpecific({
                   borderRadius: 3,
                   border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
                   background: on ? 'var(--cp-primary-60, #0052CC)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  color: on ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : '#42526E',
+                  color: on ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtle, #42526E)',
                   cursor: 'pointer',
                 }}
               >
@@ -1140,7 +1140,7 @@ function GadgetSpecific({
                   borderRadius: 3,
                   border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
                   background: on ? 'var(--cp-primary-60, #0052CC)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  color: on ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : '#42526E',
+                  color: on ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtle, #42526E)',
                   cursor: 'pointer',
                 }}
               >
@@ -1210,7 +1210,7 @@ function GadgetSpecific({
             onChange={(e) => onChange('thresholdHigh',
               Math.max(1, Math.min(100, Number(e.currentTarget.value) || 1)))}
           />
-          <span style={{ fontSize: 11, color: '#5E6C84' }}>
+          <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #5E6C84)' }}>
             Above {thresholdHigh}% added → "High creep"
           </span>
         </div>
@@ -1221,7 +1221,7 @@ function GadgetSpecific({
             onChange={(e) => onChange('thresholdModerate',
               Math.max(0, Math.min(100, Number(e.currentTarget.value) || 0)))}
           />
-          <span style={{ fontSize: 11, color: '#5E6C84' }}>
+          <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #5E6C84)' }}>
             Above {thresholdMod}% added → "Moderate creep"
           </span>
         </div>

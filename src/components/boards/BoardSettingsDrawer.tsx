@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, GripVertical, Trash2, Plus, AlertTriangle } from '@/lib/atlaskit-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -6,10 +6,13 @@ import type { BoardListItem, BoardVisibility, SwimlaneType, BoardQuickFilter } f
 import { useBoard } from '@/hooks/useBoard';
 import { useUpdateBoard, useDeleteBoard, useAddColumn, useDeleteColumn, useAddQuickFilter, useDeleteQuickFilter } from '@/hooks/useBoardMutations';
 import { typedQuery } from '@/integrations/supabase/client';
+import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
 
 interface Props {
   board: BoardListItem;
   onClose: () => void;
+  /** Project key for the filter picker — passed by BoardManagerPage */
+  projectKey?: string;
 }
 
 type SettingsTab = 'general' | 'query' | 'columns' | 'swimlanes' | 'access';
@@ -29,6 +32,9 @@ const QUERY_PRESETS = [
   { label: 'Bugs only', jql: (key?: string | null) => key ? `project = ${key} AND issuetype = "QA Bug" ORDER BY priority DESC` : 'issuetype = "QA Bug" ORDER BY priority DESC' },
 ];
 
+// ads-scanner:ignore-next-line — data value for <input type="color">, not a CSS style
+const DEFAULT_CARD_COLOR = '#0052CC';
+
 const COLOR_SWATCHES = [
   'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-icon, #525252)', 'var(--ds-background-information-bold, #0284C7)',
 ];
@@ -46,7 +52,7 @@ const SWIMLANE_OPTIONS: { value: SwimlaneType; label: string; desc: string }[] =
   { value: 'epic', label: 'Group by Epic', desc: 'One swimlane per parent epic' },
 ];
 
-export default function BoardSettingsDrawer({ board, onClose }: Props) {
+export default function BoardSettingsDrawer({ board, onClose, projectKey }: Props) {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const [tab, setTab] = useState<SettingsTab>('general');
@@ -62,8 +68,16 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
   const [newFilterName, setNewFilterName] = useState('');
   const [newFilterJql, setNewFilterJql] = useState('');
   const [addingFilter, setAddingFilter] = useState(false);
+  const [selectedFilterId, setSelectedFilterId] = useState<string>(board.filterId ?? '');
+  const [cardLayout, setCardLayout] = useState<'default' | 'compact'>(board.cardLayout ?? 'default');
+  const [cardColors, setCardColors] = useState<Array<{ id: string; label: string; jql: string; color: string }>>(board.cardColors ?? []);
+  const [addingCardColor, setAddingCardColor] = useState(false);
+  const [newCardColorLabel, setNewCardColorLabel] = useState('');
+  const [newCardColorJql, setNewCardColorJql] = useState('');
+  const [newCardColorHex, setNewCardColorHex] = useState(DEFAULT_CARD_COLOR);
 
   const { data: boardData } = useBoard(board.id);
+  const { data: availableFilters = [] } = useFiltersForProject(projectKey, 'project');
   const updateBoard = useUpdateBoard();
   const deleteBoard = useDeleteBoard();
   const addColumn = useAddColumn();
@@ -72,8 +86,6 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
   const deleteQuickFilter = useDeleteQuickFilter();
   const qc = useQueryClient();
 
-  // Resolve project key for query presets
-  const projectKey = board.projectId ? undefined : undefined; // resolved from boardData if available
 
   const { data: quickFilters = [] } = useQuery<BoardQuickFilter[]>({
     queryKey: ['board-quick-filters', board.id],
@@ -98,7 +110,9 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
 
   const isDirty = name !== board.name || description !== (board.description ?? '') ||
     color !== board.color || visibility !== board.visibility || swimlane !== board.swimlaneType ||
-    boardQuery !== (board.boardQuery ?? '');
+    boardQuery !== (board.boardQuery ?? '') || selectedFilterId !== (board.filterId ?? '') ||
+    cardLayout !== (board.cardLayout ?? 'default') ||
+    JSON.stringify(cardColors) !== JSON.stringify(board.cardColors ?? []);
 
   const columns = boardData?.columns ?? [];
 
@@ -113,6 +127,9 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
       visibility: visibility !== board.visibility ? visibility : undefined,
       swimlane_type: swimlane !== board.swimlaneType ? swimlane : undefined,
       board_query: boardQuery !== (board.boardQuery ?? '') ? boardQuery : undefined,
+      filter_id: selectedFilterId !== (board.filterId ?? '') ? (selectedFilterId || null) : undefined,
+      card_layout: cardLayout !== (board.cardLayout ?? 'default') ? cardLayout : undefined,
+      card_colors: JSON.stringify(cardColors) !== JSON.stringify(board.cardColors ?? []) ? cardColors : undefined,
     });
     onClose();
   };
@@ -219,6 +236,28 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                     }} />
                   ))}
                 </div>
+              </Section>
+
+              <Section label="Linked filter">
+                <p style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', margin: '0 0 8px', lineHeight: 1.5 }}>
+                  The board shows issues matching this saved filter. The filter owner is displayed as the board lead.
+                </p>
+                <select
+                  value={selectedFilterId}
+                  onChange={e => setSelectedFilterId(e.target.value)}
+                  style={{
+                    width: '100%', height: 32, padding: '0 8px', boxSizing: 'border-box',
+                    border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+                    fontSize: 14, color: 'var(--ds-text, #172B4D)',
+                    background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+                    outline: 'none', appearance: 'auto',
+                  }}
+                >
+                  <option value="">— None —</option>
+                  {availableFilters.map(f => (
+                    <option key={f.id} value={f.id}>{f.name}</option>
+                  ))}
+                </select>
               </Section>
 
               <Section label="Visibility">
@@ -423,6 +462,24 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                   <Plus size={13} /> Add
                 </button>
               </div>
+              {projectKey && (
+                <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
+                  <p style={{ margin: '0 0 8px', fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', lineHeight: 1.5 }}>
+                    Map workflow statuses to columns to control which issues appear in each column.
+                  </p>
+                  <button
+                    onClick={() => { onClose(); navigate(`/project-hub/${projectKey}/boards/map-statuses`); }}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
+                      background: 'var(--ds-background-neutral, #F1F2F4)', border: '2px solid transparent',
+                      borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 500,
+                      color: 'var(--ds-text, #172B4D)',
+                    }}
+                  >
+                    Configure status mapping →
+                  </button>
+                </div>
+              )}
             </>
           )}
 
@@ -444,6 +501,89 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                     </div>
                   </button>
                 ))}
+              </div>
+
+              <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
+                <FieldLabel>Card layout</FieldLabel>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {(['default', 'compact'] as const).map(layout => (
+                    <button key={layout} onClick={() => setCardLayout(layout)} style={{
+                      flex: 1, padding: '8px', borderRadius: 6, cursor: 'pointer', textAlign: 'center',
+                      border: `0.75px solid ${cardLayout === layout ? 'var(--cp-blue)' : 'var(--ds-border, rgba(15,23,42,0.12))'}`,
+                      background: cardLayout === layout ? 'var(--ds-background-selected, rgba(37,99,235,0.04))' : 'var(--ds-surface, #FFFFFF)',
+                      fontSize: 12, fontWeight: 500, color: 'var(--ds-text, #172B4D)',
+                    }}>
+                      {layout === 'default' ? 'Default' : 'Compact'}
+                    </button>
+                  ))}
+                </div>
+                <p style={{ margin: '8px 0 0', fontSize: 11, color: 'var(--ds-text-subtle, #42526E)' }}>
+                  {cardLayout === 'compact' ? 'Show only the issue key and summary.' : 'Show assignee, priority, and labels on each card.'}
+                </p>
+              </div>
+
+              <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
+                <FieldLabel>Card colors</FieldLabel>
+                <p style={{ margin: '0 0 8px', fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
+                  Highlight cards matching a JQL clause with a left-border color.
+                </p>
+                {cardColors.map(rule => (
+                  <div key={rule.id} style={{
+                    display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px',
+                    border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, marginBottom: 8,
+                    borderLeft: `4px solid ${rule.color}`,
+                  }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rule.label}</div>
+                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rule.jql}</div>
+                    </div>
+                    <button onClick={() => setCardColors(prev => prev.filter(r => r.id !== rule.id))} style={{
+                      width: 22, height: 22, border: 'none', background: 'transparent', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <Trash2 size={12} color="var(--ds-text-subtlest, #6B778C)" />
+                    </button>
+                  </div>
+                ))}
+                {addingCardColor ? (
+                  <div style={{ padding: 8, border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4 }}>
+                    <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                      <input value={newCardColorLabel} onChange={e => setNewCardColorLabel(e.target.value)}
+                        placeholder="Label (e.g. Blocked)"
+                        style={{ flex: 1, height: 32, padding: '0 8px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, fontSize: 13, color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', outline: 'none', boxSizing: 'border-box' as const }} />
+                      <input type="color" value={newCardColorHex} onChange={e => setNewCardColorHex(e.target.value)}
+                        style={{ width: 32, height: 32, padding: 0, border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, cursor: 'pointer' }} />
+                    </div>
+                    <input value={newCardColorJql} onChange={e => setNewCardColorJql(e.target.value)}
+                      placeholder="JQL: priority = Critical"
+                      style={{ width: '100%', height: 32, padding: '0 8px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, fontSize: 12, fontFamily: 'monospace', color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', outline: 'none', boxSizing: 'border-box' as const, marginBottom: 8 }} />
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button onClick={() => { setAddingCardColor(false); setNewCardColorLabel(''); setNewCardColorJql(''); setNewCardColorHex(DEFAULT_CARD_COLOR); }} style={{
+                        height: 28, padding: '0 12px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'transparent', cursor: 'pointer', fontSize: 12, color: 'var(--ds-text, #172B4D)',
+                      }}>Cancel</button>
+                      <button
+                        disabled={!newCardColorLabel.trim() || !newCardColorJql.trim()}
+                        onClick={() => {
+                          if (!newCardColorLabel.trim() || !newCardColorJql.trim()) return;
+                          setCardColors(prev => [...prev, { id: crypto.randomUUID(), label: newCardColorLabel.trim(), jql: newCardColorJql.trim(), color: newCardColorHex }]);
+                          setAddingCardColor(false); setNewCardColorLabel(''); setNewCardColorJql(''); setNewCardColorHex(DEFAULT_CARD_COLOR);
+                        }}
+                        style={{
+                          height: 28, padding: '0 12px', border: '2px solid transparent', borderRadius: 3, cursor: 'pointer', fontSize: 12, fontWeight: 500,
+                          background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-text-inverse, #FFFFFF)',
+                        }}
+                      >Add</button>
+                    </div>
+                  </div>
+                ) : (
+                  <button onClick={() => setAddingCardColor(true)} style={{
+                    display: 'flex', alignItems: 'center', gap: 4, height: 28, padding: '0 8px',
+                    border: '1px dashed var(--ds-border, #DFE1E6)', borderRadius: 4, background: 'transparent',
+                    cursor: 'pointer', fontSize: 12, color: 'var(--ds-text-subtle, #42526E)',
+                  }}>
+                    <Plus size={13} /> Add color rule
+                  </button>
+                )}
               </div>
             </>
           )}

@@ -1,13 +1,13 @@
 // @ts-nocheck
 /**
  * useReleaseItems — lazy fetch of work items for a single release name
- * (matched against ph_issues.fix_versions JSONB array of {id, name}).
+ * (matched against ph_issues.sprint_release JSONB array of {id, name}).
  *
  * Used only by ReleaseHealthUWV (Level 2 expand). Cached per release name.
  *
  * NOTES:
  *   - Releases span multiple projects → no project_key filter.
- *   - fix_versions is JSONB [{ id, name, ... }] → use .contains() match.
+ *   - sprint_release is JSONB [{ id, name, ... }] → use .contains() match.
  *   - ph_issues has no assignee_avatar_url column; Avatar resolves by name.
  */
 import { useQuery } from '@tanstack/react-query';
@@ -26,7 +26,7 @@ export interface ReleaseItem {
 }
 
 const SELECT_COLS =
-  'issue_key, summary, issue_type, status, status_category, fix_versions, assignee_user_id, assignee_display_name';
+  'issue_key, summary, issue_type, status, status_category, sprint_release, assignee_user_id, assignee_display_name';
 
 function mapRow(r: any): ReleaseItem {
   return {
@@ -54,12 +54,12 @@ export function useReleaseItems(
     queryFn: async (): Promise<ReleaseItem[]> => {
       if (!releaseName) return [];
 
-      // Primary: JSONB contains match on fix_versions array of {name}.
+      // Primary: JSONB contains match on sprint_release array of {name}.
       const { data, error } = await (supabase as any)
         .from('ph_issues')
         .select(SELECT_COLS)
         .is('deleted_at', null)
-        .contains('fix_versions', JSON.stringify([{ name: releaseName }]))
+        .contains('sprint_release', JSON.stringify([{ name: releaseName }]))
         .order('issue_key', { ascending: true })
         .limit(500);
 
@@ -72,19 +72,19 @@ export function useReleaseItems(
       }
 
       // Fallback: fetch a wider page and filter client-side. Used only when
-      // .contains() returns 0 (e.g. when fix_versions stored as plain strings).
+      // .contains() returns 0 (e.g. when sprint_release stored as plain strings).
       const { data: fallback, error: fallbackErr } = await (supabase as any)
         .from('ph_issues')
         .select(SELECT_COLS)
         .is('deleted_at', null)
-        .not('fix_versions', 'is', null)
+        .not('sprint_release', 'is', null)
         .order('issue_key', { ascending: true })
         .limit(2000);
 
       if (fallbackErr) throw fallbackErr;
 
       const filtered = (fallback ?? []).filter((row: any) => {
-        const fv = row.fix_versions;
+        const fv = row.sprint_release;
         if (!Array.isArray(fv)) return false;
         return fv.some((v: any) =>
           typeof v === 'string' ? v === releaseName : v?.name === releaseName,

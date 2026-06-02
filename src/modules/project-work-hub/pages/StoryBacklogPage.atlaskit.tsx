@@ -63,7 +63,7 @@ import { STORY_STATUS_LOZENGE, getPriorityLabel, getInitials } from '../utils/ba
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { JiraBulkActionBar } from '@/components/shared/JiraBulkActionBar';
 import { JiraFilterAtlaskit, emptyFilterValue, DEFAULT_QUICK_FILTERS } from '@/components/shared/JiraFilterAtlaskit';
-import type { JiraFilterValue, AssigneeOption, FixVersionOption } from '@/components/shared/JiraFilterAtlaskit';
+import type { JiraFilterValue, AssigneeOption, SprintReleaseOption } from '@/components/shared/JiraFilterAtlaskit';
 import { DeleteConfirmDialog } from '../components/dialogs/DeleteConfirmDialog';
 import { EditStoryDialog } from '../components/dialogs/EditStoryDialog';
 import { useAtlaskitThemeSync } from '../components/SubtasksPanel/atlaskitTheme';
@@ -291,11 +291,11 @@ export default function AtlaskitStoryBacklogPage({
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [epics]);
 
-  // derived: fix-version options. We don't have a fix_version field on the
+  // derived: sprint/release options. We don't have a sprint_release field on the
   // current data shape — use parent epics as a stand-in (same visual treatment).
-  const fixVersionOptions = useMemo<FixVersionOption[]>(() => {
+  const sprintReleaseOptions = useMemo<SprintReleaseOption[]>(() => {
     const all = stories || [];
-    const map = new Map<string, FixVersionOption>();
+    const map = new Map<string, SprintReleaseOption>();
     all.forEach(s => {
       const ep = s.feature?.epic;
       if (ep && !map.has(ep.id)) {
@@ -379,9 +379,9 @@ export default function AtlaskitStoryBacklogPage({
       src = src.filter(s => s.jira_created_at && new Date(s.jira_created_at).getTime() <= t1);
     }
 
-    // Fix versions (mapped to parent epic id in this data)
-    if (f.fixVersions.length) {
-      const sel = new Set(f.fixVersions);
+    // Sprint/Releases (mapped to parent epic id in this data)
+    if (f.sprintReleases.length) {
+      const sel = new Set(f.sprintReleases);
       src = src.filter(s => s.feature?.epic && sel.has(s.feature.epic.id));
     }
 
@@ -760,12 +760,12 @@ export default function AtlaskitStoryBacklogPage({
         {/* Assignee avatar stack (first 3 + count) */}
         <AssigneeStackFilter stories={stories || []} avatarsByName={avatarsByName} />
 
-        {/* Filter — Jira-style sectioned drawer (saved chips, quick filters, date ranges, assignees, fix versions) */}
+        {/* Filter — Jira-style sectioned drawer (saved chips, quick filters, date ranges, assignees, sprint/releases) */}
         <JiraFilterAtlaskit
           value={filterValue}
           onChange={setFilterValue}
           assignees={assigneeOptions}
-          fixVersions={fixVersionOptions}
+          sprintReleases={sprintReleaseOptions}
         />
 
         {/* spacer */}

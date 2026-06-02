@@ -26,7 +26,7 @@
  * Product Owner     @atlaskit/select         Select<IconOption> + MiniAvatar formatOptionLabel
  * Stakeholders      @atlaskit/select         CreatableSelect (multi)
  * Planned release   @atlaskit/select         Select
- * Target date       @atlaskit/datetime-picker DatePicker
+ * Target date       CatalystDatePicker         (canonical form-context date)
  * Targeted feature  @atlaskit/checkbox       Checkbox
  * BRD upload        Custom drag-drop         No ADS equivalent — retained
  * Error banner      @atlaskit/primitives     Box xcss
@@ -59,6 +59,7 @@ import { Field, ErrorMessage, HelperMessage } from '@atlaskit/form';
 import Select, { CreatableSelect } from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
 import { Checkbox } from '@atlaskit/checkbox';
+import Avatar from '@atlaskit/avatar';
 import Button, { IconButton } from '@atlaskit/button/new';
 import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
@@ -67,7 +68,7 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
-import { DatePicker } from '@atlaskit/datetime-picker';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import DropdownMenu, { DropdownItemGroup, DropdownItem } from '@atlaskit/dropdown-menu';
 import Lozenge from '@atlaskit/lozenge';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
@@ -76,14 +77,19 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { flag } from '@/components/shared/JiraTable/flags';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
-import { useCatalystWorkflow, type WorkflowStatus } from '@/hooks/useCatalystWorkflow';
+import { TitleTranslateWrapper } from '@/components/shared/title-translate/TitleTranslateWrapper';
+import { useActiveDemandProcessSteps, stepToLozengeAppearance } from '@/hooks/useDemandProcessSteps';
 import {
+  CATEGORY_OPTIONS,
   THEME_OPTIONS,
   STAKEHOLDER_OPTIONS,
   REQUEST_TYPE_OPTIONS,
 } from '@/types/business-request';
 // Canonical Catalyst icon — backed by useIconOverrides (admin overrides via /admin/icons).
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
+import { resolveAvatarUrl } from '@/lib/avatars';
+import { PriorityIcon as CanonicalPriorityIcon } from '@/components/icons/PriorityIcon';
+import { CATALYST_PRIORITIES } from '@/lib/catalyst-priority';
 
 // ── ADF editor — canonical Tiptap surface (RichTextEditor), headless
 // mode because the modal owns the Create / Cancel footer. ──────────
@@ -106,63 +112,16 @@ interface IconOption {
 // Used for DM and PO Select options, identical to Assignee/Reporter pattern.
 // ─────────────────────────────────────────────────────────────────────────────
 
-function MiniAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string | null }) {
-  const initial = name?.trim()?.charAt(0)?.toUpperCase() ?? '?';
-  if (avatarUrl) {
-    return (
-      <img
-        src={avatarUrl}
-        alt={name}
-        aria-hidden="true"
-        style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
-      />
-    );
-  }
+function MiniAvatar({ name }: { name: string; avatarUrl?: string | null }) {
   return (
-    <span
-      aria-hidden="true"
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 24,
-        height: 24,
-        borderRadius: '50%',
-        background: token('color.background.neutral'),
-        color: token('color.text.subtle'),
-        font: token('font.body.small'),
-        fontWeight: 600,
-        flexShrink: 0,
-      }}
-    >
-      {initial}
-    </span>
+    <Avatar
+      size="small"
+      name={name}
+      src={resolveAvatarUrl(name) ?? undefined}
+    />
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PriorityIcon — copied verbatim from CreateStoryModal
-// ─────────────────────────────────────────────────────────────────────────────
-
-function PriorityIcon({ name }: { name: string }) {
-  const stroke =
-    name === 'Highest' || name === 'High'
-      ? token('color.icon.danger', '#C9372C')
-      : name === 'Medium'
-        ? token('color.icon.warning', '#B38600')
-        : token('color.icon.information', '#1868DB');
-  const paths: Record<string, ReactNode> = {
-    High:   <path d="M3 10l5-5 5 5" />,
-    Medium: <><path d="M3 6h10" /><path d="M3 10h10" /></>,
-    Low:    <path d="M3 6l5 5 5-5" />,
-  };
-  return (
-    <svg width={14} height={14} viewBox="0 0 16 16" fill="none"
-      stroke={stroke} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {paths[name]}
-    </svg>
-  );
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // formatIconOption — copied verbatim from CreateStoryModal
@@ -186,19 +145,14 @@ const formatIconOption = (option: IconOption) => (
 
 const TITLE_MAX = 255;
 
-const CATEGORY_OPTIONS = [
-  { value: 'Industrial',          label: 'Industrial' },
-  { value: 'Ministry Website',    label: 'Ministry Website' },
-  { value: 'Internal Services',   label: 'Internal Services' },
-  { value: 'Innovation Platform', label: 'Innovation Platform' },
-];
+// CATEGORY_OPTIONS imported from @/types/business-request
 
-// Priority — maps to `urgency` column — Select<IconOption> same as CreateStoryModal
-const PRIORITY_OPTIONS: IconOption[] = [
-  { value: 'High',   label: 'High',   icon: <PriorityIcon name="High" /> },
-  { value: 'Normal', label: 'Medium', icon: <PriorityIcon name="Medium" /> },
-  { value: 'Low',    label: 'Low',    icon: <PriorityIcon name="Low" /> },
-];
+// Priority — canonical 5-level scale from catalyst-priority.ts
+const PRIORITY_OPTIONS: IconOption[] = CATALYST_PRIORITIES.map((p) => ({
+  value: p,
+  label: p,
+  icon: <CanonicalPriorityIcon level={p} size={14} />,
+}));
 
 // Status options for process_step are sourced from /admin/workflows
 // (catalyst_workflow_schemes for issue_type='Business Request').
@@ -225,7 +179,7 @@ function brStatusAppearance(category: 'todo' | 'in_progress' | 'done' | undefine
 const headerWrapperStyles = xcss({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 'space.200' });
 const headerActionsStyles = xcss({ display: 'flex', alignItems: 'center', gap: 'space.050', flexShrink: 0 });
 const requiredHelperStyles = xcss({ font: 'font.body.small', color: 'color.text.subtlest', marginBottom: 'space.300' });
-const fieldGroupStyles = xcss({ display: 'flex', flexDirection: 'column', gap: 'space.300' });
+const fieldGroupStyles = xcss({ display: 'flex', flexDirection: 'column', gap: 'space.200' });
 const dividerStyles = xcss({ borderBottomWidth: 'border.width', borderBottomStyle: 'solid', borderColor: 'color.border', marginBlock: 'space.100' });
 const editorWrapperStyles = xcss({ borderRadius: 'border.radius', borderWidth: 'border.width', borderStyle: 'solid', borderColor: 'color.border.input', minHeight: '160px', overflow: 'hidden' });
 const footerLeftStyles = xcss({ flex: '1' });
@@ -242,6 +196,7 @@ const translateRowStyles = xcss({ display: 'flex', alignItems: 'flex-start', gap
 export interface CreateBusinessRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
+  productId?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -249,7 +204,6 @@ export interface CreateBusinessRequestModalProps {
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface FormState {
-  arabic_title: string;
   title: string;
   descriptionAdf: object | null;
   description: string;
@@ -268,7 +222,7 @@ interface FormState {
 }
 
 const INITIAL: FormState = {
-  arabic_title: '', title: '', descriptionAdf: null, description: '',
+  title: '', descriptionAdf: null, description: '',
   process_step: 'new_request', request_type: '', urgency: '', category: '',
   theme: '', project_manager_user_id: '', po_user_id: '', stakeholders: [],
   planned_quarter: '', end_date: '', targeted_feature: false, attachments: [],
@@ -393,37 +347,25 @@ function FullscreenToggleButton() {
 }
 
 function MoreActionsButton() {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, [open]);
   return (
-    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
-      <IconButton appearance="subtle" spacing="default" label="More actions"
-        icon={(p) => <MoreIcon {...p} label="" />}
-        onClick={() => setOpen(o => !o)} isSelected={open}
-      />
-      {open && (
-        <div role="menu" style={{
-          position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 10,
-          background: token('elevation.surface.overlay', '#FFF'),
-          border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-          borderRadius: 4, boxShadow: '0 4px 12px rgba(9,30,66,0.15)', minWidth: 160, padding: '4px 0',
-        }}>
-          <button role="menuitem" type="button" onClick={() => setOpen(false)}
-            style={{ display: 'block', width: '100%', padding: '8px 14px', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontSize: 14, color: token('color.text', '#292A2E'), textAlign: 'left' }}
-            onMouseEnter={e => (e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)'))}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            View keyboard shortcuts
-          </button>
-        </div>
+    <DropdownMenu
+      trigger={({ triggerRef, ...triggerProps }) => (
+        <IconButton
+          {...triggerProps}
+          ref={triggerRef}
+          appearance="subtle"
+          spacing="default"
+          label="More actions"
+          icon={(iconProps) => <MoreIcon {...iconProps} label="" />}
+        />
       )}
-    </div>
+      placement="bottom-end"
+    >
+      <DropdownItemGroup>
+        <DropdownItem>Give feedback</DropdownItem>
+        <DropdownItem>Help</DropdownItem>
+      </DropdownItemGroup>
+    </DropdownMenu>
   );
 }
 
@@ -433,23 +375,15 @@ function MoreActionsButton() {
 
 type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new';
 
-function categoryToLozenge(cat: 'todo' | 'in_progress' | 'done' | undefined): LozengeAppearance {
-  if (cat === 'done') return 'success';
-  if (cat === 'in_progress') return 'inprogress';
-  return 'default';
-}
 
 function BRStatusChip({ status, onChange }: { status: string; onChange: (s: string) => void }) {
-  const { statuses, isLoading } = useCatalystWorkflow('Business Request');
-  const options = statuses.map((s: WorkflowStatus) => ({
-    value: s.slug,
-    label: s.name,
-    category: s.category,
-  }));
+  const { data: steps = [], isLoading } = useActiveDemandProcessSteps();
+  const options = steps.map(s => ({ value: s.value, label: s.label, step: s }));
 
+  const currentStep = steps.find(s => s.value === status);
   const current =
     options.find(o => o.value === status) ??
-    options[0] ?? { value: '', label: isLoading ? 'Loading…' : 'No status', category: 'todo' as const };
+    options[0] ?? { value: '', label: isLoading ? 'Loading…' : 'No status', step: undefined };
 
   return (
     <DropdownMenu
@@ -470,10 +404,9 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
             alignItems: 'center',
             gap: 4,
             outline: 'none',
-            fontFamily: 'var(--cp-font-body)',
           }}
         >
-          <Lozenge appearance={categoryToLozenge(current.category)} isBold>
+          <Lozenge appearance={currentStep ? stepToLozengeAppearance(currentStep) : 'default'} isBold>
             {current.label}
           </Lozenge>
           <ChevronDownIcon label="" size="small" />
@@ -482,7 +415,7 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
     >
       <DropdownItemGroup title="Change status">
         {options.length === 0 && (
-          <div style={{ padding: '8px 12px', fontSize: 13, color: token('color.text.subtlest', '#8590A2') }}>
+          <div style={{ padding: '8px 12px', fontSize: 12, color: token('color.text.subtlest', '#8590A2') }}>
             {isLoading ? 'Loading…' : 'No statuses configured'}
           </div>
         )}
@@ -492,7 +425,7 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
             isSelected={status === opt.value}
             onClick={() => onChange(opt.value)}
           >
-            <Lozenge appearance={categoryToLozenge(opt.category)} isBold>
+            <Lozenge appearance={opt.step ? stepToLozengeAppearance(opt.step) : 'default'} isBold>
               {opt.label}
             </Lozenge>
           </DropdownItem>
@@ -535,8 +468,8 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         style={{
-          border: `2px dashed ${dragOver ? token('color.border.brand', '#1868DB') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-          borderRadius: 4, padding: '20px 16px', textAlign: 'center', cursor: 'pointer',
+          border: `2px dashed ${dragOver ? token('color.border.brand', '#1868DB') : token('color.border', '#DFE1E6')}`,
+          borderRadius: 4, padding: '24px 16px', textAlign: 'center', cursor: 'pointer',
           background: dragOver ? token('color.background.selected', '#E9F2FF') : token('color.background.input', '#FAFBFC'),
           transition: 'border-color 120ms, background 120ms',
         }}
@@ -545,13 +478,13 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ margin: '0 auto 8px', display: 'block', color: token('color.text.subtlest', '#626F86') }}>
           <path d="M12 4v12m-4-4l4-4 4 4M4 20h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        <p style={{ fontSize: 13, fontWeight: 600, color: token('color.text', '#292A2E'), margin: '0 0 4px', fontFamily: 'var(--cp-font-body)' }}>Drop BRD files here or click to browse</p>
-        <p style={{ fontSize: 12, color: token('color.text.subtlest', '#626F86'), margin: 0, fontFamily: 'var(--cp-font-body)' }}>PDF, DOCX, XLSX — max 25 MB per file</p>
+        <p style={{ fontSize: 12, fontWeight: 600, color: token('color.text', '#292A2E'), margin: '0 0 4px' }}>Drop BRD files here or click to browse</p>
+        <p style={{ fontSize: 12, color: token('color.text.subtlest', '#626F86'), margin: 0 }}>PDF, DOCX, XLSX — max 25 MB per file</p>
       </div>
       {files.length > 0 && (
         <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
           {files.map((f, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', background: token('color.background.neutral', '#F4F5F7'), borderRadius: 3, fontSize: 12, fontFamily: 'var(--cp-font-body)' }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px', background: token('color.background.neutral', '#F4F5F7'), borderRadius: 3, fontSize: 12 }}>
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                 <path d="M9 1.5H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5.5L9 1.5z" stroke={token('color.text.brand', '#1868DB')} strokeWidth="1.2" fill="none"/>
                 <path d="M9 1.5V5.5h4" stroke={token('color.text.brand', '#1868DB')} strokeWidth="1.2" fill="none"/>
@@ -559,7 +492,7 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
               <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', '#292A2E') }}>{f.name}</span>
               <span style={{ color: token('color.text.subtlest', '#626F86'), whiteSpace: 'nowrap' }}>{fmt(f.size)}</span>
               <button type="button" onClick={() => remove(i)} aria-label={`Remove ${f.name}`}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', '#626F86'), padding: 2, display: 'flex', flexShrink: 0 }}>
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', '#626F86'), padding: 4, display: 'flex', flexShrink: 0 }}>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                   <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
@@ -578,86 +511,46 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
 
 function TranslateButton({ loading, label, onClick }: { loading: boolean; label: string; onClick: () => void }) {
   return (
-    <button
-      type="button"
+    <IconButton
+      appearance="subtle"
+      spacing="default"
+      label={label}
+      isLoading={loading}
       onClick={onClick}
-      disabled={loading}
-      title={label}
-      aria-label={label}
-      style={{
-        flexShrink: 0,
-        width: 32,
-        height: 40, // matches ADS Textfield height
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: loading ? token('color.background.neutral', '#F4F5F7') : token('color.background.neutral', '#F4F5F7'),
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-        borderRadius: 3,
-        cursor: loading ? 'default' : 'pointer',
-        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-        transition: 'background 120ms',
-        outline: 'none',
-      }}
-      onMouseEnter={e => { if (!loading) e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)'); }}
-      onMouseLeave={e => { e.currentTarget.style.background = token('color.background.neutral', '#F4F5F7'); }}
-    >
-      {loading ? (
-        <Spinner size="small" />
-      ) : (
-        // AI sparkle icon — purple (var(--cp-purple-60, #7C3AED)) reserved for AI per CLAUDE.md §8
+      icon={() => (
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M8 1l1.5 4H14l-3.5 2.5 1.5 4L8 9l-4 2.5 1.5-4L2 5h4.5L8 1z" fill="var(--cp-purple-60, #7C3AED)"/>
+          <path d="M8 1l1.5 4H14l-3.5 2.5 1.5 4L8 9l-4 2.5 1.5-4L2 5h4.5L8 1z" fill={token('color.icon.brand', '#7C3AED')}/>
         </svg>
       )}
-    </button>
+    />
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ADS field label helper (matches @atlaskit/form Field label styling)
-// ─────────────────────────────────────────────────────────────────────────────
-
-function FieldLabel({ children, required }: { children: ReactNode; required?: boolean }) {
-  return (
-    <label style={{
-      fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600,
-      color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), display: 'block', marginBottom: 4, lineHeight: '16px',
-    }}>
-      {required && <span aria-hidden="true" style={{ color: token('color.text.danger'), marginRight: 4 }}>*</span>}
-      {children}
-    </label>
-  );
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRequestModalProps) {
+export function CreateBusinessRequestModal({ isOpen, onClose, productId }: CreateBusinessRequestModalProps) {
   const createMutation = useCreateBusinessRequest();
   const { data: profiles = [] } = useProfiles();
   const { data: releaseOptions = [] } = useReleases();
-  const { translate, translating } = useTranslate();
-
   const [form, setForm] = useState<FormState>(INITIAL);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [titleBlurred, setTitleBlurred] = useState(false);
-  const [arabicBlurred, setArabicBlurred] = useState(false);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [formError, setFormError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [translationPreview, setTranslationPreview] = useState<{ text: string; direction: 'en_to_ar' | 'ar_to_en' } | null>(null);
 
   // Seed initial status from /admin/workflows (Business Request scheme)
-  const { initialStatus: brInitialStatus, statuses: brStatuses } = useCatalystWorkflow('Business Request');
+  const { data: brSteps = [] } = useActiveDemandProcessSteps();
   useEffect(() => {
-    if (!brStatuses.length || !brInitialStatus) return;
-    const validSlugs = brStatuses.map(s => s.slug);
-    if (!validSlugs.includes(form.process_step)) {
-      setForm(prev => ({ ...prev, process_step: brInitialStatus.slug }));
+    if (!brSteps.length) return;
+    const validValues = brSteps.map(s => s.value);
+    if (!validValues.includes(form.process_step)) {
+      setForm(prev => ({ ...prev, process_step: brSteps[0].value }));
     }
-  }, [brInitialStatus, brStatuses, form.process_step]);
+  }, [brSteps, form.process_step]);
 
   const set = useCallback(<K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -671,38 +564,13 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
   const isTouched = (field: string) => touchedFields.has(field) || submitAttempted;
 
   // ── Validation ─────────────────────────────────────────────────────────────
+  // 2026-06-01: arabic_title deprecated. Single English title required.
   const validate = () => {
-    if (!form.arabic_title.trim()) return false;
     if (!form.title.trim()) return false;
     if (!form.request_type) return false;
     if (!form.urgency) return false;
     return true;
   };
-
-  // ── AI Translation handlers ────────────────────────────────────────────────
-  const handleTranslateToArabic = useCallback(async () => {
-    if (!form.title.trim()) return;
-    const result = await translate(form.title, 'en_to_ar');
-    if (result) setTranslationPreview({ text: result, direction: 'en_to_ar' });
-    else flag.warning('Translation unavailable', 'Please enter the Arabic name manually');
-  }, [form.title, translate]);
-
-  const handleTranslateToEnglish = useCallback(async () => {
-    if (!form.arabic_title.trim()) return;
-    const result = await translate(form.arabic_title, 'ar_to_en');
-    if (result) setTranslationPreview({ text: result, direction: 'ar_to_en' });
-    else flag.warning('Translation unavailable', 'Please enter the Arabic name manually');
-  }, [form.arabic_title, translate]);
-
-  const applyTranslation = useCallback(() => {
-    if (!translationPreview) return;
-    if (translationPreview.direction === 'en_to_ar') {
-      set('arabic_title', translationPreview.text);
-    } else {
-      set('title', translationPreview.text);
-    }
-    setTranslationPreview(null);
-  }, [translationPreview, set]);
 
   // ── Submit ──────────────────────────────────────────────────────────────────
   const handleCreate = useCallback(async () => {
@@ -712,7 +580,6 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
     try {
       const payload: Record<string, unknown> = {
         title: form.title.trim(),
-        arabic_title: form.arabic_title.trim() || null,
         description: form.description || null,
         process_step: form.process_step,
         request_type: form.request_type || null,
@@ -727,6 +594,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
         impl_target_end_date: form.end_date || null,
         targeted_feature: form.targeted_feature,
         import_source: 'manual',
+        product_id: productId || null,
       };
       const created = await createMutation.mutateAsync(payload as any);
       if (form.attachments.length && (created as any)?.id) {
@@ -740,7 +608,6 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       setForm(INITIAL);
       setSubmitAttempted(false);
       setTitleBlurred(false);
-      setArabicBlurred(false);
       setTouchedFields(new Set());
       onClose();
     } catch (err: any) {
@@ -753,14 +620,14 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
     setForm(INITIAL);
     setSubmitAttempted(false);
     setTitleBlurred(false);
-    setArabicBlurred(false);
     setTouchedFields(new Set());
     setFormError(null);
     onClose();
   }, [onClose]);
 
-  const arabicError = (submitAttempted || arabicBlurred) && !form.arabic_title.trim() ? 'Arabic name is required' : undefined;
-  const titleError = (submitAttempted || titleBlurred) && !form.title.trim() ? 'English name is required' : undefined;
+  // 2026-06-01: titleError checks form.title (canonical English). If user
+  // typed only Arabic without translating, form.title is empty → blocks submit.
+  const titleError = (submitAttempted || titleBlurred) && !form.title.trim() ? 'Business request name is required (English)' : undefined;
   const isSubmitting = createMutation.isPending || uploading;
 
   // ── Render ──────────────────────────────────────────────────────────────────
@@ -798,85 +665,53 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
 
             <Box xcss={fieldGroupStyles}>
 
-              {/* ── English title + translate-to-Arabic button ───────────── */}
-              {/* @atlaskit/textfield — Textfield */}
-              <Field name="title" label="Business Request name (English)" isRequired>
+              {/* ── 2026-06-01: Single English title field — Arabic title
+                  deprecated. The bilingual TitleTranslateWrapper pattern
+                  collapsed when arabic_title was dropped from the DB. */}
+              <Field name="title" label="Business request name" isRequired>
                 {({ fieldProps }) => (
                   <>
-                    <Box xcss={translateRowStyles}>
-                      <div style={{ flex: 1 }}>
+                    <TitleTranslateWrapper
+                      value={form.title}
+                      onValueChange={(next) => set('title', next)}
+                      field="summary"
+                    >
+                      {({ dir }) => (
                         <Textfield
                           {...(fieldProps as any)}
                           value={form.title}
                           onChange={(e: any) => set('title', e.target.value)}
                           onBlur={() => setTitleBlurred(true)}
-                          placeholder="English name of the business request"
+                          placeholder="Name of the business request"
                           maxLength={TITLE_MAX}
                           isInvalid={!!titleError}
+                          testId="br-title"
+                          aria-label="Business Request name"
+                          dir={dir}
                         />
-                      </div>
-                      <TranslateButton
-                        loading={translating === 'en_to_ar'}
-                        label="Translate English → Arabic"
-                        onClick={handleTranslateToArabic}
-                      />
-                    </Box>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+                      )}
+                    </TitleTranslateWrapper>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
                       {titleError ? <ErrorMessage>{titleError}</ErrorMessage> : <span />}
-                      <span style={{ fontSize: 11, color: token('color.text.disabled', '#8590A2'), fontFamily: 'var(--cp-font-body)', marginLeft: 'auto' }}>
+                      <span style={{ fontSize: 11, color: token('color.text.disabled', '#8590A2'), marginLeft: 'auto' }}>
                         {form.title.length} / {TITLE_MAX}
                       </span>
                     </div>
-                    {!titleError && <HelperMessage>Click ✦ to auto-translate to Arabic.</HelperMessage>}
-                  </>
-                )}
-              </Field>
-
-              {/* ── Arabic title + translate-to-English button ────────────── */}
-              {/* @atlaskit/textfield — Textfield with dir="rtl" HTML attribute */}
-              <Field name="arabic_title" label="Business Request name (Arabic)" isRequired>
-                {({ fieldProps }) => (
-                  <>
-                    <Box xcss={translateRowStyles}>
-                      <div style={{ flex: 1 }}>
-                        <Textfield
-                          {...(fieldProps as any)}
-                          value={form.arabic_title}
-                          onChange={(e: any) => set('arabic_title', e.target.value)}
-                          onBlur={() => setArabicBlurred(true)}
-                          placeholder="اسم طلب الأعمال"
-                          isInvalid={!!arabicError}
-                          // dir attribute on the inner <input> — Textfield forwards arbitrary HTML attrs
-                          aria-label="Business Request name in Arabic"
-                          testId="br-arabic-title"
-                        />
-                        {/* Apply RTL via a style tag scoped to this input's testId */}
-                        <style>{`[data-testid="br-arabic-title"] { direction: rtl; text-align: right; font-size: 15px; }`}</style>
-                      </div>
-                      <TranslateButton
-                        loading={translating === 'ar_to_en'}
-                        label="Translate Arabic → English"
-                        onClick={handleTranslateToEnglish}
-                      />
-                    </Box>
-                    {arabicError
-                      ? <ErrorMessage>{arabicError}</ErrorMessage>
-                      : <HelperMessage>Official Arabic name as it appears in the ministry system. Click ✦ to auto-translate to English.</HelperMessage>
-                    }
                   </>
                 )}
               </Field>
 
               <Box xcss={dividerStyles} />
 
-              {/* ── Status — @atlaskit/button/new inside BRStatusChip ─────── */}
-              <div>
-                <FieldLabel>Status</FieldLabel>
-                <BRStatusChip status={form.process_step} onChange={s => set('process_step', s)} />
-                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: token('color.text.subtlest', '#8590A2'), marginTop: 4, lineHeight: '16px' }}>
-                  This is the initial status upon creation
-                </p>
-              </div>
+              {/* ── Status — @atlaskit/form Field + BRStatusChip ─────── */}
+              <Field name="status" label="Status">
+                {() => (
+                  <>
+                    <BRStatusChip status={form.process_step} onChange={s => set('process_step', s)} />
+                    <HelperMessage>This is the initial status upon creation</HelperMessage>
+                  </>
+                )}
+              </Field>
 
               {/* ── Description — canonical RichTextEditor in headless
                   mode (modal footer owns Create / Cancel). onChange
@@ -1046,22 +881,21 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
                 )}
               </Field>
 
-              {/* ── Target date — @atlaskit/datetime-picker DatePicker ────── */}
+              {/* ── Target date — CatalystDatePicker (canonical form-context date) ── */}
               <Field name="end_date" label="Target date">
                 {() => (
-                  <DatePicker
-                    value={form.end_date || undefined}
-                    onChange={(val: string) => set('end_date', val || '')}
+                  <CatalystDatePicker
+                    value={form.end_date || null}
+                    onChange={(val: any) => set('end_date', val || '')}
                     placeholder="Select date"
-                    dateFormat="DD/MM/YYYY"
                   />
                 )}
               </Field>
 
               {/* ── Targeted feature — @atlaskit/checkbox Checkbox ────────── */}
-              <div style={{ paddingTop: 4 }}>
+              <div style={{ padding: '4px 0' }}>
                 <Checkbox
-                  label="Targeted feature — priority feature for the current cycle"
+                  label="Targeted feature"
                   isChecked={form.targeted_feature}
                   onChange={(e: any) => set('targeted_feature', e.target.checked)}
                   name="targeted_feature"
@@ -1083,46 +917,9 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
             </Box>
           </ModalBody>
 
-          {/* ── Translation Preview Dialog ──────────────────────────────────── */}
-          {translationPreview && (
-            <ModalTransition>
-              <ModalDialog onClose={() => setTranslationPreview(null)} width="large" shouldScrollInViewport>
-                <ModalHeader>
-                  <ModalTitle>Confirm translation</ModalTitle>
-                </ModalHeader>
-                <ModalBody>
-                  <Box xcss={fieldGroupStyles}>
-                    <p style={{ fontSize: 13, color: token('color.text', '#292A2E'), fontFamily: 'var(--cp-font-body)', marginBottom: 8 }}>
-                      {translationPreview.direction === 'en_to_ar'
-                        ? 'English text will be translated to Arabic:'
-                        : 'Arabic text will be translated to English:'}
-                    </p>
-                    <div style={{
-                      padding: 12,
-                      background: token('color.background.neutral', '#F4F5F7'),
-                      borderRadius: 3,
-                      fontFamily: 'var(--cp-font-body)',
-                      fontSize: 14,
-                      color: token('color.text', '#292A2E'),
-                      direction: translationPreview.direction === 'en_to_ar' ? 'rtl' : 'ltr',
-                      textAlign: translationPreview.direction === 'en_to_ar' ? 'right' : 'left',
-                      lineHeight: '20px',
-                      wordBreak: 'break-word'
-                    }}>
-                      {translationPreview.text}
-                    </div>
-                  </Box>
-                </ModalBody>
-                <ModalFooter>
-                  <Box xcss={footerLeftStyles} />
-                  <Box xcss={footerRightStyles}>
-                    <Button appearance="subtle" onClick={() => setTranslationPreview(null)}>Keep original</Button>
-                    <Button appearance="primary" onClick={applyTranslation}>Use translation</Button>
-                  </Box>
-                </ModalFooter>
-              </ModalDialog>
-            </ModalTransition>
-          )}
+          {/* Translation preview modal removed 2026-06-01 — TitleTranslateWrapper
+              applies translations inline (with a "↩ Show original" revert
+              affordance), matching the view surface (image 2). */}
 
           {/* ── Footer ─────────────────────────────────────────────────────── */}
           <ModalFooter>

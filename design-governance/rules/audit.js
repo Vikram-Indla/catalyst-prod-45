@@ -88,19 +88,19 @@ class DesignSystemAudit {
     // Run ADS Token Scanner
     console.log('1️⃣  Running ADS Token Scanner...');
     const tokenScanner = new ADSTokenScanner();
-    this.scanWithExclusions(tokenScanner, this.sourcePath, ['modules-dormant']);
+    this.scanWithExclusions(tokenScanner, this.sourcePath, ['modules-dormant', '_graveyard']);
     this.results.tokens = tokenScanner.report();
 
     // Run Typography Enforcer
     console.log('\n2️⃣  Running Typography Enforcer...');
     const typography = new TypographyEnforcer();
-    this.scanWithExclusions(typography, this.sourcePath, ['modules-dormant']);
+    this.scanWithExclusions(typography, this.sourcePath, ['modules-dormant', '_graveyard']);
     this.results.typography = typography.report();
 
     // Run Spacing Grid Validator
     console.log('\n3️⃣  Running Spacing Grid Validator...');
     const spacing = new SpacingGridValidator();
-    this.scanWithExclusions(spacing, this.sourcePath, ['modules-dormant']);
+    this.scanWithExclusions(spacing, this.sourcePath, ['modules-dormant', '_graveyard']);
     this.results.spacing = spacing.report();
 
     // Summary

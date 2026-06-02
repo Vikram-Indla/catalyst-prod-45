@@ -116,7 +116,7 @@ const HUBS: HubEntry[] = [
   { key: 'release',  label: 'Release',  href: '/release-hub/command-center', section: 'build_ship', tone: 'magenta', shortcut: '6' },
   { key: 'test',     label: 'Test',     href: '/testhub/dashboard',          section: 'build_ship', tone: 'lime',    shortcut: '7' },
   { key: 'incident', label: 'Incident', href: '/incident-hub',               section: 'build_ship', tone: 'red',     shortcut: '8' },
-  { key: 'task',     label: 'Task',     href: '/taskhub/boards',             section: 'build_ship', tone: 'yellow',  shortcut: '9' },
+  { key: 'task',     label: 'Tasks',    href: '/tasks/board',                section: 'build_ship', tone: 'yellow',  shortcut: '9' },
   { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', tone: 'gray',    shortcut: '0' },
   { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'gray',    shortcut: '-' },
 ];

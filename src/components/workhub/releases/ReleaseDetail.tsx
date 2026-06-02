@@ -1,6 +1,6 @@
 /**
- * ReleaseDetail — Full release detail driven by real Jira fix_versions
- * Route: /workhub/releases/:id (where :id = fix version name, URL-encoded)
+ * ReleaseDetail — Full release detail driven by real Jira sprint_release
+ * Route: /workhub/releases/:id (where :id = sprint/release name, URL-encoded)
  */
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';

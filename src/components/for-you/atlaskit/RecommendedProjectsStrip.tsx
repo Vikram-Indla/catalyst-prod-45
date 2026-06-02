@@ -1,6 +1,6 @@
 /**
- * RecommendedProjectsStrip — horizontal strip of project cards at the top
- * of the For You page, directly above the tab bar.
+ * RecommendedProjectsStrip — horizontal strip of space cards (projects +
+ * products) at the top of the For You page, directly above the tab bar.
  *
  * Parity target (from /jira-compare 2026-04-24, iteration 3):
  *   - 3 cards only (cap: maxCards=3). Jira's strip caps at 3 regardless of
@@ -10,70 +10,115 @@
  *     `src` is set → image. When unset → Atlaskit's hashed-initials tile
  *     (same fallback Jira uses for spaces without a custom avatar).
  *   - Title: Inter 600 14px/20px, ellipsis single-line.
- *   - Subtitle: "Software project" (Catalyst vocab divergence — Jira says
- *     "Software space" because its container is a "space"). Inter 400
- *     12px/16px, color.text.subtlest.
- *   - Heading: "Recommended projects" (house vocab divergence from Jira's
- *     "Recommended spaces"), Inter 600 16px/20px, color.text.
- *   - View all: "View all projects" → /projects — text color, weight 400.
+ *   - Heading: "Recommended" — generic so it covers both projects and
+ *     products without tying the label to a specific hub type.
+ *   - View all: "View all" — navigates to the all-projects page.
  *   - Layout: wrapping grid at minmax(230px, 1fr), gap 16.
  *
- * Data source
- * ───────────
- * Jira's strip is account-scoped, not tab-scoped — the same projects render
- * regardless of which For You tab is active. We mirror that by consuming the
- * `allUserProjects` collection from useForYouData() instead of deriving from
- * the per-tab visible items. This fixes the "dancing" bug where cards
- * changed count and order on every tab click.
+ * Data sources
+ * ────────────
+ * - `projects` prop: Project Hub spaces from useForYouData().allUserProjects
+ * - `products`: fetched directly from the `products` table so Product Hub
+ *   spaces (e.g. "Investor Journey") appear alongside projects.
  *
- * When `projects[i].avatar_url` is set, @atlaskit/avatar renders the image.
- * When null, it renders a hashed-initials tile derived from `name`.
+ * Sort order: most-recently-visited space first (max visitedAt across all
+ * sections of the same space), then alpha for ties and unvisited spaces.
  */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import type { Project } from '@/hooks/useForYouData';
 import { useRecentProjects } from '@/hooks/home/useRecentProjects';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RecommendedProjectsStripProps {
   projects: Project[];
   maxCards?: number;
 }
 
+/** Internal unified shape for a card — project or product. */
+interface SpaceCard {
+  id: string;
+  key: string;
+  name: string;
+  avatar_url?: string | null;
+  icon?: string | null;
+  color?: string | null;
+  hub: 'project' | 'product';
+}
+
 export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: RecommendedProjectsStripProps) {
   const navigate = useNavigate();
-  // Strip caps at 3 cards; we only need the top-3 recency signal. The previous
-  // 16-row fetch was a 5x over-fetch that hit the recent-projects endpoint on
-  // every navigation. We still pad slightly above `maxCards` so a "stale"
-  // last-visited project doesn't push live projects off the strip when there
-  // are ties — but 6 is plenty for a 3-card cap.
   const { recentLocations } = useRecentProjects(Math.max(maxCards * 2, 6));
 
-  // Sort by most-recently-visited project first, fall back to alpha for ties
-  // and unvisited projects. Takes the max visitedAt across all sections of the
-  // same project so "BAU › Backlog" and "BAU › Board" count as one signal.
+  // Fetch Product Hub spaces alongside the Project Hub spaces passed via props.
+  const { data: rawProducts = [] } = useQuery({
+    queryKey: ['recommended-strip-products'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('products')
+        .select('id, code, name, color')
+        .eq('is_active', true)
+        .order('name');
+      return data ?? [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
   const cards = React.useMemo(() => {
+    // Build a recency map keyed by "hub:spaceKey" → max visitedAt.
     const recentMap = new Map<string, number>();
     for (const loc of recentLocations) {
-      const prev = recentMap.get(loc.projectKey) ?? 0;
-      if (loc.visitedAt > prev) recentMap.set(loc.projectKey, loc.visitedAt);
+      const k = `${loc.hub}:${loc.projectKey}`;
+      const prev = recentMap.get(k) ?? 0;
+      if (loc.visitedAt > prev) recentMap.set(k, loc.visitedAt);
     }
-    return [...projects]
+
+    const projectCards: SpaceCard[] = projects.map((p) => ({
+      id: p.id,
+      key: p.key,
+      name: p.name,
+      avatar_url: p.avatar_url,
+      icon: p.icon,
+      color: p.color,
+      hub: 'project',
+    }));
+
+    const productCards: SpaceCard[] = rawProducts.map((p: any) => ({
+      id: String(p.id),
+      key: p.code,
+      name: p.name,
+      avatar_url: null,
+      icon: null,
+      color: p.color ?? null,
+      hub: 'product',
+    }));
+
+    // Merge, deduplicate by "hub:key", sort by recency then alpha.
+    const seen = new Set<string>();
+    const all: SpaceCard[] = [];
+    for (const card of [...projectCards, ...productCards]) {
+      const k = `${card.hub}:${card.key}`;
+      if (!seen.has(k)) { seen.add(k); all.push(card); }
+    }
+
+    return all
       .sort((a, b) => {
-        const tA = recentMap.get(a.key) ?? 0;
-        const tB = recentMap.get(b.key) ?? 0;
+        const tA = recentMap.get(`${a.hub}:${a.key}`) ?? 0;
+        const tB = recentMap.get(`${b.hub}:${b.key}`) ?? 0;
         if (tB !== tA) return tB - tA;
         return a.name.localeCompare(b.name);
       })
       .slice(0, maxCards);
-  }, [projects, maxCards, recentLocations]);
+  }, [projects, rawProducts, maxCards, recentLocations]);
 
   if (cards.length === 0) return null;
 
   return (
     <section
-      aria-label="Recommended projects"
+      aria-label="Recommended spaces"
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -81,18 +126,8 @@ export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: Rec
         marginBlockEnd: 24,
       }}
     >
-      {/* Header row: title + "View all projects" link.
-          Jira parity note: the heading is 16/20 weight 600 and the "View
-          all" link is plain body text color/weight — NOT a blue link. */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 12,
-          paddingInline: 2,
-        }}
-      >
+      {/* Header row: title only — no "View all" since the strip spans both project and product spaces. */}
+      <div style={{ paddingInline: 2 }}>
         <h2
           style={{
             font: `600 16px/20px "Inter", system-ui, sans-serif`,
@@ -100,28 +135,8 @@ export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: Rec
             margin: 0,
           }}
         >
-          Recommended projects
+          Recommended
         </h2>
-        <button
-          type="button"
-          onClick={() => navigate('/project-hub/projects')}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            font: `400 14px/20px "Inter", system-ui, sans-serif`,
-            color: token('color.text', '#292A2E'),
-            padding: 4,
-            textDecoration: 'underline',
-            textDecorationColor: 'transparent',
-            textUnderlineOffset: 3,
-            transition: 'text-decoration-color 150ms ease',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.textDecorationColor = 'currentColor'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.textDecorationColor = 'transparent'; }}
-        >
-          View all projects
-        </button>
       </div>
 
       {/* Wrapping grid — Jira parity: cards fit at 230px min, wrap naturally. */}
@@ -133,10 +148,14 @@ export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: Rec
         }}
       >
         {cards.map(card => (
-          <ProjectCardButton
-            key={card.id}
+          <SpaceCardButton
+            key={`${card.hub}:${card.key}`}
             card={card}
-            onClick={() => navigate(`/project-hub/${card.key}`)}
+            onClick={() =>
+              card.hub === 'product'
+                ? navigate(`/product-hub/${card.key}/dashboard`)
+                : navigate(`/project-hub/${card.key}`)
+            }
           />
         ))}
       </div>
@@ -144,9 +163,9 @@ export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: Rec
   );
 }
 
-// ─── Project card ───────────────────────────────────────────────────────────
+// ─── Space card ──────────────────────────────────────────────────────────────
 
-function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => void }) {
+function SpaceCardButton({ card, onClick }: { card: SpaceCard; onClick: () => void }) {
   const [hover, setHover] = React.useState(false);
   return (
     <button
@@ -158,11 +177,8 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
         display: 'flex',
         alignItems: 'center',
         gap: 12,
-        // Jira parity: 62px total height, 12/16 padding.
         height: 62,
         padding: '12px 16px',
-        // Phase 12 (2026-04-29): reverted to Atlaskit token(). Phase 11
-        // loaded Atlaskit's dark theme — `elevation.surface` flips natively.
         background: hover
           ? token('elevation.surface.hovered', '#F0F1F2')
           : token('elevation.surface', '#FFFFFF'),
@@ -175,11 +191,6 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
         minWidth: 0,
       }}
     >
-      {/* Canonical project icon (mem://constraints/canonical-project-icons).
-          32×32 ADS-square equivalent (radius 4). Resolution order:
-          (1) projects.avatar_url → Jira-uploaded image
-          (2) ph_projects.icon + color → Lucide tinted tile
-          (3) muted Folder fallback. NEVER hashed-initial letter tiles. */}
       <ProjectIcon
         size="large"
         projectKey={card.key}
@@ -201,11 +212,6 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
         >
           {card.name}
         </div>
-        {/* Subtitle removed 2026-05-09: "Software project" was hardcoded for
-            ALL projects (Project interface has no project_type field). Identical
-            text on every card provides zero differentiation value and wastes
-            12px of vertical space in the card. H8 minimalism — design-intelligence
-            audit finding V1. */}
       </div>
     </button>
   );

@@ -269,10 +269,10 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
   ];
 
   const getStageLozenge = () => {
-    if (!stage) return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E', label: 'PENDING' };
+    if (!stage) return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)', label: 'PENDING' };
     if (stage === 'complete') return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'COMPLETE' };
-    if (stage === 'failed') return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E', label: 'FAILED' };
-    return { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: stage.toUpperCase() };
+    if (stage === 'failed') return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)', label: 'FAILED' };
+    return { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: stage.toUpperCase() };
   };
   const lozenge = getStageLozenge();
 
@@ -304,7 +304,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 rel="noopener noreferrer"
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 4,
-                  background: 'var(--cp-primary-5)', border: isDark ? '0.75px solid rgba(37,99,235,0.30)' : '0.75px solid #BFDBFE', borderRadius: 4,
+                  background: 'var(--cp-primary-5)', border: isDark ? '0.75px solid rgba(37,99,235,0.30)' : '0.75px solid var(--ds-border, #BFDBFE)', borderRadius: 4,
                   padding: '2px 8px', textDecoration: 'none', cursor: doc.jira_ticket_url ? 'pointer' : 'default',
                 }}
               >
@@ -361,7 +361,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
           <div style={{
             margin: '0 20px', marginTop: 12, padding: '8px 12px', borderRadius: 6,
             background: 'var(--cp-warning-light, #FFFBEB)', border: isDark ? '0.75px solid rgba(217,119,6,0.25)' : '0.75px solid #FDE68A',
-            fontSize: 12, color: 'var(--cp-warning-text, #92400E)', fontFamily: 'var(--cp-font-body)',
+            fontSize: 12, color: 'var(--cp-warning-text, var(--ds-text-warning, #92400E))', fontFamily: 'var(--cp-font-body)',
             display: 'flex', alignItems: 'center', gap: 6,
           }}>
             ⚠ No BRD content found — attach PDF for accurate epic generation
@@ -476,7 +476,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   rel="noopener noreferrer"
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 4,
-                    background: 'var(--cp-primary-5)', border: isDark ? '0.75px solid rgba(37,99,235,0.30)' : '0.75px solid #BFDBFE', borderRadius: 4,
+                    background: 'var(--cp-primary-5)', border: isDark ? '0.75px solid rgba(37,99,235,0.30)' : '0.75px solid var(--ds-border, #BFDBFE)', borderRadius: 4,
                     padding: '1px 8px', textDecoration: 'none',
                     fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)',
                     cursor: doc.jira_ticket_url ? 'pointer' : 'default',
@@ -674,7 +674,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 {epicCount > 0 ? (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
-                    background: 'var(--cp-primary-5)', border: '0.75px solid #BFDBFE',
+                    background: 'var(--cp-primary-5)', border: '0.75px solid var(--ds-border, #BFDBFE)',
                     fontSize: 11, fontWeight: 700, color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
                     fontFamily: 'var(--cp-font-body)',
                   }}>{pluralise(epicCount, 'epic', 'epics')} generated</span>
@@ -714,7 +714,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
                     background: 'var(--cp-success-light, #F0FDFA)', border: isDark ? '0.75px solid rgba(13,148,136,0.25)' : '0.75px solid #99F6E4',
-                    fontSize: 11, fontWeight: 700, color: '#0F766E',
+                    fontSize: 11, fontWeight: 700, color: 'var(--ds-text-success, #0F766E)',
                     fontFamily: 'var(--cp-font-body)',
                   }}>{pluralise(wikiCount, 'chunk', 'chunks')} indexed</span>
                 ) : (
@@ -785,7 +785,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                     }
                   }}
                   style={{
-                    marginLeft: 'auto', border: uatCount > 0 ? 'none' : '0.75px solid #2563EB',
+                    marginLeft: 'auto', border: uatCount > 0 ? 'none' : '0.75px solid var(--ds-link, #2563EB)',
                     background: 'transparent', cursor: generatingUat ? 'default' : 'pointer', padding: uatCount > 0 ? 0 : '0 10px',
                     fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
                     color: 'var(--cp-blue)', whiteSpace: 'nowrap', height: uatCount > 0 ? 'auto' : 28,
@@ -813,7 +813,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                     <div style={{ padding: '12px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                       <span style={{ fontSize: 13, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>No UAT scenarios generated yet</span>
                       <button onClick={handleGenerateUAT} disabled={generatingUat} style={{
-                        border: '0.75px solid #2563EB', background: 'transparent', borderRadius: 6,
+                        border: '0.75px solid var(--ds-link, #2563EB)', background: 'transparent', borderRadius: 6,
                         padding: '4px 12px', fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)',
                         cursor: generatingUat ? 'default' : 'pointer', fontFamily: 'var(--cp-font-body)',
                         display: 'inline-flex', alignItems: 'center', gap: 4,
@@ -826,8 +826,8 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                       const uatStatusStyle = s.status === 'pass'
                         ? { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }
                         : s.status === 'fail'
-                          ? { bg: '#FFEBE6', color: '#BF2600' }
-                          : { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' };
+                          ? { bg: 'var(--ds-surface, #FFEBE6)', color: 'var(--ds-text-danger, #BF2600)' }
+                          : { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' };
                       return (
                         <div key={s.id || i} style={{
                           display: 'flex', alignItems: 'center', gap: 8, height: 50,
@@ -838,7 +838,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                             fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--fg-4)', flexShrink: 0,
                           }}>{s.scenario_key}</span>
                           <span style={{
-                            fontSize: 13, color: 'var(--cp-text-primary, #1E293B)', fontFamily: 'var(--cp-font-body)',
+                            fontSize: 13, color: 'var(--cp-text-primary, var(--ds-text, #1E293B))', fontFamily: 'var(--cp-font-body)',
                             flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           }}>{s.title}</span>
                           <span style={{
@@ -921,9 +921,9 @@ function TicketTypeBadgeDrawer({ type }: { type: string | null }) {
   if (!type) return null;
   const dark = document.documentElement.classList.contains('dark');
   const map: Record<string, { bg: string; color: string; label: string }> = {
-    subtask: { bg: dark ? 'rgba(217,119,6,0.15)' : '#FEF3C7', color: dark ? '#FBBF24' : '#92400E', label: 'SUBTASK' },
+    subtask: { bg: dark ? 'rgba(217,119,6,0.15)' : 'var(--ds-surface, #FEF3C7)', color: dark ? 'var(--ds-text-warning, #FBBF24)' : 'var(--ds-text-warning, #92400E)', label: 'SUBTASK' },
     story: { bg: dark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)', color: dark ? 'var(--ds-text-brand, #60A5FA)' : 'var(--ds-background-brand-bold-hovered, #1D4ED8)', label: 'STORY' },
-    epic: { bg: dark ? 'rgba(124,58,237,0.15)' : '#F3E8FF', color: dark ? '#A78BFA' : '#6B21A8', label: 'EPIC' },
+    epic: { bg: dark ? 'rgba(124,58,237,0.15)' : 'var(--ds-surface, #F3E8FF)', color: dark ? 'var(--ds-text-discovery, #A78BFA)' : 'var(--ds-text-discovery, #6B21A8)', label: 'EPIC' },
     task: { bg: dark ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--fg-2)', label: 'TASK' },
   };
   const s = map[type] || map['task']!;

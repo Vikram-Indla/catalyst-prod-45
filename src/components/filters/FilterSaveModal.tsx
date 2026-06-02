@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { token } from '@atlaskit/tokens';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
@@ -8,6 +8,7 @@ import { RadioGroup } from '@atlaskit/radio';
 import Select from '@atlaskit/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useCreateSavedFilter, useUpdateSavedFilter, type SavedFilterFull, type HubScope } from '@/hooks/workhub/useSavedFilters';
+import { filterStateToJql, type FilterState } from '@/pages/project-hub/jira-list/components/AllWorkToolbar';
 
 interface ProfileOption {
   label: string;
@@ -69,7 +70,23 @@ export function FilterSaveModal({
 
   const [name, setName] = useState(filter?.name ?? '');
   const [description, setDescription] = useState(filter?.description ?? '');
-  const [jql, setJql] = useState(filter?.jql_query ?? (initialJql ?? ''));
+  // When editing a filter saved from AllWorkToolbar (filter_config exists but
+  // jql_query is null), derive JQL from filter_config so the textarea isn't blank.
+  const derivedJql = useMemo(() => {
+    if (filter?.jql_query) return filter.jql_query;
+    if (initialJql) return initialJql;
+    if (filter?.filter_config && typeof filter.filter_config === 'object') {
+      const cfg = filter.filter_config as Record<string, unknown>;
+      // Only derive if it looks like a FilterState (has at least one known facet key)
+      const hasFilterStateFacets = ['assignee', 'status', 'priority', 'workType'].some(k => Array.isArray(cfg[k]));
+      if (hasFilterStateFacets) {
+        return filterStateToJql(cfg as unknown as FilterState, filter.project_key ?? undefined);
+      }
+    }
+    return '';
+  }, [filter, initialJql]);
+
+  const [jql, setJql] = useState(derivedJql);
   const [viewersType, setViewersType] = useState<string>(filter?.viewers_config?.type ?? 'private');
   const [editorsType, setEditorsType] = useState<string>(filter?.editors_config?.type ?? 'owner_only');
   const [crossHub, setCrossHub] = useState<boolean>(filter?.hub_scope === 'both');
@@ -178,7 +195,7 @@ export function FilterSaveModal({
               minimumRows={3}
               maxHeight="120px"
               spellCheck={false}
-              style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12 }}
+              style={{ fontFamily: 'var(--ds-font-family-monospace, monospace)', fontSize: 12 }}
             />
           </div>
 

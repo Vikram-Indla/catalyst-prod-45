@@ -152,8 +152,8 @@ function TypeSelector({
   );
 }
 
-// ─── Fix versions cell ──────────────────────────────────
-function fixVersionNames(raw: unknown): string[] {
+// ─── Sprint/Release cell ──────────────────────────────────
+function sprintReleaseNames(raw: unknown): string[] {
   if (!raw) return [];
   // Stored as Json on ph_issues. Tolerate: string[], { name: string }[], comma-separated string.
   if (Array.isArray(raw)) {
@@ -168,9 +168,9 @@ function fixVersionNames(raw: unknown): string[] {
   return [];
 }
 
-function FixVersionsCell({ value }: { value: unknown }) {
-  const names = fixVersionNames(value);
-  if (names.length === 0) return <span className="sp-fixv-empty" aria-label="No fix versions"></span>;
+function SprintReleasesCell({ value }: { value: unknown }) {
+  const names = sprintReleaseNames(value);
+  if (names.length === 0) return <span className="sp-fixv-empty" aria-label="No sprint/releases"></span>;
   return (
     <div className="sp-fixv-cell" title={names.join(', ')}>
       {names.slice(0, 2).map((n) => (
@@ -301,13 +301,13 @@ export function SubtasksPanel({
       const [phRes, catRes] = await Promise.all([
         supabase
           .from('ph_issues')
-          .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,assignee_account_id,priority,position,deleted_at,fix_versions,jira_created_at')
+          .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,assignee_account_id,priority,position,deleted_at,sprint_release,jira_created_at')
           .eq('parent_key', storyKey)
           .is('deleted_at', null)
           .order('position', { ascending: true }),
         supabase
           .from('catalyst_issues')
-          .select('id,issue_key,title,status,status_category,issue_type,assignee_id,priority,fix_versions,created_at,parent_key,deleted_at')
+          .select('id,issue_key,title,status,status_category,issue_type,assignee_id,priority,sprint_release,created_at,parent_key,deleted_at')
           .eq('parent_key', storyKey)
           .is('deleted_at', null)
           .order('created_at', { ascending: true }),
@@ -329,7 +329,7 @@ export function SubtasksPanel({
           priority: r.priority,
           position: null,
           deleted_at: null,
-          fix_versions: r.fix_versions ?? null,
+          sprint_release: r.sprint_release ?? null,
           jira_created_at: r.created_at,
         } as SubtaskRow));
       return [...ph, ...cat];
@@ -821,7 +821,7 @@ export function SubtasksPanel({
           {!isLoading && visibleRows.length > 0 && (() => {
             // Jira-parity 4-column schema: Work | Priority | Assignee | Status.
             // Work col combines type-icon + issue-key + summary into one clickable cell.
-            // Priority and Assignee are icon-only (40px). FixVersions/Type/Key removed.
+            // Priority and Assignee are icon-only (40px). SprintReleases/Type/Key removed.
             const schema: Column<typeof visibleRows[number]>[] = [];
 
             if (columns.work) {

@@ -22,6 +22,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { PreviewRecoveryBanner } from "./components/PreviewRecoveryBanner";
 import { useCommandK } from "@/hooks/useCommandK";
 import { UWVProvider } from "@/components/universal-work-view/UWVContext";
+import { ProjectHubKeyRedirect } from "@/routes/ProjectHubKeyGuard";
 
 const CatalystLoginPageLazy = lazy(() => import("./components/auth/login").then(m => ({ default: m.CatalystLoginPage })));
 const CatalystShell = lazy(() => import("./components/layout/CatalystShell").then(m => ({ default: m.CatalystShell })));
@@ -38,7 +39,6 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const InviteAcceptPage = lazy(() => import("./pages/InviteAcceptPage"));
 const DeactivatedPage = lazy(() => import("./pages/DeactivatedPage"));
-const SubmitDemandRequest = lazy(() => import("./pages/SubmitDemandRequest"));
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
 const CleanupPage = lazy(() => import("./pages/CleanupPage"));
 const AuditTrailPage = lazy(() => import("./pages/AuditTrailPage"));
@@ -146,7 +146,6 @@ function App() {
               <Routes>
                 <Route path="/auth" element={<S><CatalystLoginPageLazy /></S>} />
                 <Route path="/auth/slack/callback" element={<S><SlackOAuthCallback /></S>} />
-                <Route path="/submit-request" element={<S><SubmitDemandRequest /></S>} />
                 <Route path="/reset-password" element={<S><ResetPassword /></S>} />
                 <Route path="/invite/accept" element={<S><InviteAcceptPage /></S>} />
                 <Route path="/deactivated" element={<S><DeactivatedPage /></S>} />
@@ -168,10 +167,27 @@ function App() {
                     redirects live inside the shell. */}
                 <Route path="/product-hub" element={<Navigate to="/product-hub/products" replace />} />
 
+                {/* Legacy global backlog retired (2026-06-01) — RequestListingPage
+                    queried the dead ph_backlog_requests_view (0 rows); live BR data
+                    lives in business_requests, read only by the scoped
+                    /product-hub/:key/backlog (ProductBacklogPage). Mounted OUTSIDE
+                    the shell for the same reason as /product-hub above: the
+                    CatalystShell re-render loop swallows in-shell Navigate calls. */}
+                <Route path="/product-hub/backlog" element={<Navigate to="/product-hub/products" replace />} />
+
                 {/* Same pattern for /project-hub — CatalystShell re-render loop
                     prevents Navigate from committing when the redirect lives
                     inside the shell. Mirror the /product-hub treatment above. */}
                 <Route path="/project-hub" element={<Navigate to="/project-hub/projects" replace />} />
+
+                {/* Excluded keys (products / modules typed under /project-hub) redirect
+                    to their canonical hub. Mounted OUTSIDE the protected shell — same
+                    CatalystShell re-render loop reason as the redirects above. Each
+                    excluded key needs its own literal-path route here AND a matching
+                    entry in KEY_REDIRECT_MAP (src/routes/ProjectHubKeyGuard.tsx).
+                    Keep in sync with `excludedProjectKeys` in useProjectHub.ts. */}
+                <Route path="/project-hub/INV/*" element={<ProjectHubKeyRedirect />} />
+                <Route path="/project-hub/MDT/*" element={<ProjectHubKeyRedirect />} />
 
                 {/* Protected shell with minimal routes */}
 

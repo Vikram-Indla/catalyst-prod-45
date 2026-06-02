@@ -25,8 +25,8 @@ export function basicToJql(v: JiraFilterValue): string {
   if (v.labels.length === 1)       clauses.push(`labels = "${v.labels[0]}"`);
   else if (v.labels.length > 1)    clauses.push(`labels in (${v.labels.map(l => `"${l}"`).join(', ')})`);
 
-  if (v.fixVersions.length === 1)  clauses.push(`fixVersion = "${v.fixVersions[0]}"`);
-  else if (v.fixVersions.length > 1) clauses.push(`fixVersion in (${v.fixVersions.map(f => `"${f}"`).join(', ')})`);
+  if (v.sprintReleases.length === 1)  clauses.push(`fixVersion = "${v.sprintReleases[0]}"`);
+  else if (v.sprintReleases.length > 1) clauses.push(`fixVersion in (${v.sprintReleases.map(f => `"${f}"`).join(', ')})`);
 
   if (v.created.from)  clauses.push(`created >= "${v.created.from}"`);
   if (v.created.to)    clauses.push(`created <= "${v.created.to}"`);

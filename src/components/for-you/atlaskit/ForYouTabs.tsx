@@ -29,9 +29,9 @@
  */
 import React from 'react';
 import { token } from '@atlaskit/tokens';
-import { Sparkles } from '@/lib/atlaskit-icons';
 import type { TabType } from '@/hooks/useForYouData';
 import { useAgeingCount } from '@/components/notifications/AgeingTab';
+import { useModuleEnabled } from '@/contexts/FeatureFlagContext';
 
 export const FOR_YOU_TAB_KEY = 'catalyst.forYou.activeTab.v1';
 
@@ -42,12 +42,21 @@ export interface ForYouTabDefinition {
 }
 
 export const FOR_YOU_TAB_ORDER: ForYouTabDefinition[] = [
-  { id: 'ai-theme',    label: 'AI Focus',        showCount: false },
-  { id: 'recommended', label: 'Recommended',     showCount: false },
+  // 2026-05-31: 'Caty Focus' (ai-theme) tab REMOVED from visible strip.
+  // The AI Themify functionality is now a contextual button on the
+  // Assigned panel ("Ask Caty - Themify"). The /for-you/ai-theme route
+  // and panel render path are KEPT alive so bookmarked URLs and stale
+  // localStorage entries gracefully resolve to the same AiThemePanel.
+  // 2026-05-31: 'Assigned to me' moved to first position per Vikram —
+  // it's the highest-frequency tab (live work-in-progress) so it earns
+  // pole position. Default landing tab logic is unchanged (separate
+  // setting in useForYouData); only the visible order is reshuffled.
   { id: 'assigned',    label: 'Assigned to me',  showCount: true  },
+  { id: 'recommended', label: 'Recommended',     showCount: false },
   { id: 'starred',     label: 'Starred',         showCount: false },
   { id: 'r360',        label: 'Resource 360°',   showCount: false },
   { id: 'ageing',      label: 'Ageing',          showCount: true  },
+  { id: 'team-pulse',  label: 'Team Pulse',      showCount: false },
 ];
 
 interface ForYouTabsProps {
@@ -62,6 +71,25 @@ export default function ForYouTabs({ activeTab, tabCounts, onChange }: ForYouTab
   // pill badge stays in lockstep with panel content without plumbing the
   // count back through useForYouData.
   const ageingCount = useAgeingCount();
+  const presenceEnabled = useModuleEnabled('presence_availability');
+
+  const visibleTabs = FOR_YOU_TAB_ORDER.filter(
+    tab => tab.id !== 'team-pulse' || presenceEnabled,
+  );
+
+  // WAI-ARIA tab pattern: ArrowLeft/Right navigate and select within the strip.
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    const currentIndex = visibleTabs.findIndex(t => t.id === activeTab);
+    const dir = e.key === 'ArrowRight' ? 1 : -1;
+    const nextIndex = (currentIndex + dir + visibleTabs.length) % visibleTabs.length;
+    const nextTab = visibleTabs[nextIndex];
+    onChange(nextTab.id);
+    // Programmatically focus the next tab button so keyboard users see the focus ring
+    const el = document.getElementById(`for-you-tab-${nextTab.id}`);
+    el?.focus();
+  };
 
   return (
     // Outer wrapper kept at page width so we can left-align the inline
@@ -71,6 +99,7 @@ export default function ForYouTabs({ activeTab, tabCounts, onChange }: ForYouTab
       <div
         role="tablist"
         aria-label="For You tabs"
+        onKeyDown={handleKeyDown}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -82,7 +111,7 @@ export default function ForYouTabs({ activeTab, tabCounts, onChange }: ForYouTab
           boxSizing: 'border-box',
         }}
       >
-        {FOR_YOU_TAB_ORDER.map(tab => {
+        {visibleTabs.map(tab => {
           const resolvedCount = tab.id === 'ageing' ? ageingCount : (tabCounts[tab.id] ?? 0);
           return (
             <TabButton
@@ -114,7 +143,8 @@ function TabButton({
 }) {
   const [hover, setHover] = React.useState(false);
   const showCounter = tab.showCount && count > 0;
-  const showSparkle = tab.id === 'ai-theme';
+  // 2026-05-31: showSparkle (ai-theme rainbow sparkle) removed alongside
+  // the Caty Focus tab. The rainbow sparkle SVG block is gone too.
   // Ageing uses a red-tinted counter to signal SLA risk, matching the
   // AMBER/RED governance language the panel itself renders.
   // Assigned uses a blue-tinted counter matching Jira's probed badge:
@@ -138,6 +168,7 @@ function TabButton({
       aria-selected={isActive}
       aria-controls={`for-you-panel-${tab.id}`}
       id={`for-you-tab-${tab.id}`}
+      tabIndex={isActive ? 0 : -1}
       onClick={onClick}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -168,19 +199,9 @@ function TabButton({
         transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.15, 1, 0.3, 1)',
       }}
     >
-      {showSparkle && (
-        <Sparkles
-          size={12}
-          strokeWidth={1.75}
-          // Matches the Ask Catalyst ("Caty") pill chrome — same AI family,
-          // same ink. Uses `color.icon.brand` (#1868DB) instead of the
-          // discovery/purple accent so every Atlaskit-compliant AI surface
-          // in Catalyst reads as the same entity. See /design-critique
-          // 2026-04-24 callout ⓪ — purple is explicitly off-palette inside
-          // the Atlassian design system and was re-homed to brand blue.
-          style={{ color: token('color.icon.brand', '#1868DB'), flexShrink: 0 }}
-        />
-      )}
+      {/* 2026-05-31: Caty Focus rainbow sparkle removed — tab no longer
+          in strip. The same rainbow-sparkle glyph now lives on the
+          "Ask Caty - Themify" button inside AssignedPanel. */}
       {tab.label}
       {showCounter && (
         <span

@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // PAGE: T10LandingPage
-// Purpose: Entry point used by the app router for /taskhub/task10
+// Purpose: Entry point used by the app router for /tasks/task10
 // NOTE: This now delegates to the V3 landing implementation (tabs: This Week / Completed / Archived)
 // ═══════════════════════════════════════════════════════════════════════════════
 

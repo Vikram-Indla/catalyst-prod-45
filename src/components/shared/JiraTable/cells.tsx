@@ -459,6 +459,13 @@ export function makeStatusEditCell<T>(opts: {
   getStatus: (row: T) => string | null;
   options: string[];
   appearanceFor: (s: string | null) => LozengeAppearance;
+  /**
+   * 2026-06-01 (catalyst-clone L11/L12 follow-up): map raw status value → pretty label.
+   * Defaults to identity (project hub keeps showing the value as-is).
+   * Product hub adapter passes `dataSource.statusLabel` so the dropdown
+   * renders "Demand approved" instead of raw slug `demand_approved`.
+   */
+  labelFor?: (s: string) => string;
   onChange: (row: T, next: string) => void;
   canEdit?: (row: T) => boolean;
 }) {
@@ -506,7 +513,7 @@ export function makeStatusEditCell<T>(opts: {
           }}
         >
           <StatusPill appearance={opts.appearanceFor(status)}>
-            {status ?? '—'}
+            {status ? (opts.labelFor ? opts.labelFor(status) : status) : '—'}
           </StatusPill>
           {editable && (
             <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden style={{ flexShrink: 0, opacity: 0.55, marginLeft: 1 }}>
@@ -581,7 +588,7 @@ export function makeStatusEditCell<T>(opts: {
                       border: ap === 'default' ? '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' : 'none',
                     }}
                   />
-                  <span style={{ flex: 1 }}>{s}</span>
+                  <span style={{ flex: 1 }}>{opts.labelFor ? opts.labelFor(s) : s}</span>
                   {/* Checkmark on selected item */}
                   {isActive && (
                     <span style={{ marginLeft: 4, color: token('color.icon.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
@@ -875,14 +882,14 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
   };
 }
 
-// ─── Fix Versions Cell ─────────────────────────────────────────────────────────
-// Renders fix versions as comma-separated plain text. Fix versions are not
+// ─── Sprint/Release Cell ─────────────────────────────────────────────────────────
+// Renders sprint/release versions as comma-separated plain text. Sprint/release versions are not
 // inline-editable in this column cell — editing happens via the bulk wizard
 // or detail panel. Matches Jira's list column display.
-export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | null | undefined) {
-  return function FixVersionsCell({ row }: CellProps<any>) {
-    const raw = getFixVersions(row);
-    // Normalise: Jira stores fix_versions as JSON array of {id,name,...} objects.
+export function makeSprintReleaseCell(getSprintRelease: (row: any) => string[] | null | undefined) {
+  return function SprintReleaseCell({ row }: CellProps<any>) {
+    const raw = getSprintRelease(row);
+    // Normalise: Jira stores sprint_release as JSON array of {id,name,...} objects.
     // Extract .name (or coerce to string) so we never pass an object to React.
     const versions = raw
       ? (raw as any[]).map(v => (typeof v === 'string' ? v : (v?.name ?? String(v)))).filter(Boolean)
@@ -890,7 +897,7 @@ export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | nul
     if (versions.length === 0) {
       return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
     }
-    // jira-compare 2026-05-20: Live DOM probe confirms fix-version pill =
+    // jira-compare 2026-05-20: Live DOM probe confirms sprint-release pill =
     // transparent bg + 0.556px solid rgb(183,185,190) border + 4px radius +
     // 0px 4px padding + 14px/400 text. Matches @atlaskit/tag appearance="default".
     return (

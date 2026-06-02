@@ -20,6 +20,7 @@
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useMyR360ResourceId, useTeamResourceIds } from '@/hooks/useR360PanelData';
 import { useAuth } from '@/lib/auth';
@@ -32,19 +33,15 @@ interface TeamResource { id: string; name: string; role_name: string | null; ava
 // ─── Sidebar roster row ───────────────────────────────────────────────────────
 
 function SidebarMemberRow({
-  name, sublabel, avatarUrl, active, onClick, isMe,
+  name, sublabel, avatarUrl, active, onClick,
 }: {
   name: string;
   sublabel?: string | null;
   avatarUrl?: string | null;
   active: boolean;
   onClick: () => void;
-  isMe?: boolean;
 }) {
   const [hover, setHover] = React.useState(false);
-
-  const initials = (n: string) =>
-    n.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 
   return (
     <button
@@ -73,29 +70,8 @@ function SidebarMemberRow({
         textAlign: 'left' as const,
       }}
     >
-      {/* Avatar (28px) */}
-      <div style={{
-        width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-        background: isMe
-          ? `linear-gradient(135deg,${token('color.background.information.bold', 'var(--cp-primary-60, #0052CC)')},${token('color.background.success.bold', '#1F845A')})`
-          : token('color.background.neutral', '#F1F2F4'),
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        overflow: 'hidden',
-        border: `1px solid ${token('color.border', '#091E4224')}`,
-        position: 'relative' as const,
-      }}>
-        {avatarUrl && (
-          <img
-            src={avatarUrl}
-            alt={name}
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-            onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-          />
-        )}
-        <span style={{ fontSize: 10, fontWeight: 700, color: isMe ? token('color.text.inverse', '#FFFFFF') : token('color.text.subtle', '#626F86') }}>
-          {isMe ? 'Me' : initials(name)}
-        </span>
-      </div>
+      {/* Avatar — face image when available, initials fallback, never both */}
+      <CatalystAvatar name={name} src={avatarUrl ?? null} size="small" />
 
       {/* Name + role */}
       <div style={{ flex: 1, minWidth: 0 }}>

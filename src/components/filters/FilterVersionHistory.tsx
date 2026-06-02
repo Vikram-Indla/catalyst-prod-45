@@ -7,6 +7,7 @@
 import React from 'react';
 import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import ModalDialog, { ModalBody, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import { useFilterVersions, type FilterVersion } from '@/hooks/workhub/useSavedFilters';
 
@@ -29,12 +30,12 @@ function relativeTime(iso: string): string {
 
 function VersionRow({ v }: { v: FilterVersion }) {
   const name = v.changer?.full_name ?? 'Unknown';
-  const avatar = v.changer?.avatar_url ?? undefined;
+  const avatar = resolveAvatarUrl(name);
 
   return (
     <div style={{
       display: 'flex',
-      gap: 12,
+      gap: 16,
       padding: '12px 0',
       borderBottom: `1px solid ${token('color.border')}`,
       alignItems: 'flex-start',
@@ -61,7 +62,7 @@ function VersionRow({ v }: { v: FilterVersion }) {
         {v.jql_query ? (
           <div style={{
             fontSize: 12,
-            fontFamily: 'monospace',
+            fontFamily: 'var(--ds-font-family-monospace, monospace)',
             color: token('color.text.subtle'),
             background: `var(--ds-surface-sunken, #F7F8F9)`,
             borderRadius: 3,

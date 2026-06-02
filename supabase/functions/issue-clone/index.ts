@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
       story_points: source.story_points,
       labels: source.labels,
       components: source.components,
-      fix_versions: source.fix_versions,
+      sprint_release: source.sprint_release,
       due_date: source.due_date,
       description_adf: source.description_adf,
       description_text: source.description_text,

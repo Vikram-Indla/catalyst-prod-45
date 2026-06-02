@@ -15,7 +15,7 @@ const CatalystViewEpic = lazy(() => import('./epic/CatalystViewEpic'));
 const CatalystViewDefect = lazy(() => import('./defect/CatalystViewDefect'));
 const CatalystViewIncident = lazy(() => import('./incident/CatalystViewIncident'));
 const CatalystViewTask = lazy(() => import('./task/CatalystViewTask'));
-const CatalystViewBusinessRequest = lazy(() => import('./business-request/CatalystViewBusinessRequest'));
+const CatalystViewBusinessRequest = lazy(() => import('./business-request/CatalystViewBusinessRequest.v3'));
 const CatalystViewSubtask = lazy(() => import('./subtask/CatalystViewSubtask'));
 const CatalystViewFeature = lazy(() => import('./feature/CatalystViewFeature'));
 // Phase 6 (2026-05-02) — Idea is its own entity backed by ph_ideas, not

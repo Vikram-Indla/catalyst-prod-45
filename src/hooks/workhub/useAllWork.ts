@@ -68,10 +68,10 @@ export function useWhWorkTypes(projectId?: string) {
   });
 }
 
-export function useWhFixVersions(projectId?: string) {
+export function useWhSprintReleases(projectId?: string) {
   return useQuery({
-    queryKey: [...whQueryKeys.fixVersions(), projectId],
-    queryFn: () => workhubService.fetchFixVersions(projectId),
+    queryKey: [...whQueryKeys.sprintReleases(), projectId],
+    queryFn: () => workhubService.fetchSprintReleases(projectId),
     staleTime: 120_000,
   });
 }

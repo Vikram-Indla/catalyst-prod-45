@@ -51,5 +51,12 @@ export default function ProjectBoardManagerPage() {
     );
   }
 
-  return <BoardManagerPage projectIdOverride={project.id} basePath={`/project-hub/${key}/boards`} />;
+  return (
+    <BoardManagerPage
+      projectIdOverride={project.id}
+      basePath={`/project-hub/${key}/boards`}
+      projectName={project.name}
+      projectKey={project.key}
+    />
+  );
 }

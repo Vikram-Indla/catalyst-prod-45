@@ -2,7 +2,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
-import type { CreateBoardInput, BoardVisibility, SwimlaneType } from '@/types/board';
+import type { CreateBoardInput, BoardVisibility, SwimlaneType, CardColorMethod, EpicDisplayMode, ColumnConstraintType, WorkingDaysConfig } from '@/types/board';
 
 export function useCreateBoard() {
   const qc = useQueryClient();
@@ -21,7 +21,14 @@ export function useCreateBoard() {
         p_user_id: null,
       });
       if (error) throw error;
-      return { boardId: data as string, name: input.name, projectId: input.projectId };
+      const boardId = data as string;
+      // Wire filter_id post-creation (create_board RPC has no p_filter_id param)
+      if (input.filterId && boardId) {
+        await (typedQuery as any)('boards')
+          .update({ filter_id: input.filterId, updated_at: new Date().toISOString() })
+          .eq('id', boardId);
+      }
+      return { boardId, name: input.name, projectId: input.projectId };
     },
     onSuccess: (result) => {
       qc.invalidateQueries({ queryKey: ['boards', result.projectId] });
@@ -45,8 +52,23 @@ export function useUpdateBoard() {
       visibility?: BoardVisibility;
       board_type?: 'kanban' | 'scrum';
       swimlane_type?: SwimlaneType;
+      swimlane_jql?: string | null;
       show_swimlanes?: boolean;
       board_query?: string | null;
+      sub_filter_query?: string | null;
+      completed_issues_cutoff?: string | null;
+      filter_id?: string | null;
+      card_layout?: 'default' | 'compact';
+      card_colors?: Array<{ id: string; label: string; jql: string; color: string }>;
+      card_color_method?: CardColorMethod;
+      card_extra_fields?: string[];
+      days_in_column_enabled?: boolean;
+      working_days_config?: WorkingDaysConfig;
+      timeline_enabled?: boolean;
+      timeline_include_children?: boolean;
+      kanban_backlog_enabled?: boolean;
+      epic_display_mode?: EpicDisplayMode;
+      column_constraint_type?: ColumnConstraintType;
     }) => {
       const update: Record<string, any> = { updated_at: new Date().toISOString() };
       if (fields.name !== undefined) update.name = fields.name;
@@ -55,8 +77,22 @@ export function useUpdateBoard() {
       if (fields.visibility !== undefined) update.visibility = fields.visibility;
       if (fields.board_type !== undefined) update.board_type = fields.board_type;
       if (fields.swimlane_type !== undefined) update.swimlane_type = fields.swimlane_type;
+      if (fields.swimlane_jql !== undefined) update.swimlane_jql = fields.swimlane_jql;
       if (fields.show_swimlanes !== undefined) update.show_swimlanes = fields.show_swimlanes;
       if (fields.board_query !== undefined) update.board_query = fields.board_query;
+      if (fields.sub_filter_query !== undefined) update.sub_filter_query = fields.sub_filter_query;
+      if (fields.completed_issues_cutoff !== undefined) update.completed_issues_cutoff = fields.completed_issues_cutoff;
+      if (fields.filter_id !== undefined) update.filter_id = fields.filter_id;
+      if (fields.card_layout !== undefined) update.card_layout = fields.card_layout;
+      if (fields.card_colors !== undefined) update.card_colors = fields.card_colors;
+      if (fields.card_extra_fields !== undefined) update.card_extra_fields = fields.card_extra_fields;
+      if (fields.days_in_column_enabled !== undefined) update.days_in_column_enabled = fields.days_in_column_enabled;
+      if (fields.working_days_config !== undefined) update.working_days_config = fields.working_days_config;
+      if (fields.timeline_enabled !== undefined) update.timeline_enabled = fields.timeline_enabled;
+      if (fields.timeline_include_children !== undefined) update.timeline_include_children = fields.timeline_include_children;
+      if (fields.kanban_backlog_enabled !== undefined) update.kanban_backlog_enabled = fields.kanban_backlog_enabled;
+      if (fields.epic_display_mode !== undefined) update.epic_display_mode = fields.epic_display_mode;
+      if (fields.column_constraint_type !== undefined) update.column_constraint_type = fields.column_constraint_type;
 
       const { error } = await typedQuery('boards')
         .update(update)
@@ -111,6 +147,22 @@ export function useToggleBoardStar() {
           role: 'viewer',
         }, { onConflict: 'board_id,user_id' });
       if (error) throw error;
+
+      // Bridge to user_starred_items so the board surfaces on Home/For You
+      if (isStarred) {
+        await supabase.from('user_starred_items').upsert({
+          user_id: user.id,
+          item_id: boardId,
+          item_type: 'board',
+          starred_at: new Date().toISOString(),
+        }, { onConflict: 'user_id,item_id,item_type' });
+      } else {
+        await supabase.from('user_starred_items')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('item_id', boardId)
+          .eq('item_type', 'board');
+      }
       return { projectId };
     },
     onMutate: async ({ boardId, projectId, isStarred }) => {
@@ -242,13 +294,15 @@ export function useUpdateCardRank() {
 export function useAddQuickFilter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ boardId, name, jql }: { boardId: string; name: string; jql: string }) => {
+    mutationFn: async ({ boardId, name, jql, description }: { boardId: string; name: string; jql: string; description?: string }) => {
       const { error } = await typedQuery('board_quick_filters' as any)
         .insert({
           board_id: boardId,
           name,
           filter_type: 'jql',
           filter_value: { jql },
+          jql_query: jql,
+          description: description ?? null,
           is_system: false,
           sort_order: Date.now(),
         });
@@ -270,6 +324,85 @@ export function useDeleteQuickFilter() {
     },
     onSuccess: (r) => { qc.invalidateQueries({ queryKey: ['board-quick-filters', r.boardId] }); },
     onError: (err: Error) => catalystToast.error(`Failed to delete filter: ${err.message}`),
+  });
+}
+
+export function useMoveBoard() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ boardId, fromProjectId, toProjectId }: { boardId: string; fromProjectId: string; toProjectId: string }) => {
+      const { error } = await typedQuery('boards')
+        .update({ project_id: toProjectId, updated_at: new Date().toISOString() })
+        .eq('id', boardId);
+      if (error) throw error;
+      return { boardId, fromProjectId, toProjectId };
+    },
+    onSuccess: (result) => {
+      qc.invalidateQueries({ queryKey: ['boards', result.fromProjectId] });
+      qc.invalidateQueries({ queryKey: ['boards', result.toProjectId] });
+      catalystToast.success('Board moved');
+    },
+    onError: (err: Error) => {
+      catalystToast.error(`Failed to move board: ${err.message}`);
+    },
+  });
+}
+
+export function useCopyBoard() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ boardId, toProjectId, newName }: { boardId: string; toProjectId: string; newName: string }) => {
+      // Fetch the source board and its columns
+      const { data: src, error: srcErr } = await typedQuery('boards').select('*').eq('id', boardId).single();
+      if (srcErr || !src) throw srcErr ?? new Error('Board not found');
+
+      const { data: cols, error: colsErr } = await typedQuery('board_columns')
+        .select('name, position, color, status_ids, is_backlog, is_done')
+        .eq('board_id', boardId)
+        .order('position', { ascending: true });
+      if (colsErr) throw colsErr;
+
+      // Create the new board (config copy — no issue_rank rows)
+      const { data: newBoard, error: boardErr } = await typedRpc('create_board', {
+        p_name: newName,
+        p_project_id: toProjectId,
+        p_is_personal: (src as any).is_personal ?? false,
+        p_visibility: (src as any).visibility ?? 'project',
+        p_board_type: (src as any).board_type ?? 'kanban',
+        p_swimlane_type: (src as any).swimlane_type ?? 'none',
+        p_color: (src as any).color ?? '#2563EB',
+        p_columns: null,
+        p_board_query: (src as any).board_query ?? null,
+        p_user_id: null,
+      });
+      if (boardErr) throw boardErr;
+
+      const newBoardId = newBoard as string;
+
+      // Copy columns if any
+      if (cols && cols.length > 0) {
+        const colInserts = cols.map((c: any) => ({
+          board_id: newBoardId,
+          name: c.name,
+          position: c.position,
+          color: c.color,
+          status_ids: c.status_ids ?? [],
+          is_backlog: c.is_backlog ?? false,
+          is_done: c.is_done ?? false,
+        }));
+        const { error: colInsertErr } = await typedQuery('board_columns').insert(colInserts);
+        if (colInsertErr) throw colInsertErr;
+      }
+
+      return { toProjectId, newBoardId };
+    },
+    onSuccess: (result) => {
+      qc.invalidateQueries({ queryKey: ['boards', result.toProjectId] });
+      catalystToast.success('Board copied');
+    },
+    onError: (err: Error) => {
+      catalystToast.error(`Failed to copy board: ${err.message}`);
+    },
   });
 }
 

@@ -754,11 +754,21 @@ export function EditablePriority({
   issueKey,
   currentPriority,
   onUpdate,
+  options,
+  onChange,
 }: {
-  issueId: string;
+  /** ph_issues row id — required only when `onChange` is NOT provided (default ph_issues write path). */
+  issueId?: string;
   issueKey?: string;
   currentPriority: string;
   onUpdate: () => void;
+  /** Custom priority option list. Defaults to PRIORITY_LIST (5-level Jira: Highest/High/Medium/Low/Lowest).
+   *  Other data sources (e.g. business_requests.urgency with 3 levels) pass their own option set here. */
+  options?: string[];
+  /** Custom write callback. When provided, called INSTEAD of the default ph_issues mutation.
+   *  Receives the selected value (or null on clear). Enables this canonical component to write to
+   *  ANY data source without forking — see CLAUDE.md "Adopt canonical components" rule (2026-06-01). */
+  onChange?: (value: string | null) => Promise<void> | void;
 }) {
   const [showPicker, setShowPicker] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -771,6 +781,12 @@ export function EditablePriority({
 
   const updateMutation = useMutation({
     mutationFn: async (priority: string | null) => {
+      // If a custom onChange is provided, the call site owns the write (e.g. business_requests.urgency).
+      // Otherwise fall back to the canonical ph_issues mutation.
+      if (onChange) {
+        await onChange(priority);
+        return;
+      }
       const query = issueKey
         ? supabase
             .from("ph_issues")
@@ -952,7 +968,7 @@ export function EditablePriority({
               padding: "6px 0",
             }}
           >
-            {PRIORITY_LIST.map((p) => {
+            {(options ?? PRIORITY_LIST).map((p) => {
               const isSelected = currentPriority === p;
               return (
                 <div
@@ -1293,48 +1309,48 @@ export function EditableStoryPoints({
   );
 }
 
-/* ── EditableFixVersions — Jira-parity multi-select dropdown ── */
+/* ── EditableSprintReleases — Jira-parity multi-select dropdown ── */
 
 /**
  * Jira parity (2026-04-20, Drawer Phase 5 Atlaskit sweep — §P0-9):
  *
  * Replaced the bespoke multi-select dropdown with `@atlaskit/select` (multi,
- * grouped). Jira's fix-version picker renders Unreleased and Released as
+ * grouped). Jira's sprint/release picker renders Unreleased and Released as
  * separate groups with uppercase labels; Atlaskit's `options` prop accepts
  * `{ label, options }` shapes for this natively, so we get the exact chrome
  * for free. Optimistic-off: writes via mutation then refetches through
  * `onUpdate`. Chips in the control are the built-in MultiValue with the
  * subtle appearance, which matches Jira's small blue token chips.
  */
-type FixVersionOption = { value: string; label: string; id?: string };
+type SprintReleaseOption = { value: string; label: string; id?: string };
 
-export function EditableFixVersions({
+export function EditableSprintReleases({
   issueId,
-  currentFixVersions,
+  currentSprintRelease,
   projectKey,
   onUpdate,
 }: {
   issueId: string;
-  currentFixVersions: any | null;
+  currentSprintRelease: any | null;
   projectKey: string | null | undefined;
   onUpdate: () => void;
 }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const navigate = useNavigate();
-  // Parse current fix version names (legacy JSON shape: [{ name }, ...] or string[]).
-  const fixVersionNames: string[] = useMemo(() => {
-    if (!currentFixVersions) return [];
-    if (Array.isArray(currentFixVersions)) {
-      return currentFixVersions
+  // Parse current sprint/release names (legacy JSON shape: [{ name }, ...] or string[]).
+  const sprintReleaseNames: string[] = useMemo(() => {
+    if (!currentSprintRelease) return [];
+    if (Array.isArray(currentSprintRelease)) {
+      return currentSprintRelease
         .map((v: any) => v?.name || v)
         .filter(Boolean) as string[];
     }
     return [];
-  }, [currentFixVersions]);
+  }, [currentSprintRelease]);
 
   // Fetch available versions from ph_versions
   const { data: versionsData } = useQuery({
-    queryKey: ["ph-fix-versions", projectKey],
+    queryKey: ["ph-sprint-releases", projectKey],
     queryFn: async () => {
       if (!projectKey) return [];
       const { data, error } = await supabase
@@ -1364,14 +1380,14 @@ export function EditableFixVersions({
     const released = versions
       .filter((v) => v.released && !v.archived)
       .map((v) => ({ value: v.name, label: v.name, id: v.jira_id }));
-    const groups: { label: string; options: FixVersionOption[] }[] = [];
+    const groups: { label: string; options: SprintReleaseOption[] }[] = [];
     if (unreleased.length)
       groups.push({ label: "Unreleased", options: unreleased });
     if (released.length) groups.push({ label: "Released", options: released });
     return groups;
   }, [versions]);
 
-  const selected: FixVersionOption[] = fixVersionNames.map((n) => ({
+  const selected: SprintReleaseOption[] = sprintReleaseNames.map((n) => ({
     value: n,
     label: n,
     id: versions.find((v) => v.name === n)?.jira_id,
@@ -1391,14 +1407,14 @@ export function EditableFixVersions({
             released: ver.released,
             archived: ver.archived,
           };
-        const existing = Array.isArray(currentFixVersions)
-          ? (currentFixVersions as any[]).find((cv) => cv?.name === n)
+        const existing = Array.isArray(currentSprintRelease)
+          ? (currentSprintRelease as any[]).find((cv) => cv?.name === n)
           : null;
         return existing ?? { name: n };
       });
       const { error } = await supabase
         .from("ph_issues")
-        .update({ fix_versions: jsonValue } as any)
+        .update({ sprint_release: jsonValue } as any)
         .eq("id", issueId);
       if (error) throw error;
     },
@@ -1418,7 +1434,7 @@ export function EditableFixVersions({
       }}
       onMouseDownCapture={(e) => {
         const labelEl = (e.target as HTMLElement).closest(
-          ".cv-fixversions-select__multi-value__label",
+          ".cv-sprintreleases-select__multi-value__label",
         );
         if (!labelEl) return;
         e.stopPropagation();
@@ -1426,8 +1442,8 @@ export function EditableFixVersions({
         if (ver?.jira_id) navigate(`/release-hub/${ver.jira_id}`);
       }}
     >
-      <Select<FixVersionOption, true>
-        inputId={`fix-versions-${issueId}`}
+      <Select<SprintReleaseOption, true>
+        inputId={`sprint-releases-${issueId}`}
         isMulti
         isClearable
         closeMenuOnSelect={false}
@@ -1436,7 +1452,7 @@ export function EditableFixVersions({
         menuShouldFlip
         appearance="subtle"
         spacing="compact"
-        classNamePrefix="cv-fixversions-select"
+        classNamePrefix="cv-sprintreleases-select"
         placeholder="Select version"
         options={groupedOptions}
         value={selected}
@@ -1554,7 +1570,7 @@ export function EditableFixVersions({
             fontSize: 11,
           }),
           // jira-compare 2026-05-20: Live DOM probe of digital-transformation.atlassian.net
-          // confirms Fix versions chip = transparent bg + 0.556px solid rgb(183,185,190) border
+          // confirms Sprint/Release chip = transparent bg + 0.556px solid rgb(183,185,190) border
           // + borderRadius 4px + padding 0px 4px + 14px/400 text.
           // Uses @atlaskit/tag "appearance=default" pattern — not a lozenge fill.
           multiValue: (base) => ({

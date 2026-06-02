@@ -17,12 +17,12 @@ import { RoadmapScoreTab } from './RoadmapScoreTab';
 // Status bar colors matching the timeline bars
 const BAR_STATUS_COLORS: Record<string, { border: string; bg: string }> = {
   new_request: { border: 'var(--ds-text-brand, #3B82F6)', bg: 'rgba(59,130,246,0.12)' },
-  draft:       { border: '#737373', bg: 'rgba(115,115,115,0.12)' },
+  draft:       { border: 'var(--ds-text-subtlest, #737373)', bg: 'rgba(115,115,115,0.12)' },
   submitted:   { border: 'var(--ds-text-brand, #3B82F6)', bg: 'rgba(59,130,246,0.12)' },
-  in_review:   { border: '#8B5CF6', bg: 'rgba(139,92,246,0.12)' },
-  approved:    { border: '#06B6D4', bg: 'rgba(6,182,212,0.12)' },
+  in_review:   { border: 'var(--ds-text-discovery, #8B5CF6)', bg: 'rgba(139,92,246,0.12)' },
+  approved:    { border: 'var(--ds-text-information, #06B6D4)', bg: 'rgba(6,182,212,0.12)' },
   in_progress: { border: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', bg: 'rgba(245,158,11,0.12)' },
-  completed:   { border: '#10B981', bg: 'rgba(16,185,129,0.12)' },
+  completed:   { border: 'var(--ds-text-success, #10B981)', bg: 'rgba(16,185,129,0.12)' },
   rejected:    { border: 'var(--ds-text-danger, #EF4444)', bg: 'rgba(239,68,68,0.12)' },
   cancelled:   { border: 'var(--ds-text-danger, #EF4444)', bg: 'rgba(239,68,68,0.12)' },
 };
@@ -115,7 +115,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
           width: '480px',
           maxWidth: '90vw',
           backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          borderLeft: '1px solid #e4e4e7',
+          borderLeft: '1px solid var(--ds-border, #e4e4e7)',
           boxShadow: '-8px 0 30px rgba(0,0,0,0.08)',
           zIndex: 201,
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
@@ -128,7 +128,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
         {item && (
           <>
             {/* A) Header */}
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid #f4f4f5' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--ds-border, #f4f4f5)' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
@@ -148,7 +148,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                   <h2 style={{
                     fontSize: '17px',
                     fontWeight: 600,
-                    color: '#18181b',
+                    color: 'var(--ds-text, #18181b)',
                     lineHeight: 1.3,
                     margin: 0,
                     wordBreak: 'break-word',
@@ -179,11 +179,11 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     borderRadius: 6, border: 'none', cursor: 'pointer',
                     backgroundColor: 'transparent',
-                    color: '#a1a1aa',
+                    color: 'var(--ds-text-subtlest, #a1a1aa)',
                     flexShrink: 0,
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#f4f4f5'; e.currentTarget.style.color = '#52525b'; }}
-                  onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#a1a1aa'; }}
+                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral, #f4f4f5)'; e.currentTarget.style.color = 'var(--ds-text-subtle, #52525b)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #a1a1aa)'; }}
                 >
                   <X size={18} />
                 </button>
@@ -191,17 +191,17 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
             </div>
 
             {/* B) Action Bar */}
-            <div style={{ padding: '8px 20px', borderBottom: '1px solid #f4f4f5', display: 'flex', gap: '4px' }}>
+            <div style={{ padding: '8px 20px', borderBottom: '1px solid var(--ds-border, #f4f4f5)', display: 'flex', gap: '4px' }}>
               {ACTION_BUTTONS.map(({ icon: Icon, label }) => (
                 <button
                   key={label}
                   style={{
                     display: 'flex', alignItems: 'center', gap: '4px',
                     padding: '4px 8px', fontSize: '12px', fontWeight: 500,
-                    color: '#71717a', backgroundColor: 'transparent',
+                    color: 'var(--ds-text-subtle, #71717a)', backgroundColor: 'transparent',
                     border: 'none', borderRadius: 6, cursor: 'pointer',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#f4f4f5'; }}
+                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral, #f4f4f5)'; }}
                   onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                 >
                   <Icon size={14} />
@@ -211,7 +211,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
             </div>
 
             {/* C) Tab Bar */}
-            <div style={{ padding: '0 20px', borderBottom: '1px solid #e4e4e7', display: 'flex', gap: '0' }}>
+            <div style={{ padding: '0 20px', borderBottom: '1px solid var(--ds-border, #e4e4e7)', display: 'flex', gap: '0' }}>
               {TABS.map(tab => (
                 <button
                   key={tab.key}
@@ -220,15 +220,15 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                     padding: '10px 12px',
                     fontSize: '13px',
                     fontWeight: activeTab === tab.key ? 600 : 400,
-                    color: activeTab === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : '#71717a',
+                    color: activeTab === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-subtle, #71717a)',
                     backgroundColor: 'transparent',
                     border: 'none',
-                    borderBottom: activeTab === tab.key ? '2px solid #2563eb' : '2px solid transparent',
+                    borderBottom: activeTab === tab.key ? '2px solid var(--ds-link, #2563eb)' : '2px solid transparent',
                     cursor: 'pointer',
                     marginBottom: '-1px',
                   }}
-                  onMouseEnter={e => { if (activeTab !== tab.key) e.currentTarget.style.color = '#3f3f46'; }}
-                  onMouseLeave={e => { if (activeTab !== tab.key) e.currentTarget.style.color = '#71717a'; }}
+                  onMouseEnter={e => { if (activeTab !== tab.key) e.currentTarget.style.color = 'var(--ds-text, #3f3f46)'; }}
+                  onMouseLeave={e => { if (activeTab !== tab.key) e.currentTarget.style.color = 'var(--ds-text-subtle, #71717a)'; }}
                 >
                   {tab.label}
                 </button>
@@ -287,7 +287,7 @@ function DetailsTabContent({
 
         <Field label="PROGRESS" value={
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '80px', height: '6px', backgroundColor: '#f4f4f5', borderRadius: '9999px', overflow: 'hidden' }}>
+            <div style={{ width: '80px', height: '6px', backgroundColor: 'var(--ds-background-neutral, #f4f4f5)', borderRadius: '9999px', overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${item.progress}%`, backgroundColor: barColor.border, borderRadius: '9999px' }} />
             </div>
             <span style={{ fontSize: '13px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{item.progress}%</span>
@@ -297,9 +297,9 @@ function DetailsTabContent({
       </div>
 
       {/* Description */}
-      <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid #f4f4f5' }}>
-        <div style={{ fontSize: '13px', fontWeight: 600, color: '#3f3f46', marginBottom: '8px' }}>Description</div>
-        <div style={{ fontSize: '13px', color: '#52525b', lineHeight: 1.6 }}>
+      <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--ds-border, #f4f4f5)' }}>
+        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #3f3f46)', marginBottom: '8px' }}>Description</div>
+        <div style={{ fontSize: '13px', color: 'var(--ds-text-subtle, #52525b)', lineHeight: 1.6 }}>
           {item.description || 'No description provided for this initiative.'}
         </div>
       </div>
@@ -314,14 +314,14 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
       <div style={{
         fontSize: '11px',
         fontWeight: 600,
-        color: '#a1a1aa',
+        color: 'var(--ds-text-subtlest, #a1a1aa)',
         letterSpacing: '0.05em',
         textTransform: 'uppercase',
         marginBottom: '4px',
       }}>
         {label}
       </div>
-      <div style={{ fontSize: '13px', color: '#27272a' }}>
+      <div style={{ fontSize: '13px', color: 'var(--ds-text, #27272a)' }}>
         {value}
       </div>
     </div>
@@ -334,7 +334,7 @@ function PlaceholderTab({ name }: { name: string }) {
   return (
     <div style={{ padding: '40px', textAlign: 'center' }}>
       <div style={{ fontSize: '32px', marginBottom: '12px' }}>{PLACEHOLDER_EMOJI[name] || '📄'}</div>
-      <div style={{ fontSize: '14px', color: '#a1a1aa', fontWeight: 500 }}>
+      <div style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #a1a1aa)', fontWeight: 500 }}>
         {displayName} — Coming soon
       </div>
     </div>

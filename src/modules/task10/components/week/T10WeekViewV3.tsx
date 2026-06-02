@@ -83,7 +83,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     gap: 12,
     padding: '12px 16px',
     background: isCompleted ? '#fafafa' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    border: isDragging ? '2px solid #2563eb' : '1px solid #e2e8f0',
+    border: isDragging ? `2px solid var(--ds-border-focused, #2563eb)` : `1px solid var(--ds-border, #e2e8f0)`,
     borderRadius: 12,
     cursor: 'default',
     transition: 'all 0.15s ease',
@@ -175,7 +175,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
   // Due date style with conditional color
   const dueStyle: React.CSSProperties = {
     ...metaItemStyle,
-    color: dueStatus === 'overdue' ? 'var(--ds-text-danger, #ef4444)' : dueStatus === 'today' ? '#0d9488' : 'var(--ds-text-subtlest, #64748b)',
+    color: dueStatus === 'overdue' ? 'var(--ds-text-danger, #ef4444)' : dueStatus === 'today' ? 'var(--ds-text-success, #0d9488)' : 'var(--ds-text-subtlest, #64748b)',
     fontWeight: dueStatus === 'overdue' ? 500 : 400,
   };
 
@@ -199,7 +199,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     ...actionBtnStyle,
     color: isHovered ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-subtlest, #94a3b8)',
     background: isHovered ? 'var(--ds-background-selected, #eff6ff)' : 'transparent',
-    border: isHovered ? '1px solid #dbeafe' : '1px solid transparent',
+    border: isHovered ? `1px solid var(--ds-border-focused, #dbeafe)` : '1px solid transparent',
   };
 
   // Remove button style
@@ -207,7 +207,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     ...actionBtnStyle,
     color: isHovered ? 'var(--ds-text-danger, #ef4444)' : 'var(--ds-text-subtlest, #94a3b8)',
     background: isHovered ? 'var(--ds-background-danger, #fef2f2)' : 'transparent',
-    border: isHovered ? '1px solid #fecaca' : '1px solid transparent',
+    border: isHovered ? `1px solid var(--ds-border-danger, #fecaca)` : '1px solid transparent',
     opacity: isCompleted ? 0.5 : 1,
   };
 
@@ -219,7 +219,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: '50%',
-    border: isCompleted ? 'none' : '2px solid #d1d5db',
+    border: isCompleted ? 'none' : `2px solid var(--ds-border, #d1d5db)`,
     backgroundColor: isCompleted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     cursor: 'pointer',
     transition: 'all 0.15s',
@@ -638,7 +638,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     height: 60,
     padding: '0 24px',
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    borderBottom: '1px solid #e2e8f0',
+    borderBottom: `1px solid var(--ds-border, #e2e8f0)`,
     gap: 20,
   };
 
@@ -676,7 +676,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     borderRadius: 6,
     background: 'var(--ds-surface-sunken, #f1f5f9)',
     color: 'var(--ds-text-subtle, #475569)',
-    border: '1px solid #e2e8f0',
+    border: `1px solid var(--ds-border, #e2e8f0)`,
   };
 
   const listNameStyle: React.CSSProperties = {
@@ -692,7 +692,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     alignItems: 'center',
     justifyContent: 'center',
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    border: '1px solid #e2e8f0',
+    border: `1px solid var(--ds-border, #e2e8f0)`,
     borderRadius: 6,
     cursor: 'pointer',
     color: 'var(--ds-text-subtle, #475569)',
@@ -705,7 +705,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     gap: 8,
     padding: '6px 14px',
     background: 'var(--ds-surface-sunken, #f8fafc)',
-    border: '1px solid #e2e8f0',
+    border: `1px solid var(--ds-border, #e2e8f0)`,
     borderRadius: 8,
     fontSize: 13,
     fontWeight: 500,
@@ -717,7 +717,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: '4px 10px',
     fontSize: 11,
     fontWeight: 700,
-    background: isCurrentWeek ? '#10b981' : 'var(--ds-text-subtlest, #64748b)',
+    background: isCurrentWeek ? 'var(--ds-text-success, #10b981)' : 'var(--ds-text-subtlest, #64748b)',
     color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     borderRadius: 4,
     textTransform: 'uppercase',
@@ -778,7 +778,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const aiSectionStyle: React.CSSProperties = {
     marginBottom: 20,
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    border: '1px dashed #cbd5e1',
+    border: `1px dashed var(--ds-border, #cbd5e1)`,
     borderRadius: 16,
     overflow: 'hidden',
   };
@@ -797,9 +797,9 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     alignItems: 'center',
     justifyContent: 'center',
     background: 'transparent',
-    border: '2px solid #8b5cf6',
+    border: `2px solid var(--ds-text-discovery, #8b5cf6)`,
     borderRadius: 12,
-    color: '#8b5cf6',
+    color: 'var(--ds-text-discovery, #8b5cf6)',
   };
 
   const aiToggleBtnStyle: React.CSSProperties = {
@@ -811,7 +811,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontWeight: 500,
     color: 'var(--ds-text-subtle, #475569)',
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    border: '1px solid #e2e8f0',
+    border: `1px solid var(--ds-border, #e2e8f0)`,
     borderRadius: 8,
     cursor: 'pointer',
   };
@@ -823,7 +823,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: '16px 20px',
     marginBottom: 24,
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    border: '1px dashed #cbd5e1',
+    border: `1px dashed var(--ds-border, #cbd5e1)`,
     borderRadius: 16,
     opacity: isAddDisabled ? 0.6 : 1,
   };
@@ -846,7 +846,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontWeight: 500,
     color: 'var(--ds-text-subtle, #475569)',
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    border: '1px solid #e2e8f0',
+    border: `1px solid var(--ds-border, #e2e8f0)`,
     borderRadius: 6,
   };
 
@@ -893,7 +893,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     gap: 12,
     padding: '10px 12px',
     background: 'var(--ds-surface-sunken, #f8fafc)',
-    border: '1px solid #e2e8f0',
+    border: `1px solid var(--ds-border, #e2e8f0)`,
     borderRadius: 8,
     marginBottom: 6,
     cursor: 'pointer',
@@ -909,7 +909,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontWeight: 600,
     color: 'var(--ds-text-subtlest, #94a3b8)',
     background: 'transparent',
-    border: '2px dashed #d1d5db',
+    border: `2px dashed var(--ds-border, #d1d5db)`,
     borderRadius: 8,
     flexShrink: 0,
   };
@@ -919,7 +919,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontSize: 12,
     fontWeight: 500,
     color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-    background: '#dbeafe',
+    background: 'var(--ds-background-selected, #dbeafe)',
     border: 'none',
     borderRadius: 6,
     cursor: 'pointer',
@@ -1173,7 +1173,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                     color: 'var(--ds-text-subtlest, #94a3b8)',
                     background: 'var(--ds-surface-sunken, #f8fafc)',
                     borderRadius: 12,
-                    border: '1px dashed #e2e8f0'
+                    border: `1px dashed var(--ds-border, #e2e8f0)`
                   }}>
                     No items yet. Add your first priority above.
                   </div>
@@ -1244,7 +1244,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                         justifyContent: 'center',
                         color: 'var(--ds-text-subtlest, #94a3b8)',
                         background: 'transparent',
-                        border: '1px solid #e2e8f0',
+                        border: `1px solid var(--ds-border, #e2e8f0)`,
                         borderRadius: 6,
                         cursor: 'pointer',
                         transition: 'all 0.15s ease',
@@ -1254,8 +1254,8 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                         handleRemoveItem(item);
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = '#fee2e2';
-                        e.currentTarget.style.borderColor = '#fecaca';
+                        e.currentTarget.style.background = 'var(--ds-background-danger, #fee2e2)';
+                        e.currentTarget.style.borderColor = 'var(--ds-border-danger, #fecaca)';
                         e.currentTarget.style.color = 'var(--ds-text-danger, #dc2626)';
                       }}
                       onMouseLeave={(e) => {

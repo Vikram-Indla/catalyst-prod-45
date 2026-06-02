@@ -4,6 +4,142 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 📵 SCREENSHOT CHECKS BANNED FOR FUNCTIONALITY BUILDING (P0, Non-Negotiable)
+
+**When building or verifying any FUNCTIONAL behavior, use MCP / DOM / CSS / Atlassian REST / Supabase probes — NEVER screenshots.**
+
+- ❌ Do NOT use screenshots to verify wiring, data flow, CRUD, routing, state, or any functional logic.
+- ✅ Use: Atlassian REST (`/rest/agile/1.0/*`, `/rest/api/3/*`), Chrome MCP DOM/`getComputedStyle` probes, Supabase MCP (`execute_sql`, `list_tables`), code archaeology.
+- ✅ Screenshots permitted ONLY for **cosmetic text changes** or **color/visual-only changes**.
+
+**Why:** Functional defects (broken handlers, undefined fields, RLS 403s, wrong FK targets) are invisible to a screenshot — they require structural probing. A screenshot proves appearance, never behavior. (Vikram, 2026-06-01)
+
+**Severity:** P0 — a "looks right" screenshot is not evidence a feature works.
+
+---
+
+## 🔁 ADOPT CANONICAL COMPONENTS — DO NOT REIMPLEMENT (P0, Non-Negotiable)
+
+**When a product-hub surface must "look exactly like" a project-hub surface, REUSE the canonical interactive components via a data adapter. NEVER build a parallel reimplementation.**
+
+### Why this rule exists (2026-06-01)
+
+The product All Work + Business Request detail view were built as **parallel reimplementations** (`BrSidebarDetails`, `BrListPanel`) using raw `@atlaskit/Select` + plain `Avatar` + a non-interactive status `<span>`. A DOM/CSS probe vs the project reference (`/project-hub/BAU/allwork`) found **18 evidence-backed parity defects** from this one decision:
+- Right-rail fields rendered as always-open react-select controls instead of click-to-edit inline (project uses `EditableAssignee` / `EditablePriority` / `EditableReporter` / `CatalystDueDateField`).
+- Status pill was a non-interactive `<span>` (could not change status) instead of the functional `StatusTransitionDropdown`; wrong colour (`rgb(239,255,214)`), double-rendered, wrong width.
+- Navigator cards lost the assignee avatar that `WorkListPanel` shows.
+- Priority lost its `PriorityIcon`; Assignee/Reporter lost their avatars; "Assign to me" link absent.
+
+A "visual clone" that re-creates markup instead of mounting the real component will ALWAYS drift — it has none of the canonical component's icons, affordances, colours, or behaviour.
+
+### The rule
+
+1. **Identify the canonical component the project surface uses** (`CatalystSidebarDetails`, `StatusTransitionDropdown`, `WorkListPanel`, `EditableAssignee/Priority/Reporter`, `CatalystDueDateField`, `JiraTable`, etc.).
+2. **Mount that exact component** on the product surface, feeding it product data through an adapter (map `business_requests` → the component's expected props). Do NOT re-create its markup with raw `@atlaskit/*` primitives.
+3. **If the canonical component is hardwired to `ph_issues`**, the correct fix is to parameterise its data source (adapter/prop), NOT to fork it. Forking = drift.
+4. **Naming parity:** product nav/labels mirror project labels by role — "Project Work" → **"Product Work"** (not "All Work"); "Project Backlog" → "Product Backlog"; etc.
+5. **Verify by DOM/CSS probe against the project reference** before declaring parity — same selectors, side-by-side, measured values. "Looks similar" is not parity.
+
+**Severity:** P0 — superficial cloning is the documented cause of repeated product-module regressions. Adopt, don't reimplement.
+
+---
+
+## 🏢 ENTERPRISE UI GUARDRAIL — NEVER IMPLEMENT CONSUMER ANIMATIONS (P0, Non-Negotiable)
+
+**Catalyst is an enterprise work-management platform.** Every UI decision must pass the enterprise benchmark.
+
+### The Rule
+
+Before implementing any animation, visual effect, or interaction pattern, ask: **"Does Jira, Salesforce, Workday, or ServiceNow do this?"** If the answer is no, **STOP and ask Vikram** — do not implement.
+
+### Permanently banned enterprise UI anti-patterns:
+- ❌ **Spinning / rotating containers** — applying `transform: rotate()` or animation to a wrapper that contains text/buttons (the content rotates with the container)
+- ❌ **Conic-gradient ANIMATIONS** on buttons, pills, or any clickable surface (the gradient itself or its container rotates/animates)
+- ❌ **Pulsing glows, neon outlines, particle effects, "AI aura" effects**
+- ❌ Any animation applied to a wrapper that contains text — text must never rotate, scale, or blur
+- ❌ Rainbow / multi-colour gradient borders on interactive controls (buttons, pills, lozenges) — **EXCEPT the AI CTA carve-out below**
+
+### Carve-out — Static rainbow border on AI CTAs ONLY (added 2026-05-31, amended same day)
+
+A **static** (non-animated, non-rotating) conic-gradient rainbow border is permitted **exclusively** on AI-branded CTAs (Ask Caty / CATY surfaces) as a permanent visual marker that the control is the AI affordance. Strict conditions:
+
+- ✅ ONLY on AI-branded CTAs — NEVER on generic buttons. Approved components: `AIIntelligenceButton` (R360 toolbar / Ideation page), `SuggestReplyTile` in `RecommendedPanel.tsx` (Ask Caty on mentions), `ReplyComposer.tsx` Ask Caty button (notifications reply composer), per-card "Ask Caty" summarize pill in `RecommendedPanel.tsx`, panel-header "Ask Caty — summarize N" digest CTA in `RecommendedPanel.tsx`, modal header pill in `SummarizeDigestModal.tsx`, "Ask Caty - Themify" CTA in `AssignedPanel.tsx` + matching modal header in `ForYouPage.atlaskit.tsx`. `AskCatalystPill` (top-nav) was DELISTED 2026-05-31 when the component was removed from the global header — AI is now strictly contextual, never global. `Caty Focus` tab was DELISTED 2026-05-31 when the tab was removed from `FOR_YOU_TAB_ORDER` and its functionality moved into the Themify modal.
+- ✅ ALWAYS visible (idle + processing) — the rainbow is the AI signifier, not a processing indicator
+- ✅ MUST be `animation: none` — pure static gradient, no rotation, no shift, no shimmer, ever
+- ✅ Processing state inside the button uses `@atlaskit/spinner` + label "Thinking…" + `aria-busy={true}` — these are independent of the rainbow border
+- ✅ MUST use 2px padding-wrapper pattern (not negative-inset position:absolute)
+- ❌ NEVER replicate this pattern on non-AI buttons (regular submit, cancel, save, delete, etc.)
+- ❌ NEVER add rotation, animation, or any motion to the gradient
+- ❌ NEVER apply to button text (only to the wrapper background)
+
+Approved reference implementation: `src/components/ui/AIIntelligenceButton.tsx`
+Approved palette: `#FF3CAC → #784BA0 → #2B86C5 → #00C9FF → #92FE9D → #FFD700`
+
+### Approved loading/processing indicators for buttons:
+- ✅ `@atlaskit/spinner` (`size="small"`, `appearance="invert"`) replacing the icon — the ADS canonical pattern
+- ✅ `disabled={true}` + `cursor: not-allowed` while awaiting a response
+- ✅ Label change ("Loading…") with `aria-busy={true}`
+- ✅ `opacity: 0.7` on the button while non-interactive
+- ✅ Subtle hover via `filter: brightness(1.08)` — NOT scale/transform on the button itself
+
+### Incident: 2026-05-31 — Spinning rainbow on "Ask Caty" button
+
+**What happened:** Claude was asked to add a rainbow ring to the Ask Caty button. Instead of flagging that this pattern is consumer/gaming UI (not enterprise), Claude implemented a `conic-gradient` rotating wrapper that caused:
+1. The ENTIRE button including its "Ask Caty" text label to rotate 360° continuously
+2. "Ask Caty" appearing **upside-down and spinning** in the global nav bar
+3. A full revert was required
+
+**What Claude should have done:** Stopped at the request and said: *"A spinning rainbow border is consumer UI. Enterprise apps use `@atlaskit/spinner` for loading state. Do you want a spinner inside the button instead?"* Then asked for confirmation before touching any code.
+
+### Clarify before implementing AI/animation features
+
+If a request involves any visual effect, motion, or AI-state indicator that isn't in the ADS component catalogue, **ask first**:
+- "Which specific button/component should this apply to?"
+- "Enterprise pattern would be X — is that what you want, or something different?"
+- "This would use [pattern] — should I proceed?"
+
+**Never assume consent for a visual pattern because it was mentioned in conversation context.**
+
+---
+
+## 🔒 WORK ITEM TYPE ICONS — LOCKED REGISTRY (P0, Non-Negotiable)
+
+**Every work item type icon in Catalyst is rendered by `JiraIssueTypeIcon` from `src/lib/jira-issue-type-icons.tsx`. The type string passed to the `type` prop MUST match the canonical registry. No guessing, no mapping from subtypes.**
+
+### Canonical icon registry (source of truth: `/admin/icons`)
+
+| Work item type | `type` prop value | Icon | Asset |
+|---|---|---|---|
+| Story | `'Story'` | Blue bookmark | `story.svg` |
+| Epic | `'Epic'` | Purple lightning | `epic.svg` |
+| Feature | `'Feature'` | Green hexagon | `feature.svg` |
+| Task | `'Task'` | Blue checkbox | `task.svg` |
+| Sub-task | `'Sub-task'` | Blue mini-checkbox | `sub-task.svg` |
+| QA Bug / Defect | `'QA Bug'` or `'Defect'` | Red circle | `qa-bug.svg` |
+| Production Incident | `'Production Incident'` | Red flame | `production-incident.svg` |
+| Change Request | `'Change Request'` | Amber arrows | `change-request.svg` |
+| **Business Request** | **`'Business Request'`** | **Amber lightbulb** | `business-request.svg` |
+| Business Gap | `'Business Gap'` | Orange gap | `business-gap.svg` |
+| Backend | `'Backend'` | Grey gear | `backend.svg` |
+| Frontend | `'Frontend'` | Blue monitor | `frontend.svg` |
+| Integration | `'Integration'` | Blue chain | `integration.svg` |
+| Idea | `'Idea'` | Yellow bulb | `idea.svg` |
+
+### Rules
+
+1. **ALL Business Requests use `type='Business Request'` (amber lightbulb).** Never pass the `request_type` subtype (feature/gap/integration/data_request) — those are field values, not work item types.
+2. **Sidebar recent items, navigator cards, table key cells, detail view headers** — every surface that shows a work item icon MUST use `JiraIssueTypeIcon` with the canonical `type` string from the table above.
+3. **When in doubt about which icon to use:** open `/admin/icons` in the browser and match the visual. The registry in `jira-issue-type-icons.tsx` is authoritative.
+4. **Never add a new type icon without updating this table** and the registry file simultaneously.
+
+### Why this rule exists (2026-06-01)
+
+`ProductHubSidebar` had a `mapBrTypeToIconType` function that mapped `request_type` values (`'feature'`→Feature icon, `'gap'`→Business Gap icon, etc.) — showing the wrong icon for every BR. A Feature-type BR showed the blue Feature checkbox instead of the amber BR lightbulb. The function was a wrong abstraction: `request_type` is a field inside a Business Request, not a work item type.
+
+**Severity:** P0 — wrong icons break type recognition across the entire product module.
+
+---
+
 ## THE FOUR RULES — UNIVERSAL BASELINE (P0, Non-Negotiable)
 
 These four rules govern HOW every other rule in this file is applied. They precede all Catalyst-specific guardrails below. If a project-specific rule and one of these four ever appear to conflict, stop and ask Vikram — do not silently choose.
@@ -460,6 +596,27 @@ Before wiring any new click handler → detail modal, grep `CatalystDetailRouter
 - `git -C /Users/vikramindla/Documents/GitHub/catalyst-prod-45 status`
 
 This applies to ALL git operations in ALL scripts and subagents, no exceptions.
+
+---
+
+## 🚫 `git add -A` / `git add .` PERMANENTLY BANNED (P0, Non-Negotiable)
+
+**Never run `git add -A`, `git add .`, or `git add --all`.** Stage ONLY the explicit file paths the current task touched: `git add path/to/fileA path/to/fileB`.
+
+### Why this rule exists (2026-06-01 — twice in one session)
+
+The working tree on `main` frequently carries **stale, uncommitted changes** from other sessions / Lovable / linters. `git add -A` stages *everything* in the tree, not just your task's files. Twice in one session this swept an unrelated stale copy of a file into a scoped commit and **silently reverted prior shipped work**:
+
+- Commit `fa5931b8d` ("fix br-view") ran `git add -A` and committed a stale `ProductHubSidebar.tsx` that had no "All Work" nav item — reverting the `Products-producthub-rebuild-01` addition. The user caught the missing menu item in the live UI. Restored in `855fedbfb`.
+
+### The rule
+
+1. **Stage explicit paths only.** `git add src/components/Foo.tsx src/index.css` — never `-A`/`.`/`--all`.
+2. **Always `git status` BEFORE every commit.** If any file you did NOT intend to touch is modified/staged, STOP. Do not commit. Investigate whether it's a stale working-tree change that would revert someone else's work.
+3. **If unexpected modified files exist in the tree**, leave them unstaged. Never assume they're yours. Surface them to Vikram if they block a clean commit.
+4. New files created by the task are staged by explicit path too — `git add src/.../NewFile.tsx`.
+
+**Severity:** P0 — `git add -A` is a silent-regression vector. A scoped commit must contain ONLY the task's files, provably, via `git status` inspection before commit.
 
 ---
 

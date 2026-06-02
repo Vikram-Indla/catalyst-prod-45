@@ -53,11 +53,11 @@ import Spinner from '@atlaskit/spinner';
 
 import Tooltip from '@atlaskit/tooltip';
 import TextArea from '@atlaskit/textarea';
-import EditIcon from '@atlaskit/icon/glyph/edit';
 import EmojiAddIcon from '@atlaskit/icon/glyph/emoji-add';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { catalystToast } from '@/lib/catalystToast';
 import ForYouRow from './ForYouRow';
+import { SummarizeDigestModal, type DigestMention } from './SummarizeDigestModal';
 import { ForYouEmptyState, GroupHeading, groupByRecency, MentionSparkleArt } from './helpers';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
 import { resolveAvatarUrl } from '@/lib/avatars';
@@ -245,6 +245,25 @@ export default function RecommendedPanel({
     [comments, dismissed]
   );
 
+  // ─── Caty's Digest — panel-level "Ask Caty" CTA (outlier feature) ──────────
+  // Council decision 2026-05-31: per-card sparkle = "this one". Panel-header
+  // digest = "all of these, triaged with inline actions". Two complementary
+  // entry points to the same AI affordance.
+  const [digestOpen, setDigestOpen] = useState<'mentions' | 'comments' | null>(null);
+  const digestRows = useMemo((): DigestMention[] => {
+    const src = digestOpen === 'mentions' ? visibleMentions
+              : digestOpen === 'comments' ? visibleComments
+              : [];
+    return src.map(m => ({
+      commentId: m.commentId,
+      mentionerName: 'mentionerName' in m ? m.mentionerName : m.authorName,
+      mentionerAvatarUrl: 'mentionerAvatarUrl' in m ? m.mentionerAvatarUrl : m.authorAvatarUrl,
+      issueKey: m.issueKey,
+      issueSummary: m.issueSummary,
+      commentBody: m.commentBody,
+    }));
+  }, [digestOpen, visibleMentions, visibleComments]);
+
   if (isLoading) {
     return <RecommendedPanelSkeleton />;
   }
@@ -304,6 +323,7 @@ export default function RecommendedPanel({
             }))}
             onOpen={resolveSelect}
             onDismiss={handleDismiss}
+            onOpenDigest={visibleMentions.length >= 2 ? () => setDigestOpen('mentions') : undefined}
           />
         )}
         {hasComments && (
@@ -336,8 +356,22 @@ export default function RecommendedPanel({
             }))}
             onOpen={resolveSelect}
             onDismiss={handleDismiss}
+            onOpenDigest={visibleComments.length >= 2 ? () => setDigestOpen('comments') : undefined}
           />
         )}
+        <SummarizeDigestModal
+          open={digestOpen !== null}
+          onClose={() => setDigestOpen(null)}
+          mentions={digestRows}
+          onReply={(commentId) => {
+            // Reply happens in the original feed card. Modal just closes and
+            // scrolls user back to the card so the existing composer takes over.
+            const el = document.querySelector(`[data-comment-id="${commentId}"]`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }}
+          onDismiss={handleDismiss}
+          onOpenTicket={(issueKey) => resolveSelect(issueKey)}
+        />
       </div>
     );
   }
@@ -394,6 +428,7 @@ function FeedSection({
   onOpen,
   onDismiss,
   currentUserName,
+  onOpenDigest,
 }: {
   label: string;
   intro: string;
@@ -401,6 +436,8 @@ function FeedSection({
   onOpen: (issueKey: string, fallback?: { issueId: string; issueType: string; projectKey: string }) => void;
   onDismiss: (commentId: string) => void;
   currentUserName?: string;
+  /** When provided, renders the rainbow "Ask Caty" digest CTA in the section header. */
+  onOpenDigest?: () => void;
 }) {
   return (
     <section
@@ -417,31 +454,68 @@ function FeedSection({
         background: token('elevation.surface', '#FFFFFF'),
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        {/* Category tile — Jira parity (DOM probe 2026-04-24):
-            32×32 filled purple tile, radius 6, with a 16×16 inline
-            speech-bubble icon (Atlassian SVG path) in near-black.
-            Catalyst previously used an outlined @atlaskit/icon/glyph/comment
-            in discovery purple, which read as a thin stroke rather than
-            Jira's solid badge. This matches Jira's home-recommended-tab
-            category-icon tile pixel-for-pixel. */}
-        <PurpleCategoryTile />
-        <h4
-          style={{
-            // CLAUDE.md 2026-05-12 — Jira section headers measure 16/20.
-            // DOM probe 2026-05-29 confirmed fontWeight 653 (not 600) on
-            // the H4 heading element. 653 is in the ADS allowed-weights list.
-            fontSize: 16,
-            lineHeight: '20px',
-            fontFamily: '"Inter", system-ui, sans-serif',
-            fontWeight: 653,
-            color: token('color.text', '#292A2E'),
-            margin: 0,
-            letterSpacing: 'normal',
-          }}
-        >
-          {label}
-        </h4>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Category tile — Jira parity (DOM probe 2026-04-24):
+              32×32 filled purple tile, radius 6, with a 16×16 inline
+              speech-bubble icon (Atlassian SVG path) in near-black. */}
+          <PurpleCategoryTile />
+          <h4
+            style={{
+              // CLAUDE.md 2026-05-12 — Jira section headers measure 16/20.
+              // DOM probe 2026-05-29 confirmed fontWeight 653 (not 600).
+              fontSize: 16,
+              lineHeight: '20px',
+              fontFamily: '"Inter", system-ui, sans-serif',
+              fontWeight: 653,
+              color: token('color.text', '#292A2E'),
+              margin: 0,
+              letterSpacing: 'normal',
+            }}
+          >
+            {label}
+          </h4>
+        </div>
+        {/* "Ask Caty" digest CTA — opens SummarizeDigestModal with interactive triage.
+            Outlier positioning vs Jira: dynamic count + inline action triage modal.
+            See CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (static rainbow border). */}
+        {onOpenDigest && (
+          <div style={{
+            display: 'inline-flex',
+            padding: 2,
+            borderRadius: 20,
+            background: ASK_CATY_RAINBOW,
+          }}>
+            <button
+              type="button"
+              onClick={onOpenDigest}
+              aria-label={`Ask Caty to summarize ${rows.length} ${rows.length === 1 ? 'item' : 'items'}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                height: 28,
+                padding: '0 12px',
+                border: 'none',
+                borderRadius: 18,
+                background: token('elevation.surface', '#FFFFFF'),
+                cursor: 'pointer',
+                color: token('color.text', '#172B4D'),
+                fontFamily: 'var(--cp-font-body, inherit)',
+                fontSize: 12,
+                fontWeight: 600,
+                lineHeight: 1,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = token('elevation.surface.hovered', '#F1F2F4'); }}
+              onMouseLeave={e => { e.currentTarget.style.background = token('elevation.surface', '#FFFFFF'); }}
+            >
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
+                <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" />
+              </svg>
+              Ask Caty — summarize {rows.length}
+            </button>
+          </div>
+        )}
       </div>
       <p
         style={{
@@ -538,68 +612,18 @@ function FeedCard({
 }) {
   const [hover, setHover] = React.useState(false);
   const [dismissFocused, setDismissFocused] = React.useState(false);
-  // G-03 — Summarize comments AI button (Jira parity: 24×24 AI icon button alongside dismiss).
-  const [summaryPhase, setSummaryPhase] = React.useState<'idle' | 'loading' | 'error'>('idle');
+  // Per-card "Ask Caty" summarize button REMOVED 2026-05-31 — duplicated the
+  // panel-header digest CTA at the wrong granularity level. Users get one
+  // canonical AI affordance per section ("Ask Caty — summarize N") that
+  // opens the interactive triage modal. The summaryPhase state and
+  // handleSummarize handler that powered the removed button are removed
+  // alongside (see git blame for the original implementation).
   // Local avatar files only — Jira/Gravatar CDN URLs are banned (CLAUDE.md §19)
   // and fail to load due to CORS. Priority: local slug match → Atlaskit initials fallback.
   const avatarSrc = resolveAvatarUrl(row.authorName) || undefined;
   const relative = formatRelativeTimestamp(row.commentCreatedAt);
   // G-04 — Absolute timestamp shown as title attribute (Jira parity: "May 17, 2026 at 3:43 PM").
   const absolute = formatAbsoluteTimestamp(row.commentCreatedAt);
-
-  const handleSummarize = async () => {
-    if (summaryPhase === 'loading') return;
-    setSummaryPhase('loading');
-    try {
-      const res = await fetchFunction('ai-improve-comment', {
-        method: 'POST',
-        // Edge function expects `current_comment` (not `commentBody`) and returns
-        // streaming NDJSON — same format as suggest_reply. Must read line-by-line;
-        // calling res.json() on a streaming response always throws.
-        body: JSON.stringify({
-          current_comment: row.commentBody,
-          issue_summary: row.issueSummary,
-        }),
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
-      const reader = res.body.getReader();
-      const dec = new TextDecoder();
-      let buf = '';
-      let fullText = '';
-      outer: while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        buf += dec.decode(value, { stream: true });
-        let nl;
-        while ((nl = buf.indexOf('\n')) !== -1) {
-          const line = buf.slice(0, nl).trim();
-          buf = buf.slice(nl + 1);
-          if (!line) continue;
-          try {
-            const ev = JSON.parse(line);
-            if (ev.type === 'text' && typeof ev.delta === 'string') {
-              fullText += ev.delta;
-            } else if (ev.type === 'done') {
-              if (ev.full_text) fullText = ev.full_text;
-              break outer;
-            } else if (ev.type === 'error') {
-              throw new Error(ev.message ?? 'AI error');
-            }
-          } catch (parseErr) {
-            if (parseErr instanceof SyntaxError) continue; // malformed chunk — skip
-            throw parseErr;
-          }
-        }
-      }
-      setSummaryPhase('idle');
-      toast.message('Comment summary', { description: fullText || row.commentBody, duration: 12_000 });
-    } catch {
-      setSummaryPhase('error');
-      toast.error('Failed to summarize');
-      setTimeout(() => setSummaryPhase('idle'), 3_000);
-    }
-  };
 
   return (
     <div
@@ -625,46 +649,10 @@ function FeedCard({
         </span>
       </Tooltip>
 
-      {/* Summarize comments — G-03 (Jira parity: 24×24 AI icon button alongside dismiss).
-          DOM probe 2026-05-29: always visible at top-right, offset left of the dismiss button.
-          Calls ai-improve-comment with mode:'summarize' and shows result in a toast. */}
-      <Tooltip content="Summarize comments">
-        <button
-          type="button"
-          aria-label="Summarize comments"
-          onClick={e => { e.stopPropagation(); handleSummarize(); }}
-          style={{
-            position: 'absolute',
-            top: 8,
-            right: 32,
-            width: 24,
-            height: 24,
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: 'none',
-            background: 'transparent',
-            borderRadius: 3,
-            cursor: summaryPhase === 'loading' ? 'wait' : 'pointer',
-            color: summaryPhase === 'error'
-              ? token('color.text.danger', '#AE2E24')
-              : token('color.text.subtle', '#626F86'),
-            opacity: 1,
-            padding: 0,
-            outline: 'none',
-          }}
-        >
-          {summaryPhase === 'loading'
-            ? <Spinner size="xsmall" />
-            : (
-              // 4-point sparkle — generic AI summarize icon (not Caty branding)
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
-                <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" />
-              </svg>
-            )
-          }
-        </button>
-      </Tooltip>
+      {/* Per-card Ask Caty summarize pill REMOVED 2026-05-31.
+          The panel-header "Ask Caty — summarize N" digest CTA covers the
+          summarize affordance at the right granularity (whole-feed, not
+          per-row noise). Dismiss (X) is now the only top-right action. */}
 
       {/* Dismiss (X) — G-01 Jira parity: always visible (opacity:1), top-right of every feed row.
           DOM probe 2026-05-29: Jira renders dismiss at opacity:1 at all times — no hover gate.
@@ -716,11 +704,12 @@ function FeedCard({
           onClick={onOpen}
           style={{
             all: 'unset',
+            display: 'block',
+            width: '100%',
             cursor: 'pointer',
             font: `400 14px/20px "Inter", system-ui, sans-serif`,
             color: token('color.text', '#292A2E'),
             textAlign: 'start',
-            wordBreak: 'break-word',
           }}
         >
           {row.headline}
@@ -768,48 +757,51 @@ function FeedCard({
           </button>
         )}
 
-        {/* Comment body — full text with @-chips rendered inline.
-            Bumped from 13/18 to 14/20 to match Jira's For You card body
-            and to read at the same density as the headline above it. */}
+        {/* Comment body — left accent bar separates "what was said" from card chrome.
+            borderLeft uses color.link token (same blue as @mention chips). */}
         <div
           style={{
-            font: `400 14px/20px "Inter", system-ui, sans-serif`,
-            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
-            marginBlockStart: 2,
+            borderLeft: `3px solid ${token('color.link', '#0052CC')}`,
+            paddingLeft: 8,
+            marginBlockStart: 4,
           }}
         >
-          {renderCommentWithMentions(row.commentBody)}
+          <div
+            style={{
+              font: `400 14px/20px "Inter", system-ui, sans-serif`,
+              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+            }}
+          >
+            {renderCommentWithMentions(row.commentBody)}
+          </div>
         </div>
 
-        {/* Emoji reactions — Jira parity (DOM probe: data-testid="render-reactions").
-            Each chip is 37×24 with a 0.556px border and radius 4. Persisted
-            against `ph_comment_reactions.comment_id` → `ph_comments.id` UUID.
-            When phCommentId is null (no ph_comments row yet), ReactionStrip
-            creates the row on first click via on-demand upsert so the chips
-            are always interactive. */}
-        <ReactionStrip
-          phCommentId={row.phCommentId}
-          jiraCommentId={row.commentId}
-          issueId={row.issueId}
-          commentBody={row.commentBody}
-        />
-
-        {/* Reply composer — Jira parity:
-             Row 1: 32px viewer avatar + a bordered textarea wrapper with
-             "Leave a reply" placeholder. Submits via useWorkItemComments.
-             Row 2: subtle "Suggest a reply" pencil button (separate button
-             below the bordered wrapper, outside the border, per Jira DOM).
-        */}
-        <ReplyComposer
-          issueId={row.issueId}
-          currentUserName={currentUserName}
-          commentBody={row.commentBody}
-          issueSummary={row.issueSummary}
-          issueType={row.issueType}
-          commenterName={row.authorName}
-        />
+        {/* Footer zone — border-top groups reactions + composer into one visual block. */}
+        <div style={{
+          borderTop: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+          paddingTop: 8,
+          marginBlockStart: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+        }}>
+          <ReactionStrip
+            phCommentId={row.phCommentId}
+            jiraCommentId={row.commentId}
+            issueId={row.issueId}
+            commentBody={row.commentBody}
+          />
+          <ReplyComposer
+            issueId={row.issueId}
+            currentUserName={currentUserName}
+            commentBody={row.commentBody}
+            issueSummary={row.issueSummary}
+            issueType={row.issueType}
+            commenterName={row.authorName}
+          />
+        </div>
       </div>
     </div>
   );
@@ -1300,21 +1292,35 @@ function ReplyComposer({
       {/* ── "Suggest a reply" tile — HIDDEN in loading/done states ──────────
           Jira parity: tile disappears once the AI flow is active.
           Only shown in idle (and error) states.
-          Button: 2px 12px padding, gap 6px per Jira DOM probe 2026-05-28. */}
+          2026-05-31: pass phase down so the tile can render an INLINE error
+          message when Gemini is rate-limited (was: silent toast that users
+          missed → "nothing happens" UX bug). */}
       {(suggestionPhase === 'idle' || suggestionPhase === 'error') && (
-        <SuggestReplyTile onSuggest={handleSuggestReply} />
+        <SuggestReplyTile phase={suggestionPhase} onSuggest={handleSuggestReply} />
       )}
     </div>
   );
 }
 
-// Suggest-a-reply hover tile — Jira parity measurements (DOM probe 2026-05-28):
+// Ask Caty hover tile — Jira parity measurements (DOM probe 2026-05-28):
 //   Button padding snapped to grid: 4px 12px (Jira raw was off-grid, nearest = 4px)
 //   Button gap: 8px (nearest on-grid to Jira's 6px raw)
-//   Button color: rgb(80,82,88) = color.text.subtle
 //   Tile padding: 8px (on-grid, nearest to Jira's raw 6px)
 //   On hover tile bg: color.background.neutral.subtle.hovered
-function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
+//   2026-05-31: Renamed from "Suggest a reply" → "Ask Caty" and wrapped in
+//   the static rainbow border (CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out).
+const ASK_CATY_RAINBOW = `conic-gradient(
+  from 0deg,
+  #FF3CAC 0deg,
+  #784BA0 60deg,
+  #2B86C5 120deg,
+  #00C9FF 180deg,
+  #92FE9D 240deg,
+  #FFD700 300deg,
+  #FF3CAC 360deg
+)`;
+
+function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error'; onSuggest: () => void }) {
   const [hover, setHover] = useState(false);
   return (
     <div
@@ -1322,6 +1328,9 @@ function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
         marginBlockStart: 8,
         marginInlineStart: 34, /* 32 avatar + 2 nudge */
         display: 'inline-flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: 6,
         padding: 8,
         borderRadius: 3,
         background: hover
@@ -1333,27 +1342,63 @@ function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <button
-        type="button"
-        onClick={onSuggest}
-        aria-label="Suggest a reply using AI"
+      {phase === 'error' && (
+        // Inline error state — visible explanation when Gemini is rate-limited
+        // or otherwise unavailable. Replaces reliance on the transient toast.
+        // Click the button below to retry.
+        <div
+          role="status"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            font: `500 12px/16px "Inter", system-ui, sans-serif`,
+            color: token('color.text.warning-inverse', '#7F5F01'),
+            background: token('color.background.warning', '#FFF7D6'),
+            border: `1px solid ${token('color.border.warning', '#B38600')}`,
+            borderRadius: 4,
+            padding: '4px 8px',
+          }}
+        >
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM7.25 4.75a.75.75 0 0 1 1.5 0v3.5a.75.75 0 0 1-1.5 0v-3.5zM8 11.5a.9.9 0 1 1 0-1.8.9.9 0 0 1 0 1.8z" />
+          </svg>
+          Caty is busy — please wait a moment and click again.
+        </div>
+      )}
+      {/* Static rainbow border wrapper — AI affordance signifier.
+          See CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (2026-05-31). */}
+      <div
         style={{
-          all: 'unset',
-          cursor: 'pointer',
           display: 'inline-flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '4px 12px',
-          borderRadius: 3,
-          font: `500 14px/20px "Inter", system-ui, sans-serif`,
-          color: token('color.text.subtle', '#505258'),
-          background: 'transparent',
-          border: `1px solid ${token('color.border', '#DFE1E6')}`,
+          padding: 2,
+          borderRadius: 5,
+          background: ASK_CATY_RAINBOW,
         }}
       >
-        <EditIcon label="" size="small" primaryColor="currentColor" />
-        Suggest a reply
-      </button>
+        <button
+          type="button"
+          onClick={onSuggest}
+          aria-label="Ask Caty to draft a reply"
+          style={{
+            all: 'unset',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            padding: '4px 8px',
+            borderRadius: 3,
+            font: `500 12px/16px "Inter", system-ui, sans-serif`,
+            color: token('color.text', '#172B4D'),
+            background: token('elevation.surface', '#FFFFFF'),
+          }}
+        >
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M11.013 1.427a1.75 1.75 0 0 1 2.474 0l1.086 1.086a1.75 1.75 0 0 1 0 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 0 1-.927-.928l.929-3.25a1.75 1.75 0 0 1 .445-.758zm.354 1.06a.75.75 0 0 0-.671.207L2.95 10.44l-.612 2.143 2.143-.612 7.745-7.745a.75.75 0 0 0-.121-1.062z"/>
+          </svg>
+          Ask Caty - Suggest?
+        </button>
+      </div>
     </div>
   );
 }
@@ -2005,11 +2050,11 @@ function HeadlineIssueTitle({
     //   hairline border (color.border token), borderRadius 4, white surface bg.
     // The bordered pill is the "grey border on the ticket" the user sees in Jira.
     <span style={{
-      display: 'inline-flex',
+      display: 'flex',
       alignItems: 'center',
       gap: 6,
-      verticalAlign: 'middle',
-      flexWrap: 'wrap',
+      overflow: 'hidden',
+      marginBlockStart: 2,
       border: `1px solid ${token('color.border', 'rgba(11, 18, 14, 0.14)')}`,
       borderRadius: 4,
       backgroundColor: token('elevation.surface', '#FFFFFF'),
@@ -2018,11 +2063,22 @@ function HeadlineIssueTitle({
       <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
         <WorkItemIcon type={normalizeIconType(issueType)} size={16} />
       </span>
-      {/* Jira parity: entity title renders as a blue link with KEY prefix.
-          DOM probe 2026-05-28: Jira shows "KEY: TITLE" in link color. */}
-      <span style={{ fontWeight: 400, color: token('color.link', '#0052CC') }}>
-        {issueKey ? `${issueKey}: ` : ''}{issueSummary}
+      {/* KEY is bold and always visible; title truncates so the status pill stays in view. */}
+      <span style={{ fontWeight: 600, color: token('color.link', '#0052CC'), whiteSpace: 'nowrap', flexShrink: 0 }}>
+        {issueKey}
       </span>
+      {issueSummary && (
+        <span style={{
+          fontWeight: 400,
+          color: token('color.link', '#0052CC'),
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          minWidth: 0,
+        }}>
+          {issueSummary}
+        </span>
+      )}
       {/* Jira parity: status chip after entity title.
           Uses StatusPill (same component as JiraTable backlog) for exact
           Jira-probed colors: done → #B3DF72, inprogress → #8FB8F6,
@@ -2138,7 +2194,7 @@ function renderCommentWithMentions(body: string): React.ReactNode {
         <React.Fragment key={`l${lineIdx}`}>
           {lineIdx > 0 ? '\n' : null}
           {preText ? renderInlineAtMentions(preText) : null}
-          <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)') }}>{`${ccLiteral}: `}</span>
+          <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', marginInlineEnd: 4 }}>CC</span>
           {nameTokens.map((tok, j) => {
             const normalized = tok.startsWith('@') ? tok : `@${tok}`;
             return (
@@ -2174,10 +2230,11 @@ function renderCommentWithMentions(body: string): React.ReactNode {
       {bodyLines.length > 0 ? '\n' : null}
       <span style={{
         color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
-        fontSize: 12,
-        fontWeight: 500,
-        marginInlineEnd: 2,
-      }}>cc: </span>
+        fontSize: 11,
+        fontWeight: 700,
+        letterSpacing: '0.05em',
+        marginInlineEnd: 4,
+      }}>CC</span>
       {mentionLabels.map((chip, i) => (
         <React.Fragment key={`tc-${i}`}>
           {i > 0 ? '  ' : null}
@@ -2206,18 +2263,16 @@ function renderInlineAtMentions(text: string): React.ReactNode[] {
 }
 
 function MentionChip({ label }: { label: string }) {
-  // Jira parity — Atlaskit Lozenge-style @-mention chip.
-  // Compact horizontal padding, 20px line-height to match parent comment body.
-  // bg: color.background.neutral. Display-only (no hover-card yet).
   return (
     <span
       style={{
         display: 'inline-block',
         padding: '0 4px',
         borderRadius: 20,
-        background: token('color.background.neutral', 'rgba(5, 21, 36, 0.06)'),
-        color: token('color.text.subtle', '#505258'),
-        font: `400 14px/20px "Inter", system-ui, sans-serif`,
+        background: 'var(--ds-background-information, #DEEBFF)',
+        border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+        color: token('color.link', '#0052CC'),
+        font: `500 13px/20px "Inter", system-ui, sans-serif`,
         whiteSpace: 'nowrap',
       }}
     >

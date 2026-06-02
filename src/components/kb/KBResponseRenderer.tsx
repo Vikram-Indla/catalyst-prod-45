@@ -22,29 +22,29 @@ const F = {
 /* ── V12 Status Lozenge Detection ── */
 const STATUS_PATTERNS: Record<string, { bg: string; color: string }> = {
   'done': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'to do': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
-  'todo': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'to do': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
+  'todo': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
   'available': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'open': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
-  'ready': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'open': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
+  'ready': { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'fixed': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'in progress': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  're-open': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'reopen': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  're-opened': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'blocked': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
-  'under review': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'in review': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'analysis': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'deferred': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
-  'closed': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'in progress': { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  're-open': { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'reopen': { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  're-opened': { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'blocked': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
+  'under review': { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'in review': { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'analysis': { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'deferred': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
+  'closed': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
   'resolved': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'at capacity': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
-  'critical': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
-  'high': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
-  'medium': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
-  'low': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
-  'backlog': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'at capacity': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
+  'critical': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
+  'high': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
+  'medium': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
+  'low': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
+  'backlog': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
 };
 
 function isStatusText(text: string): { bg: string; color: string } | null {
@@ -101,7 +101,7 @@ function renderInline(text: string): React.ReactNode[] {
       parts.push(
         <code key={key++} style={{
           fontFamily: F.mono,
-          color: 'var(--cp-blue)', background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE',
+          color: 'var(--cp-blue)', background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-border, #DBEAFE)',
           borderRadius: 4, padding: '1px 6px', fontSize: 12, fontWeight: 600,
         }}>{match[1]}</code>
       );
@@ -316,14 +316,14 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
               <tbody>
                 {tableRows.map((row, ri) => (
                   <tr key={ri} style={{
-                    borderBottom: '1px solid #F4F4F5',
-                    background: ri % 2 === 0 ? '#FAFAFA' : 'var(--bg-app)',
+                    borderBottom: '1px solid var(--ds-border, #F4F4F5)',
+                    background: ri % 2 === 0 ? 'var(--ds-surface-sunken, #FAFAFA)' : 'var(--bg-app)',
                   }}>
                     {row.map((cell, ci) => (
                       <td key={ci} style={{
                         padding: '6px 10px', verticalAlign: 'top',
                         whiteSpace: ci === 0 ? 'nowrap' : 'normal',
-                        color: ci === 0 ? 'var(--cp-blue)' : '#374151',
+                        color: ci === 0 ? 'var(--cp-blue)' : 'var(--ds-text, #374151)',
                         fontFamily: ci === 0 ? F.mono : 'inherit',
                         fontWeight: ci === 0 ? 600 : 400,
                         fontSize: ci === 0 ? 11.5 : 12.5,
@@ -379,7 +379,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
       elements.push(
         <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 4, fontSize: 13.5, lineHeight: 1.7 }}>
           <span style={{ width: 4, height: 4, borderRadius: '50%', background: lastHeaderDanger ? 'var(--sem-danger)' : 'var(--cp-blue)', flexShrink: 0, marginTop: 9 }} />
-          <span style={{ color: '#374151' }}>{renderInline(content)}</span>
+          <span style={{ color: 'var(--ds-text, #374151)' }}>{renderInline(content)}</span>
         </div>
       );
       i++; idx++; continue;
@@ -388,7 +388,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
     elements.push(
       <p key={idx} style={{
         fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 14.5, lineHeight: 1.8,
-        color: '#1F2937', margin: '6px 0', letterSpacing: '0.01em',
+        color: 'var(--ds-text, #1F2937)', margin: '6px 0', letterSpacing: '0.01em',
       }}>{renderInline(trimmed)}</p>
     );
     i++; idx++;
@@ -399,11 +399,11 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
     response.confidence >= 0.8 ? 'high' : response.confidence >= 0.5 ? 'medium' : 'low'
   );
   const confConfig = {
-    high: { color: '#0D7331', label: 'High confidence' },
+    high: { color: 'var(--ds-text-success, #0D7331)', label: 'High confidence' },
     medium: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Medium confidence' },
     low: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Low confidence — verify with sources' },
     insufficient: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Insufficient data' },
-  }[confidence] || { color: '#71717A', label: '' };
+  }[confidence] || { color: 'var(--ds-text-subtlest, #71717A)', label: '' };
 
   // Parse "Showing X of Y" from the response text for scope bar
   const showingMatch = (response.answer || '').match(/Showing\s+(\d+)\s+of\s+(\d+)/i);
@@ -425,7 +425,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
     <div dir={dir}>
       {/* Title */}
       {response.title && (
-        <h3 style={{ fontSize: 15, fontWeight: 700, color: '#09090B', margin: '0 0 6px', fontFamily: "system-ui, sans-serif" }}>
+        <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--ds-text, #09090B)', margin: '0 0 6px', fontFamily: "system-ui, sans-serif" }}>
           {response.title}
         </h3>
       )}
@@ -470,10 +470,10 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all 200ms',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#F0FDF4'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-success, #F0FDF4)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
           >
-            <ThumbsUp size={14} color="#A1A1AA" />
+            <ThumbsUp size={14} color="var(--ds-text-subtlest, #A1A1AA)" />
           </button>
           <button
             onClick={() => handleFeedbackClick(false)}
@@ -485,12 +485,12 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
             onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-danger, #FEF2F2)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
           >
-            <ThumbsDown size={14} color="#A1A1AA" />
+            <ThumbsDown size={14} color="var(--ds-text-subtlest, #A1A1AA)" />
           </button>
         </div>
       )}
       {(feedbackGiven || feedbackState !== 'none') && (
-        <div style={{ fontSize: 10, color: '#71717A', marginTop: 8, transition: 'opacity 200ms' }}>
+        <div style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #71717A)', marginTop: 8, transition: 'opacity 200ms' }}>
           {showThanks ? (
             <span style={{ animation: 'kb-feedback-bounce 200ms ease' }}>Thanks for the feedback</span>
           ) : '✓ Feedback recorded'}
@@ -499,7 +499,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
 
       {/* Meta (hover-visible) */}
       <div className="kb-response-meta" style={{
-        marginTop: 8, fontSize: 10, color: '#D4D4D8', opacity: 0, transition: 'opacity 200ms',
+        marginTop: 8, fontSize: 10, color: 'var(--ds-text-subtlest, #D4D4D8)', opacity: 0, transition: 'opacity 200ms',
       }}>
         ⚡ {response._meta.response_time_ms}ms · {response._meta.source}
         {response._meta.similarity != null && ` · ${(response._meta.similarity * 100).toFixed(0)}% match`}

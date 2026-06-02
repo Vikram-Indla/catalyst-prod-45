@@ -5822,6 +5822,14 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
    components/workflow/WorkItemStatusLozenge so any rendered lozenge in
    Catalyst matches Jira typography.
    ────────────────────────────────────────────────────────────────────── */
+/* Jira parity: @atlaskit/dynamic-table applies uppercase to th by default.
+   Catalyst uses sentence-case headers per CLAUDE.md 2026-05-19. */
+[data-testid="the-table--head"] th,
+table th[class*="css-"] {
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
 [data-cp-lozenge-jira-parity] > span,
 [data-cp-lozenge-jira-parity] > span > span,
 [data-cp-lozenge-jira-parity] span[class^="css-"] {
@@ -5971,6 +5979,34 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
   border-color: transparent !important;
 }
 
+/* ─── Center-column "Details" section (BrCenterDetails) ─────────────────────
+   Mirrors the .cv-drawer-sidebar borderless-select rules so the BR center
+   Details fields (Type/Category/Theme/Stakeholders) render as plain text in
+   idle state — no grey box, no border — exactly like the right rail.
+   Scoped to [data-cv-section="br-center-details"] so it never bleeds into
+   other center-column selects. */
+[data-cv-section="br-center-details"] [class$="__dropdown-indicator"],
+[data-cv-section="br-center-details"] [class*="-select__dropdown-indicator"] {
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+[data-cv-section="br-center-details"] [class$="__control"]:hover [class$="__dropdown-indicator"],
+[data-cv-section="br-center-details"] [class*="-select__control"]:hover [class*="-select__dropdown-indicator"],
+[data-cv-section="br-center-details"] [class$="__control--is-focused"] [class$="__dropdown-indicator"],
+[data-cv-section="br-center-details"] [class*="-select__control--is-focused"] [class*="-select__dropdown-indicator"] {
+  opacity: 1;
+}
+[data-cv-section="br-center-details"] [class$="__control"],
+[data-cv-section="br-center-details"] [class*="-select__control"] {
+  min-height: 32px;
+  border-width: 1px !important;
+  box-shadow: none !important;
+}
+[data-cv-section="br-center-details"] [class$="__control"]:hover,
+[data-cv-section="br-center-details"] [class*="-select__control"]:hover {
+  background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7)) !important;
+}
+
 /* @atlaskit/datetime-picker v17 uses compiled CSS with obfuscated class names.
    Target via the cv-date-field wrapper class added to EpicDueDateField. */
 .cv-drawer-sidebar .cv-date-field input,
@@ -5984,17 +6020,38 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
   box-shadow: none !important;
   background: transparent !important;
 }
-.cv-drawer-sidebar .cv-date-field:hover > div,
+/* @atlaskit/datetime-picker v17 paints its border on a DEEP compiled-class
+   node (e.g. ._12ji1r31), not the > div. Flatten EVERY descendant so the
+   field reads as plain text in idle — matches Story's Due date (no box). */
+.cv-drawer-sidebar .cv-date-field div,
+.cv-drawer-sidebar .cv-date-field [class*="_"] {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+/* Hide the calendar glyph in idle; reveal on hover/focus (Jira inline-edit). */
+.cv-drawer-sidebar .cv-date-field button,
+.cv-drawer-sidebar .cv-date-field [role="presentation"] svg {
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+.cv-drawer-sidebar .cv-date-field:hover button,
+.cv-drawer-sidebar .cv-date-field:hover [role="presentation"] svg,
+.cv-drawer-sidebar .cv-date-field:focus-within button,
+.cv-drawer-sidebar .cv-date-field:focus-within [role="presentation"] svg {
+  opacity: 1;
+}
+.cv-drawer-sidebar .cv-date-field:hover div,
 .cv-drawer-sidebar .cv-date-field:hover input {
-  background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7)) !important;
+  background-color: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7)) !important;
 }
 
-/* ─── Fix Versions pill styling (right rail) ────────────────────────────────
-   Jira renders fix versions as bordered secondary pills with 1px border,
+/* ─── Sprint/Release pill styling (right rail) ────────────────────────────────
+   Jira renders sprint/releases as bordered secondary pills with 1px border,
    subtle background, and text padding. Applied to @atlaskit/select MultiValue
    components in the CatalystSidebarDetails right rail.
    ────────────────────────────────────────────────────────────────────────── */
-.cv-fixversions-select__multi-value {
+.cv-sprintreleases-select__multi-value {
   border: 1px solid var(--cp-jira-fixver-border, #dfe1e6);
   border-radius: 3px;
   background-color: var(--cp-jira-fixver-bg, #f1f2f4);
@@ -6002,19 +6059,19 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
   margin: 2px;
 }
 
-.cv-fixversions-select__multi-value__label {
+.cv-sprintreleases-select__multi-value__label {
   color: var(--cp-jira-fixver-fg, #172b4d);
   padding: 2px 4px;
   font-size: 13px;
   font-weight: 400;
 }
 
-.cv-fixversions-select__multi-value__remove {
+.cv-sprintreleases-select__multi-value__remove {
   color: var(--cp-jira-fixver-fg, #172b4d);
   padding: 0 2px;
 }
 
-.cv-fixversions-select__multi-value__remove:hover {
+.cv-sprintreleases-select__multi-value__remove:hover {
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 2px;
 }
@@ -6046,3 +6103,4 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
 }
 .catalyst-ai-dot:nth-child(2) { animation-delay: 0.2s; }
 .catalyst-ai-dot:nth-child(3) { animation-delay: 0.4s; }
+

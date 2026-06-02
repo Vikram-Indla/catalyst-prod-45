@@ -81,8 +81,8 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
     <div className="space-y-6">
       <Card className="border-brand-primary">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="text-2xl">🚀</span>
+          <CardTitle className="flex items-center ">
+            <span className="">🚀</span>
             Jira Integration Setup Guide
           </CardTitle>
           <CardDescription>
@@ -105,16 +105,16 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
                 )}
               </div>
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-3 ">
                   <Lozenge appearance="default">
                     Step {step.id}
                   </Lozenge>
-                  <h3 className="font-semibold">{step.title}</h3>
+                  <h3 className="">{step.title}</h3>
                 </div>
-                <p className="text-sm text-muted-foreground mb-3">{step.description}</p>
+                <p className=" text-muted-foreground mb-3">{step.description}</p>
                 <ul className="space-y-1">
                   {step.details.map((detail, idx) => (
-                    <li key={idx} className="text-xs text-muted-foreground flex items-center gap-2">
+                    <li key={idx} className=" text-muted-foreground flex items-center ">
                       <span className="w-1 h-1 rounded-full bg-brand-primary" />
                       {detail}
                     </li>
@@ -132,63 +132,63 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
           <CardDescription>What this integration provides</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 ">
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center ">
                 <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
                 <span className="font-medium">Bidirectional Sync</span>
               </div>
-              <p className="text-sm text-muted-foreground ml-7">
+              <p className=" text-muted-foreground ml-7">
                 Changes flow both ways between Catalyst and Jira automatically
               </p>
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center ">
                 <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
                 <span className="font-medium">Field Mapping</span>
               </div>
-              <p className="text-sm text-muted-foreground ml-7">
+              <p className=" text-muted-foreground ml-7">
                 Flexible mapping between Catalyst and Jira fields
               </p>
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center ">
                 <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
                 <span className="font-medium">Conflict Resolution</span>
               </div>
-              <p className="text-sm text-muted-foreground ml-7">
+              <p className=" text-muted-foreground ml-7">
                 Smart handling of conflicting changes with manual override
               </p>
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center ">
                 <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
                 <span className="font-medium">Real-time Updates</span>
               </div>
-              <p className="text-sm text-muted-foreground ml-7">
+              <p className=" text-muted-foreground ml-7">
                 Webhook support for instant synchronization
               </p>
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center ">
                 <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
                 <span className="font-medium">Historical Migration</span>
               </div>
-              <p className="text-sm text-muted-foreground ml-7">
+              <p className=" text-muted-foreground ml-7">
                 Bulk import existing work items from Jira
               </p>
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center ">
                 <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
                 <span className="font-medium">Sync Health Metrics</span>
               </div>
-              <p className="text-sm text-muted-foreground ml-7">
+              <p className=" text-muted-foreground ml-7">
                 Monitor sync status, success rate, and errors
               </p>
             </div>
@@ -200,7 +200,7 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
         <CardHeader>
           <CardTitle className="text-amber-900 dark:text-amber-100">Important Notes</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm">
+        <CardContent className="space-y-2 ">
           <p className="text-amber-800 dark:text-amber-200">
             <strong>API Tokens:</strong> For Jira Cloud, create an API token at{" "}
             <a

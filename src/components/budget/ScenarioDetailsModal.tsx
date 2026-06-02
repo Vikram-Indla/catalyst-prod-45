@@ -63,9 +63,9 @@ const formatDateDisplay = (dateStr: string) => {
 
 const CATEGORY_COLORS = {
   insourced: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  cosourced: '#0d9488',
+  cosourced: 'var(--ds-text-success, #0d9488)',
   outsourced: 'var(--ds-text-warning, #d97706)',
-  licenses: '#7c3aed',
+  licenses: 'var(--ds-text-discovery, #7c3aed)',
 } as const;
 
 export function ScenarioDetailsModal({

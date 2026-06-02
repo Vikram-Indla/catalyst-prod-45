@@ -1,6 +1,6 @@
 /**
  * AdvancedFilterPanel — Board-level advanced filter triggered from ••• menu.
- * Filters: Fix Version, Issue Type, Status, Created Date, Assignee
+ * Filters: Sprint/Release, Issue Type, Status, Created Date, Assignee
  * Wires into the real Kanban board dataset via callback.
  */
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
@@ -19,7 +19,7 @@ import { SPACING_TOKENS } from '@/components/kanban/kanban-tokens';
 /* ═══ Types ═══ */
 
 export interface AdvancedFilters {
-  fixVersions: string[];
+  sprintReleases: string[];
   issueTypes: string[];
   statuses: string[];
   assignees: string[];
@@ -28,7 +28,7 @@ export interface AdvancedFilters {
 }
 
 export const EMPTY_ADVANCED_FILTERS: AdvancedFilters = {
-  fixVersions: [],
+  sprintReleases: [],
   issueTypes: [],
   statuses: [],
   assignees: [],
@@ -38,7 +38,7 @@ export const EMPTY_ADVANCED_FILTERS: AdvancedFilters = {
 
 export function hasActiveAdvancedFilters(f: AdvancedFilters): boolean {
   return (
-    f.fixVersions.length > 0 ||
+    f.sprintReleases.length > 0 ||
     f.issueTypes.length > 0 ||
     f.statuses.length > 0 ||
     f.assignees.length > 0 ||
@@ -49,7 +49,7 @@ export function hasActiveAdvancedFilters(f: AdvancedFilters): boolean {
 
 export function countAdvancedFilters(f: AdvancedFilters): number {
   return [
-    f.fixVersions.length > 0,
+    f.sprintReleases.length > 0,
     f.issueTypes.length > 0,
     f.statuses.length > 0,
     f.assignees.length > 0,
@@ -89,19 +89,19 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
 
   /* ── Data loaders ── */
 
-  const { data: fixVersionOptions = [] } = useQuery({
-    queryKey: ['adv-filter-fix-versions', projectKey],
+  const { data: sprintReleaseOptions = [] } = useQuery({
+    queryKey: ['adv-filter-sprint-releases', projectKey],
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_issues')
-        .select('fix_versions')
+        .select('sprint_release')
         .eq('project_key', projectKey.toUpperCase())
         .is('deleted_at', null)
         .is('archived_at', null)
-        .not('fix_versions', 'is', null);
+        .not('sprint_release', 'is', null);
       const names = new Set<string>();
       (data ?? []).forEach((r: any) => {
-        const fv = r.fix_versions;
+        const fv = r.sprint_release;
         if (Array.isArray(fv)) {
           fv.forEach((v: any) => {
             const name = typeof v === 'string' ? v : v?.name;
@@ -230,10 +230,10 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
       {/* Filter sections */}
       <div style={{ padding: '8px 0' }}>
         <MultiSelectFilterSection
-          label="Fix Version"
-          options={fixVersionOptions}
-          selected={filters.fixVersions}
-          onChange={v => update({ fixVersions: v })}
+          label="Sprint/Release"
+          options={sprintReleaseOptions}
+          selected={filters.sprintReleases}
+          onChange={v => update({ sprintReleases: v })}
           tk={tk}
           placeholder="Search versions..."
         />

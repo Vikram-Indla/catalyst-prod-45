@@ -19,6 +19,7 @@ import BoardIcon from '@atlaskit/icon/core/board';
 import Spinner from '@atlaskit/spinner';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { AdminGuard } from '@/components/admin/AdminGuard';
+import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 
 const ISSUE_TYPES = [
   { key: 'Story', label: 'Story' },
@@ -26,6 +27,7 @@ const ISSUE_TYPES = [
   { key: 'Feature', label: 'Feature' },
   { key: 'Sub-task', label: 'Sub-task' },
   { key: 'QA Bug', label: 'QA Bug' },
+  { key: 'Business Request', label: 'Business Request' },
 ];
 
 type ViewMode = 'editor' | 'diagram';
@@ -66,14 +68,13 @@ export default function WorkflowAdminPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Ask CATY button */}
-          <Button
-            appearance={catyOpen ? 'primary' : 'default'}
-            isSelected={catyOpen}
+          {/* Ask Caty — canonical rainbow-ring AI affordance */}
+          <AIIntelligenceButton
+            label="Ask Caty"
+            isActive={catyOpen}
             onClick={() => setCatyOpen(o => !o)}
-          >
-            ✦ Ask CATY
-          </Button>
+            tooltip="Ask Caty about workflows"
+          />
 
           {/* View toggle */}
           <div className="flex items-center gap-1 bg-[var(--ds-surface-sunken,#F8FAFC)] border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-md p-0.5">

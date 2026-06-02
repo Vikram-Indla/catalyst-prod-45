@@ -71,27 +71,12 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
             : TEMPLATE_CATEGORIES.find(c => c.id === cat)?.label ?? cat;
           const isActive = cat === activeCategory;
           return (
-            <button
+            <Button
               key={cat}
-              type="button"
-              aria-pressed={isActive}
+              appearance="subtle"
+              spacing="compact"
+              isSelected={isActive}
               onClick={() => setActiveCategory(cat as Cat)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 4,
-                height: 28,
-                padding: '0 8px',
-                borderRadius: 4,
-                border: `1px solid ${isActive ? token('color.border.selected') : token('color.border')}`,
-                background: isActive ? `var(--ds-background-selected, #E9F2FE)` : `var(--ds-surface, #FFFFFF)`,
-                color: isActive ? token('color.text.selected') : token('color.text.subtle'),
-                fontSize: 12,
-                fontWeight: isActive ? token('font.weight.semibold') : token('font.weight.regular'),
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                transition: 'background 80ms, border-color 80ms',
-              }}
             >
               {cat !== 'all' && (
                 <span style={{ color: CATEGORY_COLOR[cat as FilterTemplate['category']] }}>
@@ -104,7 +89,7 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
                 </span>
               )}
               {label}
-            </button>
+            </Button>
           );
         })}
       </div>
@@ -178,7 +163,7 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
               {/* JQL preview — monospace, sunken */}
               <div style={{
                 fontSize: 11,
-                fontFamily: 'monospace',
+                fontFamily: 'var(--ds-font-family-monospace, monospace)',
                 color: token('color.text.subtlest'),
                 background: `var(--ds-surface-sunken, #F7F8F9)`,
                 borderRadius: 3,

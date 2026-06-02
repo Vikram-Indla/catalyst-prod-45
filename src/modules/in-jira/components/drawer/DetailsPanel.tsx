@@ -227,11 +227,11 @@ export function DetailsPanel({ issue, users, onFieldChange }: DetailsPanelProps)
           </FieldRow>
         )}
 
-        {/* Fix Version */}
-        <FieldRow label="Fix Version" icon={<Package className="h-4 w-4" />}>
+        {/* Sprint/Release */}
+        <FieldRow label="Sprint/Release" icon={<Package className="h-4 w-4" />}>
           <div className="flex flex-wrap gap-1">
-            {issue.fixVersions && issue.fixVersions.length > 0 ? (
-              issue.fixVersions.map((version) => (
+            {issue.sprintReleases && issue.sprintReleases.length > 0 ? (
+              issue.sprintReleases.map((version) => (
                 <Lozenge key={version} appearance="default">
                   {version}
                 </Lozenge>

@@ -41,7 +41,7 @@ const OPERATORS_BY_FIELD: Record<string, { value: string; label: string }[]> = {
 
 const VALUE_OPTIONS: Record<string, string[]> = {
   status: ['To Do', 'In Progress', 'In Review', 'Done', 'Blocked', 'Cancelled', 'Open', 'Reopened', 'Closed'],
-  priority: ['Critical', 'Highest', 'High', 'Medium', 'Low', 'Lowest'],
+  priority: ['Highest', 'High', 'Medium', 'Low', 'Lowest'],
   issue_type: ['Epic', 'Story', 'Sub-task', 'Bug', 'Task', 'Incident'],
   status_category: ['To Do', 'In Progress', 'Done'],
 };

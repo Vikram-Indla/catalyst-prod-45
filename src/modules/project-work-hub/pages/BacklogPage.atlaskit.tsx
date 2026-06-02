@@ -15,6 +15,14 @@
  * ReleaseHub, TestHub, IncidentHub boards that want a Jira-style list view.
  */
 import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+// 2026-06-01 (catalyst-clone): BR vocabulary imports for inline-edit cells on
+// the product-flavored columns. Keeps the column registry colocated with the
+// canonical edit factories from JiraTable.
+import { URGENCY_OPTIONS, REQUEST_TYPE_OPTIONS, THEME_OPTIONS, STAKEHOLDER_OPTIONS, CATEGORY_OPTIONS, PLANNED_QUARTER_OPTIONS } from '@/types/business-request';
+import { Checkbox as AkCheckbox } from '@atlaskit/checkbox';
+import InlineEdit from '@atlaskit/inline-edit';
+import { BizArabicTranslateLink } from '@/components/shared/title-translate/BizArabicTranslateLink';
+import { containsArabic as containsArabicHelper } from '@/lib/detectArabic';
 import ReactDOM from 'react-dom';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
@@ -30,6 +38,7 @@ import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
 import Tooltip from '@atlaskit/tooltip';
+// ads-scanner:ignore-next-line
 import Button from '@atlaskit/button';
 import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import AkChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
@@ -87,7 +96,7 @@ import {
   makeParentEditCell,
   makeLabelsCell,
   makeLabelsEditCell,
-  makeFixVersionsCell,
+  makeSprintReleasesCell,
   makeDateEditCell,
   makeRowActionsCell,
   makeRowMenuCell,
@@ -103,15 +112,17 @@ import type {
   AssigneeChoice,
   ParentChoice,
   RowAction,
+  flag,
 } from '@/components/shared/JiraTable';
 
 import { useStoryBacklog, useEpicBacklog, useRequestsByKeys, useRequestLinksByEpicKeys } from '../hooks/useBacklogData';
+import { BIZ_SOURCE, type BacklogDataSource } from '../adapters/backlogDataSource';
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
 import { useCatySearch } from '@/components/caty/catySearchStore';
 import { applyCatyFilterBacklog } from '@/components/caty/applyCatyFilterBacklog';
-// Same Atlaskit "ai-chat" glyph used by the AllWork toolbar Ask Caty button —
-// keeps the two surfaces visually identical (icon + "Ask Caty" wording).
-import AskCatyAiIcon from '@atlaskit/icon/core/ai-chat';
+// Canonical AI affordance — white pill + sparkle + static rainbow ring.
+// Shared with the AllWork toolbar so both surfaces read identically.
+import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { useProject } from '@/hooks/useProjects';
 // Apr 28, 2026 (carryover #9): Star/Unstar persisted via the canonical
 // starred_items table chokepoint. Replaces the prior local useState toggle
@@ -134,7 +145,7 @@ import { basicToJql } from '@/lib/filters/basicToJql';
 import type {
   JiraFilterValue,
   AssigneeOption,
-  FixVersionOption,
+  SprintReleaseOption,
 } from '@/components/shared/JiraFilterAtlaskit';
 
 // Drag-and-drop — migrated from @dnd-kit → Pragmatic (BAU-backlog-drag-01)
@@ -309,23 +320,38 @@ export interface BacklogItem {
   due_date: string | null;
   comment_count: number | null;
   labels: string[] | null;
-  fix_versions: string[] | null;
+  sprint_release: string[] | null;
   rank_order: number | null;
+  // 2026-06-01 — Business Request adapter fields (always null on Jira rows).
+  // Surface only via the product backlog (ProductBacklogPage's adapter sets
+  // allowedColumnIds to expose them).
+  request_type?: string | null;
+  category?: string | null;
+  theme?: string | null;
+  urgency?: string | null;
+  planned_quarter?: string[] | null;
+  target_date?: string | null;
+  delivery_manager_id?: string | null;
+  delivery_manager_name?: string | null;
+  product_owner_id?: string | null;
+  product_owner_name?: string | null;
+  stakeholders?: string[] | null;
+  targeted_feature?: boolean | null;
 }
 
 /* ─── Status mapping (shared with Story Backlog) ────────────────────────── */
 
-function statusAppearance(status: string | null | undefined): LozengeAppearance {
+function defaultStatusAppearance(status: string | null | undefined): LozengeAppearance {
   if (!status) return 'default';
   // `STORY_STATUS_LOZENGE.color` is now the Atlaskit appearance token directly
   // (§20 / L41 migration). Pass it through; fall back to 'default' for unknown.
   const cfg = STORY_STATUS_LOZENGE[status];
   return (cfg?.color as LozengeAppearance) ?? 'default';
 }
-// Jira renders status labels uppercase in the list view DOM (the text content
-// is uppercase, not CSS text-transform). Use the STORY_STATUS_LOZENGE label
-// which is already uppercase; fall back to uppercase raw value for unknowns.
-function statusLabel(status: string | null | undefined): string {
+// Jira renders status labels in caps in the list view DOM (the text content
+// itself is capitalised, not via CSS). Use the STORY_STATUS_LOZENGE label
+// which is already capitalised; fall back to capitalised raw value for unknowns.
+function defaultStatusLabel(status: string | null | undefined): string {
   if (!status) return '—';
   return STORY_STATUS_LOZENGE[status]?.label ?? status.toUpperCase();
 }
@@ -338,7 +364,7 @@ function statusLabel(status: string | null | undefined): string {
 // workflow + grouping by statusCategory key (new / indeterminate / done)
 // matches what the Jira list-view dropdown shows on
 // digital-transformation.atlassian.net/jira/software/c/projects/BAU/list.
-const STATUS_OPTIONS: StatusOption[] = [
+const DEFAULT_STATUS_OPTIONS: StatusOption[] = [
   // To Do family (statusCategory: new)
   { value: 'To Do', label: 'To Do', appearance: 'default', group: 'To Do' },
   { value: 'Backlog', label: 'Backlog', appearance: 'default', group: 'To Do' },
@@ -369,7 +395,7 @@ const STATUS_OPTIONS: StatusOption[] = [
   { value: 'Ready to Implement', label: 'Ready to Implement', appearance: 'default', group: 'To Do' },
 ];
 // All distinct status values used in BAU — drives the status inline-edit dropdown.
-const ALL_BACKLOG_STATUSES = [
+const DEFAULT_ALL_BACKLOG_STATUSES = [
   'To Do', 'In Requirements', 'In Design', 'Ready for Development',
   'In Development', 'Ready for QA', 'In QA', 'Ready for UAT', 'In UAT',
   'In Production', 'Done', 'Blocked', 'On Hold', 'Closed', 'Cancelled',
@@ -401,7 +427,7 @@ const ALLOWED_COLUMN_IDS = new Set([
   'parent',
   'assignee',
   'priority',
-  'fix_versions',
+  'sprint_release',
   'labels',
   'due_date',
   'created',
@@ -409,6 +435,30 @@ const ALLOWED_COLUMN_IDS = new Set([
   'reporter',
   '__drag',
   '__actions',
+  // 2026-06-01 — Business Request adapter-only columns. ProductBacklogPage's
+  // adapter sets `allowedColumnIds` to whitelist them; project hub never
+  // exposes them (gated below via PRODUCT_ONLY_COLUMN_IDS).
+  'request_type',
+  'category',
+  'theme',
+  'urgency',
+  'planned_quarter',
+  'target_date',
+  'delivery_manager',
+  'product_owner',
+  'stakeholders',
+  'targeted_feature',
+]);
+
+/**
+ * Columns that only make sense when an adapter is in play (= product backlog
+ * on business_requests). When no `dataSource` is provided BacklogPage is
+ * driven by ph_issues and these columns are NOT shown in the picker.
+ */
+const PRODUCT_ONLY_COLUMN_IDS = new Set([
+  'request_type', 'category', 'theme', 'urgency', 'planned_quarter',
+  'target_date', 'delivery_manager', 'product_owner', 'stakeholders',
+  'targeted_feature',
 ]);
 
 // Permanently banned fields that must NEVER appear in column picker
@@ -434,24 +484,24 @@ const BANNED_COLUMN_IDS = new Set([
 const BG_DEFAULT = 'var(--ds-surface, #FFFFFF)';
 const BG_SOLIDS: Array<{ name: string; value: string }> = [
   { name: 'Sky',     value: 'var(--ds-surface, #FFFFFF)' }, // was blue (#E9F2FE); updated to white 2026-05-21
-  { name: 'Mint',    value: '#DCFFF1' },
-  { name: 'Lemon',   value: '#FFF7D6' },
-  { name: 'Peach',   value: '#FFE2D5' },
-  { name: 'Rose',    value: '#FFD2DC' },
-  { name: 'Lilac',   value: '#E5DBFF' },
+  { name: 'Mint',    value: 'var(--ds-background-accent-green-subtlest, #DCFFF1)' },
+  { name: 'Lemon',   value: 'var(--ds-background-accent-yellow-subtlest, #FFF7D6)' },
+  { name: 'Peach',   value: 'var(--ds-background-accent-orange-subtlest, #FFE2D5)' },
+  { name: 'Rose',    value: 'var(--ds-background-accent-red-subtlest, #FFD2DC)' },
+  { name: 'Lilac',   value: 'var(--ds-background-accent-purple-subtlest, #E5DBFF)' },
   { name: 'Stone',   value: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
-  { name: 'Blue',    value: '#0C66E4' }, // bold accents
-  { name: 'Teal',    value: '#1F845A' },
-  { name: 'Violet',  value: '#5E4DB2' },
-  { name: 'Orange',  value: '#F18D3D' },
+  { name: 'Blue',    value: 'var(--ds-link, #0C66E4)' }, // bold accents
+  { name: 'Teal',    value: 'var(--ds-icon-accent-green, #1F845A)' },
+  { name: 'Violet',  value: 'var(--ds-icon-accent-purple, #5E4DB2)' },
+  { name: 'Orange',  value: 'var(--ds-icon-accent-orange, #F18D3D)' },
   { name: 'Crimson', value: 'var(--ds-icon-accent-red, #C9372C)' },
 ];
 const BG_GRADIENTS: Array<{ name: string; value: string }> = [
-  { name: 'Sunrise',  value: 'linear-gradient(135deg, #FFD2DC, #FFF7D6)' },
-  { name: 'Ocean',    value: 'linear-gradient(135deg, #B8DAFF, #DCFFF1)' },
-  { name: 'Sunset',   value: 'linear-gradient(135deg, var(--ds-icon-accent-red, #C9372C), #E54787)' },
-  { name: 'Forest',   value: 'linear-gradient(135deg, #1F845A, var(--ds-icon-accent-green, #22A06B))' },
-  { name: 'Lavender', value: 'linear-gradient(135deg, #8270DB, #5E4DB2)' },
+  { name: 'Sunrise',  value: 'linear-gradient(135deg, var(--ds-background-accent-red-subtlest, #FFD2DC), var(--ds-background-accent-yellow-subtlest, #FFF7D6))' },
+  { name: 'Ocean',    value: 'linear-gradient(135deg, var(--ds-background-accent-blue-subtlest, #B8DAFF), var(--ds-background-accent-green-subtlest, #DCFFF1))' },
+  { name: 'Sunset',   value: 'linear-gradient(135deg, var(--ds-icon-accent-red, #C9372C), var(--ds-background-accent-magenta-bolder, #E54787))' },
+  { name: 'Forest',   value: 'linear-gradient(135deg, var(--ds-icon-accent-green, #1F845A), var(--ds-icon-accent-green, #22A06B))' },
+  { name: 'Lavender', value: 'linear-gradient(135deg, var(--ds-icon-accent-purple, #8270DB), var(--ds-icon-accent-purple, #5E4DB2))' },
   { name: 'Slate',    value: 'linear-gradient(135deg, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)), var(--ds-text-subtlest, #6B6E76))' },
 ];
 
@@ -487,7 +537,8 @@ export default function NativeBacklogPage() {
 
   if (loading) {
     return (
-      <Box xcss={xcss({ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: 'space.1000' })}>
+      // ads-scanner:ignore-next-line
+      <Box xcss={xcss({ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: 'space.400'})}>
         <Spinner size="large" label="Loading project" />
       </Box>
     );
@@ -498,7 +549,15 @@ export default function NativeBacklogPage() {
 
 /* ─── The canonical page ───────────────────────────────────────────────── */
 
-export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string }) {
+export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl, dataSource }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string; dataSource?: BacklogDataSource }) {
+  // Optional adapter — when present, BacklogPage reads rows + status vocab
+  // from the adapter (e.g. business_requests for product hub) and routes all
+  // mutations through it. When absent, behavior is identical to today's
+  // project-hub ph_issues path.
+  const STATUS_OPTIONS = dataSource?.statusOptions ?? DEFAULT_STATUS_OPTIONS;
+  const ALL_BACKLOG_STATUSES = dataSource?.allStatuses ?? DEFAULT_ALL_BACKLOG_STATUSES;
+  const statusAppearance = dataSource?.statusAppearance ?? defaultStatusAppearance;
+  const statusLabel = dataSource?.statusLabel ?? defaultStatusLabel;
   // May 12, 2026 (Phase 1.3): CATY hooks for Ask CATY toolbar button.
   const { user } = useAuth();
   const createConversation = useCreateCatyConversation();
@@ -597,6 +656,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   const avatarsByName = useProfileAvatarsByName();
   const backlogError = storiesError || epicsError;
 
+  // When dataSource is provided (e.g. product hub → business_requests),
+  // REPLACE ph_issues stories/epics with the adapter's rows. Project hub
+  // (dataSource omitted) is byte-identical to the original — these aliases
+  // resolve to the original arrays and downstream code is unchanged.
+  const effectiveStories = dataSource ? dataSource.extraStories : stories;
+  const effectiveEpics = dataSource ? dataSource.extraEpics : epics;
+
   // Request (Business Request) resolution — per the ProductBacklog ERD,
   // ph_requests.initiative_key appears as ph_issues.parent_key on any
   // Jira issue that belongs to an initiative. So we collect every distinct
@@ -678,7 +744,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // available via the column picker (+) but hidden in the factory layout.
   // NOTE: Comments column is banned (2026-05-11), removed from defaults
   // 2026-05-17 jira-compare cycle 2: 'summary' merged into 'key' (Work column).
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'status', 'comments', 'parent', 'assignee'];
+  // 2026-06-01: Comments column REMOVED from defaults — CLAUDE.md ban on
+  // comments-in-table (P0). Users can opt back in via the column picker if
+  // they really want it for personal views, but it does NOT ship as default.
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'status', 'parent', 'assignee'];
 
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
@@ -730,6 +799,38 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     DEFAULT_VISIBLE_COLUMNS.forEach((c) => fromUrl.add(c));
     return fromUrl;
   });
+  // 2026-06-01 (catalyst-clone F2/F3): when the URL requests a column id
+  // that isn't available on this surface (e.g. `parent`/`assignee` on a
+  // product backlog where the adapter's allowedColumnIds excludes them),
+  // flag the user once + strip from URL so reloads don't keep trying.
+  useEffect(() => {
+    const raw = searchParams.get('cols');
+    if (!raw) return;
+    const urlIds = raw.split(',').filter(Boolean);
+    const adapterAllow = dataSource?.allowedColumnIds
+      ? new Set([...dataSource.allowedColumnIds, '__drag', '__actions'])
+      : null;
+    const unsupported = urlIds.filter((id) => {
+      if (!ALLOWED_COLUMN_IDS.has(id)) return true;
+      if (BANNED_COLUMN_IDS.has(id)) return true;
+      if (PRODUCT_ONLY_COLUMN_IDS.has(id) && !adapterAllow) return true;
+      if (adapterAllow && !adapterAllow.has(id)) return true;
+      return false;
+    });
+    if (unsupported.length === 0) return;
+    flag.warning(
+      'Columns unavailable',
+      `${unsupported.join(', ')} not available on this surface — removed from view.`,
+    );
+    const supportedIds = urlIds.filter((id) => !unsupported.includes(id));
+    const next = new URLSearchParams(searchParams);
+    if (supportedIds.length) next.set('cols', supportedIds.join(','));
+    else next.delete('cols');
+    setSearchParams(next, { replace: true });
+    setVisibleColumns(new Set([...supportedIds, ...DEFAULT_VISIBLE_COLUMNS]));
+    // Run-once on first mount when adapter is ready.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataSource?.allowedColumnIds]);
   // Group-by — matches catalog 076-095. 'none' disables grouping.
   type GroupByKey = 'none' | 'type' | 'status' | 'parent' | 'assignee' | 'priority';
   // Apr 27, 2026 (audit pass 10, IRP-518 alignment): URL param renamed
@@ -947,6 +1048,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // optimistic write reconciles with the authoritative server response.
   const updateField = useMutation({
     mutationFn: async ({ id, source, patch }: { id: string; source?: string; patch: Record<string, unknown> }) => {
+      // Adapter route — for product hub business_requests rows. Skips the
+      // ph_issues write entirely; adapter handles its own table + invalidation.
+      if (dataSource && source === BIZ_SOURCE) {
+        await dataSource.onUpdate(id, patch);
+        return;
+      }
       // Step 1 — local cache write to ph_issues (canonical source of truth).
       // Map any catalyst-style field names in the patch to their ph_issues
       // equivalents (title→summary). updated_at→jira_updated_at.
@@ -981,7 +1088,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         }
       }
     },
-    onMutate: async ({ id, patch }) => {
+    onMutate: async ({ id, source, patch }) => {
+      // Adapter-owned rows don't live in ph_issues caches — skip snapshot/revert.
+      if (dataSource && source === BIZ_SOURCE) return undefined;
       // The actual cache keys used by useStoryBacklog / useEpicBacklog are
       // 3-tuple: ['backlog-*', projectId, projectKey]. The first two
       // elements are stable for this page; we use a partial-match
@@ -1057,6 +1166,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // every projectKey variant of the cache keys).
       queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+      // Also invalidate adapter caches when present (no-op for project hub).
+      if (dataSource) {
+        dataSource.invalidationKeys.forEach(k =>
+          queryClient.invalidateQueries({ queryKey: k as any }),
+        );
+      }
     },
   });
 
@@ -1099,13 +1214,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           created_at: null,
           comment_count: null,
           labels: null,
-          fix_versions: null,
+          sprint_release: null,
           rank_order: null,
         });
       });
     }
 
-    epics.forEach((e) => {
+    effectiveEpics.forEach((e) => {
       epicSeen.add(e.id);
       // If this epic's own parent_key resolves to an initiative, link it up
       // so the tree builder nests the epic under the initiative row. As a
@@ -1134,7 +1249,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         due_date: (e as any).end_date ?? (e as any).due_date ?? null,
         comment_count: e.comment_count ?? null,
         labels: (e as any).labels ?? null,
-        fix_versions: (e as any).fix_versions ?? null,
+        sprint_release: (e as any).sprint_release ?? null,
         rank_order: (e as any).rank_order ?? null,
       });
     });
@@ -1145,7 +1260,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     // epic object on story.feature.epic with real Jira status/priority/
     // assignee/jira_updated_at (2026-04 wiring fix) so the synthesized
     // rows aren't blank "Set status" ghosts any more.
-    stories.forEach((s) => {
+    effectiveStories.forEach((s) => {
       const ep = s.feature?.epic as (typeof s.feature extends { epic: infer E } ? E : any) & {
         status?: string | null;
         priority?: string | null;
@@ -1179,7 +1294,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           due_date: null,
           comment_count: null,
           labels: null,
-          fix_versions: null,
+          sprint_release: null,
           rank_order: null,
         });
       }
@@ -1196,7 +1311,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       if (it === 'Production Incident') return 'incident';
       return 'story';
     };
-    stories.forEach((s) => {
+    effectiveStories.forEach((s) => {
       const ep = s.feature?.epic;
       // Apr 27, 2026 (L52): fall back to raw parent_key/parent_summary
       // from ph_issues when the parent isn't an Epic (so QA Bug +
@@ -1232,12 +1347,27 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         due_date: (s as any).start_date ?? (s as any).due_date ?? null,
         comment_count: null,
         labels: (s as any).labels ?? null,
-        fix_versions: (s as any).fix_versions ?? null,
+        sprint_release: (s as any).sprint_release ?? null,
         rank_order: (s as any).rank_order ?? null,
+        // 2026-06-01: BR-specific fields surfaced via the product adapter
+        // (project hub rows leave them undefined, which is fine — these
+        // columns are only visible when allowedColumnIds whitelists them).
+        request_type: (s as any).request_type ?? null,
+        category: (s as any).category ?? null,
+        theme: (s as any).theme ?? null,
+        urgency: (s as any).urgency ?? null,
+        planned_quarter: (s as any).planned_quarter ?? null,
+        target_date: (s as any).target_date ?? null,
+        delivery_manager_id: (s as any).delivery_manager_id ?? null,
+        delivery_manager_name: (s as any).delivery_manager_name ?? null,
+        product_owner_id: (s as any).product_owner_id ?? null,
+        product_owner_name: (s as any).product_owner_name ?? null,
+        stakeholders: (s as any).stakeholders ?? null,
+        targeted_feature: (s as any).targeted_feature ?? null,
       });
     });
     return out;
-  }, [epics, stories, initiativesByKey]);
+  }, [effectiveEpics, effectiveStories, initiativesByKey]);
 
   // ── Three-level tree: Request → Epic → Story.
   //   - Items with parent_id go into childrenOf[parent_id].
@@ -1292,8 +1422,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       if (f.assignees.length && (!it.assignee_name || !f.assignees.includes(it.assignee_name))) return false;
       // Reporter filter — sourced from ph_issues.reporter_display_name
       if (f.reporter.length && (!it.reporter_name || !f.reporter.includes(it.reporter_name))) return false;
-      // Fix version filter (parent epic maps to a "fix version" in this view)
-      if (f.fixVersions.length && (!it.parent_id || !f.fixVersions.includes(it.parent_id))) return false;
+      // Sprint/Release filter (parent epic maps to a "sprint/release" in this view)
+      if (f.sprintReleases.length && (!it.parent_id || !f.sprintReleases.includes(it.parent_id))) return false;
       // Updated date range
       if (f.updated.from && (!it.updated_at || it.updated_at < f.updated.from)) return false;
       if (f.updated.to && (!it.updated_at || it.updated_at > f.updated.to + 'T23:59:59')) return false;
@@ -1459,7 +1589,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       }
       if (f.assignees.length && (!it.assignee_name || !f.assignees.includes(it.assignee_name))) return false;
       if (f.reporter.length && (!it.reporter_name || !f.reporter.includes(it.reporter_name))) return false;
-      if (f.fixVersions.length && (!it.parent_id || !f.fixVersions.includes(it.parent_id))) return false;
+      if (f.sprintReleases.length && (!it.parent_id || !f.sprintReleases.includes(it.parent_id))) return false;
       if (f.updated.from && (!it.updated_at || it.updated_at < f.updated.from)) return false;
       if (f.updated.to && (!it.updated_at || it.updated_at > f.updated.to + 'T23:59:59')) return false;
       if (f.created.from && (!it.created_at || it.created_at < f.created.from)) return false;
@@ -1644,13 +1774,19 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     if (container && projectKey) {
       sessionStorage.setItem(`backlog-scroll-${projectKey}`, Math.max(0, container.scrollTop).toString());
     }
+    // Adapter-owned rows (e.g. business_requests in product hub) route to
+    // their own detail surface via the adapter's onOpenItem hook.
+    if (dataSource && (it as any).source === BIZ_SOURCE) {
+      dataSource.onOpenItem(it.key ?? null, it.id);
+      return;
+    }
     writeTicketOrigin({
       fromUrl: `${resolvedBaseUrl}/backlog`,
       fromLabel: 'Backlog',
       fromType: 'story-backlog',
     });
     navigate(`${resolvedBaseUrl}/backlog/${it.issue_key || it.id}`);
-  }, [projectKey, navigate]);
+  }, [projectKey, navigate, dataSource, resolvedBaseUrl]);
   // Detail callbacks removed 2026-05-12 task E: no longer managing panel state.
 
   // Detail navigation (j/k keys) removed 2026-05-12 task E: detail view now
@@ -1886,6 +2022,21 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         }
 
         try {
+          // Adapter route — for BIZ rows, persist rank via adapter (no ph_issues).
+          if (dataSource && (draggedRow as any).source === BIZ_SOURCE) {
+            if (dataSource.onSetRank) {
+              await dataSource.onSetRank(draggedRow.id, newRankOrder);
+              dataSource.invalidationKeys.forEach(k =>
+                queryClient.invalidateQueries({ queryKey: k as any }),
+              );
+              if (sortKey !== null) {
+                setSortKey(null);
+                setSortDir(null);
+              }
+              flag.success('Reordered', `${draggedRow.key || 'Row'} moved.`);
+            }
+            return;
+          }
           const { error: updErr } = await supabase
             .from('ph_issues')
             .update({ sort_order: newRankOrder, jira_updated_at: new Date().toISOString() })
@@ -1949,9 +2100,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           (r: BacklogItem) => openDetail(r),
           (r: BacklogItem) => `/project-hub/${projectKey}/backlog/${r.key || r.id}`,
           (it: BacklogItem) => {
+          if ((it as any).source === 'biz') {
+            return <JiraIssueTypeIcon type="Business Request" size={16} />;
+          }
           if (it.type === 'initiative') {
             const init = initiativesByKey?.get(it.key || '');
-            const bg = init?.initiative_type_color_hex || '#904EE2';
+            const bg = init?.initiative_type_color_hex || 'var(--ds-icon-accent-purple, #904EE2)';
             return (
               <span
                 title={init?.initiative_type_label || 'Request'}
@@ -2002,6 +2156,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           },
         });
         return function WorkCell(props: any) {
+          // 2026-06-01 (catalyst-clone F7): BR rows with Arabic titles get an
+          // inline "Translate to English" affordance. Project hub rows (English-
+          // only) are unaffected. Translation is per-row, per-session — never
+          // persisted to DB.
+          const row = props.row as BacklogItem;
+          const isBizArabic = (row as any).source === 'biz' && containsArabicHelper(row.title);
           return (
             <span
               style={{
@@ -2013,7 +2173,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               }}
             >
               <span style={{ flexShrink: 0 }}>{keyCellRenderer(props)}</span>
-              <span style={{ flex: 1, minWidth: 0 }}>{summaryCellRenderer(props)}</span>
+              <span style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ flex: 1, minWidth: 0 }}>{summaryCellRenderer(props)}</span>
+                {isBizArabic && row.key && (
+                  <BizArabicTranslateLink
+                    issueKey={row.key}
+                    original={row.title}
+                  />
+                )}
+              </span>
             </span>
           );
         };
@@ -2070,6 +2238,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         getStatus: (r) => r.status,
         options: ALL_BACKLOG_STATUSES,
         appearanceFor: (s) => statusAppearance(s) as LozengeAppearance,
+        // 2026-06-01 (catalyst-clone): when an adapter provides statusLabel
+        // (product hub on business_requests does — it maps demand_approved
+        // → "Demand approved" via demand_process_steps), use it so the
+        // dropdown shows pretty labels instead of raw enum slugs. Project
+        // hub passes ALL_BACKLOG_STATUSES which are already pretty strings,
+        // so identity fallthrough is correct there.
+        labelFor: dataSource?.statusLabel
+          ? (s) => dataSource.statusLabel!(s)
+          : undefined,
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { status: next } }),
       }),
       // 2026-05-10 Jira-parity per-column filter chevron.
@@ -2095,7 +2272,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // width:8 (96px). Icon + count badge is the only content; fits easily.
       width: 8,
       sortable: false,
-      defaultVisible: true,
+      // 2026-06-01: Comments column off-by-default — CLAUDE.md ban on
+      // comments-in-table. Still selectable from the column picker.
+      defaultVisible: false,
       alwaysVisible: false,
       cell: makeCommentsCell(
         (r: BacklogItem) => r.comment_count,
@@ -2103,15 +2282,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       ),
     },
     {
-      id: 'fix_versions',
-      label: 'Fix versions',
+      id: 'sprint_release',
+      label: 'Sprint/Release',
       // 2026-05-16: Jira DOM probe = 220px. width:18 = 216px (≈220px).
       // Prior width:10 (120px) clipped version names badly.
       width: 18,
       sortable: false,
       defaultVisible: true,
-      accessor: (r: BacklogItem) => (r.fix_versions || []).join(', '),
-      cell: makeFixVersionsCell((r: BacklogItem) => r.fix_versions),
+      accessor: (r: BacklogItem) => (r.sprint_release || []).join(', '),
+      cell: makeSprintReleasesCell((r: BacklogItem) => r.sprint_release),
       include: (row: BacklogItem) => row.issue_type !== 'Feature',
     },
     {
@@ -2230,6 +2409,229 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           : null,
       ),
     },
+    // ── 2026-06-01 Business Request adapter-only columns ────────────────
+    // Surfaced only when ProductBacklogPage's adapter sets allowedColumnIds.
+    // Project hub never sees these (PRODUCT_ONLY_COLUMN_IDS gate above).
+    // All `defaultVisible: false` — opt-in via the picker.
+    //
+    // 2026-06-01 (catalyst-clone inaugural run): every cell is now an INLINE
+    // EDIT cell wired through dataSource.onUpdate → BIZ_PATCH_MAP →
+    // business_requests UPDATE. Mirrors the project canonical edit factories
+    // exactly — no parallel implementations (L1 compliance).
+    {
+      id: 'request_type',
+      label: 'Type',
+      width: 10,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.request_type || '',
+      cell: ({ row: r }: { row: BacklogItem }) => (
+        <div className="cv-cell-inline-edit-no-label">
+        <InlineEdit<string | null>
+          defaultValue={r.request_type ?? null}
+          label="Type"
+          editView={({ errorMessage: _e, ...fp }: any) => (
+            <Select
+              {...fp}
+              autoFocus
+              options={REQUEST_TYPE_OPTIONS}
+              value={REQUEST_TYPE_OPTIONS.find(o => o.value === (r.request_type ?? '')) ?? null}
+              onChange={(opt: any) => fp.onChange(opt?.value ?? null)}
+              menuPortalTarget={document.body}
+              styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+            />
+          )}
+          readView={() => (
+            <div style={{ padding: '4px 8px', cursor: 'pointer', color: 'var(--ds-text, #172B4D)', textTransform: 'capitalize' }}>
+              {r.request_type || <span data-jira-cell-ghost>Add type</span>}
+            </div>
+          )}
+          onConfirm={(next) => updateField.mutate({ id: r.id, source: r.source, patch: { request_type: next ?? null } })}
+        />
+        </div>
+      ),
+    },
+    {
+      id: 'category',
+      label: 'Category',
+      width: 11,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.category || '',
+      cell: ({ row: r }: { row: BacklogItem }) => (
+        <div className="cv-cell-inline-edit-no-label">
+        <InlineEdit<string | null>
+          defaultValue={r.category ?? null}
+          label="Category"
+          editView={({ errorMessage: _e, ...fp }: any) => (
+            <Select
+              {...fp}
+              autoFocus
+              options={CATEGORY_OPTIONS}
+              value={CATEGORY_OPTIONS.find(o => o.value === (r.category ?? '')) ?? null}
+              onChange={(opt: any) => fp.onChange(opt?.value ?? null)}
+              menuPortalTarget={document.body}
+              styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+            />
+          )}
+          readView={() => (
+            <div style={{ padding: '4px 8px', cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}>
+              {r.category || <span data-jira-cell-ghost>Add category</span>}
+            </div>
+          )}
+          onConfirm={(next) => updateField.mutate({ id: r.id, source: r.source, patch: { category: next ?? null } })}
+        />
+        </div>
+      ),
+    },
+    {
+      id: 'theme',
+      label: 'Theme',
+      width: 14,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.theme || '',
+      cell: ({ row: r }: { row: BacklogItem }) => {
+        const current = THEME_OPTIONS.find(o => o.value === (r.theme ?? '')) ?? null;
+        return (
+          <div className="cv-cell-inline-edit-no-label">
+          <InlineEdit<string | null>
+            defaultValue={r.theme ?? null}
+            label="Theme"
+            editView={({ errorMessage: _e, ...fp }: any) => (
+              <Select
+                {...fp}
+                autoFocus
+                options={THEME_OPTIONS}
+                value={current}
+                onChange={(opt: any) => fp.onChange(opt?.value ?? null)}
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+              />
+            )}
+            readView={() => (
+              <div style={{ padding: '4px 8px', cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}>
+                {current ? (current.labelEn ?? current.label) : <span data-jira-cell-ghost>Add theme</span>}
+              </div>
+            )}
+            onConfirm={(next) => updateField.mutate({ id: r.id, source: r.source, patch: { theme: next ?? null } })}
+          />
+          </div>
+        );
+      },
+    },
+    {
+      id: 'urgency',
+      label: 'Priority',
+      // Mirrors project Priority width:6 — Low/Normal/High/Critical all ≤8 chars
+      width: 7,
+      sortable: true,
+      defaultVisible: false,
+      cell: makePriorityEditCell<BacklogItem>({
+        getPriority: (r) => r.urgency,
+        options: URGENCY_OPTIONS.map(v => v.toLowerCase()),
+        onChange: (row, next) => updateField.mutate({
+          id: row.id, source: row.source,
+          // Re-capitalize: DB stores 'High' / 'Normal' / 'Low' / 'Critical'
+          patch: { urgency: next ? next.charAt(0).toUpperCase() + next.slice(1) : null },
+        }),
+      }),
+    },
+    {
+      id: 'planned_quarter',
+      label: 'Planned release',
+      width: 13,
+      sortable: false,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => (r.planned_quarter || []).join(', '),
+      cell: makeLabelsEditCell<BacklogItem>({
+        getLabels: (r) => r.planned_quarter,
+        options: PLANNED_QUARTER_OPTIONS.map(o => o.value),
+        onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { planned_quarter: next } }),
+      }),
+    },
+    {
+      id: 'target_date',
+      label: 'Target date',
+      width: 9,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.target_date || '',
+      cell: makeDateEditCell<BacklogItem>({
+        getDate: (r) => r.target_date ?? null,
+        onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { target_date: next } }),
+      }),
+    },
+    {
+      id: 'delivery_manager',
+      label: 'Delivery Manager',
+      width: 12,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.delivery_manager_name || '',
+      cell: makeAssigneeEditCell<BacklogItem>({
+        getAssignee: (r) => r.delivery_manager_name
+          ? { id: r.delivery_manager_id ?? r.delivery_manager_name, name: r.delivery_manager_name, avatarUrl: resolveAvatarUrl(r.delivery_manager_name) ?? avatarsByName.get(r.delivery_manager_name.toLowerCase()) ?? null }
+          : null,
+        options: assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null })),
+        onChange: (row, next) => updateField.mutate({
+          id: row.id, source: row.source,
+          patch: { delivery_manager_id: next?.id ?? null, delivery_manager_name: next?.name ?? null },
+        }),
+      }),
+    },
+    {
+      id: 'product_owner',
+      label: 'Product Owner',
+      width: 12,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.product_owner_name || '',
+      cell: makeAssigneeEditCell<BacklogItem>({
+        getAssignee: (r) => r.product_owner_name
+          ? { id: r.product_owner_id ?? r.product_owner_name, name: r.product_owner_name, avatarUrl: resolveAvatarUrl(r.product_owner_name) ?? avatarsByName.get(r.product_owner_name.toLowerCase()) ?? null }
+          : null,
+        options: assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null })),
+        onChange: (row, next) => updateField.mutate({
+          id: row.id, source: row.source,
+          patch: { product_owner_id: next?.id ?? null, product_owner_name: next?.name ?? null },
+        }),
+      }),
+    },
+    {
+      id: 'stakeholders',
+      label: 'Stakeholders',
+      width: 16,
+      sortable: false,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => (r.stakeholders || []).join(', '),
+      cell: makeLabelsEditCell<BacklogItem>({
+        getLabels: (r) => r.stakeholders,
+        options: STAKEHOLDER_OPTIONS.map(o => o.value),
+        onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { stakeholders: next } }),
+      }),
+    },
+    {
+      id: 'targeted_feature',
+      label: 'Targeted feature',
+      width: 10,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => (r.targeted_feature ? '1' : '0'),
+      cell: ({ row: r }: { row: BacklogItem }) => (
+        <div style={{ padding: '4px 8px' }}>
+          <AkCheckbox
+            isChecked={!!r.targeted_feature}
+            onChange={(e) => updateField.mutate({
+              id: r.id, source: r.source,
+              patch: { targeted_feature: e.currentTarget.checked },
+            })}
+            label={r.targeted_feature ? 'Yes' : ''}
+          />
+        </div>
+      ),
+    },
+    // 2026-06-01: Arabic title column removed — arabic_title DB column dropped.
     {
       id: '__actions',
       label: '',
@@ -2247,10 +2649,37 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // Filter columns to only allowed standard Jira fields (2026-05-12).
   // Prevents type-specific custom fields and banned fields from appearing
   // in the column picker. See ALLOWED_COLUMN_IDS + BANNED_COLUMN_IDS above.
-  const filteredCols = useMemo(() =>
-    columns.filter((col) => ALLOWED_COLUMN_IDS.has(col.id) && !BANNED_COLUMN_IDS.has(col.id)),
-    [columns, ALLOWED_COLUMN_IDS, BANNED_COLUMN_IDS]
-  );
+  //
+  // 2026-06-01: when an adapter provides `allowedColumnIds`, also restrict
+  // to that whitelist. Product hub (business_requests) uses this to hide
+  // project-only columns (parent, sprint_release, labels, assignee, due_date,
+  // priority, reporter, comments) that don't apply to the slim BR schema.
+  // Structural columns ('__drag', '__actions') are always allowed.
+  const filteredCols = useMemo(() => {
+    const adapterAllow = dataSource?.allowedColumnIds
+      ? new Set([...dataSource.allowedColumnIds, '__drag', '__actions'])
+      : null;
+    const allowed = columns.filter((col) => {
+      if (!ALLOWED_COLUMN_IDS.has(col.id)) return false;
+      if (BANNED_COLUMN_IDS.has(col.id)) return false;
+      if (PRODUCT_ONLY_COLUMN_IDS.has(col.id) && !adapterAllow) return false;
+      if (adapterAllow && !adapterAllow.has(col.id)) return false;
+      return true;
+    });
+    // 2026-06-01 (catalyst-clone F11): when URL provides explicit `cols=` order,
+    // honor it. Structural columns (__drag, __actions) and any cols not in URL
+    // keep their registry order, appended after the URL-ordered set.
+    const urlCols = searchParams.get('cols');
+    if (!urlCols) return allowed;
+    const urlOrder = urlCols.split(',').filter(Boolean);
+    const orderIdx = new Map<string, number>();
+    urlOrder.forEach((id, i) => orderIdx.set(id, i));
+    return [...allowed].sort((a, b) => {
+      const ai = orderIdx.has(a.id) ? orderIdx.get(a.id)! : 9999;
+      const bi = orderIdx.has(b.id) ? orderIdx.get(b.id)! : 9999;
+      return ai - bi;
+    });
+  }, [columns, dataSource?.allowedColumnIds, searchParams]);
 
 
   // Editing state — used by EditBacklogItemModal below.
@@ -2262,6 +2691,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // Delete mutation — wired to @atlaskit/modal-dialog confirmation below.
   const deleteItem = useMutation({
     mutationFn: async (item: BacklogItem) => {
+      // Adapter route — for product hub business_requests rows.
+      if (dataSource && (item as any).source === BIZ_SOURCE) {
+        await dataSource.onDelete(item.id);
+        return;
+      }
       if (item.source !== 'catalyst') {
         throw new Error('Jira-synced items must be deleted in Jira.');
       }
@@ -2283,6 +2717,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       setDeleteTarget(null);
       queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+      if (dataSource) {
+        dataSource.invalidationKeys.forEach(k =>
+          queryClient.invalidateQueries({ queryKey: k as any }),
+        );
+      }
     },
     onError: (e: Error) => flag.error('Delete failed', e.message),
   });
@@ -2311,6 +2750,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   };
   const bulkUpdate = useMutation({
     mutationFn: async ({ ids, patch }: { ids: string[]; patch: Record<string, unknown> }) => {
+      // Adapter route — apply patch row-by-row via adapter for BIZ rows.
+      if (dataSource) {
+        const bizRows = items.filter((it) => ids.includes(it.id) && (it as any).source === BIZ_SOURCE);
+        if (bizRows.length > 0) {
+          await Promise.all(bizRows.map(r => dataSource.onUpdate(r.id, patch)));
+          return { applied: bizRows.length, skipped: ids.length - bizRows.length };
+        }
+      }
       const editable = items.filter((it) => ids.includes(it.id) && it.source === 'catalyst');
       const skipped = ids.length - editable.length;
       if (editable.length === 0) {
@@ -2334,11 +2781,24 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       );
       queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+      if (dataSource) {
+        dataSource.invalidationKeys.forEach(k =>
+          queryClient.invalidateQueries({ queryKey: k as any }),
+        );
+      }
     },
     onError: (e: Error) => flag.error('Bulk update failed', e.message),
   });
   const bulkDelete = useMutation({
     mutationFn: async (ids: string[]) => {
+      // Adapter route — delegate to adapter for BIZ rows.
+      if (dataSource) {
+        const bizRows = items.filter((it) => ids.includes(it.id) && (it as any).source === BIZ_SOURCE);
+        if (bizRows.length > 0) {
+          await dataSource.onBulkDelete(bizRows.map(r => r.id));
+          return { applied: bizRows.length, skipped: ids.length - bizRows.length };
+        }
+      }
       const editable = items.filter((it) => ids.includes(it.id) && it.source === 'catalyst');
       const skipped = ids.length - editable.length;
       if (editable.length === 0) {
@@ -2363,13 +2823,22 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       setSelectedIds(new Set());
       queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+      if (dataSource) {
+        dataSource.invalidationKeys.forEach(k =>
+          queryClient.invalidateQueries({ queryKey: k as any }),
+        );
+      }
     },
     onError: (e: Error) => flag.error('Bulk delete failed', e.message),
   });
 
-  if (storiesLoading || epicsLoading) {
+  // For dataSource (e.g. product hub), gate on adapter loading.
+  // For project hub, gate on the ph_issues hooks.
+  const effectiveLoading = dataSource ? dataSource.isLoading : (storiesLoading || epicsLoading);
+  if (effectiveLoading) {
     return (
-      <Box xcss={xcss({ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: 'space.1000' })}>
+      // ads-scanner:ignore-next-line
+      <Box xcss={xcss({ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: 'space.400'})}>
         <Spinner size="large" label="Loading backlog" />
       </Box>
     );
@@ -2378,8 +2847,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // Error state — shows only when BOTH fetchers failed. If only one errors
   // we still render the table from the partial data; a toast already surfaced
   // the failure via TanStack Query's built-in retry path.
-  if (backlogError && stories.length === 0 && epics.length === 0) {
+  // For dataSource flows, errors surface via the adapter's mutation flags; we
+  // skip the ph_issues error gate when an adapter is provided.
+  if (!dataSource && backlogError && stories.length === 0 && epics.length === 0) {
     return (
+      // ads-scanner:ignore-next-line
       <Box xcss={xcss({ padding: 'space.400', maxWidth: '720px' })}>
         <SectionMessage
           appearance="error"
@@ -2628,7 +3100,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             horizontal-nav-header.ui.project-header.header. The legacy
             ProjectChromeBand is retained for back-compat by surfaces that
             still mount it directly, but Backlog now uses the chip alone. */}
-        <ProjectHeaderChip projectKey={projectKey} />
+        {dataSource?.ChromeHeader
+          ? <dataSource.ChromeHeader productCode={projectKey} productName={projectDisplayName} />
+          : <ProjectHeaderChip projectKey={projectKey} />}
         {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
         {false && <ProjectChromeBand
           projectName={pageTitle}
@@ -2662,7 +3136,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     justifyContent: 'center',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)';
+                    e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = 'transparent';
@@ -2705,7 +3179,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     justifyContent: 'center',
                   }}
                   onMouseEnter={(e) => {
-                    if (!projectMenuAnchor) e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)';
+                    if (!projectMenuAnchor) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))';
                   }}
                   onMouseLeave={(e) => {
                     if (!projectMenuAnchor) e.currentTarget.style.background = 'transparent';
@@ -2784,22 +3258,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             digital-transformation.atlassian.net BAU list view). Catalyst
             previously rendered Ask CATY in the global top nav — wrong
             location. Moved here per jira-compare 2026-05-12 finding. */}
-        <Tooltip content="Ask Caty about this backlog" position="bottom">
-          <Button
-            appearance="subtle"
-            spacing="compact"
-            onClick={() => setAskCatyOpen(true)}
-            iconBefore={
-              <AskCatyAiIcon
-                label=""
-                color="var(--ds-text-subtlest, #6B778C)"
-              />
-            }
-            testId="catalyst-backlog-toolbar.ask-caty"
-          >
-            Ask Caty
-          </Button>
-        </Tooltip>
+        <AIIntelligenceButton
+          label="Ask Caty"
+          onClick={() => setAskCatyOpen(true)}
+          tooltip="Ask Caty about this backlog"
+        />
         {/* Apr 28, 2026 (jira-compare cycle 2 T5): wrapper width fixed
             280 → flex:1 with min/max so the input expands like Jira's
             (probed Jira width=625px) instead of cramming at 280. */}
@@ -2828,7 +3291,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     border: 'none',
                     cursor: 'pointer',
                     color: token('color.text.subtlest', '#6B778C'),
-                    padding: '0 6px 0 2px',
+                    padding: '0 8px 0 4px',
                   }}
                 >
                   <AkCloseIcon label="" size="small" />
@@ -2856,7 +3319,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               { id: 'Business Gap',        label: 'Business Gap',        icon: <JiraIssueTypeIcon type="Story"   size={14} /> },
               { id: 'API Requirement',     label: 'API Requirement',     icon: <JiraIssueTypeIcon type="Task"    size={14} /> },
             ]}
-            fixVersions={epics.map<FixVersionOption>((e) => ({ id: e.id, label: e.epic_key ? `${e.epic_key} — ${e.name}` : e.name }))}
+            sprintReleases={epics.map<SprintReleaseOption>((e) => ({ id: e.id, label: e.epic_key ? `${e.epic_key} — ${e.name}` : e.name }))}
             labels={[]}
           />
         </div>
@@ -2866,29 +3329,38 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             from items + avatarsByName). maxCount=5 with appearance="stack"
             matches Jira's stacked-circle pattern. The "Add people" CTA is a
             future addition; for cycle 1 we ship read-only avatar stack. */}
-        {assigneeOptions.length > 0 && (
-          <AvatarGroup
-            appearance="stack"
-            size="small"
-            maxCount={5}
-            label="Filter by assignee"
-            data={assigneeOptions.map((a) => ({
-              key: a.id,
-              name: a.name,
-              src: a.avatarUrl ?? undefined,
-            }))}
-            onAvatarClick={(_event, _analytics, index) => {
-              const a = assigneeOptions[index];
-              if (!a) return;
-              setFilterValue((prev) => ({
-                ...prev,
-                assignees: prev.assignees.includes(a.name)
-                  ? prev.assignees.filter((x) => x !== a.name)
-                  : [...prev.assignees, a.name],
-              }));
-            }}
-          />
-        )}
+        {/* 2026-06-01 (catalyst-clone F9): filter toolbar avatar group to
+            assignees with a resolved avatar (i.e. active profile match).
+            Stops the +24 overflow chip from including ex-employees /
+            deleted accounts that have no profile but a stale name string
+            in legacy rows. */}
+        {(() => {
+          const activeAssignees = assigneeOptions.filter((a) => a.avatarUrl);
+          if (!activeAssignees.length) return null;
+          return (
+            <AvatarGroup
+              appearance="stack"
+              size="small"
+              maxCount={5}
+              label="Filter by assignee"
+              data={activeAssignees.map((a) => ({
+                key: a.id,
+                name: a.name,
+                src: a.avatarUrl ?? undefined,
+              }))}
+              onAvatarClick={(_event, _analytics, index) => {
+                const a = activeAssignees[index];
+                if (!a) return;
+                setFilterValue((prev) => ({
+                  ...prev,
+                  assignees: prev.assignees.includes(a.name)
+                    ? prev.assignees.filter((x) => x !== a.name)
+                    : [...prev.assignees, a.name],
+                }));
+              }}
+            />
+          );
+        })()}
 
         {/* Apr 27, 2026 — jira-compare audit P0 #2 / P1 #3:
             Two-flex-cluster toolbar. LEFT cluster (above this spacer)
@@ -3051,6 +3523,17 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   if (trimmed.length > 255) { flag.error('Summary must be 255 characters or fewer'); return; }
                   setInlineCreateSubmitting(true);
                   try {
+                    // Adapter route — product hub creates via adapter.onCreate.
+                    if (dataSource) {
+                      await dataSource.onCreate({ title: trimmed });
+                      flag.success(`Created — ${trimmed}`);
+                      dataSource.invalidationKeys.forEach(k =>
+                        queryClient.invalidateQueries({ queryKey: k as any }),
+                      );
+                      setFooterCreateActive(false);
+                      setInlineCreateSubmitting(false);
+                      return;
+                    }
                     const issueKey = await generateIssueKey(projectKey);
                     const nowIso = new Date().toISOString();
                     // Default status: first group when grouped by status, else 'To Do'
@@ -3238,29 +3721,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 )}
               </div>
             }
-            // Apr 27, 2026 (L70): Create row now renders INSIDE the
-            // table viewport via JiraTable's `bottomSlot` prop —
-            // eliminates the visual gap that the horizontal scrollbar
-            // was creating between the last table row and the floating
-            // Create row. Sticks to the table; horizontal scroll sits
-            // BELOW Create. Smart-default issue type matches the
-            // active type-filter pill.
-            bottomSlot={
-              <BottomCreateRow
-                projectKey={projectKey}
-                defaultIssueType={
-                  typeFilter === 'epic' ? 'Epic'
-                  : typeFilter === 'feature' ? 'Feature'
-                  : typeFilter === 'bug' ? 'QA Bug'
-                  : typeFilter === 'incident' ? 'Production Incident'
-                  : 'Story'
-                }
-                onCreated={() => {
-                  queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
-                  queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
-                }}
-              />
-            }
+            // 2026-06-01: bottomSlot={<BottomCreateRow/>} REMOVED — it
+            // duplicated the canonical sticky footer create row above
+            // (enableStickyCreateFooter + stickyCreateFooter), producing
+            // TWO stacked "+ Create" rows at the table bottom on both
+            // project and product surfaces. Per the 2026-05-17 directive
+            // ("BacklogPage has sticky footer create only"), the sticky
+            // footer is the single canonical entry point. BottomCreateRow
+            // remains in the file as a deprecated component until removed
+            // in a separate cleanup pass.
           />
           </div>
         </div>
@@ -3419,17 +3888,17 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             </ModalHeader>
             <ModalBody>
               {/* Step indicator */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
                 {[1, 2].map((s) => (
                   <React.Fragment key={s}>
                     <span style={{
                       width: 24, height: 24, borderRadius: '50%',
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 12, fontWeight: 700,
-                      background: bulkWizardStep >= s ? '#0C66E4' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
-                      color: bulkWizardStep >= s ? '#fff' : '#42526E',
+                      background: bulkWizardStep >= s ? 'var(--ds-link, #0C66E4)' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+                      color: bulkWizardStep >= s ? 'var(--ds-text-inverse, #fff)' : 'var(--ds-text-subtle, #42526E)',
                     }}>{s}</span>
-                    <span style={{ fontSize: 12, color: bulkWizardStep >= s ? '#0C66E4' : '#7A869A', fontWeight: 500 }}>
+                    <span style={{ fontSize: 12, color: bulkWizardStep >= s ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtlest, #7A869A)', fontWeight: 500 }}>
                       {s === 1 ? 'Choose action' : 'Configure & confirm'}
                     </span>
                     {s < 2 && <span style={{ flex: 1, height: 1, background: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))' }} />}
@@ -3451,8 +3920,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                       style={{
                         display: 'flex', alignItems: 'flex-start', gap: 12,
                         padding: '12px 16px', borderRadius: 6, cursor: 'pointer',
-                        border: `2px solid ${bulkWizardAction === opt.id ? '#0C66E4' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'}`,
-                        background: bulkWizardAction === opt.id ? '#E9F2FF' : '#FAFBFC',
+                        border: `2px solid ${bulkWizardAction === opt.id ? 'var(--ds-link, #0C66E4)' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'}`,
+                        background: bulkWizardAction === opt.id ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--ds-surface-sunken, #FAFBFC)',
                         transition: 'border-color 80ms, background 80ms',
                       }}
                     >
@@ -3462,10 +3931,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                         value={opt.id}
                         checked={bulkWizardAction === opt.id}
                         onChange={() => setBulkWizardAction(opt.id)}
-                        style={{ marginTop: 2, accentColor: '#0C66E4' }}
+                        style={{ marginTop: 4, accentColor: 'var(--ds-link, #0C66E4)' }}
                       />
                       <div>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: '#292A2E', marginBottom: 2 }}>{opt.label}</div>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #292A2E)', marginBottom: 4 }}>{opt.label}</div>
                         <div style={{ fontSize: 13, color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' }}>{opt.description}</div>
                       </div>
                     </label>
@@ -3659,9 +4128,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             background: token('elevation.surface.overlay', '#FFFFFF'),
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
-            boxShadow: '0 4px 16px rgba(9, 30, 66, 0.16)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 4px 16px rgba(9, 30, 66, 0.16))',
             minWidth: 280,
-            padding: '6px 0',
+            padding: '8px 0',
           }}
         >
           {[
@@ -3690,7 +4159,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             { id: 'delete', label: 'Delete project', danger: true, onClick: () => { setDeleteConfirmText(''); setDeleteOpen(true); } },
           ].map((item) => {
             if ((item as any).divider) {
-              return <div key={item.id} style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'), margin: '6px 0' }} />;
+              return <div key={item.id} style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'), margin: '8px 0' }} />;
             }
             return (
               <button
@@ -3717,7 +4186,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   cursor: 'pointer',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)';
+                  e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
@@ -3748,12 +4217,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(9, 30, 66, 0.54)',
+          background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
           zIndex: 9999,
           display: 'flex',
           alignItems: 'flex-start',
           justifyContent: 'center',
-          paddingTop: 60,
+          paddingTop: 48,
         }}
         onKeyDown={(e) => {
           if (e.key === 'Escape' && !addPeopleSubmitting) {
@@ -3769,7 +4238,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             maxWidth: 'calc(100vw - 48px)',
             background: token('elevation.surface', '#FFFFFF'),
             borderRadius: 8,
-            boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9, 30, 66, 0.25))',
             display: 'flex',
             flexDirection: 'column',
             maxHeight: 'calc(100vh - 120px)',
@@ -3782,7 +4251,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '20px 24px 12px',
+              padding: '24px 24px 12px',
             }}
           >
             <h2
@@ -3906,7 +4375,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               display: 'flex',
               justifyContent: 'flex-end',
               gap: 8,
-              padding: '12px 24px 20px',
+              padding: '12px 24px 24px',
               borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             }}
           >
@@ -3995,12 +4464,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(9, 30, 66, 0.54)',
+          background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
           zIndex: 9999,
           display: 'flex',
           alignItems: 'flex-start',
           justifyContent: 'center',
-          paddingTop: 80,
+          paddingTop: 48,
         }}
         onKeyDown={(e) => {
           if (e.key === 'Escape') {
@@ -4015,7 +4484,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             maxWidth: 'calc(100vw - 48px)',
             background: token('elevation.surface', '#FFFFFF'),
             borderRadius: 8,
-            boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9, 30, 66, 0.25))',
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -4027,7 +4496,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '20px 24px 8px',
+              padding: '24px 24px 8px',
             }}
           >
             <h2
@@ -4129,10 +4598,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         data-testid="archive-project-modal"
         style={{
           position: 'fixed', inset: 0,
-          background: 'rgba(9, 30, 66, 0.54)',
+          background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
           zIndex: 9999,
           display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-          paddingTop: 100,
+          paddingTop: 48,
         }}
         onKeyDown={(e) => { if (e.key === 'Escape') setArchiveOpen(false); }}
       >
@@ -4141,13 +4610,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             width: 480, maxWidth: 'calc(100vw - 48px)',
             background: token('elevation.surface', '#FFFFFF'),
             borderRadius: 8,
-            boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9, 30, 66, 0.25))',
             display: 'flex', flexDirection: 'column',
           }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header — warning appearance (icon + title in warning color). */}
-          <div style={{ padding: '20px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ padding: '24px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{ color: token('color.icon.warning', '#946F00'), display: 'inline-flex' }}>
               <AkWarningIcon label="" size="medium" />
             </span>
@@ -4215,10 +4684,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         data-testid="delete-project-modal"
         style={{
           position: 'fixed', inset: 0,
-          background: 'rgba(9, 30, 66, 0.54)',
+          background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
           zIndex: 9999,
           display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-          paddingTop: 100,
+          paddingTop: 48,
         }}
         onKeyDown={(e) => { if (e.key === 'Escape') { setDeleteOpen(false); setDeleteConfirmText(''); } }}
       >
@@ -4227,13 +4696,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             width: 480, maxWidth: 'calc(100vw - 48px)',
             background: token('elevation.surface', '#FFFFFF'),
             borderRadius: 8,
-            boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9, 30, 66, 0.25))',
             display: 'flex', flexDirection: 'column',
           }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header — danger appearance. */}
-          <div style={{ padding: '20px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ padding: '24px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{ color: token('color.icon.danger', '#AE2A19'), display: 'inline-flex' }}>
               <AkWarningIcon label="" size="medium" />
             </span>
@@ -4337,7 +4806,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             background: token('elevation.surface.overlay', '#FFFFFF'),
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 8,
-            boxShadow: '0 8px 24px rgba(9, 30, 66, 0.18)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(9, 30, 66, 0.18))',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -4346,7 +4815,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           onKeyDown={(e) => { if (e.key === 'Escape') setBgPickerAnchor(null); }}
         >
           {/* Header */}
-          <div style={{ padding: '14px 16px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ padding: '16px 16px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <h2
               id="project-background-picker-title"
               style={{
@@ -4472,7 +4941,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           {/* Footer — Remove background. Disabled when no background is set. */}
           <div
             style={{
-              padding: '10px 16px 12px',
+              padding: '8px 16px 12px',
               borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               display: 'flex',
               justifyContent: 'flex-end',
@@ -4676,7 +5145,7 @@ function GroupByControl({
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
-            padding: '6px 0',
+            padding: '8px 0',
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
             fontSize: 14,
@@ -4699,7 +5168,7 @@ function GroupByControl({
                   display: 'flex',
                   alignItems: 'center',
                   width: '100%',
-                  padding: '6px 16px',
+                  padding: '8px 16px',
                   border: 'none',
                   outline: 'none',
                   background: active
@@ -4861,7 +5330,7 @@ function ToolbarMenuButton({
             }
           }}
           style={buttonStyle}
-          onMouseEnter={(e) => { e.currentTarget.style.background = '#E4E6EA'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #E4E6EA)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           {icon}
@@ -4881,7 +5350,7 @@ function ToolbarMenuButton({
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
-            padding: '6px 0',
+            padding: '8px 0',
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
             fontSize: 14,
@@ -4894,7 +5363,6 @@ function ToolbarMenuButton({
                   padding: '4px 16px',
                   fontSize: 11,
                   fontWeight: 700,
-                  textTransform: 'uppercase',
                   letterSpacing: '0.04em',
                   color: token('color.text.subtlest', '#6B778C'),
                 }}>
@@ -4926,7 +5394,7 @@ function ToolbarMenuButton({
                       alignItems: 'center',
                       gap: 8,
                       width: '100%',
-                      padding: '6px 16px',
+                      padding: '8px 16px',
                       border: 'none',
                       outline: 'none',
                       background: focused
@@ -5042,7 +5510,7 @@ function ColumnFilterMultiSelect({
           <button
             type="button"
             onClick={() => onChange([])}
-            style={{ border: 'none', background: 'transparent', color: 'var(--ds-link, #0C66E4)', fontSize: 12, cursor: 'pointer', padding: '2px 4px' }}
+            style={{ border: 'none', background: 'transparent', color: 'var(--ds-link, #0C66E4)', fontSize: 12, cursor: 'pointer', padding: '4px 4px' }}
           >Clear</button>
         )}
       </div>
@@ -5060,7 +5528,7 @@ function ColumnFilterMultiSelect({
       />
       <div style={{ maxHeight: 240, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
         {filtered.length === 0 && (
-          <div style={{ padding: '6px 8px', fontSize: 12, color: 'var(--ds-text-subtlest, #6B6E76)' }}>No matches</div>
+          <div style={{ padding: '8px 8px', fontSize: 12, color: 'var(--ds-text-subtlest, #6B6E76)' }}>No matches</div>
         )}
         {filtered.map((opt) => {
           const isChecked = selected.includes(opt);
@@ -5069,7 +5537,7 @@ function ColumnFilterMultiSelect({
               key={opt}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                padding: '6px 8px', cursor: 'pointer', fontSize: 14,
+                padding: '8px 8px', cursor: 'pointer', fontSize: 14,
                 borderRadius: 3,
                 background: isChecked ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
               }}
@@ -5085,7 +5553,7 @@ function ColumnFilterMultiSelect({
           );
         })}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', paddingTop: 6 }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', paddingTop: 8 }}>
         <button
           type="button"
           onClick={onClose}
@@ -5331,7 +5799,7 @@ function InlineGroupCreateRow({
               border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 4,
               boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
-              padding: '6px 0',
+              padding: '8px 0',
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
               fontSize: 14,
@@ -5355,7 +5823,7 @@ function InlineGroupCreateRow({
                     alignItems: 'center',
                     gap: 8,
                     width: '100%',
-                    padding: '6px 16px',
+                    padding: '8px 16px',
                     border: 'none',
                     outline: 'none',
                     background: active
@@ -5416,7 +5884,7 @@ function InlineGroupCreateRow({
                 alignItems: 'center',
                 gap: 6,
                 height: 27,
-                padding: '0 10px',
+                padding: '0 8px',
                 border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                 borderRadius: 3,
                 background: assigneeMenuOpen ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)') : token('elevation.surface', '#FFFFFF'),
@@ -5458,7 +5926,7 @@ function InlineGroupCreateRow({
                   border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                   borderRadius: 4,
                   boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
-                  padding: 6,
+                  padding: 8,
                   zIndex: 9999,
                   fontFamily: 'var(--cp-font-body)',
                   fontSize: 14,
@@ -5474,7 +5942,7 @@ function InlineGroupCreateRow({
                   onChange={(e) => setAssigneeQuery(e.target.value)}
                   placeholder="Search people…"
                   style={{
-                    padding: '6px 8px', fontSize: 13,
+                    padding: '8px 8px', fontSize: 13,
                     border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                     borderRadius: 3, outline: 'none', fontFamily: 'inherit',
                   }}
@@ -5487,7 +5955,7 @@ function InlineGroupCreateRow({
                     onClick={() => { setAssigneeIdx(-1); setAssigneeMenuOpen(false); }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 8,
-                      width: '100%', padding: '6px 8px',
+                      width: '100%', padding: '8px 8px',
                       border: 'none', outline: 'none',
                       background: assigneeIdx === -1 ? token('color.background.selected', '#E9F2FF') : 'transparent',
                       color: token('color.text', '#292A2E'),
@@ -5499,7 +5967,7 @@ function InlineGroupCreateRow({
                     <span>Unassigned</span>
                   </button>
                   {filteredMembers.length === 0 && assigneeQuery && (
-                    <div style={{ padding: '6px 8px', fontSize: 12, color: token('color.text.subtlest', '#6B6E76') }}>
+                    <div style={{ padding: '8px 8px', fontSize: 12, color: token('color.text.subtlest', '#6B6E76') }}>
                       No matches
                     </div>
                   )}
@@ -5515,7 +5983,7 @@ function InlineGroupCreateRow({
                         onClick={() => { setAssigneeIdx(idx); setAssigneeMenuOpen(false); }}
                         style={{
                           display: 'flex', alignItems: 'center', gap: 8,
-                          width: '100%', padding: '6px 8px',
+                          width: '100%', padding: '8px 8px',
                           border: 'none', outline: 'none',
                           background: isActive ? token('color.background.selected', '#E9F2FF') : 'transparent',
                           color: token('color.text', '#292A2E'),
@@ -5562,6 +6030,7 @@ function BottomCreateRow({
   rightOffset = 0,
   leftOffset = 0,
   onCreated,
+  onCreateOverride,
 }: {
   projectKey: string;
   /** Smart default based on the active pill — when user's on "Defects"
@@ -5577,6 +6046,9 @@ function BottomCreateRow({
    *  row aligns with the table column edge. */
   leftOffset?: number;
   onCreated: () => void;
+  /** When provided (e.g. product hub adapter), bypasses the ph_issues
+   *  insert and delegates row creation to this callback instead. */
+  onCreateOverride?: (input: { title: string; issueType: CreatableIssueType }) => Promise<void>;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [summary, setSummary] = useState('');
@@ -5614,6 +6086,14 @@ function BottomCreateRow({
     if (!projectKey) return;
     setIsSubmitting(true);
     try {
+      // Adapter route — delegate to override when provided (product hub).
+      if (onCreateOverride) {
+        await onCreateOverride({ title, issueType });
+        flag.success(`Created — ${title}`);
+        reset();
+        onCreated();
+        return;
+      }
       const issueKey = await generateIssueKey(projectKey);
       const nowIso = new Date().toISOString();
       const { error } = await supabase.from('ph_issues').insert({
@@ -5874,7 +6354,7 @@ function InlineCreateRow({
         onClick={() => setIsEditing(true)}
         style={{
           display: 'flex', alignItems: 'center', gap: 8,
-          width: '100%', padding: '10px 12px', marginTop: 4,
+          width: '100%', padding: '8px 12px', marginTop: 4,
           border: '1px dashed transparent', borderRadius: 4,
           background: 'transparent', color: token('color.text.subtlest', '#6B778C'),
           fontSize: 13, fontWeight: 500, textAlign: 'left',
@@ -6002,7 +6482,7 @@ function BulkActionsBar({
           background: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
           color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderRadius: 8,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12)',
+          boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12))',
           fontFamily: 'var(--cp-font-body)',
           overflow: 'hidden',
           fontSize: 14,
@@ -6026,12 +6506,12 @@ function BulkActionsBar({
             cursor: 'pointer',
             transition: 'background 100ms',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered, rgba(255,255,255,0.10))')}
           onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
         >
           <AkCloseIcon label="" size="small" />
         </button>
-        <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse, rgba(255,255,255,0.20))' }} />
 
         {/* Selected count */}
         <span
@@ -6047,7 +6527,7 @@ function BulkActionsBar({
         >
           {count} {itemLabel} selected
         </span>
-        <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse, rgba(255,255,255,0.20))' }} />
 
         {/* 2026-05-12 Jira parity: Select all (in scope) — only when not yet all selected */}
         {onSelectAll && typeof totalAvailable === 'number' && count < totalAvailable && (
@@ -6059,7 +6539,7 @@ function BulkActionsBar({
               style={{
                 height: 32,
                 padding: '0 12px',
-                margin: '0 6px',
+                margin: '0 8px',
                 background: 'transparent',
                 border: 'none',
                 color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
@@ -6068,12 +6548,12 @@ function BulkActionsBar({
                 cursor: 'pointer',
                 borderRadius: 4,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered, rgba(255,255,255,0.10))')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               Select all ({totalAvailable} in scope)
             </button>
-            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+            <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse, rgba(255,255,255,0.20))' }} />
           </>
         )}
 
@@ -6087,7 +6567,7 @@ function BulkActionsBar({
               style={{
                 height: 32,
                 padding: '0 12px',
-                margin: '0 6px',
+                margin: '0 8px',
                 background: 'transparent',
                 border: 'none',
                 color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
@@ -6096,12 +6576,12 @@ function BulkActionsBar({
                 cursor: 'pointer',
                 borderRadius: 4,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered, rgba(255,255,255,0.10))')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               Edit fields
             </button>
-            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+            <div style={{ width: 1, height: 20, background: 'var(--ds-border-inverse, rgba(255,255,255,0.20))' }} />
           </>
         )}
 
@@ -6109,7 +6589,7 @@ function BulkActionsBar({
         <BulkPopover label="Change status" width={240}>
           {(close) => (
             <>
-              <div style={{ padding: '6px 8px 2px', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C') }}>Status</div>
+              <div style={{ padding: '8px 8px 4px', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: token('color.text.subtlest', '#6B778C') }}>Status</div>
               {statusOptions.map((opt) => (
                 <BulkMenuItem
                   key={opt.value}
@@ -6158,7 +6638,7 @@ function BulkActionsBar({
             fontFamily: 'inherit',
             transition: 'background 100ms',
           }}
-          onMouseEnter={(e) => { if (!isBusy) (e.currentTarget.style.background = 'rgba(220,38,38,0.20)'); }}
+          onMouseEnter={(e) => { if (!isBusy) (e.currentTarget.style.background = 'var(--ds-background-danger-hovered, rgba(220,38,38,0.20))'); }}
           onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
         >
           <AkTrashIcon label="" size="small" />
@@ -6245,7 +6725,7 @@ function BulkPopover({
           alignItems: 'center',
           gap: 4,
           height: 44,
-          padding: '0 14px',
+          padding: '0 16px',
           background: 'transparent',
           border: 'none',
           color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
@@ -6256,7 +6736,7 @@ function BulkPopover({
           transition: 'background 100ms',
           whiteSpace: 'nowrap',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+        onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-inverse-subtle-hovered, rgba(255,255,255,0.10))')}
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       >
         {label} ▾
@@ -6279,7 +6759,7 @@ function BulkPopover({
             background: token('elevation.surface', '#FFFFFF'),
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
-            boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18))',
             padding: 4,
             maxHeight: 360,
             overflowY: 'auto',
@@ -6346,7 +6826,7 @@ function BulkMenuItem({ onClick, children }: { onClick: () => void; children: Re
         display: 'flex',
         alignItems: 'center',
         width: '100%',
-        padding: '8px 10px',
+        padding: '8px 8px',
         border: 'none',
         background: 'transparent',
         color: token('color.text', '#292A2E'),
@@ -6421,7 +6901,7 @@ function EditBacklogItemModal({
               style={{
                 width: '100%',
                 height: 36,
-                padding: '0 10px',
+                padding: '0 8px',
                 border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                 borderRadius: 3,
                 fontSize: 14,

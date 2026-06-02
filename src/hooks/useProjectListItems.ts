@@ -3,10 +3,11 @@
  * Reads from ph_issues (the actual synced Jira data) keyed by project_key
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import type { WorkItem, WorkItemType, WorkItemStatus, WorkItemPriority } from '@/types/workItem.types';
+import type { FilterState } from '@/pages/project-hub/jira-list/components/AllWorkToolbar';
 
 /* ── helpers ── */
 
@@ -130,7 +131,7 @@ function mapPhIssue(row: any): WorkItem {
     reporterId: row.reporter_account_id ?? null,
     reporter: row.reporter_display_name ? { id: row.reporter_account_id || '', name: row.reporter_display_name } : undefined,
     priority: normalisePriority(row.priority),
-    fixVersion: Array.isArray(row.fix_versions) && row.fix_versions.length > 0 ? row.fix_versions[0] : null,
+    sprintRelease: Array.isArray(row.sprint_release) && row.sprint_release.length > 0 ? row.sprint_release[0] : null,
     commentsCount: countComments(row.comments),
     childCount: 0,
     description: row.description_text ?? null,
@@ -148,7 +149,58 @@ function mapPhIssue(row: any): WorkItem {
   };
 }
 
-const PH_ISSUES_SELECT = 'id, issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, severity, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name, is_flagged, flag_reason, raw_json';
+const PH_ISSUES_SELECT = 'id, issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, sprint_release, labels, priority, story_points, sprint_name, resolution, severity, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name, is_flagged, flag_reason, raw_json';
+
+/* ── Server-side filter application ──────────────────────────────────
+   Maps FilterState facets to PostgREST predicates on ph_issues columns.
+   Only non-empty facets are applied, so an EMPTY_FILTERS state is a no-op.
+   The DB column mapping mirrors filterStateToJql in AllWorkToolbar.tsx.
+*/
+function applyServerFilter(qb: any, filter: FilterState | undefined): any {
+  if (!filter) return qb;
+
+  // workType → issue_type (e.g. ["Epic", "Story"])
+  if (filter.workType?.length > 0) {
+    qb = qb.in('issue_type', filter.workType);
+  }
+  // status → status (e.g. ["In Requirements", "In Progress"])
+  if (filter.status?.length > 0) {
+    qb = qb.in('status', filter.status);
+  }
+  // assignee → assignee_account_id (Jira account IDs)
+  if (filter.assignee?.length > 0) {
+    qb = qb.in('assignee_account_id', filter.assignee);
+  }
+  // priority → priority
+  if (filter.priority?.length > 0) {
+    qb = qb.in('priority', filter.priority);
+  }
+  // labels → labels (array column — use overlaps)
+  if (filter.labels?.length > 0) {
+    qb = qb.overlaps('labels', filter.labels);
+  }
+  // sprintReleases → sprint_release (array column — use overlaps)
+  if (filter.sprintReleases?.length > 0) {
+    qb = qb.overlaps('sprint_release', filter.sprintReleases);
+  }
+  // resolution → resolution
+  if (filter.resolution?.length > 0) {
+    qb = qb.in('resolution', filter.resolution);
+  }
+  // sprint → sprint_name
+  if (filter.sprint?.length > 0) {
+    qb = qb.in('sprint_name', filter.sprint);
+  }
+  // severity → severity
+  if (filter.severity?.length > 0) {
+    qb = qb.in('severity', filter.severity);
+  }
+  // parent → parent_key
+  if (filter.parent?.length > 0) {
+    qb = qb.in('parent_key', filter.parent);
+  }
+  return qb;
+}
 
 /* ── Paginated ph_issues fetch ────────────────────────────────────────
    PostgREST applies a server-side max-rows cap (typically 1000) that
@@ -161,6 +213,8 @@ const PH_ISSUES_SELECT = 'id, issue_key, project_key, issue_type, summary, statu
    Task ..." 2026-04-28). PH_ISSUES_PAGE_SIZE matches the typical
    PostgREST max-rows ceiling; bump only if the server config is raised.
 */
+const YEAR_2026_START = '2026-01-01T00:00:00Z';
+const ALLOWED_ISSUE_TYPES = ['Story', 'Backend', 'Frontend', 'Sub-task', 'Epic', 'Feature'];
 const PH_ISSUES_PAGE_SIZE = 1000;
 const PH_ISSUES_MAX_ROWS = 20000; // safety stop; one project << this in practice
 
@@ -189,8 +243,10 @@ export function useProjectListItems(projectKey: string | undefined) {
       if (!projectKey) return [];
       const rows = await fetchAllPhIssues((qb) => qb
         .eq('project_key', projectKey)
+        .in('issue_type', ALLOWED_ISSUE_TYPES)
+        .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
-        .is('deleted_at', null)
+        .is('archived_at', null)
         .order('jira_updated_at', { ascending: false, nullsFirst: false }),
       );
       return rows.map(mapPhIssue);
@@ -232,18 +288,51 @@ export interface AllWorkPaginationState {
   fetchPrevPage: () => void;
   isLoading: boolean;
   error: Error | null;
+  /** Total rows matching the current filters (across all pages), not just the
+   *  current page. Null while loading. Used by the footer to show the real size
+   *  instead of implying the 25-row page is the whole list. */
+  totalCount: number | null;
+  /** Current page, 1-indexed (matches @atlaskit/pagination's selectedIndex+1). */
+  page: number;
+  /** Jump to a 1-indexed page (clamped to [1, pageCount]). */
+  setPage: (n: number) => void;
+  /** Total number of pages = ceil(totalCount / rowsPerPage). Min 1. */
+  pageCount: number;
 }
 
 const DEFAULT_ALL_WORK_ROWS_PER_PAGE = 25;
 
-export function useProjectAllWorkItems(projectKey: string | undefined): AllWorkPaginationState {
+export function useProjectAllWorkItems(
+  projectKey: string | undefined,
+  filter?: FilterState,
+): AllWorkPaginationState {
   const { user } = useAuth();
-  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ALL_WORK_ROWS_PER_PAGE);
-  const [cursor, setCursor] = useState<{ timestamp: string; key: string } | null>(null);
-  const [hasNextPage, setHasNextPage] = useState(false);
+  const [rowsPerPage, setRowsPerPageState] = useState(DEFAULT_ALL_WORK_ROWS_PER_PAGE);
+  // Offset/range pagination (2026-06-02): replaced the keyset cursor, which was
+  // broken — the cursor `.or()` collided with the 2026-gate `.or()` (PostgREST
+  // collapses two top-level `or=` params), so Next never advanced. Offset/range
+  // is deterministic and pairs cleanly with @atlaskit/pagination + totalCount.
+  const [page, setPageState] = useState(1); // 1-indexed
+
+  // Reset to page 1 whenever the filter changes so the user sees the first
+  // page of the filtered result set (not a stale offset into the old set).
+  const prevFilterRef = useRef<string>('');
+  const filterKey = JSON.stringify(filter ?? {});
+  useEffect(() => {
+    if (filterKey !== prevFilterRef.current) {
+      prevFilterRef.current = filterKey;
+      setPageState(1);
+    }
+  }, [filterKey]);
+
+  // Changing page size invalidates the current offset — reset to page 1.
+  const setRowsPerPage = useCallback((n: number) => {
+    setRowsPerPageState(n);
+    setPageState(1);
+  }, []);
 
   const { data = [], isLoading, error } = useQuery({
-    queryKey: ['project-all-work-items-keyset', projectKey, cursor, rowsPerPage],
+    queryKey: ['project-all-work-items-offset', projectKey, page, rowsPerPage, filterKey],
     queryFn: async (): Promise<WorkItem[]> => {
       if (!projectKey) return [];
 
@@ -251,50 +340,77 @@ export function useProjectAllWorkItems(projectKey: string | undefined): AllWorkP
         .from('ph_issues')
         .select(PH_ISSUES_SELECT)
         .eq('project_key', projectKey)
+        .in('issue_type', ALLOWED_ISSUE_TYPES)
+        .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
-        .is('deleted_at', null)
+        .is('archived_at', null);
+
+      // Server-side filter predicates BEFORE ordering + range, so the page
+      // window operates on the filtered result set.
+      qb = applyServerFilter(qb, filter);
+
+      qb = qb
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .order('issue_key', { ascending: false });
 
-      // Keyset pagination: if we have a cursor, filter to rows AFTER the cursor
-      // Composite-key boundary: fetch rows where (jira_updated_at < cursor.timestamp)
-      // OR (jira_updated_at = cursor.timestamp AND issue_key < cursor.key)
-      // This handles timestamp collisions (bulk-synced data) correctly
-      if (cursor) {
-        qb = qb.or(
-          `jira_updated_at.lt.${cursor.timestamp},and(jira_updated_at.eq.${cursor.timestamp},issue_key.lt.${cursor.key})`
-        );
-      }
-
-      // Fetch one extra row to determine if there's a next page
-      const { data: rows, error: err } = await qb.limit(rowsPerPage + 1);
+      // Offset/range window for the current page. .range() is inclusive on
+      // both ends. No `.or()` cursor — avoids the PostgREST double-or collision
+      // that silently dropped the keyset boundary.
+      const start = (page - 1) * rowsPerPage;
+      const end = start + rowsPerPage - 1;
+      const { data: rows, error: err } = await qb.range(start, end);
       if (err) throw err;
 
-      // Determine if there's a next page
-      const hasMore = (rows?.length ?? 0) > rowsPerPage;
-      setHasNextPage(hasMore);
-
-      // Return only the requested number of rows
-      const resultRows = (rows ?? []).slice(0, rowsPerPage);
-      return resultRows.map(mapPhIssue);
+      return (rows ?? []).map(mapPhIssue);
     },
     enabled: !!projectKey && !!user,
     staleTime: 30_000,
   });
 
+  // Total count across ALL pages for the current filter set. Cursor-independent
+  // (no keyset boundary) so it reflects the full filtered total, not one page.
+  // head:true → COUNT only, zero rows transferred.
+  const { data: totalCount = null } = useQuery({
+    queryKey: ['project-all-work-count', projectKey, filterKey],
+    queryFn: async (): Promise<number | null> => {
+      if (!projectKey) return null;
+      let qb = supabase
+        .from('ph_issues')
+        .select('*', { count: 'exact', head: true })
+        .eq('project_key', projectKey)
+        .in('issue_type', ALLOWED_ISSUE_TYPES)
+        .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
+        .is('jira_removed_at', null)
+        .is('archived_at', null);
+      qb = applyServerFilter(qb, filter);
+      const { count, error: err } = await qb;
+      if (err) throw err;
+      return count ?? 0;
+    },
+    enabled: !!projectKey && !!user,
+    staleTime: 30_000,
+  });
+
+  const pageCount = totalCount != null
+    ? Math.max(1, Math.ceil(totalCount / rowsPerPage))
+    : 1;
+
+  const setPage = useCallback((n: number) => {
+    setPageState((prev) => {
+      const clamped = Math.max(1, Math.min(n, Math.max(1, pageCount)));
+      return clamped === prev ? prev : clamped;
+    });
+  }, [pageCount]);
+
+  const hasNextPage = page < pageCount;
+  const hasPrevPage = page > 1;
+
   const fetchNextPage = useCallback(() => {
-    if (data.length === 0 || !hasNextPage) return;
-    const lastRow = data[data.length - 1];
-    if (lastRow && lastRow.updatedAt) {
-      setCursor({
-        timestamp: lastRow.updatedAt,
-        key: lastRow.jiraKey,
-      });
-    }
-  }, [data, hasNextPage]);
+    setPageState((p) => (p < pageCount ? p + 1 : p));
+  }, [pageCount]);
 
   const fetchPrevPage = useCallback(() => {
-    setCursor(null);  // Reset to first page
+    setPageState((p) => (p > 1 ? p - 1 : p));
   }, []);
 
   return {
@@ -302,11 +418,15 @@ export function useProjectAllWorkItems(projectKey: string | undefined): AllWorkP
     rowsPerPage,
     setRowsPerPage,
     hasNextPage,
-    hasPrevPage: cursor !== null,
+    hasPrevPage,
     fetchNextPage,
     fetchPrevPage,
     isLoading,
     error: error ?? null,
+    totalCount,
+    page,
+    setPage,
+    pageCount,
   };
 }
 
@@ -323,7 +443,7 @@ export function useWorkItemChildren(parentKey: string | undefined, enabled: bool
         .select(PH_ISSUES_SELECT)
         .eq('parent_key', parentKey)
         .is('jira_removed_at', null)
-        .is('deleted_at', null)
+        .is('archived_at', null)
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(500);
       if (error) throw error;
@@ -348,7 +468,7 @@ export function useWorkItem(itemId: string | undefined) {
         .select(PH_ISSUES_SELECT)
         .eq('issue_key', itemId)
         .is('jira_removed_at', null)
-        .is('deleted_at', null)
+        .is('archived_at', null)
         .maybeSingle();
       if (error) throw error;
       if (!data) return null;
@@ -373,7 +493,7 @@ export function useSearchWorkItems(projectKey: string | undefined, query: string
         .select(PH_ISSUES_SELECT)
         .eq('project_key', projectKey)
         .is('jira_removed_at', null)
-        .is('deleted_at', null)
+        .is('archived_at', null)
         .or(`summary.ilike.%${query}%,issue_key.ilike.%${query}%`)
         .limit(20);
       if (error) throw error;

@@ -40,10 +40,10 @@ const SORT_OPTIONS: { field: string; label: string }[] = [
 ];
 
 const PRIORITY_COLORS: Record<string, string> = {
-  Highest: 'var(--ds-text-danger, #ef4444)', High: '#f97316', Medium: 'var(--ds-text-brand, #3b82f6)', Low: 'var(--ds-text-success, #22c55e)', Lowest: '#8c8f96',
+  Highest: 'var(--ds-text-danger, #ef4444)', High: 'var(--ds-text-warning, #f97316)', Medium: 'var(--ds-text-brand, #3b82f6)', Low: 'var(--ds-text-success, #22c55e)', Lowest: 'var(--ds-text-subtlest, #8c8f96)',
 };
 
-const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1'];
+const AVATAR_COLORS = ['var(--ds-text-discovery, #4C6EF5)', 'var(--ds-text-warning, #FA8C16)', 'var(--ds-text-success, #52C41A)', 'var(--ds-text-danger, #EB2F96)', 'var(--ds-text-discovery, #722ED1)'];
 
 type DetailTab = 'details' | 'subtasks' | 'attachments' | 'comments' | 'history' | 'links';
 
@@ -277,7 +277,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 style={{
                   borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))',
                   backgroundColor: isActive ? 'rgba(37,99,235,0.08)' : isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
-                  borderLeft: isActive ? '3px solid #2563EB' : '3px solid transparent',
+                  borderLeft: isActive ? '3px solid var(--ds-link, #2563EB)' : '3px solid transparent',
                 }}
               >
                 <div className="flex items-start gap-2">

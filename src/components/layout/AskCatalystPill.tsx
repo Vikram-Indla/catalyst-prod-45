@@ -55,6 +55,19 @@ function AskCatalystIcon() {
   return <CatySparkle size={16} monochromeColor={token('color.icon.brand', '#2563EB')} />;
 }
 
+// CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out — static rainbow border on AI CTAs.
+// MUST be `animation: none` — no rotation, no shift, no shimmer. Pure colour treatment.
+const STATIC_RAINBOW = `conic-gradient(
+  from 0deg,
+  #FF3CAC 0deg,
+  #784BA0 60deg,
+  #2B86C5 120deg,
+  #00C9FF 180deg,
+  #92FE9D 240deg,
+  #FFD700 300deg,
+  #FF3CAC 360deg
+)`;
+
 const DEPT_OPTIONS = ['Delivery', 'Product', 'Governance', 'Operations', 'Technical Support', 'Strategy & Planning'];
 
 const DEPT_COLORS: Record<string, string> = {
@@ -122,52 +135,62 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
         </Tooltip>
       ) : (
         <Tooltip content={tooltipLabel} position="bottom">
-          <button
-            type="button"
-            onClick={handleClick}
-            disabled={!isForYou}
-            aria-disabled={!isForYou}
-            aria-label={tooltipLabel}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            onFocus={() => setHovered(true)}
-            onBlur={() => setHovered(false)}
+          {/* Always-on static rainbow border — AI affordance signifier.
+              See CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (2026-05-31). */}
+          <div
             style={{
-              all: 'unset',
-              boxSizing: 'border-box',
               display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              height: 36,
-              padding: '0 14px 0 12px',
+              padding: 2,
               borderRadius: 9999,
-              background: token('elevation.surface', '#FFFFFF'),
-              border: `1px solid ${token('color.border.brand', '#2563EB')}`,
-              // ADS canonical: rest = elevation.shadow.raised; hover ring uses brand-focus
-              // ring (color.border.focused) + raised shadow. Dark mode resolves both via CSS vars.
-              boxShadow: hovered && isForYou
-                ? `0 0 0 3px var(--ds-border-focused, rgba(37,99,235,0.20)), var(--ds-shadow-raised, 0 4px 10px rgba(37,99,235,0.12))`
-                : 'var(--ds-shadow-raised, 0 1px 2px rgba(15,23,42,0.04))',
-              transition: 'box-shadow 180ms ease, transform 180ms ease',
-              cursor: isForYou ? 'pointer' : 'not-allowed',
+              background: STATIC_RAINBOW,
               opacity: isForYou ? 1 : 0.55,
-              fontFamily: 'var(--cp-font-body)',
-              color: token('color.text', 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))'),
             }}
           >
-            <CatySparkle size={18} />
-            <span
+            <button
+              type="button"
+              onClick={handleClick}
+              disabled={!isForYou}
+              aria-disabled={!isForYou}
+              aria-label={tooltipLabel}
+              onMouseEnter={() => setHovered(true)}
+              onMouseLeave={() => setHovered(false)}
+              onFocus={() => setHovered(true)}
+              onBlur={() => setHovered(false)}
               style={{
-                fontSize: 14,
-                fontWeight: 650,
-                letterSpacing: '-0.1px',
-                lineHeight: 1,
+                all: 'unset',
+                boxSizing: 'border-box',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                height: 32,
+                padding: '0 14px 0 12px',
+                borderRadius: 9999,
+                background: token('elevation.surface', '#FFFFFF'),
+                // Border removed — rainbow wrapper provides the AI signifier.
+                // Hover state: subtle raised shadow only (no extra ring; rainbow IS the focus marker).
+                boxShadow: hovered && isForYou
+                  ? 'var(--ds-shadow-raised, 0 4px 10px rgba(37,99,235,0.12))'
+                  : 'var(--ds-shadow-raised, 0 1px 2px rgba(15,23,42,0.04))',
+                transition: 'box-shadow 180ms ease, transform 180ms ease',
+                cursor: isForYou ? 'pointer' : 'not-allowed',
+                fontFamily: 'var(--cp-font-body)',
                 color: token('color.text', 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))'),
               }}
             >
-              Ask Caty
-            </span>
-          </button>
+              <CatySparkle size={18} />
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: 650,
+                  letterSpacing: '-0.1px',
+                  lineHeight: 1,
+                  color: token('color.text', 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))'),
+                }}
+              >
+                Ask Caty
+              </span>
+            </button>
+          </div>
         </Tooltip>
       )}
 

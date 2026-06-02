@@ -143,17 +143,17 @@ export function useResource360People() {
         if (issue.parent_key) parentKeys.add(issue.parent_key);
       });
 
-      const parentStoryMap = new Map<string, { status_category: string; fix_versions: any }>();
+      const parentStoryMap = new Map<string, { status_category: string; sprint_release: any }>();
       if (parentKeys.size > 0) {
         const { data: parentStories } = await supabase
           .from('ph_issues')
-          .select('issue_key, status_category, fix_versions')
+          .select('issue_key, status_category, sprint_release')
           .in('issue_key', Array.from(parentKeys))
           .is('archived_at', null);
         (parentStories ?? []).forEach((p: any) => {
           parentStoryMap.set(p.issue_key, { 
             status_category: p.status_category,
-            fix_versions: p.fix_versions
+            sprint_release: p.sprint_release
           });
         });
       }
@@ -216,9 +216,9 @@ export function useResource360People() {
           person.active_subtasks++;
         }
 
-        // Extract release names from fix_versions if available
-        if (parentStory.fix_versions && Array.isArray(parentStory.fix_versions)) {
-          parentStory.fix_versions.forEach((version: any) => {
+        // Extract release names from sprint_release if available
+        if (parentStory.sprint_release && Array.isArray(parentStory.sprint_release)) {
+          parentStory.sprint_release.forEach((version: any) => {
             if (version.name) {
               if (!releaseNamesPerPerson.has(resourceId)) {
                 releaseNamesPerPerson.set(resourceId, new Set());

@@ -114,7 +114,7 @@ export function T10AssigneeFieldNew({
         left: position.left,
         width: Math.max(position.width, 320),
         backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--ds-border, #e5e7eb)',
         borderRadius: '8px',
         boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15), 0 4px 6px -2px rgba(0,0,0,0.08)',
         // Must be above the side panel overlay (z=100000) and panel (z=100001)
@@ -124,19 +124,19 @@ export function T10AssigneeFieldNew({
       }}
     >
       {/* Search */}
-      <div style={{ padding: '8px', borderBottom: '1px solid #f3f4f6' }}>
+      <div style={{ padding: '8px', borderBottom: '1px solid var(--ds-border, #f3f4f6)' }}>
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             padding: '8px 12px',
-            backgroundColor: '#f9fafb',
+            backgroundColor: 'var(--ds-surface-sunken, #f9fafb)',
             borderRadius: '6px',
-            border: '1px solid #e5e7eb',
+            border: '1px solid var(--ds-border, #e5e7eb)',
           }}
         >
-          <Search size={14} style={{ color: '#9ca3af', flexShrink: 0 }} />
+          <Search size={14} style={{ color: 'var(--ds-text-subtlest, #9ca3af)', flexShrink: 0 }} />
           <input
             ref={searchInputRef}
             type="text"
@@ -175,7 +175,7 @@ export function T10AssigneeFieldNew({
               padding: '10px 12px',
               marginTop: '4px',
               backgroundColor: 'var(--ds-background-danger, #fef2f2)',
-              border: '1px solid #fecaca',
+              border: '1px solid var(--ds-border-danger, #fecaca)',
               borderRadius: '6px',
               cursor: 'pointer',
               fontSize: '14px',
@@ -192,7 +192,7 @@ export function T10AssigneeFieldNew({
             style={{
               padding: '20px',
               textAlign: 'center',
-              color: '#9ca3af',
+              color: 'var(--ds-text-subtlest, #9ca3af)',
               fontSize: '14px',
             }}
           >
@@ -205,7 +205,7 @@ export function T10AssigneeFieldNew({
             style={{
               padding: '20px',
               textAlign: 'center',
-              color: '#9ca3af',
+              color: 'var(--ds-text-subtlest, #9ca3af)',
               fontSize: '14px',
             }}
           >
@@ -230,11 +230,11 @@ export function T10AssigneeFieldNew({
                   padding: '10px 12px',
                   marginTop: '4px',
                   backgroundColor: isSelected ? 'var(--ds-background-selected, #eff6ff)' : 'transparent',
-                  border: isSelected ? '1px solid #bfdbfe' : '1px solid transparent',
+                  border: isSelected ? '1px solid var(--ds-border-selected, #bfdbfe)' : '1px solid transparent',
                   borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '14px',
-                  color: '#111827',
+                  color: 'var(--ds-text, #111827)',
                 }}
               >
                 <div
@@ -273,7 +273,7 @@ export function T10AssigneeFieldNew({
                     {user.full_name || 'Unknown User'}
                   </div>
                   {user.email && (
-                    <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--ds-text-subtle, #6b7280)' }}>
                       {user.email}
                     </div>
                   )}
@@ -300,10 +300,10 @@ export function T10AssigneeFieldNew({
           width: '100%',
           padding: '10px 14px',
           backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          border: isOpen ? '1px solid #2563eb' : '1px solid #d1d5db',
+          border: isOpen ? '1px solid var(--ds-link, #2563eb)' : '1px solid var(--ds-border, #d1d5db)',
           borderRadius: '8px',
           cursor: 'pointer',
-          boxShadow: isOpen ? '0 0 0 3px #eff6ff' : 'none',
+          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-selected, #eff6ff)' : 'none',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
@@ -339,10 +339,10 @@ export function T10AssigneeFieldNew({
                   getT10Initials(assigneeName)
                 )}
               </div>
-              <span style={{ fontSize: '14px', color: '#111827', fontWeight: 500 }}>{assigneeName}</span>
+              <span style={{ fontSize: '14px', color: 'var(--ds-text, #111827)', fontWeight: 500 }}>{assigneeName}</span>
             </>
           ) : (
-            <span style={{ color: '#9ca3af', fontSize: '14px' }}>Select assignee</span>
+            <span style={{ color: 'var(--ds-text-subtlest, #9ca3af)', fontSize: '14px' }}>Select assignee</span>
           )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -356,10 +356,10 @@ export function T10AssigneeFieldNew({
                 justifyContent: 'center',
                 width: '20px',
                 height: '20px',
-                backgroundColor: '#f3f4f6',
+                backgroundColor: 'var(--ds-background-neutral, #f3f4f6)',
                 border: 'none',
                 borderRadius: '50%',
-                color: '#6b7280',
+                color: 'var(--ds-text-subtle, #6b7280)',
                 cursor: 'pointer',
               }}
             >
@@ -369,7 +369,7 @@ export function T10AssigneeFieldNew({
           <ChevronDown
             size={16}
             style={{
-              color: '#9ca3af',
+              color: 'var(--ds-text-subtlest, #9ca3af)',
               transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
               transition: 'transform 0.15s ease',
             }}

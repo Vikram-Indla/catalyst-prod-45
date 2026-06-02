@@ -4,7 +4,7 @@
  *
  * Only maps facets that JiraFilterValue supports:
  *   status, assignee(s), reporter, priority, issuetype (→ workType),
- *   labels, fixVersion(s), created, updated date ranges.
+ *   labels, sprintRelease(s), created, updated date ranges.
  *
  * Complex predicates (parent, sprint, IS EMPTY, NOT IN, functions) are
  * silently dropped — they fall outside the facet model.
@@ -47,8 +47,8 @@ export function jqlToJiraFilterValue(jql: string): JiraFilterValue {
       result.workType = [...result.workType, ...values];
     } else if (col === 'labels') {
       result.labels = [...result.labels, ...values];
-    } else if (col === 'fix_versions') {
-      result.fixVersions = [...result.fixVersions, ...values];
+    } else if (col === 'sprint_release') {
+      result.sprintReleases = [...result.sprintReleases, ...values];
     } else if (col === 'jira_created_at') {
       if (op === '>=' || op === '>') {
         result.created = { ...result.created, from: values[0] };

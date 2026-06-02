@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import AkDynamicTable from '@atlaskit/dynamic-table';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import AkAvatar from '@atlaskit/avatar';
@@ -12,6 +12,7 @@ import { useFiltersForProject, useStarFilter, useDeleteSavedFilter, type SavedFi
 import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { Star, StarOff, Plus, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 export type HubType = 'project' | 'product';
 
@@ -36,17 +37,17 @@ const TABLE_HEAD = {
 
 function ViewersChip({ config }: { config: SavedFilterFull['viewers_config'] }) {
   if (config.type === 'private') {
-    return <Lozenge>Private</Lozenge>;
+    return <span data-cp-lozenge-jira-parity><Lozenge>Private</Lozenge></span>;
   }
   if (config.type === 'org') {
-    return <Lozenge appearance="inprogress">Organisation</Lozenge>;
+    return <span data-cp-lozenge-jira-parity><Lozenge appearance="inprogress">Organisation</Lozenge></span>;
   }
-  return <Lozenge>{config.user_ids?.length ?? 0} people</Lozenge>;
+  return <span data-cp-lozenge-jira-parity><Lozenge>{config.user_ids?.length ?? 0} people</Lozenge></span>;
 }
 
 function EditorsChip({ config }: { config: SavedFilterFull['editors_config'] }) {
   const label = config?.type === 'owner_only' ? 'Owner only' : `${config?.user_ids?.length ?? 0} people`;
-  return <Lozenge>{label}</Lozenge>;
+  return <span data-cp-lozenge-jira-parity><Lozenge>{label}</Lozenge></span>;
 }
 
 export default function FiltersListPage({ hubType = 'project' }: FiltersListPageProps) {
@@ -133,8 +134,11 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           {
             key: 'star',
             content: (
-              <button
-                aria-label={isStarred ? 'Unstar filter' : 'Star filter'}
+              <IconButton
+                icon={isStarred ? Star : StarOff}
+                label={isStarred ? 'Unstar filter' : 'Star filter'}
+                appearance="subtle"
+                spacing="compact"
                 onClick={() => {
                   if (!currentUserId) return;
                   starFilter.mutate({
@@ -143,20 +147,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                     userId: currentUserId,
                   });
                 }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: 4,
-                  color: isStarred
-                    ? token('color.icon.warning')
-                    : token('color.icon.subtle'),
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                {isStarred ? <Star size="small" /> : <StarOff size="small" />}
-              </button>
+              />
             ),
           },
           {
@@ -184,7 +175,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                     style={{
                       fontSize: 11,
                       color: token('color.text.subtlest'),
-                      fontFamily: 'var(--cp-font-mono, monospace)',
+                      fontFamily: 'var(--ds-font-family-monospace, monospace)',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
@@ -202,7 +193,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             content: f.owner ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <AkAvatar
-                  src={f.owner.avatar_url ?? undefined}
+                  src={resolveAvatarUrl(f.owner.full_name)}
                   name={f.owner.full_name ?? 'Unknown'}
                   size="xsmall"
                 />
@@ -244,7 +235,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
               const n = f.starred_by_user_ids.length;
               return (
                 <span style={{ fontSize: 14, color: token('color.text.subtle') }}>
-                  {n === 0 ? '0 people' : `${n} ${n === 1 ? 'person' : 'people'}`}
+                  {n === 0 ? '—' : `${n} ${n === 1 ? 'person' : 'people'}`}
                 </span>
               );
             })(),
@@ -294,7 +285,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           <h1 style={{
             margin: 0,
             fontSize: 24,
-            fontWeight: token('font.weight.bold'),
+            fontWeight: 653,
             color: token('color.text'),
             lineHeight: '28px',
           }}>

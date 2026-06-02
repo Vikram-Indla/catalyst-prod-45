@@ -109,7 +109,7 @@ export const usageMap: UsageMap = {
     "source": "./calendar",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/PlannerCalendar.tsx"
+      "src/modules/tasks/components/PlannerCalendar.tsx"
     ]
   },
   "ActiveFilters::../types/objective-roadmap": {
@@ -148,7 +148,7 @@ export const usageMap: UsageMap = {
       "src/components/workhub/workitems/WorkItemFilters.tsx",
       "src/features/release-dashboard/components/AnalyticsDashboard.tsx",
       "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/modules/project-work-hub/components/FilterDrawer.tsx",
       "src/pages/TeamRoom.tsx",
       "src/pages/testhub/ActivityFeedPage.tsx",
@@ -269,7 +269,7 @@ export const usageMap: UsageMap = {
     "source": "./ActivitySection",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
     ]
   },
   "ActivityTab::./drawer-tabs/ActivityTab": {
@@ -358,7 +358,7 @@ export const usageMap: UsageMap = {
     "source": "./AddColumnButton",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/kanban/KanbanBoard.tsx"
+      "src/modules/tasks/components/kanban/KanbanBoard.tsx"
     ]
   },
   "AddColumnModal::./AddColumnModal": {
@@ -366,7 +366,7 @@ export const usageMap: UsageMap = {
     "source": "./AddColumnModal",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/boards/BoardKanban.tsx"
+      "src/modules/tasks/components/boards/BoardKanban.tsx"
     ]
   },
   "AddEditRoleModal::@/components/admin/roles-permissions/AddEditRoleModal": {
@@ -3342,12 +3342,12 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
       "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
       "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
-      "src/modules/planner/components/TaskList/TaskListHeader.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/dashboard/DashboardTeamWorkload.tsx",
-      "src/modules/planner/components/dashboard/DashboardWorkstreamHealth.tsx",
-      "src/modules/planner/components/my-tasks/TaskSection.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/TaskList/TaskListHeader.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/dashboard/DashboardTeamWorkload.tsx",
+      "src/modules/tasks/components/dashboard/DashboardWorkstreamHealth.tsx",
+      "src/modules/tasks/components/my-tasks/TaskSection.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/priorities/components/PriToastContainer.tsx",
       "src/modules/task10/components/panel/T10ActivityTimeline.tsx",
       "src/modules/task10/components/week/T10WeekView.tsx",
@@ -3489,13 +3489,13 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ReleasesPage.tsx",
       "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/planner/components/PlannerBulkDeleteModal.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/PlannerBulkDeleteModal.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/product-backlog/pages/CatalystDemandList.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
@@ -3580,13 +3580,13 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ReleasesPage.tsx",
       "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/planner/components/PlannerBulkDeleteModal.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/PlannerBulkDeleteModal.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/product-backlog/pages/CatalystDemandList.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
@@ -3671,13 +3671,13 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ReleasesPage.tsx",
       "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/planner/components/PlannerBulkDeleteModal.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/PlannerBulkDeleteModal.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/product-backlog/pages/CatalystDemandList.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
@@ -3765,13 +3765,13 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ReleasesPage.tsx",
       "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/planner/components/PlannerBulkDeleteModal.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/PlannerBulkDeleteModal.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/product-backlog/pages/CatalystDemandList.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
@@ -3859,13 +3859,13 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ReleasesPage.tsx",
       "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/planner/components/PlannerBulkDeleteModal.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/PlannerBulkDeleteModal.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/product-backlog/pages/CatalystDemandList.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
@@ -3953,13 +3953,13 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ReleasesPage.tsx",
       "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/planner/components/PlannerBulkDeleteModal.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/PlannerBulkDeleteModal.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/product-backlog/pages/CatalystDemandList.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
@@ -4046,13 +4046,13 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ReleasesPage.tsx",
       "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/planner/components/PlannerBulkDeleteModal.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/PlannerBulkDeleteModal.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/product-backlog/pages/CatalystDemandList.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
@@ -4140,13 +4140,13 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ReleasesPage.tsx",
       "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/planner/components/PlannerBulkDeleteModal.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/PlannerBulkDeleteModal.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/product-backlog/pages/CatalystDemandList.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/project-work-hub/components/dialogs/DeleteConfirmDialog.tsx",
@@ -4165,7 +4165,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/releases/test-case-detail/TestCaseVersionHistory.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx"
     ]
   },
   "AlertIcon::@atlaskit/icon/core/alert": {
@@ -4377,23 +4377,23 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
       "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
-      "src/modules/planner/components/PlannerBulkDeleteModal.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
-      "src/modules/planner/components/boards/BoardTaskCard.tsx",
-      "src/modules/planner/components/calendar/TaskHoverCard.tsx",
-      "src/modules/planner/components/dashboard/DashboardKPIStrip.tsx",
-      "src/modules/planner/components/dashboard/DashboardMetricCards.tsx",
-      "src/modules/planner/components/dashboard/DashboardUpcomingDeadlines.tsx",
-      "src/modules/planner/components/dashboard/DashboardUpcomingDeadlinesV2.tsx",
-      "src/modules/planner/components/dashboard/DashboardWorkstreamHealth.tsx",
-      "src/modules/planner/components/dashboard/DashboardWorkstreamHealthV2.tsx",
-      "src/modules/planner/components/insights/MonthlyChronicleView.tsx",
-      "src/modules/planner/components/insights/WeeklySummaryView.tsx",
-      "src/modules/planner/components/kanban/KanbanCard.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/PlannerBulkDeleteModal.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
+      "src/modules/tasks/components/boards/BoardTaskCard.tsx",
+      "src/modules/tasks/components/calendar/TaskHoverCard.tsx",
+      "src/modules/tasks/components/dashboard/DashboardKPIStrip.tsx",
+      "src/modules/tasks/components/dashboard/DashboardMetricCards.tsx",
+      "src/modules/tasks/components/dashboard/DashboardUpcomingDeadlines.tsx",
+      "src/modules/tasks/components/dashboard/DashboardUpcomingDeadlinesV2.tsx",
+      "src/modules/tasks/components/dashboard/DashboardWorkstreamHealth.tsx",
+      "src/modules/tasks/components/dashboard/DashboardWorkstreamHealthV2.tsx",
+      "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
+      "src/modules/tasks/components/kanban/KanbanCard.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/priorities/components/PriCarryoverBanner.tsx",
       "src/modules/priorities/components/PriToastContainer.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
@@ -4809,11 +4809,11 @@ export const usageMap: UsageMap = {
       "src/modules/backlog/components/BacklogToolbar.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/in-jira/components/releases/VersionCard.tsx",
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamCard.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamRowView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamCard.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamRowView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
       "src/modules/project-work-hub/components/tabs/ArchivedTab.tsx",
       "src/modules/task10/components/landing/T10ArchivedCardV3.tsx",
@@ -4874,7 +4874,7 @@ export const usageMap: UsageMap = {
     "source": "./ArchivedWorkstreamsView",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx"
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx"
     ]
   },
   "ArchiveIcon::@atlaskit/icon/glyph/archive": {
@@ -4891,8 +4891,8 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx"
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx"
     ]
   },
   "ArrowDown::@/lib/atlaskit-icons": {
@@ -4931,7 +4931,7 @@ export const usageMap: UsageMap = {
       "src/modules/backlog/components/BacklogContextMenu.tsx",
       "src/modules/feature-backlog/components/FeatureBacklogTable.tsx",
       "src/modules/in-jira/components/drawer/ActivityTabs.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
       "src/modules/program-epics/components/EpicListView.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/HeaderOverflowMenu.tsx",
       "src/modules/task10/components/week/T10PriorityCard.tsx",
@@ -5035,7 +5035,7 @@ export const usageMap: UsageMap = {
       "src/modules/capacity-planner/components/import/CapacityImportWizard.tsx",
       "src/modules/epic-balancing/components/EpicBalancingPage.tsx",
       "src/modules/incidents/analytics/components/DrilldownDrawer.tsx",
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/task10/components/week/T10WeekHeader.tsx",
       "src/modules/task10/pages/T10CompletedPage.tsx",
@@ -5140,9 +5140,9 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
       "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
       "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/QuickActions.tsx",
-      "src/modules/planner/components/insights/MonthlyChronicleView.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/QuickActions.tsx",
+      "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
       "src/modules/task10/components/completed/T10CompletedItemsList.tsx",
       "src/modules/task10/components/completed/T10CompletedSummaryCards.tsx",
       "src/modules/task10/components/landing/T10CompletedDetailModal.tsx",
@@ -5246,7 +5246,7 @@ export const usageMap: UsageMap = {
       "src/modules/feature-backlog/components/FeatureBacklogTable.tsx",
       "src/modules/in-jira/components/drawer/ActivityTabs.tsx",
       "src/modules/incidents/kanban/components/KanbanCard.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
       "src/modules/program-epics/components/EpicListView.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/HeaderOverflowMenu.tsx",
       "src/modules/task10/components/week/T10AIBanner.tsx",
@@ -5291,7 +5291,7 @@ export const usageMap: UsageMap = {
       "src/components/workhub/issue-view/IssueContentView.tsx",
       "src/modules/feature-backlog/components/FeatureBacklogTable.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
-      "src/modules/planner/components/TaskList/TaskListTable.tsx",
+      "src/modules/tasks/components/TaskList/TaskListTable.tsx",
       "src/modules/product-roadmap/components/RoadmapListPanel.tsx",
       "src/modules/task10/components/week/T10SortableList.tsx",
       "src/modules/task10/components/week/T10UnifiedSortableList.tsx",
@@ -5400,8 +5400,8 @@ export const usageMap: UsageMap = {
     "source": "./AssigneeAvatar",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/kanban/KanbanCard.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx"
+      "src/modules/tasks/components/kanban/KanbanCard.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx"
     ]
   },
   "AssigneeCell::./CellRenderers": {
@@ -5445,7 +5445,7 @@ export const usageMap: UsageMap = {
       "src/components/hierarchy/BulkActionBar.tsx",
       "src/components/hierarchy/DetailPanel.tsx",
       "src/components/hierarchy/WorkItemTable.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx"
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx"
     ]
   },
   "AssigneePickerPopover::./AssigneePickerPopover": {
@@ -5645,7 +5645,7 @@ export const usageMap: UsageMap = {
     "source": "./AttachmentsSection",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
     ]
   },
   "AttachmentsSection::@/components/shared/AttachmentsSection": {
@@ -5937,9 +5937,9 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/dashboard/DashboardTeamWorkload.tsx",
-      "src/modules/planner/components/dashboard/DashboardTeamWorkloadV2.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/dashboard/DashboardTeamWorkload.tsx",
+      "src/modules/tasks/components/dashboard/DashboardTeamWorkloadV2.tsx",
       "src/modules/project-work-hub/components/WorkItemDetailsDrawer.tsx",
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
       "src/modules/project-work-hub/components/tabs/ListTab.tsx",
@@ -5964,7 +5964,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/planner/task-modal/atoms",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/CreateTaskModal/CreateTaskModal.tsx"
+      "src/modules/tasks/components/CreateTaskModal/CreateTaskModal.tsx"
     ]
   },
   "Avatar::@atlaskit/avatar": {
@@ -6282,7 +6282,7 @@ export const usageMap: UsageMap = {
       "src/components/ja/home/CriticalStrip.tsx",
       "src/components/modals/LinkWorkItemModal/LinkTypeSelector.tsx",
       "src/features/my-test-scope/components/ProgressGauge.tsx",
-      "src/modules/planner/components/dashboard/DashboardMetricCards.tsx",
+      "src/modules/tasks/components/dashboard/DashboardMetricCards.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
       "src/pages/project/FeatureViewPage.tsx",
       "src/pages/project/feature-detail/FeatureLinksTab.tsx"
@@ -6347,9 +6347,9 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/SummaryPage.tsx",
       "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/ProgressSection.tsx",
-      "src/modules/planner/components/insights/MonthlyChronicleView.tsx",
-      "src/modules/planner/components/insights/WeeklySummaryView.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/ProgressSection.tsx",
+      "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
       "src/modules/task10/components/landing/T10EmptyState.tsx",
       "src/pages/KanbanBoardAnalytics.tsx",
@@ -6577,7 +6577,7 @@ export const usageMap: UsageMap = {
     "source": "./BoardKanban",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/boards/PlannerBoardsPage.tsx"
+      "src/modules/tasks/components/boards/PlannerBoardsPage.tsx"
     ]
   },
   "BoardManagerPage::@/components/boards/BoardManagerPage": {
@@ -6626,9 +6626,9 @@ export const usageMap: UsageMap = {
     "source": "./BoardTaskCard",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/boards/BoardColumn.tsx",
-      "src/modules/planner/components/boards/BoardKanban.tsx",
-      "src/modules/planner/components/boards/SortableColumn.tsx"
+      "src/modules/tasks/components/boards/BoardColumn.tsx",
+      "src/modules/tasks/components/boards/BoardKanban.tsx",
+      "src/modules/tasks/components/boards/SortableColumn.tsx"
     ]
   },
   "BoardToolbar::@/components/board/BoardToolbar": {
@@ -7281,7 +7281,7 @@ export const usageMap: UsageMap = {
       "src/features/release-dashboard/components/GoNoGoDashboard.tsx",
       "src/features/release-dashboard/components/QualityMetricsPanel.tsx",
       "src/features/release-dashboard/components/ReportPanel.tsx",
-      "src/modules/planner/components/insights/WeeklySummaryView.tsx",
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/project-work-hub/components/WorkTypeIcon.tsx",
       "src/pages/releases/CommandCenterPage.tsx",
@@ -7364,8 +7364,8 @@ export const usageMap: UsageMap = {
     "source": "../task-list/BulkActionBar",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskList/TaskListPage.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx"
+      "src/modules/tasks/components/TaskList/TaskListPage.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx"
     ]
   },
   "BulkActionBar::./BulkActionBar": {
@@ -8312,7 +8312,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/in-jira/components/import/AISuggestionBanner.tsx",
       "src/modules/in-jira/components/import/ImportWizard.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/in-jira/components/releases/VersionDialog.tsx",
       "src/modules/in-jira/pages/AllWorkPage.tsx",
@@ -8352,36 +8352,36 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
-      "src/modules/planner/PlannerPage.tsx",
-      "src/modules/planner/components/AddColumnModal.tsx",
-      "src/modules/planner/components/PlannerBulkActionBar.tsx",
-      "src/modules/planner/components/PlannerCalendar.tsx",
-      "src/modules/planner/components/PlannerCreateTeamModal.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/TaskChecklist.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/ActivitySection.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/ChecklistSection.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/QuickActions.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SectionHeader.tsx",
-      "src/modules/planner/components/TaskList/ExportButton.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/boards/AddColumnModal.tsx",
-      "src/modules/planner/components/calendar/CalendarHeader.tsx",
-      "src/modules/planner/components/calendar/QuickAddPopover.tsx",
-      "src/modules/planner/components/dashboard/DashboardWorkstreamFilter.tsx",
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx",
-      "src/modules/planner/components/insights/MonthlyChronicleView.tsx",
-      "src/modules/planner/components/insights/WeeklySummaryView.tsx",
-      "src/modules/planner/components/kanban/AddColumnButton.tsx",
-      "src/modules/planner/components/kanban/KanbanColumn.tsx",
-      "src/modules/planner/components/kanban/KanbanFilters.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/shared/PlannerViewHeader.tsx",
-      "src/modules/planner/components/task-list/InlineDatePicker.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamQuickEditDialog.tsx",
+      "src/modules/tasks/PlannerPage.tsx",
+      "src/modules/tasks/components/AddColumnModal.tsx",
+      "src/modules/tasks/components/PlannerBulkActionBar.tsx",
+      "src/modules/tasks/components/PlannerCalendar.tsx",
+      "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/TaskChecklist.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/ActivitySection.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/ChecklistSection.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/QuickActions.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SectionHeader.tsx",
+      "src/modules/tasks/components/TaskList/ExportButton.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/boards/AddColumnModal.tsx",
+      "src/modules/tasks/components/calendar/CalendarHeader.tsx",
+      "src/modules/tasks/components/calendar/QuickAddPopover.tsx",
+      "src/modules/tasks/components/dashboard/DashboardWorkstreamFilter.tsx",
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx",
+      "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
+      "src/modules/tasks/components/kanban/AddColumnButton.tsx",
+      "src/modules/tasks/components/kanban/KanbanColumn.tsx",
+      "src/modules/tasks/components/kanban/KanbanFilters.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/shared/PlannerViewHeader.tsx",
+      "src/modules/tasks/components/task-list/InlineDatePicker.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamQuickEditDialog.tsx",
       "src/modules/product-backlog/components/ColumnsPanel.tsx",
       "src/modules/product-backlog/components/FilterDrawer.tsx",
       "src/modules/product-backlog/components/ProductBacklogFiltersDialog.tsx",
@@ -8746,8 +8746,8 @@ export const usageMap: UsageMap = {
       "src/modules/budget/components/ResourceCostSection.tsx",
       "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/task-list/InlineDatePicker.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/task-list/InlineDatePicker.tsx",
       "src/modules/work-hub/components/CreateVersionDialog.tsx",
       "src/pages/admin/ResourceAssignments.tsx",
       "src/pages/producthub/ideation/CreateDriveModal.tsx"
@@ -8882,19 +8882,19 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KeyResultAnalyticsDrawer/KeyResultAnalyticsDrawer.tsx",
       "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/planner/components/CreateTaskModal/CreateTaskModal.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
-      "src/modules/planner/components/boards/BoardTaskCard.tsx",
-      "src/modules/planner/components/calendar/CalendarHeader.tsx",
-      "src/modules/planner/components/calendar/TaskContextMenu.tsx",
-      "src/modules/planner/components/calendar/TaskHoverCard.tsx",
-      "src/modules/planner/components/dashboard/DashboardUpcomingDeadlines.tsx",
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx",
-      "src/modules/planner/components/kanban/DueDateBadge.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/my-tasks/TaskRow.tsx",
-      "src/modules/planner/components/my-tasks/TaskSection.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/CreateTaskModal/CreateTaskModal.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
+      "src/modules/tasks/components/boards/BoardTaskCard.tsx",
+      "src/modules/tasks/components/calendar/CalendarHeader.tsx",
+      "src/modules/tasks/components/calendar/TaskContextMenu.tsx",
+      "src/modules/tasks/components/calendar/TaskHoverCard.tsx",
+      "src/modules/tasks/components/dashboard/DashboardUpcomingDeadlines.tsx",
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx",
+      "src/modules/tasks/components/kanban/DueDateBadge.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/my-tasks/TaskRow.tsx",
+      "src/modules/tasks/components/my-tasks/TaskSection.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
       "src/modules/priorities/pages/PriListsPage.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapEmptyState.tsx",
@@ -8967,7 +8967,7 @@ export const usageMap: UsageMap = {
     "source": "./calendar",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/PlannerCalendar.tsx"
+      "src/modules/tasks/components/PlannerCalendar.tsx"
     ]
   },
   "CalendarCheck::@/lib/atlaskit-icons": {
@@ -9022,9 +9022,9 @@ export const usageMap: UsageMap = {
       "src/components/work-items/SprintSelector.tsx",
       "src/components/workhub/calendar/CalendarPage.tsx",
       "src/components/workhub/calendar/CalendarReleaseView.tsx",
-      "src/modules/planner/components/PlannerCalendar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/calendar/CalendarHeader.tsx"
+      "src/modules/tasks/components/PlannerCalendar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/calendar/CalendarHeader.tsx"
     ]
   },
   "CalendarEventDrawer::./CalendarEventDrawer": {
@@ -9090,8 +9090,8 @@ export const usageMap: UsageMap = {
       "src/modules/budget/components/LicenseDialog.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/planner/components/PlannerCalendar.tsx",
-      "src/modules/planner/components/task-list/InlineDatePicker.tsx",
+      "src/modules/tasks/components/PlannerCalendar.tsx",
+      "src/modules/tasks/components/task-list/InlineDatePicker.tsx",
       "src/modules/work-hub/components/CreateVersionDialog.tsx",
       "src/pages/producthub/ideation/CreateDriveModal.tsx",
       "src/pages/wiki/WikiTemplatesPage.tsx"
@@ -9148,7 +9148,7 @@ export const usageMap: UsageMap = {
     "source": "./calendar",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/PlannerCalendar.tsx"
+      "src/modules/tasks/components/PlannerCalendar.tsx"
     ]
   },
   "CalendarOff::@/lib/atlaskit-icons": {
@@ -9254,7 +9254,7 @@ export const usageMap: UsageMap = {
       "src/components/backlog/DetailPanel/DescriptionEditor.tsx",
       "src/components/incidents/IncidentDescription.tsx",
       "src/components/planner/task-modal/organisms/tabs/DescriptionTab.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDescription.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDescription.tsx",
       "src/pages/project/components/FeatureDescription.tsx"
     ]
   },
@@ -9329,7 +9329,7 @@ export const usageMap: UsageMap = {
     "source": "./calendar",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/PlannerCalendar.tsx"
+      "src/modules/tasks/components/PlannerCalendar.tsx"
     ]
   },
   "CapacityPlannerGantt::@/components/capacity-planner": {
@@ -11243,44 +11243,44 @@ export const usageMap: UsageMap = {
       "src/modules/backlog/components/split-panel/EpicDetailPanel.tsx",
       "src/modules/in-jira/components/drawer/InlineEdit.tsx",
       "src/modules/in-jira/components/import/AISuggestionBanner.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/okr-v2/components/OKRColumnChooser.tsx",
       "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/planner/components/CreateTaskModal/CreateTaskModal.tsx",
-      "src/modules/planner/components/CreateTaskModal/fields/AssigneeSelect.tsx",
-      "src/modules/planner/components/CreateTaskModal/fields/PrioritySelect.tsx",
-      "src/modules/planner/components/CreateTaskModal/fields/WorkstreamSelect.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/ChecklistSection.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/QuickActions.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SavingIndicator.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SidebarFields.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/StatusDropdown.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/TaskList/AssigneeDropdown.tsx",
-      "src/modules/planner/components/TaskList/LabelsDropdown.tsx",
-      "src/modules/planner/components/TaskList/PriorityDropdown.tsx",
-      "src/modules/planner/components/TaskList/StatusDropdown.tsx",
-      "src/modules/planner/components/TaskList/WorkstreamDropdown.tsx",
-      "src/modules/planner/components/boards/AddColumnModal.tsx",
-      "src/modules/planner/components/boards/ColumnActions.tsx",
-      "src/modules/planner/components/calendar/TaskContextMenu.tsx",
-      "src/modules/planner/components/dashboard/DashboardWorkstreamFilter.tsx",
-      "src/modules/planner/components/kanban/DueDateBadge.tsx",
-      "src/modules/planner/components/my-tasks/CompletedTodaySection.tsx",
-      "src/modules/planner/components/my-tasks/MyTasksHeader.tsx",
-      "src/modules/planner/components/my-tasks/TaskRow.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
-      "src/modules/planner/components/workstreams/CreateWorkstreamModal.tsx",
-      "src/modules/planner/components/workstreams/LeadPicker.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamLeadPickerDropdown.tsx",
+      "src/modules/tasks/components/CreateTaskModal/CreateTaskModal.tsx",
+      "src/modules/tasks/components/CreateTaskModal/fields/AssigneeSelect.tsx",
+      "src/modules/tasks/components/CreateTaskModal/fields/PrioritySelect.tsx",
+      "src/modules/tasks/components/CreateTaskModal/fields/WorkstreamSelect.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/ChecklistSection.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/QuickActions.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SavingIndicator.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SidebarFields.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/StatusDropdown.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/TaskList/AssigneeDropdown.tsx",
+      "src/modules/tasks/components/TaskList/LabelsDropdown.tsx",
+      "src/modules/tasks/components/TaskList/PriorityDropdown.tsx",
+      "src/modules/tasks/components/TaskList/StatusDropdown.tsx",
+      "src/modules/tasks/components/TaskList/WorkstreamDropdown.tsx",
+      "src/modules/tasks/components/boards/AddColumnModal.tsx",
+      "src/modules/tasks/components/boards/ColumnActions.tsx",
+      "src/modules/tasks/components/calendar/TaskContextMenu.tsx",
+      "src/modules/tasks/components/dashboard/DashboardWorkstreamFilter.tsx",
+      "src/modules/tasks/components/kanban/DueDateBadge.tsx",
+      "src/modules/tasks/components/my-tasks/CompletedTodaySection.tsx",
+      "src/modules/tasks/components/my-tasks/MyTasksHeader.tsx",
+      "src/modules/tasks/components/my-tasks/TaskRow.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/CreateWorkstreamModal.tsx",
+      "src/modules/tasks/components/workstreams/LeadPicker.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamLeadPickerDropdown.tsx",
       "src/modules/priorities/components/PriCarryoverBanner.tsx",
       "src/modules/priorities/components/PriStatusToggle.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
@@ -11480,11 +11480,11 @@ export const usageMap: UsageMap = {
       "src/modules/feature-backlog/components/FeatureBacklogTable.tsx",
       "src/modules/feature-backlog/components/FeatureKanbanColumn.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListTable.tsx",
-      "src/modules/planner/components/TaskList/TaskRow.tsx",
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListTable.tsx",
+      "src/modules/tasks/components/TaskList/TaskRow.tsx",
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
       "src/modules/product-backlog/components/ColumnsPanel.tsx",
       "src/modules/product-backlog/components/FilterDrawer.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
@@ -11742,11 +11742,11 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/in-jira/pages/SummaryPage.tsx",
       "src/modules/objectives/components/Widgets/ObjectiveSummaryCard.tsx",
-      "src/modules/planner/components/TaskList/TaskListHeader.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/dashboard/DashboardWorkstreamHealth.tsx",
-      "src/modules/planner/components/my-tasks/CompletedTodaySection.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/TaskList/TaskListHeader.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/dashboard/DashboardWorkstreamHealth.tsx",
+      "src/modules/tasks/components/my-tasks/CompletedTodaySection.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/pages/InviteAcceptPage.tsx",
       "src/pages/ResetPassword.tsx",
       "src/pages/Roadmaps.tsx",
@@ -11866,7 +11866,7 @@ export const usageMap: UsageMap = {
     "source": "./ChecklistIndicator",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskCard.tsx"
+      "src/modules/tasks/components/TaskCard.tsx"
     ]
   },
   "ChecklistItem::../../molecules": {
@@ -11898,7 +11898,7 @@ export const usageMap: UsageMap = {
     "source": "./ChecklistSection",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
     ]
   },
   "ChecklistTab::./organisms": {
@@ -11987,9 +11987,9 @@ export const usageMap: UsageMap = {
       "src/components/work-manager/TaskCard.tsx",
       "src/components/work-manager/TaskDrawer.tsx",
       "src/components/workhub/issue-view/IssueContentView.tsx",
-      "src/modules/planner/components/ChecklistIndicator.tsx",
-      "src/modules/planner/components/TaskChecklist.tsx",
-      "src/modules/planner/components/dashboard/DashboardMetricCards.tsx",
+      "src/modules/tasks/components/ChecklistIndicator.tsx",
+      "src/modules/tasks/components/TaskChecklist.tsx",
+      "src/modules/tasks/components/dashboard/DashboardMetricCards.tsx",
       "src/modules/priorities/components/PriEmptyState.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/project-work-hub/components/WorkTypeIcon.tsx",
@@ -12218,30 +12218,30 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx",
       "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
-      "src/modules/planner/components/CreateTaskModal/CreateTaskModal.tsx",
-      "src/modules/planner/components/CreateTaskModal/fields/AssigneeSelect.tsx",
-      "src/modules/planner/components/CreateTaskModal/fields/PrioritySelect.tsx",
-      "src/modules/planner/components/CreateTaskModal/fields/WorkstreamSelect.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/CollapsibleSection.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SidebarFields.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/StatusDropdown.tsx",
-      "src/modules/planner/components/TaskList/StatusDropdown.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListTable.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/TaskList/WorkstreamDropdown.tsx",
-      "src/modules/planner/components/dashboard/DashboardWorkstreamFilter.tsx",
-      "src/modules/planner/components/kanban/SwimlaneRow.tsx",
-      "src/modules/planner/components/my-tasks/CompletedTodaySection.tsx",
-      "src/modules/planner/components/my-tasks/MyTasksHeader.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/workstreams/LeadPicker.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamRowView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/CreateTaskModal/CreateTaskModal.tsx",
+      "src/modules/tasks/components/CreateTaskModal/fields/AssigneeSelect.tsx",
+      "src/modules/tasks/components/CreateTaskModal/fields/PrioritySelect.tsx",
+      "src/modules/tasks/components/CreateTaskModal/fields/WorkstreamSelect.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/CollapsibleSection.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SidebarFields.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/StatusDropdown.tsx",
+      "src/modules/tasks/components/TaskList/StatusDropdown.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListTable.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/TaskList/WorkstreamDropdown.tsx",
+      "src/modules/tasks/components/dashboard/DashboardWorkstreamFilter.tsx",
+      "src/modules/tasks/components/kanban/SwimlaneRow.tsx",
+      "src/modules/tasks/components/my-tasks/CompletedTodaySection.tsx",
+      "src/modules/tasks/components/my-tasks/MyTasksHeader.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/workstreams/LeadPicker.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamRowView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/product-roadmap/components/RoadmapListPanel.tsx",
       "src/modules/program-epics/components/EpicListView.tsx",
       "src/modules/project-work-hub/components/AddPeopleModal.tsx",
@@ -12445,11 +12445,11 @@ export const usageMap: UsageMap = {
       "src/modules/feature-backlog/components/FeatureKanbanColumn.tsx",
       "src/modules/feature-backlog/components/split-panel/FeatureDetailPanel.tsx",
       "src/modules/kanban/components/KanbanColumn.tsx",
-      "src/modules/planner/components/CreateTaskModal/CreateTaskModal.tsx",
-      "src/modules/planner/components/PlannerCalendar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/calendar/CalendarHeader.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/CreateTaskModal/CreateTaskModal.tsx",
+      "src/modules/tasks/components/PlannerCalendar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/calendar/CalendarHeader.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/priorities/components/PriWeekHeader.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
@@ -12634,15 +12634,15 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx",
-      "src/modules/planner/components/CreateTaskModal/CreateTaskModal.tsx",
-      "src/modules/planner/components/PlannerCalendar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/CollapsibleSection.tsx",
-      "src/modules/planner/components/calendar/CalendarHeader.tsx",
-      "src/modules/planner/components/calendar/TaskContextMenu.tsx",
-      "src/modules/planner/components/kanban/SwimlaneRow.tsx",
-      "src/modules/planner/components/workstreams/CreateWorkstreamModal.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/CreateTaskModal/CreateTaskModal.tsx",
+      "src/modules/tasks/components/PlannerCalendar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/CollapsibleSection.tsx",
+      "src/modules/tasks/components/calendar/CalendarHeader.tsx",
+      "src/modules/tasks/components/calendar/TaskContextMenu.tsx",
+      "src/modules/tasks/components/kanban/SwimlaneRow.tsx",
+      "src/modules/tasks/components/workstreams/CreateWorkstreamModal.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/priorities/components/PriWeekHeader.tsx",
       "src/modules/product-roadmap/components/RoadmapListPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
@@ -12933,7 +12933,7 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
       "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
-      "src/modules/planner/components/TaskList/TaskListTable.tsx",
+      "src/modules/tasks/components/TaskList/TaskListTable.tsx",
       "src/modules/task10/components/landing/T10ListCardMinimal.tsx",
       "src/pages/CleanupPage.tsx",
       "src/pages/ResourceListingPage.tsx",
@@ -13060,8 +13060,8 @@ export const usageMap: UsageMap = {
       "src/components/ui/catalyst/CatalystOwnerAvatar.tsx",
       "src/components/users/UserAvatar.tsx",
       "src/components/workhub/shared/AvatarChip.tsx",
-      "src/modules/planner/components/UserAvatar.tsx",
-      "src/modules/planner/components/kanban/AssigneeAvatar.tsx"
+      "src/modules/tasks/components/UserAvatar.tsx",
+      "src/modules/tasks/components/kanban/AssigneeAvatar.tsx"
     ]
   },
   "CircularGauge::../shared/CircularGauge": {
@@ -13304,15 +13304,15 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
       "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
-      "src/modules/planner/components/calendar/TaskHoverCard.tsx",
-      "src/modules/planner/components/dashboard/DashboardUpcomingDeadlines.tsx",
-      "src/modules/planner/components/dashboard/DashboardUpcomingDeadlinesV2.tsx",
-      "src/modules/planner/components/insights/DailyScorecardView.tsx",
-      "src/modules/planner/components/kanban/DueDateBadge.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/my-tasks/TaskRow.tsx",
-      "src/modules/planner/components/my-tasks/TaskSection.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/calendar/TaskHoverCard.tsx",
+      "src/modules/tasks/components/dashboard/DashboardUpcomingDeadlines.tsx",
+      "src/modules/tasks/components/dashboard/DashboardUpcomingDeadlinesV2.tsx",
+      "src/modules/tasks/components/insights/DailyScorecardView.tsx",
+      "src/modules/tasks/components/kanban/DueDateBadge.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/my-tasks/TaskRow.tsx",
+      "src/modules/tasks/components/my-tasks/TaskSection.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
       "src/modules/priorities/pages/PriListsPage.tsx",
       "src/modules/project-work-hub/components/tabs/ReleasesTab.tsx",
       "src/modules/task10/components/filters/T10StatusFilter.tsx",
@@ -13603,7 +13603,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/planner/task-modal/atoms",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/CreateTaskModal/CreateTaskModal.tsx"
+      "src/modules/tasks/components/CreateTaskModal/CreateTaskModal.tsx"
     ]
   },
   "Column::@/components/shared/JiraTable": {
@@ -13619,7 +13619,7 @@ export const usageMap: UsageMap = {
     "source": "./ColumnActions",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/boards/SortableColumn.tsx"
+      "src/modules/tasks/components/boards/SortableColumn.tsx"
     ]
   },
   "ColumnConfig::../types": {
@@ -13747,9 +13747,9 @@ export const usageMap: UsageMap = {
       "src/components/project-hub/shell/SidebarProjectNav.tsx",
       "src/modules/in-jira/pages/AllWorkPage.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/ViewToggle.tsx",
       "src/pages/producthub/CardsPage.tsx",
       "src/pages/project-hub/ProjectBoardPage.tsx",
@@ -13834,7 +13834,7 @@ export const usageMap: UsageMap = {
       "src/components/ui/business-owner-picker.tsx",
       "src/components/ui/user-picker.tsx",
       "src/modules/backlog/components/CreateEpicModal.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
@@ -13890,7 +13890,7 @@ export const usageMap: UsageMap = {
       "src/components/ui/business-owner-picker.tsx",
       "src/components/ui/user-picker.tsx",
       "src/modules/backlog/components/CreateEpicModal.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
@@ -13911,7 +13911,7 @@ export const usageMap: UsageMap = {
       "src/components/ui/business-owner-picker.tsx",
       "src/components/ui/user-picker.tsx",
       "src/modules/backlog/components/CreateEpicModal.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
@@ -13933,7 +13933,7 @@ export const usageMap: UsageMap = {
       "src/components/ui/business-owner-picker.tsx",
       "src/components/ui/user-picker.tsx",
       "src/modules/backlog/components/CreateEpicModal.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
@@ -13955,7 +13955,7 @@ export const usageMap: UsageMap = {
       "src/components/ui/business-owner-picker.tsx",
       "src/components/ui/user-picker.tsx",
       "src/modules/backlog/components/CreateEpicModal.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
@@ -13977,7 +13977,7 @@ export const usageMap: UsageMap = {
       "src/components/ui/business-owner-picker.tsx",
       "src/components/ui/user-picker.tsx",
       "src/modules/backlog/components/CreateEpicModal.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
@@ -14286,7 +14286,7 @@ export const usageMap: UsageMap = {
     "source": "./CompletedTodaySection",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/my-tasks/MyTasksContent.tsx"
+      "src/modules/tasks/components/my-tasks/MyTasksContent.tsx"
     ]
   },
   "CompleteRecordsModal::./DataQualityDetailModals": {
@@ -14677,13 +14677,13 @@ export const usageMap: UsageMap = {
       "src/modules/feature-backlog/components/split-panel/FeatureDetailPanel.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/TaskList/TaskRow.tsx",
-      "src/modules/planner/components/calendar/TaskContextMenu.tsx",
-      "src/modules/planner/components/task-list/RowActions.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskRow.tsx",
+      "src/modules/tasks/components/calendar/TaskContextMenu.tsx",
+      "src/modules/tasks/components/task-list/RowActions.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapDetailPanel.tsx",
       "src/modules/task10/components/panel/T10EnterpriseSidePanel.tsx",
@@ -14750,7 +14750,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/project-hub/work-items/TableContextMenu.tsx",
       "src/components/requests/ContextMenu.tsx",
-      "src/modules/planner/components/calendar/TaskContextMenu.tsx"
+      "src/modules/tasks/components/calendar/TaskContextMenu.tsx"
     ]
   },
   "CopyWeekModal::./CopyWeekModal": {
@@ -15340,7 +15340,7 @@ export const usageMap: UsageMap = {
     "source": "../kanban",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/boards/PlannerBoardsPage.tsx"
+      "src/modules/tasks/components/boards/PlannerBoardsPage.tsx"
     ]
   },
   "CreateTaskModal::./components/kanban": {
@@ -15348,7 +15348,7 @@ export const usageMap: UsageMap = {
     "source": "./components/kanban",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/KanbanPage.tsx"
+      "src/modules/tasks/KanbanPage.tsx"
     ]
   },
   "CreateTaskModal::./kanban": {
@@ -15356,8 +15356,8 @@ export const usageMap: UsageMap = {
     "source": "./kanban",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/PlannerCalendar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx"
+      "src/modules/tasks/components/PlannerCalendar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx"
     ]
   },
   "CreateTestCaseDialogEnterprise::@/components/releases/test-cases/create-dialog": {
@@ -15442,7 +15442,7 @@ export const usageMap: UsageMap = {
     "source": "./CreateWorkstreamModal",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx"
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx"
     ]
   },
   "CreditCard::@/lib/atlaskit-icons": {
@@ -15576,7 +15576,7 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/CreateWorkstreamModal.tsx"
+      "src/modules/tasks/components/workstreams/CreateWorkstreamModal.tsx"
     ]
   },
   "CurlyBracketsIcon::@atlaskit/icon/core/curly-brackets": {
@@ -15738,7 +15738,7 @@ export const usageMap: UsageMap = {
     "source": "./components/insights",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "DangerConfirmModal::@/components/shared/DangerConfirmModal": {
@@ -15795,7 +15795,7 @@ export const usageMap: UsageMap = {
     "source": "./DashboardKPIStrip",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx"
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx"
     ]
   },
   "DashboardSkeleton::./DashboardSkeleton": {
@@ -15803,7 +15803,7 @@ export const usageMap: UsageMap = {
     "source": "./DashboardSkeleton",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx"
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx"
     ]
   },
   "DashboardStatusChartV2::./DashboardStatusChartV2": {
@@ -15811,7 +15811,7 @@ export const usageMap: UsageMap = {
     "source": "./DashboardStatusChartV2",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx"
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx"
     ]
   },
   "DashboardTeamWorkloadV2::./DashboardTeamWorkloadV2": {
@@ -15819,7 +15819,7 @@ export const usageMap: UsageMap = {
     "source": "./DashboardTeamWorkloadV2",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx"
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx"
     ]
   },
   "DashboardUpcomingDeadlinesV2::./DashboardUpcomingDeadlinesV2": {
@@ -15827,7 +15827,7 @@ export const usageMap: UsageMap = {
     "source": "./DashboardUpcomingDeadlinesV2",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx"
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx"
     ]
   },
   "DashboardWidgetGrid::@/components/project-hub/dashboard/DashboardWidgetGrid": {
@@ -15851,7 +15851,7 @@ export const usageMap: UsageMap = {
     "source": "./DashboardWorkstreamFilter",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx"
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx"
     ]
   },
   "DashboardWorkstreamHealthV2::./DashboardWorkstreamHealthV2": {
@@ -15859,7 +15859,7 @@ export const usageMap: UsageMap = {
     "source": "./DashboardWorkstreamHealthV2",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx"
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx"
     ]
   },
   "Database::@/integrations/supabase/types": {
@@ -17378,10 +17378,10 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
       "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/planner/components/PlannerCreateTeamModal.tsx",
-      "src/modules/planner/components/boards/AddColumnModal.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamMembersDialog.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamQuickEditDialog.tsx",
+      "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
+      "src/modules/tasks/components/boards/AddColumnModal.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamMembersDialog.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamQuickEditDialog.tsx",
       "src/modules/product-backlog/components/ProductBacklogFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
@@ -17718,10 +17718,10 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
       "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/planner/components/PlannerCreateTeamModal.tsx",
-      "src/modules/planner/components/boards/AddColumnModal.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamMembersDialog.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamQuickEditDialog.tsx",
+      "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
+      "src/modules/tasks/components/boards/AddColumnModal.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamMembersDialog.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamQuickEditDialog.tsx",
       "src/modules/product-backlog/components/ProductBacklogFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
@@ -17883,7 +17883,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/releases/VersionDialog.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
       "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
-      "src/modules/planner/components/boards/AddColumnModal.tsx",
+      "src/modules/tasks/components/boards/AddColumnModal.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/pages/project/components/LinkTypeSelectorDialog.tsx",
       "src/pages/project/components/RiskLinkDialog.tsx",
@@ -18081,8 +18081,8 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
       "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/planner/components/boards/AddColumnModal.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamQuickEditDialog.tsx",
+      "src/modules/tasks/components/boards/AddColumnModal.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamQuickEditDialog.tsx",
       "src/modules/product-backlog/components/ProductBacklogFiltersDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapFilterDialog.tsx",
@@ -18395,10 +18395,10 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
       "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/planner/components/PlannerCreateTeamModal.tsx",
-      "src/modules/planner/components/boards/AddColumnModal.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamMembersDialog.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamQuickEditDialog.tsx",
+      "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
+      "src/modules/tasks/components/boards/AddColumnModal.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamMembersDialog.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamQuickEditDialog.tsx",
       "src/modules/product-backlog/components/ProductBacklogFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
@@ -18720,10 +18720,10 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
       "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/planner/components/PlannerCreateTeamModal.tsx",
-      "src/modules/planner/components/boards/AddColumnModal.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamMembersDialog.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamQuickEditDialog.tsx",
+      "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
+      "src/modules/tasks/components/boards/AddColumnModal.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamMembersDialog.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamQuickEditDialog.tsx",
       "src/modules/product-backlog/components/ProductBacklogFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
@@ -19026,12 +19026,12 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
-      "src/modules/planner/PlannerPage.tsx",
-      "src/modules/planner/components/TaskList/ExportButton.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/insights/MonthlyChronicleView.tsx",
-      "src/modules/planner/components/insights/WeeklySummaryView.tsx",
+      "src/modules/tasks/PlannerPage.tsx",
+      "src/modules/tasks/components/TaskList/ExportButton.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
@@ -19434,22 +19434,22 @@ export const usageMap: UsageMap = {
       "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/TaskList/ExportButton.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/TaskList/TaskRow.tsx",
-      "src/modules/planner/components/boards/ColumnActions.tsx",
-      "src/modules/planner/components/boards/ColumnHeader.tsx",
-      "src/modules/planner/components/dashboard/DashboardWorkstreamFilter.tsx",
-      "src/modules/planner/components/kanban/KanbanCard.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/task-list/RowActions.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/TaskList/ExportButton.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/TaskList/TaskRow.tsx",
+      "src/modules/tasks/components/boards/ColumnActions.tsx",
+      "src/modules/tasks/components/boards/ColumnHeader.tsx",
+      "src/modules/tasks/components/dashboard/DashboardWorkstreamFilter.tsx",
+      "src/modules/tasks/components/kanban/KanbanCard.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/task-list/RowActions.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
@@ -19532,9 +19532,9 @@ export const usageMap: UsageMap = {
       "src/features/all-releases/components/FilterBar.tsx",
       "src/features/all-releases/components/Toolbar.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
       "src/pages/program/ExecutionWorkbench/views/TableView.tsx",
       "src/pages/release/IncidentRoomList.tsx"
@@ -19648,22 +19648,22 @@ export const usageMap: UsageMap = {
       "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/TaskList/ExportButton.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/TaskList/TaskRow.tsx",
-      "src/modules/planner/components/boards/ColumnActions.tsx",
-      "src/modules/planner/components/boards/ColumnHeader.tsx",
-      "src/modules/planner/components/dashboard/DashboardWorkstreamFilter.tsx",
-      "src/modules/planner/components/kanban/KanbanCard.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/task-list/RowActions.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/TaskList/ExportButton.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/TaskList/TaskRow.tsx",
+      "src/modules/tasks/components/boards/ColumnActions.tsx",
+      "src/modules/tasks/components/boards/ColumnHeader.tsx",
+      "src/modules/tasks/components/dashboard/DashboardWorkstreamFilter.tsx",
+      "src/modules/tasks/components/kanban/KanbanCard.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/task-list/RowActions.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
@@ -19814,22 +19814,22 @@ export const usageMap: UsageMap = {
       "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/TaskList/ExportButton.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/TaskList/TaskRow.tsx",
-      "src/modules/planner/components/boards/ColumnActions.tsx",
-      "src/modules/planner/components/boards/ColumnHeader.tsx",
-      "src/modules/planner/components/dashboard/DashboardWorkstreamFilter.tsx",
-      "src/modules/planner/components/kanban/KanbanCard.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/task-list/RowActions.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/TaskList/ExportButton.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/TaskList/TaskRow.tsx",
+      "src/modules/tasks/components/boards/ColumnActions.tsx",
+      "src/modules/tasks/components/boards/ColumnHeader.tsx",
+      "src/modules/tasks/components/dashboard/DashboardWorkstreamFilter.tsx",
+      "src/modules/tasks/components/kanban/KanbanCard.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/task-list/RowActions.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
@@ -19982,19 +19982,19 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/kanban/pages/IncidentKanbanPage.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/TaskList/TaskRow.tsx",
-      "src/modules/planner/components/boards/ColumnActions.tsx",
-      "src/modules/planner/components/boards/ColumnHeader.tsx",
-      "src/modules/planner/components/dashboard/DashboardWorkstreamFilter.tsx",
-      "src/modules/planner/components/task-list/RowActions.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/TaskList/TaskRow.tsx",
+      "src/modules/tasks/components/boards/ColumnActions.tsx",
+      "src/modules/tasks/components/boards/ColumnHeader.tsx",
+      "src/modules/tasks/components/dashboard/DashboardWorkstreamFilter.tsx",
+      "src/modules/tasks/components/task-list/RowActions.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/work-hub/components/ColumnHeaderMenu.tsx",
@@ -20155,22 +20155,22 @@ export const usageMap: UsageMap = {
       "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/TaskList/ExportButton.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/TaskList/TaskRow.tsx",
-      "src/modules/planner/components/boards/ColumnActions.tsx",
-      "src/modules/planner/components/boards/ColumnHeader.tsx",
-      "src/modules/planner/components/dashboard/DashboardWorkstreamFilter.tsx",
-      "src/modules/planner/components/kanban/KanbanCard.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/task-list/RowActions.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/TaskList/ExportButton.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/TaskList/TaskRow.tsx",
+      "src/modules/tasks/components/boards/ColumnActions.tsx",
+      "src/modules/tasks/components/boards/ColumnHeader.tsx",
+      "src/modules/tasks/components/dashboard/DashboardWorkstreamFilter.tsx",
+      "src/modules/tasks/components/kanban/KanbanCard.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/task-list/RowActions.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/project-work-hub/components/tabs/KanbanBoardTab.tsx",
@@ -20243,8 +20243,8 @@ export const usageMap: UsageMap = {
     "source": "./DueDateBadge",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/kanban/KanbanCard.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx"
+      "src/modules/tasks/components/kanban/KanbanCard.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx"
     ]
   },
   "DuplicateEpicDialog::@/components/items/epics/dialogs/DuplicateEpicDialog": {
@@ -20342,8 +20342,8 @@ export const usageMap: UsageMap = {
       "src/modules/budget/components/SoftwareLicensesPage.tsx",
       "src/modules/feature-backlog/components/split-panel/FeatureDetailPanel.tsx",
       "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/task-list/RowActions.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/task-list/RowActions.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/task10/components/landing/T10ListCard.tsx",
       "src/modules/task10/components/panel/T10ActivityTimeline.tsx",
@@ -20382,9 +20382,9 @@ export const usageMap: UsageMap = {
       "src/components/work-manager/ManagerFollowUpNotes.tsx",
       "src/components/work-manager/WorkManagerSettings.tsx",
       "src/features/release-dashboard/components/DashboardHeader.tsx",
-      "src/modules/planner/components/my-tasks/TaskRow.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamRowView.tsx",
+      "src/modules/tasks/components/my-tasks/TaskRow.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamRowView.tsx",
       "src/modules/task10/components/landing/T10ListCardMenu.tsx",
       "src/modules/work-hub/views/ReleaseDetailsView.tsx",
       "src/pages/SkillsInventory.tsx",
@@ -20402,7 +20402,7 @@ export const usageMap: UsageMap = {
       "src/components/catalyst-roadmap/RoadmapContextMenu.tsx",
       "src/components/enterprise/EnterpriseGrid.tsx",
       "src/components/shared/ListScreenToolbar.tsx",
-      "src/modules/planner/components/calendar/TaskContextMenu.tsx",
+      "src/modules/tasks/components/calendar/TaskContextMenu.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/HeaderOverflowMenu.tsx"
     ]
   },
@@ -20423,8 +20423,8 @@ export const usageMap: UsageMap = {
       "src/components/business-requests/table-view/BacklogTableView.tsx"
     ]
   },
-  "EditableFixVersions::@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields": {
-    "name": "EditableFixVersions",
+  "EditableSprintReleases::@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields": {
+    "name": "EditableSprintReleases",
     "source": "@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields",
     "origin": "internal",
     "consumers": [
@@ -21813,9 +21813,9 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/analytics/components/DrilldownDrawer.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
       "src/modules/objectives/components/AlignedItems/ObjectivesSection.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/TaskList/TaskRow.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamCard.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskRow.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamCard.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/RowActionsMenu.tsx",
       "src/modules/task10/components/panel/T10SidePanelNew.tsx",
       "src/modules/work-hub/views/SummaryView.tsx",
@@ -22844,11 +22844,11 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
-      "src/modules/planner/PlannerPage.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/AttachmentsSection.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/insights/MonthlyChronicleView.tsx",
-      "src/modules/planner/components/insights/WeeklySummaryView.tsx",
+      "src/modules/tasks/PlannerPage.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/AttachmentsSection.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
@@ -23009,9 +23009,9 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/KanbanBoardPage.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/project-work-hub/components/tabs/ListTab.tsx",
       "src/modules/task10/components/completed/T10CompletedFilters.tsx",
@@ -23300,12 +23300,12 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/KanbanBoardPage.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
-      "src/modules/planner/components/calendar/TaskContextMenu.tsx",
-      "src/modules/planner/components/calendar/TaskHoverCard.tsx",
-      "src/modules/planner/components/kanban/KanbanBoard.tsx",
-      "src/modules/planner/components/kanban/SwimlaneRow.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/calendar/TaskContextMenu.tsx",
+      "src/modules/tasks/components/calendar/TaskHoverCard.tsx",
+      "src/modules/tasks/components/kanban/KanbanBoard.tsx",
+      "src/modules/tasks/components/kanban/SwimlaneRow.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.atlaskit.tsx",
       "src/modules/work-hub/components/GroupByMenu.tsx",
       "src/pages/ReqAssistGenerate.tsx",
@@ -24100,7 +24100,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
       "src/modules/in-jira/pages/ReleaseManagementPage.tsx",
       "src/modules/objectives/components/ObjectiveHierarchyDialog.tsx",
-      "src/modules/planner/components/insights/WeeklySummaryView.tsx",
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
       "src/pages/CleanupPage.tsx",
       "src/pages/enterprise/BudgetPlannerPage.tsx",
       "src/pages/enterprise/EnterpriseObjectives.tsx",
@@ -24486,11 +24486,11 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
       "src/modules/kanban/components/KanbanCard.tsx",
       "src/modules/okr-v2/components/OKRColumnChooser.tsx",
-      "src/modules/planner/components/boards/ColumnHeader.tsx",
-      "src/modules/planner/components/boards/SortableColumn.tsx",
-      "src/modules/planner/components/calendar/CalendarCell.tsx",
-      "src/modules/planner/components/calendar/TaskPillV2.tsx",
-      "src/modules/planner/components/kanban/KanbanColumn.tsx",
+      "src/modules/tasks/components/boards/ColumnHeader.tsx",
+      "src/modules/tasks/components/boards/SortableColumn.tsx",
+      "src/modules/tasks/components/calendar/CalendarCell.tsx",
+      "src/modules/tasks/components/calendar/TaskPillV2.tsx",
+      "src/modules/tasks/components/kanban/KanbanColumn.tsx",
       "src/modules/priorities/components/PriPriorityCard.tsx",
       "src/modules/product-roadmap/components/RoadmapListRow.tsx",
       "src/modules/program-epics/components/EpicListView.tsx",
@@ -24945,7 +24945,7 @@ export const usageMap: UsageMap = {
       "src/components/workhub/jira/SyncLogTable.tsx",
       "src/components/workhub/workitems/WorkItemsPage.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/ActivitySection.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/ActivitySection.tsx",
       "src/pages/KnowledgeHubDocumentPage.tsx",
       "src/pages/UserProfile.tsx",
       "src/pages/project-hub/WorkItemsListPage.tsx",
@@ -25721,9 +25721,9 @@ export const usageMap: UsageMap = {
       "src/modules/backlog/components/EpicKanbanColumn.tsx",
       "src/modules/feature-backlog/components/FeatureKanbanColumn.tsx",
       "src/modules/kanban/components/KanbanColumn.tsx",
-      "src/modules/planner/components/insights/MonthlyChronicleView.tsx",
-      "src/modules/planner/components/insights/WeeklySummaryView.tsx",
-      "src/modules/planner/components/kanban/KanbanColumn.tsx",
+      "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
+      "src/modules/tasks/components/kanban/KanbanColumn.tsx",
       "src/modules/task10/components/landing/T10ListsContainer.tsx"
     ]
   },
@@ -25949,7 +25949,7 @@ export const usageMap: UsageMap = {
       "src/components/workhub/caty/CatyInsightsTab.tsx",
       "src/features/estimation/components/EstimationConversionsModal.tsx",
       "src/modules/budget/components/LicenseAllocationSection.tsx",
-      "src/modules/planner/components/workstreams/CreateWorkstreamModal.tsx",
+      "src/modules/tasks/components/workstreams/CreateWorkstreamModal.tsx",
       "src/modules/task10/components/modals/T10CheckoutModal.tsx",
       "src/modules/task10/components/week/T10AISuggestionsPanel.tsx",
       "src/modules/task10/components/week/T10WeekViewV3.tsx",
@@ -26462,19 +26462,19 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
-      "src/modules/planner/components/AddColumnModal.tsx",
-      "src/modules/planner/components/PlannerCreateTeamModal.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/TaskChecklist.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/ProgressSection.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/boards/AddColumnModal.tsx",
-      "src/modules/planner/components/calendar/QuickAddPopover.tsx",
-      "src/modules/planner/components/kanban/AddColumnButton.tsx",
-      "src/modules/planner/components/kanban/KanbanFilters.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamQuickEditDialog.tsx",
+      "src/modules/tasks/components/AddColumnModal.tsx",
+      "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/TaskChecklist.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/ProgressSection.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/boards/AddColumnModal.tsx",
+      "src/modules/tasks/components/calendar/QuickAddPopover.tsx",
+      "src/modules/tasks/components/kanban/AddColumnButton.tsx",
+      "src/modules/tasks/components/kanban/KanbanFilters.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamQuickEditDialog.tsx",
       "src/modules/product-backlog/components/ProductBacklogFiltersDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/program-epics/components/EpicListView.tsx",
@@ -27092,7 +27092,7 @@ export const usageMap: UsageMap = {
       "src/components/product-hub/ProductScopedPageHeader.tsx",
       "src/components/project/ViewSelector.tsx",
       "src/modules/in-jira/components/InJiraLayout.tsx",
-      "src/modules/planner/components/boards/PlannerBoardsPage.tsx",
+      "src/modules/tasks/components/boards/PlannerBoardsPage.tsx",
       "src/pages/project-hub/ProjectBoardPage.tsx"
     ]
   },
@@ -27113,7 +27113,7 @@ export const usageMap: UsageMap = {
     "source": "./components/kanban",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "KanbanBoardShell::@/components/kanban/KanbanBoardShell": {
@@ -27122,7 +27122,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/releases/cycle-command-center/CycleKanbanView.tsx",
-      "src/modules/planner/KanbanPage.tsx",
+      "src/modules/tasks/KanbanPage.tsx",
       "src/pages/KanbanBoardView.tsx",
       "src/pages/PortfolioKanban.tsx",
       "src/pages/incidenthub/IncidentKanbanPage.tsx",
@@ -27155,8 +27155,8 @@ export const usageMap: UsageMap = {
       "src/components/requests/KanbanColumn.tsx",
       "src/modules/incidents/kanban/components/VirtualizedCardList.tsx",
       "src/modules/kanban/components/KanbanColumn.tsx",
-      "src/modules/planner/components/kanban/KanbanBoard.tsx",
-      "src/modules/planner/components/kanban/KanbanColumn.tsx"
+      "src/modules/tasks/components/kanban/KanbanBoard.tsx",
+      "src/modules/tasks/components/kanban/KanbanColumn.tsx"
     ]
   },
   "KanbanCardComponent::./KanbanCard": {
@@ -27185,7 +27185,7 @@ export const usageMap: UsageMap = {
       "src/components/boards/BoardCanvasPage.tsx",
       "src/components/requests/KanbanBoard.tsx",
       "src/modules/kanban/components/Swimlane.tsx",
-      "src/modules/planner/components/kanban/KanbanBoard.tsx"
+      "src/modules/tasks/components/kanban/KanbanBoard.tsx"
     ]
   },
   "KanbanColumnType::@/config/defectWorkflow": {
@@ -27569,7 +27569,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/planner/task-modal/atoms",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/CreateTaskModal/CreateTaskModal.tsx"
+      "src/modules/tasks/components/CreateTaskModal/CreateTaskModal.tsx"
     ]
   },
   "Label::@/components/planner/task-modal/types/labels": {
@@ -27577,7 +27577,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/planner/task-modal/types/labels",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/hooks/useTaskLabelsMap.ts"
+      "src/modules/tasks/hooks/useTaskLabelsMap.ts"
     ]
   },
   "Label::@/components/ui/label": {
@@ -27810,11 +27810,11 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
-      "src/modules/planner/components/AddColumnModal.tsx",
-      "src/modules/planner/components/PlannerCreateTeamModal.tsx",
-      "src/modules/planner/components/boards/AddColumnModal.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamQuickEditDialog.tsx",
+      "src/modules/tasks/components/AddColumnModal.tsx",
+      "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
+      "src/modules/tasks/components/boards/AddColumnModal.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamQuickEditDialog.tsx",
       "src/modules/product-backlog/components/ProductBacklogFiltersDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapFilterDialog.tsx",
@@ -27882,7 +27882,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/planner/task-modal/molecules/LabelBadge",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskList/LabelsDropdown.tsx"
+      "src/modules/tasks/components/TaskList/LabelsDropdown.tsx"
     ]
   },
   "LabelConfig::./LabelsDropdown": {
@@ -27917,7 +27917,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/backlog/BacklogHeader.tsx",
       "src/components/backlog/BacklogSection.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx"
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx"
     ]
   },
   "LabelsFilter::@/components/planner/shared/LabelsFilter": {
@@ -27925,7 +27925,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/planner/shared/LabelsFilter",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx"
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx"
     ]
   },
   "LabelsManager::../../molecules/LabelsManager": {
@@ -28031,16 +28031,16 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/in-jira/pages/SummaryPage.tsx",
       "src/modules/okr-v2/components/KRWorkAlignmentDrawer.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/calendar/TaskContextMenu.tsx",
-      "src/modules/planner/components/calendar/TaskHoverCard.tsx",
-      "src/modules/planner/components/dashboard/DashboardWorkstreamFilter.tsx",
-      "src/modules/planner/components/kanban/KanbanBoard.tsx",
-      "src/modules/planner/components/kanban/SwimlaneRow.tsx",
-      "src/modules/planner/components/my-tasks/MyTasksContent.tsx",
-      "src/modules/planner/components/my-tasks/MyTasksHeader.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/calendar/TaskContextMenu.tsx",
+      "src/modules/tasks/components/calendar/TaskHoverCard.tsx",
+      "src/modules/tasks/components/dashboard/DashboardWorkstreamFilter.tsx",
+      "src/modules/tasks/components/kanban/KanbanBoard.tsx",
+      "src/modules/tasks/components/kanban/SwimlaneRow.tsx",
+      "src/modules/tasks/components/my-tasks/MyTasksContent.tsx",
+      "src/modules/tasks/components/my-tasks/MyTasksHeader.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
       "src/modules/project-work-hub/pages/FeatureBacklogPage.tsx",
       "src/modules/task10/components/week/T10WeekViewV3.tsx",
@@ -28101,7 +28101,7 @@ export const usageMap: UsageMap = {
       "src/components/teams/TeamRoomSidebar.tsx",
       "src/components/testhub/FolderPanel.tsx",
       "src/modules/in-jira/components/InJiraLayout.tsx",
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx"
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx"
     ]
   },
   "LayoutGrid::@/lib/atlaskit-icons": {
@@ -28137,9 +28137,9 @@ export const usageMap: UsageMap = {
       "src/features/release-dashboard/components/DashboardBuilder.tsx",
       "src/modules/backlog/components/BacklogHeader.tsx",
       "src/modules/feature-backlog/components/FeatureBacklogHeader.tsx",
-      "src/modules/planner/components/kanban/KanbanFilters.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/kanban/KanbanFilters.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
       "src/modules/task10/components/week/T10WeekViewV3.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
@@ -28204,7 +28204,7 @@ export const usageMap: UsageMap = {
     "source": "../../hooks/useLeadNotes",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx"
     ]
   },
   "LeadNotesTab::./LeadNotesTab": {
@@ -28212,7 +28212,7 @@ export const usageMap: UsageMap = {
     "source": "./LeadNotesTab",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
     ]
   },
   "LeadPicker::./LeadPicker": {
@@ -28220,7 +28220,7 @@ export const usageMap: UsageMap = {
     "source": "./LeadPicker",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/WorkstreamCard.tsx"
+      "src/modules/tasks/components/workstreams/WorkstreamCard.tsx"
     ]
   },
   "LeadPickerDropdown::./WorkstreamLeadPickerDropdown": {
@@ -28228,7 +28228,7 @@ export const usageMap: UsageMap = {
     "source": "./WorkstreamLeadPickerDropdown",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/WorkstreamRowView.tsx"
+      "src/modules/tasks/components/workstreams/WorkstreamRowView.tsx"
     ]
   },
   "Leaf::@/lib/atlaskit-icons": {
@@ -28416,10 +28416,10 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
       "src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/ObjectiveAnalyticsDrawer.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/QuickActions.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/QuickActions.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapDetailPanel.tsx",
       "src/pages/CleanupPage.tsx",
@@ -28812,10 +28812,10 @@ export const usageMap: UsageMap = {
       "src/modules/feature-backlog/components/FeatureBacklogHeader.tsx",
       "src/modules/in-jira/components/InJiraLayout.tsx",
       "src/modules/in-jira/pages/AllWorkPage.tsx",
-      "src/modules/planner/components/TaskList/TaskListHeader.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/TaskList/TaskListHeader.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
       "src/modules/work-hub/WorkHubLayout.tsx",
       "src/modules/work-hub/components/FieldPicker.tsx",
@@ -28868,7 +28868,7 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskDetailDrawer/ActivitySection.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/ActivitySection.tsx"
     ]
   },
   "ListIcon::@/lib/atlaskit-icons": {
@@ -29136,20 +29136,20 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
       "src/modules/incidents/kanban/pages/IncidentKanbanPage.tsx",
       "src/modules/objectives/components/ObjectiveHierarchyDialog.tsx",
-      "src/modules/planner/components/CreateTaskModal/CreateTaskModal.tsx",
-      "src/modules/planner/components/CreateTaskModal/fields/WorkstreamSelect.tsx",
-      "src/modules/planner/components/TaskChecklist.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/AttachmentsSection.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/QuickActions.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SavingIndicator.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SidebarFields.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/TaskList/LabelsDropdown.tsx",
-      "src/modules/planner/components/boards/AddColumnModal.tsx",
-      "src/modules/planner/components/boards/BoardKanban.tsx",
-      "src/modules/planner/components/insights/DailyScorecardView.tsx",
-      "src/modules/planner/components/kanban/KanbanBoard.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/CreateTaskModal/CreateTaskModal.tsx",
+      "src/modules/tasks/components/CreateTaskModal/fields/WorkstreamSelect.tsx",
+      "src/modules/tasks/components/TaskChecklist.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/AttachmentsSection.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/QuickActions.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SavingIndicator.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SidebarFields.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/TaskList/LabelsDropdown.tsx",
+      "src/modules/tasks/components/boards/AddColumnModal.tsx",
+      "src/modules/tasks/components/boards/BoardKanban.tsx",
+      "src/modules/tasks/components/insights/DailyScorecardView.tsx",
+      "src/modules/tasks/components/kanban/KanbanBoard.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx",
@@ -29283,8 +29283,8 @@ export const usageMap: UsageMap = {
       "src/components/testhub/CreateCategoryModal.tsx",
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/TaskList/TaskRow.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskRow.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/task10/components/week/T10WeekViewNew.tsx",
       "src/pages/UnauthorizedPage.tsx",
@@ -29649,7 +29649,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/drawer/ActivityTabs.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
       "src/modules/in-jira/components/import/AISuggestionBanner.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/in-jira/pages/AllWorkPage.tsx",
       "src/modules/in-jira/pages/KanbanBoardPage.tsx",
@@ -29669,7 +29669,7 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/AnalyticsDrawerContent.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SidebarFields.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SidebarFields.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapFilterDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
@@ -29809,7 +29809,7 @@ export const usageMap: UsageMap = {
       "src/components/shared/KPIWidgetCard.tsx",
       "src/components/strategy/WidgetCard.tsx",
       "src/components/ui/catalyst/SectionHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SectionHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SectionHeader.tsx",
       "src/pages/project-hub/PhasePlaceholderPage.tsx"
     ]
   },
@@ -29962,7 +29962,7 @@ export const usageMap: UsageMap = {
       "src/components/roadmap/RoadmapEngine.tsx",
       "src/components/strategy/WidgetCard.tsx",
       "src/modules/in-jira/components/IssueDrawer.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/work-hub/views/SummaryView.tsx",
       "src/pages/release/IncidentsList.tsx",
@@ -30047,7 +30047,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/shared/MentionTextarea",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx"
     ]
   },
   "MentionTextarea::@/components/shared/MentionTextarea": {
@@ -30055,7 +30055,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/shared/MentionTextarea",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx"
     ]
   },
   "Menu::@/lib/atlaskit-icons": {
@@ -30140,8 +30140,8 @@ export const usageMap: UsageMap = {
       "src/components/workhub/workitems/WorkItemDrawer.tsx",
       "src/modules/in-jira/components/drawer/ActivityTabs.tsx",
       "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/ActivitySection.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/ActivitySection.tsx",
       "src/modules/priorities/components/PriPriorityCard.tsx",
       "src/modules/program-epics/components/EpicListView.tsx",
       "src/modules/project-work-hub/components/tabs/ListTab.tsx",
@@ -30461,8 +30461,8 @@ export const usageMap: UsageMap = {
     "source": "@/components/layout/MobileBottomNav",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx",
-      "src/modules/planner/pages/MyTasksPage.tsx",
+      "src/modules/tasks/PlannerPage.tsx",
+      "src/modules/tasks/pages/MyTasksPage.tsx",
       "src/modules/task10/components/landing/T10LandingPageV3.tsx",
       "src/modules/task10/components/week/T10WeekViewV3.tsx"
     ]
@@ -30472,8 +30472,8 @@ export const usageMap: UsageMap = {
     "source": "@/components/layout/MobileMenuDrawer",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx",
-      "src/modules/planner/pages/MyTasksPage.tsx",
+      "src/modules/tasks/PlannerPage.tsx",
+      "src/modules/tasks/pages/MyTasksPage.tsx",
       "src/modules/task10/components/landing/T10LandingPageV3.tsx",
       "src/modules/task10/components/week/T10WeekViewV3.tsx"
     ]
@@ -30501,7 +30501,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/overlays/AtlassianModal",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
     ]
   },
   "Modal::@atlaskit/modal-dialog": {
@@ -30595,7 +30595,7 @@ export const usageMap: UsageMap = {
     "source": "@/components/overlays/AtlassianModal",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
     ]
   },
   "ModalDialog::./PortalFix": {
@@ -30974,7 +30974,7 @@ export const usageMap: UsageMap = {
     "source": "./components/insights",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "MonthlyUtilization::@/types/capacity-heatmap": {
@@ -31072,15 +31072,15 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/kanban/components/KanbanCard.tsx",
       "src/modules/objectives/components/KeyResults/KeyResultCard.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/TaskList/TaskRow.tsx",
-      "src/modules/planner/components/boards/ColumnActions.tsx",
-      "src/modules/planner/components/boards/ColumnHeader.tsx",
-      "src/modules/planner/components/kanban/KanbanCard.tsx",
-      "src/modules/planner/components/task-list/RowActions.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamCard.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskRow.tsx",
+      "src/modules/tasks/components/boards/ColumnActions.tsx",
+      "src/modules/tasks/components/boards/ColumnHeader.tsx",
+      "src/modules/tasks/components/kanban/KanbanCard.tsx",
+      "src/modules/tasks/components/task-list/RowActions.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamCard.tsx",
       "src/modules/program-epics/components/EpicListView.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/HeaderOverflowMenu.tsx",
@@ -31169,7 +31169,7 @@ export const usageMap: UsageMap = {
       "src/modules/backlog/components/EpicTableView.tsx",
       "src/modules/incidents/kanban/pages/IncidentKanbanPage.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
       "src/modules/priorities/pages/PriListsPage.tsx",
       "src/modules/task10/components/landing/T10LandingPageV3.tsx",
       "src/modules/task10/components/landing/T10ListCard.tsx",
@@ -31335,7 +31335,7 @@ export const usageMap: UsageMap = {
     "source": "../components/my-tasks",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/pages/MyTasksPage.tsx"
+      "src/modules/tasks/pages/MyTasksPage.tsx"
     ]
   },
   "MyTasksHeader::./MyTasksHeader": {
@@ -31343,7 +31343,7 @@ export const usageMap: UsageMap = {
     "source": "./MyTasksHeader",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/my-tasks/MyTasksContent.tsx"
+      "src/modules/tasks/components/my-tasks/MyTasksContent.tsx"
     ]
   },
   "MyTestScopeDashboard::@/features/my-test-scope": {
@@ -31439,7 +31439,7 @@ export const usageMap: UsageMap = {
     "source": "./CreateTaskModal/CreateTaskModal",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/PlannerCreateModal.tsx"
+      "src/modules/tasks/components/PlannerCreateModal.tsx"
     ]
   },
   "NewIncidentModal::./components/NewIncidentModal": {
@@ -32149,7 +32149,7 @@ export const usageMap: UsageMap = {
       "src/modules/budget/components/SoftwareLicensesPage.tsx",
       "src/modules/in-jira/components/InJiraLayout.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/in-jira/components/releases/VersionDialog.tsx",
       "src/modules/in-jira/pages/ReleaseManagementPage.tsx",
@@ -32172,7 +32172,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/modules/kanban/pages/CatalystDemandKanban.tsx",
-      "src/modules/planner/pages/MyTasksPage.tsx",
+      "src/modules/tasks/pages/MyTasksPage.tsx",
       "src/modules/product-backlog/pages/CatalystDemandList.tsx",
       "src/modules/product-backlog/pages/CatalystDemandTable.tsx",
       "src/pages/CapacityPlanningPage.tsx",
@@ -32230,9 +32230,9 @@ export const usageMap: UsageMap = {
       "src/components/workhub/issue-view/IssueContentView.tsx",
       "src/components/workhub/themes/ThemesPage.tsx",
       "src/components/workhub/workitems/WorkItemDrawer.tsx",
-      "src/modules/planner/components/AddColumnModal.tsx",
-      "src/modules/planner/components/boards/ColumnActions.tsx",
-      "src/modules/planner/components/boards/ColumnHeader.tsx",
+      "src/modules/tasks/components/AddColumnModal.tsx",
+      "src/modules/tasks/components/boards/ColumnActions.tsx",
+      "src/modules/tasks/components/boards/ColumnHeader.tsx",
       "src/pages/testhub/SettingsPage.tsx"
     ]
   },
@@ -32370,7 +32370,7 @@ export const usageMap: UsageMap = {
       "src/components/workhub/issue-view/IssueContentView.tsx",
       "src/components/workhub/issue-view/sections/ActivitySection.tsx",
       "src/modules/incidents/kanban/components/KanbanCard.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/product-backlog/components/split-panel/RequestListPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapDetailPanel.tsx",
@@ -32527,9 +32527,9 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamCard.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamCard.tsx",
       "src/modules/priorities/components/PriPriorityCard.tsx",
       "src/modules/product-roadmap/components/RoadmapDetailPanel.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/RowActionsMenu.tsx",
@@ -32934,7 +32934,7 @@ export const usageMap: UsageMap = {
     "source": "./components/boards",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "PlannerBulkActionBar::./components/PlannerBulkActionBar": {
@@ -32942,7 +32942,7 @@ export const usageMap: UsageMap = {
     "source": "./components/PlannerBulkActionBar",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "PlannerBulkDeleteModal::./components/PlannerBulkDeleteModal": {
@@ -32950,7 +32950,7 @@ export const usageMap: UsageMap = {
     "source": "./components/PlannerBulkDeleteModal",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "PlannerCalendar::./components/PlannerCalendar": {
@@ -32958,7 +32958,7 @@ export const usageMap: UsageMap = {
     "source": "./components/PlannerCalendar",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "PlannerCreateModal::../components/PlannerCreateModal": {
@@ -32966,8 +32966,8 @@ export const usageMap: UsageMap = {
     "source": "../components/PlannerCreateModal",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/pages/MyTasksPage.tsx",
-      "src/modules/planner/pages/TaskListPage.tsx"
+      "src/modules/tasks/pages/MyTasksPage.tsx",
+      "src/modules/tasks/pages/TaskListPage.tsx"
     ]
   },
   "PlannerCreateModal::./components/PlannerCreateModal": {
@@ -32975,7 +32975,7 @@ export const usageMap: UsageMap = {
     "source": "./components/PlannerCreateModal",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "PlannerCreateTeamModal::./components/PlannerCreateTeamModal": {
@@ -32983,7 +32983,7 @@ export const usageMap: UsageMap = {
     "source": "./components/PlannerCreateTeamModal",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "PlannerDashboard::./components/dashboard": {
@@ -32991,7 +32991,7 @@ export const usageMap: UsageMap = {
     "source": "./components/dashboard",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "PlannerSearchBar::../PlannerSearchBar": {
@@ -32999,7 +32999,7 @@ export const usageMap: UsageMap = {
     "source": "../PlannerSearchBar",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/boards/PlannerBoardsPage.tsx"
+      "src/modules/tasks/components/boards/PlannerBoardsPage.tsx"
     ]
   },
   "PlannerSearchBar::./components/PlannerSearchBar": {
@@ -33007,7 +33007,7 @@ export const usageMap: UsageMap = {
     "source": "./components/PlannerSearchBar",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "PlannerSearchBar::./PlannerSearchBar": {
@@ -33015,7 +33015,7 @@ export const usageMap: UsageMap = {
     "source": "./PlannerSearchBar",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/PlannerCalendar.tsx"
+      "src/modules/tasks/components/PlannerCalendar.tsx"
     ]
   },
   "PlannerSettings::./components/PlannerSettings": {
@@ -33023,7 +33023,7 @@ export const usageMap: UsageMap = {
     "source": "./components/PlannerSettings",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "PlannerTaskList::./components/PlannerTaskList": {
@@ -33031,7 +33031,7 @@ export const usageMap: UsageMap = {
     "source": "./components/PlannerTaskList",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "PlannerTimeline::./components/PlannerTimeline": {
@@ -33039,7 +33039,7 @@ export const usageMap: UsageMap = {
     "source": "./components/PlannerTimeline",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "PlannerViewHeader::../shared/PlannerViewHeader": {
@@ -33047,7 +33047,7 @@ export const usageMap: UsageMap = {
     "source": "../shared/PlannerViewHeader",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/boards/PlannerBoardsPage.tsx"
+      "src/modules/tasks/components/boards/PlannerBoardsPage.tsx"
     ]
   },
   "PlannerViewHeader::./shared/PlannerViewHeader": {
@@ -33055,7 +33055,7 @@ export const usageMap: UsageMap = {
     "source": "./shared/PlannerViewHeader",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/PlannerCalendar.tsx"
+      "src/modules/tasks/components/PlannerCalendar.tsx"
     ]
   },
   "PlanningViewTab::./drawer-tabs/PlanningViewTab": {
@@ -33195,8 +33195,8 @@ export const usageMap: UsageMap = {
       "src/components/test-cycles/assignment-table/AssignmentRow.tsx",
       "src/components/test-cycles/assignment-table/StatusSelect.tsx",
       "src/components/test-management/DataRowResultsSummary.tsx",
-      "src/modules/planner/components/TaskList/TaskListHeader.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListHeader.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
       "src/pages/testhub/PlanDetailPage.tsx"
     ]
   },
@@ -33401,7 +33401,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/InJiraLayout.tsx",
       "src/modules/in-jira/components/board/KanbanBoard.tsx",
       "src/modules/in-jira/components/board/ScrumBoard.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/in-jira/pages/KanbanBoardPage.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/in-jira/pages/ReleasesPage.tsx",
@@ -33417,30 +33417,30 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
       "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
-      "src/modules/planner/PlannerPage.tsx",
-      "src/modules/planner/components/CreateTaskModal/CreateTaskModal.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/TaskChecklist.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/ChecklistSection.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SectionHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SidebarFields.tsx",
-      "src/modules/planner/components/TaskList/AssigneeDropdown.tsx",
-      "src/modules/planner/components/TaskList/LabelsDropdown.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/boards/BoardColumn.tsx",
-      "src/modules/planner/components/boards/BoardKanban.tsx",
-      "src/modules/planner/components/boards/ColumnHeader.tsx",
-      "src/modules/planner/components/boards/SortableColumn.tsx",
-      "src/modules/planner/components/calendar/CalendarCell.tsx",
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx",
-      "src/modules/planner/components/kanban/AddColumnButton.tsx",
-      "src/modules/planner/components/kanban/KanbanColumn.tsx",
-      "src/modules/planner/components/my-tasks/MyTasksContent.tsx",
-      "src/modules/planner/components/my-tasks/MyTasksHeader.tsx",
-      "src/modules/planner/components/shared/PlannerViewHeader.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/PlannerPage.tsx",
+      "src/modules/tasks/components/CreateTaskModal/CreateTaskModal.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/TaskChecklist.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/ChecklistSection.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SectionHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SidebarFields.tsx",
+      "src/modules/tasks/components/TaskList/AssigneeDropdown.tsx",
+      "src/modules/tasks/components/TaskList/LabelsDropdown.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/boards/BoardColumn.tsx",
+      "src/modules/tasks/components/boards/BoardKanban.tsx",
+      "src/modules/tasks/components/boards/ColumnHeader.tsx",
+      "src/modules/tasks/components/boards/SortableColumn.tsx",
+      "src/modules/tasks/components/calendar/CalendarCell.tsx",
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx",
+      "src/modules/tasks/components/kanban/AddColumnButton.tsx",
+      "src/modules/tasks/components/kanban/KanbanColumn.tsx",
+      "src/modules/tasks/components/my-tasks/MyTasksContent.tsx",
+      "src/modules/tasks/components/my-tasks/MyTasksHeader.tsx",
+      "src/modules/tasks/components/shared/PlannerViewHeader.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/priorities/components/PriEmptyState.tsx",
       "src/modules/priorities/components/PriQuickAdd.tsx",
       "src/modules/priorities/pages/PriListsPage.tsx",
@@ -33690,26 +33690,26 @@ export const usageMap: UsageMap = {
       "src/modules/budget/components/LicenseDialog.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/analytics/components/TimeRangeSelector.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
       "src/modules/okr-v2/components/OKRColumnChooser.tsx",
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/QuickActions.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SidebarFields.tsx",
-      "src/modules/planner/components/TaskList/AssigneeDropdown.tsx",
-      "src/modules/planner/components/TaskList/LabelsDropdown.tsx",
-      "src/modules/planner/components/TaskList/PriorityDropdown.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/boards/ColumnActions.tsx",
-      "src/modules/planner/components/boards/ColumnHeader.tsx",
-      "src/modules/planner/components/calendar/QuickAddPopover.tsx",
-      "src/modules/planner/components/task-list/InlineDatePicker.tsx",
-      "src/modules/planner/components/workstreams/LeadPicker.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/QuickActions.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SidebarFields.tsx",
+      "src/modules/tasks/components/TaskList/AssigneeDropdown.tsx",
+      "src/modules/tasks/components/TaskList/LabelsDropdown.tsx",
+      "src/modules/tasks/components/TaskList/PriorityDropdown.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/boards/ColumnActions.tsx",
+      "src/modules/tasks/components/boards/ColumnHeader.tsx",
+      "src/modules/tasks/components/calendar/QuickAddPopover.tsx",
+      "src/modules/tasks/components/task-list/InlineDatePicker.tsx",
+      "src/modules/tasks/components/workstreams/LeadPicker.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx",
@@ -33834,26 +33834,26 @@ export const usageMap: UsageMap = {
       "src/modules/budget/components/LicenseDialog.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/analytics/components/TimeRangeSelector.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
       "src/modules/okr-v2/components/OKRColumnChooser.tsx",
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/QuickActions.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SidebarFields.tsx",
-      "src/modules/planner/components/TaskList/AssigneeDropdown.tsx",
-      "src/modules/planner/components/TaskList/LabelsDropdown.tsx",
-      "src/modules/planner/components/TaskList/PriorityDropdown.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/boards/ColumnActions.tsx",
-      "src/modules/planner/components/boards/ColumnHeader.tsx",
-      "src/modules/planner/components/calendar/QuickAddPopover.tsx",
-      "src/modules/planner/components/task-list/InlineDatePicker.tsx",
-      "src/modules/planner/components/workstreams/LeadPicker.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/QuickActions.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SidebarFields.tsx",
+      "src/modules/tasks/components/TaskList/AssigneeDropdown.tsx",
+      "src/modules/tasks/components/TaskList/LabelsDropdown.tsx",
+      "src/modules/tasks/components/TaskList/PriorityDropdown.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/boards/ColumnActions.tsx",
+      "src/modules/tasks/components/boards/ColumnHeader.tsx",
+      "src/modules/tasks/components/calendar/QuickAddPopover.tsx",
+      "src/modules/tasks/components/task-list/InlineDatePicker.tsx",
+      "src/modules/tasks/components/workstreams/LeadPicker.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx",
@@ -33969,26 +33969,26 @@ export const usageMap: UsageMap = {
       "src/modules/budget/components/LicenseDialog.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/analytics/components/TimeRangeSelector.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
       "src/modules/okr-v2/components/OKRColumnChooser.tsx",
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/QuickActions.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SidebarFields.tsx",
-      "src/modules/planner/components/TaskList/AssigneeDropdown.tsx",
-      "src/modules/planner/components/TaskList/LabelsDropdown.tsx",
-      "src/modules/planner/components/TaskList/PriorityDropdown.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/boards/ColumnActions.tsx",
-      "src/modules/planner/components/boards/ColumnHeader.tsx",
-      "src/modules/planner/components/calendar/QuickAddPopover.tsx",
-      "src/modules/planner/components/task-list/InlineDatePicker.tsx",
-      "src/modules/planner/components/workstreams/LeadPicker.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/QuickActions.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SidebarFields.tsx",
+      "src/modules/tasks/components/TaskList/AssigneeDropdown.tsx",
+      "src/modules/tasks/components/TaskList/LabelsDropdown.tsx",
+      "src/modules/tasks/components/TaskList/PriorityDropdown.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/boards/ColumnActions.tsx",
+      "src/modules/tasks/components/boards/ColumnHeader.tsx",
+      "src/modules/tasks/components/calendar/QuickAddPopover.tsx",
+      "src/modules/tasks/components/task-list/InlineDatePicker.tsx",
+      "src/modules/tasks/components/workstreams/LeadPicker.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx",
@@ -34219,8 +34219,8 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/requests/RequestTable.tsx",
-      "src/modules/planner/components/kanban/KanbanCard.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx"
+      "src/modules/tasks/components/kanban/KanbanCard.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx"
     ]
   },
   "PriorityBadge::@/components/defects/g25/PriorityBadge": {
@@ -34338,7 +34338,7 @@ export const usageMap: UsageMap = {
       "src/components/hierarchy/BulkActionBar.tsx",
       "src/components/hierarchy/DetailPanel.tsx",
       "src/components/hierarchy/WorkItemTable.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx"
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx"
     ]
   },
   "PriorityIcon::../PriorityIcon": {
@@ -35388,7 +35388,7 @@ export const usageMap: UsageMap = {
     "source": "./calendar/QuickAddPopover",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/PlannerCalendar.tsx"
+      "src/modules/tasks/components/PlannerCalendar.tsx"
     ]
   },
   "QuickAddRow::./QuickAddRow": {
@@ -35554,7 +35554,7 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx"
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx"
     ]
   },
   "RadioGroup::@/components/ui/radio-group": {
@@ -35900,8 +35900,8 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/KanbanBoardPage.tsx",
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/incidents/kanban/pages/IncidentKanbanPage.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx",
       "src/modules/project-work-hub/components/tabs/SummaryTab.tsx",
       "src/modules/task10/components/panel/T10ActivityTimeline.tsx",
       "src/modules/work-hub/views/AllWorkView.tsx",
@@ -36699,7 +36699,7 @@ export const usageMap: UsageMap = {
     "source": "../../hooks/useResourceInventory",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/CreateWorkstreamModal.tsx"
+      "src/modules/tasks/components/workstreams/CreateWorkstreamModal.tsx"
     ]
   },
   "Resource::@/types/capacity": {
@@ -37704,8 +37704,8 @@ export const usageMap: UsageMap = {
       "src/components/workhub/releases/ReleaseDetail.tsx",
       "src/components/workhub/releases/ReleasesPage.tsx",
       "src/modules/in-jira/components/releases/VersionCard.tsx",
-      "src/modules/planner/components/insights/MonthlyChronicleView.tsx",
-      "src/modules/planner/components/insights/WeeklySummaryView.tsx",
+      "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
       "src/pages/producthub/ideation/CreateDriveModal.tsx",
       "src/pages/producthub/ideation/IdeationAnalyticsView.tsx",
       "src/pages/releasehub/CommandCenterPage.tsx",
@@ -37799,7 +37799,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/incidents/analytics/components/DrilldownDrawer.tsx",
       "src/modules/incidents/kanban/components/ManageColumnsDialog.tsx",
-      "src/modules/planner/components/my-tasks/CompletedTodaySection.tsx",
+      "src/modules/tasks/components/my-tasks/CompletedTodaySection.tsx",
       "src/modules/product-roadmap/components/RoadmapFilterDialog.tsx",
       "src/modules/project-work-hub/components/tabs/ArchivedTab.tsx",
       "src/modules/task10/components/landing/T10ArchivedCardV3.tsx",
@@ -37882,7 +37882,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/enterprise/EnterpriseGrid.tsx",
-      "src/modules/planner/components/kanban/KanbanFilters.tsx"
+      "src/modules/tasks/components/kanban/KanbanFilters.tsx"
     ]
   },
   "Rows4::@/lib/atlaskit-icons": {
@@ -37991,7 +37991,7 @@ export const usageMap: UsageMap = {
     "source": "./SavingIndicator",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskDetailDrawer/DrawerFooter.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerFooter.tsx"
     ]
   },
   "SavingIndicator::./SavingIndicator": {
@@ -37999,7 +37999,7 @@ export const usageMap: UsageMap = {
     "source": "./SavingIndicator",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskDetailDrawer/DrawerFooter.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerFooter.tsx"
     ]
   },
   "Scale::../types/objective-roadmap": {
@@ -38336,14 +38336,14 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/analytics/components/RequiresAttentionTabs.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/QuickActions.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/boards/BoardKanban.tsx",
-      "src/modules/planner/components/insights/DailyScorecardView.tsx",
-      "src/modules/planner/components/insights/MonthlyChronicleView.tsx",
-      "src/modules/planner/components/insights/WeeklySummaryView.tsx",
-      "src/modules/planner/components/kanban/KanbanBoard.tsx",
-      "src/modules/planner/components/kanban/KanbanColumn.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/QuickActions.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/boards/BoardKanban.tsx",
+      "src/modules/tasks/components/insights/DailyScorecardView.tsx",
+      "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
+      "src/modules/tasks/components/kanban/KanbanBoard.tsx",
+      "src/modules/tasks/components/kanban/KanbanColumn.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-roadmap/components/RoadmapFilterDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapListPanel.tsx",
@@ -38368,8 +38368,8 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/KanbanBoardPage.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
-      "src/modules/planner/components/boards/BoardKanban.tsx",
-      "src/modules/planner/components/kanban/KanbanBoard.tsx",
+      "src/modules/tasks/components/boards/BoardKanban.tsx",
+      "src/modules/tasks/components/kanban/KanbanBoard.tsx",
       "src/modules/product-roadmap/components/RoadmapSwimlinePanel.tsx",
       "src/modules/product-roadmap/components/RoadmapTimelinePanel.tsx"
     ]
@@ -38523,21 +38523,21 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
       "src/modules/objectives/components/AlignedItems/LinkObjectiveDialog.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
-      "src/modules/planner/components/CreateTaskModal/CreateTaskModal.tsx",
-      "src/modules/planner/components/CreateTaskModal/fields/AssigneeSelect.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/TaskList/AssigneeDropdown.tsx",
-      "src/modules/planner/components/TaskList/LabelsDropdown.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/kanban/KanbanFilters.tsx",
-      "src/modules/planner/components/my-tasks/MyTasksHeader.tsx",
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
-      "src/modules/planner/components/workstreams/CreateWorkstreamModal.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamLeadPickerDropdown.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx",
+      "src/modules/tasks/components/CreateTaskModal/CreateTaskModal.tsx",
+      "src/modules/tasks/components/CreateTaskModal/fields/AssigneeSelect.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/TaskList/AssigneeDropdown.tsx",
+      "src/modules/tasks/components/TaskList/LabelsDropdown.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/kanban/KanbanFilters.tsx",
+      "src/modules/tasks/components/my-tasks/MyTasksHeader.tsx",
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/CreateWorkstreamModal.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamLeadPickerDropdown.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx",
       "src/modules/priorities/pages/PriListsPage.tsx",
       "src/modules/product-backlog/components/split-panel/RequestListPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
@@ -39093,10 +39093,10 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
       "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
       "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
-      "src/modules/planner/components/PlannerCreateTeamModal.tsx",
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx",
-      "src/modules/planner/components/kanban/KanbanFilters.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx",
+      "src/modules/tasks/components/kanban/KanbanFilters.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/modules/product-backlog/components/ProductBacklogFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
@@ -39454,10 +39454,10 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
       "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
       "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
-      "src/modules/planner/components/PlannerCreateTeamModal.tsx",
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx",
-      "src/modules/planner/components/kanban/KanbanFilters.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx",
+      "src/modules/tasks/components/kanban/KanbanFilters.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/modules/product-backlog/components/ProductBacklogFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
@@ -39798,10 +39798,10 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
       "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
       "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
-      "src/modules/planner/components/PlannerCreateTeamModal.tsx",
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx",
-      "src/modules/planner/components/kanban/KanbanFilters.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx",
+      "src/modules/tasks/components/kanban/KanbanFilters.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/modules/product-backlog/components/ProductBacklogFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
@@ -40133,10 +40133,10 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
       "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
       "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
-      "src/modules/planner/components/PlannerCreateTeamModal.tsx",
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx",
-      "src/modules/planner/components/kanban/KanbanFilters.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx",
+      "src/modules/tasks/components/kanban/KanbanFilters.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/modules/product-backlog/components/ProductBacklogFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
@@ -40460,10 +40460,10 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KRWorkContributionsV2.tsx",
       "src/modules/okr-v2/components/KeyResultDialogV2.tsx",
       "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
-      "src/modules/planner/components/PlannerCreateTeamModal.tsx",
-      "src/modules/planner/components/dashboard/PlannerDashboard.tsx",
-      "src/modules/planner/components/kanban/KanbanFilters.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
+      "src/modules/tasks/components/dashboard/PlannerDashboard.tsx",
+      "src/modules/tasks/components/kanban/KanbanFilters.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/modules/product-backlog/components/ProductBacklogFiltersDialog.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/program-epics/components/EpicRoadmap.tsx",
@@ -40562,8 +40562,8 @@ export const usageMap: UsageMap = {
       "src/components/workhub/issue-view/sections/ActivitySection.tsx",
       "src/features/release-dashboard/components/SignoffPanel.tsx",
       "src/modules/in-jira/components/drawer/ActivityTabs.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/ActivitySection.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/ActivitySection.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
       "src/pages/enterprise/DemandSummaryPage.tsx",
       "src/pages/producthub/ideation/IdeationDetailPanel.tsx",
       "src/pages/project/components/FeatureActivity.tsx",
@@ -40615,7 +40615,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/CreateIssueModal.tsx",
       "src/modules/in-jira/components/IssueDrawer.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/modules/product-roadmap/components/RoadmapExportDialog.tsx",
       "src/modules/product-roadmap/components/RoadmapFilterDialog.tsx",
       "src/pages/Roadmaps.tsx",
@@ -40986,7 +40986,7 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/modules/product-backlog/components/FilterDrawer.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
       "src/pages/enterprise/EnterpriseRisks.tsx",
@@ -41049,7 +41049,7 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/modules/product-backlog/components/FilterDrawer.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
       "src/pages/enterprise/EnterpriseRisks.tsx",
@@ -41132,7 +41132,7 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/modules/product-backlog/components/FilterDrawer.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
       "src/pages/enterprise/EnterpriseRisks.tsx",
@@ -41187,7 +41187,7 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/modules/product-backlog/components/FilterDrawer.tsx",
       "src/pages/enterprise/CapacityPlannerPage.tsx",
       "src/pages/enterprise/EnterpriseRisks.tsx",
@@ -41259,7 +41259,7 @@ export const usageMap: UsageMap = {
       "src/components/releases/quality-gates/QualityGateEditor.tsx",
       "src/components/requests/tabs/RequestAuditTab.tsx",
       "src/components/requests/tabs/RequestRisksTab.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
       "src/pages/releases/QualityGatesPage.tsx"
     ]
   },
@@ -41440,7 +41440,7 @@ export const usageMap: UsageMap = {
     "source": "./SidebarFields",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
     ]
   },
   "SidebarMenuItem::./SidebarBase": {
@@ -41650,11 +41650,11 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/dashboard/DashboardSkeleton.tsx",
-      "src/modules/planner/components/insights/MonthlyChronicleView.tsx",
-      "src/modules/planner/components/insights/WeeklySummaryView.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/dashboard/DashboardSkeleton.tsx",
+      "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
       "src/modules/product-roadmap/components/RoadmapLoadingSkeleton.tsx",
       "src/modules/work-hub/views/SummaryView.tsx",
       "src/pages/KnowledgeHubDocumentPage.tsx",
@@ -41878,8 +41878,8 @@ export const usageMap: UsageMap = {
       "src/components/skills-inventory/SkillsFiltersDialog.tsx",
       "src/components/templates/TemplateAssignmentRules.tsx",
       "src/modules/okr-v2/components/OKRSmartFiltersDialog.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/ProgressSection.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/ProgressSection.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx"
     ]
   },
   "SlidersHorizontal::@/lib/atlaskit-icons": {
@@ -41948,7 +41948,7 @@ export const usageMap: UsageMap = {
     "source": "./SortableColumn",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/boards/BoardKanban.tsx"
+      "src/modules/tasks/components/boards/BoardKanban.tsx"
     ]
   },
   "SortAsc::@/lib/atlaskit-icons": {
@@ -42165,7 +42165,7 @@ export const usageMap: UsageMap = {
       "src/components/wiki/WikiOnboardingWizard.tsx",
       "src/components/workhub/caty/CatyPage.tsx",
       "src/modules/in-jira/components/import/AISuggestionBanner.tsx",
-      "src/modules/planner/components/TaskChecklist.tsx",
+      "src/modules/tasks/components/TaskChecklist.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/InlineCreateWithAI.tsx",
       "src/modules/task10/components/week/T10AIBanner.tsx",
       "src/modules/task10/components/week/T10AISuggestionsPanel.tsx",
@@ -42391,7 +42391,7 @@ export const usageMap: UsageMap = {
       "src/components/producthub/cards/GridSizeToggle.tsx",
       "src/components/testhub/CloneTestCycleModal.tsx",
       "src/components/testhub/requirements/LinkTestCaseModal.tsx",
-      "src/modules/planner/components/TaskChecklist.tsx",
+      "src/modules/tasks/components/TaskChecklist.tsx",
       "src/modules/program-epics/components/EpicListView.tsx",
       "src/modules/work-hub/views/SummaryView.tsx"
     ]
@@ -42504,8 +42504,8 @@ export const usageMap: UsageMap = {
       "src/components/testhub/CreateCategoryModal.tsx",
       "src/components/testhub/filters/SavedFilters.tsx",
       "src/components/workhub/allwork/AllWorkHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/QuickActions.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SidebarFields.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/QuickActions.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SidebarFields.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapDetailPanel.tsx",
       "src/modules/project-work-hub/pages/StoryBacklogPage.atlaskit.tsx",
@@ -42810,7 +42810,7 @@ export const usageMap: UsageMap = {
       "src/components/hierarchy/BulkActionBar.tsx",
       "src/components/hierarchy/DetailPanel.tsx",
       "src/components/hierarchy/WorkItemTable.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx"
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx"
     ]
   },
   "StatusFilter::./ideation/ideation-data": {
@@ -43508,7 +43508,7 @@ export const usageMap: UsageMap = {
     "source": "./WorkstreamSummaryCard",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx"
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx"
     ]
   },
   "SummaryCell::./cells": {
@@ -43585,7 +43585,7 @@ export const usageMap: UsageMap = {
     "source": "./SwimlaneCard",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/kanban/SwimlaneRow.tsx"
+      "src/modules/tasks/components/kanban/SwimlaneRow.tsx"
     ]
   },
   "SwimlaneGroup::../types": {
@@ -43601,7 +43601,7 @@ export const usageMap: UsageMap = {
     "source": "./SwimlaneRow",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/kanban/KanbanBoard.tsx"
+      "src/modules/tasks/components/kanban/KanbanBoard.tsx"
     ]
   },
   "SwimlaneRow::@/components/kanban/KanbanSwimlane": {
@@ -44515,7 +44515,7 @@ export const usageMap: UsageMap = {
     "source": "./WorkstreamTableHeader",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx"
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx"
     ]
   },
   "TableHeader::@/components/ui/table": {
@@ -45082,8 +45082,8 @@ export const usageMap: UsageMap = {
       "src/components/workhub/allwork/AllWorkSplitView.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
       "src/modules/kanban/components/KanbanCard.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SidebarFields.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SidebarFields.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/modules/priorities/pages/PriListsPage.tsx",
       "src/modules/task10/components/filters/T10LabelFilter.tsx",
       "src/modules/task10/components/landing/T10LabelFilter.tsx",
@@ -45266,7 +45266,7 @@ export const usageMap: UsageMap = {
     "source": "../TaskChecklist",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx"
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx"
     ]
   },
   "TaskContextMenu::./TaskContextMenu": {
@@ -45274,7 +45274,7 @@ export const usageMap: UsageMap = {
     "source": "./TaskContextMenu",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/calendar/CalendarCell.tsx"
+      "src/modules/tasks/components/calendar/CalendarCell.tsx"
     ]
   },
   "TaskDescription::./TaskDescription": {
@@ -45282,7 +45282,7 @@ export const usageMap: UsageMap = {
     "source": "./TaskDescription",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx"
     ]
   },
   "TaskDetailDrawer::../components/TaskDetailDrawer/TaskDetailDrawer": {
@@ -45290,7 +45290,7 @@ export const usageMap: UsageMap = {
     "source": "../components/TaskDetailDrawer/TaskDetailDrawer",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/pages/MyTasksPage.tsx"
+      "src/modules/tasks/pages/MyTasksPage.tsx"
     ]
   },
   "TaskDetailDrawer::../TaskDetailDrawer/TaskDetailDrawer": {
@@ -45298,7 +45298,7 @@ export const usageMap: UsageMap = {
     "source": "../TaskDetailDrawer/TaskDetailDrawer",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/boards/PlannerBoardsPage.tsx"
+      "src/modules/tasks/components/boards/PlannerBoardsPage.tsx"
     ]
   },
   "TaskDetailDrawer::./components/kanban": {
@@ -45306,8 +45306,8 @@ export const usageMap: UsageMap = {
     "source": "./components/kanban",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/KanbanPage.tsx",
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/KanbanPage.tsx",
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "TaskDrawer::@/components/work-manager/TaskDrawer": {
@@ -45347,7 +45347,7 @@ export const usageMap: UsageMap = {
     "source": "./TaskHoverCard",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/calendar/TaskPillV2.tsx"
+      "src/modules/tasks/components/calendar/TaskPillV2.tsx"
     ]
   },
   "TaskIcon::@/components/boards/WorkItemTypeIcons": {
@@ -45389,7 +45389,7 @@ export const usageMap: UsageMap = {
     "source": "./TaskListHeader",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskList/TaskListPage.tsx"
+      "src/modules/tasks/components/TaskList/TaskListPage.tsx"
     ]
   },
   "TaskListPageV3::../components/TaskList": {
@@ -45397,7 +45397,7 @@ export const usageMap: UsageMap = {
     "source": "../components/TaskList",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/pages/TaskListPage.tsx"
+      "src/modules/tasks/pages/TaskListPage.tsx"
     ]
   },
   "TaskListPageV3::./TaskList": {
@@ -45405,7 +45405,7 @@ export const usageMap: UsageMap = {
     "source": "./TaskList",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/PlannerTaskList.tsx"
+      "src/modules/tasks/components/PlannerTaskList.tsx"
     ]
   },
   "TaskListRowV3::./TaskListRowV3": {
@@ -45413,7 +45413,7 @@ export const usageMap: UsageMap = {
     "source": "./TaskListRowV3",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx"
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx"
     ]
   },
   "TaskListTable::./TaskListTable": {
@@ -45421,7 +45421,7 @@ export const usageMap: UsageMap = {
     "source": "./TaskListTable",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskList/TaskListPage.tsx"
+      "src/modules/tasks/components/TaskList/TaskListPage.tsx"
     ]
   },
   "TaskListToolbar::./TaskListToolbar": {
@@ -45429,7 +45429,7 @@ export const usageMap: UsageMap = {
     "source": "./TaskListToolbar",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskList/TaskListPage.tsx"
+      "src/modules/tasks/components/TaskList/TaskListPage.tsx"
     ]
   },
   "TaskPillV2::./TaskPillV2": {
@@ -45437,7 +45437,7 @@ export const usageMap: UsageMap = {
     "source": "./TaskPillV2",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/calendar/CalendarCell.tsx"
+      "src/modules/tasks/components/calendar/CalendarCell.tsx"
     ]
   },
   "TaskPriority::../../types": {
@@ -45469,8 +45469,8 @@ export const usageMap: UsageMap = {
     "source": "./TaskRow",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskList/TaskListTable.tsx",
-      "src/modules/planner/components/my-tasks/TaskSection.tsx"
+      "src/modules/tasks/components/TaskList/TaskListTable.tsx",
+      "src/modules/tasks/components/my-tasks/TaskSection.tsx"
     ]
   },
   "TaskSection::./TaskSection": {
@@ -45478,7 +45478,7 @@ export const usageMap: UsageMap = {
     "source": "./TaskSection",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/my-tasks/MyTasksContent.tsx"
+      "src/modules/tasks/components/my-tasks/MyTasksContent.tsx"
     ]
   },
   "TaskStatus::../types": {
@@ -45544,9 +45544,9 @@ export const usageMap: UsageMap = {
     "source": "./workstreams-constants",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/WorkstreamLeadPickerDropdown.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamRowView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx"
+      "src/modules/tasks/components/workstreams/WorkstreamLeadPickerDropdown.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamRowView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx"
     ]
   },
   "TeamMember::@/hooks/useFeatureAssignments": {
@@ -46108,7 +46108,7 @@ export const usageMap: UsageMap = {
       "src/components/templates/ApplyTemplateModal.tsx",
       "src/components/templates/TemplateCard.tsx",
       "src/components/templates/TemplateTestSelector.tsx",
-      "src/modules/planner/components/insights/MonthlyChronicleView.tsx"
+      "src/modules/tasks/components/insights/MonthlyChronicleView.tsx"
     ]
   },
   "TestTube2::@/lib/atlaskit-icons": {
@@ -46267,7 +46267,7 @@ export const usageMap: UsageMap = {
       "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
       "src/modules/okr-v2/components/CreateObjectiveDialogV2.tsx",
       "src/modules/okr-v2/components/ObjectiveOverviewTabV2.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
       "src/modules/project-work-hub/components/dialogs/CreateFeatureDialog.tsx",
       "src/modules/project-work-hub/components/dialogs/CreateSubtaskDialog.tsx",
       "src/modules/project-work-hub/components/dialogs/EditFeatureDialog.tsx",
@@ -47394,8 +47394,8 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/TrendIcon.tsx",
       "src/modules/okr-v2/components/shared/OkrThemeDot.tsx",
       "src/modules/okr-v2/components/shared/OkrWorkItemBadge.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
       "src/modules/product-backlog/components/split-panel/RequestListPanel.tsx",
       "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
@@ -47684,26 +47684,26 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/KeyResultsTabV2.tsx",
       "src/modules/okr-v2/components/LinkedWorkTabV2.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/planner/components/PlannerBulkActionBar.tsx",
-      "src/modules/planner/components/TaskCard.tsx",
-      "src/modules/planner/components/TaskChecklist.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx",
-      "src/modules/planner/components/TaskList/TaskRow.tsx",
-      "src/modules/planner/components/boards/ColumnActions.tsx",
-      "src/modules/planner/components/boards/ColumnHeader.tsx",
-      "src/modules/planner/components/boards/SortableColumn.tsx",
-      "src/modules/planner/components/calendar/TaskContextMenu.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/my-tasks/TaskRow.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/task-list/RowActions.tsx",
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamCard.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamRowView.tsx",
+      "src/modules/tasks/components/PlannerBulkActionBar.tsx",
+      "src/modules/tasks/components/TaskCard.tsx",
+      "src/modules/tasks/components/TaskChecklist.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskRow.tsx",
+      "src/modules/tasks/components/boards/ColumnActions.tsx",
+      "src/modules/tasks/components/boards/ColumnHeader.tsx",
+      "src/modules/tasks/components/boards/SortableColumn.tsx",
+      "src/modules/tasks/components/calendar/TaskContextMenu.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/my-tasks/TaskRow.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/task-list/RowActions.tsx",
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamCard.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamRowView.tsx",
       "src/modules/priorities/components/PriPriorityCard.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/product-backlog/components/split-panel/RequestDetailPanel.tsx",
@@ -47854,8 +47854,8 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/TrendIcon.tsx",
       "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
       "src/modules/okr-v2/components/shared/OkrProgressCell.tsx",
-      "src/modules/planner/components/insights/MonthlyChronicleView.tsx",
-      "src/modules/planner/components/insights/WeeklySummaryView.tsx",
+      "src/modules/tasks/components/insights/MonthlyChronicleView.tsx",
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
       "src/pages/SkillsInventory.tsx",
       "src/pages/TeamRoom.tsx",
       "src/pages/release/IncidentCommandCenter.tsx",
@@ -47930,8 +47930,8 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/TrendIcon.tsx",
       "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
       "src/modules/okr-v2/components/shared/OkrProgressCell.tsx",
-      "src/modules/planner/components/dashboard/DashboardMetricCards.tsx",
-      "src/modules/planner/components/insights/WeeklySummaryView.tsx",
+      "src/modules/tasks/components/dashboard/DashboardMetricCards.tsx",
+      "src/modules/tasks/components/insights/WeeklySummaryView.tsx",
       "src/modules/task10/components/completed/T10CompletedSummaryCards.tsx",
       "src/pages/KanbanBoardAnalytics.tsx",
       "src/pages/PortfolioRoadmap.tsx",
@@ -48111,7 +48111,7 @@ export const usageMap: UsageMap = {
     "source": "./useMyTasksUndo",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/hooks/useCompleteMyTaskWithUndo.ts"
+      "src/modules/tasks/hooks/useCompleteMyTaskWithUndo.ts"
     ]
   },
   "UndoIcon::@atlaskit/icon/core/undo": {
@@ -48285,7 +48285,7 @@ export const usageMap: UsageMap = {
       "src/modules/capacity-planner/components/import/CapacityImportWizard.tsx",
       "src/modules/in-jira/components/import/ImportWizard.tsx",
       "src/modules/in-jira/pages/SettingsPage.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/AttachmentsSection.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/AttachmentsSection.tsx",
       "src/modules/product-backlog/components/split-panel/AttachmentUploadModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/pages/SubmitDemandRequest.tsx",
@@ -48417,16 +48417,16 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/pages/KanbanBoardPage.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/in-jira/pages/ScrumBoardPage.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SidebarFields.tsx",
-      "src/modules/planner/components/calendar/TaskContextMenu.tsx",
-      "src/modules/planner/components/calendar/TaskHoverCard.tsx",
-      "src/modules/planner/components/dashboard/DashboardUpcomingDeadlines.tsx",
-      "src/modules/planner/components/kanban/KanbanBoard.tsx",
-      "src/modules/planner/components/kanban/SwimlaneRow.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/workstreams/LeadPicker.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamRowView.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SidebarFields.tsx",
+      "src/modules/tasks/components/calendar/TaskContextMenu.tsx",
+      "src/modules/tasks/components/calendar/TaskHoverCard.tsx",
+      "src/modules/tasks/components/dashboard/DashboardUpcomingDeadlines.tsx",
+      "src/modules/tasks/components/kanban/KanbanBoard.tsx",
+      "src/modules/tasks/components/kanban/SwimlaneRow.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/workstreams/LeadPicker.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamRowView.tsx",
       "src/modules/priorities/pages/PriListsPage.tsx",
       "src/modules/product-roadmap/components/RoadmapListRow.tsx",
       "src/modules/product-roadmap/components/RoadmapSwimlinePanel.tsx",
@@ -48566,7 +48566,7 @@ export const usageMap: UsageMap = {
       "src/components/releases/cycle-command-center/ActivityFeed.tsx",
       "src/components/test-cycles/assignment-table/AssigneeSelect.tsx",
       "src/components/workload/WorkloadAlerts.tsx",
-      "src/modules/planner/components/dashboard/DashboardTeamWorkloadV2.tsx",
+      "src/modules/tasks/components/dashboard/DashboardTeamWorkloadV2.tsx",
       "src/modules/task10/components/panel/T10ActivityTimeline.tsx"
     ]
   },
@@ -48651,7 +48651,7 @@ export const usageMap: UsageMap = {
       "src/components/work-manager/WorkManagerTeams.tsx",
       "src/features/release-dashboard/components/SignoffPanel.tsx",
       "src/modules/incidents/kanban/components/KanbanCard.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
       "src/modules/task10/components/panel/T10ActivityTimeline.tsx",
       "src/pages/SkillsInventory.tsx",
       "src/pages/project/FeatureDetailPage.tsx",
@@ -48787,14 +48787,14 @@ export const usageMap: UsageMap = {
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
-      "src/modules/planner/components/PlannerCalendar.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/dashboard/DashboardKPIStrip.tsx",
-      "src/modules/planner/components/dashboard/DashboardRoleBanner.tsx",
-      "src/modules/planner/components/dashboard/DashboardTeamWorkload.tsx",
-      "src/modules/planner/components/dashboard/DashboardTeamWorkloadV2.tsx",
-      "src/modules/planner/components/workstreams/CreateWorkstreamModal.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamMembersDialog.tsx",
+      "src/modules/tasks/components/PlannerCalendar.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/dashboard/DashboardKPIStrip.tsx",
+      "src/modules/tasks/components/dashboard/DashboardRoleBanner.tsx",
+      "src/modules/tasks/components/dashboard/DashboardTeamWorkload.tsx",
+      "src/modules/tasks/components/dashboard/DashboardTeamWorkloadV2.tsx",
+      "src/modules/tasks/components/workstreams/CreateWorkstreamModal.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamMembersDialog.tsx",
       "src/modules/project-work-hub/ProjectWorkHubPage.tsx",
       "src/modules/work-hub/WorkHubLayout.tsx",
       "src/pages/SkillsInventory.tsx",
@@ -48893,7 +48893,7 @@ export const usageMap: UsageMap = {
     "consumers": [
       "src/components/planhub/views/ResourcesView.tsx",
       "src/modules/incidents/analytics/components/RequiresAttentionTabs.tsx",
-      "src/modules/planner/components/dashboard/DashboardTeamWorkload.tsx",
+      "src/modules/tasks/components/dashboard/DashboardTeamWorkload.tsx",
       "src/modules/project-work-hub/components/SubtasksPanel/popovers/AssigneePopover.tsx",
       "src/pages/CleanupPage.tsx"
     ]
@@ -49066,7 +49066,7 @@ export const usageMap: UsageMap = {
     "source": "../../hooks/useVersions",
     "origin": "internal",
     "consumers": [
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx"
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx"
     ]
   },
   "VersionWithProgress::../hooks/useVersions": {
@@ -49250,7 +49250,7 @@ export const usageMap: UsageMap = {
     "source": "./WorkstreamViewToggle",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx"
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx"
     ]
   },
   "VirtualizedCardList::./VirtualizedCardList": {
@@ -49411,7 +49411,7 @@ export const usageMap: UsageMap = {
     "source": "./components/insights",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "WeekStripCollapsible::./r360-member": {
@@ -50590,11 +50590,11 @@ export const usageMap: UsageMap = {
     "source": "../../hooks/usePlannerWorkstreams",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/ArchivedWorkstreamsView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamQuickEditDialog.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamRowView.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx"
+      "src/modules/tasks/components/workstreams/ArchivedWorkstreamsView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamQuickEditDialog.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamRowView.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx"
     ]
   },
   "Workstream::../hooks/usePlannerWorkstreams": {
@@ -50602,7 +50602,7 @@ export const usageMap: UsageMap = {
     "source": "../hooks/usePlannerWorkstreams",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/PlannerTimeline.tsx"
+      "src/modules/tasks/components/PlannerTimeline.tsx"
     ]
   },
   "WorkstreamBadge::./WorkstreamBadge": {
@@ -50610,8 +50610,8 @@ export const usageMap: UsageMap = {
     "source": "./WorkstreamBadge",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/kanban/KanbanCard.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx"
+      "src/modules/tasks/components/kanban/KanbanCard.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx"
     ]
   },
   "WorkstreamCard::./WorkstreamCard": {
@@ -50619,7 +50619,7 @@ export const usageMap: UsageMap = {
     "source": "./WorkstreamCard",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx"
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx"
     ]
   },
   "WorkstreamDrawer::./WorkstreamDrawer": {
@@ -50627,7 +50627,7 @@ export const usageMap: UsageMap = {
     "source": "./WorkstreamDrawer",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx"
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx"
     ]
   },
   "WorkstreamDrawer::./workstreams/WorkstreamDrawer": {
@@ -50635,7 +50635,7 @@ export const usageMap: UsageMap = {
     "source": "./workstreams/WorkstreamDrawer",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/PlannerTimeline.tsx"
+      "src/modules/tasks/components/PlannerTimeline.tsx"
     ]
   },
   "WorkstreamDropdown::./WorkstreamDropdown": {
@@ -50643,7 +50643,7 @@ export const usageMap: UsageMap = {
     "source": "./WorkstreamDropdown",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/TaskList/TaskListRowV3.tsx"
+      "src/modules/tasks/components/TaskList/TaskListRowV3.tsx"
     ]
   },
   "WorkstreamMembersDialog::./WorkstreamMembersDialog": {
@@ -50651,7 +50651,7 @@ export const usageMap: UsageMap = {
     "source": "./WorkstreamMembersDialog",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx"
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx"
     ]
   },
   "WorkstreamQuickEditDialog::./WorkstreamQuickEditDialog": {
@@ -50659,7 +50659,7 @@ export const usageMap: UsageMap = {
     "source": "./WorkstreamQuickEditDialog",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx"
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx"
     ]
   },
   "WorkstreamRow::./WorkstreamRowView": {
@@ -50667,7 +50667,7 @@ export const usageMap: UsageMap = {
     "source": "./WorkstreamRowView",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/components/workstreams/WorkstreamsPage.tsx"
+      "src/modules/tasks/components/workstreams/WorkstreamsPage.tsx"
     ]
   },
   "WorkstreamsPage::./components/workstreams": {
@@ -50675,7 +50675,7 @@ export const usageMap: UsageMap = {
     "source": "./components/workstreams",
     "origin": "internal",
     "consumers": [
-      "src/modules/planner/PlannerPage.tsx"
+      "src/modules/tasks/PlannerPage.tsx"
     ]
   },
   "WorkTreeCounts::../types": {
@@ -51157,7 +51157,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/IssueDrawer.tsx",
       "src/modules/in-jira/components/drawer/InlineEdit.tsx",
       "src/modules/in-jira/components/import/AISuggestionBanner.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/analytics/components/DrilldownDrawer.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
@@ -51170,30 +51170,30 @@ export const usageMap: UsageMap = {
       "src/modules/okr-v2/components/StrategyAnalyticsModal.tsx",
       "src/modules/okr-v2/components/StrategyCockpit/StrategyCockpit.tsx",
       "src/modules/okr-v2/components/WorkItemAnalyticsDrawer/WorkItemAnalyticsDrawer.tsx",
-      "src/modules/planner/components/AddColumnModal.tsx",
-      "src/modules/planner/components/CreateTaskModal/CreateTaskModal.tsx",
-      "src/modules/planner/components/CreateTaskModal/fields/AssigneeSelect.tsx",
-      "src/modules/planner/components/PlannerBulkActionBar.tsx",
-      "src/modules/planner/components/PlannerCreateTeamModal.tsx",
-      "src/modules/planner/components/PlannerSearchBar.tsx",
-      "src/modules/planner/components/PlannerTimeline.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/AttachmentsSection.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/ChecklistSection.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/DrawerHeader.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/LeadNotesTab.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/SidebarFields.tsx",
-      "src/modules/planner/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/TaskList/TaskListPageV3.tsx",
-      "src/modules/planner/components/TaskList/TaskListToolbar.tsx",
-      "src/modules/planner/components/calendar/ActiveFilterChips.tsx",
-      "src/modules/planner/components/kanban/KanbanFilters.tsx",
-      "src/modules/planner/components/kanban/TaskDetailDrawer.tsx",
-      "src/modules/planner/components/my-tasks/MyTasksHeader.tsx",
-      "src/modules/planner/components/task-list/BulkActionBar.tsx",
-      "src/modules/planner/components/workstreams/CreateWorkstreamModal.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamLeadPickerDropdown.tsx",
-      "src/modules/planner/components/workstreams/WorkstreamMembersDialog.tsx",
+      "src/modules/tasks/components/AddColumnModal.tsx",
+      "src/modules/tasks/components/CreateTaskModal/CreateTaskModal.tsx",
+      "src/modules/tasks/components/CreateTaskModal/fields/AssigneeSelect.tsx",
+      "src/modules/tasks/components/PlannerBulkActionBar.tsx",
+      "src/modules/tasks/components/PlannerCreateTeamModal.tsx",
+      "src/modules/tasks/components/PlannerSearchBar.tsx",
+      "src/modules/tasks/components/PlannerTimeline.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/AttachmentsSection.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/ChecklistSection.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/LeadNotesTab.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/SidebarFields.tsx",
+      "src/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/TaskList/TaskListPageV3.tsx",
+      "src/modules/tasks/components/TaskList/TaskListToolbar.tsx",
+      "src/modules/tasks/components/calendar/ActiveFilterChips.tsx",
+      "src/modules/tasks/components/kanban/KanbanFilters.tsx",
+      "src/modules/tasks/components/kanban/TaskDetailDrawer.tsx",
+      "src/modules/tasks/components/my-tasks/MyTasksHeader.tsx",
+      "src/modules/tasks/components/task-list/BulkActionBar.tsx",
+      "src/modules/tasks/components/workstreams/CreateWorkstreamModal.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamLeadPickerDropdown.tsx",
+      "src/modules/tasks/components/workstreams/WorkstreamMembersDialog.tsx",
       "src/modules/priorities/components/PriCheckoutModal.tsx",
       "src/modules/priorities/components/PriSidePanel.tsx",
       "src/modules/priorities/components/PriToastContainer.tsx",
@@ -51441,7 +51441,7 @@ export const usageMap: UsageMap = {
       "src/components/workhub/issue-view/IssueContentView.tsx",
       "src/components/workhub/resource360/ResourceDetail.tsx",
       "src/features/my-test-scope/components/ScopeTabs.tsx",
-      "src/modules/planner/components/TaskChecklist.tsx",
+      "src/modules/tasks/components/TaskChecklist.tsx",
       "src/modules/project-work-hub/components/CreateWorkItemDropdown.tsx",
       "src/modules/project-work-hub/components/WorkTypeIcon.tsx",
       "src/modules/task10/components/modals/T10CheckoutModalNew.tsx",

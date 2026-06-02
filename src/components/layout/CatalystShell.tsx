@@ -436,7 +436,7 @@ function CatalystShellContent() {
 
   // Check if on TaskHub route (includes /priorities which is part of TaskHub)
   const isTaskHubRoute =
-    location.pathname.startsWith("/taskhub") ||
+    location.pathname.startsWith("/tasks") ||
     location.pathname.startsWith("/priorities");
 
   // Check if on TestHub route
@@ -533,7 +533,7 @@ function CatalystShellContent() {
     location.pathname.startsWith("/releasehub") ||
     location.pathname.startsWith("/testhub") ||
     location.pathname.startsWith("/incident-hub") ||
-    location.pathname.startsWith("/taskhub") ||
+    location.pathname.startsWith("/tasks") ||
     location.pathname.startsWith("/ideation") || // peer hub Ideation
     location.pathname.startsWith("/priorities");
 

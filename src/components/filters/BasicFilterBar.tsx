@@ -27,6 +27,7 @@ import MediumPriIcon  from '@atlaskit/icon/core/priority-medium';
 import LowPriIcon     from '@atlaskit/icon/core/priority-low';
 import LowestPriIcon  from '@atlaskit/icon/core/priority-lowest';
 import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import Button from '@atlaskit/button/new';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type {
   JiraFilterValue,
@@ -34,7 +35,7 @@ import type {
   ReporterOption,
   StatusFilterOption,
   WorkTypeOption,
-  FixVersionOption,
+  SprintReleaseOption,
   LabelOption,
   PriorityLevel,
 } from '@/components/shared/JiraFilterAtlaskit';
@@ -64,7 +65,7 @@ export interface BasicFilterBarProps {
   reporters?: ReporterOption[];
   statuses?: StatusFilterOption[];
   workTypes?: WorkTypeOption[];
-  fixVersions?: FixVersionOption[];
+  sprintReleases?: SprintReleaseOption[];
   labels?: LabelOption[];
   isLoading?: boolean;
 }
@@ -91,7 +92,7 @@ function ChipButton({ label, count, isOpen, onClick, chipRef }: ChipButtonProps)
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 8,
         height: 32,
         padding: '0 8px',
         borderRadius: 3,
@@ -128,7 +129,7 @@ function ChipButton({ label, count, isOpen, onClick, chipRef }: ChipButtonProps)
             background: token('color.background.accent.blue.bolder', '#0C66E4'),
             color: token('color.text.inverse', '#FFFFFF'),
             fontSize: 11,
-            fontWeight: 700,
+            fontWeight: 653,
           }}
         >
           {count}
@@ -207,7 +208,7 @@ function DropdownShell({
         boxShadow: token('elevation.shadow.overlay', '0 8px 24px -4px rgba(9,30,66,0.18)'),
         maxHeight: 'calc(100vh - 200px)',
         overflowY: 'auto',
-        fontFamily: '"Atlassian Sans", ui-sans-serif, system-ui, sans-serif',
+        fontFamily: 'var(--ds-font-family-sans, ui-sans-serif, system-ui, sans-serif)',
         fontSize: 14,
       }}
     >
@@ -220,28 +221,18 @@ function DropdownShell({
           borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
         }}>
           {label && (
-            <span style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtlest', '#6B778C') }}>
+            <span style={{ fontSize: 12, fontWeight: 653, color: token('color.text.subtlest', '#6B778C') }}>
               {label}
             </span>
           )}
           {hasSelections && onClear && (
-            <button
-              type="button"
+            <Button
+              appearance="link"
+              spacing="none"
               onClick={onClear}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: token('color.link', '#0C66E4'),
-                fontSize: 12,
-                fontWeight: 500,
-                cursor: 'pointer',
-                padding: '0 4px',
-                fontFamily: 'inherit',
-                marginLeft: 'auto',
-              }}
             >
               Clear
-            </button>
+            </Button>
           )}
         </div>
       )}
@@ -303,7 +294,7 @@ function MoreSection({ label, children }: { label: string; children: React.React
       <div style={{
         padding: '8px 12px 4px',
         fontSize: 11,
-        fontWeight: 600,
+        fontWeight: 653,
         color: token('color.text.subtlest', '#6B778C'),
       }}>
         {label}
@@ -322,7 +313,7 @@ export function BasicFilterBar({
   reporters = [],
   statuses = [],
   workTypes = [],
-  fixVersions = [],
+  sprintReleases = [],
   labels = [],
   isLoading,
 }: BasicFilterBarProps) {
@@ -357,7 +348,7 @@ export function BasicFilterBar({
   // Count for "More filters" badge
   const moreCount =
     value.reporter.length +
-    value.fixVersions.length +
+    value.sprintReleases.length +
     value.labels.length +
     (value.updated.from || value.updated.to ? 1 : 0) +
     (value.created.from || value.created.to ? 1 : 0) +
@@ -474,7 +465,7 @@ export function BasicFilterBar({
                   label={s.label}
                   isChecked={value.status.includes(s.value)}
                   onChange={() => toggleMulti('status', s.value, value.status)}
-                  icon={<Lozenge appearance={s.appearance as LozengeAppearance}>{s.label}</Lozenge>}
+                  icon={<span data-cp-lozenge-jira-parity><Lozenge appearance={s.appearance as LozengeAppearance}>{s.label}</Lozenge></span>}
                 />
               ))
             )}
@@ -527,7 +518,7 @@ export function BasicFilterBar({
             onClear={() => onChange({
               ...value,
               reporter: [],
-              fixVersions: [],
+              sprintReleases: [],
               labels: [],
               updated: {},
               created: {},
@@ -559,15 +550,15 @@ export function BasicFilterBar({
               )}
             </MoreSection>
 
-            {/* Fix versions */}
-            {fixVersions.length > 0 && (
-              <MoreSection label="Fix version">
-                {fixVersions.map(fv => (
+            {/* Sprint/Release */}
+            {sprintReleases.length > 0 && (
+              <MoreSection label="Sprint/Release">
+                {sprintReleases.map(fv => (
                   <CheckRow
                     key={fv.id}
                     label={fv.label}
-                    isChecked={value.fixVersions.includes(fv.id)}
-                    onChange={() => toggleMulti('fixVersions', fv.id, value.fixVersions)}
+                    isChecked={value.sprintReleases.includes(fv.id)}
+                    onChange={() => toggleMulti('sprintReleases', fv.id, value.sprintReleases)}
                   />
                 ))}
               </MoreSection>
@@ -648,27 +639,14 @@ export function BasicFilterBar({
 
         {/* Clear all — only when something is active */}
         {hasAny && (
-          <button
-            type="button"
+          <Button
+            appearance="subtle"
+            spacing="compact"
+            iconBefore={CrossCircleIcon}
             onClick={() => onChange(emptyFilterValue)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              height: 32,
-              padding: '0 8px',
-              border: 'none',
-              background: 'transparent',
-              color: token('color.text.subtle', '#42526E'),
-              fontSize: 13,
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              borderRadius: 3,
-            }}
           >
-            <CrossCircleIcon label="" size="small" />
             Clear all
-          </button>
+          </Button>
         )}
       </div>
     </div>

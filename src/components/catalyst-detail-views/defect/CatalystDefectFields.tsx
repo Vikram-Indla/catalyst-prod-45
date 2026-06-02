@@ -24,7 +24,7 @@
  *      replaces the italic placeholder that failed WCAG AA contrast.
  *
  * Data wiring today:
- *   - Fix-in build   ← issue.fix_versions  (Json: Array<{ name }>)
+ *   - Fix-in build   ← issue.sprint_release  (Json: Array<{ name }>)
  *   - Resolution     ← issue.resolution    (string | null)
  *   Pass-through props for Severity / Environment / Steps / Found-in /
  *   Root Cause stay optional until the schema follow-up (add columns to
@@ -129,9 +129,9 @@ export function CatalystDefectKeyRows({
    */
   onUpdate?: () => void;
 }) {
-  // Normalize fix_versions — stored as Json, may be null or malformed.
-  const fixVersions: Array<{ name: string }> = Array.isArray(issue?.fix_versions)
-    ? ((issue as any).fix_versions as any[]).filter(
+  // Normalize sprint_release — stored as Json, may be null or malformed.
+  const sprintRelease: Array<{ name: string }> = Array.isArray(issue?.sprint_release)
+    ? ((issue as any).sprint_release as any[]).filter(
         (v): v is { name: string } =>
           !!v && typeof v === 'object' && typeof v.name === 'string',
       )
@@ -142,7 +142,7 @@ export function CatalystDefectKeyRows({
     : null;
 
   const hasFoundIn = !!foundInBuild && foundInBuild.trim().length > 0;
-  const hasFixIn = fixVersions.length > 0;
+  const hasFixIn = sprintRelease.length > 0;
   const hasRootCause = !!rootCause && rootCause.trim().length > 0;
   const hasResolution = !!resolution;
   return (
@@ -169,8 +169,8 @@ export function CatalystDefectKeyRows({
       )}
 
       {/* "Fix in" removed 2026-05-02 per Vikram — duplicates the right-rail
-          Fix versions field. Jira does not surface a separate "Fix in"
-          row; fixVersions is the canonical source. */}
+          Sprint/Release field. Jira does not surface a separate "Fix in"
+          row; sprintRelease is the canonical source. */}
 
       {hasRootCause && (
         <KeyDetailsFieldRow label="Root cause" alignBlock="center">

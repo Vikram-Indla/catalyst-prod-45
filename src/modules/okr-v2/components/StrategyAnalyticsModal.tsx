@@ -52,7 +52,7 @@ const TrendBadge = ({ trend, value }: { trend: TrendDirection; value: string }) 
     <span className={cn(
       "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium",
 isNeutral && "bg-muted/50 text-muted-foreground",
-      isPositive && "bg-[#e8f5e9] dark:bg-[rgba(74,222,128,0.10)] text-[#4a7c4a] dark:text-[#4ADE80]",
+      isPositive && "bg-[#e8f5e9] dark:bg-[rgba(74,222,128,0.10)] text-[var(--ds-text-success,#4a7c4a)] dark:text-[#4ADE80]",
       !isPositive && !isNeutral && "bg-amber-50 dark:bg-[rgba(251,191,36,0.10)] text-amber-600 dark:text-[#FBBF24]"
     )}>
       {isPositive && <TrendingUp className="h-3 w-3" />}
@@ -85,7 +85,7 @@ const KPICard = ({ title, children, wide = false }: { title: string; children: R
   <div className={cn(
     "p-5 rounded-xl",
     "bg-white dark:bg-[#161B22]",
-    "border border-[#E1E4E8] dark:border-[#30363D]",
+    "border border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D]",
     wide && "col-span-2"
   )}>
     <div className="text-[11px] font-semibold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] uppercase tracking-wider mb-3">
@@ -122,8 +122,8 @@ const DrillDownDialog = ({ isOpen, onClose, title, items }: DrillDownDialogProps
 case 'on-track': return 'bg-secondary-green';
       case 'in-progress': return 'bg-brand-primary';
       case 'at-risk': return 'bg-amber-500';
-      case 'off-track': return 'bg-[#b85c38]';
-      case 'blocked': return 'bg-[#b85c38]';
+      case 'off-track': return 'bg-[var(--ds-text-danger,#b85c38)]';
+      case 'blocked': return 'bg-[var(--ds-text-danger,#b85c38)]';
       default: return 'bg-muted-foreground';
     }
   };
@@ -138,13 +138,13 @@ case 'on-track': return 'bg-secondary-green';
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-[95%] max-w-[600px] bg-white dark:bg-[#161B22] rounded-xl shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200 border border-[#E1E4E8] dark:border-[#30363D]">
+      <div className="w-[95%] max-w-[600px] bg-white dark:bg-[#161B22] rounded-xl shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200 border border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E1E4E8] dark:border-[#30363D]">
-          <h3 className="text-lg font-semibold text-[#24292F] dark:text-[#E6EDF3]">{title}</h3>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D]">
+          <h3 className="text-lg font-semibold text-[var(--ds-text,#24292F)] dark:text-[#E6EDF3]">{title}</h3>
           <button
             onClick={onClose}
-            className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[#8B949E] hover:text-[#24292F] dark:hover:text-[#E6EDF3] transition-colors"
+            className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[var(--ds-text-subtlest,#8B949E)] hover:text-[var(--ds-text,#24292F)] dark:hover:text-[#E6EDF3] transition-colors"
             aria-label="Close"
           >
             <X className="h-4 w-4" />
@@ -154,11 +154,11 @@ case 'on-track': return 'bg-secondary-green';
         {/* Content */}
         <ScrollArea className="max-h-[400px]">
           {items.length === 0 ? (
-            <div className="p-6 text-center text-[#8B949E] dark:text-[#6E7681]">
+            <div className="p-6 text-center text-[var(--ds-text-subtlest,#8B949E)] dark:text-[#6E7681]">
               No items found
             </div>
           ) : (
-            <div className="divide-y divide-[#E1E4E8] dark:divide-[#21262D]">
+            <div className="divide-y divide-[var(--ds-border,#E1E4E8)] dark:divide-[#21262D]">
               {items.map((item) => (
                 <div
                   key={item.id}
@@ -167,16 +167,16 @@ case 'on-track': return 'bg-secondary-green';
                   {getTypeIcon(item.type)}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3] truncate">
+                      <span className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[#E6EDF3] truncate">
                         {item.name}
                       </span>
                       {item.progress !== undefined && (
-                        <span className="text-xs text-[#8B949E] dark:text-[#6E7681]">
+                        <span className="text-xs text-[var(--ds-text-subtlest,#8B949E)] dark:text-[#6E7681]">
                           {item.progress}%
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-[#8B949E] dark:text-[#6E7681]">
+                    <div className="flex items-center gap-2 text-xs text-[var(--ds-text-subtlest,#8B949E)] dark:text-[#6E7681]">
                       {item.themeName && <span>{item.themeName}</span>}
                       {item.parentName && (
                         <>
@@ -196,10 +196,10 @@ case 'on-track': return 'bg-secondary-green';
         </ScrollArea>
         
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-[#E1E4E8] dark:border-[#30363D] flex justify-end">
-          <button 
+        <div className="px-6 py-3 border-t border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D] flex justify-end">
+          <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-[#161B22] border border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]"
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-[#161B22] border border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D] text-[var(--ds-text,#24292F)] dark:text-[#E6EDF3] hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]"
           >
             Close
           </button>
@@ -234,15 +234,15 @@ const ClickableMetricRow = ({ label, value, highlight, accentColor, onClick, dis
       onClick={isClickable ? onClick : undefined}
     >
       <span className={cn(
-        "text-xs text-[#8B949E] dark:text-[#6E7681]",
-        isClickable && "hover:text-[#24292F] dark:hover:text-[#E6EDF3]"
+        "text-xs text-[var(--ds-text-subtlest,#8B949E)] dark:text-[#6E7681]",
+        isClickable && "hover:text-[var(--ds-text,#24292F)] dark:hover:text-[#E6EDF3]"
       )}>
         {label}
       </span>
       <span
         className={cn(
           "text-sm font-semibold",
-          highlight ? "" : "text-[#24292F] dark:text-[#E6EDF3]",
+          highlight ? "" : "text-[var(--ds-text,#24292F)] dark:text-[#E6EDF3]",
           isClickable && "underline decoration-dotted underline-offset-2"
         )}
         style={highlight && accentColor ? { color: accentColor } : {}}
@@ -334,18 +334,18 @@ const StrategyPerformanceOverview = ({ metrics }: { metrics: PerformanceMetrics 
                 <div key={i} className={cn(
                   "flex items-start gap-3 p-3 rounded-lg border",
                   item.count > 0 
-                    ? "bg-[rgba(37,99,235,0.08)] dark:bg-[rgba(37,99,235,0.15)] border-[rgba(37,99,235,0.3)]" 
-                    : "bg-[#F6F8FA] dark:bg-[#21262D] border-[#E1E4E8] dark:border-[#30363D]"
+                    ? "bg-[rgba(37,99,235,0.08)] dark:bg-[rgba(37,99,235,0.15)] border-[rgba(37,99,235,0.3)]"
+                    : "bg-[#F6F8FA] dark:bg-[#21262D] border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D]"
                 )}>
                   <span className={cn(
                     "text-3xl font-bold leading-none",
-                    item.count > 0 ? "text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" : "text-[#24292F] dark:text-[#E6EDF3]"
+                    item.count > 0 ? "text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" : "text-[var(--ds-text,#24292F)] dark:text-[#E6EDF3]"
                   )}>
                     {item.count}
                   </span>
                   <div>
-                    <div className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3] mb-0.5">{item.label}</div>
-                    <div className="text-[11px] text-[#8B949E] dark:text-[#6E7681]">{item.sublabel}</div>
+                    <div className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[#E6EDF3] mb-0.5">{item.label}</div>
+                    <div className="text-[11px] text-[var(--ds-text-subtlest,#8B949E)] dark:text-[#6E7681]">{item.sublabel}</div>
                   </div>
                 </div>
               ))}
@@ -366,12 +366,12 @@ const ThemeLevelSnapshot = ({ themes }: { themes: ThemeAnalyticsRow[] }) => {
     <div className="mb-8">
       <SectionTitle>Theme-Level Snapshot</SectionTitle>
       
-      <div className="bg-white dark:bg-[#161B22] rounded-xl border border-[#E1E4E8] dark:border-[#30363D] overflow-hidden">
+      <div className="bg-white dark:bg-[#161B22] rounded-xl border border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D] overflow-hidden">
         {/* Header */}
-        <div className="grid grid-cols-[1.4fr_0.8fr_0.8fr_0.7fr_0.9fr_1fr] gap-3 px-5 py-3 bg-[var(--ds-surface-sunken,#FAFBFC)] dark:bg-[#0D1117] border-b border-[#E1E4E8] dark:border-[#30363D]">
+        <div className="grid grid-cols-[1.4fr_0.8fr_0.8fr_0.7fr_0.9fr_1fr] gap-3 px-5 py-3 bg-[var(--ds-surface-sunken,#FAFBFC)] dark:bg-[#0D1117] border-b border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D]">
           {['Theme', 'Progress', 'Baseline', 'Trend', 'Risk Density', 'Coverage'].map((col, i) => (
             <span key={i} className={cn(
-              "text-[10px] font-semibold text-[#8B949E] dark:text-[#6E7681] uppercase tracking-wider",
+              "text-[10px] font-semibold text-[var(--ds-text-subtlest,#8B949E)] dark:text-[#6E7681] uppercase tracking-wider",
               i > 0 && "text-right"
             )}>
               {col}
@@ -385,14 +385,14 @@ const ThemeLevelSnapshot = ({ themes }: { themes: ThemeAnalyticsRow[] }) => {
             key={theme.id}
             className={cn(
               "grid grid-cols-[1.4fr_0.8fr_0.8fr_0.7fr_0.9fr_1fr] gap-3 px-5 py-3.5",
-              index < themes.length - 1 && "border-b border-[#E1E4E8] dark:border-[#21262D]",
+              index < themes.length - 1 && "border-b border-[var(--ds-border,#E1E4E8)] dark:border-[#21262D]",
               theme.isBehind && "bg-[rgba(37,99,235,0.08)] dark:bg-[rgba(37,99,235,0.1)]"
             )}
           >
             {/* Theme Name */}
             <div className="flex items-center gap-2.5">
               <ThemeDot color={theme.color} />
-              <span className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">{theme.name}</span>
+              <span className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[#E6EDF3]">{theme.name}</span>
             </div>
 
             {/* Progress */}
@@ -426,7 +426,7 @@ const ThemeLevelSnapshot = ({ themes }: { themes: ThemeAnalyticsRow[] }) => {
             {/* Risk Density */}
             <span className={cn(
               "text-xs text-right",
-              theme.highRisks > 0 ? "text-[#b85c38] font-medium" : "text-muted-foreground"
+              theme.highRisks > 0 ? "text-[var(--ds-text-danger,#b85c38)] font-medium" : "text-muted-foreground"
             )}>
               {theme.highRisks > 0 ? `${theme.highRisks} High` : '—'} / {theme.totalKRs} KRs
             </span>
@@ -468,12 +468,12 @@ interface RiskCardProps {
 
 const RiskCard = ({ icon, title, items, accentColor }: RiskCardProps) => (
   <div 
-    className="p-5 rounded-xl bg-white dark:bg-[#161B22] border border-[#E1E4E8] dark:border-[#30363D]"
+    className="p-5 rounded-xl bg-white dark:bg-[#161B22] border border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D]"
     style={{ borderLeftWidth: 3, borderLeftColor: accentColor }}
   >
     <div className="flex items-center gap-2.5 mb-4">
       <span style={{ color: accentColor }}>{icon}</span>
-      <span className="text-sm font-semibold text-[#24292F] dark:text-[#E6EDF3]">{title}</span>
+      <span className="text-sm font-semibold text-[var(--ds-text,#24292F)] dark:text-[#E6EDF3]">{title}</span>
     </div>
     <div className="flex flex-col gap-2.5">
       {items.map((item, i) => (
@@ -586,7 +586,7 @@ const FocusAreaItem = ({ number, text, severity }: { number: number; text: strin
   const severityColors: Record<FocusSeverity, string> = {
     high: 'var(--ds-text-danger, #ef4444)',
     medium: 'var(--ds-text-warning, #f59e0b)',
-    low: '#6b7280',
+    low: 'var(--ds-text-subtlest, #6b7280)',
   };
   
   return (
@@ -600,7 +600,7 @@ const FocusAreaItem = ({ number, text, severity }: { number: number; text: strin
       >
         {number}
       </span>
-      <p className="m-0 text-sm text-[#24292F] dark:text-[#E6EDF3] leading-relaxed">{text}</p>
+      <p className="m-0 text-sm text-[var(--ds-text,#24292F)] dark:text-[#E6EDF3] leading-relaxed">{text}</p>
     </div>
   );
 };
@@ -610,7 +610,7 @@ const TopFocusAreas = ({ focusAreas }: { focusAreas: FocusArea[] }) => {
     return (
       <div className="mb-6">
         <SectionTitle>Top 5 Focus Areas</SectionTitle>
-        <div className="p-5 rounded-xl text-center bg-white dark:bg-[#161B22] border border-[#E1E4E8] dark:border-[#30363D] text-[#8B949E] dark:text-[#6E7681]">
+        <div className="p-5 rounded-xl text-center bg-white dark:bg-[#161B22] border border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D] text-[var(--ds-text-subtlest,#8B949E)] dark:text-[#6E7681]">
           No critical focus areas detected. Keep up the good work!
         </div>
       </div>
@@ -621,7 +621,7 @@ const TopFocusAreas = ({ focusAreas }: { focusAreas: FocusArea[] }) => {
     <div className="mb-6">
       <SectionTitle>Top 5 Focus Areas</SectionTitle>
       
-      <div className="p-5 rounded-xl bg-white dark:bg-[#161B22] border border-[#E1E4E8] dark:border-[#30363D]">
+      <div className="p-5 rounded-xl bg-white dark:bg-[#161B22] border border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D]">
         <div className="flex flex-col gap-3">
           {focusAreas.map((area, i) => (
             <FocusAreaItem
@@ -718,16 +718,16 @@ export function StrategyAnalyticsModal({
         <div className={cn(
           "w-[95%] max-w-[1100px] max-h-[92vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden",
           "bg-white dark:bg-[#0D1117]",
-          "border border-[#E1E4E8] dark:border-[#30363D]"
+          "border border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D]"
         )}>
-          
+
           {/* Header */}
-          <div className="flex justify-between items-start px-7 py-6 border-b border-[#E1E4E8] dark:border-[#21262D] bg-white dark:bg-[#161B22]">
+          <div className="flex justify-between items-start px-7 py-6 border-b border-[var(--ds-border,#E1E4E8)] dark:border-[#21262D] bg-white dark:bg-[#161B22]">
             <div>
-              <h2 className="text-xl font-semibold text-[#24292F] dark:text-[#E6EDF3] tracking-tight mb-1">
+              <h2 className="text-xl font-semibold text-[var(--ds-text,#24292F)] dark:text-[#E6EDF3] tracking-tight mb-1">
                 Strategy Analytics Overview
               </h2>
-              <p className="text-sm text-[#8B949E] dark:text-[#6E7681]">
+              <p className="text-sm text-[var(--ds-text-subtlest,#8B949E)] dark:text-[#6E7681]">
                 Based on all active themes in current strategy
               </p>
             </div>
@@ -739,8 +739,8 @@ export function StrategyAnalyticsModal({
                   <button className={cn(
                     "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs transition-colors",
                     "bg-white dark:bg-[#161B22]",
-                    "border border-[#E1E4E8] dark:border-[#30363D]",
-                    "text-[#57606A] dark:text-[#8B949E]",
+                    "border border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D]",
+                    "text-[var(--ds-text-subtle,#57606A)] dark:text-[#8B949E]",
                     "hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]"
                   )}>
                     <BarChart3 className="h-3.5 w-3.5" />
@@ -753,7 +753,7 @@ export function StrategyAnalyticsModal({
                     <ChevronDown className="h-3 w-3 ml-0.5" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 z-[1100] bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
+                <DropdownMenuContent align="end" className="w-56 z-[1100] bg-white dark:bg-[#161B22] border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D]">
                   <DropdownMenuItem 
                     onClick={() => handleThemeToggle(null)}
                     className="flex items-center justify-between"
@@ -783,7 +783,7 @@ export function StrategyAnalyticsModal({
               
               <button
                 onClick={onClose}
-                className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[#8B949E] hover:text-[#24292F] dark:hover:text-[#E6EDF3] transition-colors"
+                className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[var(--ds-text-subtlest,#8B949E)] hover:text-[var(--ds-text,#24292F)] dark:hover:text-[#E6EDF3] transition-colors"
                 aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
@@ -822,8 +822,8 @@ export function StrategyAnalyticsModal({
           </div>
 
           {/* Footer */}
-          <div className="flex justify-between items-center px-7 py-4 border-t border-[#E1E4E8] dark:border-[#21262D] bg-[var(--ds-surface-sunken,#FAFBFC)] dark:bg-[#161B22]">
-            <p className="text-xs text-[#8B949E] dark:text-[#6E7681]">
+          <div className="flex justify-between items-center px-7 py-4 border-t border-[var(--ds-border,#E1E4E8)] dark:border-[#21262D] bg-[var(--ds-surface-sunken,#FAFBFC)] dark:bg-[#161B22]">
+            <p className="text-xs text-[var(--ds-text-subtlest,#8B949E)] dark:text-[#6E7681]">
               Analytics are read-only; metrics update automatically as OKRs change.
             </p>
             
@@ -832,8 +832,8 @@ export function StrategyAnalyticsModal({
                 className={cn(
                   "inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium",
                   "bg-white dark:bg-[#161B22]",
-                  "border border-[#E1E4E8] dark:border-[#30363D]",
-                  "text-[#24292F] dark:text-[#E6EDF3]",
+                  "border border-[var(--ds-border,#E1E4E8)] dark:border-[#30363D]",
+                  "text-[var(--ds-text,#24292F)] dark:text-[#E6EDF3]",
                   "hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]",
                   "disabled:opacity-50"
                 )}

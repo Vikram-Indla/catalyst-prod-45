@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // COMPONENT: T10HeaderV3
-// Purpose: /taskhub/task10 header matching Workstreams/Boards page header
+// Purpose: /tasks/task10 header matching Workstreams/Boards page header
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';

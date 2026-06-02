@@ -24,8 +24,8 @@ export interface UWVParams {
   dataType?: 'epics' | 'incidents' | 'defects' | 'releases' | 'overdue' | 'onhold' | 'demand';
   /** Optional explicit ph_projects.id (used by ReleaseHealthUWV for canonical lookup). */
   projectId?: string;
-  /** Optional list of fix_version names to filter ph_issues by (JSONB containment). */
-  fixVersions?: string[];
+  /** Optional list of sprint_release names to filter ph_issues by (JSONB containment). */
+  sprintRelease?: string[];
   /** Gadget-forwarded filters (Layer 2 settings). All AND-combined when present. */
   statusFilter?: string[];
   assigneeFilter?: string[];

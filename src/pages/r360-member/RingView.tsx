@@ -146,8 +146,14 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
       </div>
       <span className={`r3-completed-text ${doneCount === 0 ? 'empty' : ''}`}>Completed</span>
 
-      {/* COMPLETED PANEL POPOVER */}
-      {showDone && doneCount > 0 && (
+      {/* COMPLETED PANEL POPOVER
+          2026-05-31 BUG FIX: previously gated on `doneCount > 0`, which meant
+          clicking the empty (dashed) badge did nothing visible — the click
+          fired and showDone flipped, but the popover never rendered. Now the
+          popover always renders when showDone is true; an empty-state body
+          is shown when doneCount === 0 so the user gets feedback instead of
+          assuming the button is broken. */}
+      {showDone && (
         <div className="r3-completed-panel" role="dialog" aria-label="Completed items this week" aria-modal="true"
           onClick={e => e.stopPropagation()}
         >
@@ -178,7 +184,27 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
             {doneCount} of {totalItems} total resolved ({totalItems > 0 ? Math.round((doneCount / totalItems) * 100) : 0}%)
           </div>
 
-          {/* Item list */}
+          {/* Empty state — when doneCount === 0, replace item list with
+              a friendly message so the click feels intentional, not broken. */}
+          {doneCount === 0 && (
+            <div style={{
+              padding: '24px 16px',
+              textAlign: 'center',
+              color: T.textSubtle(),
+              fontSize: 13,
+              lineHeight: '18px',
+            }}>
+              <div style={{ fontSize: 24, marginBottom: 8 }}>✨</div>
+              <div style={{ fontWeight: 600, color: T.text(), marginBottom: 4 }}>
+                Nothing completed yet this week
+              </div>
+              <div style={{ fontSize: 12 }}>
+                Resolve work items to fill this badge.
+              </div>
+            </div>
+          )}
+
+          {/* Item list — only when there are items to show */}
           <div style={{ maxHeight: 280, overflowY: 'auto', scrollbarWidth: 'thin' }}>
             {doneItems.map(item => {
               const closedDate = item.resolved_at || item.updated_at;
@@ -205,10 +231,12 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
             })}
           </div>
 
-          {/* Footer */}
-          <div style={{ padding: '10px 16px', borderTop: `1px solid ${T.border()}`, fontSize: 11, color: T.textSubtlest(), textAlign: 'center', fontStyle: 'italic' }}>
-            Click any item to view details
-          </div>
+          {/* Footer — only when there are items the user can click into */}
+          {doneCount > 0 && (
+            <div style={{ padding: '10px 16px', borderTop: `1px solid ${T.border()}`, fontSize: 11, color: T.textSubtlest(), textAlign: 'center', fontStyle: 'italic' }}>
+              Click any item to view details
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -435,10 +463,6 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               </div>
             </div>
 
-            {/* Age label below card */}
-            <div style={{ textAlign: 'center', marginTop: 5, fontSize: 10, color: T.textSubtlest(), width: `${CARD_W}px`, pointerEvents: 'none' }}>
-              Updated {item.age_days}d ago
-            </div>
           </div>
         );
       })}

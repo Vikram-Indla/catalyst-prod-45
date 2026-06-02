@@ -20,7 +20,7 @@ export function useBoardCards(boardId: string | undefined) {
       
       // Fetch work items (ph_issues) for these IDs
       const { data: items, error: itemError } = await typedQuery('ph_issues')
-        .select('id, issue_key, summary, issue_type, status, status_category, priority, story_points, assignee_display_name, assignee_account_id, fix_versions, parent_key, labels, due_date')
+        .select('id, issue_key, summary, issue_type, status, status_category, priority, story_points, assignee_display_name, assignee_account_id, sprint_release, parent_key, labels, due_date')
         .in('id', workItemIds)
         .is('archived_at', null)
         .limit(5000);
@@ -71,11 +71,11 @@ export function useBoardCards(boardId: string | undefined) {
           color: priorityColors[pName] ?? 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))',
         } : null;
 
-        // Parse fix_versions
+        // Parse sprint_release
         let releaseObj = null;
-        if (item.fix_versions) {
+        if (item.sprint_release) {
           try {
-            const fv = typeof item.fix_versions === 'string' ? JSON.parse(item.fix_versions) : item.fix_versions;
+            const fv = typeof item.sprint_release === 'string' ? JSON.parse(item.sprint_release) : item.sprint_release;
             if (Array.isArray(fv) && fv.length > 0) {
               releaseObj = { id: fv[0].id ?? fv[0].name, name: fv[0].name };
             }

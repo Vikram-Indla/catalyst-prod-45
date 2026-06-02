@@ -1,30 +1,62 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Search, SlidersHorizontal, Plus } from '@/lib/atlaskit-icons';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import { Search, Plus, Star, MoreHorizontal } from '@/lib/atlaskit-icons';
+import { token } from '@atlaskit/tokens';
 import { useBoards } from '@/hooks/useBoards';
-import BoardCard from './BoardCard';
+import { useDeleteBoard, useMoveBoard, useCopyBoard, useToggleBoardStar } from '@/hooks/useBoardMutations';
+import { useProjects } from '@/hooks/useProjectHub';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable/types';
 import CreateBoardModal from './CreateBoardModal';
-import BoardSettingsDrawer from './BoardSettingsDrawer';
+import Spinner from '@atlaskit/spinner';
 import type { BoardListItem } from '@/types/board';
-
-type TabFilter = 'all' | 'project' | 'personal' | 'starred';
 
 interface BoardManagerPageProps {
   projectIdOverride?: string;
   basePath?: string;
+  /** Project name for the Location column — resolved by ProjectBoardManagerPage */
+  projectName?: string;
+  /** Project key for the Location column — resolved by ProjectBoardManagerPage */
+  projectKey?: string;
 }
 
-export default function BoardManagerPage({ projectIdOverride, basePath }: BoardManagerPageProps = {}) {
+export default function BoardManagerPage({ projectIdOverride, basePath, projectName, projectKey }: BoardManagerPageProps = {}) {
   const { projectId: paramProjectId } = useParams<{ projectId: string }>();
   const projectId = projectIdOverride || paramProjectId;
   const boardBasePath = basePath || `/projects/${projectId}/boards`;
   const navigate = useNavigate();
   const { data: boards = [], isLoading, error } = useBoards(projectId);
+  const deleteBoard = useDeleteBoard();
+  const moveBoard = useMoveBoard();
+  const copyBoard = useCopyBoard();
+  const toggleStar = useToggleBoardStar();
+  const { data: allProjects = [] } = useProjects();
   const [search, setSearch] = useState('');
-  const [activeTab, setActiveTab] = useState<TabFilter>('all');
+  const [spaceFilter, setSpaceFilter] = useState<string | null>(null);
+  const [userFilter, setUserFilter] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
-  const [settingsBoard, setSettingsBoard] = useState<BoardListItem | null>(null);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [moveTarget, setMoveTarget] = useState<BoardListItem | null>(null);
+  const [copyTarget, setCopyTarget] = useState<BoardListItem | null>(null);
+
+  // Unique space labels for Space dropdown
+  const spaceOptions = useMemo(() => {
+    const seen = new Set<string>();
+    boards.forEach(b => {
+      const label = b.projectId ?? '';
+      if (label) seen.add(label);
+    });
+    return Array.from(seen);
+  }, [boards]);
+
+  // Unique admin (lead) names for User dropdown
+  const userOptions = useMemo(() => {
+    const seen = new Set<string>();
+    boards.forEach(b => { if (b.leadName) seen.add(b.leadName); });
+    return Array.from(seen);
+  }, [boards]);
 
   const filtered = useMemo(() => {
     let list = boards;
@@ -32,245 +64,593 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
       const q = search.toLowerCase();
       list = list.filter(b => b.name.toLowerCase().includes(q));
     }
-    switch (activeTab) {
-      case 'project': return list.filter(b => !b.isPersonal);
-      case 'personal': return list.filter(b => b.isPersonal);
-      case 'starred': return list.filter(b => b.isStarred);
-      default: return list;
+    if (spaceFilter) {
+      list = list.filter(b => b.projectId === spaceFilter);
     }
-  }, [boards, search, activeTab]);
+    if (userFilter) {
+      list = list.filter(b => b.leadName === userFilter);
+    }
+    return list;
+  }, [boards, search, spaceFilter, userFilter]);
 
-  const starred = filtered.filter(b => b.isStarred);
-  const projectBoards = filtered.filter(b => !b.isPersonal && !b.isStarred);
-  const personalBoards = filtered.filter(b => b.isPersonal && !b.isStarred);
+  const handleDelete = useCallback((board: BoardListItem) => {
+    if (!projectId) return;
+    if (!window.confirm(`Delete board "${board.name}"? This cannot be undone.`)) return;
+    deleteBoard.mutate({ boardId: board.id, projectId });
+  }, [deleteBoard, projectId]);
 
-  const tabCounts = useMemo(() => ({
-    all: boards.length,
-    project: boards.filter(b => !b.isPersonal).length,
-    personal: boards.filter(b => b.isPersonal).length,
-    starred: boards.filter(b => b.isStarred).length,
-  }), [boards]);
+  const locationLabel = projectName
+    ? `${projectName}${projectKey ? ` (${projectKey})` : ''}`
+    : (projectKey ?? '—');
 
-  const tabs: { key: TabFilter; label: string }[] = [
-    { key: 'all', label: 'All Boards' },
-    { key: 'project', label: 'Project Boards' },
-    { key: 'personal', label: 'Personal' },
-    { key: 'starred', label: 'Starred' },
-  ];
+  // Project avatar initial letter + color for Location column
+  const locationInitial = (projectName ?? projectKey ?? '?')[0]?.toUpperCase() ?? '?';
+
+  const columns: Column<BoardListItem>[] = useMemo(() => [
+    {
+      id: '__star',
+      label: '',
+      width: 4,
+      alwaysVisible: true,
+      accessor: (b) => b.isStarred,
+      cell: ({ row }) => (
+        <button
+          data-jira-table-editor
+          onClick={(e) => {
+            e.stopPropagation();
+            if (projectId) toggleStar.mutate({ boardId: row.id, projectId, isStarred: !row.isStarred });
+          }}
+          title={row.isStarred ? 'Unstar board' : 'Star board'}
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24,
+            color: row.isStarred ? 'var(--ds-icon-warning, #E2B203)' : 'var(--ds-text-subtlest, #6B778C)',
+          }}
+        >
+          <Star size={14} fill={row.isStarred ? 'currentColor' : 'none'} />
+        </button>
+      ),
+    },
+    {
+      id: 'name',
+      label: 'Name',
+      flex: true,
+      alwaysVisible: true,
+      accessor: (b) => b.name,
+      cell: ({ row }) => (
+        <span style={{
+          color: 'var(--ds-link, #0052CC)',
+          fontSize: 14,
+          fontWeight: 400,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          cursor: 'pointer',
+        }}>
+          {row.name}
+        </span>
+      ),
+    },
+    {
+      id: 'admin',
+      label: 'Admin',
+      width: 18,
+      accessor: (b) => b.leadName,
+      cell: ({ row }) => row.leadName ? (
+        <span style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          fontSize: 14, color: 'var(--ds-text, #172B4D)',
+        }}>
+          <span style={{
+            width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+            background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
+            color: 'var(--ds-text-accent-blue, #0055CC)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 11, fontWeight: 600,
+          }}>
+            {row.leadName[0]?.toUpperCase()}
+          </span>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {row.leadName}
+          </span>
+        </span>
+      ) : (
+        <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>
+      ),
+    },
+    {
+      id: 'location',
+      label: 'Location',
+      width: 22,
+      accessor: () => locationLabel,
+      cell: () => (
+        <span style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          fontSize: 14, color: 'var(--ds-text-subtle, #505258)',
+          overflow: 'hidden',
+        }}>
+          {/* Project avatar */}
+          <span style={{
+            width: 16, height: 16, borderRadius: 2, flexShrink: 0,
+            background: 'var(--ds-background-accent-teal-subtler, #C6EDFB)',
+            color: 'var(--ds-text-accent-teal, #164555)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 10, fontWeight: 700,
+          }}>
+            {locationInitial}
+          </span>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {locationLabel}
+          </span>
+        </span>
+      ),
+    },
+    {
+      id: '__menu',
+      label: '',
+      width: 4,
+      alwaysVisible: true,
+      accessor: () => null,
+      cell: ({ row }) => (
+        <BoardRowMenu
+          board={row}
+          onEditSettings={() => navigate(projectKey ? `/project-hub/${projectKey}/boards/${row.id}/settings` : `${boardBasePath}/${row.id}/settings`)}
+          onDelete={() => handleDelete(row)}
+          onMove={() => setMoveTarget(row)}
+          onCopy={() => setCopyTarget(row)}
+        />
+      ),
+    },
+  ], [locationLabel, locationInitial, handleDelete, projectId, toggleStar]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-1)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--ds-surface, #FFFFFF)' }}>
       {error && (
-        <div style={{ background: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--sem-danger)', padding: '8px 24px', fontSize: 12, fontFamily: 'var(--cp-font-body)', borderBottom: '1px solid #FECACA' }}>
-          ⚠ Board query error: {(error as Error).message} | projectId: {projectId}
+        <div style={{ background: 'var(--ds-background-danger-subtle, #FEF2F2)', color: 'var(--ds-text-danger, #AE2A19)', padding: '8px 24px', fontSize: 12, borderBottom: '1px solid var(--ds-border-danger, #FECACA)' }}>
+          Board query error: {(error as Error).message}
         </div>
       )}
       {/* Header */}
-      <div style={{ background: 'var(--bg-app)', borderBottom: '0.75px solid rgba(15,23,42,0.08)', flexShrink: 0 }}>
-        <div style={{ padding: '16px 24px 0' }}>
-          <div style={{ fontSize: 12, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-3)', marginBottom: 6 }}>
-            ProjectHub › Boards
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
-            <div>
-              <h1 style={{ fontSize: 17, fontFamily: 'var(--cp-font-heading)', fontWeight: 700, color: 'var(--fg-1)', letterSpacing: '-0.4px', margin: 0 }}>Boards</h1>
-              <p style={{ fontSize: 12.5, color: 'var(--fg-3)', margin: '2px 0 0', fontFamily: 'var(--cp-font-body)' }}>
-                {boards.length} board{boards.length !== 1 ? 's' : ''} in this project
-              </p>
-              <p style={{ fontSize: 11, color: 'var(--fg-4)', margin: '2px 0 0', fontFamily: 'var(--cp-font-body)' }}>
-                Debug: projectId = {projectId}
-              </p>
-            </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '12px 0 12px' }}>
-            {/* Search input */}
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 6, height: 30, padding: '0 10px',
-              background: 'var(--bg-1)', border: `0.75px solid ${searchFocused ? 'var(--cp-blue)' : 'rgba(15,23,42,0.06)'}`,
-              borderRadius: 4, width: 200,
-              boxShadow: searchFocused ? '0 0 0 2px rgba(37,99,235,0.10)' : 'none',
-              transition: 'border-color 150ms, box-shadow 150ms',
+      <div style={{ background: 'var(--ds-surface, #FFFFFF)', borderBottom: '1px solid var(--ds-border, #DFE1E6)', flexShrink: 0 }}>
+        <div style={{ padding: '16px 24px 12px' }}>
+          {/* Title row — h1 left, Create board right (Jira pattern) */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
+              Boards
+            </h1>
+            <button onClick={() => setCreateOpen(true)} style={{
+              display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
+              background: 'var(--ds-background-brand-bold, #0052CC)', border: '2px solid transparent',
+              borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 500,
+              color: 'var(--ds-text-inverse, #FFFFFF)',
             }}>
-              <Search size={13} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
+              <Plus size={14} strokeWidth={2.5} /> Create board
+            </button>
+          </div>
+          {/* Toolbar — search + Space dropdown + User dropdown */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {/* Search */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8, height: 32, padding: '0 8px',
+              background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+              border: `2px solid ${searchFocused ? 'var(--ds-border-focused, #388BFF)' : 'var(--ds-border, #DFE1E6)'}`,
+              borderRadius: 3, width: 200, transition: 'border-color 150ms',
+            }}>
+              <Search size={13} color="var(--ds-text-subtlest, #6B778C)" />
               <input
                 value={search} onChange={e => setSearch(e.target.value)}
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => setSearchFocused(false)}
-                placeholder="Search boards…"
+                onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)}
+                placeholder="Search boards…" aria-label="Search boards"
                 style={{
                   border: 'none', outline: 'none', background: 'transparent', flex: 1,
-                  fontSize: 12.5, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-1)',
-                  appearance: 'none' as any,
+                  fontSize: 14, color: 'var(--ds-text, #172B4D)',
                 }}
               />
             </div>
-            <button style={{
-              display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
-              background: 'transparent', border: '0.75px solid rgba(15,23,42,0.12)',
-              borderRadius: 6, cursor: 'pointer', fontSize: 12.5, fontWeight: 500,
-              color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)',
-            }}>
-              <SlidersHorizontal size={14} /> Filter
-            </button>
-            <button onClick={() => setCreateOpen(true)} style={{
-              display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 14px',
-              background: 'var(--cp-blue)', border: 'none', borderRadius: 6,
-              cursor: 'pointer', fontSize: 12.5, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              fontFamily: 'var(--cp-font-body)',
-            }}>
-              <Plus size={14} strokeWidth={2.5} /> Create Board
-            </button>
-          </div>
-          <div style={{ display: 'flex', gap: 0, borderTop: '0.75px solid rgba(15,23,42,0.08)' }}>
-            {tabs.map(tab => {
-              const active = activeTab === tab.key;
-              return (
-                <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
-                  display: 'flex', alignItems: 'center', gap: 6, padding: '10px 16px',
-                  border: 'none', background: 'transparent', cursor: 'pointer',
-                  fontSize: 12.5, fontWeight: active ? 600 : 500,
-                  color: active ? 'var(--cp-blue)' : 'var(--fg-3)',
-                  fontFamily: 'var(--cp-font-body)',
-                  borderBottom: active ? '2px solid var(--cp-blue)' : '2px solid transparent',
-                  marginBottom: -1,
-                }}>
-                  {tab.label}
-                  <span style={{
-                    fontSize: 11, fontWeight: 600, padding: '1px 7px', borderRadius: 12,
-                    background: active ? 'rgba(37,99,235,0.08)' : 'var(--bg-1)',
-                    color: active ? 'var(--cp-blue)' : 'var(--fg-4)',
-                  }}>{tabCounts[tab.key]}</span>
+            {/* Space dropdown */}
+            <DropdownMenu
+              trigger={({ triggerRef, ...triggerProps }) => (
+                <button
+                  {...triggerProps}
+                  ref={triggerRef as React.Ref<HTMLButtonElement>}
+                  type="button"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 4, height: 32,
+                    background: spaceFilter ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-background-neutral, #F1F2F4)',
+                    border: `2px solid ${spaceFilter ? 'var(--ds-border-selected, #388BFF)' : 'transparent'}`,
+                    borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 400,
+                    padding: '0 12px',
+                    color: spaceFilter ? 'var(--ds-link, #0052CC)' : 'var(--ds-text, #172B4D)',
+                  }}
+                >
+                  Space {spaceFilter ? `· ${spaceFilter.slice(0, 8)}` : ''}
                 </button>
-              );
-            })}
+              )}
+            >
+              <DropdownItemGroup>
+                <DropdownItem onClick={() => setSpaceFilter(null)}>All spaces</DropdownItem>
+                {spaceOptions.map(s => (
+                  <DropdownItem key={s} onClick={() => setSpaceFilter(s)}>
+                    {s}
+                  </DropdownItem>
+                ))}
+              </DropdownItemGroup>
+            </DropdownMenu>
+            {/* User dropdown */}
+            <DropdownMenu
+              trigger={({ triggerRef, ...triggerProps }) => (
+                <button
+                  {...triggerProps}
+                  ref={triggerRef as React.Ref<HTMLButtonElement>}
+                  type="button"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 4, height: 32,
+                    background: userFilter ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-background-neutral, #F1F2F4)',
+                    border: `2px solid ${userFilter ? 'var(--ds-border-selected, #388BFF)' : 'transparent'}`,
+                    borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 400,
+                    color: userFilter ? 'var(--ds-link, #0052CC)' : 'var(--ds-text, #172B4D)',
+                  }}
+                >
+                  User {userFilter ? `· ${userFilter.split(' ')[0]}` : ''}
+                </button>
+              )}
+            >
+              <DropdownItemGroup>
+                <DropdownItem onClick={() => setUserFilter(null)}>All users</DropdownItem>
+                {userOptions.map(u => (
+                  <DropdownItem key={u} onClick={() => setUserFilter(u)}>
+                    {u}
+                  </DropdownItem>
+                ))}
+              </DropdownItemGroup>
+            </DropdownMenu>
           </div>
         </div>
       </div>
 
-      {/* Body */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
+      {/* Body — JiraTable */}
+      <div style={{ flex: 1, overflowY: 'auto' }}>
         {isLoading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200 }}>
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--cp-blue)' }} />
+            <Spinner size="large" />
+          </div>
+        ) : filtered.length === 0 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 200, gap: 8 }}>
+            <span style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)' }}>
+              {search ? `No boards match "${search}"` : 'No boards yet'}
+            </span>
+            <button onClick={() => setCreateOpen(true)} style={{
+              display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
+              background: 'var(--ds-background-brand-bold, #0052CC)', border: 'none',
+              borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 500, color: 'var(--ds-text-inverse, #FFFFFF)',
+            }}>
+              <Plus size={14} strokeWidth={2.5} /> Create board
+            </button>
           </div>
         ) : (
-          <>
-            {starred.length > 0 && (
-              <>
-                <SectionLabel label="⭐ Starred" />
-                <BoardGrid>
-                  {starred.map(b => (
-                    <BoardCard key={b.id} board={b} projectId={projectId!}
-                      onOpen={() => navigate(`${boardBasePath}/${b.id}`)}
-                      onSettings={() => setSettingsBoard(b)} />
-                  ))}
-                </BoardGrid>
-              </>
-            )}
-
-            {projectBoards.length > 0 && (
-              <>
-                <SectionLabel label="Project Boards" />
-                <BoardGrid>
-                  {projectBoards.map(b => (
-                    <BoardCard key={b.id} board={b} projectId={projectId!}
-                      onOpen={() => navigate(`${boardBasePath}/${b.id}`)}
-                      onSettings={() => setSettingsBoard(b)} />
-                  ))}
-                </BoardGrid>
-              </>
-            )}
-
-            {personalBoards.length > 0 && (
-              <>
-                <SectionLabel label="Personal Boards" />
-                <BoardGrid>
-                  {personalBoards.map(b => (
-                    <BoardCard key={b.id} board={b} projectId={projectId!}
-                      onOpen={() => navigate(`${boardBasePath}/${b.id}`)}
-                      onSettings={() => setSettingsBoard(b)} />
-                  ))}
-                </BoardGrid>
-              </>
-            )}
-
-            {filtered.length === 0 && (
-              <BoardGrid>
-                <NewBoardCard onClick={() => setCreateOpen(true)} />
-              </BoardGrid>
-            )}
-            {filtered.length > 0 && (
-              <div style={{ marginTop: 12 }}>
-                <BoardGrid>
-                  <NewBoardCard onClick={() => setCreateOpen(true)} />
-                </BoardGrid>
-              </div>
-            )}
-          </>
+          <JiraTable
+            data={filtered}
+            columns={columns}
+            getRowId={(b) => b.id}
+            onRowClick={(b) => navigate(`${boardBasePath}/${b.id}`)}
+          />
         )}
       </div>
 
       {createOpen && (
         <CreateBoardModal projectId={projectId!} basePath={boardBasePath} onClose={() => setCreateOpen(false)} />
       )}
-      {settingsBoard && (
-        <BoardSettingsDrawer board={settingsBoard} onClose={() => setSettingsBoard(null)} />
+
+      {moveTarget && (
+        <MoveBoardDialog
+          board={moveTarget}
+          projects={allProjects}
+          currentProjectId={moveTarget.projectId ?? ''}
+          onConfirm={(toProjectId) => {
+            moveBoard.mutate({ boardId: moveTarget.id, fromProjectId: moveTarget.projectId ?? '', toProjectId });
+            setMoveTarget(null);
+          }}
+          onClose={() => setMoveTarget(null)}
+        />
+      )}
+      {copyTarget && (
+        <CopyBoardDialog
+          board={copyTarget}
+          projects={allProjects}
+          currentProjectId={copyTarget.projectId ?? ''}
+          onConfirm={(toProjectId, newName) => {
+            copyBoard.mutate({ boardId: copyTarget.id, toProjectId, newName });
+            setCopyTarget(null);
+          }}
+          onClose={() => setCopyTarget(null)}
+        />
       )}
     </div>
   );
 }
 
-function SectionLabel({ label }: { label: string }) {
+// ─── Board row kebab menu ────────────────────────────────────────────────────
+// Uses the same portal pattern as cells.tsx makeStatusEditCellAkPopup:
+// position:absolute + window.scrollY offset instead of Popper position:fixed,
+// which avoids the overflow:clip containing-block bug in this page's layout.
+function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy }: {
+  board: BoardListItem;
+  onEditSettings: () => void;
+  onDelete: () => void;
+  onMove: () => void;
+  onCopy: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  // Click-outside to close — same pattern as cells.tsx
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (
+        triggerRef.current?.contains(e.target as Node) ||
+        popupRef.current?.contains(e.target as Node)
+      ) return;
+      setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const handleOpen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const rect = triggerRef.current?.getBoundingClientRect();
+    if (rect) {
+      // position:absolute relative to document root — avoids overflow:clip issue
+      setPos({ top: rect.bottom + window.scrollY + 4, left: rect.right + window.scrollX - 180 });
+    }
+    setOpen(o => !o);
+  };
+
+  const handleItem = (cb: () => void) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setOpen(false);
+    cb();
+  };
+
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '16px 0 10px' }}>
-      <span style={{
-        fontSize: 11.5, fontWeight: 650, textTransform: 'uppercase' as const,
-        letterSpacing: '0.05em', color: 'var(--fg-4)',
-        fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
-      }}>{label}</span>
-      <span style={{ flex: 1, height: 0.75, background: 'rgba(15,23,42,0.08)' }} />
-    </div>
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-label={`More actions for ${board.name}`}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className="jira-row-menu-trigger"
+        onClick={handleOpen}
+        style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: 32, height: 32, padding: 0, border: 'none', borderRadius: 3,
+          background: 'transparent', color: token('color.text.subtle', '#42526E'),
+          cursor: 'pointer', opacity: 0, transition: 'opacity 120ms ease, background 100ms ease',
+        }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
+          (e.currentTarget as HTMLElement).style.opacity = '1';
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLElement).style.background = 'transparent';
+        }}
+      >
+        <MoreHorizontal size={16} />
+      </button>
+
+      {open && typeof document !== 'undefined' && ReactDOM.createPortal(
+        <div
+          ref={popupRef}
+          role="menu"
+          style={{
+            position: 'absolute',
+            top: pos.top,
+            left: pos.left,
+            zIndex: 9999,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            borderRadius: 4,
+            boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,.25), 0 0 0 1px rgba(9,30,66,.08)'),
+            minWidth: 180,
+            padding: '4px 0',
+          }}
+        >
+          {/* Standard actions */}
+          {[
+            { label: 'Edit settings', cb: onEditSettings },
+            { label: 'Move to project…', cb: onMove },
+            { label: 'Copy board…', cb: onCopy },
+          ].map(({ label, cb }) => (
+            <button
+              key={label}
+              type="button"
+              role="menuitem"
+              onClick={handleItem(cb)}
+              style={{
+                display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px',
+                border: 'none', background: 'transparent', cursor: 'pointer',
+                textAlign: 'left', fontSize: 14,
+                color: token('color.text', '#172B4D'),
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+            >
+              {label}
+            </button>
+          ))}
+          {/* Divider */}
+          <div style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '4px 0' }} />
+          {/* Danger action */}
+          <button
+            type="button"
+            role="menuitem"
+            onClick={handleItem(onDelete)}
+            style={{
+              display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px',
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              textAlign: 'left', fontSize: 14,
+              color: token('color.text.danger', '#AE2A19'),
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+          >
+            Delete
+          </button>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }
 
-function BoardGrid({ children }: { children: React.ReactNode }) {
+// ─── Shared dialog chrome ────────────────────────────────────────────────────
+function DialogOverlay({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-      gap: 12,
-    }}>
-      {children}
-    </div>
-  );
-}
-
-function NewBoardCard({ onClick }: { onClick: () => void }) {
-  const [hover, setHover] = useState(false);
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+    <div
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        minHeight: 160, padding: 20,
-        border: `0.75px dashed ${hover ? 'var(--cp-blue)' : 'rgba(15,23,42,0.12)'}`,
-        borderRadius: 8, cursor: 'pointer',
-        background: hover ? 'var(--cp-blue-wash)' : 'transparent',
-        transition: 'all 150ms',
+        position: 'fixed', inset: 0, zIndex: 1000,
+        background: 'var(--ds-blanket, rgba(9,30,66,0.54))',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}
     >
-      <Plus size={28} color={hover ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'} strokeWidth={1.5} />
-      <span style={{
-        fontSize: 12.5, fontWeight: 500, marginTop: 8,
-        color: hover ? 'var(--cp-blue)' : 'var(--fg-4)',
-        fontFamily: 'var(--cp-font-body)',
-      }}>Create New Board</span>
-      <span style={{
-        fontSize: 11.5, color: 'var(--fg-4)', marginTop: 4,
-        maxWidth: 220, textAlign: 'center', fontFamily: 'var(--cp-font-body)',
-      }}>Add a kanban board to organize and track work items</span>
-    </button>
+      <div style={{
+        background: 'var(--ds-surface-overlay, #FFFFFF)', borderRadius: 4,
+        padding: 24, minWidth: 360, maxWidth: 480, width: '100%',
+        boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9,30,66,0.24))',
+      }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ─── Move board dialog ───────────────────────────────────────────────────────
+function MoveBoardDialog({ board, projects, currentProjectId, onConfirm, onClose }: {
+  board: BoardListItem;
+  projects: Array<{ id: string; name: string; project_key: string }>;
+  currentProjectId: string;
+  onConfirm: (toProjectId: string) => void;
+  onClose: () => void;
+}) {
+  const [selected, setSelected] = React.useState('');
+  const eligible = projects.filter(p => p.id !== currentProjectId);
+  return (
+    <DialogOverlay onClose={onClose}>
+      <h2 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        Move "{board.name}"
+      </h2>
+      <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text-subtle, #42526E)' }}>
+        Select the destination project.
+      </p>
+      <select
+        value={selected}
+        onChange={e => setSelected(e.target.value)}
+        style={{
+          width: '100%', height: 32, padding: '0 8px', boxSizing: 'border-box',
+          border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+          fontSize: 14, color: 'var(--ds-text, #172B4D)',
+          background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+          outline: 'none', marginBottom: 16,
+        }}
+      >
+        <option value="">— Choose project —</option>
+        {eligible.map(p => (
+          <option key={p.id} value={p.id}>{p.name} ({p.project_key})</option>
+        ))}
+      </select>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+        <button onClick={onClose} style={{
+          height: 32, padding: '0 12px', border: '2px solid var(--ds-border, #DFE1E6)',
+          borderRadius: 3, background: 'transparent', cursor: 'pointer',
+          fontSize: 14, color: 'var(--ds-text, #172B4D)',
+        }}>
+          Cancel
+        </button>
+        <button onClick={() => selected && onConfirm(selected)} disabled={!selected} style={{
+          height: 32, padding: '0 12px', border: '2px solid transparent',
+          borderRadius: 3, cursor: selected ? 'pointer' : 'not-allowed',
+          fontSize: 14, fontWeight: 500, color: 'var(--ds-text-inverse, #FFFFFF)',
+          background: selected ? 'var(--ds-background-brand-bold, #0052CC)' : 'var(--ds-background-disabled, #091E420F)',
+        }}>
+          Move
+        </button>
+      </div>
+    </DialogOverlay>
+  );
+}
+
+// ─── Copy board dialog ───────────────────────────────────────────────────────
+function CopyBoardDialog({ board, projects, currentProjectId, onConfirm, onClose }: {
+  board: BoardListItem;
+  projects: Array<{ id: string; name: string; project_key: string }>;
+  currentProjectId: string;
+  onConfirm: (toProjectId: string, newName: string) => void;
+  onClose: () => void;
+}) {
+  const [selected, setSelected] = React.useState(currentProjectId);
+  const [name, setName] = React.useState(`Copy of ${board.name}`);
+  const valid = !!selected && name.trim().length > 0;
+  return (
+    <DialogOverlay onClose={onClose}>
+      <h2 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        Copy "{board.name}"
+      </h2>
+      <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text-subtle, #42526E)' }}>
+        Creates a new board with the same configuration. Issues are not copied.
+      </p>
+      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 4 }}>
+        Board name
+      </label>
+      <input
+        value={name}
+        onChange={e => setName(e.target.value)}
+        style={{
+          width: '100%', height: 32, padding: '0 8px', boxSizing: 'border-box',
+          border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+          fontSize: 14, color: 'var(--ds-text, #172B4D)',
+          background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+          outline: 'none', marginBottom: 12,
+        }}
+      />
+      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 4 }}>
+        Destination project
+      </label>
+      <select
+        value={selected}
+        onChange={e => setSelected(e.target.value)}
+        style={{
+          width: '100%', height: 32, padding: '0 8px', boxSizing: 'border-box',
+          border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+          fontSize: 14, color: 'var(--ds-text, #172B4D)',
+          background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+          outline: 'none', marginBottom: 16,
+        }}
+      >
+        {projects.map(p => (
+          <option key={p.id} value={p.id}>{p.name} ({p.project_key})</option>
+        ))}
+      </select>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+        <button onClick={onClose} style={{
+          height: 32, padding: '0 12px', border: '2px solid var(--ds-border, #DFE1E6)',
+          borderRadius: 3, background: 'transparent', cursor: 'pointer',
+          fontSize: 14, color: 'var(--ds-text, #172B4D)',
+        }}>
+          Cancel
+        </button>
+        <button onClick={() => valid && onConfirm(selected, name.trim())} disabled={!valid} style={{
+          height: 32, padding: '0 12px', border: '2px solid transparent',
+          borderRadius: 3, cursor: valid ? 'pointer' : 'not-allowed',
+          fontSize: 14, fontWeight: 500, color: 'var(--ds-text-inverse, #FFFFFF)',
+          background: valid ? 'var(--ds-background-brand-bold, #0052CC)' : 'var(--ds-background-disabled, #091E420F)',
+        }}>
+          Copy
+        </button>
+      </div>
+    </DialogOverlay>
   );
 }

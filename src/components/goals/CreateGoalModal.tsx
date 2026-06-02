@@ -20,10 +20,11 @@ const STATUS_OPTIONS: { value: GoalStatus; label: string }[] = [
 ];
 
 const PRIORITY_OPTIONS: { value: Priority; label: string }[] = [
-  { value: 'critical', label: 'Critical' },
-  { value: 'high', label: 'High' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'low', label: 'Low' },
+  { value: 'Highest', label: 'Highest' },
+  { value: 'High', label: 'High' },
+  { value: 'Medium', label: 'Medium' },
+  { value: 'Low', label: 'Low' },
+  { value: 'Lowest', label: 'Lowest' },
 ];
 
 const QUARTER_OPTIONS = ['Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026'];

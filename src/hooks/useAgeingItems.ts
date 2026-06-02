@@ -26,7 +26,7 @@ export interface AgeingItem {
   reporter_display_name: string | null;
   assignee_account_id: string | null;
   assignee_display_name: string | null;
-  fix_versions: string | null;
+  sprint_release: string | null;
   comment_count: number;
   child_issue_count: number;
   assignee_status: string;
@@ -40,12 +40,12 @@ export interface AgeingItem {
   item_type: string;
   issue_type_raw: string;
   reporter_name: string | null;
-  fixed_versions: string | null;
+  fixed_sprint_releases: string | null;
   created_at: string;
   assignee_is_active: boolean;
 }
 
-const BASE_SELECT = `id, issue_key, issue_type, summary, status, status_category, priority, jira_created_at, jira_updated_at, parent_key, parent_summary, project_key, project_name, reporter_account_id, reporter_display_name, assignee_account_id, assignee_display_name, fix_versions, hierarchy_level, labels, story_points, sprint_name, resolution, deleted_at`;
+const BASE_SELECT = `id, issue_key, issue_type, summary, status, status_category, priority, jira_created_at, jira_updated_at, parent_key, parent_summary, project_key, project_name, reporter_account_id, reporter_display_name, assignee_account_id, assignee_display_name, sprint_release, hierarchy_level, labels, story_points, sprint_name, resolution, deleted_at`;
 
 function mapIssueType(raw: string): string {
   const v = (raw || '').toLowerCase();
@@ -171,9 +171,9 @@ export function useAgeingItems() {
           ? Math.max(1, Math.floor((now - new Date(item.jira_created_at).getTime()) / 86400000))
           : 0;
 
-        const fixVer = Array.isArray(item.fix_versions) && item.fix_versions.length > 0
-          ? (item.fix_versions as any[]).map((v: any) => typeof v === 'string' ? v : v?.name || '').filter(Boolean).join(', ')
-          : (typeof item.fix_versions === 'string' ? item.fix_versions : null);
+        const fixVer = Array.isArray(item.sprint_release) && item.sprint_release.length > 0
+          ? (item.sprint_release as any[]).map((v: any) => typeof v === 'string' ? v : v?.name || '').filter(Boolean).join(', ')
+          : (typeof item.sprint_release === 'string' ? item.sprint_release : null);
 
         const parentIssueType = item.parent_key ? (parentTypeMap[item.parent_key] ?? null) : null;
 
@@ -196,7 +196,7 @@ export function useAgeingItems() {
           reporter_display_name: item.reporter_display_name ?? null,
           assignee_account_id: item.assignee_account_id,
           assignee_display_name: item.assignee_display_name ?? null,
-          fix_versions: fixVer,
+          sprint_release: fixVer,
           comment_count: commentMap[item.id] ?? 0,
           child_issue_count: childMap[item.issue_key] ?? 0,
           assignee_status: profile?.status ?? 'active',
@@ -210,7 +210,7 @@ export function useAgeingItems() {
           item_type: mapIssueType(item.issue_type || ''),
           issue_type_raw: item.issue_type || '',
           reporter_name: item.reporter_display_name ?? null,
-          fixed_versions: fixVer,
+          fixed_sprint_releases: fixVer,
           created_at: item.jira_created_at || '',
           assignee_is_active: !assignee_is_inactive,
         } as AgeingItem;

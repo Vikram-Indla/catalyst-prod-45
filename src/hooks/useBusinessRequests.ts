@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { BusinessRequest, CreateBusinessRequestFormData, ReadinessChecklist } from '@/types/business-request';
+import { BusinessRequest, CreateBusinessRequestFormData } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { Json } from '@/integrations/supabase/types';
 
@@ -38,16 +38,7 @@ const generateRequestKey = async (): Promise<string> => {
 };
 
 // Helper to transform DB row to BusinessRequest
-const transformRow = (row: any): BusinessRequest => ({
-  ...row,
-  readiness_checklist: (row.readiness_checklist as ReadinessChecklist) || {
-    requirements_documented: false,
-    technical_design_approved: false,
-    resources_allocated: false,
-    environment_ready: false,
-    test_cases_prepared: false,
-  },
-});
+const transformRow = (row: any): BusinessRequest => ({ ...row });
 
 export function useBusinessRequests(searchQuery?: string) {
   const queryClient = useQueryClient();
@@ -79,8 +70,16 @@ export function useBusinessRequests(searchQuery?: string) {
     queryKey: ['business-requests', searchQuery],
     queryFn: async () => {
       // Performance optimization: limit to 200 rows for fast initial load
+      // 2026-06-01: select * + JOIN profiles for Delivery Manager
+      // (project_manager_user_id) and Product Owner (po_user_id) so the
+      // product backlog adapter can surface their display names without a
+      // second round-trip.
       let query = typedQuery('business_requests')
-        .select('*')
+        .select(
+          '*,' +
+          'delivery_manager:project_manager_user_id(id, full_name, avatar_url),' +
+          'product_owner:po_user_id(id, full_name, avatar_url)'
+        )
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
         .limit(200);
@@ -204,7 +203,7 @@ export function useCreateBusinessRequest() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (data: CreateBusinessRequestFormData & { delivery_platform?: string; planned_quarter?: string[] | null; assignee?: string | null; end_date_locked?: boolean; end_date_locked_by?: string | null; end_date_locked_at?: string | null }) => {
+    mutationFn: async (data: CreateBusinessRequestFormData & { planned_quarter?: string[] | null }) => {
       // Get current user for audit logging
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -222,46 +221,29 @@ export function useCreateBusinessRequest() {
       // Generate request key in MIM-XXX format
       const requestKey = await generateRequestKey();
       
+      // Insert only columns that exist in the slimmed 22-column schema.
+      // Dropped columns (platform, complexity, track, requestor,
+      // business_justification, delivery_platform, department, department_id,
+      // business_owner, business_owner_id, start_date, impl_start_date,
+      // impl_target_end_date, assignee, end_date_locked, end_date_locked_by,
+      // end_date_locked_at, scope_url, import_source, import_ref) were removed
+      // in the 2026-06-01 schema slim-down.
       const { data: result, error } = await typedQuery('business_requests')
         .insert([{
           title: data.title,
           description: data.description || null,
-          platform: data.platform,
-          complexity: data.complexity,
-          urgency: data.urgency,
-          track: data.track || null,
-          requestor: data.requestor || null,
-          business_justification: data.business_justification || null,
+          urgency: data.urgency || null,
           request_key: requestKey,
-          delivery_platform: data.delivery_platform || null,
           planned_quarter: data.planned_quarter || null,
-          department: (data as any).department || null,
-          department_id: (data as any).department_id || null,
-          business_owner: (data as any).business_owner || null,
-          business_owner_id: (data as any).business_owner_id || null,
-          // Date fields
-          start_date: (data as any).start_date || null,
           end_date: (data as any).end_date || null,
-          impl_start_date: (data as any).impl_start_date || null,
-          // Many views use impl_target_end_date as "Target Complete"; keep it in sync on create
-          impl_target_end_date: (data as any).impl_target_end_date || (data as any).end_date || null,
-          // Assignee
-          assignee: (data as any).assignee || null,
-          // Lock fields
-          end_date_locked: (data as any).end_date_locked || false,
-          end_date_locked_by: (data as any).end_date_locked_by || null,
-          end_date_locked_at: (data as any).end_date_locked_at || null,
-          // Feature unification fields (migration: 20260428090000)
-          arabic_title: (data as any).arabic_title || null,
           request_type: (data as any).request_type || null,
           category: (data as any).category || null,
           theme: (data as any).theme || null,
-          scope_url: (data as any).scope_url || null,
           stakeholders: (data as any).stakeholders || [],
           po_user_id: (data as any).po_user_id || null,
+          project_manager_user_id: (data as any).project_manager_user_id || null,
           targeted_feature: (data as any).targeted_feature ?? false,
-          import_source: (data as any).import_source || 'manual',
-          import_ref: (data as any).import_ref || null,
+          product_id: (data as any).product_id || null,
         }])
         .select()
         .single();
@@ -290,93 +272,117 @@ export function useCreateBusinessRequest() {
   });
 }
 
+let _cachedActorInfo: { userId: string | null; actorName: string } | null = null;
+
+async function getActorInfo() {
+  if (_cachedActorInfo) return _cachedActorInfo;
+  const { data: { user } } = await supabase.auth.getUser();
+  let actorName = 'System';
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, email')
+      .eq('id', user.id)
+      .single();
+    actorName = profile?.full_name || profile?.email || 'Unknown User';
+  }
+  _cachedActorInfo = { userId: user?.id ?? null, actorName };
+  return _cachedActorInfo;
+}
+
+async function logBrAudit(id: string, data: Partial<BusinessRequest>) {
+  const { data: currentData } = await typedQuery('business_requests')
+    .select('*')
+    .eq('id', id)
+    .single();
+  if (!currentData) return;
+
+  const { userId, actorName } = await getActorInfo();
+  const auditLogs: any[] = [];
+
+  for (const [key, newValue] of Object.entries(data)) {
+    const oldValue = (currentData as any)[key];
+    const oldStr = oldValue === null || oldValue === undefined ? null : String(oldValue);
+    const newStr = newValue === null || newValue === undefined ? null : String(newValue);
+    if (oldStr !== newStr) {
+      auditLogs.push({
+        business_request_id: id,
+        actor_id: userId,
+        actor_name: actorName,
+        action: 'UPDATE',
+        field_changed: key,
+        old_value: oldStr,
+        new_value: newStr,
+      });
+    }
+  }
+
+  if (auditLogs.length > 0) {
+    await typedQuery('business_request_audit_logs').insert(auditLogs);
+  }
+}
+
 export function useUpdateBusinessRequest() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<BusinessRequest> }) => {
-      // Get current user for audit logging
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      // Get profile for actor name
-      let actorName = 'System';
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('full_name, email')
-          .eq('id', user.id)
-          .single();
-        actorName = profile?.full_name || profile?.email || 'Unknown User';
+    onMutate: async ({ id, data }) => {
+      await queryClient.cancelQueries({ queryKey: ['business-request', id] });
+      const prev = queryClient.getQueryData<BusinessRequest>(['business-request', id]);
+      if (prev) {
+        queryClient.setQueryData(['business-request', id], { ...prev, ...data });
       }
-
-      // Get the current data before update for audit logging
-      const { data: currentData } = await typedQuery('business_requests')
-        .select('*')
-        .eq('id', id)
-        .single();
-      
-      // Convert ReadinessChecklist to Json-compatible format
-      // IMPORTANT: Remove system-managed fields AND computed fields from update payload
+      return { prev };
+    },
+    mutationFn: async ({ id, data }: { id: string; data: Partial<BusinessRequest> }) => {
       const updateData: Record<string, any> = { ...data };
 
-      // Remove system-managed fields
       delete updateData.id;
       delete updateData.request_key;
       delete updateData.created_at;
       delete updateData.updated_at;
       delete updateData.deleted_at;
-
-      // Remove internal UI-only fields
       delete updateData._batch;
-
-      // Remove computed/joined fields that don't exist in the database
       delete updateData.requestor_name;
       delete updateData.assignee_name;
       delete updateData.department_name;
       delete updateData.business_owner_name;
       delete updateData.product_name;
-      
+
       if (data.readiness_checklist) {
         updateData.readiness_checklist = data.readiness_checklist as unknown as Json;
       }
-      
-      // Handle forced rank update - need to shift other items
+
       if (data.rank !== undefined) {
         const newRank = data.rank;
-        
+
         if (newRank !== null) {
-          // Get current item's old rank
           const { data: currentItem } = await typedQuery('business_requests')
             .select('rank')
             .eq('id', id)
             .single();
-          
+
           const currentItemTyped = currentItem as any;
-          const oldRank = currentItemTyped?.rank;
-          
-          // Get all items that need to be shifted
+
           const { data: allItems } = await typedQuery('business_requests')
             .select('id, rank')
             .not('id', 'eq', id)
             .not('rank', 'is', null)
             .order('rank', { ascending: true })
             .limit(1000);
-          
+
           const allItemsTyped = (allItems || []) as any[];
-          
+
           if (allItemsTyped.length > 0) {
-            // Shift items to make room for the forced rank
             const itemsToUpdate: { id: string; rank: number }[] = [];
-            
+
             for (const item of allItemsTyped) {
               if (item.rank !== null && item.rank >= newRank) {
-                // Shift item down by 1
                 itemsToUpdate.push({ id: item.id, rank: item.rank + 1 });
               }
             }
-            
-            // Update shifted items
+
             for (const item of itemsToUpdate) {
               await typedQuery('business_requests')
                 .update({ rank: item.rank })
@@ -385,7 +391,7 @@ export function useUpdateBusinessRequest() {
           }
         }
       }
-      
+
       const { data: result, error } = await typedQuery('business_requests')
         .update(updateData)
         .eq('id', id)
@@ -393,45 +399,22 @@ export function useUpdateBusinessRequest() {
         .single();
       if (error) throw error;
 
-      // Create audit log entries for changed fields
-      if (currentData) {
-        const auditLogs: any[] = [];
-        
-        for (const [key, newValue] of Object.entries(data)) {
-          const oldValue = (currentData as any)[key];
-          const oldStr = oldValue === null || oldValue === undefined ? null : String(oldValue);
-          const newStr = newValue === null || newValue === undefined ? null : String(newValue);
-          
-          // Only log if value actually changed
-          if (oldStr !== newStr) {
-            auditLogs.push({
-              business_request_id: id,
-              actor_id: user?.id || null,
-              actor_name: actorName,
-              action: 'UPDATE',
-              field_changed: key,
-              old_value: oldStr,
-              new_value: newStr
-            });
-          }
-        }
-        
-        // Insert all audit logs
-        if (auditLogs.length > 0) {
-          await typedQuery('business_request_audit_logs').insert(auditLogs);
-        }
-      }
+      // Fire-and-forget audit logging — does not block the UI
+      logBrAudit(id, data).catch(() => {});
 
       return result;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['business-request'] });
-      queryClient.invalidateQueries({ queryKey: ['business-request-audit'] });
-      queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
-      // Removed auto-toast - let components handle their own notifications
+      queryClient.invalidateQueries({ queryKey: ['business-request', variables.id] });
+      if (variables.data.rank !== undefined) {
+        queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+        queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
+      }
     },
-    onError: (error) => {
+    onError: (error, variables, context) => {
+      if (context?.prev) {
+        queryClient.setQueryData(['business-request', variables.id], context.prev);
+      }
       toast({ title: 'Failed to update business request', description: error.message, variant: 'destructive' });
     },
   });
@@ -548,5 +531,37 @@ export function useDuplicateBusinessRequest() {
     onError: (error) => {
       toast({ title: 'Failed to duplicate request', description: error.message, variant: 'destructive' });
     },
+  });
+}
+
+export function useBusinessRequestsByProduct(productId: string | null | undefined) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!productId) return;
+    const channel = supabase
+      .channel(`business-requests-product-${productId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'business_requests' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['business-requests-by-product', productId] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [productId, queryClient]);
+
+  return useQuery({
+    queryKey: ['business-requests-by-product', productId],
+    queryFn: async () => {
+      if (!productId) return [];
+      const { data, error } = await typedQuery('business_requests')
+        .select('*')
+        .eq('product_id', productId)
+        .is('deleted_at', null)
+        .order('rank', { ascending: true, nullsFirst: false });
+      if (error) throw error;
+      return ((data || []) as any[]).map(transformRow);
+    },
+    enabled: !!productId,
+    staleTime: 30000,
+    placeholderData: (prev: any) => prev,
   });
 }

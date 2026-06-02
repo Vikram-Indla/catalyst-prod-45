@@ -172,16 +172,16 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
       {/* Header */}
       <div className="flex items-center justify-between pb-4 border-b">
         <div>
-          <h2 className="text-lg font-semibold">Fields & Layout</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className=" ">Fields & Layout</h2>
+          <p className=" text-muted-foreground">
             Configure tabs, sections, and fields for the Demand drawer.
           </p>
         </div>
       </div>
 
       {/* Scope Selector */}
-      <div className="flex items-center gap-4">
-        <span className="text-sm font-medium">Configuration Scope:</span>
+      <div className="flex items-center ">
+        <span className=" font-medium">Configuration Scope:</span>
         <div style={{ minWidth: '192px' }}>
           <AdsSelect
             value={
@@ -200,16 +200,16 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
 
       {/* Tabs Configuration */}
       <div className="border rounded-lg overflow-hidden">
-        <div className="bg-muted/30 px-4 py-3 border-b">
+        <div className="bg-muted/30 py-3 border-b">
           <h3 className="font-medium">Drawer Tabs</h3>
-          <p className="text-xs text-muted-foreground">Configure which tabs appear in the Demand drawer</p>
+          <p className=" text-muted-foreground">Configure which tabs appear in the Demand drawer</p>
         </div>
         <div className="divide-y">
           {tabs.map((tab) => (
-            <div key={tab.id} className="flex items-center gap-4 px-4 py-3 hover:bg-muted/20">
+            <div key={tab.id} className="flex items-center py-3 hover:bg-muted/20">
               <DragHandlerIcon label="" size="small" />
-              <div className="flex-1 flex items-center gap-2">
-                <span className="text-sm">{tab.display_name}</span>
+              <div className="flex-1 flex items-center ">
+                <span className="">{tab.display_name}</span>
                 {tab.is_required && (
                   <Lozenge appearance="inprogress">Required</Lozenge>
                 )}
@@ -228,10 +228,10 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
       <Collapsible open={sectionsOpen} onOpenChange={setSectionsOpen}>
         <div className="border rounded-lg overflow-hidden">
           <CollapsibleTrigger asChild>
-            <button className="w-full bg-muted/30 px-4 py-3 border-b flex items-center justify-between hover:bg-muted/50 transition-colors">
+            <button className="w-full bg-muted/30 py-3 border-b flex items-center justify-between hover:bg-muted/50 transition-colors">
               <div>
                 <h3 className="font-medium text-left">Sections & Order (Demand Details)</h3>
-                <p className="text-xs text-muted-foreground">Configure section visibility and collapse state</p>
+                <p className=" text-muted-foreground">Configure section visibility and collapse state</p>
               </div>
               <ChevronRightIcon label="" size="small" />
             </button>
@@ -239,25 +239,25 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
           <CollapsibleContent>
             <div className="divide-y">
               {sections.map((section) => (
-                <div key={section.key} className="flex items-center gap-4 px-4 py-3 hover:bg-muted/20">
+                <div key={section.key} className="flex items-center py-3 hover:bg-muted/20">
                   <DragHandlerIcon label="" size="small" />
-                  <div className="flex-1 flex items-center gap-2">
-                    <span className="text-sm">{section.name}</span>
+                  <div className="flex-1 flex items-center ">
+                    <span className="">{section.name}</span>
                     {section.is_required && (
                       <Lozenge appearance="inprogress">Required</Lozenge>
                     )}
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Visible</span>
+                  <div className="flex items-center ">
+                    <div className="flex items-center ">
+                      <span className=" text-muted-foreground">Visible</span>
                       <Toggle
                         isChecked={section.is_visible}
                         onChange={() => handleSectionToggle(section.key, 'is_visible')}
                         isDisabled={section.is_required}
                       />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Collapsed</span>
+                    <div className="flex items-center ">
+                      <span className=" text-muted-foreground">Collapsed</span>
                       <Toggle
                         isChecked={section.collapsed_by_default}
                         onChange={() => handleSectionToggle(section.key, 'collapsed_by_default')}
@@ -273,56 +273,56 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
 
       {/* Fields Table */}
       <div className="border rounded-lg overflow-hidden">
-        <div className="bg-muted/30 px-4 py-3 border-b">
+        <div className="bg-muted/30 py-3 border-b">
           <h3 className="font-medium">Field Configuration</h3>
-          <p className="text-xs text-muted-foreground">Configure field visibility, requirements, and list values</p>
+          <p className=" text-muted-foreground">Configure field visibility, requirements, and list values</p>
         </div>
-        <table className="w-full text-sm">
+        <table className="w-full ">
           <thead className="bg-muted/20">
             <tr>
-              <th className="text-left px-4 py-2 font-medium text-muted-foreground">Field</th>
-              <th className="text-left px-4 py-2 font-medium text-muted-foreground">Section</th>
-              <th className="text-center px-4 py-2 font-medium text-muted-foreground">Type</th>
-              <th className="text-center px-4 py-2 font-medium text-muted-foreground">Active</th>
-              <th className="text-center px-4 py-2 font-medium text-muted-foreground">Required</th>
-              <th className="text-center px-4 py-2 font-medium text-muted-foreground">Values</th>
-              <th className="text-center px-4 py-2 font-medium text-muted-foreground">Rules</th>
+              <th className="text-left font-medium text-muted-foreground">Field</th>
+              <th className="text-left font-medium text-muted-foreground">Section</th>
+              <th className="text-center font-medium text-muted-foreground">Type</th>
+              <th className="text-center font-medium text-muted-foreground">Active</th>
+              <th className="text-center font-medium text-muted-foreground">Required</th>
+              <th className="text-center font-medium text-muted-foreground">Values</th>
+              <th className="text-center font-medium text-muted-foreground">Rules</th>
             </tr>
           </thead>
           <tbody className="divide-y">
             {fields.map((field) => (
               <tr key={field.key} className="hover:bg-muted/10">
-                <td className="px-4 py-2">
-                  <div className="flex items-center gap-2">
+                <td className=" ">
+                  <div className="flex items-center ">
                     <span>{field.label}</span>
                     {field.is_system && (
                       <Lozenge appearance="default">System</Lozenge>
                     )}
                   </div>
                 </td>
-                <td className="px-4 py-2 text-muted-foreground">
+                <td className=" text-muted-foreground">
                   {sections.find(s => s.key === field.section)?.name || field.section}
                 </td>
-                <td className="px-4 py-2 text-center">
+                <td className=" text-center">
                   <Lozenge appearance="default">
                     {field.fieldType}
                   </Lozenge>
                 </td>
-                <td className="px-4 py-2 text-center">
+                <td className=" text-center">
                   <Toggle
                     isChecked={true}
                     isDisabled={field.is_system}
                     onChange={() => {}}
                   />
                 </td>
-                <td className="px-4 py-2 text-center">
+                <td className=" text-center">
                   <Toggle
                     isChecked={field.is_required}
                     onChange={() => handleFieldToggle(field.key, 'is_required')}
                     isDisabled={field.is_system && field.is_required}
                   />
                 </td>
-                <td className="px-4 py-2 text-center">
+                <td className=" text-center">
                   {field.fieldType === 'select' && field.optionsSourceKey ? (
                     <Button
                       appearance="subtle"
@@ -332,10 +332,10 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
                       Configure
                     </Button>
                   ) : (
-                    <span className="text-xs text-muted-foreground">—</span>
+                    <span className=" text-muted-foreground">—</span>
                   )}
                 </td>
-                <td className="px-4 py-2 text-center">
+                <td className=" text-center">
                   <Button appearance="subtle" iconBefore={SettingsIcon} >{null}</Button>
                 </td>
               </tr>

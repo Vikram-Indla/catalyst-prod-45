@@ -1,7 +1,7 @@
 /**
  * Planner BoardAdapter<KanbanTask> — Phase 8.
  *
- * Converts the legacy PlanHub Kanban (`/taskhub-kanban`) off its bespoke
+ * Converts the legacy PlanHub Kanban (`/tasks/board`) off its bespoke
  * `KanbanBoard` + `@dnd-kit` stack and onto the canonical KanbanBoardShell
  * + Pragmatic drag-drop stack.
  *
@@ -30,7 +30,7 @@
  */
 import type { ReactNode } from 'react';
 import { CheckCircle2 } from '@/lib/atlaskit-icons';
-import type { KanbanTask, PlannerStatus, KanbanTaskPriority } from '@/modules/planner/types/kanban';
+import type { KanbanTask, PlannerStatus, KanbanTaskPriority } from '@/modules/tasks/types/kanban';
 import type { KanbanColumnDef } from '../kanban-tokens';
 import type { BoardIssue } from '../kanban-types';
 import type {

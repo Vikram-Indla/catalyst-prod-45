@@ -18,7 +18,7 @@
  * `issue-navigator.ui.refinement-bar.*`):
  *   container: flex · gap 8 · pad 8 12 · border-bottom 1px DFE1E6
  *   filter popup: 600w × 489h · left rail 140w · facet role=tab
- *   facet order: Fix versions, Parent, Assignee, Work type, Labels,
+ *   facet order: Sprint/Release, Parent, Assignee, Work type, Labels,
  *                Status, Priority, Reporter
  *
  * Filter selections forward via the typed FilterState prop so the parent
@@ -83,6 +83,7 @@ import ThumbsDownIconCore from "@atlaskit/icon/core/thumbs-down";
 import InfoIconCore from "@atlaskit/icon/core/information";
 // ListIconCore and SplitIconCore removed — view toggle removed 2026-05-04
 import SparkIconCore from "@atlaskit/icon/core/ai-chat";
+import { AIIntelligenceButton } from "@/components/ui/AIIntelligenceButton";
 /* jira-compare 2026-05-03 cycle 4 (Vikram caught ADS drift): chevron-down
    is glyph-only in this Atlaskit version (CLAUDE.md canonical replacement
    map). Replacing unicode `▾` character with the canonical Atlaskit glyph. */
@@ -90,6 +91,7 @@ import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import type { WorkItem } from "@/types/workItem.types";
 import "./ask-caty-input.css";
 import { useCatySearch } from "@/components/caty/catySearchStore";
+import { FilterSaveModal } from "@/components/filters/FilterSaveModal";
 import { useAuth } from "@/lib/auth";
 import { JiraBasicFilter } from "@/components/shared/JiraBasicFilter";
 import type { FilterCategory as JiraFilterCategory } from "@/components/shared/JiraBasicFilter";
@@ -110,7 +112,7 @@ export type AllWorkView = "split" | "list";
    from raw_json) deferred to a separate WO — they need different UI
    (date range picker + custom-field schema discovery). */
 export type FilterFacet =
-  | "fixVersions"
+  | "sprintReleases"
   | "parent"
   | "assignee"
   | "workType"
@@ -126,7 +128,7 @@ export type FilterFacet =
 export type FilterState = Record<FilterFacet, string[]>;
 
 export const EMPTY_FILTERS: FilterState = {
-  fixVersions: [],
+  sprintReleases: [],
   parent: [],
   assignee: [],
   workType: [],
@@ -141,7 +143,7 @@ export const EMPTY_FILTERS: FilterState = {
 };
 
 const FACET_ORDER: FilterFacet[] = [
-  "fixVersions",
+  "sprintReleases",
   "parent",
   "assignee",
   "workType",
@@ -200,7 +202,7 @@ const ASK_CATY_PLACEHOLDER_SAMPLES: string[] = [
    as a follow-up WO. */
 const TOP_LEVEL_FACETS: FilterFacet[] = ["workType", "status", "assignee"];
 const MORE_FILTERS_FACETS: FilterFacet[] = [
-  "fixVersions",
+  "sprintReleases",
   "parent",
   "labels",
   "priority",
@@ -212,7 +214,7 @@ const MORE_FILTERS_FACETS: FilterFacet[] = [
 ];
 
 const FACET_LABELS: Record<FilterFacet, string> = {
-  fixVersions: "Fix versions",
+  sprintReleases: "Sprint/Release",
   parent: "Parent",
   assignee: "Assignee",
   workType: "Work type",
@@ -307,8 +309,8 @@ function distinctOptions(items: WorkItem[], facet: FilterFacet): FacetOption[] {
   const map = new Map<string, FacetOption>();
   for (const i of items) {
     switch (facet) {
-      case "fixVersions": {
-        const v = toLabel(i.fixVersion);
+      case "sprintReleases": {
+        const v = toLabel(i.sprintRelease);
         if (v && !map.has(v)) map.set(v, { value: v, label: v });
         break;
       }
@@ -399,8 +401,8 @@ function distinctOptions(items: WorkItem[], facet: FilterFacet): FacetOption[] {
     selection state. */
 export function itemPassesFilters(item: WorkItem, f: FilterState): boolean {
   if (
-    f.fixVersions.length > 0 &&
-    !f.fixVersions.includes(toLabel(item.fixVersion))
+    f.sprintReleases.length > 0 &&
+    !f.sprintReleases.includes(toLabel(item.sprintRelease))
   )
     return false;
   if (f.parent.length > 0 && !f.parent.includes(toLabel(item.parentKey)))
@@ -618,7 +620,7 @@ function FilterTriggerAndPopup({
  * - priority          → PriorityIcon (RESET ICONS registry)
  * - status            → Atlaskit Lozenge with statusToLozenge appearance
  * - labels            → Atlaskit Lozenge default chip
- * - fixVersions       → plain text (Jira doesn't decorate version names)
+ * - sprintReleases    → plain text (Jira doesn't decorate version names)
  *
  * Used by both the FilterChip dropdowns (one facet per chip) and the
  * legacy 600×489 "More filters" popup (multi-facet left rail).
@@ -960,185 +962,48 @@ function FilterChip({
 }
 
 /**
- * SaveFilterModal — persists current FilterState as a named saved view.
- *
- * Atlaskit primitives: @atlaskit/modal-dialog (https://atlassian.design/components/modal-dialog),
- * @atlaskit/textfield, @atlaskit/textarea, @atlaskit/checkbox, @atlaskit/button/new.
- *
- * Backend: INSERT into public.allwork_saved_filters (table created by
- * Vikram-run SQL on 2026-05-03). RLS auto-restricts rows to auth.uid().
- *
- * MVP scope (Vikram: "limited fields only which we know"):
- * - Name (required, unique per user+project — UNIQUE constraint at DB)
- * - Description (optional)
- * - Make this filter shared (boolean → is_shared column)
- *
- * Deferred: Viewers/Editors granular sharing (Jira's pattern but the
- * Catalyst saved_filters table only has one is_shared boolean; extending
- * needs schema change + Vikram approval).
+ * Convert a FilterState to a Jira-style JQL string.
+ * Exported so FilterSaveModal can auto-populate JQL when editing a filter
+ * that was saved with filter_config but no jql_query (legacy AllWork saves).
+ * Each active facet becomes an IN clause; clauses are joined with AND.
+ * The project clause is always prepended when projectKey is provided.
  */
-interface SaveFilterModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  currentState: FilterState;
-  projectKey: string;
-  onSaved?: () => void;
-  onShowFlag: (title: string, appearance: "success" | "error") => void;
-}
-
-function SaveFilterModal({
-  isOpen,
-  onClose,
-  currentState,
-  projectKey,
-  onSaved,
-  onShowFlag,
-}: SaveFilterModalProps) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [isShared, setIsShared] = useState(false);
-  const [saving, setSaving] = useState(false);
-
-  // Reset form when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setName("");
-      setDescription("");
-      setIsShared(false);
-      setSaving(false);
-    }
-  }, [isOpen]);
-
-  const handleSave = async () => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    setSaving(true);
-    try {
-      const { data: authData, error: authErr } = await (
-        supabase as any
-      ).auth.getUser();
-      if (authErr || !authData?.user?.id) {
-        onShowFlag("Not signed in — cannot save filter", "error");
-        setSaving(false);
-        return;
-      }
-      const { error } = await (supabase as any)
-        .from("allwork_saved_filters")
-        .insert({
-          user_id: authData.user.id,
-          project_key: projectKey,
-          name: trimmed,
-          description: description.trim() || null,
-          state: currentState,
-          is_shared: isShared,
-        });
-      if (error) {
-        if (error.code === "23505") {
-          onShowFlag(
-            `A filter named "${trimmed}" already exists in ${projectKey}`,
-            "error",
-          );
-        } else {
-          onShowFlag(`Save failed: ${error.message}`, "error");
-        }
-        setSaving(false);
-        return;
-      }
-      onShowFlag(`Saved filter "${trimmed}"`, "success");
-      onSaved?.();
-      onClose();
-    } catch (e: any) {
-      onShowFlag(`Save failed: ${(e as Error)?.message || String(e)}`, "error");
-      setSaving(false);
-    }
+export function filterStateToJql(state: FilterState, projectKey?: string): string {
+  const FACET_JQL: Record<FilterFacet, string> = {
+    assignee:    'assignee',
+    reporter:    'reporter',
+    status:      'status',
+    priority:    'priority',
+    workType:    'issuetype',
+    labels:      'labels',
+    sprintReleases: 'fixVersion',
+    parent:      'parent',
+    resolution:  'resolution',
+    sprint:      'sprint',
+    storyPoints: 'storyPoints',
+    severity:    'cf[10125]',
   };
 
-  return (
-    <ModalTransition>
-      {isOpen && (
-        <Modal
-          onClose={onClose}
-          testId="catalyst-save-filter-modal"
-          width="small"
-        >
-          <ModalHeader>
-            <ModalTitle>Save filter</ModalTitle>
-          </ModalHeader>
-          <ModalBody>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: 12,
-                    fontWeight: 600,
-                    marginBottom: 4,
-                    color: "var(--ds-text, #292A2E)",
-                  }}
-                >
-                  Name{" "}
-                  <span style={{ color: "var(--ds-text-danger, #DE350B)" }}>
-                    *
-                  </span>
-                </label>
-                <Textfield
-                  autoFocus
-                  value={name}
-                  onChange={(e) =>
-                    setName((e.target as HTMLInputElement).value)
-                  }
-                  placeholder="e.g. My open bugs"
-                  testId="catalyst-save-filter-modal.name"
-                />
-              </div>
-              <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: 12,
-                    fontWeight: 600,
-                    marginBottom: 4,
-                    color: "var(--ds-text, #292A2E)",
-                  }}
-                >
-                  Description
-                </label>
-                <Textarea
-                  value={description}
-                  onChange={(e) =>
-                    setDescription((e.target as HTMLTextAreaElement).value)
-                  }
-                  placeholder="Optional"
-                  minimumRows={2}
-                  maxHeight="120px"
-                  testId="catalyst-save-filter-modal.description"
-                />
-              </div>
-              <Checkbox
-                isChecked={isShared}
-                onChange={(e) => setIsShared(e.target.checked)}
-                label="Make this filter visible to others"
-                testId="catalyst-save-filter-modal.is-shared"
-              />
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button appearance="subtle" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              appearance="primary"
-              onClick={handleSave}
-              isDisabled={!name.trim() || saving}
-              testId="catalyst-save-filter-modal.save"
-            >
-              {saving ? "Saving…" : "Save"}
-            </Button>
-          </ModalFooter>
-        </Modal>
-      )}
-    </ModalTransition>
-  );
+  const clauses: string[] = [];
+
+  if (projectKey) {
+    clauses.push(`project = "${projectKey}"`);
+  }
+
+  for (const facet of FACET_ORDER) {
+    const vals = state[facet];
+    if (!vals || vals.length === 0) continue;
+    const field = FACET_JQL[facet];
+    if (!field) continue;
+    if (vals.length === 1) {
+      clauses.push(`${field} = "${vals[0]}"`);
+    } else {
+      const quoted = vals.map(v => `"${v}"`).join(', ');
+      clauses.push(`${field} in (${quoted})`);
+    }
+  }
+
+  return clauses.join(' AND ');
 }
 
 /**
@@ -1159,9 +1024,9 @@ interface SavedFilterRow {
   id: string;
   name: string;
   description: string | null;
-  state: FilterState;
+  filter_config: FilterState;
   is_shared: boolean;
-  user_id: string;
+  owner_id: string;
 }
 
 function SavedFiltersDropdown({
@@ -1176,8 +1041,8 @@ function SavedFiltersDropdown({
     staleTime: 30 * 1000,
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from("allwork_saved_filters")
-        .select("id,name,description,state,is_shared,user_id")
+        .from("ph_saved_filters")
+        .select("id,name,description,filter_config,is_shared,owner_id")
         .eq("project_key", projectKey)
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -1189,7 +1054,7 @@ function SavedFiltersDropdown({
     const ok = window.confirm(`Delete saved filter "${name}"?`);
     if (!ok) return;
     const { error } = await (supabase as any)
-      .from("allwork_saved_filters")
+      .from("ph_saved_filters")
       .delete()
       .eq("id", id);
     if (error) {
@@ -1220,7 +1085,7 @@ function SavedFiltersDropdown({
           <DropdownItem
             key={row.id}
             onClick={() => {
-              onApply(row.state);
+              onApply(row.filter_config);
               onShowFlag(`Applied "${row.name}"`, "success");
             }}
             elemAfter={
@@ -1736,7 +1601,7 @@ export function AllWorkToolbar({
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              gap: 12,
+              gap: 16,
               padding: "0 4px",
               fontSize: 12,
               color: "var(--ds-text-subtlest, #6B778C)",
@@ -1849,15 +1714,11 @@ export function AllWorkToolbar({
       {/* 3. Ask Caty — replaces Jira's "Ask AI". Click → expands to full-width
           AI query bar (mirrors Jira BAU Ask AI probe: full toolbar replacement,
           40px white bar with blue focus border, contextual placeholder). */}
-      <Button
-        appearance="subtle"
-        spacing="compact"
-        iconBefore={SparkIcon}
+      <AIIntelligenceButton
+        label="Ask Caty"
         onClick={() => setAskCatyOpen(true)}
-        testId="catalyst-allwork-toolbar.ask-caty"
-      >
-        Ask Caty
-      </Button>
+        tooltip="Ask Caty about this view"
+      />
 
       {/* 4. Search */}
       <div style={{ flex: "0 1 220px", minWidth: 140 }}>
@@ -1941,7 +1802,7 @@ export function AllWorkToolbar({
       />
 
       {/* More filters → opens the multi-facet popup with the 5 remaining facets
-          (Fix versions, Parent, Labels, Priority, Reporter). Reuses
+          (Sprint/Release, Parent, Labels, Priority, Reporter). Reuses
           FilterTriggerAndPopup from Round 6 — left-rail tabs + right-pane
           value picker pattern. Atlaskit primitive: @atlaskit/popup behaviour
           replicated manually (see Round 6 root-cause comment). */}
@@ -2010,6 +1871,7 @@ export function AllWorkToolbar({
           then opens SaveFilterModal. */}
       <Button
         appearance="subtle"
+        isDisabled={totalSelected(selectedFilters) === 0}
         onClick={() => {
           setOpenChipKey(null); // close any open chip popup before modal opens
           setSaveModalOpen(true);
@@ -2031,15 +1893,15 @@ export function AllWorkToolbar({
         onShowFlag={showFlag}
       />
 
-      {/* Save filter modal — mounted always; visibility controlled by isOpen. */}
-      <SaveFilterModal
-        isOpen={saveModalOpen}
-        onClose={() => setSaveModalOpen(false)}
-        currentState={selectedFilters}
-        projectKey={projectKey}
-        onSaved={() => setSavedFiltersRefreshKey((k) => k + 1)}
-        onShowFlag={showFlag}
-      />
+      {/* Save filter modal — standalone canonical FilterSaveModal */}
+      {saveModalOpen && (
+        <FilterSaveModal
+          initialJql={filterStateToJql(selectedFilters, projectKey) || undefined}
+          hubScope="project"
+          onClose={() => setSaveModalOpen(false)}
+          onSaved={() => { setSavedFiltersRefreshKey((k) => k + 1); setSaveModalOpen(false); }}
+        />
+      )}
 
       <span style={{ flex: 1 }} />
 

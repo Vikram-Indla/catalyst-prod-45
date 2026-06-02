@@ -65,11 +65,11 @@ export function AIStrategyIntelligencePanel({
   if (!metrics) return null;
 
   const LEVEL_COLORS = [
-    { bg: '#DBEAFE', text: '#1E40AF', border: '#93C5FD' },
-    { bg: '#CCFBF1', text: '#115E59', border: '#5EEAD4' },
-    { bg: '#DBEAFE', text: '#1E40AF', border: '#93C5FD' },
-    { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A' },
-    { bg: '#EDE9FE', text: '#5B21B6', border: '#C4B5FD' },
+    { bg: 'var(--ds-background-information, #DBEAFE)', text: 'var(--ds-text, #1E40AF)', border: 'var(--ds-border, #93C5FD)' },
+    { bg: 'var(--ds-surface-sunken, #CCFBF1)', text: 'var(--ds-text, #115E59)', border: 'var(--ds-border, #5EEAD4)' },
+    { bg: 'var(--ds-background-information, #DBEAFE)', text: 'var(--ds-text, #1E40AF)', border: 'var(--ds-border, #93C5FD)' },
+    { bg: 'var(--ds-background-warning, #FEF3C7)', text: 'var(--ds-text, #92400E)', border: 'var(--ds-border, #FDE68A)' },
+    { bg: 'var(--ds-background-discovery, #EDE9FE)', text: 'var(--ds-text-discovery, #5B21B6)', border: 'var(--ds-border, #C4B5FD)' },
   ];
 
   const chainSegments = [

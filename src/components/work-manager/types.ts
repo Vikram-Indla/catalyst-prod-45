@@ -3,7 +3,8 @@
 
 export type TaskType = 'Project' | 'Task' | 'General';
 export type TaskStatus = 'Backlog' | 'Planned' | 'In Progress' | 'Waiting' | 'Done';
-export type Priority = 'Critical' | 'High' | 'Medium' | 'Low';
+/** @deprecated Use CatalystPriority from '@/lib/catalyst-priority' instead. */
+export type Priority = 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
 export type RecurrenceType = 'None' | 'Daily' | 'Weekly' | 'Biweekly' | 'Monthly';
 export type LinkedItemType = 'Epic' | 'Feature' | 'Story' | 'BusinessRequest';
 export type DueBucket = 'overdue' | 'today' | 'next7' | 'future' | 'none';

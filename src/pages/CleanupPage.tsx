@@ -117,9 +117,9 @@ function StatusLozenge({ value }: { value: string }) {
   const lower = (value || '').toLowerCase();
   let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color = 'var(--ds-text, #253858)';
   if (lower.includes('progress') || lower.includes('review') || lower.includes('active') || lower.includes('integration') || lower.includes('ready for development')) {
-    bg = '#DEEBFF'; color = '#0747A6';
+    bg = 'var(--ds-background-information, #DEEBFF)'; color = 'var(--ds-background-information-bold, #0747A6)';
   } else if (lower.includes('done') || lower.includes('approved') || lower.includes('complete')) {
-    bg = '#E3FCEF'; color = '#006644';
+    bg = 'var(--ds-background-success, #E3FCEF)'; color = 'var(--ds-text-success, #006644)';
   }
   return (
     <span
@@ -141,7 +141,7 @@ function StatusLozenge({ value }: { value: string }) {
 // ── Helpers ──────────────────────────────────────
 function daysColor(d: number): string {
   if (d > 90) return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
-  if (d >= 60) return '#92400E';
+  if (d >= 60) return 'var(--ds-text-warning, #92400E)';
   return 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
 }
 
@@ -421,8 +421,8 @@ export default function CleanupPage() {
   const breachStreak = govScore?.breachStreak ?? 0;
   const itemCount = sharedItems.length;
   const ragCfg = {
-    green: { bg: '#ECFDF5', border: '#6EE7B7', color: '#065F46' },
-    amber: { bg: '#FFFBEB', border: '#FCD34D', color: '#92400E' },
+    green: { bg: 'var(--ds-background-success, #ECFDF5)', border: 'var(--ds-border-success, #6EE7B7)', color: 'var(--ds-text-success, #065F46)' },
+    amber: { bg: 'var(--ds-background-warning, #FFFBEB)', border: 'var(--ds-border-warning, #FCD34D)', color: 'var(--ds-text-warning, #92400E)' },
     red:   { bg: 'var(--ds-background-danger, #FEF2F2)', border: 'var(--ds-border-danger, #FCA5A5)', color: 'var(--ds-text-danger, #991B1B)' },
   }[ragStatus];
 
@@ -572,12 +572,12 @@ export default function CleanupPage() {
       {/* ═══ GOVERNANCE BREACH BANNER ═══ */}
       {(ragStatus === 'red' || ragStatus === 'amber') && (
         <div style={{
-          background: ragStatus === 'red' ? 'var(--ds-background-danger, #FEF2F2)' : '#FFFBEB',
-          borderBottom: '1px solid ' + (ragStatus === 'red' ? 'var(--ds-border-danger, #FCA5A5)' : '#FCD34D'),
+          background: ragStatus === 'red' ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-background-warning, #FFFBEB)',
+          borderBottom: '1px solid ' + (ragStatus === 'red' ? 'var(--ds-border-danger, #FCA5A5)' : 'var(--ds-border-warning, #FCD34D)'),
           padding: '8px 24px', display: 'flex', alignItems: 'flex-start', gap: 8,
         }}>
-          <AlertTriangle size={14} color={ragStatus === 'red' ? 'var(--ds-text-danger, #991B1B)' : '#92400E'} style={{ flexShrink: 0, marginTop: 1 }} />
-          <span style={{ fontSize: 13, color: ragStatus === 'red' ? 'var(--ds-text-danger, #991B1B)' : '#92400E', lineHeight: 1.5 }}>
+          <AlertTriangle size={14} color={ragStatus === 'red' ? 'var(--ds-text-danger, #991B1B)' : 'var(--ds-text-warning, #92400E)'} style={{ flexShrink: 0, marginTop: 1 }} />
+          <span style={{ fontSize: 13, color: ragStatus === 'red' ? 'var(--ds-text-danger, #991B1B)' : 'var(--ds-text-warning, #92400E)', lineHeight: 1.5 }}>
             {ragStatus === 'red'
               ? `Governance breach — ${itemCount} aging items, ${breachStreak}d streak. Force closures bypass status workflow. Reporters notified automatically. Audit trail is permanent. Restore window: 90 days. REPORTER items — onus is on the reporter, not you.`
               : `Governance warning — ${itemCount} aging items. Review and close stale work to prevent a breach.`
@@ -605,7 +605,7 @@ export default function CleanupPage() {
                 background: 'transparent', fontFamily: 'var(--cp-font-body)',
                 fontSize: 13, fontWeight: activeTab === tab.key ? 700 : 500,
                 color: activeTab === tab.key ? 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-                borderBottom: activeTab === tab.key ? '2px solid #2563EB' : '2px solid transparent',
+                borderBottom: activeTab === tab.key ? '2px solid var(--ds-link, #2563EB)' : '2px solid transparent',
               }}
             >
               {tab.label}
@@ -678,8 +678,8 @@ export default function CleanupPage() {
                   display: 'flex', flexDirection: 'column', alignItems: 'center',
                   justifyContent: 'center', marginTop: 64, gap: 12,
                 }}>
-                  <CheckCircle size={48} color="#10B981" strokeWidth={1.5} />
-                  <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700, color: '#065F46' }}>
+                  <CheckCircle size={48} color="var(--ds-text-success, #10B981)" strokeWidth={1.5} />
+                  <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700, color: 'var(--ds-text-success, #065F46)' }}>
                     Governance: GREEN
                   </span>
                   <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
@@ -795,7 +795,7 @@ export default function CleanupPage() {
                                   onOpenChange={(open) => { if (!open) setEditingStatusId(null); }}
                                   defaultOpen
                                 >
-                                  <SelectTrigger style={{ height: 24, fontSize: 11, border: '1px solid #2563EB', borderRadius: 4, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+                                  <SelectTrigger style={{ height: 24, fontSize: 11, border: '1px solid var(--ds-link, #2563EB)', borderRadius: 4, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', zIndex: 100 }}>
@@ -819,7 +819,7 @@ export default function CleanupPage() {
                             {cat.isReporterOnus && (
                               <span style={{
                                 fontSize: 11, fontWeight: 600,
-                                background: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #991B1B)', border: '1px solid #FCA5A5',
+                                background: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #991B1B)', border: '1px solid var(--ds-border-danger, #FCA5A5)',
                                 padding: '2px 8px', borderRadius: 4,
                               }}>
                                 REPORTER
@@ -874,7 +874,7 @@ export default function CleanupPage() {
                                 marginTop: 8, paddingLeft: cat.isReporterOnus ? 0 : 28,
                               }}>
                                 <div style={{
-                                  background: 'var(--ds-surface-sunken, #F8FAFC)', borderLeft: '2px solid #CBD5E1',
+                                  background: 'var(--ds-surface-sunken, #F8FAFC)', borderLeft: '2px solid var(--ds-border, #CBD5E1)',
                                   paddingLeft: 12, paddingTop: 6, paddingBottom: 6,
                                   fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                                 }}>
@@ -972,7 +972,7 @@ export default function CleanupPage() {
                     border: selected.size > 0 ? 'none' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                     cursor: selected.size === 0 ? 'not-allowed' : 'pointer',
                   }}
-                  onMouseEnter={e => { if (selected.size > 0) e.currentTarget.style.background = '#B91C1C'; }}
+                  onMouseEnter={e => { if (selected.size > 0) e.currentTarget.style.background = 'var(--ds-text-danger, #B91C1C)'; }}
                   onMouseLeave={e => { if (selected.size > 0) e.currentTarget.style.background = 'var(--ds-text-danger, var(--cp-danger, #DC2626))'; }}
                 >
                   Force Close ({selected.size})
@@ -1065,7 +1065,7 @@ export default function CleanupPage() {
                             style={{
                               height: 44, borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', cursor: 'pointer',
                               background: isSelected ? 'rgba(37,99,235,0.04)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                              borderLeft: isSelected ? '2px solid #2563EB' : '2px solid transparent',
+                              borderLeft: isSelected ? '2px solid var(--ds-link, #2563EB)' : '2px solid transparent',
                               transition: 'background .1s',
                             }}
                             onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F8FAFC)'; }}
@@ -1140,7 +1140,7 @@ export default function CleanupPage() {
                                 {(() => {
                                   const name = item.reporter_name || 'Unknown';
                                   const ini = initials(name);
-                                  const clr = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777'][ini.charCodeAt(0) % 5];
+                                                  const clr = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-link, #0284C7)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-discovery, #DB2777)'][ini.charCodeAt(0) % 5];
                                   return (
                                     <>
                                       <div style={{
@@ -1168,7 +1168,7 @@ export default function CleanupPage() {
                                 {(() => {
                                   const name = item.reporter_name || 'Unknown';
                                   const ini = initials(name);
-                                  const clr = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777'][ini.charCodeAt(0) % 5];
+                                  const clr = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-link, #0284C7)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-discovery, #DB2777)'][ini.charCodeAt(0) % 5];
                                   return (
                                     <>
                                       <div style={{
@@ -1199,7 +1199,7 @@ export default function CleanupPage() {
                                   onOpenChange={(open) => { if (!open) setEditingStatusId(null); }}
                                   defaultOpen
                                 >
-                                  <SelectTrigger style={{ height: 28, fontSize: 11, border: '1px solid #2563EB', borderRadius: 4, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', minWidth: 100 }}>
+                                  <SelectTrigger style={{ height: 28, fontSize: 11, border: '1px solid var(--ds-link, #2563EB)', borderRadius: 4, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', minWidth: 100 }}>
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', zIndex: 100 }}>
@@ -1303,7 +1303,7 @@ export default function CleanupPage() {
                     background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
                   }}
                   onClick={() => setShowForceCloseDialog(true)}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#B91C1C')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-text-danger, #B91C1C)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-danger, var(--cp-danger, #DC2626))')}
                 >
                   Force Close (bypass)
@@ -1368,7 +1368,7 @@ export default function CleanupPage() {
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{
                         fontFamily: 'var(--cp-font-mono)', fontSize: 13,
-                        color: deadlinePassed || alreadyRestored ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' : '#065F46',
+                        color: deadlinePassed || alreadyRestored ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' : 'var(--ds-text-success, #065F46)',
                       }}>
                         {alreadyRestored ? 'Restored' : deadlinePassed ? 'Window expired' : `Expires in ${daysUntilDeadline}d`}
                       </span>
@@ -1436,7 +1436,7 @@ export default function CleanupPage() {
             ].map((row, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '8px 0' }}>
                 <row.Icon size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" style={{ flexShrink: 0, marginTop: 1 }} />
-                <span style={{ fontSize: 14, color: '#1E293B', lineHeight: 1.5 }}>{row.text}</span>
+                <span style={{ fontSize: 14, color: 'var(--ds-text, #1E293B)', lineHeight: 1.5 }}>{row.text}</span>
               </div>
             ))}
 
@@ -1537,7 +1537,7 @@ export default function CleanupPage() {
                   background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', border: 'none',
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 700, cursor: 'pointer',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#B91C1C')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-text-danger, #B91C1C)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-danger, var(--cp-danger, #DC2626))')}
               >
                 Close {selected.size} item{selected.size !== 1 ? 's' : ''}

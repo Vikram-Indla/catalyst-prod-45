@@ -32,7 +32,7 @@ interface NewTaskDialogProps {
 }
 
 const taskTypes: TaskType[] = ['Project', 'Task', 'General'];
-const priorities: Priority[] = ['Critical', 'High', 'Medium', 'Low'];
+const priorities: Priority[] = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
 const statuses: TaskStatus[] = ['Backlog', 'Planned', 'In Progress', 'Waiting', 'Done'];
 
 export function NewTaskDialog({ open, onOpenChange, onCreateTask, teams, users }: NewTaskDialogProps) {

@@ -204,7 +204,7 @@ export const r360Service = {
       .single();
     if (!resource) return [];
 
-    const ISSUE_FIELDS = 'issue_key, project_key, project_name, summary, issue_type, status, priority, assignee_display_name, reporter_display_name, parent_key, parent_summary, sprint_name, story_points, fix_versions, due_date, jira_created_at, jira_updated_at, resolution, labels, assignee_account_id, reporter_account_id';
+    const ISSUE_FIELDS = 'issue_key, project_key, project_name, summary, issue_type, status, priority, assignee_display_name, reporter_display_name, parent_key, parent_summary, sprint_name, story_points, sprint_release, due_date, jira_created_at, jira_updated_at, resolution, labels, assignee_account_id, reporter_account_id';
 
     // Fetch assigned items — prefer jira_account_id for accurate matching
     let assigneeQuery = typedQuery('ph_issues')
@@ -257,9 +257,9 @@ export const r360Service = {
       const age = computeAge(assignedAt);
       const gd = groupDate(item.jira_updated_at || item.jira_created_at);
       let fv: string | null = null;
-      if (item.fix_versions) {
+      if (item.sprint_release) {
         try {
-          const fvArr = typeof item.fix_versions === 'string' ? JSON.parse(item.fix_versions) : item.fix_versions;
+          const fvArr = typeof item.sprint_release === 'string' ? JSON.parse(item.sprint_release) : item.sprint_release;
           if (Array.isArray(fvArr) && fvArr.length > 0) fv = fvArr[0]?.name || fvArr[0] || null;
         } catch { /* ignore */ }
       }
@@ -283,7 +283,7 @@ export const r360Service = {
         parent_title: item.parent_summary,
         sprint_name: item.sprint_name,
         story_points: item.story_points,
-        fix_version: fv,
+        sprint_release: fv,
         due_date: item.due_date,
         created_at: item.jira_created_at,
         updated_at: item.jira_updated_at || item.jira_created_at,

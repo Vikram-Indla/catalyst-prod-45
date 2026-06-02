@@ -68,19 +68,18 @@ export function BrDescriptionSection({ request, onUpdate }: Props) {
       style={{ marginBottom: 16 }}
       aria-label="Description"
     >
-      <div
+      <h2
         style={{
-          fontSize: 11,
-          color: token('color.text.subtle', '#6B6E76'),
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          marginBottom: 6,
-          letterSpacing: '0.04em',
+          margin: '0 0 8px 0',
+          fontSize: 14,
+          fontWeight: 500,
+          lineHeight: '20px',
+          color: token('color.text.subtle', '#505258'),
           fontFamily: 'var(--cp-font-body)',
         }}
       >
         Description
-      </div>
+      </h2>
       {editing ? (
         <RichTextEditor
           initialAdf={initialAdf}
@@ -105,13 +104,11 @@ export function BrDescriptionSection({ request, onUpdate }: Props) {
             display: 'block',
             width: '100%',
             textAlign: 'left',
-            padding: hasContent ? '8px 12px' : '12px',
+            padding: hasContent ? '8px 0' : '8px 0',
             minHeight: hasContent ? 60 : 80,
             background: 'transparent',
-            border: hasContent
-              ? `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`
-              : `1px dashed ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-            borderRadius: 4,
+            border: 'none',
+            borderRadius: 3,
             color: hasContent
               ? token('color.text', '#292A2E')
               : token('color.text.subtlest', '#8590A2'),

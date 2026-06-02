@@ -47,7 +47,7 @@
  *      slice to `limit`
  *
  * Note: "Release" is NOT a ph_issues issue_type — release information is
- * stored in `fix_versions` JSONB on individual issues. Vikram's earlier
+ * stored in `sprint_release` JSONB on individual issues. Vikram's earlier
  * mention of "release numbers" was de-scoped here; releases need their
  * own rail or are out-of-scope for Recent.
  *

@@ -50,7 +50,7 @@ describe('CatalystView* — window.confirm removed after migration', () => {
     'feature/CatalystViewFeature.tsx',
     'incident/CatalystViewIncident.tsx',
     'defect/CatalystViewDefect.tsx',
-    'business-request/CatalystViewBusinessRequest.tsx',
+    'business-request/CatalystViewBusinessRequest.v3.tsx',
   ];
 
   for (const rel of VIEW_FILES) {

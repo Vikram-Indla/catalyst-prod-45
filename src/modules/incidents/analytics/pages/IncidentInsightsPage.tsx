@@ -1193,9 +1193,9 @@ const printStyles = `
     right: 0;
     text-align: center;
     font-size: 8pt;
-    color: #666;
+    color: var(--ds-text-subtlest, #666);
     padding: 0.5rem;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid var(--ds-border, #ddd);
   }
 }
 `;

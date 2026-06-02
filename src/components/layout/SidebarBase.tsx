@@ -45,7 +45,7 @@ const HUB_ITEMS = [
   { label: 'Release Hub',  href: '/release-hub/command-center', Icon: ShipIcon,            tone: 'var(--ds-icon-accent-orange, #FF8B00)' },
   { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: 'var(--ds-icon-accent-green, #36B37E)' },
   { label: 'Incident Hub', href: '/incident-hub',               Icon: WarningIcon,         tone: 'var(--ds-icon-accent-red, #DE350B)' },
-  { label: 'Task Hub',     href: '/taskhub/boards',             Icon: TaskIcon,            tone: 'var(--ds-icon-accent-yellow, #FFAB00)' },
+  { label: 'Task Hub',     href: '/tasks/board',             Icon: TaskIcon,            tone: 'var(--ds-icon-accent-yellow, #FFAB00)' },
   { label: 'Plan Hub',     href: '/planhub',                    Icon: CalendarIcon,        tone: 'var(--ds-icon-accent-magenta, #E774BB)' },
   { label: 'Wiki Hub',     href: '/wiki',                       Icon: BookIcon,            tone: 'var(--ds-icon-accent-lime, #65BA43)' },
 ] as const;
@@ -58,11 +58,10 @@ const HUB_ITEMS = [
 const ROUTE_PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
   '/project-hub/projects': () => import('../../pages/project-hub/AllProjectsPage'),
   '/admin/resources': () => import('../../pages/ResourceListingPage'),
-  '/producthub/kanban': () => import('../../pages/producthub/KanbanPage'),
   '/releasehub': () => import('../../pages/releasehub/AllReleasesPage'),
   '/testhub': () => import('../../modules-dormant/testhub/TestHubPage'),
   '/planhub': () => import('../../components/planhub/PlanHubShell'),
-  '/taskhub': () => import('../../modules/planner/PlannerPage'),
+  '/tasks': () => import('../../modules/tasks/PlannerPage'),
   '/incidenthub': () => import('../../pages/incidenthub/IncidentListPage'),
   '/strategyhub': () => import('../../modules-dormant/strategyhub/StrategicThemesPage'),
 };

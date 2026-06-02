@@ -30,7 +30,7 @@ type StatusCat = 'todo' | 'progress' | 'done';
 
 // ─── CG-05 STATUS COLORS (DEF-02 fix) ───
 const STATUS_CG05: Record<StatusCat, { dot: string; bg: string; text: string }> = {
-  todo:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', text: '#78350F' },
+  todo:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' },
   progress: { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E3A5F' },
   done:     { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', text: '#14532D' },
 };
@@ -177,8 +177,8 @@ function smartDue(item: WorkItem): { date: string; source: 'ticket' | 'release' 
 function slaBadge(dueStr: string): { label: string; bg: string; color: string } {
   const diff = daysBetween(NOW, new Date(dueStr));
   if (diff < 0) return { label: `${Math.abs(diff)}d overdue`, bg: 'var(--ds-background-danger, #FEF2F2)', color: T.danger };
-  if (diff === 0) return { label: 'Due today', bg: '#FFFBEB', color: T.warning };
-  if (diff <= 3) return { label: `${diff}d left`, bg: '#FFFBEB', color: T.warning };
+  if (diff === 0) return { label: 'Due today', bg: 'var(--ds-background-warning, #FFF7D6)', color: T.warning };
+  if (diff <= 3) return { label: `${diff}d left`, bg: 'var(--ds-background-warning, #FFF7D6)', color: T.warning };
   return { label: `${diff}d left`, bg: '#F0FDF4', color: T.success };
 }
 

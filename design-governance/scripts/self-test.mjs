@@ -175,16 +175,23 @@ const FIXTURES = [
     code: `<div style={{ color: 'var(--ds-text, rgb(41, 42, 46))' }}>x</div>`,
     expect: [],
   },
-  // Banned toast libraries
+  // Banned toast libraries. Only react-toastify is banned; sonner and
+  // react-hot-toast are aliased to the ADS flag shim in vite.config.ts
+  // (2026-05-26) so direct imports are transparently redirected.
   {
-    name: 'sonner-import',
-    code: `import { toast } from 'sonner';`,
+    name: 'react-toastify-import',
+    code: `import { toast } from 'react-toastify';`,
     expect: [{ scanner: 'tokens', type: 'BANNED_TOAST' }],
   },
   {
-    name: 'react-hot-toast-import',
+    name: 'sonner-import (must NOT flag)',
+    code: `import { toast } from 'sonner';`,
+    expect: [],
+  },
+  {
+    name: 'react-hot-toast-import (must NOT flag)',
     code: `import toast from 'react-hot-toast';`,
-    expect: [{ scanner: 'tokens', type: 'BANNED_TOAST' }],
+    expect: [],
   },
   // Banned column header strings
   {

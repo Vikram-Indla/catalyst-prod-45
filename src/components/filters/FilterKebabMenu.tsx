@@ -9,12 +9,14 @@ import {
   useCopyFilter,
   useUpdateSavedFilter,
   useDeleteSavedFilter,
-  useToggleFilterSubscription,
   useBoardsForProject,
   useToggleFilterBoardLink,
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import Textfield from '@atlaskit/textfield';
+import Select from '@atlaskit/select';
+import { supabase } from '@/integrations/supabase/client';
 import { FilterSaveModal } from './FilterSaveModal';
 import { FilterVersionHistory } from './FilterVersionHistory';
 import { TransferOwnershipModal } from './TransferOwnershipModal';
@@ -29,19 +31,22 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const [historyOpen, setHistoryOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
+  const [createBoardOpen, setCreateBoardOpen] = useState(false);
+  const [boardName, setBoardName] = useState('');
+  const [boardType, setBoardType] = useState<{ label: string; value: string }>({ label: 'Kanban', value: 'kanban' });
+  const [creatingBoard, setCreatingBoard] = useState(false);
+  const navigate = useNavigate();
 
   const { key: projectKey } = useParams<{ key: string }>();
 
   const copyFilter       = useCopyFilter();
   const updateFilter     = useUpdateSavedFilter();
   const deleteFilter     = useDeleteSavedFilter();
-  const toggleSubscribe  = useToggleFilterSubscription();
   const boardLink        = useToggleFilterBoardLink();
   const { data: boards = [] } = useBoardsForProject(projectKey);
 
   const isOwner = filter.user_id === currentUserId || filter.owner_id === currentUserId;
   const isPrivate = filter.viewers_config?.type === 'private';
-  const isSubscribed = currentUserId ? (filter.subscriber_ids ?? []).includes(currentUserId) : false;
 
   function handleToggleVisibility() {
     const next = isPrivate
@@ -54,6 +59,7 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   return (
     <>
       <DropdownMenu
+        placement="bottom-end"
         trigger={({ triggerRef, ...props }) => (
           <IconButton
             ref={triggerRef}
@@ -82,23 +88,20 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
           <DropdownItem onClick={() => setHistoryOpen(true)}>
             View version history
           </DropdownItem>
-          {currentUserId && (
-            <DropdownItem
-              onClick={() => toggleSubscribe.mutate({
-                filterId: filter.id,
-                currentSubscriberIds: filter.subscriber_ids ?? [],
-                userId: currentUserId,
-              })}
-            >
-              {isSubscribed ? 'Unsubscribe from changes' : 'Subscribe to changes'}
-            </DropdownItem>
-          )}
-          {isOwner && (
+            {isOwner && (
             <DropdownItem onClick={() => setTransferOpen(true)}>
               Transfer ownership
             </DropdownItem>
           )}
         </DropdownItemGroup>
+
+        {isOwner && (
+          <DropdownItemGroup>
+            <DropdownItem onClick={() => { setBoardName(`${filter.name} board`); setCreateBoardOpen(true); }}>
+              Create board from filter
+            </DropdownItem>
+          </DropdownItemGroup>
+        )}
 
         {/* Board link items — one per board (O10) */}
         {boards.length > 0 && isOwner && (
@@ -157,6 +160,11 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
                 Are you sure you want to delete{' '}
                 <strong>{filter.name}</strong>? This action cannot be undone.
               </p>
+              {filter.used_by_board_ids.length > 0 && (
+                <p style={{ margin: '8px 0 0', fontSize: 13, color: token('color.text.warning') }}>
+                  This filter is used by {filter.used_by_board_ids.length} board{filter.used_by_board_ids.length > 1 ? 's' : ''}. Deleting it will unlink those boards.
+                </p>
+              )}
             </ModalBody>
             <ModalFooter>
               <Button appearance="subtle" onClick={() => setDeleteOpen(false)} isDisabled={deleteFilter.isPending}>
@@ -180,6 +188,91 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
           onClose={() => setTransferOpen(false)}
         />
       )}
+
+      <ModalTransition>
+        {createBoardOpen && (
+          <ModalDialog onClose={() => setCreateBoardOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle>Create board from filter</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                    Board name
+                  </label>
+                  <Textfield
+                    autoFocus
+                    value={boardName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBoardName(e.target.value)}
+                    placeholder="e.g. Sprint board"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                    Board type
+                  </label>
+                  <Select
+                    options={[
+                      { label: 'Kanban', value: 'kanban' },
+                      { label: 'Scrum', value: 'scrum' },
+                    ]}
+                    value={boardType}
+                    onChange={(opt: any) => opt && setBoardType(opt)}
+                    menuPosition="fixed"
+                  />
+                </div>
+                <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
+                  The board will use the JQL from <strong>{filter.name}</strong> to populate its issues.
+                </p>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setCreateBoardOpen(false)} isDisabled={creatingBoard}>
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                isDisabled={!boardName.trim() || creatingBoard}
+                isLoading={creatingBoard}
+                onClick={async () => {
+                  setCreatingBoard(true);
+                  try {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    const { data: board, error } = await (supabase as any)
+                      .from('boards')
+                      .insert({
+                        name: boardName.trim(),
+                        board_type: boardType.value,
+                        filter_id: filter.id,
+                        jira_project_key: projectKey?.toUpperCase() ?? null,
+                        created_by: user?.id ?? null,
+                      })
+                      .select('id')
+                      .single();
+                    if (error) throw error;
+                    const nextBoardIds = [...filter.used_by_board_ids, board.id];
+                    await (supabase as any)
+                      .from('ph_saved_filters')
+                      .update({ used_by_board_ids: nextBoardIds })
+                      .eq('id', filter.id);
+                    setCreateBoardOpen(false);
+                    if (projectKey && board?.id) {
+                      navigate(`/project-hub/${projectKey}/board/${board.id}`);
+                    }
+                  } catch (e: any) {
+                    console.error('Failed to create board:', e);
+                  } finally {
+                    setCreatingBoard(false);
+                  }
+                }}
+              >
+                Create board
+              </Button>
+            </ModalFooter>
+          </ModalDialog>
+        )}
+      </ModalTransition>
     </>
   );
 }

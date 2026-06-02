@@ -20,7 +20,7 @@ export interface PhIssue {
   reporter_account_id: string | null;
   reporter_display_name: string | null;
   project_key: string;
-  fix_versions: any | null;
+  sprint_release: any | null;
   labels: string[] | null;
   jira_created_at: string | null;
   jira_updated_at: string | null;
@@ -31,7 +31,7 @@ export interface PhIssue {
   story_points?: number | null;
 }
 
-export interface FixVersion {
+export interface SprintRelease {
   id: string;
   name: string;
   released: boolean;

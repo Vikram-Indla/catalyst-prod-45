@@ -43,7 +43,8 @@ export type TabType =
   | 'r360'
   | 'worked'
   | 'viewed'
-  | 'ageing';
+  | 'ageing'
+  | 'team-pulse';
 export type ModeFilter = 'all' | 'ops' | 'del' | 'tsk';
 
 export interface WorkItemAssignee {
@@ -83,7 +84,7 @@ export interface WorkItem {
   sprint?: string;
   storyPoints?: number;
   labels?: string[];
-  fixVersion?: string;
+  sprintRelease?: string;
   component?: string;
   jiraUrl?: string;
   lastSyncedAt?: string;
@@ -269,7 +270,7 @@ function mapPlannerTaskToIssueRow(row: any) {
     sprint_name: null,
     story_points: null,
     labels: null,
-    fix_versions: null,
+    sprint_release: null,
     components: null,
     description_text: null,
     last_synced_at: null,
@@ -299,7 +300,7 @@ function mapStoryToIssueRow(row: any, assigneeName: string, projectName: string,
     sprint_name: null,
     story_points: row.story_points || row.estimate_points || null,
     labels: row.tags || null,
-    fix_versions: null,
+    sprint_release: null,
     components: null,
     description_text: row.description || null,
     last_synced_at: null,
@@ -329,7 +330,7 @@ function mapFeatureToIssueRow(row: any, assigneeName: string, projectName: strin
     sprint_name: null,
     story_points: row.estimate_points || null,
     labels: row.labels || null,
-    fix_versions: null,
+    sprint_release: null,
     components: row.components || null,
     description_text: row.description || null,
     last_synced_at: null,
@@ -359,7 +360,7 @@ function mapEpicToIssueRow(row: any, assigneeName: string) {
     sprint_name: null,
     story_points: row.points_estimate || null,
     labels: row.tags || null,
-    fix_versions: null,
+    sprint_release: null,
     components: null,
     description_text: row.description || null,
     last_synced_at: null,
@@ -389,7 +390,7 @@ function mapIncidentToIssueRow(row: any, assigneeName: string, projectName: stri
     sprint_name: null,
     story_points: null,
     labels: null,
-    fix_versions: null,
+    sprint_release: null,
     components: null,
     description_text: row.description || null,
     last_synced_at: null,
@@ -416,11 +417,11 @@ function mapIssueToWorkItem(
     try { labels = JSON.parse(row.labels); } catch { /* empty */ }
   }
 
-  let fixVersion = '';
-  if (row.fix_versions) {
+  let sprintRelease = '';
+  if (row.sprint_release) {
     try {
-      const fv = typeof row.fix_versions === 'string' ? JSON.parse(row.fix_versions) : row.fix_versions;
-      if (Array.isArray(fv) && fv.length > 0) fixVersion = fv[0]?.name || fv[0] || '';
+      const fv = typeof row.sprint_release === 'string' ? JSON.parse(row.sprint_release) : row.sprint_release;
+      if (Array.isArray(fv) && fv.length > 0) sprintRelease = fv[0]?.name || fv[0] || '';
     } catch { /* empty */ }
   }
 
@@ -458,7 +459,7 @@ function mapIssueToWorkItem(
     sprint: row.sprint_name || undefined,
     storyPoints: row.story_points ? Number(row.story_points) : undefined,
     labels: labels.length > 0 ? labels : undefined,
-    fixVersion: fixVersion || undefined,
+    sprintRelease: sprintRelease || undefined,
     component: component || undefined,
     description: row.description_text || undefined,
     jiraUrl: row.issue_key && jiraBaseUrl ? `${jiraBaseUrl}/browse/${row.issue_key}` : undefined,
@@ -482,7 +483,7 @@ function mapIssueToWorkItem(
   };
 }
 
-const SELECT_FIELDS = 'id, issue_key, project_key, project_name, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, jira_created_at, parent_key, parent_summary, sprint_name, story_points, labels, fix_versions, components, description_text, last_synced_at';
+const SELECT_FIELDS = 'id, issue_key, project_key, project_name, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, jira_created_at, parent_key, parent_summary, sprint_name, story_points, labels, sprint_release, components, description_text, last_synced_at';
 
 // ─── Cache-layer types ────────────────────────────────────────────────────────
 // Maps serialized as [key, value][] so they survive JSON.stringify in the

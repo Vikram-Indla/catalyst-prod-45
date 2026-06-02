@@ -32,7 +32,7 @@ export interface ProductionIncident {
   parent_key: string | null;
   parent_summary: string | null;
   story_points: number | null;
-  fix_versions: any;
+  sprint_release: any;
   comments: any;
   changelog: any;
 }

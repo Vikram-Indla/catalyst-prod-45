@@ -142,7 +142,7 @@ export default function IdeationPage() {
         title={pageTitle}
         actions={
           <>
-            <AIIntelligenceButton label="Intelligence" onClick={() => setIntelligenceOpen(true)} />
+            <AIIntelligenceButton onClick={() => setIntelligenceOpen(true)} />
             <button style={{
               background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: dk.t2, border: `1px solid ${dk.border}`,
               borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 500,

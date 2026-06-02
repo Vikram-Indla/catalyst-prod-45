@@ -52,7 +52,8 @@ import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
 import AiThemePanel from '@/components/for-you/atlaskit/AiThemePanel';
 import AgeingPanel from '@/components/for-you/atlaskit/AgeingPanel';
 import R360Panel from '@/components/for-you/atlaskit/R360Panel';
-import { R360AccessTile } from '@/components/R360AccessTile';
+import { PresencePanel } from '@/components/for-you/atlaskit/PresencePanel';
+import { useModuleEnabled } from '@/contexts/FeatureFlagContext';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 const PAGE_SIZE = 20;
@@ -85,6 +86,7 @@ function isBusinessRequest(item: WorkItem | null | undefined): boolean {
 
 export default function ForYouPageAtlaskit() {
   const { user: authUser, loading: authLoading } = useAuth();
+  const presenceEnabled = useModuleEnabled('presence_availability');
 
   // Don't start data fetching until auth is fully established
   const data = useForYouData(authLoading);
@@ -180,6 +182,13 @@ export default function ForYouPageAtlaskit() {
     });
   }, [trackView]);
 
+  // ─── Ask Caty - Themify trigger (replaces former Caty Focus tab) ─────────
+  // The AI Themify functionality used to live as a top-level tab. 2026-05-31:
+  // moved to a contextual rainbow CTA on the Assigned panel that navigates
+  // to the same AiThemePanel surface via handleTabChange('ai-theme').
+  // (Modal-wrap pattern attempted first; reverted to navigation because the
+  // modal silently failed to render — guaranteed-working path now.)
+
   // ─── Client-side pagination ─────────────────────────────────────────────
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const visibleItems = useMemo(() => workItems.slice(0, visibleCount), [workItems, visibleCount]);
@@ -234,10 +243,15 @@ export default function ForYouPageAtlaskit() {
       // useForYouData itself — see note in AiThemePanel.tsx for rationale.
       case 'ai-theme':    return <AiThemePanel allUserProjects={allUserProjects} />;
       case 'ageing':      return <AgeingPanel />;
-      // R360 owns its own data pipeline — no row-feed props.
+      // R360 and Team Pulse own their own data pipelines — no row-feed props.
       case 'r360':        return <R360Panel />;
+      case 'team-pulse':  return presenceEnabled ? <PresencePanel /> : (
+        <div style={{ padding: 32, textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          Team Pulse is not enabled for your organisation.
+        </div>
+      );
       case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
-      case 'assigned':    return <AssignedPanel    {...panelProps} />;
+      case 'assigned':    return <AssignedPanel    {...panelProps} onAskCatyThemify={() => handleTabChange('ai-theme')} />;
       case 'starred':     return <StarredPanel     {...panelProps} onSwitchTab={onSwitchTab} />;
       default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
     }
@@ -246,7 +260,7 @@ export default function ForYouPageAtlaskit() {
   // AI Theme and Ageing render their own vertical lists/grids internally —
   // neither shares the client-side pagination window that the row-feed tabs
   // use. Suppress Load more + sentinel for those tabs to avoid dead chrome.
-  const showPagination = activeTab !== 'ai-theme' && activeTab !== 'ageing' && activeTab !== 'r360';
+  const showPagination = activeTab !== 'ai-theme' && activeTab !== 'ageing' && activeTab !== 'r360' && activeTab !== 'team-pulse';
   const isR360Active = activeTab === 'r360';
 
   return (
@@ -260,23 +274,17 @@ export default function ForYouPageAtlaskit() {
         // `color.text` resolve correctly via --ds-* in both modes natively.
         background: token('elevation.surface', '#FFFFFF'),
         color: token('color.text', '#292A2E'),
-        paddingInline: 'clamp(16px, 3vw, 32px)',
-        paddingBlockStart: 24,
-        paddingBlockEnd: 48,
-        maxWidth: 1280,
-        marginInline: 'auto',
+        paddingInline: isR360Active ? 0 : 'clamp(16px, 3vw, 32px)',
+        paddingBlockStart: isR360Active ? 0 : 24,
+        paddingBlockEnd: isR360Active ? 0 : 48,
+        maxWidth: isR360Active ? 'none' : 1280,
+        marginInline: isR360Active ? 0 : 'auto',
         boxSizing: 'border-box',
       }}
     >
-      {/* Recommended projects strip + R360 access tile — hidden when R360 tab
-          is active so the ring view fills the full viewport without noise. */}
+      {/* Recommended projects strip — hidden when R360 tab is active. */}
       {!isR360Active && (
-        <>
-          <RecommendedProjectsStrip projects={allUserProjects} />
-          <div style={{ marginBlockStart: 12 }}>
-            <R360AccessTile />
-          </div>
-        </>
+        <RecommendedProjectsStrip projects={allUserProjects} />
       )}
 
       {/* Heading + tabs — heading is hidden in R360 full-screen mode; tabs stay
@@ -371,6 +379,10 @@ export default function ForYouPageAtlaskit() {
       {/* Detail rendering: CatalystShell mounts CatalystDetailRouter
           for the pending item set by handleSelect → openDetail().
           (Bespoke ForYouDetailPanel deleted 2026-05-11.) */}
+
+      {/* Modal pattern for Ask Caty - Themify was tried (commit bdf8c6584)
+          but failed to render — see commit message + AssignedPanel JSDoc.
+          Navigation path (handleTabChange('ai-theme')) is now used instead. */}
     </div>
   );
 }

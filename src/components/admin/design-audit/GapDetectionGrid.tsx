@@ -141,7 +141,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
     switch (category) {
       case 'color': return <div className="h-3 w-3 rounded bg-brand-primary" />;
       case 'spacing': return <div className="h-3 w-3 border-2 border-current rounded" />;
-      case 'typography': return <span className="text-[10px] font-bold">Aa</span>;
+      case 'typography': return <span className="text-[10px] ">Aa</span>;
       case 'layout': return <div className="h-3 w-3 grid grid-cols-2 gap-0.5"><div className="bg-current rounded-sm" /><div className="bg-current rounded-sm" /><div className="bg-current rounded-sm" /><div className="bg-current rounded-sm" /></div>;
       case 'component': return <FileIcon label="" size="small" />;
       case 'responsive': return <PhoneIcon label="" size="small" />;
@@ -154,38 +154,38 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
       {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
-          <div className="text-2xl font-bold text-foreground">{stats.total}</div>
-          <div className="text-xs text-muted-foreground">Total Gaps</div>
+          <div className=" text-foreground">{stats.total}</div>
+          <div className=" text-muted-foreground">Total Gaps</div>
         </div>
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
-          <div className="text-2xl font-bold text-destructive">{stats.p0}</div>
-          <div className="text-xs text-muted-foreground">P0 Critical</div>
+          <div className=" text-destructive">{stats.p0}</div>
+          <div className=" text-muted-foreground">P0 Critical</div>
         </div>
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
-          <div className="text-2xl font-bold text-warning">{stats.p1}</div>
-          <div className="text-xs text-muted-foreground">P1 Major</div>
+          <div className=" text-warning">{stats.p1}</div>
+          <div className=" text-muted-foreground">P1 Major</div>
         </div>
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
-          <div className="text-2xl font-bold text-info">{stats.p2}</div>
-          <div className="text-xs text-muted-foreground">P2 Medium</div>
+          <div className=" text-info">{stats.p2}</div>
+          <div className=" text-muted-foreground">P2 Medium</div>
         </div>
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
-          <div className="text-2xl font-bold text-muted-foreground">{stats.p3}</div>
-          <div className="text-xs text-muted-foreground">P3 Minor</div>
+          <div className=" text-muted-foreground">{stats.p3}</div>
+          <div className=" text-muted-foreground">P3 Minor</div>
         </div>
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
-          <div className="text-2xl font-bold text-success">{stats.autoFixable}</div>
-          <div className="text-xs text-muted-foreground">Auto-fixable</div>
+          <div className=" text-success">{stats.autoFixable}</div>
+          <div className=" text-muted-foreground">Auto-fixable</div>
         </div>
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
-          <div className="text-2xl font-bold text-brand-primary">{stats.responsive}</div>
-          <div className="text-xs text-muted-foreground">Responsive</div>
+          <div className=" text-brand-primary">{stats.responsive}</div>
+          <div className=" text-muted-foreground">Responsive</div>
         </div>
       </div>
 
       {/* Filters & Actions */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center ">
           <FilterIcon label="" size="small" />
           <div style={{ width: '160px' }}>
             <AdsSelect
@@ -251,7 +251,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
           <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
+                <h3 className="text-base flex items-center " style={{ fontWeight: 500, margin: 0 }}>
                   <WarningIcon label="" size="small" />
                   Design Gaps ({filteredGaps.length})
                 </h3>
@@ -284,17 +284,17 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
 
                     <div className="flex items-center gap-1.5 shrink-0 text-muted-foreground">
                       {getCategoryIcon(gap.category)}
-                      <span className="text-xs capitalize">{gap.category}</span>
+                      <span className=" capitalize">{gap.category}</span>
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm">{gap.component}</span>
+                      <div className="flex items-center ">
+                        <span className="font-medium ">{gap.component}</span>
                         <code className="text-[10px] text-muted-foreground bg-secondary px-1 rounded">
                           {gap.route}
                         </code>
                       </div>
-                      <div className="text-xs text-muted-foreground mt-0.5">
+                      <div className=" text-muted-foreground mt-0.5">
                         <span className="text-destructive">{gap.current}</span>
                         {' → '}
                         <span className="text-success">{gap.expected}</span>
@@ -332,7 +332,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
         /* Responsive Gaps View */
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
           <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
-            <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
+            <h3 className="text-base flex items-center " style={{ fontWeight: 500, margin: 0 }}>
               <PhoneIcon label="" size="small" />
               Responsive Gaps ({responsivenessGaps.length})
             </h3>
@@ -340,26 +340,26 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
           </div>
           <div>
             <ScrollArea className="h-[400px]">
-              <table className="w-full text-sm">
+              <table className="w-full ">
                 <thead className="sticky top-0 border-b" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                   <tr>
-                    <th className="text-left font-medium px-4 py-2">Route</th>
-                    <th className="text-left font-medium px-4 py-2">Viewport</th>
-                    <th className="text-center font-medium px-4 py-2">Score</th>
-                    <th className="text-center font-medium px-4 py-2">Issues</th>
-                    <th className="text-center font-medium px-4 py-2">P0/P1</th>
-                    <th className="text-left font-medium px-4 py-2">Top Issue</th>
-                    <th className="text-right font-medium px-4 py-2">Action</th>
+                    <th className="text-left font-medium ">Route</th>
+                    <th className="text-left font-medium ">Viewport</th>
+                    <th className="text-center font-medium ">Score</th>
+                    <th className="text-center font-medium ">Issues</th>
+                    <th className="text-center font-medium ">P0/P1</th>
+                    <th className="text-left font-medium ">Top Issue</th>
+                    <th className="text-right font-medium ">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {responsivenessGaps.map((gap, idx) => (
                     <tr key={idx} className="border-b hover:bg-secondary/30">
-                      <td className="px-4 py-2">
-                        <code className="text-xs px-1.5 py-0.5 bg-secondary rounded">{gap.route}</code>
+                      <td className=" ">
+                        <code className=" px-1.5 py-0.5 bg-secondary rounded">{gap.route}</code>
                       </td>
-                      <td className="px-4 py-2 text-muted-foreground">{gap.viewport}</td>
-                      <td className="px-4 py-2 text-center">
+                      <td className=" text-muted-foreground">{gap.viewport}</td>
+                      <td className=" text-center">
                         <Lozenge appearance={
                           gap.score >= 80 ? 'success' :
                           gap.score >= 60 ? 'moved' :
@@ -368,14 +368,14 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                           {gap.score}%
                         </Lozenge>
                       </td>
-                      <td className="px-4 py-2 text-center font-medium">{gap.issues}</td>
-                      <td className="px-4 py-2 text-center">
+                      <td className=" text-center font-medium">{gap.issues}</td>
+                      <td className=" text-center">
                         {gap.p0 > 0 && <span className="mr-1"><Lozenge appearance="removed">{String(gap.p0)}</Lozenge></span>}
                         {gap.p1 > 0 && <Lozenge appearance="moved">{String(gap.p1)}</Lozenge>}
                         {gap.p0 === 0 && gap.p1 === 0 && <span className="text-muted-foreground">-</span>}
                       </td>
-                      <td className="px-4 py-2 text-xs text-muted-foreground">{gap.topIssue}</td>
-                      <td className="px-4 py-2 text-right">
+                      <td className=" text-muted-foreground">{gap.topIssue}</td>
+                      <td className=" text-right">
                         <Tooltip content="Copy fix instruction to clipboard, then paste in chat" position="left">
                           <Button
                             appearance="default"

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Settings as SettingsIcon, User as UserIcon, Users, Sun, Moon, Monitor, Palette } from '@/lib/atlaskit-icons';
+import { LogOut, Settings as SettingsIcon, User as UserIcon, Sun, Moon, Monitor, Palette } from '@/lib/atlaskit-icons';
 
 import {
   DropdownMenu,
@@ -16,15 +16,13 @@ import {
 
 import { useAuth } from '@/lib/auth';
 import { useTheme } from '@/hooks/useTheme';
-import { useUserRole } from '@/hooks/useUserRole';
-import { useMyLeadProjects } from '@/hooks/useMyLeadProjects';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { token } from '@atlaskit/tokens';
+import { PresenceRing } from '@/components/shared/PresenceRing';
+import { useOwnPresence } from '@/hooks/usePresence';
+import { AvailabilityPanel } from '@/components/layout/AvailabilityPanel';
+import { ScheduleLeaveModal } from '@/components/layout/ScheduleLeaveModal';
 
-// Atlassian brand purple — kept as a literal because it is the canonical
-// avatar fallback colour across both light and dark modes (Jira / Confluence
-// parity). Do not migrate to a token; this is a brand identity hex.
-const AVATAR_BRAND_PURPLE = '#5243AA';
 
 /**
  * ProfileMenu — Radix rebuild Apr 2026
@@ -46,15 +44,18 @@ export function ProfileMenu() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
-  const { canAccessEnterprise } = useUserRole();
-  const { projects } = useMyLeadProjects();
   const [open, setOpen] = useState(false);
+  // Resource 360 routing logic (canAccessEnterprise / useMyLeadProjects /
+  // r360Item) removed 2026-05-31 alongside the menu entry — see git blame
+  // for the original three-way branch by user role.
 
-  const r360Item = canAccessEnterprise
-    ? { label: 'Resource 360™', path: '/admin/resources' }
-    : projects.length > 0
-    ? { label: 'My Team', path: '/my-team' }
-    : { label: 'My Resource 360°', path: '/me' };
+  const { data: ownPresence } = useOwnPresence();
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
+
+  // Tooltip for own presence ring: show "On leave · Back Jun 15" when scheduled
+  const ownBackOnLabel = ownPresence?.state === 'on_leave' && ownPresence?.back_on
+    ? `On leave · Back ${new Date(ownPresence.back_on).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`
+    : undefined;
 
   const email = user?.email ?? '';
   const name =
@@ -62,10 +63,8 @@ export function ProfileMenu() {
     (user?.user_metadata?.name as string | undefined) ||
     email.split('@')[0] ||
     'User';
-  const avatarUrl =
-    (user?.user_metadata?.avatar_url as string | undefined) ||
-    resolveAvatarUrl(name) ||
-    undefined;
+  // Only use bundled local avatars — external CDN URLs (Google OAuth, Gravatar) are banned per CLAUDE.md G6.
+  const avatarUrl = resolveAvatarUrl(name) || undefined;
 
   const initials =
     name
@@ -91,6 +90,7 @@ export function ProfileMenu() {
   };
 
   return (
+    <>
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <button
@@ -114,76 +114,49 @@ export function ProfileMenu() {
               : '0 0 0 0 transparent',
           }}
         >
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 28,
-              height: 28,
-              borderRadius: '50%',
-              overflow: 'hidden',
-              backgroundColor: AVATAR_BRAND_PURPLE,
-              color: token('color.text.inverse', '#FFFFFF'),
-              fontSize: 11,
-              fontWeight: 600,
-              pointerEvents: 'none',
-            }}
-          >
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt=""
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <span>{initials}</span>
-            )}
-          </span>
+          <PresenceRing
+            name={name}
+            src={avatarUrl ?? null}
+            size="small"
+            state={ownPresence?.state ?? null}
+            tooltip={ownBackOnLabel}
+          />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="w-72 p-0 z-[1000]"
+        style={{ width: 288, padding: 0, zIndex: 1000 }}
+        onPointerDownOutside={e => {
+          // Keep the menu open when the user interacts with the AvailabilityPanel
+          // (date pickers, selects, text fields). Without this, Radix closes the
+          // dropdown on every pointer-down that originates outside the trigger.
+          const target = e.target as Element | null;
+          if (target?.closest('.av-panel-compact')) e.preventDefault();
+        }}
+        onInteractOutside={e => {
+          const target = (e.target as Element | null);
+          if (target?.closest('.av-panel-compact')) e.preventDefault();
+        }}
       >
         {/* Identity header */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 12,
-            padding: '12px 14px',
+            gap: 8,
+            padding: '12px 16px',
             borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             background: token('elevation.surface.sunken', '#F4F5F7'),
           }}
         >
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 40,
-              height: 40,
-              borderRadius: '50%',
-              overflow: 'hidden',
-              backgroundColor: AVATAR_BRAND_PURPLE,
-              color: token('color.text.inverse', '#FFFFFF'),
-              fontSize: 14,
-              fontWeight: 600,
-              flexShrink: 0,
-            }}
-          >
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt=""
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <span>{initials}</span>
-            )}
-          </span>
+          <PresenceRing
+            name={name}
+            src={avatarUrl ?? null}
+            size="medium"
+            state={ownPresence?.state ?? null}
+            tooltip={ownBackOnLabel}
+          />
           <div style={{ minWidth: 0, flex: 1 }}>
             <div
               style={{
@@ -213,8 +186,13 @@ export function ProfileMenu() {
 
         <div style={{ padding: 4 }}>
           <DropdownMenuLabel
-            className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide"
-            style={{ color: token('color.text.subtle', '#6B778C') }}
+            style={{
+              padding: '4px 12px',
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: '0.06em',
+              color: token('color.text.subtle', '#6B778C'),
+            }}
           >
             Account
           </DropdownMenuLabel>
@@ -223,49 +201,42 @@ export function ProfileMenu() {
               e.preventDefault();
               go('/profile');
             }}
-            className="cursor-pointer"
+            style={{ cursor: 'pointer', gap: 8 }}
           >
-            <UserIcon className="mr-2 h-4 w-4" />
+            <UserIcon style={{ width: 16, height: 16, flexShrink: 0 }} />
             <span>Profile</span>
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={(e) => {
-              e.preventDefault();
-              go(r360Item.path);
-            }}
-            className="cursor-pointer"
-          >
-            <Users className="mr-2 h-4 w-4" />
-            <span>{r360Item.label}</span>
-          </DropdownMenuItem>
+          {/* Resource 360 entry REMOVED 2026-05-31 — accessible via the
+              For You "Resource 360°" tab and via per-row contextual actions.
+              Profile menu was a redundant entry point cluttering the dropdown. */}
           <DropdownMenuItem
             onSelect={(e) => {
               e.preventDefault();
               go('/settings');
             }}
-            className="cursor-pointer"
+            style={{ cursor: 'pointer', gap: 8 }}
           >
-            <SettingsIcon className="mr-2 h-4 w-4" />
+            <SettingsIcon style={{ width: 16, height: 16, flexShrink: 0 }} />
             <span>Account settings</span>
           </DropdownMenuItem>
 
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="cursor-pointer">
-              <Palette className="mr-2 h-4 w-4" />
+            <DropdownMenuSubTrigger style={{ cursor: 'pointer', gap: 8 }}>
+              <Palette style={{ width: 16, height: 16, flexShrink: 0 }} />
               <span>Theme</span>
             </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="z-[1001]">
+            <DropdownMenuSubContent style={{ zIndex: 1001 }}>
               <DropdownMenuItem
                 onSelect={(e) => {
                   e.preventDefault();
                   setTheme('light');
                 }}
-                className="cursor-pointer"
+                style={{ cursor: 'pointer', gap: 8 }}
               >
-                <Sun className="mr-2 h-4 w-4" />
+                <Sun style={{ width: 16, height: 16, flexShrink: 0 }} />
                 Light
                 {theme === 'light' && (
-                  <span className="ml-auto" style={{ color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
+                  <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -273,12 +244,12 @@ export function ProfileMenu() {
                   e.preventDefault();
                   setTheme('dark');
                 }}
-                className="cursor-pointer"
+                style={{ cursor: 'pointer', gap: 8 }}
               >
-                <Moon className="mr-2 h-4 w-4" />
+                <Moon style={{ width: 16, height: 16, flexShrink: 0 }} />
                 Dark
                 {theme === 'dark' && (
-                  <span className="ml-auto" style={{ color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
+                  <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -286,16 +257,25 @@ export function ProfileMenu() {
                   e.preventDefault();
                   setTheme('system');
                 }}
-                className="cursor-pointer"
+                style={{ cursor: 'pointer', gap: 8 }}
               >
-                <Monitor className="mr-2 h-4 w-4" />
+                <Monitor style={{ width: 16, height: 16, flexShrink: 0 }} />
                 Match system
                 {theme === 'system' && (
-                  <span className="ml-auto" style={{ color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
+                  <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
                 )}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
+
+          <DropdownMenuSeparator />
+
+          {/* Availability quick-set + leave scheduler */}
+          <AvailabilityPanel
+            onDone={() => setOpen(false)}
+            onScheduleLeave={() => { setOpen(false); setShowLeaveModal(true); }}
+            currentState={ownPresence?.state ?? null}
+          />
 
           <DropdownMenuSeparator />
 
@@ -304,13 +284,19 @@ export function ProfileMenu() {
               e.preventDefault();
               void handleSignOut();
             }}
-            className="cursor-pointer"
+            style={{ cursor: 'pointer', gap: 8 }}
           >
-            <LogOut className="mr-2 h-4 w-4" />
+            <LogOut style={{ width: 16, height: 16, flexShrink: 0 }} />
             <span>Log out</span>
           </DropdownMenuItem>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
+
+    <ScheduleLeaveModal
+      isOpen={showLeaveModal}
+      onClose={() => setShowLeaveModal(false)}
+    />
+    </>
   );
 }

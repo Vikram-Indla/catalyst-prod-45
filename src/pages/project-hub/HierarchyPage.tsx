@@ -58,8 +58,8 @@ function collectTypes(items: WorkItem[], set: Set<string> = new Set()): Set<stri
   for (const item of items) { if (item.issueType) set.add(item.issueType); collectTypes(item.children, set); }
   return set;
 }
-function collectFixVersions(items: WorkItem[], set: Set<string> = new Set()): Set<string> {
-  for (const item of items) { if (item.fixVersion) set.add(item.fixVersion.name); collectFixVersions(item.children, set); }
+function collectSprintReleases(items: WorkItem[], set: Set<string> = new Set()): Set<string> {
+  for (const item of items) { if (item.sprintRelease) set.add(item.sprintRelease.name); collectSprintReleases(item.children, set); }
   return set;
 }
 function collectPriorities(items: WorkItem[], set: Set<string> = new Set()): Set<string> {
@@ -83,7 +83,7 @@ function filterTree(items: WorkItem[], search: string, filters: Filters): WorkIt
     const matchesStatus = filters.statuses.length === 0 || filters.statuses.includes(item.status.name);
     const matchesAssignee = filters.assignees.length === 0 || (item.assignee && filters.assignees.includes(item.assignee.displayName));
     const matchesPriority = filters.priorities.length === 0 || (item.priority && filters.priorities.includes(item.priority.name));
-    const matchesSprint = filters.sprints.length === 0 || (item.fixVersion && filters.sprints.includes(item.fixVersion.name));
+    const matchesSprint = filters.sprints.length === 0 || (item.sprintRelease && filters.sprints.includes(item.sprintRelease.name));
     const selfMatches = matchesSearch && matchesType && matchesStatus && matchesAssignee && matchesPriority && matchesSprint;
     if (selfMatches || filteredChildren.length > 0) {
       acc.push({ ...item, children: filteredChildren });
@@ -353,7 +353,7 @@ export default function HierarchyPage() {
   const allAssigneeNames = useMemo(() => Array.from(allAssigneeMap.keys()), [allAssigneeMap]);
   const allTypes = useMemo(() => Array.from(collectTypes(treeItems)), [treeItems]);
   const allPriorities = useMemo(() => Array.from(collectPriorities(treeItems)), [treeItems]);
-  const allSprints = useMemo(() => Array.from(collectFixVersions(treeItems)), [treeItems]);
+  const allSprints = useMemo(() => Array.from(collectSprintReleases(treeItems)), [treeItems]);
 
   const filteredItems = useMemo(() => filterTree(treeItems, search, filters), [treeItems, search, filters]);
   const activeFilterCount = filters.types.length + filters.statuses.length + filters.assignees.length + filters.priorities.length + filters.sprints.length;
@@ -534,7 +534,7 @@ export default function HierarchyPage() {
               )}
             </div>
 
-            {/* Release (Fix Version) */}
+            {/* Release (Sprint/Release) */}
             <div style={{ position: 'relative' }}>
               <FilterTrigger label="Release" values={filters.sprints}
                 onClear={() => setFilters(f => ({ ...f, sprints: [] }))}

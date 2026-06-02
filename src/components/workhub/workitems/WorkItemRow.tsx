@@ -109,16 +109,16 @@ export function WorkItemRow({
         <StatusLozenge status={item.status} />
       </div>
 
-      {/* 5b. Fix Version */}
+      {/* 5b. Sprint/Release */}
       <div className="flex items-center min-w-0">
-        {Array.isArray(item.fix_versions) && item.fix_versions.length > 0 ? (
+        {Array.isArray(item.sprint_release) && item.sprint_release.length > 0 ? (
           <span
             className="inline-flex px-2 py-0.5 rounded text-[10px] font-medium truncate max-w-full"
             style={{ backgroundColor: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0' }}
-            title={item.fix_versions.map((v: any) => v.name).join(', ')}
+            title={item.sprint_release.map((v: any) => v.name).join(', ')}
           >
-            {item.fix_versions[0]?.name}
-            {item.fix_versions.length > 1 && ` +${item.fix_versions.length - 1}`}
+            {item.sprint_release[0]?.name}
+            {item.sprint_release.length > 1 && ` +${item.sprint_release.length - 1}`}
           </span>
         ) : (
           <span className="text-[10.5px] italic" style={{ color: 'var(--fg-4)' }}>—</span>

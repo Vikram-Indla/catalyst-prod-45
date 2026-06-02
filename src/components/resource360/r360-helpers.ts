@@ -58,7 +58,7 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
 
   // First try exact match
   if (lower === 'todo' || lower === 'to do')
-    return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', text: '#78350F', category: 'unstarted' };
+    return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', category: 'unstarted' };
   if (lower === 'in progress' || lower === 'under implementation' || lower === 'in development')
     return { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E3A5F', category: 'started' };
   if (lower === 'in review' || lower === 'in qa' || lower === 'ready for qa' || lower === 'retest')
@@ -70,9 +70,9 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
   if (lower === 'blocked')
     return { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: '#7F1D1D', category: 'blocked' };
   if (lower === 're-open' || lower === 'reopen')
-    return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', text: '#78350F', category: 'unstarted' };
+    return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', category: 'unstarted' };
   if (lower === 'in requirements' || lower === 'awaiting info')
-    return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', text: '#78350F', category: 'unstarted' };
+    return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', category: 'unstarted' };
   if (lower === 'rejected')
     return { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: '#7F1D1D', category: 'completed' };
 
@@ -84,7 +84,7 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
     if (catLower === 'in progress' || catLower === 'indeterminate')
       return { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E3A5F', category: 'started' };
     if (catLower === 'to do' || catLower === 'new')
-      return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', text: '#78350F', category: 'unstarted' };
+      return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', category: 'unstarted' };
   }
 
   // Default — gray for truly unknown statuses
@@ -100,7 +100,7 @@ export function getPriorityColor(priority: string): string {
     case 'critical': return '#BE123C';
     case 'highest': return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
     case 'high': return '#EA580C';
-    case 'medium': return '#CA8A04';
+    case 'medium': return 'var(--ds-text-warning, #974F0C)';
     case 'low': return '#57534E';
     default: return 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
   }
