@@ -280,10 +280,9 @@ export default function ForYouPageAtlaskit() {
         boxSizing: 'border-box',
       }}
     >
-      {/* Recommended projects strip — hidden when R360 tab is active. */}
-      {!isR360Active && (
+      <div style={isR360Active ? { paddingInline: 'clamp(16px, 3vw, 32px)' } : undefined}>
         <RecommendedProjectsStrip projects={allUserProjects} />
-      )}
+      </div>
 
       {/* Heading + tabs — heading is hidden in R360 full-screen mode; tabs stay
           visible so the user can switch back to other tabs. */}
