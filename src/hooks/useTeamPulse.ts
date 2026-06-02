@@ -46,7 +46,7 @@ export function useTeamPulse() {
       const { data: sharedRows, error: rpcErr } = await supabase
         .rpc('shared_user_ids', { viewer: user.id });
 
-      if (rpcErr) throw rpcErr;
+      if (rpcErr) { console.error('[useTeamPulse] shared_user_ids rpc error:', rpcErr); throw rpcErr; }
 
       const sharedIds: string[] = (sharedRows ?? []).map((r: { shared_id: string }) => r.shared_id);
       if (sharedIds.length === 0) return { members: [], weekLeave: [] };
@@ -58,7 +58,7 @@ export function useTeamPulse() {
         .in('user_id', sharedIds)
         .order('full_name');
 
-      if (statusErr) throw statusErr;
+      if (statusErr) { console.error('[useTeamPulse] v_user_effective_status error:', statusErr); throw statusErr; }
 
       const members: UserStatus[] = (statusRows ?? []).map((r: any) => ({
         user_id:        r.user_id,
@@ -73,20 +73,27 @@ export function useTeamPulse() {
       }));
 
       // 3. This-week leave entries from user_availability
+      // Note: no FK exists on user_availability.user_id so we cannot use PostgREST's
+      // embedded-join syntax. Profile data is resolved from already-fetched statusRows.
       const { data: leaveRows, error: leaveErr } = await supabase
         .from('user_availability')
-        .select('user_id, kind, starts_at, ends_at, note, backup_user_id, profiles:user_id(full_name, avatar_url)')
+        .select('user_id, kind, starts_at, ends_at, note, backup_user_id')
         .in('user_id', sharedIds)
         .lte('starts_at', endOfWeek())
         .gte('ends_at', startOfWeek())
         .order('starts_at');
 
-      if (leaveErr) throw leaveErr;
+      if (leaveErr) { console.error('[useTeamPulse] user_availability error:', leaveErr); throw leaveErr; }
+
+      const profileMap = new Map<string, { full_name: string | null; avatar_url: string | null }>();
+      for (const r of (statusRows ?? [])) {
+        profileMap.set((r as any).user_id, { full_name: (r as any).full_name, avatar_url: (r as any).avatar_url });
+      }
 
       const weekLeave: TeamLeaveEntry[] = (leaveRows ?? []).map((r: any) => ({
         user_id:        r.user_id,
-        full_name:      (r.profiles as any)?.full_name ?? null,
-        avatar_url:     (r.profiles as any)?.avatar_url ?? null,
+        full_name:      profileMap.get(r.user_id)?.full_name ?? null,
+        avatar_url:     profileMap.get(r.user_id)?.avatar_url ?? null,
         kind:           r.kind,
         starts_at:      r.starts_at,
         ends_at:        r.ends_at,
