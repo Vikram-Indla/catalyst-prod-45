@@ -12,11 +12,15 @@
  */
 import React, { useEffect } from 'react';
 import Spinner from '@atlaskit/spinner';
+import Button from '@atlaskit/button/new';
 import { token } from '@atlaskit/tokens';
 import { PresenceRing } from '@/components/shared/PresenceRing';
 import { useTeamPulse } from '@/hooks/useTeamPulse';
 import { useBackupSuggestion } from '@/hooks/useBackupSuggestion';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { PresenceState } from '@/lib/presence';
+import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -73,6 +77,8 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 // ─── PresencePanel ────────────────────────────────────────────────────────────
 
 export function PresencePanel() {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const { data, isLoading, error } = useTeamPulse();
   const { suggest, coverage_insight, isPending: isInsightPending } = useBackupSuggestion();
 
@@ -98,14 +104,22 @@ export function PresencePanel() {
 
   if (error) {
     return (
-      <div
-        style={{
-          padding: 24,
-          color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
-          fontSize: 14,
-        }}
-      >
-        Failed to load team status.
+      <div style={{ padding: '24px 0', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'), fontSize: 16, lineHeight: 1 }}>⚠</span>
+          <span style={{ fontSize: 14, fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+            Failed to load team status
+          </span>
+        </div>
+        <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+          There was a problem fetching your team's availability.
+        </span>
+        <Button
+          appearance="subtle"
+          onClick={() => void queryClient.invalidateQueries({ queryKey: ['team-pulse'] })}
+        >
+          Try again
+        </Button>
       </div>
     );
   }
@@ -129,7 +143,10 @@ export function PresencePanel() {
       >
         <div style={{ marginBottom: 8, fontSize: 24 }}>👋</div>
         <div style={{ fontWeight: 500, marginBottom: 4 }}>No team members found</div>
-        <div>Team Pulse shows people you share projects or products with.</div>
+        <div style={{ marginBottom: 16 }}>Team Pulse shows people you share projects or products with.</div>
+        <Button appearance="primary" onClick={() => navigate('/project-hub')}>
+          Go to projects
+        </Button>
       </div>
     );
   }
@@ -137,8 +154,8 @@ export function PresencePanel() {
   return (
     <div style={{ padding: '0 0 32px' }}>
 
-      {/* ── Team status ─────────────────────────────────────────────────── */}
-      <SectionHeader>Team status</SectionHeader>
+      {/* ── Team availability ───────────────────────────────────────────── */}
+      <SectionHeader>Team availability</SectionHeader>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {membersOnLeave.map(member => (
@@ -194,7 +211,7 @@ export function PresencePanel() {
               >
                 <PresenceRing
                   name={entry.full_name ?? undefined}
-                  src={entry.avatar_url ?? null}
+                  src={resolveAvatarUrl(entry.full_name) ?? null}
                   size="small"
                   state="on_leave"
                 />
@@ -242,9 +259,12 @@ function MemberRow({ member }: { member: { user_id: string; full_name: string | 
     >
       <PresenceRing
         name={member.full_name ?? undefined}
-        src={member.avatar_url ?? null}
+        src={resolveAvatarUrl(member.full_name) ?? null}
         size="small"
         state={state}
+        tooltip={isOnLeave && member.back_on
+          ? `On leave · Back ${formatDate(member.back_on)}`
+          : undefined}
       />
 
       <div style={{ minWidth: 0, flex: 1 }}>

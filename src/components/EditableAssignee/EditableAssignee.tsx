@@ -36,6 +36,7 @@ export const EditableAssignee = memo(function EditableAssignee({
 }: EditableAssigneeProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [leaveWarning, setLeaveWarning] = useState<{ name: string; backOn?: string | null } | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const portalRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -103,6 +104,10 @@ export const EditableAssignee = memo(function EditableAssignee({
   const catySuggestion = currentOption?.presenceState === 'on_leave'
     ? (currentOption?.backupSuggestion ?? null)
     : null;
+  // Look up the backup person in options to get their actual presenceState
+  const backupOption = catySuggestion
+    ? options.find(o => o.name.toLowerCase() === catySuggestion.name.toLowerCase())
+    : null;
 
   // Position calculation
   const triggerRect = triggerRef.current?.getBoundingClientRect();
@@ -116,14 +121,26 @@ export const EditableAssignee = memo(function EditableAssignee({
       }
     : { display: 'none' };
 
-  // Handle selection
+  // Handle selection — shows a brief on-leave flash warning if the selected person is on leave
   const handleSelect = useCallback(
     (name: string | null) => {
       onSelect(name);
+      if (name) {
+        const person = options.find(o => o.name.toLowerCase() === name.toLowerCase());
+        if (person?.presenceState === 'on_leave') {
+          setLeaveWarning({ name, backOn: person.backOn ?? null });
+          setTimeout(() => {
+            setLeaveWarning(null);
+            setOpen(false);
+            setSearch('');
+          }, 2000);
+          return;
+        }
+      }
       setOpen(false);
       setSearch('');
     },
-    [onSelect]
+    [onSelect, options]
   );
 
   return (
@@ -195,6 +212,32 @@ export const EditableAssignee = memo(function EditableAssignee({
                 />
               </div>
 
+              {/* On-leave assignment warning flash */}
+              {leaveWarning && (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  style={{
+                    padding: '8px 12px',
+                    background: 'var(--ds-background-warning, #FFF7D6)',
+                    borderBottom: `1px solid var(--ds-border-warning, #F8E6A0)`,
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: 8,
+                  }}
+                >
+                  <span style={{ color: 'var(--ds-icon-warning, #D97008)', flexShrink: 0, fontSize: 16, lineHeight: '20px' }}>⚠</span>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                      {leaveWarning.name} is on leave
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
+                      {leaveWarning.backOn ? `Back ${leaveWarning.backOn}. ` : ''}You can still assign.
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Options list */}
               <div style={{ maxHeight: 280, overflowY: 'auto' }}>
 
@@ -243,7 +286,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                           name={catySuggestion.name}
                           src={catySuggestion.avatarUrl ?? null}
                           size="small"
-                          state={null}
+                          state={backupOption?.presenceState ?? null}
                         />
                         <span>{catySuggestion.name}</span>
                       </button>
