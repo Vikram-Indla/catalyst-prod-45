@@ -16,6 +16,7 @@ import { token } from '@atlaskit/tokens';
 import { PresenceRing } from '@/components/shared/PresenceRing';
 import { useTeamPulse } from '@/hooks/useTeamPulse';
 import { useBackupSuggestion } from '@/hooks/useBackupSuggestion';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { PresenceState } from '@/lib/presence';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -194,7 +195,7 @@ export function PresencePanel() {
               >
                 <PresenceRing
                   name={entry.full_name ?? undefined}
-                  src={entry.avatar_url ?? null}
+                  src={resolveAvatarUrl(entry.full_name) ?? null}
                   size="small"
                   state="on_leave"
                 />
@@ -242,7 +243,7 @@ function MemberRow({ member }: { member: { user_id: string; full_name: string | 
     >
       <PresenceRing
         name={member.full_name ?? undefined}
-        src={member.avatar_url ?? null}
+        src={resolveAvatarUrl(member.full_name) ?? null}
         size="small"
         state={state}
       />
