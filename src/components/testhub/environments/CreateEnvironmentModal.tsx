@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Server, Globe, Link2, Database, User, FileText, AlertCircle } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface CreateEnvironmentModalProps {
   isOpen: boolean;

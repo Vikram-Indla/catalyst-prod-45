@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Copy, CheckSquare, Square } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface TestCycle {
   id: string;

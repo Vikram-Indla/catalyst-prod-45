@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Search, Plus, Check, Folder, FolderOpen } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface TestCaseItem {
   id: string;

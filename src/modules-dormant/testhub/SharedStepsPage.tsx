@@ -15,7 +15,7 @@ import {
   Globe, Lock, Bell, Heart, Star,
 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { CreateSharedStepModal } from '@/components/testhub/CreateSharedStepModal';

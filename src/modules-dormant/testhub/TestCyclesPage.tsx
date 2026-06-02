@@ -10,7 +10,7 @@ import {
   Calendar, ChevronDown
 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { TestCycleCard } from '@/components/testhub/TestCycleCard';
 import { CreateTestCycleModal } from '@/components/testhub/CreateTestCycleModal';

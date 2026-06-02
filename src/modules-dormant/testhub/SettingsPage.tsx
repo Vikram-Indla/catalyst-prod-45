@@ -9,7 +9,7 @@ import {
   Sun, Moon, Monitor, Check, RefreshCw, Activity
 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { ActivityLog } from '@/components/testhub/settings/ActivityLog';
 

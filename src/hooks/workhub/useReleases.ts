@@ -5,7 +5,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Release, ReleaseProgress } from '@/types/workhub.types';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 
 /** Hook A — All releases, ordered by sort_order then target_date */
 export function useWHReleases() {

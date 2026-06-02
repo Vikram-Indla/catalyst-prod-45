@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react';
 import { X, Link2, Search, CheckSquare, Square } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 import { useTheme } from '@/hooks/useTheme';
 
 interface LinkTestCaseModalProps {
