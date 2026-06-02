@@ -18,10 +18,10 @@ const LEAVE_KIND_OPTIONS: { label: string; value: LeaveKind }[] = [
   { label: 'Out of office', value: 'ooo' },
 ];
 
-const QUICK_SET: { label: string; state: PresenceState; color: string }[] = [
-  { label: 'Available', state: 'available', color: 'var(--ds-link, #1868DB)' },
+const QUICK_SET: { label: string; state: PresenceState; color: string; outline?: boolean }[] = [
+  { label: 'Available', state: 'available', color: 'var(--ds-icon-success, #22A06B)' },
   { label: 'Busy',      state: 'busy',      color: 'var(--ds-text-subtlest, #6B6E76)' },
-  { label: 'Away',      state: 'away',      color: 'var(--ds-link, #1868DB)' },
+  { label: 'Away',      state: 'away',      color: 'var(--ds-icon-warning, #D97008)', outline: true },
 ];
 
 interface Props {
@@ -103,7 +103,7 @@ export function AvailabilityPanel({ onDone }: Props) {
   }, [startsAt, endsAt, kind, note, backupUserId, onDone]);
 
   return (
-    <div style={{ padding: '12px 16px', minWidth: 260 }}>
+    <div style={{ padding: '8px 12px', minWidth: 240 }}>
       {/* Quick-set section */}
       <div
         style={{
@@ -111,14 +111,14 @@ export function AvailabilityPanel({ onDone }: Props) {
           fontWeight: 600,
           letterSpacing: '0.06em',
           color: token('color.text.subtle', 'var(--ds-text-subtle, #6B778C)'),
-          marginBottom: 8,
+          marginBottom: 4,
         }}
       >
         Set availability
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 12 }}>
-        {QUICK_SET.map(({ label, state, color }) => (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 8 }}>
+        {QUICK_SET.map(({ label, state, color, outline }) => (
           <button
             key={state}
             onClick={() => void handleQuickSet(state)}
@@ -127,12 +127,12 @@ export function AvailabilityPanel({ onDone }: Props) {
               display: 'flex',
               alignItems: 'center',
               gap: 8,
-              padding: '8px 8px',
+              padding: '6px 8px',
               border: 'none',
               borderRadius: 3,
               background: 'transparent',
               cursor: 'pointer',
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: 400,
               color: token('color.text', 'var(--ds-text, #172B4D)'),
               width: '100%',
@@ -150,8 +150,10 @@ export function AvailabilityPanel({ onDone }: Props) {
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
-                background: color,
+                background: outline ? 'transparent' : color,
+                border: outline ? `2px solid ${color}` : 'none',
                 flexShrink: 0,
+                boxSizing: 'border-box',
               }}
             />
             {label}
@@ -163,7 +165,7 @@ export function AvailabilityPanel({ onDone }: Props) {
       <div
         style={{
           borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-          paddingTop: 8,
+          paddingTop: 6,
         }}
       >
         <button
@@ -171,7 +173,7 @@ export function AvailabilityPanel({ onDone }: Props) {
           style={{
             background: 'none',
             border: 'none',
-            padding: '4px 0',
+            padding: '3px 0',
             cursor: 'pointer',
             fontSize: 13,
             fontWeight: 400,
@@ -184,7 +186,7 @@ export function AvailabilityPanel({ onDone }: Props) {
         </button>
 
         {showLeave && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 6 }}>
             <div>
               <label
                 style={{

@@ -22,8 +22,6 @@ import { PresenceRing } from '@/components/shared/PresenceRing';
 import { useOwnPresence } from '@/hooks/usePresence';
 import { AvailabilityPanel } from '@/components/layout/AvailabilityPanel';
 
-// Atlassian brand purple avatar fallback — canonical Jira/Confluence identity colour.
-const AVATAR_BRAND_PURPLE = token('color.background.brand.boldest', '#5243AA');
 
 /**
  * ProfileMenu — Radix rebuild Apr 2026
@@ -168,11 +166,10 @@ export function ProfileMenu() {
         <div style={{ padding: 4 }}>
           <DropdownMenuLabel
             style={{
-              padding: '4px 8px',
+              padding: '4px 12px',
               fontSize: 11,
               fontWeight: 600,
               letterSpacing: '0.06em',
-              textTransform: 'uppercase',
               color: token('color.text.subtle', '#6B778C'),
             }}
           >
