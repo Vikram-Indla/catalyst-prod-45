@@ -25,7 +25,7 @@ const QUERY_KEY = 'planner-task-checklist';
 /**
  * Fetch checklist items for a specific task
  */
-export function usePlannerChecklist(taskId: string | undefined) {
+export function useTaskChecklist(taskId: string | undefined) {
   return useQuery({
     queryKey: [QUERY_KEY, taskId],
     queryFn: async () => {
@@ -51,7 +51,7 @@ export function usePlannerChecklist(taskId: string | undefined) {
 /**
  * Subscribe to realtime changes for a task's checklist
  */
-export function usePlannerChecklistRealtime(taskId: string | undefined) {
+export function useTaskChecklistRealtime(taskId: string | undefined) {
   const queryClient = useQueryClient();
 
   useEffect(() => {

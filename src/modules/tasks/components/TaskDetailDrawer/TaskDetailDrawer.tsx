@@ -42,8 +42,8 @@ import {
   useTaskComments,
   useTaskActivity,
 } from '../../hooks/useTaskDetails';
-import { usePlannerTaskRealtime } from '../../hooks/usePlannerTaskRealtime';
-import { useUpdatePlannerTaskField } from '../../hooks/useUpdatePlannerTaskField';
+import { useTaskItemRealtime } from '../../hooks/useTaskItemRealtime';
+import { useUpdateTaskField } from '../../hooks/useUpdateTaskField';
 import { useLeadNotes } from '../../hooks/useLeadNotes';
 
 interface TaskDetailDrawerProps {
@@ -127,7 +127,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
 
   const task = draftTask ?? serverTask;
 
-  usePlannerTaskRealtime({
+  useTaskItemRealtime({
     taskId: effectiveTaskId,
     onUpdate: () => {},
     onDelete: () => {
@@ -135,7 +135,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
     },
   });
 
-  const { updateNow, updateDebounced, flushPending, isPending } = useUpdatePlannerTaskField();
+  const { updateNow, updateDebounced, flushPending, isPending } = useUpdateTaskField();
 
   const showSaving = useCallback(() => {
     if (saveStatusTimerRef.current) {

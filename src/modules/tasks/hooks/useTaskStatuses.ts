@@ -14,7 +14,7 @@ export interface PlannerStatus {
   order: number;
 }
 
-export function usePlannerStatuses() {
+export function useTaskStatuses() {
   return useQuery({
     queryKey: ['planner-statuses'],
     queryFn: async (): Promise<PlannerStatus[]> => {

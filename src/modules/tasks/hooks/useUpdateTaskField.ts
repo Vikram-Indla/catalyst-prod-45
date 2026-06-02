@@ -14,7 +14,7 @@ interface UpdateTaskFieldInput {
   value: any;
 }
 
-export function useUpdatePlannerTaskField() {
+export function useUpdateTaskField() {
   const queryClient = useQueryClient();
   const pendingUpdates = useRef<Map<string, Record<string, any>>>(new Map());
   const debounceTimers = useRef<Map<string, NodeJS.Timeout>>(new Map());

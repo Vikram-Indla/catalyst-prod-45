@@ -15,7 +15,7 @@ export interface PlannerKeyboardActions {
   onEscape: () => void;
 }
 
-export function usePlannerKeyboard(
+export function useTaskKeyboard(
   actions: PlannerKeyboardActions,
   enabled: boolean = true
 ) {

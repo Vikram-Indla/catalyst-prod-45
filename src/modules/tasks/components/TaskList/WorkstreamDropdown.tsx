@@ -7,7 +7,7 @@ import { useState, useRef, useEffect, memo } from 'react';
 import { Check, ChevronDown } from '@/lib/atlaskit-icons';
 import { getWorkstreamColor } from '@/lib/workstream-colors';
 import { COLORS, WORKSTREAM_COLORS } from '@/components/planner/task-modal/colors';
-import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
+import { useTaskWorkstreams } from '../../hooks/useTaskWorkstreams';
 import type { TaskListTask } from '../../hooks/useTaskList';
 
 export interface WorkstreamDropdownProps {
@@ -56,7 +56,7 @@ export const WorkstreamDropdown = memo(function WorkstreamDropdown({ task, works
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { data: workstreams = [] } = usePlannerWorkstreams();
+  const { data: workstreams = [] } = useTaskWorkstreams();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {

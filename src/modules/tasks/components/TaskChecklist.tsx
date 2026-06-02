@@ -13,15 +13,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import {
-  usePlannerChecklist,
-  usePlannerChecklistRealtime,
+  useTaskChecklist,
+  useTaskChecklistRealtime,
   useToggleChecklistItem,
   useAddChecklistItem,
   useDeleteChecklistItem,
   useBulkInsertChecklist,
   calculateChecklistProgress,
   type ChecklistItem,
-} from '../hooks/usePlannerChecklist';
+} from '../hooks/useTaskChecklist';
 
 interface TaskChecklistProps {
   taskId: string;
@@ -48,8 +48,8 @@ export function TaskChecklist({
   const [analysisStep, setAnalysisStep] = useState(0);
 
   // Queries and mutations
-  const { data: items = [], isLoading } = usePlannerChecklist(taskId);
-  usePlannerChecklistRealtime(taskId);
+  const { data: items = [], isLoading } = useTaskChecklist(taskId);
+  useTaskChecklistRealtime(taskId);
   
   const toggleItem = useToggleChecklistItem();
   const addItem = useAddChecklistItem();

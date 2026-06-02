@@ -21,7 +21,7 @@ import {
   horizontalListSortingStrategy,
   arrayMove,
 } from '@dnd-kit/sortable';
-import { useBoardData, useMoveBoardTask } from '../../hooks/usePlannerBoards';
+import { useBoardData, useMoveBoardTask } from '../../hooks/useTaskBoards';
 import { useReorderColumns } from '../../hooks/useColumnManagement';
 import { SortableColumn } from './SortableColumn';
 import { BoardTaskCard } from './BoardTaskCard';

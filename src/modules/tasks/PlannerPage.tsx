@@ -27,13 +27,13 @@ import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { MobileMenuDrawer } from '@/components/layout/MobileMenuDrawer';
 
 import { PlannerSearchBar } from './components/PlannerSearchBar';
-import { usePlannerTasks, useUpdatePlannerTask, useDeletePlannerTask, useBulkDeletePlannerTasks } from './hooks/usePlannerTasks';
-import { usePlannerUsers } from './hooks/usePlannerUsers';
-import { useCreatePlannerTask } from './hooks/useCreatePlannerTask';
-import { usePlannerSearch } from './hooks/usePlannerSearch';
-import { usePlannerKeyboard } from './hooks/usePlannerKeyboard';
+import { useTaskItems, useUpdatePlannerTask, useDeletePlannerTask, useBulkDeletePlannerTasks } from './hooks/useTaskItems';
+import { useTaskUsers } from './hooks/useTaskUsers';
+import { useCreateTask } from './hooks/useCreateTask';
+import { useTaskSearch } from './hooks/useTaskSearch';
+import { useTaskKeyboard } from './hooks/useTaskKeyboard';
 
-import { usePlannerRealtime } from './hooks/usePlannerRealtime';
+import { useTaskRealtime } from './hooks/useTaskRealtime';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { catalystToast } from '@/lib/catalystToast';
@@ -118,8 +118,8 @@ export function PlannerPage() {
   }, [view]);
 
   // Data hooks
-  const { data: tasks = [], isLoading } = usePlannerTasks(selectedTeamId);
-  const { data: users = [] } = usePlannerUsers();
+  const { data: tasks = [], isLoading } = useTaskItems(selectedTeamId);
+  const { data: users = [] } = useTaskUsers();
   
   // Online users from real users data (add color for avatar)
   const avatarColors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#10b981', '#8b5cf6', 'var(--ds-text-warning, #f59e0b)', 'var(--ds-text-danger, #ef4444)', '#0d9488'];
@@ -133,11 +133,11 @@ export function PlannerPage() {
   const updateTask = useUpdatePlannerTask();
   const deleteTask = useDeletePlannerTask();
   const bulkDeleteTasks = useBulkDeletePlannerTasks();
-  const createTask = useCreatePlannerTask();
+  const createTask = useCreateTask();
   const createTeam = useCreateTeam();
   
   // Realtime subscription for live updates
-  usePlannerRealtime(selectedTeamId);
+  useTaskRealtime(selectedTeamId);
   
   // Search and filter
   const {
@@ -153,7 +153,7 @@ export function PlannerPage() {
     hasActiveFilters,
     totalCount,
     filteredCount,
-  } = usePlannerSearch(tasks);
+  } = useTaskSearch(tasks);
 
 
 
@@ -164,7 +164,7 @@ export function PlannerPage() {
   }, [selectedKanbanTask, filteredTasks]);
 
   // Keyboard shortcuts
-  usePlannerKeyboard({
+  useTaskKeyboard({
     onCreateTask: () => {
       setCreateDefaultStatus('backlog');
       setIsCreateModalOpen(true);

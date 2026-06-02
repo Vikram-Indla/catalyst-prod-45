@@ -27,7 +27,7 @@ interface CreateTaskData {
 }
 
 
-export function useCreatePlannerTask() {
+export function useCreateTask() {
   const queryClient = useQueryClient();
 
   return useMutation({

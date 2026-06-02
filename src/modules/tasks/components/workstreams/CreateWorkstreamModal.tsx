@@ -7,7 +7,7 @@ import '@/styles/workstreams.css';
 import { useState, useMemo } from 'react';
 import { useProfileAvatars } from '@/hooks/useProfileAvatars';
 import { X, Check, ChevronRight, Search, Crown, Info, Users } from '@/lib/atlaskit-icons';
-import { useCreateWorkstream, useAddWorkstreamMember } from '../../hooks/usePlannerWorkstreams';
+import { useCreateWorkstream, useAddWorkstreamMember } from '../../hooks/useTaskWorkstreams';
 import { useResourceInventory, Resource } from '../../hooks/useResourceInventory';
 import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';

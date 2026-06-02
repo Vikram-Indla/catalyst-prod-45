@@ -13,10 +13,10 @@ import { CreateTaskModal } from '../kanban';
 import { TaskDetailDrawer } from '../TaskDetailDrawer/TaskDetailDrawer';
 import { PlannerViewHeader } from '../shared/PlannerViewHeader';
 import { PlannerSearchBar } from '../PlannerSearchBar';
-import { usePlannerUsers } from '../../hooks/usePlannerUsers';
-import { usePlannerTasks } from '../../hooks/usePlannerTasks';
-import { usePlannerSearch } from '../../hooks/usePlannerSearch';
-import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
+import { useTaskUsers } from '../../hooks/useTaskUsers';
+import { useTaskItems } from '../../hooks/useTaskItems';
+import { useTaskSearch } from '../../hooks/useTaskSearch';
+import { useTaskWorkstreams } from '../../hooks/useTaskWorkstreams';
 import type { GroupByOption } from '../../types';
 
 export interface PlannerBoardsPageProps {
@@ -48,8 +48,8 @@ export function PlannerBoardsPage({
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   
   // Data hooks
-  const { data: workstreamsData = [] } = usePlannerWorkstreams();
-  const { data: users = [] } = usePlannerUsers();
+  const { data: workstreamsData = [] } = useTaskWorkstreams();
+  const { data: users = [] } = useTaskUsers();
   
   // Map workstreams to teams format for PlannerSearchBar
   const teams = useMemo(() => workstreamsData.map(ws => ({
@@ -81,7 +81,7 @@ export function PlannerBoardsPage({
     }
   }, [resolvedWorkstreamId]);
 
-  const { data: tasks = [] } = usePlannerTasks(selectedTeamId);
+  const { data: tasks = [] } = useTaskItems(selectedTeamId);
 
   // Search and filter
   const {
@@ -97,7 +97,7 @@ export function PlannerBoardsPage({
     hasActiveFilters,
     totalCount,
     filteredCount,
-  } = usePlannerSearch(tasks);
+  } = useTaskSearch(tasks);
 
   // Map parent filters to V9 BoardFilters
   const boardFilters = useMemo<BoardFilters>(() => {

@@ -27,7 +27,7 @@ const DEFAULT_FILTERS: PlannerFilters = {
   overdue: null,
 };
 
-export function usePlannerSearch(tasks: PlannerTask[]) {
+export function useTaskSearch(tasks: PlannerTask[]) {
   const [filters, setFilters] = useState<PlannerFilters>(DEFAULT_FILTERS);
 
   // Initialize Fuse.js for fuzzy search

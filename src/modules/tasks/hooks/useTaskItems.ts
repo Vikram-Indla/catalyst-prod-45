@@ -66,7 +66,7 @@ const transformPlannerTask = (row: any): PlannerTask => ({
   updatedAt: row.updated_at,
 });
 
-export function usePlannerTasks(teamId?: string | null) {
+export function useTaskItems(teamId?: string | null) {
   return useQuery({
     // Cache-buster: ensures UI picks up task_key mapping changes immediately
     queryKey: ['planner-tasks', teamId, 'v2-task-key'],

@@ -30,9 +30,9 @@ import {
   startOfDay 
 } from 'date-fns';
 import { CreateTaskModal } from './kanban';
-import { usePlannerWorkstreams, Workstream } from '../hooks/usePlannerWorkstreams';
+import { useTaskWorkstreams, Workstream } from '../hooks/useTaskWorkstreams';
 import { WorkstreamDrawer } from './workstreams/WorkstreamDrawer';
-import { usePlannerUsers } from '../hooks/usePlannerUsers';
+import { useTaskUsers } from '../hooks/useTaskUsers';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getWorkstreamColor, getStatusDotColor, STATUS_DOT_COLORS } from '@/lib/workstream-colors';
@@ -238,8 +238,8 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
 
   // Data
   const { data: allTasks = [], isLoading: tasksLoading } = useTimelineTasks();
-  const { data: workstreams = [], isLoading: wsLoading } = usePlannerWorkstreams();
-  const { data: users = [] } = usePlannerUsers();
+  const { data: workstreams = [], isLoading: wsLoading } = useTaskWorkstreams();
+  const { data: users = [] } = useTaskUsers();
 
   // ============================================================
   // FILTER LOGIC

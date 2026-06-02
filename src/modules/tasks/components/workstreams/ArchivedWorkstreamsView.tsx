@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { ArrowLeft, ArchiveRestore, Trash2, Check, Search, Archive } from '@/lib/atlaskit-icons';
-import { Workstream, useArchiveWorkstream, useDeleteWorkstream } from '../../hooks/usePlannerWorkstreams';
+import { Workstream, useArchiveWorkstream, useDeleteWorkstream } from '../../hooks/useTaskWorkstreams';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   AlertDialog,

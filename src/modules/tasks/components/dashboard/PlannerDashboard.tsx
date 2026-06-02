@@ -6,8 +6,8 @@
 
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useDashboardData } from '../../hooks/usePlannerDashboard';
-import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
+import { useDashboardData } from '../../hooks/useTaskDashboard';
+import { useTaskWorkstreams } from '../../hooks/useTaskWorkstreams';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { DashboardWorkstreamFilter } from './DashboardWorkstreamFilter';
@@ -43,7 +43,7 @@ export function PlannerDashboard() {
     refetchAll,
   } = useDashboardData();
   
-  const { data: workstreams = [] } = usePlannerWorkstreams();
+  const { data: workstreams = [] } = useTaskWorkstreams();
 
   // Check if user can access all workstreams via RPC
   const { data: canViewAll = false } = useQuery({

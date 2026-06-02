@@ -54,7 +54,7 @@ export interface Workstream {
   };
 }
 
-export function usePlannerWorkstreams(includeArchived = false) {
+export function useTaskWorkstreams(includeArchived = false) {
   return useQuery({
     queryKey: ['planner-workstreams', includeArchived],
     queryFn: async (): Promise<Workstream[]> => {
