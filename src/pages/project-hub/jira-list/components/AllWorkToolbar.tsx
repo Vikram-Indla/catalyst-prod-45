@@ -91,6 +91,7 @@ import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import type { WorkItem } from "@/types/workItem.types";
 import "./ask-caty-input.css";
 import { useCatySearch } from "@/components/caty/catySearchStore";
+import { FilterSaveModal } from "@/components/filters/FilterSaveModal";
 import { useAuth } from "@/lib/auth";
 import { JiraBasicFilter } from "@/components/shared/JiraBasicFilter";
 import type { FilterCategory as JiraFilterCategory } from "@/components/shared/JiraBasicFilter";
@@ -1006,192 +1007,6 @@ export function filterStateToJql(state: FilterState, projectKey?: string): strin
 }
 
 /**
- * SaveFilterModal — persists current FilterState as a named saved view.
- *
- * Atlaskit primitives: @atlaskit/modal-dialog (https://atlassian.design/components/modal-dialog),
- * @atlaskit/textfield, @atlaskit/textarea, @atlaskit/checkbox, @atlaskit/button/new.
- *
- * Backend: INSERT into public.allwork_saved_filters (table created by
- * Vikram-run SQL on 2026-05-03). RLS auto-restricts rows to auth.uid().
- *
- * MVP scope (Vikram: "limited fields only which we know"):
- * - Name (required, unique per user+project — UNIQUE constraint at DB)
- * - Description (optional)
- * - Make this filter shared (boolean → is_shared column)
- *
- * Deferred: Viewers/Editors granular sharing (Jira's pattern but the
- * Catalyst saved_filters table only has one is_shared boolean; extending
- * needs schema change + Vikram approval).
- */
-interface SaveFilterModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  currentState: FilterState;
-  projectKey: string;
-  onSaved?: () => void;
-  onShowFlag: (title: string, appearance: "success" | "error") => void;
-}
-
-function SaveFilterModal({
-  isOpen,
-  onClose,
-  currentState,
-  projectKey,
-  onSaved,
-  onShowFlag,
-}: SaveFilterModalProps) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [isShared, setIsShared] = useState(false);
-  const [saving, setSaving] = useState(false);
-
-  // Reset form when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setName("");
-      setDescription("");
-      setIsShared(false);
-      setSaving(false);
-    }
-  }, [isOpen]);
-
-  const handleSave = async () => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    setSaving(true);
-    try {
-      const { data: authData, error: authErr } = await (
-        supabase as any
-      ).auth.getUser();
-      if (authErr || !authData?.user?.id) {
-        onShowFlag("Not signed in — cannot save filter", "error");
-        setSaving(false);
-        return;
-      }
-      const jqlQuery = filterStateToJql(currentState, projectKey) || null;
-      const { error } = await (supabase as any)
-        .from("ph_saved_filters")
-        .insert({
-          owner_id: authData.user.id,
-          user_id: authData.user.id,
-          project_key: projectKey,
-          name: trimmed,
-          description: description.trim() || null,
-          filter_config: currentState,
-          jql_query: jqlQuery,
-          is_shared: isShared,
-          hub_scope: 'project',
-        });
-      if (error) {
-        if (error.code === "23505") {
-          onShowFlag(
-            `A filter named "${trimmed}" already exists in ${projectKey}`,
-            "error",
-          );
-        } else {
-          onShowFlag(`Save failed: ${error.message}`, "error");
-        }
-        setSaving(false);
-        return;
-      }
-      onShowFlag(`Saved filter "${trimmed}"`, "success");
-      onSaved?.();
-      onClose();
-    } catch (e: any) {
-      onShowFlag(`Save failed: ${(e as Error)?.message || String(e)}`, "error");
-      setSaving(false);
-    }
-  };
-
-  return (
-    <ModalTransition>
-      {isOpen && (
-        <Modal
-          onClose={onClose}
-          testId="catalyst-save-filter-modal"
-          width="small"
-        >
-          <ModalHeader>
-            <ModalTitle>Save filter</ModalTitle>
-          </ModalHeader>
-          <ModalBody>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: 12,
-                    fontWeight: 600,
-                    marginBottom: 4,
-                    color: "var(--ds-text, #292A2E)",
-                  }}
-                >
-                  Name{" "}
-                  <span style={{ color: "var(--ds-text-danger, #DE350B)" }}>
-                    *
-                  </span>
-                </label>
-                <Textfield
-                  autoFocus
-                  value={name}
-                  onChange={(e) =>
-                    setName((e.target as HTMLInputElement).value)
-                  }
-                  placeholder="e.g. My open bugs"
-                  testId="catalyst-save-filter-modal.name"
-                />
-              </div>
-              <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: 12,
-                    fontWeight: 600,
-                    marginBottom: 4,
-                    color: "var(--ds-text, #292A2E)",
-                  }}
-                >
-                  Description
-                </label>
-                <Textarea
-                  value={description}
-                  onChange={(e) =>
-                    setDescription((e.target as HTMLTextAreaElement).value)
-                  }
-                  placeholder="Optional"
-                  minimumRows={2}
-                  maxHeight="120px"
-                  testId="catalyst-save-filter-modal.description"
-                />
-              </div>
-              <Checkbox
-                isChecked={isShared}
-                onChange={(e) => setIsShared(e.target.checked)}
-                label="Make this filter visible to others"
-                testId="catalyst-save-filter-modal.is-shared"
-              />
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button appearance="subtle" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              appearance="primary"
-              onClick={handleSave}
-              isDisabled={!name.trim() || saving}
-              testId="catalyst-save-filter-modal.save"
-            >
-              {saving ? "Saving…" : "Save"}
-            </Button>
-          </ModalFooter>
-        </Modal>
-      )}
-    </ModalTransition>
-  );
-}
-
-/**
  * SavedFiltersDropdown — Read + apply + Delete saved filters (R + D of CRUD).
  *
  * Lives next to the Save filter button in the toolbar. Fetches the user's
@@ -2056,6 +1871,7 @@ export function AllWorkToolbar({
           then opens SaveFilterModal. */}
       <Button
         appearance="subtle"
+        isDisabled={totalSelected(selectedFilters) === 0}
         onClick={() => {
           setOpenChipKey(null); // close any open chip popup before modal opens
           setSaveModalOpen(true);
@@ -2077,15 +1893,15 @@ export function AllWorkToolbar({
         onShowFlag={showFlag}
       />
 
-      {/* Save filter modal — mounted always; visibility controlled by isOpen. */}
-      <SaveFilterModal
-        isOpen={saveModalOpen}
-        onClose={() => setSaveModalOpen(false)}
-        currentState={selectedFilters}
-        projectKey={projectKey}
-        onSaved={() => setSavedFiltersRefreshKey((k) => k + 1)}
-        onShowFlag={showFlag}
-      />
+      {/* Save filter modal — standalone canonical FilterSaveModal */}
+      {saveModalOpen && (
+        <FilterSaveModal
+          initialJql={filterStateToJql(selectedFilters, projectKey) || undefined}
+          hubScope="project"
+          onClose={() => setSaveModalOpen(false)}
+          onSaved={() => { setSavedFiltersRefreshKey((k) => k + 1); setSaveModalOpen(false); }}
+        />
+      )}
 
       <span style={{ flex: 1 }} />
 

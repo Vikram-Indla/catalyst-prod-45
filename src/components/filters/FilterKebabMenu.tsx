@@ -9,7 +9,6 @@ import {
   useCopyFilter,
   useUpdateSavedFilter,
   useDeleteSavedFilter,
-  useToggleFilterSubscription,
   useBoardsForProject,
   useToggleFilterBoardLink,
   type SavedFilterFull,
@@ -35,13 +34,11 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const copyFilter       = useCopyFilter();
   const updateFilter     = useUpdateSavedFilter();
   const deleteFilter     = useDeleteSavedFilter();
-  const toggleSubscribe  = useToggleFilterSubscription();
   const boardLink        = useToggleFilterBoardLink();
   const { data: boards = [] } = useBoardsForProject(projectKey);
 
   const isOwner = filter.user_id === currentUserId || filter.owner_id === currentUserId;
   const isPrivate = filter.viewers_config?.type === 'private';
-  const isSubscribed = currentUserId ? (filter.subscriber_ids ?? []).includes(currentUserId) : false;
 
   function handleToggleVisibility() {
     const next = isPrivate
@@ -82,18 +79,7 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
           <DropdownItem onClick={() => setHistoryOpen(true)}>
             View version history
           </DropdownItem>
-          {currentUserId && (
-            <DropdownItem
-              onClick={() => toggleSubscribe.mutate({
-                filterId: filter.id,
-                currentSubscriberIds: filter.subscriber_ids ?? [],
-                userId: currentUserId,
-              })}
-            >
-              {isSubscribed ? 'Unsubscribe from changes' : 'Subscribe to changes'}
-            </DropdownItem>
-          )}
-          {isOwner && (
+            {isOwner && (
             <DropdownItem onClick={() => setTransferOpen(true)}>
               Transfer ownership
             </DropdownItem>
