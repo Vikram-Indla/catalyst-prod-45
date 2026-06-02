@@ -52,8 +52,9 @@ import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
 import AiThemePanel from '@/components/for-you/atlaskit/AiThemePanel';
 import AgeingPanel from '@/components/for-you/atlaskit/AgeingPanel';
 import R360Panel from '@/components/for-you/atlaskit/R360Panel';
-import { PresencePanel } from '@/components/for-you/atlaskit/PresencePanel';
-import { useModuleEnabled } from '@/contexts/FeatureFlagContext';
+import BoardPanel from '@/components/for-you/atlaskit/BoardPanel';
+import TimelinePanel from '@/components/for-you/atlaskit/TimelinePanel';
+
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 const PAGE_SIZE = 20;
@@ -86,8 +87,6 @@ function isBusinessRequest(item: WorkItem | null | undefined): boolean {
 
 export default function ForYouPageAtlaskit() {
   const { user: authUser, loading: authLoading } = useAuth();
-  const presenceEnabled = useModuleEnabled('presence_availability');
-
   // Don't start data fetching until auth is fully established
   const data = useForYouData(authLoading);
   const {
@@ -126,6 +125,9 @@ export default function ForYouPageAtlaskit() {
       } else if (stored === 'worked' || stored === 'viewed') {
         initialStoredTabRef.current = 'recommended';
         localStorage.setItem(FOR_YOU_TAB_KEY, 'recommended');
+      } else if (stored === 'team-pulse') {
+        initialStoredTabRef.current = 'r360';
+        localStorage.setItem(FOR_YOU_TAB_KEY, 'r360');
       } else if (stored) {
         initialStoredTabRef.current = stored as TabType;
       } else {
@@ -140,7 +142,7 @@ export default function ForYouPageAtlaskit() {
   const { tab: urlTab } = useParams<{ tab?: string }>();
   const navigate = useNavigate();
 
-  const VALID_TABS: Set<string> = useMemo(() => new Set(['ai-theme', 'recommended', 'assigned', 'starred', 'r360', 'ageing']), []);
+  const VALID_TABS: Set<string> = useMemo(() => new Set(['ai-theme', 'recommended', 'assigned', 'starred', 'r360', 'ageing', 'board', 'timeline']), []);
 
   // useLayoutEffect runs before paint — applies the stored tab to the hook
   // state before the user sees any UI. URL param takes precedence over localStorage.
@@ -243,13 +245,9 @@ export default function ForYouPageAtlaskit() {
       // useForYouData itself — see note in AiThemePanel.tsx for rationale.
       case 'ai-theme':    return <AiThemePanel allUserProjects={allUserProjects} />;
       case 'ageing':      return <AgeingPanel />;
-      // R360 and Team Pulse own their own data pipelines — no row-feed props.
       case 'r360':        return <R360Panel />;
-      case 'team-pulse':  return presenceEnabled ? <PresencePanel /> : (
-        <div style={{ padding: 32, textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)' }}>
-          Team Pulse is not enabled for your organisation.
-        </div>
-      );
+      case 'board':       return <BoardPanel />;
+      case 'timeline':    return <TimelinePanel />;
       case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
       case 'assigned':    return <AssignedPanel    {...panelProps} onAskCatyThemify={() => handleTabChange('ai-theme')} />;
       case 'starred':     return <StarredPanel     {...panelProps} onSwitchTab={onSwitchTab} />;
@@ -260,8 +258,8 @@ export default function ForYouPageAtlaskit() {
   // AI Theme and Ageing render their own vertical lists/grids internally —
   // neither shares the client-side pagination window that the row-feed tabs
   // use. Suppress Load more + sentinel for those tabs to avoid dead chrome.
-  const showPagination = activeTab !== 'ai-theme' && activeTab !== 'ageing' && activeTab !== 'r360' && activeTab !== 'team-pulse';
-  const isR360Active = activeTab === 'r360';
+  const showPagination = activeTab !== 'ai-theme' && activeTab !== 'ageing' && activeTab !== 'r360' && activeTab !== 'board' && activeTab !== 'timeline';
+  const isR360Active = activeTab === 'r360' || activeTab === 'board' || activeTab === 'timeline';
 
   return (
     <div

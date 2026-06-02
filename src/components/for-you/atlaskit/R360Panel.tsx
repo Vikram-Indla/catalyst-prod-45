@@ -24,7 +24,9 @@ import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useMyR360ResourceId, useTeamResourceIds } from '@/hooks/useR360PanelData';
 import { useAuth } from '@/lib/auth';
+import { useModuleEnabled } from '@/contexts/FeatureFlagContext';
 import R360MemberDetail from '@/pages/R360MemberDetail';
+import { PresencePanel } from '@/components/for-you/atlaskit/PresencePanel';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -311,6 +313,7 @@ const MAX_PILLS_TEAM = 5;
 export default function R360Panel() {
   const { user } = useAuth();
   const { isTeamLead } = useUserRole();
+  const presenceEnabled = useModuleEnabled('presence_availability');
   const { data: myResourceId, isLoading: idLoading } = useMyR360ResourceId();
   const { data: teamResources = [], isLoading: teamLoading } = useTeamResourceIds(
     isTeamLead ? (user?.id ?? null) : null,
@@ -415,6 +418,26 @@ export default function R360Panel() {
       {/* ── R360 weekly view (fills remaining space) ── */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <R360MemberDetail resourceId={activeResourceId} embedded />
+
+        {/* ── Team Pulse (merged into Ring view) ── */}
+        {presenceEnabled && (
+          <div style={{
+            marginTop: 24,
+            borderTop: `1px solid ${token('color.border', '#091E4224')}`,
+            paddingTop: 16,
+          }}>
+            <h2 style={{
+              margin: '0 0 8px',
+              fontSize: 16,
+              fontWeight: 653,
+              color: token('color.text', '#292A2E'),
+              fontFamily: 'var(--ds-font-family-body, "Inter"), system-ui, sans-serif',
+            }}>
+              Team pulse
+            </h2>
+            <PresencePanel />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -31,7 +31,7 @@ import React from 'react';
 import { token } from '@atlaskit/tokens';
 import type { TabType } from '@/hooks/useForYouData';
 import { useAgeingCount } from '@/components/notifications/AgeingTab';
-import { useModuleEnabled } from '@/contexts/FeatureFlagContext';
+
 
 export const FOR_YOU_TAB_KEY = 'catalyst.forYou.activeTab.v1';
 
@@ -56,7 +56,8 @@ export const FOR_YOU_TAB_ORDER: ForYouTabDefinition[] = [
   { id: 'starred',     label: 'Starred',         showCount: false },
   { id: 'r360',        label: 'Resource 360°',   showCount: false },
   { id: 'ageing',      label: 'Ageing',          showCount: true  },
-  { id: 'team-pulse',  label: 'Team Pulse',      showCount: false },
+  { id: 'board',       label: 'Board',           showCount: false },
+  { id: 'timeline',    label: 'Timeline',        showCount: false },
 ];
 
 interface ForYouTabsProps {
@@ -71,11 +72,7 @@ export default function ForYouTabs({ activeTab, tabCounts, onChange }: ForYouTab
   // pill badge stays in lockstep with panel content without plumbing the
   // count back through useForYouData.
   const ageingCount = useAgeingCount();
-  const presenceEnabled = useModuleEnabled('presence_availability');
-
-  const visibleTabs = FOR_YOU_TAB_ORDER.filter(
-    tab => tab.id !== 'team-pulse' || presenceEnabled,
-  );
+  const visibleTabs = FOR_YOU_TAB_ORDER;
 
   // WAI-ARIA tab pattern: ArrowLeft/Right navigate and select within the strip.
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {

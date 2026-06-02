@@ -44,7 +44,9 @@ export type TabType =
   | 'worked'
   | 'viewed'
   | 'ageing'
-  | 'team-pulse';
+  | 'team-pulse'
+  | 'board'
+  | 'timeline';
 export type ModeFilter = 'all' | 'ops' | 'del' | 'tsk';
 
 export interface WorkItemAssignee {

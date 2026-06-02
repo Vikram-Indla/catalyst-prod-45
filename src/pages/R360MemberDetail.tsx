@@ -61,9 +61,11 @@ interface R360MemberDetailProps {
   projectScope?: string[];
   /** When true: renders inside the For You R360 tab. Hides the Back button. */
   embedded?: boolean;
+  /** When set, locks the view to this mode and hides the Ring/Chronology/Board sub-tab switcher. */
+  forceView?: R360ViewType;
 }
 
-export default function R360MemberDetail({ resourceId: resourceIdProp, projectScope, embedded = false }: R360MemberDetailProps = {}) {
+export default function R360MemberDetail({ resourceId: resourceIdProp, projectScope, embedded = false, forceView }: R360MemberDetailProps = {}) {
   const { isDark } = useTheme();
   const { resourceId: resourceIdFromParams } = useParams<{ resourceId: string }>();
   const resourceId = resourceIdProp ?? resourceIdFromParams;
@@ -77,8 +79,12 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
     ? '/admin/resources'
     : '/project-hub/resources';
   const [searchParams] = useSearchParams();
-  const initialView = (searchParams.get('view') as R360ViewType) || 'ring';
+  const initialView = forceView ?? (embedded ? 'ring' : (searchParams.get('view') as R360ViewType) || 'ring');
   const [view, setView] = useState<R360ViewType>(initialView);
+
+  useEffect(() => {
+    if (forceView) setView(forceView);
+  }, [forceView]);
 
   // D-19 Nuclear scroll reset on view tab switch
   useEffect(() => {
@@ -540,7 +546,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
 
               {/* ── Tabs + Actions — §10 toolbar buttons ── */}
               <div className="r3-tabs">
-                {(['ring', 'chronology', 'board'] as R360ViewType[]).map(v => (
+                {!forceView && !embedded && (['ring', 'chronology', 'board'] as R360ViewType[]).map(v => (
                   <button key={v} className={`r3-tab ${view === v ? 'active' : ''}`} onClick={() => setView(v)}>
                     {v.charAt(0).toUpperCase() + v.slice(1)}
                   </button>
