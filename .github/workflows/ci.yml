@@ -15,7 +15,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          # No dependency cache: the repo intentionally ships no lockfile
+          # (npm install is used, not npm ci — see "Install dependencies"
+          # below). `cache: 'npm'` hard-fails setup-node when no lockfile
+          # exists, so it is omitted.
 
       - name: Install dependencies
         # npm ci fails with EBADPLATFORM on linux/x64 for optional darwin-arm64
