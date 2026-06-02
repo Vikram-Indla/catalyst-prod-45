@@ -79,9 +79,11 @@ export function useTeamPulse() {
         sharedScopes:   scopeMap.get(r.user_id) ?? [],
       }));
 
-      // 3. This-week leave entries from user_availability
-      // Note: no FK exists on user_availability.user_id so we cannot use PostgREST's
-      // embedded-join syntax. Profile data is resolved from already-fetched statusRows.
+      // 3. This-week leave entries from user_availability.
+      //    No embedded profiles join: user_availability has no FK to profiles,
+      //    so PostgREST cannot resolve `profiles:user_id(...)` (PGRST200). Names
+      //    and avatars are resolved from `members` (v_user_effective_status is
+      //    built FROM profiles, so it covers every sharedId).
       const { data: leaveRows, error: leaveErr } = await supabase
         .from('user_availability')
         .select('user_id, kind, starts_at, ends_at, note, backup_user_id')
@@ -92,10 +94,9 @@ export function useTeamPulse() {
 
       if (leaveErr) { console.error('[useTeamPulse] user_availability error:', leaveErr); throw leaveErr; }
 
-      const profileMap = new Map<string, { full_name: string | null; avatar_url: string | null }>();
-      for (const r of (statusRows ?? [])) {
-        profileMap.set((r as any).user_id, { full_name: (r as any).full_name, avatar_url: (r as any).avatar_url });
-      }
+      const profileMap = new Map(
+        members.map(m => [m.user_id, { full_name: m.full_name, avatar_url: m.avatar_url }]),
+      );
 
       const weekLeave: TeamLeaveEntry[] = (leaveRows ?? []).map((r: any) => ({
         user_id:        r.user_id,
