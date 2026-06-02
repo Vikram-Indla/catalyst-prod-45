@@ -18,6 +18,8 @@ import { useAuth } from '@/lib/auth';
 import { useTheme } from '@/hooks/useTheme';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { token } from '@atlaskit/tokens';
+import { PresenceRing } from '@/components/shared/PresenceRing';
+import { useOwnPresence } from '@/hooks/usePresence';
 
 // Atlassian brand purple avatar fallback — canonical Jira/Confluence identity colour.
 const AVATAR_BRAND_PURPLE = token('color.background.brand.boldest', '#5243AA');
@@ -46,6 +48,8 @@ export function ProfileMenu() {
   // Resource 360 routing logic (canAccessEnterprise / useMyLeadProjects /
   // r360Item) removed 2026-05-31 alongside the menu entry — see git blame
   // for the original three-way branch by user role.
+
+  const { data: ownPresence } = useOwnPresence();
 
   const email = user?.email ?? '';
   const name =
@@ -103,32 +107,12 @@ export function ProfileMenu() {
               : '0 0 0 0 transparent',
           }}
         >
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 28,
-              height: 28,
-              borderRadius: '50%',
-              overflow: 'hidden',
-              backgroundColor: AVATAR_BRAND_PURPLE,
-              color: token('color.text.inverse', '#FFFFFF'),
-              fontSize: 11,
-              fontWeight: 600,
-              pointerEvents: 'none',
-            }}
-          >
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt=""
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <span>{initials}</span>
-            )}
-          </span>
+          <PresenceRing
+            name={name}
+            src={avatarUrl ?? null}
+            size="small"
+            state={ownPresence?.state ?? null}
+          />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -147,32 +131,12 @@ export function ProfileMenu() {
             background: token('elevation.surface.sunken', '#F4F5F7'),
           }}
         >
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 40,
-              height: 40,
-              borderRadius: '50%',
-              overflow: 'hidden',
-              backgroundColor: AVATAR_BRAND_PURPLE,
-              color: token('color.text.inverse', '#FFFFFF'),
-              fontSize: 14,
-              fontWeight: 600,
-              flexShrink: 0,
-            }}
-          >
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt=""
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <span>{initials}</span>
-            )}
-          </span>
+          <PresenceRing
+            name={name}
+            src={avatarUrl ?? null}
+            size="medium"
+            state={ownPresence?.state ?? null}
+          />
           <div style={{ minWidth: 0, flex: 1 }}>
             <div
               style={{

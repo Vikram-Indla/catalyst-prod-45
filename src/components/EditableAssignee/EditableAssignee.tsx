@@ -6,11 +6,19 @@
  */
 import { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { createPortal } from 'react-dom';
+import { PresenceRing } from '@/components/shared/PresenceRing';
+import type { PresenceState } from '@/lib/presence';
 
 export interface AssigneeOption {
   name: string;
   email?: string;
   avatarUrl?: string;
+  /** Supabase auth user id — used to look up realtime presence ring. */
+  userId?: string;
+  /** Effective presence state from v_user_effective_status. */
+  presenceState?: PresenceState | null;
+  /** ISO date string (ends_at + 1 day) shown when presenceState === 'on_leave'. */
+  backOn?: string | null;
 }
 
 interface EditableAssigneeProps {
@@ -223,6 +231,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                   const isActive =
                     currentAssignee?.toLowerCase() ===
                     person.name.toLowerCase();
+                  const isOnLeave = person.presenceState === 'on_leave';
                   return (
                     <button
                       key={person.name}
@@ -232,43 +241,63 @@ export const EditableAssignee = memo(function EditableAssignee({
                       }}
                       style={{
                         width: '100%',
-                        display: 'block',
-                        padding: '10px 12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '8px 12px',
                         border: 'none',
                         cursor: 'pointer',
                         background: isActive
                           ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'
-                          : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                          : 'var(--cp-bg-elevated, #ffffff)',
                         textAlign: 'left',
                         fontFamily: 'var(--cp-font-body)',
                         fontSize: 14,
                         fontWeight: 400,
-                        color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+                        color: 'var(--ds-text, #172B4D)',
                         transition: 'background 150ms',
                       }}
                       onMouseEnter={e => {
                         e.currentTarget.style.background =
-                          'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
+                          'var(--ds-surface-sunken, #F4F5F7)';
                       }}
                       onMouseLeave={e => {
                         e.currentTarget.style.background = isActive
-                          ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'
-                          : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+                          ? 'var(--ds-surface-sunken, #F4F5F7)'
+                          : 'var(--cp-bg-elevated, #ffffff)';
                       }}
                     >
-                      <div style={{ marginBottom: 2 }}>
-                        {person.name}
-                      </div>
-                      {person.email && (
-                        <div
-                          style={{
-                            fontSize: 12,
-                            color: 'var(--ds-text-subtlest, #5E6C84)',
-                          }}
-                        >
-                          {person.email}
+                      <PresenceRing
+                        name={person.name}
+                        src={person.avatarUrl ?? null}
+                        size="small"
+                        state={person.presenceState ?? null}
+                      />
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{ fontSize: 14, fontWeight: 400 }}>{person.name}</span>
+                          {isOnLeave && person.backOn && (
+                            <span style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              background: 'var(--ds-background-danger, #FFECEB)',
+                              color: 'var(--ds-icon-danger, #C9372C)',
+                              padding: '1px 6px',
+                              borderRadius: 3,
+                              fontSize: 11,
+                              fontWeight: 600,
+                            }}>
+                              Back {person.backOn}
+                            </span>
+                          )}
                         </div>
-                      )}
+                        {person.email && (
+                          <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #5E6C84)' }}>
+                            {person.email}
+                          </div>
+                        )}
+                      </div>
                     </button>
                   );
                 })}
