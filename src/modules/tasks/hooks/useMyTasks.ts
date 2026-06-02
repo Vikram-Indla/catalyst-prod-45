@@ -39,7 +39,7 @@ export function useMyTasks(filters: FilterConfig = {}) {
       // The view already filters by auth.uid() for user involvement
       let query = supabase
         .from('tasks')
-        .select('id, task_key, title, status_slug, priority, due_date, sort_order, time_section, workstream_slug, involvement_type, assignee_id, workstream_id, status_id, created_at')
+        .select('id, key, title, status_slug, priority, due_date, sort_order, time_section, workstream_slug, involvement_type, assignee_id, workstream_id, status_id, created_at')
         .order('due_date', { ascending: true, nullsFirst: false })
         .order('sort_order', { ascending: true });
 
@@ -57,7 +57,7 @@ export function useMyTasks(filters: FilterConfig = {}) {
         query = query.in('priority', filters.priorities);
       }
       if (filters.searchQuery) {
-        query = query.or(`title.ilike.%${filters.searchQuery}%,task_key.ilike.%${filters.searchQuery}%`);
+        query = query.or(`title.ilike.%${filters.searchQuery}%,key.ilike.%${filters.searchQuery}%`);
       }
       if (filters.involvement && filters.involvement !== 'all') {
         query = query.eq('involvement_type', filters.involvement);
@@ -146,7 +146,7 @@ export function useMyTasksActivity(limit = 10) {
         .from('task_activity')
         .select(`
           *,
-          tasks!inner(task_key, title, assignee_id)
+          tasks!inner(key, title, assignee_id)
         `)
         .eq('tasks.assignee_id', user?.id)
         .order('created_at', { ascending: false })
@@ -171,23 +171,22 @@ export function useCreateMyTask() {
       // Generate task key
       const { data: lastTask, error: lastTaskError } = await supabase
         .from('tasks')
-        .select('task_key')
+        .select('key')
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
       if (lastTaskError && lastTaskError.code !== 'PGRST116') throw lastTaskError;
 
-      const lastNum = lastTask?.task_key 
-        ? parseInt(lastTask.task_key.replace('PLN-', '')) 
+      const lastNum = lastTask?.key
+        ? parseInt(lastTask.key.replace(/^[A-Z]+-/, '')) || 0
         : 0;
-      const newKey = `PLN-${String(lastNum + 1).padStart(3, '0')}`;
+      const newKey = `TSK-${String(lastNum + 1).padStart(3, '0')}`;
 
       const { data, error } = await supabase
         .from('tasks')
         .insert({
           ...payload,
           key: newKey,
-          task_key: newKey,
           assignee_id: user?.id,
           created_by: user?.id,
         })
