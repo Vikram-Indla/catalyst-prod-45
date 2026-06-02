@@ -110,7 +110,6 @@ export function AvailabilityPanel({ onDone }: Props) {
           fontSize: 11,
           fontWeight: 600,
           letterSpacing: '0.06em',
-          textTransform: 'uppercase' as const,
           color: token('color.text.subtle', 'var(--ds-text-subtle, #6B778C)'),
           marginBottom: 8,
         }}
@@ -128,7 +127,7 @@ export function AvailabilityPanel({ onDone }: Props) {
               display: 'flex',
               alignItems: 'center',
               gap: 8,
-              padding: '6px 8px',
+              padding: '8px 8px',
               border: 'none',
               borderRadius: 3,
               background: 'transparent',

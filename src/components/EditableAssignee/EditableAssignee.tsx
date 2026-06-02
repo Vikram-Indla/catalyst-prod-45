@@ -200,7 +200,7 @@ export const EditableAssignee = memo(function EditableAssignee({
 
                 {/* Caty backup suggestion — only when current assignee is on leave */}
                 {catySuggestion && (
-                  <div style={{ padding: '6px 12px 4px' }}>
+                  <div style={{ padding: '4px 12px' }}>
                     {/* AI section label */}
                     <div style={{
                       fontSize: 11,
@@ -215,7 +215,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                     <div style={{
                       background: `conic-gradient(from 0deg, #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg, #00C9FF 180deg, #92FE9D 240deg, #FFD700 300deg, #FF3CAC 360deg)`,
                       animation: 'none',
-                      padding: 2,
+                      padding: 4,
                       borderRadius: 4,
                     }}>
                       <button
@@ -228,7 +228,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                           display: 'flex',
                           alignItems: 'center',
                           gap: 8,
-                          padding: '6px 8px',
+                          padding: 8,
                           border: 'none',
                           borderRadius: 3,
                           cursor: 'pointer',
@@ -260,7 +260,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                   style={{
                     width: '100%',
                     display: 'block',
-                    padding: '10px 12px',
+                    padding: '8px 12px',
                     border: 'none',
                     cursor: 'pointer',
                     background:
@@ -345,7 +345,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                               gap: 4,
                               background: 'var(--ds-background-danger, #FFECEB)',
                               color: 'var(--ds-icon-danger, #C9372C)',
-                              padding: '1px 6px',
+                              padding: '0 8px',
                               borderRadius: 3,
                               fontSize: 11,
                               fontWeight: 600,

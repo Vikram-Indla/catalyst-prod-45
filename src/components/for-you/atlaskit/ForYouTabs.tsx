@@ -31,6 +31,7 @@ import React from 'react';
 import { token } from '@atlaskit/tokens';
 import type { TabType } from '@/hooks/useForYouData';
 import { useAgeingCount } from '@/components/notifications/AgeingTab';
+import { useModuleEnabled } from '@/contexts/FeatureFlagContext';
 
 export const FOR_YOU_TAB_KEY = 'catalyst.forYou.activeTab.v1';
 
@@ -70,6 +71,11 @@ export default function ForYouTabs({ activeTab, tabCounts, onChange }: ForYouTab
   // pill badge stays in lockstep with panel content without plumbing the
   // count back through useForYouData.
   const ageingCount = useAgeingCount();
+  const presenceEnabled = useModuleEnabled('presence_availability');
+
+  const visibleTabs = FOR_YOU_TAB_ORDER.filter(
+    tab => tab.id !== 'team-pulse' || presenceEnabled,
+  );
 
   return (
     // Outer wrapper kept at page width so we can left-align the inline
@@ -90,7 +96,7 @@ export default function ForYouTabs({ activeTab, tabCounts, onChange }: ForYouTab
           boxSizing: 'border-box',
         }}
       >
-        {FOR_YOU_TAB_ORDER.map(tab => {
+        {visibleTabs.map(tab => {
           const resolvedCount = tab.id === 'ageing' ? ageingCount : (tabCounts[tab.id] ?? 0);
           return (
             <TabButton

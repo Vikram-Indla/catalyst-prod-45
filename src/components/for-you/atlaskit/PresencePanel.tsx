@@ -61,7 +61,6 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
         fontSize: 11,
         fontWeight: 600,
         letterSpacing: '0.06em',
-        textTransform: 'uppercase' as const,
         color: token('color.text.subtle', 'var(--ds-text-subtle, #6B778C)'),
         padding: '16px 0 8px',
       }}
@@ -155,7 +154,7 @@ export function PresencePanel() {
         <div
           style={{
             marginTop: 12,
-            padding: '10px 12px',
+            padding: '8px 12px',
             borderRadius: 4,
             background: token('color.background.information', 'var(--ds-background-information, #E9F2FE)'),
             display: 'flex',

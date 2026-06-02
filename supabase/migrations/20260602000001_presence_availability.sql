@@ -240,4 +240,5 @@ VALUES (
 )
 ON CONFLICT (module_key) DO UPDATE SET
   description = EXCLUDED.description,
-  label       = EXCLUDED.label;
+  label       = EXCLUDED.label,
+  is_enabled  = false;  -- keep premium gate off by default
