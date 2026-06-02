@@ -12,12 +12,14 @@
  */
 import React, { useEffect } from 'react';
 import Spinner from '@atlaskit/spinner';
+import Button from '@atlaskit/button/new';
 import { token } from '@atlaskit/tokens';
 import { PresenceRing } from '@/components/shared/PresenceRing';
 import { useTeamPulse } from '@/hooks/useTeamPulse';
 import { useBackupSuggestion } from '@/hooks/useBackupSuggestion';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type { PresenceState } from '@/lib/presence';
+import { useQueryClient } from '@tanstack/react-query';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -74,6 +76,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 // ─── PresencePanel ────────────────────────────────────────────────────────────
 
 export function PresencePanel() {
+  const queryClient = useQueryClient();
   const { data, isLoading, error } = useTeamPulse();
   const { suggest, coverage_insight, isPending: isInsightPending } = useBackupSuggestion();
 
@@ -99,14 +102,22 @@ export function PresencePanel() {
 
   if (error) {
     return (
-      <div
-        style={{
-          padding: 24,
-          color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
-          fontSize: 14,
-        }}
-      >
-        Failed to load team status.
+      <div style={{ padding: '24px 0', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'), fontSize: 16, lineHeight: 1 }}>⚠</span>
+          <span style={{ fontSize: 14, fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+            Failed to load team status
+          </span>
+        </div>
+        <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+          There was a problem fetching your team's availability.
+        </span>
+        <Button
+          appearance="subtle"
+          onClick={() => void queryClient.invalidateQueries({ queryKey: ['team-pulse'] })}
+        >
+          Try again
+        </Button>
       </div>
     );
   }
