@@ -55,8 +55,31 @@ const VIEW_TITLES: Record<PlannerView, string> = {
   'settings': 'Settings',
 };
 
+// Map URL view params (the /tasks/* route scheme) to internal PlannerView keys.
+// The sidebar/routes use 'overview', 'board', 'list'; the component's view
+// switch uses 'dashboard', 'boards', 'task-list'. Without this mapping those
+// three nav items fall through to the default board and show the wrong title.
+const VIEW_ALIASES: Record<string, PlannerView> = {
+  overview: 'dashboard',
+  board: 'boards',
+  boards: 'boards',
+  list: 'task-list',
+  'task-list': 'task-list',
+};
+const normalizeView = (v?: string): PlannerView =>
+  ((v && (VIEW_ALIASES[v] ?? (v as PlannerView))) || 'boards');
+
+// Reverse: internal PlannerView key → URL slug used by the /tasks/* routes and
+// sidebar, so internal view switches keep the URL consistent with the nav.
+const VIEW_TO_SLUG: Partial<Record<PlannerView, string>> = {
+  dashboard: 'overview',
+  boards: 'board',
+  'task-list': 'list',
+};
+const viewToSlug = (v: PlannerView): string => VIEW_TO_SLUG[v] ?? v;
+
 // Check if view is an insight view
-const isInsightView = (view: PlannerView) => 
+const isInsightView = (view: PlannerView) =>
   view === 'weekly-report' || view === 'workstream-performance' || view === 'ai-insights';
 
 export function PlannerPage() {
@@ -65,7 +88,7 @@ export function PlannerPage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   
   // Core state
-  const [activeView, setActiveView] = useState<PlannerView>((view as PlannerView) || 'boards');
+  const [activeView, setActiveView] = useState<PlannerView>(normalizeView(view));
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
@@ -112,8 +135,9 @@ export function PlannerPage() {
 
   // Sync activeView with URL
   useEffect(() => {
-    if (view && view !== activeView) {
-      setActiveView(view as PlannerView);
+    const normalized = normalizeView(view);
+    if (normalized !== activeView) {
+      setActiveView(normalized);
     }
   }, [view]);
 
@@ -202,7 +226,7 @@ export function PlannerPage() {
   // Handlers
   const handleViewChange = useCallback((view: PlannerView) => {
     setActiveView(view);
-    navigate(`/tasks/${view}`);
+    navigate(`/tasks/${viewToSlug(view)}`);
   }, [navigate]);
 
   // Convert PlannerTask to KanbanTask for unified drawer

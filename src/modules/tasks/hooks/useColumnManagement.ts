@@ -26,6 +26,16 @@ export interface ReorderColumnsInput {
   columns: Array<{ id: string; position: number }>;
 }
 
+// task_statuses.color is varchar(7) — it stores a plain hex (#rrggbb).
+// Color pickers may pass ADS token strings like 'var(--ds-text-brand, #3b82f6)'
+// which overflow the column. Extract the hex fallback (or first hex) so any
+// picker's value is normalized to a storable 7-char hex before insert/update.
+function normalizeHexColor(color: string | undefined): string | undefined {
+  if (!color) return color;
+  const match = color.match(/#[0-9a-fA-F]{6}/);
+  return match ? match[0] : color.slice(0, 7);
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // Hook: useCreateColumn
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -58,7 +68,7 @@ export function useCreateColumn() {
         .insert({
           name: name.trim(),
           slug,
-          color,
+          color: normalizeHexColor(color),
           position: newPosition,
           sort_order: newPosition,
           is_system: false,
@@ -102,7 +112,7 @@ export function useUpdateColumn() {
         updates.slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
       }
       if (color !== undefined) {
-        updates.color = color;
+        updates.color = normalizeHexColor(color);
       }
 
       const { data, error } = await supabase
