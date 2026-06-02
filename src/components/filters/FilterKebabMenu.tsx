@@ -51,6 +51,7 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   return (
     <>
       <DropdownMenu
+        placement="bottom-end"
         trigger={({ triggerRef, ...props }) => (
           <IconButton
             ref={triggerRef}
