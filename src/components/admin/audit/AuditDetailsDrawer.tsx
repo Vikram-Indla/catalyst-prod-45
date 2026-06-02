@@ -113,7 +113,7 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
           </SheetDescription>
         </SheetHeader>
 
-        <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }} />
+        <hr style={{ margin: '16px 0', border: 'none', borderTop: '0 solid var(--ds-border-layout, #EBECF0)' }} />
 
         {/* Metadata */}
         <div className="space-y-4">
@@ -152,7 +152,7 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
           </div>
         </div>
 
-        <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }} />
+        <hr style={{ margin: '16px 0', border: 'none', borderTop: '0 solid var(--ds-border-layout, #EBECF0)' }} />
 
         {/* Field-level Diff */}
         <div className="space-y-3">
@@ -192,7 +192,7 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
           )}
         </div>
 
-        <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }} />
+        <hr style={{ margin: '16px 0', border: 'none', borderTop: '0 solid var(--ds-border-layout, #EBECF0)' }} />
 
         {/* Actions */}
         <div className="flex gap-2">

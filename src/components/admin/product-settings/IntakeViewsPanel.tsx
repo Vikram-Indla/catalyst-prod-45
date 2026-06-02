@@ -72,7 +72,7 @@ export function IntakeViewsPanel({ onChanges }: IntakeViewsPanelProps) {
       {/* Scope Selector */}
       <div className="flex items-center gap-4">
         <span className="text-sm font-medium">Configuration Scope:</span>
-        <div style={{ minWidth: '192px' }}>
+        <div style={{ minWidth: '190' }}>
           <AdsSelect
             value={
               selectedScope === 'global'
@@ -162,7 +162,7 @@ export function IntakeViewsPanel({ onChanges }: IntakeViewsPanelProps) {
             </div>
           </div>
 
-          <div className="bg-muted/50 p-4 rounded-lg" style={{ borderLeft: '3px solid var(--accent-color)' }}>
+          <div className="bg-muted/50 p-4 rounded-lg" style={{ borderLeft: '4px solid var(--accent-color)' }}>
             <p className="text-sm text-muted-foreground">
               <strong>Note:</strong> To modify which statuses appear in each Kanban column, 
               update the status categories in the Workflow & Statuses panel.

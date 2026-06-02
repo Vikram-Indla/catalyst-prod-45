@@ -70,7 +70,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
     );
   };
 
-  const labelStyle: React.CSSProperties = { fontSize: '11px', fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', marginBottom: '4px', display: 'block' };
+  const labelStyle: React.CSSProperties = { fontSize: '10', fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', marginBottom: '4px', display: 'block' };
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
@@ -79,19 +79,19 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
         style={{ maxWidth: '460px', borderRadius: '8px' }}
       >
         {/* Header */}
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(15,23,42,0.06)', position: 'relative' }}>
-          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '15px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0 }}>
+        <div style={{ padding: '16px 24px', borderBottom: '0 solid rgba(15,23,42,0.06)', position: 'relative' }}>
+          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '16px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0 }}>
             Create Catalyst User
           </DialogTitle>
-          <p style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: '2px' }}>
+          <p style={{ fontSize: '10', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: '0' }}>
             Local account — not pushed to Jira
           </p>
           <button
             onClick={onClose}
             style={{
-              position: 'absolute', top: '14px', right: '16px',
-              width: '26px', height: '26px', borderRadius: '50%',
-              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              position: 'absolute', top: '16px', right: '16px',
+              width: '24px', height: '24px', borderRadius: '50%',
+              border: '0 solid rgba(15,23,42,0.10)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
             }}
@@ -101,22 +101,22 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
         </div>
 
         {/* Body */}
-        <div style={{ padding: '18px 20px' }}>
+        <div style={{ padding: '16px 24px' }}>
           {/* Purple info banner */}
           <div style={{
-            background: '#F5F3FF', border: '1px solid rgba(124,58,237,0.25)',
-            borderRadius: '6px', padding: '9px 11px', display: 'flex', gap: '8px',
+            background: '#F5F3FF', border: '0 solid rgba(124,58,237,0.25)',
+            borderRadius: '4px', padding: '8px 10', display: 'flex', gap: '8px',
             alignItems: 'flex-start', marginBottom: '16px',
           }}>
             <ShareIcon label="" size="small" />
-            <span style={{ fontSize: '11px', color: 'var(--cp-purple-60, #7C3AED)', lineHeight: 1.55 }}>
+            <span style={{ fontSize: '10', color: 'var(--cp-purple-60, #7C3AED)', lineHeight: 1.55 }}>
               This user will exist only in Catalyst. Jira bidirectional sync is
               excluded. They authenticate with a Catalyst-managed password.
             </span>
           </div>
 
           {/* Full Name */}
-          <div style={{ marginBottom: '12px' }}>
+          <div style={{ marginBottom: '10' }}>
             <label style={labelStyle}>Full Name <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>*</span></label>
             <Textfield
               value={displayName}
@@ -124,11 +124,11 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
               placeholder="e.g. Dr. Ahmed Al-Rashid"
               isInvalid={!!errors.displayName}
             />
-            {errors.displayName && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: '2px', display: 'block' }}>{errors.displayName}</span>}
+            {errors.displayName && <span style={{ fontSize: '8px', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: '0', display: 'block' }}>{errors.displayName}</span>}
           </div>
 
           {/* Email */}
-          <div style={{ marginBottom: '12px' }}>
+          <div style={{ marginBottom: '10' }}>
             <label style={labelStyle}>Email <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>*</span></label>
             <Textfield
               type="email"
@@ -137,11 +137,11 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
               placeholder="user@moi.gov.sa"
               isInvalid={!!errors.email}
             />
-            {errors.email && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: '2px', display: 'block' }}>{errors.email}</span>}
+            {errors.email && <span style={{ fontSize: '8px', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: '0', display: 'block' }}>{errors.email}</span>}
           </div>
 
           {/* Password */}
-          <div style={{ marginBottom: '12px' }}>
+          <div style={{ marginBottom: '10' }}>
             <label style={labelStyle}>Password <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>*</span></label>
             <Textfield
               type={showPassword ? 'text' : 'password'}
@@ -159,14 +159,14 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
                 </button>
               }
             />
-            <span style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: '2px', display: 'block' }}>
+            <span style={{ fontSize: '8px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: '0', display: 'block' }}>
               Min 8 characters. Stored securely in Catalyst (bcrypt).
             </span>
-            {errors.password && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: '1px', display: 'block' }}>{errors.password}</span>}
+            {errors.password && <span style={{ fontSize: '8px', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: '0', display: 'block' }}>{errors.password}</span>}
           </div>
 
           {/* Role + Department */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
             <div>
               <label style={labelStyle}>Resource Role</label>
               <AdsSelect
@@ -189,9 +189,9 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
 
           {/* Amber warning */}
           <div style={{
-            background: '#FFFBEB', border: '1px solid rgba(217,119,6,0.25)',
-            borderRadius: '4px', padding: '8px 10px',
-            fontSize: '10.5px', color: '#92400E', lineHeight: 1.5,
+            background: '#FFFBEB', border: '0 solid rgba(217,119,6,0.25)',
+            borderRadius: '4px', padding: '8px 8px',
+            fontSize: '10.4px', color: '#92400E', lineHeight: 1.5,
           }}>
             ⚠ This user will be flagged catalyst_only = true and permanently excluded
             from bidirectional Jira sync. Jira will never receive this user's data.
@@ -200,16 +200,16 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
 
         {/* Footer */}
         <div style={{
-          padding: '14px 20px', borderTop: '1px solid rgba(15,23,42,0.06)',
+          padding: '16px 24px', borderTop: '0 solid rgba(15,23,42,0.06)',
           background: 'var(--bg-1, #F8FAFC)', display: 'flex', gap: '8px', borderRadius: '0 0 8px 8px',
         }}>
           <button
             onClick={handleSubmit}
             disabled={isPending}
             style={{
-              flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
-              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
-              padding: '8px 14px', borderRadius: '6px', fontSize: '13px', fontWeight: 600,
+              flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: 'none',
+              padding: '8px 16px', borderRadius: '4px', fontSize: '16px', fontWeight: 600,
               cursor: isPending ? 'not-allowed' : 'pointer', opacity: isPending ? 0.7 : 1,
             }}
           >
@@ -219,8 +219,8 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
           <button
             onClick={onClose}
             style={{
-              padding: '8px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: 500,
-              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+              padding: '8px 16px', borderRadius: '4px', fontSize: '16px', fontWeight: 500,
+              border: '0 solid rgba(15,23,42,0.10)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
               cursor: 'pointer',
             }}
           >
