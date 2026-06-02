@@ -104,6 +104,10 @@ export const EditableAssignee = memo(function EditableAssignee({
   const catySuggestion = currentOption?.presenceState === 'on_leave'
     ? (currentOption?.backupSuggestion ?? null)
     : null;
+  // Look up the backup person in options to get their actual presenceState
+  const backupOption = catySuggestion
+    ? options.find(o => o.name.toLowerCase() === catySuggestion.name.toLowerCase())
+    : null;
 
   // Position calculation
   const triggerRect = triggerRef.current?.getBoundingClientRect();
@@ -282,7 +286,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                           name={catySuggestion.name}
                           src={catySuggestion.avatarUrl ?? null}
                           size="small"
-                          state={null}
+                          state={backupOption?.presenceState ?? null}
                         />
                         <span>{catySuggestion.name}</span>
                       </button>

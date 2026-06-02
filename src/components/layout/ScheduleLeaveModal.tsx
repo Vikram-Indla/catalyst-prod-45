@@ -156,6 +156,7 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
             <input
               type="date"
               value={endsAt}
+              min={startsAt || undefined}
               onChange={(e) => { setEndsAt(e.target.value); setErrors(er => ({ ...er, endsAt: undefined })); }}
               style={{
                 display: 'block',

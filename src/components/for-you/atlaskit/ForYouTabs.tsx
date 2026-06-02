@@ -77,6 +77,20 @@ export default function ForYouTabs({ activeTab, tabCounts, onChange }: ForYouTab
     tab => tab.id !== 'team-pulse' || presenceEnabled,
   );
 
+  // WAI-ARIA tab pattern: ArrowLeft/Right navigate and select within the strip.
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    const currentIndex = visibleTabs.findIndex(t => t.id === activeTab);
+    const dir = e.key === 'ArrowRight' ? 1 : -1;
+    const nextIndex = (currentIndex + dir + visibleTabs.length) % visibleTabs.length;
+    const nextTab = visibleTabs[nextIndex];
+    onChange(nextTab.id);
+    // Programmatically focus the next tab button so keyboard users see the focus ring
+    const el = document.getElementById(`for-you-tab-${nextTab.id}`);
+    el?.focus();
+  };
+
   return (
     // Outer wrapper kept at page width so we can left-align the inline
     // pill cluster without it stretching. The inner role="tablist" is the
@@ -85,6 +99,7 @@ export default function ForYouTabs({ activeTab, tabCounts, onChange }: ForYouTab
       <div
         role="tablist"
         aria-label="For You tabs"
+        onKeyDown={handleKeyDown}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -153,6 +168,7 @@ function TabButton({
       aria-selected={isActive}
       aria-controls={`for-you-panel-${tab.id}`}
       id={`for-you-tab-${tab.id}`}
+      tabIndex={isActive ? 0 : -1}
       onClick={onClick}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
