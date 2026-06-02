@@ -1513,3 +1513,25 @@ CREATE POLICY "Members can view comments" ON ph_comments
 **Rule:** When a `ph_comments`-style anchor table is non-PII and its reactions table already uses `USING (true)`, match both policies for consistency — divergent USING clauses between a parent row and its child table create hidden multi-user failure modes. The ownership short-circuit (`author_id = auth.uid()`) is the right first step but is never the final step for tables where multiple users react to the same anchor. Before calling an RLS fix "done", test with a SECOND authenticated user — single-user smoke tests miss the INSERT+RETURNING UNIQUE collision entirely.
 
 **Severity:** P1 (the `author_id` partial fix resolved the author's own reactions but left every other user's reactions silently broken)
+
+---
+
+## 2026-06-02 — Duplicate import lines cause Vite runtime crash; grep the ERROR module, not the ERROR message
+
+**Surface:** Any Vite dev server page that lazy-loads a module with a duplicate `import` statement
+**Pattern:** `/tasks/board` crashed with `Identifier 'catalystToast' has already been declared`. Five fix attempts targeted the WRONG files — `CatalystToast.tsx` vs `lib/catalystToast.ts` export collision, re-exports, barrel files, Vite dep optimizer, esbuild scan failures. None worked. The actual root cause was `TaskDetailDrawer.tsx` lines 13-14 having the IDENTICAL import on consecutive lines:
+```
+import { catalystToast } from '@/lib/catalystToast';
+import { catalystToast } from '@/lib/catalystToast';
+```
+Vite transforms each named import into a `const` binding. Two identical imports → two `const catalystToast` in the same module scope → `SyntaxError` at runtime. TypeScript does NOT flag duplicate imports as errors — `tsc --noEmit` passes clean.
+
+**Why five attempts failed:** Every attempt assumed the duplicate was ACROSS files (two files exporting the same name). The actual duplicate was WITHIN a single file (same import repeated). The bulk `sed` rename from `planner_tasks` → `tasks` earlier in the session likely created the duplicate when a line was processed twice.
+
+**Rule:** When debugging `Identifier 'X' has already been declared` in Vite:
+1. **First**: `grep -rn "import.*X" src/ | awk -F: '{print $1}' | sort | uniq -c | sort -rn | head -5` — find files that import X MORE THAN ONCE. This catches same-file duplicates that `tsc` won't flag.
+2. **Second**: Use Chrome MCP `read_console_messages` to get the actual failing MODULE URL from the stack trace, then read that specific Vite-served module.
+3. **NEVER** assume the error is cross-file until you've ruled out same-file duplicate imports.
+4. After any bulk `sed` rename, run: `grep -rn "^import" src/ --include="*.ts" --include="*.tsx" | sort | uniq -d` to catch any line that was duplicated by the sed pass.
+
+**Severity:** P0 (app crash — white screen on any route that lazy-loads the affected module)
