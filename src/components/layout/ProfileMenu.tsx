@@ -118,6 +118,17 @@ export function ProfileMenu() {
         align="end"
         sideOffset={8}
         style={{ width: 288, padding: 0, zIndex: 1000 }}
+        onPointerDownOutside={e => {
+          // Keep the menu open when the user interacts with the AvailabilityPanel
+          // (date pickers, selects, text fields). Without this, Radix closes the
+          // dropdown on every pointer-down that originates outside the trigger.
+          const target = e.target as Element | null;
+          if (target?.closest('.av-panel-compact')) e.preventDefault();
+        }}
+        onInteractOutside={e => {
+          const target = (e.target as Element | null);
+          if (target?.closest('.av-panel-compact')) e.preventDefault();
+        }}
       >
         {/* Identity header */}
         <div
@@ -250,12 +261,10 @@ export function ProfileMenu() {
           <DropdownMenuSeparator />
 
           {/* Availability quick-set + leave scheduler */}
-          <div onMouseDown={e => e.preventDefault()}>
-            <AvailabilityPanel
-              onDone={() => setOpen(false)}
-              currentState={ownPresence?.state ?? null}
-            />
-          </div>
+          <AvailabilityPanel
+            onDone={() => setOpen(false)}
+            currentState={ownPresence?.state ?? null}
+          />
 
           <DropdownMenuSeparator />
 
