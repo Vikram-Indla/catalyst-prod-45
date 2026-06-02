@@ -27,6 +27,7 @@ import MediumPriIcon  from '@atlaskit/icon/core/priority-medium';
 import LowPriIcon     from '@atlaskit/icon/core/priority-low';
 import LowestPriIcon  from '@atlaskit/icon/core/priority-lowest';
 import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import Button from '@atlaskit/button/new';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type {
   JiraFilterValue,
@@ -91,7 +92,7 @@ function ChipButton({ label, count, isOpen, onClick, chipRef }: ChipButtonProps)
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 8,
         height: 32,
         padding: '0 8px',
         borderRadius: 3,
@@ -207,7 +208,7 @@ function DropdownShell({
         boxShadow: token('elevation.shadow.overlay', '0 8px 24px -4px rgba(9,30,66,0.18)'),
         maxHeight: 'calc(100vh - 200px)',
         overflowY: 'auto',
-        fontFamily: '"Atlassian Sans", ui-sans-serif, system-ui, sans-serif',
+        fontFamily: 'var(--ds-font-family-sans, ui-sans-serif, system-ui, sans-serif)',
         fontSize: 14,
       }}
     >
@@ -225,23 +226,13 @@ function DropdownShell({
             </span>
           )}
           {hasSelections && onClear && (
-            <button
-              type="button"
+            <Button
+              appearance="link"
+              spacing="none"
               onClick={onClear}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: token('color.link', '#0C66E4'),
-                fontSize: 12,
-                fontWeight: 500,
-                cursor: 'pointer',
-                padding: '0 4px',
-                fontFamily: 'inherit',
-                marginLeft: 'auto',
-              }}
             >
               Clear
-            </button>
+            </Button>
           )}
         </div>
       )}
@@ -648,27 +639,14 @@ export function BasicFilterBar({
 
         {/* Clear all — only when something is active */}
         {hasAny && (
-          <button
-            type="button"
+          <Button
+            appearance="subtle"
+            spacing="compact"
+            iconBefore={CrossCircleIcon}
             onClick={() => onChange(emptyFilterValue)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              height: 32,
-              padding: '0 8px',
-              border: 'none',
-              background: 'transparent',
-              color: token('color.text.subtle', '#42526E'),
-              fontSize: 13,
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              borderRadius: 3,
-            }}
           >
-            <CrossCircleIcon label="" size="small" />
             Clear all
-          </button>
+          </Button>
         )}
       </div>
     </div>

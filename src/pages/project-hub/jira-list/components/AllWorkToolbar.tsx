@@ -1601,7 +1601,7 @@ export function AllWorkToolbar({
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              gap: 12,
+              gap: 16,
               padding: "0 4px",
               fontSize: 12,
               color: "var(--ds-text-subtlest, #6B778C)",

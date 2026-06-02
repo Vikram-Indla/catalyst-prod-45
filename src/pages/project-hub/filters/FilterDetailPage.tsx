@@ -114,23 +114,14 @@ export default function FilterDetailPage() {
         borderBottom: `1px solid ${token('color.border')}`,
         flexShrink: 0,
       }}>
-        <button
+        <Button
+          appearance="subtle"
+          spacing="compact"
+          iconBefore={ArrowLeft}
           onClick={() => navigate(backHref)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: token('color.text.subtle'),
-            fontSize: 13,
-            padding: '4px 0',
-          }}
         >
-          <ArrowLeft size="small" />
           Filters
-        </button>
+        </Button>
         <span style={{ color: token('color.text.subtlest'), fontSize: 13 }}>/</span>
         <span style={{ fontSize: 13, color: token('color.text.subtle') }}>{filter.name}</span>
       </div>
@@ -321,12 +312,13 @@ export default function FilterDetailPage() {
             fontSize: 14,
             marginBottom: 24,
           }}>
-            No JQL query saved — <button
+            No JQL query saved — <Button
+              appearance="link"
+              spacing="none"
               onClick={() => setEditOpen(true)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.link'), fontSize: 14 }}
             >
               add one now
-            </button>
+            </Button>
           </div>
         )}
 

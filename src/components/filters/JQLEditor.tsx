@@ -124,7 +124,7 @@ export function JQLEditor({
           resize: 'vertical',
           padding: '8px 12px',
           fontSize: 13,
-          fontFamily: 'monospace',
+          fontFamily: 'var(--ds-font-family-monospace, monospace)',
           lineHeight: 1.5,
           color: token('color.text'),
           background: `var(--ds-surface, #FFFFFF)`,

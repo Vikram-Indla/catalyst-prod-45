@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import AkDynamicTable from '@atlaskit/dynamic-table';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import AkAvatar from '@atlaskit/avatar';
@@ -133,8 +133,11 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           {
             key: 'star',
             content: (
-              <button
-                aria-label={isStarred ? 'Unstar filter' : 'Star filter'}
+              <IconButton
+                icon={isStarred ? Star : StarOff}
+                label={isStarred ? 'Unstar filter' : 'Star filter'}
+                appearance="subtle"
+                spacing="compact"
                 onClick={() => {
                   if (!currentUserId) return;
                   starFilter.mutate({
@@ -143,20 +146,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                     userId: currentUserId,
                   });
                 }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: 4,
-                  color: isStarred
-                    ? token('color.icon.warning')
-                    : token('color.icon.subtle'),
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                {isStarred ? <Star size="small" /> : <StarOff size="small" />}
-              </button>
+              />
             ),
           },
           {
@@ -184,7 +174,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                     style={{
                       fontSize: 11,
                       color: token('color.text.subtlest'),
-                      fontFamily: 'var(--cp-font-mono, monospace)',
+                      fontFamily: 'var(--ds-font-family-monospace, monospace)',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
