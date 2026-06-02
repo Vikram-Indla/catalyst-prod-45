@@ -13,7 +13,10 @@ import {
   useToggleFilterBoardLink,
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import Textfield from '@atlaskit/textfield';
+import Select from '@atlaskit/select';
+import { supabase } from '@/integrations/supabase/client';
 import { FilterSaveModal } from './FilterSaveModal';
 import { FilterVersionHistory } from './FilterVersionHistory';
 import { TransferOwnershipModal } from './TransferOwnershipModal';
@@ -28,6 +31,11 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const [historyOpen, setHistoryOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
+  const [createBoardOpen, setCreateBoardOpen] = useState(false);
+  const [boardName, setBoardName] = useState('');
+  const [boardType, setBoardType] = useState<{ label: string; value: string }>({ label: 'Kanban', value: 'kanban' });
+  const [creatingBoard, setCreatingBoard] = useState(false);
+  const navigate = useNavigate();
 
   const { key: projectKey } = useParams<{ key: string }>();
 
@@ -86,6 +94,14 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
             </DropdownItem>
           )}
         </DropdownItemGroup>
+
+        {isOwner && (
+          <DropdownItemGroup>
+            <DropdownItem onClick={() => { setBoardName(`${filter.name} board`); setCreateBoardOpen(true); }}>
+              Create board from filter
+            </DropdownItem>
+          </DropdownItemGroup>
+        )}
 
         {/* Board link items — one per board (O10) */}
         {boards.length > 0 && isOwner && (
@@ -172,6 +188,91 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
           onClose={() => setTransferOpen(false)}
         />
       )}
+
+      <ModalTransition>
+        {createBoardOpen && (
+          <ModalDialog onClose={() => setCreateBoardOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle>Create board from filter</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4, color: token('color.text.subtle') }}>
+                    Board name
+                  </label>
+                  <Textfield
+                    autoFocus
+                    value={boardName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBoardName(e.target.value)}
+                    placeholder="e.g. Sprint board"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4, color: token('color.text.subtle') }}>
+                    Board type
+                  </label>
+                  <Select
+                    options={[
+                      { label: 'Kanban', value: 'kanban' },
+                      { label: 'Scrum', value: 'scrum' },
+                    ]}
+                    value={boardType}
+                    onChange={(opt: any) => opt && setBoardType(opt)}
+                    menuPosition="fixed"
+                  />
+                </div>
+                <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
+                  The board will use the JQL from <strong>{filter.name}</strong> to populate its issues.
+                </p>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setCreateBoardOpen(false)} isDisabled={creatingBoard}>
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                isDisabled={!boardName.trim() || creatingBoard}
+                isLoading={creatingBoard}
+                onClick={async () => {
+                  setCreatingBoard(true);
+                  try {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    const { data: board, error } = await (supabase as any)
+                      .from('boards')
+                      .insert({
+                        name: boardName.trim(),
+                        board_type: boardType.value,
+                        filter_id: filter.id,
+                        jira_project_key: projectKey?.toUpperCase() ?? null,
+                        created_by: user?.id ?? null,
+                      })
+                      .select('id')
+                      .single();
+                    if (error) throw error;
+                    const nextBoardIds = [...filter.used_by_board_ids, board.id];
+                    await (supabase as any)
+                      .from('ph_saved_filters')
+                      .update({ used_by_board_ids: nextBoardIds })
+                      .eq('id', filter.id);
+                    setCreateBoardOpen(false);
+                    if (projectKey && board?.id) {
+                      navigate(`/project-hub/${projectKey}/board/${board.id}`);
+                    }
+                  } catch (e: any) {
+                    console.error('Failed to create board:', e);
+                  } finally {
+                    setCreatingBoard(false);
+                  }
+                }}
+              >
+                Create board
+              </Button>
+            </ModalFooter>
+          </ModalDialog>
+        )}
+      </ModalTransition>
     </>
   );
 }
