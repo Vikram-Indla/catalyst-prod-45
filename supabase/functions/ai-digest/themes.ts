@@ -46,15 +46,21 @@ export interface ThemesResponse {
 }
 
 /**
- * Deterministic hash of (issue_key, updated_at) tuples — drives cache
- * invalidation. When a new issue arrives or an existing one's updated_at
- * changes, the signature diverges from cache's and we re-run.
+ * Deterministic hash of (issue_key, summary, status, issue_type) tuples —
+ * drives cache invalidation. We deliberately hash the SEMANTIC fields the
+ * clustering actually consumes, NOT jira_updated_at: Jira bumps updated_at on
+ * cosmetic re-syncs (re-index, watcher change, no-op webhook) which would
+ * otherwise bust the cache and force a full Gemini re-run even when nothing
+ * themable changed. The signature now diverges only when a clusterable field
+ * (new/removed issue, status, summary, or type) actually changes. (2026-06-02)
+ *
+ * Exported for unit testing (src/test/edge/ai-digest-themes-signature.test.ts).
  */
-async function computeIssuesSignature(
-  issues: Array<{ issue_key: string; updated_at: string }>,
+export async function computeIssuesSignature(
+  issues: Array<{ issue_key: string; summary: string; status: string; issue_type: string }>,
 ): Promise<string> {
   const parts = issues
-    .map(i => `${i.issue_key}:${i.updated_at}`)
+    .map(i => `${i.issue_key}:${i.summary}:${i.status}:${i.issue_type}`)
     .sort()
     .join('|');
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(parts));
@@ -368,10 +374,16 @@ export async function handleThemesRequest(args: {
   }
 
   // ── 3. Cache check via (user_id, scope_mode, project_key) ───────────────
-  // Adapt our row shape (jira_updated_at) to the signature helper's
-  // generic {updated_at} contract — same hash semantics either way.
+  // Signature hashes the SEMANTIC fields clustering consumes (summary, status,
+  // issue_type) — NOT jira_updated_at — so cosmetic Jira re-syncs don't bust
+  // the cache. See computeIssuesSignature for rationale. (2026-06-02)
   const signature = await computeIssuesSignature(
-    issueRows.map(i => ({ issue_key: i.issue_key, updated_at: i.jira_updated_at })),
+    issueRows.map(i => ({
+      issue_key: i.issue_key,
+      summary: i.summary,
+      status: i.status,
+      issue_type: i.issue_type,
+    })),
   );
   // Cache check — runs for both normal loads AND forceRefresh.
   // forceRefresh bypasses TTL but NOT the no-delta guard: if the user hits
