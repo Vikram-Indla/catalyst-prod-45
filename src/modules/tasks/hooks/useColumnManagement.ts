@@ -41,7 +41,7 @@ export function useCreateColumn() {
 
       // Get max position
       const { data: maxPosData } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('position')
         .order('position', { ascending: false })
         .limit(1)
@@ -54,7 +54,7 @@ export function useCreateColumn() {
 
       // Insert new status
       const { data, error } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .insert({
           name: name.trim(),
           slug,
@@ -106,7 +106,7 @@ export function useUpdateColumn() {
       }
 
       const { data, error } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .update(updates)
         .eq('id', id)
         .select()
@@ -137,7 +137,7 @@ export function useDeleteColumn() {
     mutationFn: async ({ id, moveTasksToBacklog }: { id: string; moveTasksToBacklog?: boolean }) => {
       // Check if this is a system column
       const { data: status } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('is_system, name')
         .eq('id', id)
         .single();
@@ -149,7 +149,7 @@ export function useDeleteColumn() {
       // Get backlog status ID for moving tasks
       if (moveTasksToBacklog) {
         const { data: backlog } = await supabase
-          .from('planner_statuses')
+          .from('task_statuses')
           .select('id')
           .eq('slug', 'backlog')
           .single();
@@ -157,7 +157,7 @@ export function useDeleteColumn() {
         if (backlog) {
           // Move tasks to backlog
           await supabase
-            .from('planner_tasks')
+            .from('tasks')
             .update({ status_id: backlog.id })
             .eq('status_id', id);
         }
@@ -165,7 +165,7 @@ export function useDeleteColumn() {
 
       // Delete the status
       const { error } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .delete()
         .eq('id', id);
 
@@ -195,7 +195,7 @@ export function useReorderColumns() {
       // Update each column's position
       const updates = columns.map(({ id, position }) =>
         supabase
-          .from('planner_statuses')
+          .from('task_statuses')
           .update({ position, sort_order: position, updated_at: new Date().toISOString() })
           .eq('id', id)
       );
@@ -225,7 +225,7 @@ export function useReorderColumns() {
 // ═══════════════════════════════════════════════════════════════════════════════
 export function useColumnTaskCount(statusId: string) {
   return supabase
-    .from('planner_tasks')
+    .from('tasks')
     .select('*', { count: 'exact', head: true })
     .eq('status_id', statusId)
     .is('deleted_at', null);

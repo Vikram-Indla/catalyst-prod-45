@@ -19,7 +19,7 @@
  *     - isFlagged  ← task.is_starred
  *     - raw        ← full KanbanTask
  *
- *   Columns — derived dynamically from `planner_statuses`. Each row becomes
+ *   Columns — derived dynamically from `task_statuses`. Each row becomes
  *     one column with `id: status.id`. `is_completed_status` → category
  *     'done'; `slug === 'backlog'` (or `is_default`) → 'todo'; everything
  *     else → 'in_progress'.

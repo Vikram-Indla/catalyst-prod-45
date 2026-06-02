@@ -35,13 +35,13 @@ export function useCompleteMyTaskWithUndo() {
     mutationFn: async ({ taskId }: CompleteTaskParams) => {
       // Get done status
       const { data: doneStatus } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('id')
         .eq('is_done', true)
         .single();
 
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({
           status_id: doneStatus?.id,
           completed_at: new Date().toISOString(),

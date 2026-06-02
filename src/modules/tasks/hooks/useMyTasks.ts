@@ -38,7 +38,7 @@ export function useMyTasks(filters: FilterConfig = {}) {
     queryFn: async (): Promise<MyTask[]> => {
       // The view already filters by auth.uid() for user involvement
       let query = supabase
-        .from('planner_my_tasks')
+        .from('tasks')
         .select('id, task_key, title, status_slug, priority, due_date, sort_order, time_section, workstream_slug, involvement_type, assignee_id, workstream_id, status_id, created_at')
         .order('due_date', { ascending: true, nullsFirst: false })
         .order('sort_order', { ascending: true });
@@ -82,7 +82,7 @@ export function useMyTasksSummary() {
     queryFn: async (): Promise<TaskSummary> => {
       // The view already filters by auth.uid()
       const { data, error } = await supabase
-        .from('planner_my_tasks_summary')
+        .from('tasks_summary')
         .select('*')
         .maybeSingle();
 
@@ -146,9 +146,9 @@ export function useMyTasksActivity(limit = 10) {
         .from('planner_activity_log')
         .select(`
           *,
-          planner_tasks!inner(task_key, title, assignee_id)
+          tasks!inner(task_key, title, assignee_id)
         `)
-        .eq('planner_tasks.assignee_id', user?.id)
+        .eq('tasks.assignee_id', user?.id)
         .order('created_at', { ascending: false })
         .limit(limit);
 
@@ -170,7 +170,7 @@ export function useCreateMyTask() {
     mutationFn: async (payload: CreateTaskPayload) => {
       // Generate task key
       const { data: lastTask, error: lastTaskError } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .select('task_key')
         .order('created_at', { ascending: false })
         .limit(1)
@@ -183,7 +183,7 @@ export function useCreateMyTask() {
       const newKey = `PLN-${String(lastNum + 1).padStart(3, '0')}`;
 
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .insert({
           ...payload,
           key: newKey,
@@ -223,7 +223,7 @@ export function useUpdateMyTask() {
     mutationFn: async ({ id, ...updates }: UpdateTaskPayload) => {
       // Get old values for activity log
       const { data: oldTask, error: oldTaskError } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .select('*')
         .eq('id', id)
         .single();
@@ -234,7 +234,7 @@ export function useUpdateMyTask() {
       // If status changed to done, set completed_at
       if (updates.status_id) {
         const { data: status, error: statusError } = await supabase
-          .from('planner_statuses')
+          .from('task_statuses')
           .select('is_done')
           .eq('id', updates.status_id)
           .single();
@@ -248,7 +248,7 @@ export function useUpdateMyTask() {
       }
 
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update(updateData)
         .eq('id', id)
         .select()
@@ -293,7 +293,7 @@ export function useBulkUpdateMyTasks() {
       // Handle completion status
       if (updates.status_id) {
         const { data: status, error: statusError } = await supabase
-          .from('planner_statuses')
+          .from('task_statuses')
           .select('is_done')
           .eq('id', updates.status_id)
           .single();
@@ -307,7 +307,7 @@ export function useBulkUpdateMyTasks() {
       }
 
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update(updateData)
         .in('id', task_ids)
         .select();
@@ -341,7 +341,7 @@ export function useDeleteMyTask() {
   return useMutation({
     mutationFn: async (taskId: string) => {
       const { error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .delete()
         .eq('id', taskId);
 
@@ -364,14 +364,14 @@ export function useCompleteMyTask() {
     mutationFn: async (taskId: string) => {
       // Get done status
       const { data: doneStatus, error: doneStatusError } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('id')
         .eq('is_done', true)
         .single();
       if (doneStatusError) throw doneStatusError;
 
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({
           status_id: doneStatus?.id,
           completed_at: new Date().toISOString(),
@@ -423,7 +423,7 @@ export function useReorderMyTask() {
       // Batch update
       for (const update of updates) {
         await supabase
-          .from('planner_tasks')
+          .from('tasks')
           .update({ sort_order: update.sort_order })
           .eq('id', update.id);
       }
@@ -442,7 +442,7 @@ export function useMyWorkstreams() {
     queryKey: ['planner', 'workstreams', 'filter'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('planner_workstreams')
+        .from('task_workstreams')
         .select('id, name, color')
         .eq('is_active', true)
         .order('name');

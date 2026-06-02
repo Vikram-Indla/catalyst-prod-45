@@ -94,7 +94,7 @@ export const LabelsDropdown = memo(function LabelsDropdown({ task, taskLabels, w
       if (isAssigned) {
         // Remove label
         const { error } = await supabase
-          .from('planner_task_labels')
+          .from('task_label_assignments_v2')
           .delete()
           .eq('task_id', task.id)
           .eq('label_id', labelId);
@@ -105,7 +105,7 @@ export const LabelsDropdown = memo(function LabelsDropdown({ task, taskLabels, w
         // Add label
         const { data: { user } } = await supabase.auth.getUser();
         const { error } = await supabase
-          .from('planner_task_labels')
+          .from('task_label_assignments_v2')
           .insert({
             task_id: task.id,
             label_id: labelId,
@@ -139,7 +139,7 @@ export const LabelsDropdown = memo(function LabelsDropdown({ task, taskLabels, w
 
     try {
       const { error } = await supabase
-        .from('planner_task_labels')
+        .from('task_label_assignments_v2')
         .delete()
         .eq('task_id', task.id);
 
@@ -172,7 +172,7 @@ export const LabelsDropdown = memo(function LabelsDropdown({ task, taskLabels, w
         // Also assign the new label to this task
         const { data: { user } } = await supabase.auth.getUser();
         const { error } = await supabase
-          .from('planner_task_labels')
+          .from('task_label_assignments_v2')
           .insert({
             task_id: task.id,
             label_id: newLabel.id,

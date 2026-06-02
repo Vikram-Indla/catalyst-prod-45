@@ -16,7 +16,7 @@ export const useLabels = () => {
   const fetchLabels = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('planner_labels')
+        .from('task_labels_registry')
         .select('*')
         .order('name');
 
@@ -36,7 +36,7 @@ export const useLabels = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       const { data, error } = await supabase
-        .from('planner_labels')
+        .from('task_labels_registry')
         .insert({
           name: name.trim(),
           color,
@@ -68,7 +68,7 @@ export const useLabels = () => {
   const deleteLabel = async (labelId: string): Promise<boolean> => {
     try {
       const { error } = await supabase
-        .from('planner_labels')
+        .from('task_labels_registry')
         .delete()
         .eq('id', labelId);
 

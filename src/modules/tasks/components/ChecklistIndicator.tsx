@@ -23,7 +23,7 @@ export function ChecklistIndicator({ storyId, className }: ChecklistIndicatorPro
     queryKey: ['checklist-stats', storyId],
     queryFn: async (): Promise<ChecklistStats> => {
       const { data, error } = await supabase
-        .from('planner_checklist_items')
+        .from('task_checklist_items')
         .select('is_completed, is_header')
         .eq('story_id', storyId);
 

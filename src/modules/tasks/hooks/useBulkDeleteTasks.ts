@@ -9,7 +9,7 @@ export function useBulkDeleteTasks() {
     mutationFn: async (taskIds: string[]) => {
       // Soft delete by setting deleted_at
       const { error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({ deleted_at: new Date().toISOString() })
         .in('id', taskIds);
 

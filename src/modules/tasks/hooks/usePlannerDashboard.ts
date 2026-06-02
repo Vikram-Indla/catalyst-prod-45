@@ -25,7 +25,7 @@ export function useDashboardMetrics() {
     queryKey: ['planner', 'dashboard', 'metrics'],
     queryFn: async (): Promise<DashboardMetrics> => {
       const { data, error } = await supabase
-        .from('planner_dashboard_metrics')
+        .from('tasks')
         .select('*')
         .single();
       
@@ -46,7 +46,7 @@ export function useStatusDistribution() {
     queryKey: ['planner', 'dashboard', 'status-distribution'],
     queryFn: async (): Promise<StatusDistribution[]> => {
       const { data, error } = await supabase
-        .from('planner_dashboard_status_distribution')
+        .from('tasks')
         .select('*')
         .order('position');
       
@@ -67,7 +67,7 @@ export function useWorkstreamHealth() {
     queryKey: ['planner', 'dashboard', 'workstream-health'],
     queryFn: async (): Promise<WorkstreamHealth[]> => {
       const { data, error } = await supabase
-        .from('planner_dashboard_workstream_health')
+        .from('tasks')
         .select('*');
       
       if (error) throw error;
@@ -87,7 +87,7 @@ export function useUpcomingDeadlines() {
     queryKey: ['planner', 'dashboard', 'upcoming-deadlines'],
     queryFn: async (): Promise<UpcomingDeadline[]> => {
       const { data, error } = await supabase
-        .from('planner_dashboard_upcoming_deadlines')
+        .from('tasks')
         .select('*');
       
       if (error) throw error;
@@ -107,7 +107,7 @@ export function useTeamWorkload() {
     queryKey: ['planner', 'dashboard', 'team-workload'],
     queryFn: async (): Promise<TeamWorkload[]> => {
       const { data, error } = await supabase
-        .from('planner_dashboard_team_workload')
+        .from('tasks')
         .select('*');
       
       if (error) throw error;

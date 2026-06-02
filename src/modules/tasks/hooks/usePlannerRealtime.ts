@@ -32,7 +32,7 @@ export function usePlannerRealtime(teamId?: string | null) {
         {
           event: '*',
           schema: 'public',
-          table: 'planner_tasks',
+          table: 'tasks',
           ...(teamId ? { filter: `workstream_id=eq.${teamId}` } : {}),
         },
         () => {

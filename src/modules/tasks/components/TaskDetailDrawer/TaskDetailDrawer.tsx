@@ -61,12 +61,12 @@ function useTaskDetail(taskId: string | null) {
     queryFn: async () => {
       if (!taskId) return null;
       
-      const { data, error } = await typedQuery('planner_tasks')
+      const { data, error } = await typedQuery('tasks')
         .select(`
           *,
-          status:planner_statuses(*),
-          workstream:planner_workstreams(id, name),
-          assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
+          status:task_statuses(*),
+          workstream:task_workstreams(id, name),
+          assignee:profiles!tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .eq('id', taskId)
         .single();
@@ -227,7 +227,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
       let keyPrefix = 'TSK';
       if (workstreamId) {
         const { data: wsData } = await supabase
-          .from('planner_workstreams')
+          .from('task_workstreams')
           .select('key_prefix')
           .eq('id', workstreamId)
           .maybeSingle();
@@ -239,7 +239,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
       
       // 2. Get max sequence number for this workstream
       const { data: existingTasks } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .select('task_key')
         .eq('workstream_id', workstreamId || '')
         .like('task_key', `${keyPrefix}-%`);
@@ -260,7 +260,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
       
       // 3. Insert duplicated task
       const { data: newTask, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .insert([{
           task_key: newTaskKey,
           title: task.title, // No "(Copy)" suffix per requirement
@@ -302,7 +302,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
     try {
       const deletedKey = task?.task_key || 'Task';
       const { error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .delete()
         .eq('id', effectiveTaskId);
       

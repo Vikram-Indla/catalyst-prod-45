@@ -41,7 +41,7 @@ export function QuickAddPopover({
       let statusId = defaultStatusId;
       if (!statusId) {
         const { data: statuses } = await supabase
-          .from('planner_statuses')
+          .from('task_statuses')
           .select('id')
           .order('position', { ascending: true })
           .limit(1);
@@ -52,7 +52,7 @@ export function QuickAddPopover({
       const taskKey = `TASK-${Date.now().toString(36).toUpperCase()}`;
       
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .insert([{
           key: taskKey,
           task_key: taskKey,

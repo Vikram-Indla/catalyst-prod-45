@@ -20,7 +20,7 @@ function useStatuses() {
     queryKey: ['planner-statuses'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('*')
         .order('position');
       if (error) throw error;

@@ -153,7 +153,7 @@ export function useTaskListStats(workstreamId?: string | null, assigneeId?: stri
     queryKey: ['planner-task-list-stats', workstreamId, assigneeId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .rpc('planner_task_list_stats', {
+        .rpc('task_list_stats', {
           p_workstream_id: workstreamId || null,
           p_assignee_id: assigneeId || null,
         });

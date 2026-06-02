@@ -39,13 +39,13 @@ async function generateTaskKey(workstreamId?: string): Promise<string> {
   }
   
   // Fallback to legacy PLN-based keys for tasks without workstream
-  const { data, error } = await supabase.rpc('generate_planner_task_key');
+  const { data, error } = await supabase.rpc('generate_task_key');
   
   if (error || !data) {
     console.error('Error generating task key:', error);
     // Fallback: query max and increment (but DB sequence is preferred)
     const { data: maxTask } = await supabase
-      .from('planner_tasks')
+      .from('tasks')
       .select('task_key')
       .like('task_key', 'PLN-%')
       .order('created_at', { ascending: false })
@@ -84,7 +84,7 @@ export function useCreateTaskMutation() {
       let statusId = input.status_id;
       if (!statusId) {
         const { data: backlogStatus } = await supabase
-          .from('planner_statuses')
+          .from('task_statuses')
           .select('id')
           .eq('slug', 'backlog')
           .single();
@@ -93,7 +93,7 @@ export function useCreateTaskMutation() {
       
       // Insert task
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .insert({
           task_key: taskKey,
           title: input.title,

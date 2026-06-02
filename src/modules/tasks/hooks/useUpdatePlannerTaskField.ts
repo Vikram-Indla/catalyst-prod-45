@@ -22,14 +22,14 @@ export function useUpdatePlannerTaskField() {
   const mutation = useMutation({
     mutationFn: async ({ taskId, field, value }: UpdateTaskFieldInput) => {
       const { data, error } = await (supabase
-        .from('planner_tasks') as any)
+        .from('tasks') as any)
         .update({ [field]: value, updated_at: new Date().toISOString() })
         .eq('id', taskId)
         .select(`
           *,
-          status:planner_statuses(*),
-          assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url),
-          workstream:planner_workstreams(id, name)
+          status:task_statuses(*),
+          assignee:profiles!tasks_assignee_id_fkey(id, full_name, email, avatar_url),
+          workstream:task_workstreams(id, name)
         `)
         .single();
 

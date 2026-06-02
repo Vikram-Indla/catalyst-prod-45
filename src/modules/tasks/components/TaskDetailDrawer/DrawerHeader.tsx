@@ -56,7 +56,7 @@ function useStatuses() {
     queryKey: ['drawer-statuses'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('*')
         .order('position');
       if (error) throw error;
@@ -97,7 +97,7 @@ function useWorkstreams() {
 
       if (canAccessAll) {
         const { data, error } = await supabase
-          .from('planner_workstreams')
+          .from('task_workstreams')
           .select('id, name')
           .eq('is_active', true)
           .order('name');
@@ -109,7 +109,7 @@ function useWorkstreams() {
         .from('workstream_members')
         .select(`
           workstream_id,
-          workstream:planner_workstreams(id, name, is_active)
+          workstream:task_workstreams(id, name, is_active)
         `)
         .eq('user_id', user.id);
       

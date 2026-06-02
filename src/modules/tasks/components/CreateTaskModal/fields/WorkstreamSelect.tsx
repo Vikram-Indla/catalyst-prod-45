@@ -41,7 +41,7 @@ export function WorkstreamSelect({ value, onChange, error, className }: Workstre
       if (canAccessAll) {
         // Admin/super_admin: fetch all active workstreams
         const { data, error } = await supabase
-          .from('planner_workstreams')
+          .from('task_workstreams')
           .select('id, name, color')
           .eq('is_active', true)
           .order('sort_order', { ascending: true });
@@ -55,7 +55,7 @@ export function WorkstreamSelect({ value, onChange, error, className }: Workstre
         .from('workstream_members')
         .select(`
           workstream_id,
-          workstream:planner_workstreams(id, name, color, is_active)
+          workstream:task_workstreams(id, name, color, is_active)
         `)
         .eq('user_id', user.id);
       

@@ -111,7 +111,7 @@ function useTimelineTasks() {
     queryKey: ['timeline-tasks-dashboard'],
     queryFn: async (): Promise<TimelineTask[]> => {
       const { data: tasks, error } = await (supabase
-        .from('planner_tasks') as any)
+        .from('tasks') as any)
         .select(`
           id,
           task_key,
@@ -122,9 +122,9 @@ function useTimelineTasks() {
           start_date,
           due_date,
           progress,
-          status:planner_statuses(slug, name),
-          workstream:planner_workstreams(id, name, color),
-          assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name)
+          status:task_statuses(slug, name),
+          workstream:task_workstreams(id, name, color),
+          assignee:profiles!tasks_assignee_id_fkey(id, full_name)
         `)
         .is('deleted_at', null)
         .order('start_date', { ascending: true, nullsFirst: false });

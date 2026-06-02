@@ -1,6 +1,6 @@
 // ============================================================
 // PLANNER STATUSES HOOK
-// Fetches status options from planner_statuses table
+// Fetches status options from task_statuses table
 // ============================================================
 
 import { useQuery } from '@tanstack/react-query';
@@ -19,7 +19,7 @@ export function usePlannerStatuses() {
     queryKey: ['planner-statuses'],
     queryFn: async (): Promise<PlannerStatus[]> => {
       const { data, error } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('id, slug, name, color, sort_order')
         .order('sort_order', { ascending: true });
 

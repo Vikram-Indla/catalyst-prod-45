@@ -543,7 +543,7 @@ export const HomeContentV2 = memo(function HomeContentV2() {
         'story': 'stories',
         'feature': 'features',
         'epic': 'epics',
-        'task': 'work_manager_tasks',
+        'task': 'tasks',
       };
       
       const tableName = tableMap[itemType];

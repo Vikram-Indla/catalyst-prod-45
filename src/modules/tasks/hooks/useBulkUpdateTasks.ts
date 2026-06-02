@@ -13,7 +13,7 @@ export function useBulkUpdateTasks() {
   return useMutation({
     mutationFn: async ({ taskIds, updates }: BulkUpdateInput) => {
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({ ...updates, updated_at: new Date().toISOString() })
         .in('id', taskIds)
         .select();

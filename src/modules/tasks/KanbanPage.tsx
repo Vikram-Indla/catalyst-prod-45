@@ -11,13 +11,13 @@
  *     view-settings controls, filter popovers, group-by, and the
  *     Pragmatic drag-drop stack for free.
  *
- *   - Columns derive dynamically from `planner_statuses` — users who
+ *   - Columns derive dynamically from `task_statuses` — users who
  *     have added custom statuses (e.g. "Review", "Blocked") see them as
  *     columns without any config change.
  *
  *   - Drag between columns persists a status_id + position change via
  *     useMoveKanbanTask, which handles both within-column reorder (RPC
- *     reorder_planner_tasks_up/down) and cross-column moves.
+ *     reorder_tasks_up/down) and cross-column moves.
  *
  *   - Clicking a card still opens the TaskDetailDrawer (full edit
  *     surface), preserved verbatim from the legacy implementation.

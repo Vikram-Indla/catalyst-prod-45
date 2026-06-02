@@ -19,7 +19,7 @@ export function useRescheduleTask() {
   return useMutation({
     mutationFn: async ({ taskId, newDate }: RescheduleInput) => {
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({ due_date: format(newDate, 'yyyy-MM-dd') })
         .eq('id', taskId)
         .select()

@@ -27,7 +27,7 @@ export function usePlannerTaskRealtime({ taskId, onUpdate, onDelete }: UsePlanne
         {
           event: 'UPDATE',
           schema: 'public',
-          table: 'planner_tasks',
+          table: 'tasks',
           filter: `id=eq.${taskId}`,
         },
         (payload) => {
@@ -59,7 +59,7 @@ export function usePlannerTaskRealtime({ taskId, onUpdate, onDelete }: UsePlanne
         {
           event: 'DELETE',
           schema: 'public',
-          table: 'planner_tasks',
+          table: 'tasks',
           filter: `id=eq.${taskId}`,
         },
         () => {

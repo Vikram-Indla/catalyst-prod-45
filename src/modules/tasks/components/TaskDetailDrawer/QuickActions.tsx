@@ -42,7 +42,7 @@ function useWorkstreams() {
 
       if (canAccessAll) {
         const { data, error } = await supabase
-          .from('planner_workstreams')
+          .from('task_workstreams')
           .select('id, name')
           .eq('is_active', true)
           .order('name');
@@ -55,7 +55,7 @@ function useWorkstreams() {
         .from('workstream_members')
         .select(`
           workstream_id,
-          workstream:planner_workstreams(id, name, is_active)
+          workstream:task_workstreams(id, name, is_active)
         `)
         .eq('user_id', user.id);
       
@@ -106,7 +106,7 @@ export function QuickActions({
     
     try {
       const { error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({ workstream_id: workstreamId })
         .eq('id', taskId);
       
@@ -137,7 +137,7 @@ export function QuickActions({
     
     try {
       const { error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({ is_starred: newStarred })
         .eq('id', taskId);
       

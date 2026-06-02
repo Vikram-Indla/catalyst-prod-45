@@ -12,7 +12,7 @@ export function usePlanSubscription(planId: string | null) {
       .channel(`plan:${planId}`)
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'planhub_tasks', filter: `plan_id=eq.${planId}` },
+        { event: '*', schema: 'public', table: 'tasks', filter: `plan_id=eq.${planId}` },
         (payload) => {
           console.log('Task change:', payload);
           queryClient.invalidateQueries({ queryKey: ['planhub', 'tasks', planId] });

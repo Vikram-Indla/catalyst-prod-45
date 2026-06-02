@@ -23,7 +23,7 @@ export function useCalendarTasksRealtime({ startDate, endDate }: UseCalendarReal
         {
           event: '*',
           schema: 'public',
-          table: 'planner_tasks',
+          table: 'tasks',
         },
         (payload) => {
           // Invalidate planner tasks to trigger refetch

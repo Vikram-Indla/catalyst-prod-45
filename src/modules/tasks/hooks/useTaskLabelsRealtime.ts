@@ -7,7 +7,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 /**
- * Subscribes to planner_task_labels changes and invalidates the task-labels-map query.
+ * Subscribes to task_label_assignments_v2 changes and invalidates the task-labels-map query.
  * This ensures the Task List labels column updates in realtime when labels are assigned/unassigned.
  */
 export function useTaskLabelsRealtime() {
@@ -33,7 +33,7 @@ export function useTaskLabelsRealtime() {
         {
           event: '*',
           schema: 'public',
-          table: 'planner_task_labels',
+          table: 'task_label_assignments_v2',
         },
         () => {
           scheduleInvalidate();

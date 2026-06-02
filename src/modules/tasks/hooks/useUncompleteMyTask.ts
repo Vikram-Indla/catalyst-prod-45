@@ -22,13 +22,13 @@ export function useUncompleteMyTask() {
     mutationFn: async ({ taskId }: UncompleteTaskParams) => {
       // Get the "In Progress" status (or any non-done status)
       const { data: inProgressStatus } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('id')
         .eq('slug', 'progress')
         .single();
 
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({
           status_id: inProgressStatus?.id,
           completed_at: null,

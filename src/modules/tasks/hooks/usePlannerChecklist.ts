@@ -32,7 +32,7 @@ export function usePlannerChecklist(taskId: string | undefined) {
       if (!taskId) return [];
       
       const { data, error } = await supabase
-        .from('planner_task_checklist_items')
+        .from('task_checklist_items_v2')
         .select('*')
         .eq('task_id', taskId)
         .order('sort_order', { ascending: true });
@@ -64,7 +64,7 @@ export function usePlannerChecklistRealtime(taskId: string | undefined) {
         {
           event: '*',
           schema: 'public',
-          table: 'planner_task_checklist_items',
+          table: 'task_checklist_items_v2',
           filter: `task_id=eq.${taskId}`,
         },
         () => {
@@ -90,7 +90,7 @@ export function useToggleChecklistItem() {
       const { data: userData } = await supabase.auth.getUser();
       
       const { error } = await supabase
-        .from('planner_task_checklist_items')
+        .from('task_checklist_items_v2')
         .update({
           is_completed: isCompleted,
           completed_at: isCompleted ? new Date().toISOString() : null,
@@ -127,7 +127,7 @@ export function useAddChecklistItem() {
       const { data: userData } = await supabase.auth.getUser();
       
       const { error } = await supabase
-        .from('planner_task_checklist_items')
+        .from('task_checklist_items_v2')
         .insert({
           task_id: taskId,
           content,
@@ -153,7 +153,7 @@ export function useDeleteChecklistItem() {
   return useMutation({
     mutationFn: async (itemId: string) => {
       const { error } = await supabase
-        .from('planner_task_checklist_items')
+        .from('task_checklist_items_v2')
         .delete()
         .eq('id', itemId);
 
@@ -183,7 +183,7 @@ export function useBulkInsertChecklist() {
       
       // First, delete existing items
       const { error: deleteError } = await supabase
-        .from('planner_task_checklist_items')
+        .from('task_checklist_items_v2')
         .delete()
         .eq('task_id', taskId);
 
@@ -199,7 +199,7 @@ export function useBulkInsertChecklist() {
       }));
 
       const { error: insertError } = await supabase
-        .from('planner_task_checklist_items')
+        .from('task_checklist_items_v2')
         .insert(insertItems);
 
       if (insertError) throw insertError;

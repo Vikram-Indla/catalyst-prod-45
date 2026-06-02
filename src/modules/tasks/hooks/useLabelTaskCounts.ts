@@ -15,7 +15,7 @@ export function useLabelTaskCounts() {
     queryKey: ['label-task-counts'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('planner_task_labels')
+        .from('task_label_assignments_v2')
         .select('label_id');
 
       if (error) {

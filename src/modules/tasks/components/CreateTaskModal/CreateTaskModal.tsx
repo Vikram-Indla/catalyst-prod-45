@@ -132,7 +132,7 @@ export function CreateTaskModal({
     }
 
     // Note: status is handled via status_id lookup - the mutation hook looks up
-    // the status_id from planner_statuses table based on slug (defaults to 'backlog')
+    // the status_id from task_statuses table based on slug (defaults to 'backlog')
     const input: CreateTaskInput = {
       title: title.trim(),
       description: description.trim() || undefined,

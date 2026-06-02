@@ -1,6 +1,6 @@
 // ============================================================
 // PLANNER TASKS HOOK
-// Fetches tasks from planner_tasks table and transforms to Planner format
+// Fetches tasks from tasks table and transforms to Planner format
 // Now unified with Kanban to use the same data source
 // ============================================================
 
@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { PlannerTask, TaskStatus, TaskPriority } from '../types';
 
-// Map planner_statuses to Planner TaskStatus
+// Map task_statuses to Planner TaskStatus
 const mapStatusFromPlannerStatuses = (statusName: string | null): TaskStatus => {
   const name = statusName?.toLowerCase() || '';
   
@@ -40,7 +40,7 @@ const mapPriority = (dbPriority: string | null): TaskPriority => {
   }
 };
 
-// Transform planner_tasks row to PlannerTask
+// Transform tasks row to PlannerTask
 const transformPlannerTask = (row: any): PlannerTask => ({
   id: row.id,
   // Use task_key first (proper sequential key), then fallback to key, then generate from UUID
@@ -71,12 +71,12 @@ export function usePlannerTasks(teamId?: string | null) {
     // Cache-buster: ensures UI picks up task_key mapping changes immediately
     queryKey: ['planner-tasks', teamId, 'v2-task-key'],
     queryFn: async () => {
-      let query = typedQuery('planner_tasks')
+      let query = typedQuery('tasks')
         .select(`
           *,
-          status:planner_statuses(*),
-          workstream:planner_workstreams(id, name, color, slug),
-          assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
+          status:task_statuses(*),
+          workstream:task_workstreams(id, name, color, slug),
+          assignee:profiles!tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
@@ -145,7 +145,7 @@ export function useUpdatePlannerTask() {
       }
 
       const { error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update(dbUpdates)
         .eq('id', id);
 
@@ -182,7 +182,7 @@ export function useDeletePlannerTask() {
     mutationFn: async (id: string) => {
       // Soft delete via backend function (bypasses RLS edge-cases)
       const { error } = await supabase
-        .rpc('soft_delete_planner_task', { p_task_id: id });
+        .rpc('soft_delete_task', { p_task_id: id });
 
       if (error) throw error;
       return { id };
@@ -221,7 +221,7 @@ export function useBulkDeletePlannerTasks() {
   return useMutation({
     mutationFn: async (ids: string[]) => {
       const { error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({ deleted_at: new Date().toISOString() })
         .in('id', ids);
 
@@ -259,7 +259,7 @@ export function useDuplicatePlannerTask() {
     mutationFn: async (task: PlannerTask) => {
       // Get the first status as default
       const { data: statuses } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('id')
         .order('position', { ascending: true })
         .limit(1);
@@ -270,7 +270,7 @@ export function useDuplicatePlannerTask() {
       const newKey = `PLN-${Date.now()}`;
       
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .insert([{
           key: newKey,
           task_key: newKey,

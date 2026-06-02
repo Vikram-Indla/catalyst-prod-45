@@ -49,7 +49,7 @@ export function ColumnActions({ column }: ColumnActionsProps) {
   const handleDelete = async () => {
     // Check for tasks in this column
     const { count } = await supabase
-      .from('planner_tasks')
+      .from('tasks')
       .select('*', { count: 'exact', head: true })
       .eq('status_id', column.id)
       .is('deleted_at', null);

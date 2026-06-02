@@ -179,8 +179,8 @@ export function useUnifiedHomeSummary(mode: HomeRoleMode, userId?: string) {
             supabase.from('stories').select('id', { count: 'exact', head: true }).is('deleted_at', null),
             supabase.from('stories').select('id', { count: 'exact', head: true }).is('deleted_at', null).not('assignee_id', 'is', null),
             supabase.from('features').select('id', { count: 'exact', head: true }).is('deleted_at', null),
-            supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true }).or('status.in.(Planned,In Progress),ready_for_sprint.eq.true'),
-            supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true }).in('status', ['Backlog', 'On Hold']),
+            supabase.from('tasks').select('id', { count: 'exact', head: true }).or('status.in.(Planned,In Progress),ready_for_sprint.eq.true'),
+            supabase.from('tasks').select('id', { count: 'exact', head: true }).in('status', ['Backlog', 'On Hold']),
           ]);
 
           const workedOn = (incidentsTotal.count || 0) + (storiesTotal.count || 0) + (featuresTotal.count || 0) + (tasksPlanned.count || 0);
@@ -236,11 +236,11 @@ export function useUnifiedHomeSummary(mode: HomeRoleMode, userId?: string) {
 
         case 'planner': {
           const [plannedResult, upcomingResult, pendingResult] = await Promise.all([
-            supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
+            supabase.from('tasks').select('id', { count: 'exact', head: true })
               .or('status.in.(Planned,In Progress),ready_for_sprint.eq.true'),
-            supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
+            supabase.from('tasks').select('id', { count: 'exact', head: true })
               .in('status', ['Backlog', 'On Hold']),
-            supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
+            supabase.from('tasks').select('id', { count: 'exact', head: true })
               .or('decision_required.eq.true,review_status.eq.pending'),
           ]);
 
@@ -701,7 +701,7 @@ async function fetchPlannerItems(params: {
   const { filters, search, sort, from, to, updatedRangeDate, userId, page, pageSize } = params;
 
   let query = supabase
-    .from('work_manager_tasks')
+    .from('tasks')
     .select(`
       id,
       key,
@@ -815,11 +815,11 @@ async function fetchPlannerItems(params: {
 
   // Fetch category counts
   const [plannedResult, upcomingResult, pendingResult] = await Promise.all([
-    supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
+    supabase.from('tasks').select('id', { count: 'exact', head: true })
       .or('status.in.(Planned,In Progress),ready_for_sprint.eq.true'),
-    supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
+    supabase.from('tasks').select('id', { count: 'exact', head: true })
       .in('status', ['Backlog', 'On Hold']),
-    supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
+    supabase.from('tasks').select('id', { count: 'exact', head: true })
       .or('decision_required.eq.true,review_status.eq.pending'),
   ]);
 

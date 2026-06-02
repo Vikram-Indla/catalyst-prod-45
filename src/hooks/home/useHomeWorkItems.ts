@@ -297,7 +297,7 @@ async function fetchStarredItems(params: {
   // Fetch tasks
   if (taskIds.length > 0) {
     const { data: tasks } = await supabase
-      .from('work_manager_tasks')
+      .from('tasks')
       .select('id, key, title, status, priority, blocked, updated_at, created_at, assignee_id, planned_date, ready_for_sprint, decision_required, review_status')
       .in('id', taskIds);
 
@@ -749,7 +749,7 @@ async function fetchPlanner(params: {
   const from = (page - 1) * pageSize;
 
   let query = supabase
-    .from('work_manager_tasks')
+    .from('tasks')
     .select(`
       id, key, title, status, priority, assignee_id, team_id, due_date, planned_date,
       ready_for_sprint, decision_required, review_status, blocked, created_at, updated_at
@@ -836,15 +836,15 @@ async function fetchPlanner(params: {
   const [assignedToMeRes, thisWeekRes, nextWeekRes] = await Promise.all([
     // Assigned to me - tasks assigned to current user
     userId 
-      ? supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
+      ? supabase.from('tasks').select('id', { count: 'exact', head: true })
           .eq('assignee_id', userId)
       : Promise.resolve({ count: 0 }),
     // This week - tasks with due_date within this week
-    supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
+    supabase.from('tasks').select('id', { count: 'exact', head: true })
       .gte('due_date', startOfToday.toISOString().split('T')[0])
       .lte('due_date', endOfThisWeek.toISOString().split('T')[0]),
     // Next week - tasks with due_date in next week
-    supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
+    supabase.from('tasks').select('id', { count: 'exact', head: true })
       .gte('due_date', startOfNextWeek.toISOString().split('T')[0])
       .lte('due_date', endOfNextWeek.toISOString().split('T')[0]),
   ]);
