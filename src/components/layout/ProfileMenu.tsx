@@ -251,7 +251,10 @@ export function ProfileMenu() {
 
           {/* Availability quick-set + leave scheduler */}
           <div onMouseDown={e => e.preventDefault()}>
-            <AvailabilityPanel onDone={() => setOpen(false)} />
+            <AvailabilityPanel
+              onDone={() => setOpen(false)}
+              currentState={ownPresence?.state ?? null}
+            />
           </div>
 
           <DropdownMenuSeparator />
