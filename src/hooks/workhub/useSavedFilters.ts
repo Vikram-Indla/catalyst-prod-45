@@ -99,9 +99,15 @@ export function useCreateSavedFilter() {
       if (error) throw new Error(error.message);
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data: any) => {
       qc.invalidateQueries({ queryKey: ['filters'] });
       catalystToast.success('Filter saved');
+      if (data?.id) {
+        supabase
+          .from('ph_filter_versions' as any)
+          .insert({ filter_id: data.id, jql_query: data.jql_query ?? null, changed_by: data.user_id ?? null })
+          .then(() => qc.invalidateQueries({ queryKey: ['filters', 'versions', data.id] }));
+      }
     },
     onError: (err: Error) => catalystToast.error(err.message),
   });
@@ -130,9 +136,17 @@ export function useUpdateSavedFilter() {
         .eq('id', id);
       if (error) throw new Error(error.message);
     },
-    onSuccess: () => {
+    onSuccess: (_data: unknown, vars: { id: string; updates: UpdateSavedFilterParams }) => {
       qc.invalidateQueries({ queryKey: ['filters'] });
       catalystToast.success('Filter updated');
+      if (vars.updates.jql_query !== undefined) {
+        supabase.auth.getUser().then(({ data: { user } }) => {
+          supabase
+            .from('ph_filter_versions' as any)
+            .insert({ filter_id: vars.id, jql_query: vars.updates.jql_query ?? null, changed_by: user?.id ?? null })
+            .then(() => qc.invalidateQueries({ queryKey: ['filters', 'versions', vars.id] }));
+        });
+      }
     },
     onError: (err: Error) => catalystToast.error(err.message),
   });
@@ -380,8 +394,8 @@ export function useBoardsForProject(projectKey: string | undefined) {
       if (!projectKey) return [] as BoardOption[];
       const { data, error } = await (supabase as any)
         .from('boards')
-        .select('id, name, ph_projects!inner(key)')
-        .eq('ph_projects.key', projectKey.toUpperCase())
+        .select('id, name')
+        .eq('jira_project_key', projectKey.toUpperCase())
         .is('deleted_at', null)
         .order('name');
       if (error) throw new Error(error.message);
@@ -449,24 +463,18 @@ export function useToggleFilterBoardLink() {
 export function useRecordFilterUsage() {
   return useMutation({
     mutationFn: async (filterId: string) => {
-      const { error } = await supabase.rpc('increment_filter_use_count' as any, {
-        p_filter_id: filterId,
-      });
-      if (error) {
-        // Fallback: manual increment if RPC doesn't exist yet
-        const { data: current } = await supabase
-          .from('ph_saved_filters')
-          .select('use_count')
-          .eq('id', filterId)
-          .single();
-        await supabase
-          .from('ph_saved_filters')
-          .update({
-            use_count: ((current as any)?.use_count ?? 0) + 1,
-            last_used_at: new Date().toISOString(),
-          } as any)
-          .eq('id', filterId);
-      }
+      const { data: current } = await supabase
+        .from('ph_saved_filters')
+        .select('use_count')
+        .eq('id', filterId)
+        .single();
+      await supabase
+        .from('ph_saved_filters')
+        .update({
+          use_count: ((current as any)?.use_count ?? 0) + 1,
+          last_used_at: new Date().toISOString(),
+        } as any)
+        .eq('id', filterId);
     },
   });
 }

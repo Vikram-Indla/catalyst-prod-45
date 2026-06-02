@@ -144,6 +144,11 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
                 Are you sure you want to delete{' '}
                 <strong>{filter.name}</strong>? This action cannot be undone.
               </p>
+              {filter.used_by_board_ids.length > 0 && (
+                <p style={{ margin: '8px 0 0', fontSize: 13, color: token('color.text.warning') }}>
+                  This filter is used by {filter.used_by_board_ids.length} board{filter.used_by_board_ids.length > 1 ? 's' : ''}. Deleting it will unlink those boards.
+                </p>
+              )}
             </ModalBody>
             <ModalFooter>
               <Button appearance="subtle" onClick={() => setDeleteOpen(false)} isDisabled={deleteFilter.isPending}>
