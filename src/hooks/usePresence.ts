@@ -60,7 +60,12 @@ export function usePresence() {
   };
 }
 
-/** Read own current presence state (for the ProfileMenu quick-set UI). */
+/**
+ * Read own EFFECTIVE presence state from v_user_effective_status.
+ * This view returns on_leave when there is an active user_availability row,
+ * so the ring updates automatically after scheduling leave — no separate
+ * write to user_presence is needed.
+ */
 export function useOwnPresence() {
   return useQuery({
     queryKey: ['own-presence'],
@@ -68,11 +73,15 @@ export function useOwnPresence() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
       const { data } = await supabase
-        .from('user_presence')
-        .select('state, manual_until')
+        .from('v_user_effective_status')
+        .select('effective_state, back_on')
         .eq('user_id', user.id)
         .maybeSingle();
-      return data as { state: PresenceState; manual_until: string | null } | null;
+      if (!data) return null;
+      return {
+        state:   data.effective_state as PresenceState,
+        back_on: data.back_on as string | null,
+      };
     },
     staleTime: 15_000,
   });

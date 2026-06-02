@@ -52,6 +52,11 @@ export function ProfileMenu() {
   const { data: ownPresence } = useOwnPresence();
   const [showLeaveModal, setShowLeaveModal] = useState(false);
 
+  // Tooltip for own presence ring: show "On leave · Back Jun 15" when scheduled
+  const ownBackOnLabel = ownPresence?.state === 'on_leave' && ownPresence?.back_on
+    ? `On leave · Back ${new Date(ownPresence.back_on).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`
+    : undefined;
+
   const email = user?.email ?? '';
   const name =
     (user?.user_metadata?.full_name as string | undefined) ||
@@ -114,6 +119,7 @@ export function ProfileMenu() {
             src={avatarUrl ?? null}
             size="small"
             state={ownPresence?.state ?? null}
+            tooltip={ownBackOnLabel}
           />
         </button>
       </DropdownMenuTrigger>
@@ -149,6 +155,7 @@ export function ProfileMenu() {
             src={avatarUrl ?? null}
             size="medium"
             state={ownPresence?.state ?? null}
+            tooltip={ownBackOnLabel}
           />
           <div style={{ minWidth: 0, flex: 1 }}>
             <div

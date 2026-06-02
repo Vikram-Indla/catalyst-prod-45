@@ -14,6 +14,8 @@ interface Props {
   /** Presence state drives the ring. Omit / null → plain avatar, no ring. */
   state?: PresenceState | null;
   testId?: string;
+  /** Override the default state-label tooltip. Use for "On leave · Back Jun 15" etc. */
+  tooltip?: string;
 }
 
 /**
@@ -33,7 +35,7 @@ interface Props {
  *   away (dashed) → inner box-shadow for white gap only +
  *     absolutely positioned span with border:2px dashed <ringColor>
  */
-export function PresenceRing({ name, src, size = 'medium', state, testId }: Props) {
+export function PresenceRing({ name, src, size = 'medium', state, testId, tooltip }: Props) {
   if (!state) {
     return <CatalystAvatar name={name} src={src} size={size} testId={testId} />;
   }
@@ -42,7 +44,8 @@ export function PresenceRing({ name, src, size = 'medium', state, testId }: Prop
   const dashed    = PRESENCE_DASHED[state];
   const px        = SIZE_PX[size];
 
-  const label = PRESENCE_LABEL[state];
+  // tooltip prop overrides the default state label (e.g. "On leave · Back Jun 15")
+  const label = tooltip ?? PRESENCE_LABEL[state];
 
   if (dashed) {
     // Away: white-gap box-shadow on the wrapper + dashed border via child element

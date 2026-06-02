@@ -257,6 +257,9 @@ function MemberRow({ member }: { member: { user_id: string; full_name: string | 
         src={resolveAvatarUrl(member.full_name) ?? null}
         size="small"
         state={state}
+        tooltip={isOnLeave && member.back_on
+          ? `On leave · Back ${formatDate(member.back_on)}`
+          : undefined}
       />
 
       <div style={{ minWidth: 0, flex: 1 }}>

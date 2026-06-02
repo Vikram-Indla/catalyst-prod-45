@@ -5,8 +5,10 @@ import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 type LeaveKind = 'vacation' | 'public_holiday' | 'sick' | 'ooo';
 
@@ -28,8 +30,37 @@ interface Props {
   onClose: () => void;
 }
 
+// z-index style shared by all Select portals inside this modal —
+// must exceed @atlaskit/modal-dialog's backdrop (~510) so dropdowns
+// render above it rather than behind it.
+const SELECT_PORTAL_STYLES = {
+  menuPortal: (base: React.CSSProperties) => ({ ...base, zIndex: 9999 }),
+} as const;
+
+// Option type for the backup contact picker
+interface BackupOption {
+  label: string;
+  value: string;
+}
+
+// Render each backup option with a CatalystAvatar for immediate recognition.
+// resolveAvatarUrl uses only bundled local assets (CLAUDE.md G6 — no external CDN).
+function BackupOptionLabel({ label }: { label: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <CatalystAvatar
+        name={label}
+        src={resolveAvatarUrl(label) ?? null}
+        size="xsmall"
+      />
+      <span style={{ fontSize: 14 }}>{label}</span>
+    </div>
+  );
+}
+
 export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const [startsAt,     setStartsAt]     = useState('');
   const [endsAt,       setEndsAt]       = useState('');
@@ -52,7 +83,10 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
     enabled: isOpen,
   });
 
-  const backupOptions = profiles.map(p => ({ label: p.full_name ?? p.id, value: p.id }));
+  const backupOptions: BackupOption[] = profiles.map(p => ({
+    label: p.full_name ?? p.id,
+    value: p.id,
+  }));
 
   const validate = (): FieldError => {
     const e: FieldError = {};
@@ -86,6 +120,11 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
 
       if (insertError) throw insertError;
       toast({ title: 'Leave scheduled' });
+      // Invalidate own-presence so the ring changes immediately (v_user_effective_status
+      // will now return on_leave for the current user). Also invalidate team-pulse so
+      // teammates see the update without waiting for the 30s stale window.
+      void queryClient.invalidateQueries({ queryKey: ['own-presence'] });
+      void queryClient.invalidateQueries({ queryKey: ['team-pulse'] });
       onClose();
     } catch (e: unknown) {
       toast({
@@ -97,7 +136,7 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
       setIsSubmitting(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startsAt, endsAt, kind, note, backupUserId, onClose, toast]);
+  }, [startsAt, endsAt, kind, note, backupUserId, onClose, toast, queryClient]);
 
   if (!isOpen) return null;
 
@@ -188,6 +227,7 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
               onChange={opt => { setKind(opt as { label: string; value: LeaveKind } | null); setErrors(e => ({ ...e, kind: undefined })); }}
               placeholder="Select type..."
               menuPortalTarget={document.body}
+              styles={SELECT_PORTAL_STYLES}
             />
             {errors.kind && <div style={errorStyle}>{errors.kind}</div>}
           </div>
@@ -203,13 +243,15 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
 
           <div>
             <label style={labelStyle}>Backup contact (optional)</label>
-            <Select
+            <Select<BackupOption>
               options={backupOptions}
               value={backupUserId}
-              onChange={opt => setBackupUserId(opt as { label: string; value: string } | null)}
+              onChange={opt => setBackupUserId(opt as BackupOption | null)}
               placeholder="Select backup..."
               menuPortalTarget={document.body}
+              styles={SELECT_PORTAL_STYLES}
               isClearable
+              formatOptionLabel={(opt) => <BackupOptionLabel label={opt.label} />}
             />
           </div>
         </div>

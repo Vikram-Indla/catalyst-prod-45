@@ -99,15 +99,16 @@ export function useTeamPulse() {
     staleTime: 30_000,
   });
 
-  // Realtime: invalidate on any user_presence change
+  // Realtime: invalidate on user_presence OR user_availability changes.
+  // user_availability must be included so other team members' Team Pulse
+  // updates immediately when someone schedules or cancels leave — not just
+  // on the 30-second staleTime tick.
   useEffect(() => {
+    const handler = () => { void queryClient.invalidateQueries({ queryKey: ['team-pulse'] }); };
     const channel = supabase
       .channel('team-pulse-realtime')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'user_presence' },
-        () => { void queryClient.invalidateQueries({ queryKey: ['team-pulse'] }); }
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_presence' },     handler)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_availability' }, handler)
       .subscribe();
 
     return () => { void supabase.removeChannel(channel); };
