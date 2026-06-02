@@ -75,7 +75,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 
 export function PresencePanel() {
   const navigate = useNavigate();
-  const { data, isLoading, error } = useTeamPulse();
+  const { data, isLoading, error, refetch } = useTeamPulse();
   const { suggest, coverage_insight, isPending: isInsightPending } = useBackupSuggestion();
 
   const membersOnLeaveForInsight = data?.members.filter(m => m.effective_state === 'on_leave') ?? [];
@@ -100,14 +100,32 @@ export function PresencePanel() {
 
   if (error) {
     return (
-      <div
-        style={{
-          padding: 24,
-          color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
-          fontSize: 14,
-        }}
-      >
-        Failed to load team status.
+      <div style={{ padding: 32, textAlign: 'center' }}>
+        <div
+          style={{
+            fontSize: 14,
+            color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
+            marginBottom: 12,
+          }}
+        >
+          Failed to load team status.
+        </div>
+        <button
+          type="button"
+          onClick={() => void refetch()}
+          style={{
+            background: 'none',
+            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+            borderRadius: 3,
+            padding: '6px 16px',
+            fontSize: 14,
+            fontWeight: 500,
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
+            cursor: 'pointer',
+          }}
+        >
+          Try again
+        </button>
       </div>
     );
   }
