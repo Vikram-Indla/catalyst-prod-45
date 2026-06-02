@@ -210,7 +210,7 @@ Deno.serve(async (req) => {
             priority: f.priority?.name ?? null,
             labels: f.labels ?? [],
             components: (f.components ?? []).map((c: any) => c.name),
-            fix_versions: (f.fixVersions ?? []).map((v: any) => ({
+            sprint_release: (f.fixVersions ?? []).map((v: any) => ({
               id: v.id, name: v.name, released: v.released,
             })),
             due_date: f.duedate ?? null,

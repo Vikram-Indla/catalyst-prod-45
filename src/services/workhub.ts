@@ -116,8 +116,8 @@ function mapCatalystIssueToListRow(row: any) {
     parent_id: row.parent_id,
     parent_key: null,
     parent_summary: null,
-    fix_version_id: row.release_id,
-    fix_version_name: null,
+    sprint_release_id: row.release_id,
+    sprint_release_name: null,
     assignee_id: row.assignee_id,
     assignee_name: null,
     assignee_avatar: null,
@@ -133,7 +133,7 @@ function mapCatalystIssueToListRow(row: any) {
     sprint_name: row.sprint_name,
     resolution: null,
     components: [],
-    fix_versions: [],
+    sprint_release: [],
     description_text: row.description,
     comments_data: [],
     changelog: [],
@@ -220,8 +220,8 @@ function mapPhIssueToListRow(row: any) {
     parent_id: null,
     parent_key: row.parent_key,
     parent_summary: row.parent_summary,
-    fix_version_id: null,
-    fix_version_name: null,
+    sprint_release_id: null,
+    sprint_release_name: null,
     assignee_id: row.assignee_account_id,
     assignee_name: row.assignee_display_name,
     assignee_avatar: null,
@@ -237,7 +237,7 @@ function mapPhIssueToListRow(row: any) {
     sprint_name: row.sprint_name,
     resolution: row.resolution,
     components: row.components,
-    fix_versions: row.fix_versions,
+    sprint_release: row.sprint_release,
     description_text: row.description_text,
     comments_data: row.comments || [],
     changelog: row.changelog || [],
@@ -322,8 +322,8 @@ async function fetchWorkTypes(projectId?: string) {
   }));
 }
 
-async function fetchFixVersions(projectId?: string) {
-  let q = supabase.from('wh_fix_versions').select('*').is('deleted_at', null).order('sort_order');
+async function fetchSprintReleases(projectId?: string) {
+  let q = supabase.from('wh_sprint_releases').select('*').is('deleted_at', null).order('sort_order');
   if (projectId) q = q.eq('project_id', projectId);
   const { data, error } = await q;
   if (error) throw new Error(error.message);
@@ -480,7 +480,7 @@ async function createWorkItem(payload: {
   assignee_id?: string | null;
   reporter_id?: string | null;
   description?: string | null;
-  fix_version_id?: string | null;
+  sprint_release_id?: string | null;
   parent_id?: string | null;
 }) {
   const { data, error } = await supabase
@@ -496,7 +496,7 @@ async function createWorkItem(payload: {
       assignee_id: payload.assignee_id,
       reporter_id: payload.reporter_id,
       description: payload.description,
-      fix_version_id: payload.fix_version_id,
+      sprint_release_id: payload.sprint_release_id,
       parent_id: payload.parent_id,
     })
     .select()
@@ -648,7 +648,7 @@ async function cloneWorkItem(
       item_key: itemKey,
       key_sequence: nextSeq,
       parent_id: source.parent_id,
-      fix_version_id: source.fix_version_id,
+      sprint_release_id: source.sprint_release_id,
       summary: `CLONE - ${source.summary}`,
       description: source.description,
       assignee_id: source.assignee_id,
@@ -702,7 +702,7 @@ export const workhubService = {
   fetchStatuses,
   fetchValidTransitions,
   fetchWorkTypes,
-  fetchFixVersions,
+  fetchSprintReleases,
   fetchLabels,
   fetchLinkTypes,
   fetchComments,

@@ -39,7 +39,7 @@ interface ItemData {
   jira_created_at: string;
   jira_updated_at: string;
   labels: string[] | null;
-  fix_versions: string | null;
+  sprint_release: string | null;
   components: string | null;
   sprint_name: string | null;
   story_points: number | null;
@@ -140,7 +140,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
       setItem(null);
       try {
         const { data, error } = await typedQuery('ph_issues')
-          .select('issue_key, summary, status, priority, issue_type, project_key, project_name, assignee_display_name, reporter_display_name, description_text, jira_created_at, jira_updated_at, labels, fix_versions, components, sprint_name, story_points, parent_key, parent_summary')
+          .select('issue_key, summary, status, priority, issue_type, project_key, project_name, assignee_display_name, reporter_display_name, description_text, jira_created_at, jira_updated_at, labels, sprint_release, components, sprint_name, story_points, parent_key, parent_summary')
           .eq('issue_key', issueKey.trim())
           .maybeSingle();
         if (error) console.error('KA detail fetch error:', error);
@@ -149,7 +149,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
         } else {
           // Fallback: ilike match
           const { data: fallback } = await typedQuery('ph_issues')
-            .select('issue_key, summary, status, priority, issue_type, project_key, project_name, assignee_display_name, reporter_display_name, description_text, jira_created_at, jira_updated_at, labels, fix_versions, components, sprint_name, story_points, parent_key, parent_summary')
+            .select('issue_key, summary, status, priority, issue_type, project_key, project_name, assignee_display_name, reporter_display_name, description_text, jira_created_at, jira_updated_at, labels, sprint_release, components, sprint_name, story_points, parent_key, parent_summary')
             .ilike('issue_key', issueKey.trim())
             .maybeSingle();
           if (fallback) setItem({ ...fallback, description: fallback.description_text });

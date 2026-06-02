@@ -9,7 +9,7 @@
  * surface, defined as the union of three conditions:
  *   1. Item created in 2026, OR
  *   2. Item updated in 2026, OR
- *   3. Item is in an active release (fix_versions contains the name
+ *   3. Item is in an active release (sprint_release contains the name
  *      of any release whose status is not archived/released/shipped).
  *
  * The third condition catches carry-in work assigned to active 2026
@@ -87,7 +87,7 @@ async function fiscalScopeFor(
     `and(${updatedCol}.gte.${YEAR_2026_START},${updatedCol}.lt.${YEAR_2026_END})`,
   ];
   const releaseClauses = releaseNames.map(
-    (name) => `fix_versions.cs.${JSON.stringify([{ name }])}`,
+    (name) => `sprint_release.cs.${JSON.stringify([{ name }])}`,
   );
   return [...baseClauses, ...releaseClauses].join(',');
 }
@@ -210,7 +210,7 @@ export interface DashboardDateFilter { dateFrom?: string | null; dateTo?: string
  */
 export interface DashboardWidgetFilters extends DashboardDateFilter {
   statusFilter?: string[];      // matched against ph_issues.status_category
-  releaseFilter?: string[];     // JSONB containment on ph_issues.fix_versions
+  releaseFilter?: string[];     // JSONB containment on ph_issues.sprint_release
   assigneeFilter?: string[];    // matched against ph_issues.assignee_display_name
   itemTypeFilter?: string[];    // matched against ph_issues.issue_type
   priorityFilter?: string[];    // matched against ph_issues.priority
@@ -224,7 +224,7 @@ function applyPhIssuesLayer2Filters(q: any, f: DashboardWidgetFilters): any {
   if (f.priorityFilter?.length) q = q.in('priority', f.priorityFilter);
   if (f.releaseFilter?.length) {
     const orClause = f.releaseFilter
-      .map((name: string) => `fix_versions.cs.${JSON.stringify([{ name }])}`)
+      .map((name: string) => `sprint_release.cs.${JSON.stringify([{ name }])}`)
       .join(',');
     q = q.or(orClause);
   }
@@ -525,10 +525,10 @@ export function useDashboardScopeChange(
         if (v.name)    versionByName.set(v.name,    v.start_date ?? null);
       }
 
-      // ── 3. Issues with fix_versions (Layer 2 filters applied) ─────────────
+      // ── 3. Issues with sprint_release (Layer 2 filters applied) ─────────────
       let issueQ = supabase
         .from('ph_issues')
-        .select('id, fix_versions, jira_created_at, status_category, assignee_display_name, issue_type, priority')
+        .select('id, sprint_release, jira_created_at, status_category, assignee_display_name, issue_type, priority')
         .eq('project_key', pKey)
         .is('deleted_at', null)
         .or(await fiscalScopeFor(pKey,'jira_created_at', 'jira_updated_at'));
@@ -540,7 +540,7 @@ export function useDashboardScopeChange(
       const { data: issues, error: issuesError } = await issueQ;
       if (issuesError) throw issuesError;
 
-      // ── 4. ph_activity_log — fix_version assignment events ────────────────
+      // ── 4. ph_activity_log — sprint_release assignment events ────────────────
       const issueIds = (issues ?? []).map((i: any) => i.id).filter(Boolean);
       const activityByItemId = new Map<string, { new_value: string; created_at: string }[]>();
 
@@ -551,7 +551,7 @@ export function useDashboardScopeChange(
             .from('ph_activity_log')
             .select('work_item_id, new_value, created_at')
             .in('work_item_id', chunk)
-            .in('field_name', ['fix_versions', 'Fix Version'])
+            .in('field_name', ['sprint_release', 'Fix Version'])
             .not('new_value', 'is', null);
 
           for (const row of actRows ?? []) {
@@ -599,7 +599,7 @@ export function useDashboardScopeChange(
         let addedCount    = 0;
 
         for (const issue of (issues ?? []) as any[]) {
-          const fv = issue.fix_versions;
+          const fv = issue.sprint_release;
           const issueVersions = Array.isArray(fv) ? fv : [];
           const belongsToRelease = issueVersions.some((v: any) =>
             typeof v === 'string' ? v === rel.name : v?.name === rel.name
@@ -688,7 +688,7 @@ export function useDashboardIncidents(
       if (priorityFilter.length) q = q.in('priority', priorityFilter);
       if (releaseFilter.length) {
         const orClause = releaseFilter
-          .map((name: string) => `fix_versions.cs.${JSON.stringify([{ name }])}`)
+          .map((name: string) => `sprint_release.cs.${JSON.stringify([{ name }])}`)
           .join(',');
         q = q.or(orClause);
       }
@@ -1106,16 +1106,16 @@ export function useDashboardReleaseHealth(
       // jira_updated_at silently drops items linked to in-scope releases that
       // were last touched in 2025, causing gadget/UWV count mismatch.
       //
-      // CRITICAL: Filter by fix_versions server-side. Without this, a project
+      // CRITICAL: Filter by sprint_release server-side. Without this, a project
       // with >1000 issues hits the Supabase default row cap and silently drops
       // release-linked items (BAU has 1,128 active issues → 29 vs real 31).
       const releaseNames = releases.map(r => r.name);
       const fvOrClause = releaseNames
-        .map(n => `fix_versions.cs.${JSON.stringify([{ name: n }])}`)
+        .map(n => `sprint_release.cs.${JSON.stringify([{ name: n }])}`)
         .join(',');
       let issuesQ = supabase
         .from('ph_issues')
-        .select('fix_versions, status_category')
+        .select('sprint_release, status_category')
         .eq('project_key', pKey)
         .is('deleted_at', null)
         .or(fvOrClause);
@@ -1131,7 +1131,7 @@ export function useDashboardReleaseHealth(
         let done = 0;
 
         for (const issue of issues ?? []) {
-          const fv = issue.fix_versions;
+          const fv = issue.sprint_release;
           const versions = Array.isArray(fv) ? fv : [];
           const belongs = versions.some((v: any) =>
             typeof v === 'string' ? v === rel.name : v?.name === rel.name

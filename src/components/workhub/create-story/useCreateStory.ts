@@ -19,7 +19,7 @@ export interface CreateStoryFormData {
   description: string;
   descriptionAdf: any | null;
   releaseId: string | null;
-  fixVersions: string[];
+  sprintReleases: string[];
   assigneeId: string | null;
   reporterId: string | null;
   tags: string[];
@@ -35,7 +35,7 @@ const INITIAL_FORM: CreateStoryFormData = {
   description: '',
   descriptionAdf: null,
   releaseId: null,
-  fixVersions: [],
+  sprintReleases: [],
   assigneeId: null,
   reporterId: null,
   tags: [],

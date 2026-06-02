@@ -230,13 +230,13 @@ serve(async (req) => {
       while (rHasMore) {
         const { data: rows } = await supabase
           .from("ph_issues")
-          .select("project_key, fix_versions")
-          .not("fix_versions", "is", null)
+          .select("project_key, sprint_release")
+          .not("sprint_release", "is", null)
           .is("jira_removed_at", null)
           .range(rOffset, rOffset + 999);
         if (!rows || rows.length === 0) { rHasMore = false; break; }
         for (const r of rows) {
-          const fvs = r.fix_versions as any[];
+          const fvs = r.sprint_release as any[];
           if (!fvs || !Array.isArray(fvs)) continue;
           for (const fv of fvs) {
             if (!fv.name) continue;
@@ -341,7 +341,7 @@ serve(async (req) => {
       while (wiHasMore) {
         const { data: issues } = await supabase
           .from("ph_issues")
-          .select("issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_account_id, parent_key, fix_versions, due_date, jira_created_at, jira_updated_at, labels")
+          .select("issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_account_id, parent_key, sprint_release, due_date, jira_created_at, jira_updated_at, labels")
           .is("jira_removed_at", null)
           .range(wiOffset, wiOffset + 999);
         if (!issues || issues.length === 0) { wiHasMore = false; break; }
@@ -354,7 +354,7 @@ serve(async (req) => {
           const hash = computeHash(issue);
 
           let releaseId: string | null = null;
-          const fvs = issue.fix_versions as any[];
+          const fvs = issue.sprint_release as any[];
           if (fvs && Array.isArray(fvs) && fvs.length > 0 && fvs[0].name) {
             releaseId = releaseNameToId[`${phProjectId}::${fvs[0].name}`] ?? null;
           }

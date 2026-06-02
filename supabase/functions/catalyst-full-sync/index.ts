@@ -154,7 +154,7 @@ serve(async (req) => {
             parent_key: f.parent?.key || null,
             parent_summary: f.parent?.fields?.summary || null,
             hierarchy_level: getHierarchyLevel(f.issuetype?.name || ''),
-            fix_versions: (f.fixVersions || []).map((v: any) => ({ id: v.id, name: v.name, releaseDate: v.releaseDate })),
+            sprint_release: (f.fixVersions || []).map((v: any) => ({ id: v.id, name: v.name, releaseDate: v.releaseDate })),
             due_date: f.duedate || null,
             labels: f.labels || [],
             components: (f.components || []).map((c: any) => c.name),

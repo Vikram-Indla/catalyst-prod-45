@@ -82,12 +82,12 @@ export function useWorkItemVersions(workItemId: string, workItemType: string) {
     },
   });
 
-  const fixVersions = versions.filter(v => v.link_type === 'fix');
+  const sprintReleases = versions.filter(v => v.link_type === 'fix');
   const affectsVersions = versions.filter(v => v.link_type === 'affects');
 
   return {
     versions,
-    fixVersions,
+    sprintReleases,
     affectsVersions,
     isLoading,
     addVersion,

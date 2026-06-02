@@ -131,7 +131,7 @@ function mapPhIssue(row: any): WorkItem {
     reporterId: row.reporter_account_id ?? null,
     reporter: row.reporter_display_name ? { id: row.reporter_account_id || '', name: row.reporter_display_name } : undefined,
     priority: normalisePriority(row.priority),
-    fixVersion: Array.isArray(row.fix_versions) && row.fix_versions.length > 0 ? row.fix_versions[0] : null,
+    sprintRelease: Array.isArray(row.sprint_release) && row.sprint_release.length > 0 ? row.sprint_release[0] : null,
     commentsCount: countComments(row.comments),
     childCount: 0,
     description: row.description_text ?? null,
@@ -149,7 +149,7 @@ function mapPhIssue(row: any): WorkItem {
   };
 }
 
-const PH_ISSUES_SELECT = 'id, issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, severity, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name, is_flagged, flag_reason, raw_json';
+const PH_ISSUES_SELECT = 'id, issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, sprint_release, labels, priority, story_points, sprint_name, resolution, severity, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name, is_flagged, flag_reason, raw_json';
 
 /* ── Server-side filter application ──────────────────────────────────
    Maps FilterState facets to PostgREST predicates on ph_issues columns.
@@ -179,9 +179,9 @@ function applyServerFilter(qb: any, filter: FilterState | undefined): any {
   if (filter.labels?.length > 0) {
     qb = qb.overlaps('labels', filter.labels);
   }
-  // fixVersions → fix_versions (array column — use overlaps)
-  if (filter.fixVersions?.length > 0) {
-    qb = qb.overlaps('fix_versions', filter.fixVersions);
+  // sprintReleases → sprint_release (array column — use overlaps)
+  if (filter.sprintReleases?.length > 0) {
+    qb = qb.overlaps('sprint_release', filter.sprintReleases);
   }
   // resolution → resolution
   if (filter.resolution?.length > 0) {

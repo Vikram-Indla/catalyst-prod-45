@@ -33,7 +33,7 @@ export {
   makeTypeIconCell,
   makeCaretCell,
   makeLabelsCell,
-  makeFixVersionsCell,
+  makeSprintReleaseCell,
   makeDragHandleCell,
   makeRowMenuCell,
 } from './cells';

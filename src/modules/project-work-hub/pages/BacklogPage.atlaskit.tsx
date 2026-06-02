@@ -96,7 +96,7 @@ import {
   makeParentEditCell,
   makeLabelsCell,
   makeLabelsEditCell,
-  makeFixVersionsCell,
+  makeSprintReleasesCell,
   makeDateEditCell,
   makeRowActionsCell,
   makeRowMenuCell,
@@ -145,7 +145,7 @@ import { basicToJql } from '@/lib/filters/basicToJql';
 import type {
   JiraFilterValue,
   AssigneeOption,
-  FixVersionOption,
+  SprintReleaseOption,
 } from '@/components/shared/JiraFilterAtlaskit';
 
 // Drag-and-drop — migrated from @dnd-kit → Pragmatic (BAU-backlog-drag-01)
@@ -320,7 +320,7 @@ export interface BacklogItem {
   due_date: string | null;
   comment_count: number | null;
   labels: string[] | null;
-  fix_versions: string[] | null;
+  sprint_release: string[] | null;
   rank_order: number | null;
   // 2026-06-01 — Business Request adapter fields (always null on Jira rows).
   // Surface only via the product backlog (ProductBacklogPage's adapter sets
@@ -427,7 +427,7 @@ const ALLOWED_COLUMN_IDS = new Set([
   'parent',
   'assignee',
   'priority',
-  'fix_versions',
+  'sprint_release',
   'labels',
   'due_date',
   'created',
@@ -1214,7 +1214,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           created_at: null,
           comment_count: null,
           labels: null,
-          fix_versions: null,
+          sprint_release: null,
           rank_order: null,
         });
       });
@@ -1249,7 +1249,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         due_date: (e as any).end_date ?? (e as any).due_date ?? null,
         comment_count: e.comment_count ?? null,
         labels: (e as any).labels ?? null,
-        fix_versions: (e as any).fix_versions ?? null,
+        sprint_release: (e as any).sprint_release ?? null,
         rank_order: (e as any).rank_order ?? null,
       });
     });
@@ -1294,7 +1294,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           due_date: null,
           comment_count: null,
           labels: null,
-          fix_versions: null,
+          sprint_release: null,
           rank_order: null,
         });
       }
@@ -1347,7 +1347,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         due_date: (s as any).start_date ?? (s as any).due_date ?? null,
         comment_count: null,
         labels: (s as any).labels ?? null,
-        fix_versions: (s as any).fix_versions ?? null,
+        sprint_release: (s as any).sprint_release ?? null,
         rank_order: (s as any).rank_order ?? null,
         // 2026-06-01: BR-specific fields surfaced via the product adapter
         // (project hub rows leave them undefined, which is fine — these
@@ -1422,8 +1422,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       if (f.assignees.length && (!it.assignee_name || !f.assignees.includes(it.assignee_name))) return false;
       // Reporter filter — sourced from ph_issues.reporter_display_name
       if (f.reporter.length && (!it.reporter_name || !f.reporter.includes(it.reporter_name))) return false;
-      // Fix version filter (parent epic maps to a "fix version" in this view)
-      if (f.fixVersions.length && (!it.parent_id || !f.fixVersions.includes(it.parent_id))) return false;
+      // Sprint/Release filter (parent epic maps to a "sprint/release" in this view)
+      if (f.sprintReleases.length && (!it.parent_id || !f.sprintReleases.includes(it.parent_id))) return false;
       // Updated date range
       if (f.updated.from && (!it.updated_at || it.updated_at < f.updated.from)) return false;
       if (f.updated.to && (!it.updated_at || it.updated_at > f.updated.to + 'T23:59:59')) return false;
@@ -1589,7 +1589,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       }
       if (f.assignees.length && (!it.assignee_name || !f.assignees.includes(it.assignee_name))) return false;
       if (f.reporter.length && (!it.reporter_name || !f.reporter.includes(it.reporter_name))) return false;
-      if (f.fixVersions.length && (!it.parent_id || !f.fixVersions.includes(it.parent_id))) return false;
+      if (f.sprintReleases.length && (!it.parent_id || !f.sprintReleases.includes(it.parent_id))) return false;
       if (f.updated.from && (!it.updated_at || it.updated_at < f.updated.from)) return false;
       if (f.updated.to && (!it.updated_at || it.updated_at > f.updated.to + 'T23:59:59')) return false;
       if (f.created.from && (!it.created_at || it.created_at < f.created.from)) return false;
@@ -2282,15 +2282,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       ),
     },
     {
-      id: 'fix_versions',
-      label: 'Fix versions',
+      id: 'sprint_release',
+      label: 'Sprint/Release',
       // 2026-05-16: Jira DOM probe = 220px. width:18 = 216px (≈220px).
       // Prior width:10 (120px) clipped version names badly.
       width: 18,
       sortable: false,
       defaultVisible: true,
-      accessor: (r: BacklogItem) => (r.fix_versions || []).join(', '),
-      cell: makeFixVersionsCell((r: BacklogItem) => r.fix_versions),
+      accessor: (r: BacklogItem) => (r.sprint_release || []).join(', '),
+      cell: makeSprintReleasesCell((r: BacklogItem) => r.sprint_release),
       include: (row: BacklogItem) => row.issue_type !== 'Feature',
     },
     {
@@ -2652,7 +2652,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   //
   // 2026-06-01: when an adapter provides `allowedColumnIds`, also restrict
   // to that whitelist. Product hub (business_requests) uses this to hide
-  // project-only columns (parent, fix_versions, labels, assignee, due_date,
+  // project-only columns (parent, sprint_release, labels, assignee, due_date,
   // priority, reporter, comments) that don't apply to the slim BR schema.
   // Structural columns ('__drag', '__actions') are always allowed.
   const filteredCols = useMemo(() => {
@@ -3319,7 +3319,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               { id: 'Business Gap',        label: 'Business Gap',        icon: <JiraIssueTypeIcon type="Story"   size={14} /> },
               { id: 'API Requirement',     label: 'API Requirement',     icon: <JiraIssueTypeIcon type="Task"    size={14} /> },
             ]}
-            fixVersions={epics.map<FixVersionOption>((e) => ({ id: e.id, label: e.epic_key ? `${e.epic_key} — ${e.name}` : e.name }))}
+            sprintReleases={epics.map<SprintReleaseOption>((e) => ({ id: e.id, label: e.epic_key ? `${e.epic_key} — ${e.name}` : e.name }))}
             labels={[]}
           />
         </div>

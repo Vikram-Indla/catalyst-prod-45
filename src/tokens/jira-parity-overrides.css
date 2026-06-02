@@ -88,17 +88,17 @@
   /* JIRA-PARITY: probed 2026-05-07 BAU issue header — text color, actual=#292A2E / fontWeight 500 */
   --cp-jira-header-status-fg: #292A2E;
 
-  /* ─── Fix Versions pill (right rail) ─────────────────────────────────────
-   * Jira renders fix versions as bordered secondary pills in the right rail.
+  /* ─── Sprint/Release pill (right rail) ─────────────────────────────────────
+   * Jira renders sprint/releases as bordered secondary pills in the right rail.
    * Styling: border 1px, border-radius 3px, padding 4px 6px, subtle bg.
    * ─────────────────────────────────────────────────────────────────────── */
 
-  /* JIRA-PARITY: probed (pending DOM inspection) — fix versions border color */
+  /* JIRA-PARITY: probed (pending DOM inspection) — sprint/release border color */
   --cp-jira-fixver-border: #dfe1e6;
 
-  /* JIRA-PARITY: probed (pending DOM inspection) — fix versions background */
+  /* JIRA-PARITY: probed (pending DOM inspection) — sprint/release background */
   --cp-jira-fixver-bg: #f1f2f4;
 
-  /* JIRA-PARITY: probed (pending DOM inspection) — fix versions text color */
+  /* JIRA-PARITY: probed (pending DOM inspection) — sprint/release text color */
   --cp-jira-fixver-fg: #172b4d;
 }

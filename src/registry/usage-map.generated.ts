@@ -8312,7 +8312,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/drawer/IssueActionsMenu.tsx",
       "src/modules/in-jira/components/import/AISuggestionBanner.tsx",
       "src/modules/in-jira/components/import/ImportWizard.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/in-jira/components/releases/VersionDialog.tsx",
       "src/modules/in-jira/pages/AllWorkPage.tsx",
@@ -11243,7 +11243,7 @@ export const usageMap: UsageMap = {
       "src/modules/backlog/components/split-panel/EpicDetailPanel.tsx",
       "src/modules/in-jira/components/drawer/InlineEdit.tsx",
       "src/modules/in-jira/components/import/AISuggestionBanner.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/okr-v2/components/OKRColumnChooser.tsx",
@@ -13834,7 +13834,7 @@ export const usageMap: UsageMap = {
       "src/components/ui/business-owner-picker.tsx",
       "src/components/ui/user-picker.tsx",
       "src/modules/backlog/components/CreateEpicModal.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
@@ -13890,7 +13890,7 @@ export const usageMap: UsageMap = {
       "src/components/ui/business-owner-picker.tsx",
       "src/components/ui/user-picker.tsx",
       "src/modules/backlog/components/CreateEpicModal.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
@@ -13911,7 +13911,7 @@ export const usageMap: UsageMap = {
       "src/components/ui/business-owner-picker.tsx",
       "src/components/ui/user-picker.tsx",
       "src/modules/backlog/components/CreateEpicModal.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
@@ -13933,7 +13933,7 @@ export const usageMap: UsageMap = {
       "src/components/ui/business-owner-picker.tsx",
       "src/components/ui/user-picker.tsx",
       "src/modules/backlog/components/CreateEpicModal.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
@@ -13955,7 +13955,7 @@ export const usageMap: UsageMap = {
       "src/components/ui/business-owner-picker.tsx",
       "src/components/ui/user-picker.tsx",
       "src/modules/backlog/components/CreateEpicModal.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
@@ -13977,7 +13977,7 @@ export const usageMap: UsageMap = {
       "src/components/ui/business-owner-picker.tsx",
       "src/components/ui/user-picker.tsx",
       "src/modules/backlog/components/CreateEpicModal.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/program-epics/components/CreateEpicDialog.tsx",
       "src/modules/program-epics/components/EditEpicDialog.tsx"
@@ -20423,8 +20423,8 @@ export const usageMap: UsageMap = {
       "src/components/business-requests/table-view/BacklogTableView.tsx"
     ]
   },
-  "EditableFixVersions::@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields": {
-    "name": "EditableFixVersions",
+  "EditableSprintReleases::@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields": {
+    "name": "EditableSprintReleases",
     "source": "@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields",
     "origin": "internal",
     "consumers": [
@@ -29649,7 +29649,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/drawer/ActivityTabs.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
       "src/modules/in-jira/components/import/AISuggestionBanner.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/in-jira/pages/AllWorkPage.tsx",
       "src/modules/in-jira/pages/KanbanBoardPage.tsx",
@@ -32149,7 +32149,7 @@ export const usageMap: UsageMap = {
       "src/modules/budget/components/SoftwareLicensesPage.tsx",
       "src/modules/in-jira/components/InJiraLayout.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/in-jira/components/releases/VersionCard.tsx",
       "src/modules/in-jira/components/releases/VersionDialog.tsx",
       "src/modules/in-jira/pages/ReleaseManagementPage.tsx",
@@ -33401,7 +33401,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/InJiraLayout.tsx",
       "src/modules/in-jira/components/board/KanbanBoard.tsx",
       "src/modules/in-jira/components/board/ScrumBoard.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/in-jira/pages/KanbanBoardPage.tsx",
       "src/modules/in-jira/pages/ListPage.tsx",
       "src/modules/in-jira/pages/ReleasesPage.tsx",
@@ -33690,7 +33690,7 @@ export const usageMap: UsageMap = {
       "src/modules/budget/components/LicenseDialog.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/analytics/components/TimeRangeSelector.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
@@ -33834,7 +33834,7 @@ export const usageMap: UsageMap = {
       "src/modules/budget/components/LicenseDialog.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/analytics/components/TimeRangeSelector.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
@@ -33969,7 +33969,7 @@ export const usageMap: UsageMap = {
       "src/modules/budget/components/LicenseDialog.tsx",
       "src/modules/budget/components/ResourceCostSection.tsx",
       "src/modules/in-jira/components/drawer/DetailsPanel.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/analytics/components/TimeRangeSelector.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",
       "src/modules/objectives/components/ObjectivePanel/ObjectiveForm.tsx",
@@ -49066,7 +49066,7 @@ export const usageMap: UsageMap = {
     "source": "../../hooks/useVersions",
     "origin": "internal",
     "consumers": [
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx"
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx"
     ]
   },
   "VersionWithProgress::../hooks/useVersions": {
@@ -51157,7 +51157,7 @@ export const usageMap: UsageMap = {
       "src/modules/in-jira/components/IssueDrawer.tsx",
       "src/modules/in-jira/components/drawer/InlineEdit.tsx",
       "src/modules/in-jira/components/import/AISuggestionBanner.tsx",
-      "src/modules/in-jira/components/releases/FixVersionPicker.tsx",
+      "src/modules/in-jira/components/releases/SprintReleasePicker.tsx",
       "src/modules/incidents/analytics/components/DrilldownDrawer.tsx",
       "src/modules/incidents/kanban/components/KanbanFiltersBar.tsx",
       "src/modules/incidents/kanban/components/SetCommitteeApproversModal.tsx",

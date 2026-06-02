@@ -18,7 +18,7 @@
  * `issue-navigator.ui.refinement-bar.*`):
  *   container: flex · gap 8 · pad 8 12 · border-bottom 1px DFE1E6
  *   filter popup: 600w × 489h · left rail 140w · facet role=tab
- *   facet order: Fix versions, Parent, Assignee, Work type, Labels,
+ *   facet order: Sprint/Release, Parent, Assignee, Work type, Labels,
  *                Status, Priority, Reporter
  *
  * Filter selections forward via the typed FilterState prop so the parent
@@ -111,7 +111,7 @@ export type AllWorkView = "split" | "list";
    from raw_json) deferred to a separate WO — they need different UI
    (date range picker + custom-field schema discovery). */
 export type FilterFacet =
-  | "fixVersions"
+  | "sprintReleases"
   | "parent"
   | "assignee"
   | "workType"
@@ -127,7 +127,7 @@ export type FilterFacet =
 export type FilterState = Record<FilterFacet, string[]>;
 
 export const EMPTY_FILTERS: FilterState = {
-  fixVersions: [],
+  sprintReleases: [],
   parent: [],
   assignee: [],
   workType: [],
@@ -142,7 +142,7 @@ export const EMPTY_FILTERS: FilterState = {
 };
 
 const FACET_ORDER: FilterFacet[] = [
-  "fixVersions",
+  "sprintReleases",
   "parent",
   "assignee",
   "workType",
@@ -201,7 +201,7 @@ const ASK_CATY_PLACEHOLDER_SAMPLES: string[] = [
    as a follow-up WO. */
 const TOP_LEVEL_FACETS: FilterFacet[] = ["workType", "status", "assignee"];
 const MORE_FILTERS_FACETS: FilterFacet[] = [
-  "fixVersions",
+  "sprintReleases",
   "parent",
   "labels",
   "priority",
@@ -213,7 +213,7 @@ const MORE_FILTERS_FACETS: FilterFacet[] = [
 ];
 
 const FACET_LABELS: Record<FilterFacet, string> = {
-  fixVersions: "Fix versions",
+  sprintReleases: "Sprint/Release",
   parent: "Parent",
   assignee: "Assignee",
   workType: "Work type",
@@ -308,8 +308,8 @@ function distinctOptions(items: WorkItem[], facet: FilterFacet): FacetOption[] {
   const map = new Map<string, FacetOption>();
   for (const i of items) {
     switch (facet) {
-      case "fixVersions": {
-        const v = toLabel(i.fixVersion);
+      case "sprintReleases": {
+        const v = toLabel(i.sprintRelease);
         if (v && !map.has(v)) map.set(v, { value: v, label: v });
         break;
       }
@@ -400,8 +400,8 @@ function distinctOptions(items: WorkItem[], facet: FilterFacet): FacetOption[] {
     selection state. */
 export function itemPassesFilters(item: WorkItem, f: FilterState): boolean {
   if (
-    f.fixVersions.length > 0 &&
-    !f.fixVersions.includes(toLabel(item.fixVersion))
+    f.sprintReleases.length > 0 &&
+    !f.sprintReleases.includes(toLabel(item.sprintRelease))
   )
     return false;
   if (f.parent.length > 0 && !f.parent.includes(toLabel(item.parentKey)))
@@ -619,7 +619,7 @@ function FilterTriggerAndPopup({
  * - priority          → PriorityIcon (RESET ICONS registry)
  * - status            → Atlaskit Lozenge with statusToLozenge appearance
  * - labels            → Atlaskit Lozenge default chip
- * - fixVersions       → plain text (Jira doesn't decorate version names)
+ * - sprintReleases    → plain text (Jira doesn't decorate version names)
  *
  * Used by both the FilterChip dropdowns (one facet per chip) and the
  * legacy 600×489 "More filters" popup (multi-facet left rail).
@@ -975,7 +975,7 @@ export function filterStateToJql(state: FilterState, projectKey?: string): strin
     priority:    'priority',
     workType:    'issuetype',
     labels:      'labels',
-    fixVersions: 'fixVersion',
+    sprintReleases: 'fixVersion',
     parent:      'parent',
     resolution:  'resolution',
     sprint:      'sprint',
@@ -1987,7 +1987,7 @@ export function AllWorkToolbar({
       />
 
       {/* More filters → opens the multi-facet popup with the 5 remaining facets
-          (Fix versions, Parent, Labels, Priority, Reporter). Reuses
+          (Sprint/Release, Parent, Labels, Priority, Reporter). Reuses
           FilterTriggerAndPopup from Round 6 — left-rail tabs + right-pane
           value picker pattern. Atlaskit primitive: @atlaskit/popup behaviour
           replicated manually (see Round 6 root-cause comment). */}

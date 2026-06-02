@@ -147,7 +147,7 @@ export interface BacklogDataSource {
    * to its own ALLOWED_COLUMN_IDS + BANNED_COLUMN_IDS gates). Structural
    * columns ('__drag', '__actions') are always allowed regardless.
    *
-   * Product hub uses this to hide project-only columns (parent, fix_versions,
+   * Product hub uses this to hide project-only columns (parent, sprint_release,
    * labels, assignee, due_date, priority, reporter, comments) which don't
    * apply to the slim 22-column business_requests schema.
    */
@@ -201,7 +201,7 @@ function bizRequestToBacklogStory(r: BusinessRequest): BacklogStory {
     parent_key: null,
     parent_summary: null,
     labels: null,
-    fix_versions: null,
+    sprint_release: null,
     rank_order: typeof r.rank === 'number' ? r.rank : null,
     feature: null,
     // ── BR-specific fields (project hub rows leave these undefined) ──────

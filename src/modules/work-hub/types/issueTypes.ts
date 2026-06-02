@@ -29,7 +29,7 @@ export interface User {
   };
 }
 
-export interface FixVersion {
+export interface SprintRelease {
   id: string;
   name: string;
   released?: boolean;
@@ -101,7 +101,7 @@ export interface IssueListItem {
     reporter?: User;
     created: string;
     updated: string;
-    fixVersions: FixVersion[];
+    sprintRelease: SprintRelease[];
     priority?: Priority;
     labels?: string[];
     parent?: {

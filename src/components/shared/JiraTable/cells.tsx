@@ -882,14 +882,14 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
   };
 }
 
-// ─── Fix Versions Cell ─────────────────────────────────────────────────────────
-// Renders fix versions as comma-separated plain text. Fix versions are not
+// ─── Sprint/Release Cell ─────────────────────────────────────────────────────────
+// Renders sprint/release versions as comma-separated plain text. Sprint/release versions are not
 // inline-editable in this column cell — editing happens via the bulk wizard
 // or detail panel. Matches Jira's list column display.
-export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | null | undefined) {
-  return function FixVersionsCell({ row }: CellProps<any>) {
-    const raw = getFixVersions(row);
-    // Normalise: Jira stores fix_versions as JSON array of {id,name,...} objects.
+export function makeSprintReleaseCell(getSprintRelease: (row: any) => string[] | null | undefined) {
+  return function SprintReleaseCell({ row }: CellProps<any>) {
+    const raw = getSprintRelease(row);
+    // Normalise: Jira stores sprint_release as JSON array of {id,name,...} objects.
     // Extract .name (or coerce to string) so we never pass an object to React.
     const versions = raw
       ? (raw as any[]).map(v => (typeof v === 'string' ? v : (v?.name ?? String(v)))).filter(Boolean)
@@ -897,7 +897,7 @@ export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | nul
     if (versions.length === 0) {
       return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
     }
-    // jira-compare 2026-05-20: Live DOM probe confirms fix-version pill =
+    // jira-compare 2026-05-20: Live DOM probe confirms sprint-release pill =
     // transparent bg + 0.556px solid rgb(183,185,190) border + 4px radius +
     // 0px 4px padding + 14px/400 text. Matches @atlaskit/tag appearance="default".
     return (

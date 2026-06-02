@@ -147,7 +147,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                 reporters={pools.reporters}
                 statuses={pools.statuses}
                 workTypes={pools.workTypes}
-                fixVersions={pools.fixVersions}
+                sprintReleases={pools.sprintReleases}
                 labels={pools.labels}
                 isLoading={pools.isLoading}
               />
@@ -249,7 +249,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                   assignee:  (pools.assignees  ?? []).map(a => a.label),
                   reporter:  (pools.reporters  ?? []).map(r => r.label),
                   issuetype: (pools.workTypes  ?? []).map(w => w.label),
-                  fixVersion:(pools.fixVersions?? []).map(f => f.label),
+                  fixVersion:(pools.sprintReleases?? []).map(f => f.label),
                   labels:    (pools.labels     ?? []).map(l => l.label),
                   priority:  ['Highest', 'High', 'Medium', 'Low', 'Lowest'],
                 }}

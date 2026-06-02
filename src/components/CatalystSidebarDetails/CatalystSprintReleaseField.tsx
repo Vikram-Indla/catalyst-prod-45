@@ -1,26 +1,26 @@
 /**
- * CatalystFixVersionsField — Fix versions field (F3.8)
+ * CatalystSprintReleaseField — Sprint/Release field (F3.8)
  */
 import React, { memo, useState, useEffect } from 'react';
 
-export const CatalystFixVersionsField = memo(function CatalystFixVersionsField({
-  fixVersions = [],
-  onFixVersionsChange,
+export const CatalystSprintReleaseField = memo(function CatalystSprintReleaseField({
+  sprintRelease = [],
+  onSprintReleaseChange,
 }: {
-  fixVersions: string[];
-  onFixVersionsChange: (versions: string[]) => void;
+  sprintRelease: string[];
+  onSprintReleaseChange: (versions: string[]) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<string[]>(fixVersions);
+  const [selected, setSelected] = useState<string[]>(sprintRelease);
   const available = ['v1.0', 'v1.1', 'v2.0', 'v2.1'];
 
   useEffect(() => {
-    setSelected(fixVersions);
-  }, [fixVersions]);
+    setSelected(sprintRelease);
+  }, [sprintRelease]);
 
   return (
     <div>
-      <label>Fix Versions</label>
+      <label>Sprint/Release</label>
       <button data-testid="versions-button" onClick={() => setOpen(!open)}>
         {selected.length ? selected.join(', ') : 'None selected'}
       </button>
@@ -36,7 +36,7 @@ export const CatalystFixVersionsField = memo(function CatalystFixVersionsField({
                     ? [...selected, version]
                     : selected.filter((v) => v !== version);
                   setSelected(newVersions);
-                  onFixVersionsChange(newVersions);
+                  onSprintReleaseChange(newVersions);
                 }}
               />
               {version}

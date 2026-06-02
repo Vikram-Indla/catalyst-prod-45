@@ -50,7 +50,7 @@ export interface CatyFilter {
   // Hierarchy & grouping
   parent_keys?: string[];
   sprint_names?: string[];
-  fix_versions?: string[];
+  sprint_releases?: string[];
   labels?: string[];
 
   // Engagement / weight

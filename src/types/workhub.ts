@@ -150,7 +150,7 @@ export interface WhValidTransition {
   toStatusId: string;
 }
 
-export interface WhFixVersion {
+export interface WhSprintRelease {
   id: string;
   name: string;
   releaseDate?: string;
@@ -193,7 +193,7 @@ export interface WhWorkItemListRow {
   story_points?: number;
   labels?: string[];
   components?: string[];
-  fix_versions?: string[];
+  sprint_release?: string[];
   epic_key?: string;
   epic_name?: string;
   parent_key?: string;
@@ -288,7 +288,7 @@ export interface WhCreateWorkItemPayload {
   description?: string;
   due_date?: string;
   labels?: string[];
-  fix_versions?: string[];
+  sprint_release?: string[];
   parent_key?: string;
   story_points?: number;
 }
@@ -302,7 +302,7 @@ export interface WhUpdateWorkItemPayload {
   description?: string;
   due_date?: string | null;
   labels?: string[];
-  fix_versions?: string[];
+  sprint_release?: string[];
   story_points?: number | null;
 }
 
@@ -314,7 +314,7 @@ export interface WhFilterConfig {
   projectKeys: string[];
   assigneeIds: string[];
   labels: string[];
-  hasFixVersion: boolean | null;
+  hasSprintRelease: boolean | null;
   dueDateRange: { from?: string; to?: string } | null;
   sortField: string;
   sortDirection: 'asc' | 'desc';
@@ -421,6 +421,6 @@ export const whQueryKeys = {
   stats: () => [...whQueryKeys.all, 'stats'] as const,
   statuses: () => [...whQueryKeys.all, 'statuses'] as const,
   workTypes: () => [...whQueryKeys.all, 'work-types'] as const,
-  fixVersions: () => [...whQueryKeys.all, 'fix-versions'] as const,
+  sprintReleases: () => [...whQueryKeys.all, 'sprint-releases'] as const,
   labels: () => [...whQueryKeys.all, 'labels'] as const,
 };

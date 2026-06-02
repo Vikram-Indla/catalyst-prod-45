@@ -34,7 +34,7 @@ import type {
   ReporterOption,
   StatusFilterOption,
   WorkTypeOption,
-  FixVersionOption,
+  SprintReleaseOption,
   LabelOption,
   PriorityLevel,
 } from '@/components/shared/JiraFilterAtlaskit';
@@ -64,7 +64,7 @@ export interface BasicFilterBarProps {
   reporters?: ReporterOption[];
   statuses?: StatusFilterOption[];
   workTypes?: WorkTypeOption[];
-  fixVersions?: FixVersionOption[];
+  sprintReleases?: SprintReleaseOption[];
   labels?: LabelOption[];
   isLoading?: boolean;
 }
@@ -322,7 +322,7 @@ export function BasicFilterBar({
   reporters = [],
   statuses = [],
   workTypes = [],
-  fixVersions = [],
+  sprintReleases = [],
   labels = [],
   isLoading,
 }: BasicFilterBarProps) {
@@ -357,7 +357,7 @@ export function BasicFilterBar({
   // Count for "More filters" badge
   const moreCount =
     value.reporter.length +
-    value.fixVersions.length +
+    value.sprintReleases.length +
     value.labels.length +
     (value.updated.from || value.updated.to ? 1 : 0) +
     (value.created.from || value.created.to ? 1 : 0) +
@@ -527,7 +527,7 @@ export function BasicFilterBar({
             onClear={() => onChange({
               ...value,
               reporter: [],
-              fixVersions: [],
+              sprintReleases: [],
               labels: [],
               updated: {},
               created: {},
@@ -559,15 +559,15 @@ export function BasicFilterBar({
               )}
             </MoreSection>
 
-            {/* Fix versions */}
-            {fixVersions.length > 0 && (
-              <MoreSection label="Fix version">
-                {fixVersions.map(fv => (
+            {/* Sprint/Release */}
+            {sprintReleases.length > 0 && (
+              <MoreSection label="Sprint/Release">
+                {sprintReleases.map(fv => (
                   <CheckRow
                     key={fv.id}
                     label={fv.label}
-                    isChecked={value.fixVersions.includes(fv.id)}
-                    onChange={() => toggleMulti('fixVersions', fv.id, value.fixVersions)}
+                    isChecked={value.sprintReleases.includes(fv.id)}
+                    onChange={() => toggleMulti('sprintReleases', fv.id, value.sprintReleases)}
                   />
                 ))}
               </MoreSection>

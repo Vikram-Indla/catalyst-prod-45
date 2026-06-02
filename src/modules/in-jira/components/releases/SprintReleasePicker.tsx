@@ -1,5 +1,5 @@
 /**
- * Fix Version Picker Component
+ * Sprint/Release Picker Component
  * Multi-select dropdown for linking issues to versions
  */
 
@@ -23,19 +23,19 @@ import {
 import { cn } from '@/lib/utils';
 import { useVersions, VersionWithProgress } from '../../hooks/useVersions';
 
-interface FixVersionPickerProps {
+interface SprintReleasePickerProps {
   projectId: string | null | undefined;
   selectedVersionIds: string[];
   onVersionsChange: (versionIds: string[]) => void;
   disabled?: boolean;
 }
 
-export function FixVersionPicker({
+export function SprintReleasePicker({
   projectId,
   selectedVersionIds,
   onVersionsChange,
   disabled,
-}: FixVersionPickerProps) {
+}: SprintReleasePickerProps) {
   const [open, setOpen] = useState(false);
   const { versions, isLoading, unreleasedVersions, releasedVersions } = useVersions(projectId);
 

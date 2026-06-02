@@ -4,7 +4,7 @@
  *
  * Supports the facets surfaced by itemPassesFilters:
  *   status, assignee (display name), priority, workType (issue_type),
- *   labels, fixVersions, sprint, resolution, reporter
+ *   labels, sprintReleases, sprint, resolution, reporter
  *
  * Complex predicates (date ranges, IS EMPTY, NOT IN, parent) are silently
  * ignored — they fall outside the facet model.
@@ -24,7 +24,7 @@ const COLUMN_TO_FACET: Partial<Record<string, keyof FilterState>> = {
   priority:                'priority',
   issue_type:              'workType',
   labels:                  'labels',
-  fix_versions:            'fixVersions',
+  sprint_release:          'sprintReleases',
   sprint_name:             'sprint',
   resolution:              'resolution',
 };

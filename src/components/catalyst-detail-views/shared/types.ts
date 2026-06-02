@@ -8,7 +8,7 @@ export type {
   TmTestCase, TmTestCaseLink, ThTestExecution, RhRelease, RhChange,
   Profile, ProjectMember, PhIssueRow, ColumnConfig, ParentIssue,
   StatusCategory, PriorityLevel, TestResult, ActivityTab,
-  FixVersion,
+  SprintRelease,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
 
 /** Catalyst work item types supported by detail views.

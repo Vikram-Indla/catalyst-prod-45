@@ -135,14 +135,14 @@ const RELEASE_TEMPLATES: FilterTemplate[] = [
   {
     id: 'rel-in-release',
     name: 'Items in current release',
-    description: 'All issues with a fix version set',
+    description: 'All issues with a sprint/release set',
     jql: 'fixVersion is not EMPTY AND status != Done ORDER BY priority DESC',
     category: 'dates',
   },
   {
     id: 'rel-incidents-this-release',
     name: 'Release incidents',
-    description: 'Production incidents linked to a fix version',
+    description: 'Production incidents linked to a sprint/release',
     jql: 'issuetype = "Production Incident" AND fixVersion is not EMPTY ORDER BY created DESC',
     category: 'quality',
   },
@@ -175,7 +175,7 @@ const TESTHUB_TEMPLATES: FilterTemplate[] = [
   {
     id: 'test-critical',
     name: 'Critical defects',
-    description: 'Highest priority bugs with no fix version',
+    description: 'Highest priority bugs with no sprint/release',
     jql: 'issuetype = "QA Bug" AND priority = Highest AND fixVersion is EMPTY',
     category: 'priority',
   },

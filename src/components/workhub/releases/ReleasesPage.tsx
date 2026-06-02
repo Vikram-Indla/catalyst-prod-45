@@ -1,5 +1,5 @@
 /**
- * ReleasesPage — Releases derived from real Jira fix_versions in wh_issues
+ * ReleasesPage — Releases derived from real Jira sprint_release in wh_issues
  * Route: /workhub/releases
  */
 import { useState, useMemo, useRef, useEffect } from 'react';

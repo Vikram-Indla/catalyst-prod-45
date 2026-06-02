@@ -434,7 +434,7 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
     { name: 'Priority', current: item?.priority, result: 'Kept' },
     { name: 'Assignee', current: item?.assignee_display_name, result: 'Kept' },
     { name: 'Labels', current: item?.labels ? '(has labels)' : '—', result: destProject === projectKey ? 'Kept' : 'Dropped' },
-    { name: 'Fix Versions', current: item?.fix_versions ? '(has versions)' : '—', result: destProject === projectKey ? 'Kept' : 'Dropped' },
+    { name: 'Sprint/Release', current: item?.sprint_release ? '(has versions)' : '—', result: destProject === projectKey ? 'Kept' : 'Dropped' },
     { name: 'Parent', current: item?.parent_key ?? '—', result: destProject === projectKey ? 'Kept' : 'Dropped' },
   ];
 
@@ -449,7 +449,7 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
       if (destProject !== projectKey) {
         updates.parent_key = null;
         updates.labels = null;
-        updates.fix_versions = null;
+        updates.sprint_release = null;
       }
       const { error } = await supabase.from('ph_issues').update(updates).eq('id', issueId);
       if (error) throw error;

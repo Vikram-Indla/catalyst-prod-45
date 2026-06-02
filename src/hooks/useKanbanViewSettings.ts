@@ -15,7 +15,7 @@ export interface VisibleFields {
   linkedWorkItems: boolean;
   priority: boolean;
   assignee: boolean;
-  fixVersions: boolean;
+  sprintReleases: boolean;
 }
 
 /**
@@ -25,7 +25,7 @@ export interface VisibleFields {
  * settings-storage key name.
  *
  * Fields without a direct FIELD_ID equivalent (cardCover, linkedWorkItems,
- * fixVersions) are excluded — they are kanban-specific and not part of the
+ * sprintReleases) are excluded — they are kanban-specific and not part of the
  * canonical table-cell field system.
  */
 export const KANBAN_FIELD_MAP: Partial<Record<keyof VisibleFields, string>> = {
@@ -90,7 +90,7 @@ const DEFAULT_SETTINGS: KanbanViewSettings = {
     linkedWorkItems: false,
     priority: true,
     assignee: true,
-    fixVersions: true,
+    sprintReleases: true,
   },
 };
 

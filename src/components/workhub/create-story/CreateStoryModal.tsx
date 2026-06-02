@@ -949,12 +949,12 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── Fix versions ────────────────────────────────────── */}
-              <Field name="fixVersions" label="Fix versions">
+              {/* ── Sprint/Release ────────────────────────────────────── */}
+              <Field name="sprintRelease" label="Sprint/Release">
                 {({ fieldProps }) => (
                   <Select<IconOption>
                     {...fieldProps}
-                    inputId="cs-fixversions"
+                    inputId="cs-sprintrelease"
                     options={releaseOptions}
                     value={
                       releaseOptions.find(

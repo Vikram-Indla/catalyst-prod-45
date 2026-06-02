@@ -103,7 +103,7 @@ export default function ProductBacklogPage() {
   //
   // 2026-06-01: `allowedColumnIds` gates the column picker to ONLY columns
   // that apply to business_requests (the slim 22-column schema). Hides the
-  // project-only columns (parent, fix_versions, labels, assignee, due_date,
+  // project-only columns (parent, sprint_release, labels, assignee, due_date,
   // priority, reporter, comments) inherited from the project hub registry.
   // BR-specific columns (theme, stakeholders, urgency-as-Priority, etc.)
   // will be added to the registry in a follow-up PR; for now the product
