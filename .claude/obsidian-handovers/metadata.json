@@ -56,7 +56,22 @@
       "local_commits": 0,
       "uncommitted_files": 0,
       "description": "Project Board Manager (project-exclusive). Mirror Jira /jira/boards. Listing table (Name/Lead/Location) via JiraTable+useBoards. BIG DIVERGENCE: non-JQL filter picker from ph_saved_filters wired to boards.filter_id. Map statuses reuse MapStatusesPage. Kebab Edit/Copy/Move/Delete (Move=same-type project only, never product, guard via location.projectTypeKey). Star->user_starred_items bridge for 4U/Home. Live Jira board 29 config + filter 10070 captured. New RPCs needed: move_board, copy_board. 6 phases A-F. Token verified working then exposed in chat (rotate)."
+    },
+    "05": {
+      "name": "General-create-modals-allwork-01",
+      "project": "General",
+      "menu": "create-modals + allwork",
+      "component": "create-modals, br-sidebar, pagination",
+      "status": "complete",
+      "progress": 100,
+      "phase": "shipped_to_main",
+      "created": "2026-06-02T04:40:00Z",
+      "last_saved": "2026-06-02T04:40:00Z",
+      "local_commits": 0,
+      "uncommitted_files": 0,
+      "handoff_to": "khan.jahanara@gmail.com",
+      "description": "Create modals ADS rebuild (dropdown-menu, @atlaskit/avatar, 5-level priority, Field labels, dead-CSS purge), RTL+CATY translate on title fields (+ .ttw-root width:100% crunch fix), avatar fix (resolveAvatarUrl src only), BR detail sidebar label/value alignment (tactical — canonical adoption rejected, documented why), Targeted feature checkbox-only, BR update optimistic-update lag fix, AllWork pagination redesign (broken keyset double-.or() -> offset/range + @atlaskit/pagination + WorkListPanel hideFooter). All landed on main + pushed. Includes AllWork 656 vs Backlog 847 by-design explanation. Open: decide AllWork ALLOWED_ISSUE_TYPES scope; optional full CatalystSidebarDetails adoption; linter/parallel-agent collision warning."
     }
   },
-  "last_updated": "2026-06-01T00:00:00Z"
+  "last_updated": "2026-06-02T04:40:00Z"
 }
