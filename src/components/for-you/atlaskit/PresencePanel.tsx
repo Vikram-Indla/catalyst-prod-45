@@ -13,6 +13,7 @@
 import React, { useEffect } from 'react';
 import Spinner from '@atlaskit/spinner';
 import { token } from '@atlaskit/tokens';
+import { useNavigate } from 'react-router-dom';
 import { PresenceRing } from '@/components/shared/PresenceRing';
 import { useTeamPulse } from '@/hooks/useTeamPulse';
 import { useBackupSuggestion } from '@/hooks/useBackupSuggestion';
@@ -73,6 +74,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 // ─── PresencePanel ────────────────────────────────────────────────────────────
 
 export function PresencePanel() {
+  const navigate = useNavigate();
   const { data, isLoading, error } = useTeamPulse();
   const { suggest, coverage_insight, isPending: isInsightPending } = useBackupSuggestion();
 
@@ -128,8 +130,26 @@ export function PresencePanel() {
         }}
       >
         <div style={{ marginBottom: 8, fontSize: 24 }}>👋</div>
-        <div style={{ fontWeight: 500, marginBottom: 4 }}>No team members found</div>
-        <div>Team Pulse shows people you share projects or products with.</div>
+        <div style={{ fontWeight: 500, marginBottom: 4, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+          No team members found
+        </div>
+        <div style={{ marginBottom: 16 }}>Team Pulse shows people you share projects or products with.</div>
+        <button
+          type="button"
+          onClick={() => navigate('/project-hub')}
+          style={{
+            background: token('color.background.brand.bold', 'var(--ds-background-brand-bold, #0052CC)'),
+            color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
+            border: 'none',
+            borderRadius: 3,
+            padding: '6px 16px',
+            fontSize: 14,
+            fontWeight: 500,
+            cursor: 'pointer',
+          }}
+        >
+          Go to projects
+        </button>
       </div>
     );
   }
