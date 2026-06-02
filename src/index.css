@@ -6096,27 +6096,3 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
 .catalyst-ai-dot:nth-child(2) { animation-delay: 0.2s; }
 .catalyst-ai-dot:nth-child(3) { animation-delay: 0.4s; }
 
-/* AvailabilityPanel in-dropdown compact override
-   AtlasKit DatePicker/Select/Textfield default to 16px font inside menus.
-   Scale down to 13px and trim container height so the form reads as a
-   compact in-menu panel, not a standalone page form.                        */
-.av-panel-compact input,
-.av-panel-compact textarea {
-  font-size: 13px !important;
-}
-.av-panel-compact [class*="-container"] {
-  font-size: 13px !important;
-  min-height: 28px !important;
-  height: 28px !important;
-}
-.av-panel-compact [class*="-control"],
-.av-panel-compact [class*="__control"] {
-  min-height: 28px !important;
-  height: 28px !important;
-  font-size: 13px !important;
-}
-.av-panel-compact [class*="__value-container"],
-.av-panel-compact [class*="__single-value"],
-.av-panel-compact [class*="__placeholder"] {
-  font-size: 13px !important;
-}
