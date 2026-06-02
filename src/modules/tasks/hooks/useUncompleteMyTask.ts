@@ -41,10 +41,10 @@ export function useUncompleteMyTask() {
       if (error) throw error;
 
       // Log activity
-      await supabase.from('planner_activity_log').insert({
+      await supabase.from('task_activity').insert({
         task_id: taskId,
-        user_id: user?.id,
-        action: 'status_changed',
+        actor_id: user?.id,
+        action_type: 'status_changed',
         old_value: { status: 'done' },
         new_value: { status: 'in_progress' },
       });

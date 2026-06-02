@@ -23,7 +23,7 @@ export function useSavedFilters() {
     queryKey: savedFiltersKeys.list(),
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('planner_saved_filters')
+        .from('task_saved_filters')
         .select('*')
         .eq('user_id', user?.id)
         .order('sort_order', { ascending: true });
@@ -45,7 +45,7 @@ export function useCreateSavedFilter() {
   return useMutation({
     mutationFn: async ({ name, filter_config }: { name: string; filter_config: FilterConfig }) => {
       const { data, error } = await supabase
-        .from('planner_saved_filters')
+        .from('task_saved_filters')
         .insert([{
           user_id: user?.id!,
           name,
@@ -77,7 +77,7 @@ export function useUpdateSavedFilter() {
       if (is_default !== undefined) updates.is_default = is_default;
 
       const { data, error } = await supabase
-        .from('planner_saved_filters')
+        .from('task_saved_filters')
         .update(updates)
         .eq('id', id)
         .select()
@@ -101,7 +101,7 @@ export function useDeleteSavedFilter() {
   return useMutation({
     mutationFn: async (filterId: string) => {
       const { error } = await supabase
-        .from('planner_saved_filters')
+        .from('task_saved_filters')
         .delete()
         .eq('id', filterId);
 

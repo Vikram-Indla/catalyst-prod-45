@@ -54,10 +54,10 @@ export function useCompleteMyTaskWithUndo() {
       if (error) throw error;
 
       // Log activity
-      await supabase.from('planner_activity_log').insert({
+      await supabase.from('task_activity').insert({
         task_id: taskId,
-        user_id: user?.id,
-        action: 'completed',
+        actor_id: user?.id,
+        action_type: 'completed',
       });
 
       return data;

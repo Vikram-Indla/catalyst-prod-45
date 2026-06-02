@@ -95,7 +95,7 @@ export function useTaskList(filters: TaskListFilters = {}, sorting?: TaskListSor
 
       // Build base query
       let query = supabase
-        .from('planner_task_list')
+        .from('tasks')
         .select('*');
 
       // Apply all filters at once using .and() or individual filters

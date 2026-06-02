@@ -492,7 +492,7 @@ export function PlannerPage() {
                   className="text-[11px] font-semibold uppercase tracking-wider"
                   style={{ color: 'var(--text-3)' }}
                 >
-                  PLANNER
+                  TASKS
                 </span>
                 <span className="text-[14px]" style={{ color: 'var(--text-4)' }}>
                   /

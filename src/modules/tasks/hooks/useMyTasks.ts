@@ -88,7 +88,7 @@ export function useMyTasksSummary() {
 
       if (error && error.code !== 'PGRST116') throw error;
       return (data || {
-        user_id: user?.id || null,
+        actor_id: user?.id || null,
         total_tasks: 0,
         overdue_count: 0,
         today_count: 0,
@@ -120,7 +120,7 @@ export function useMyTasksCalendar(month: string) {
         .toISOString().split('T')[0];
 
       const { data, error } = await supabase
-        .from('planner_calendar_tasks')
+        .from('task_calendar_tasks')
         .select('*')
         .eq('assignee_id', user?.id)
         .gte('due_date', startDate)
@@ -143,7 +143,7 @@ export function useMyTasksActivity(limit = 10) {
     queryKey: myTasksKeys.activity(),
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('planner_activity_log')
+        .from('task_activity')
         .select(`
           *,
           tasks!inner(task_key, title, assignee_id)
@@ -197,10 +197,10 @@ export function useCreateMyTask() {
       if (error) throw error;
 
       // Log activity
-      await supabase.from('planner_activity_log').insert({
+      await supabase.from('task_activity').insert({
         task_id: data.id,
-        user_id: user?.id,
-        action: 'created',
+        actor_id: user?.id,
+        action_type: 'created',
         new_value: { title: payload.title },
       });
 
@@ -263,9 +263,9 @@ export function useUpdateMyTask() {
       if (changedFields.includes('priority')) action = 'priority_changed';
       if (updateData.completed_at) action = 'completed';
 
-      await supabase.from('planner_activity_log').insert({
+      await supabase.from('task_activity').insert({
         task_id: id,
-        user_id: user?.id,
+        actor_id: user?.id,
         action,
         old_value: oldTask,
         new_value: updates,
@@ -315,11 +315,11 @@ export function useBulkUpdateMyTasks() {
       if (error) throw error;
 
       // Log bulk activity
-      await supabase.from('planner_activity_log').insert(
+      await supabase.from('task_activity').insert(
         task_ids.map(task_id => ({
           task_id,
-          user_id: user?.id,
-          action: 'updated',
+          actor_id: user?.id,
+          action_type: 'updated',
           new_value: { bulk_update: true, ...updates },
         }))
       );
@@ -384,10 +384,10 @@ export function useCompleteMyTask() {
       if (error) throw error;
 
       // Log completion
-      await supabase.from('planner_activity_log').insert({
+      await supabase.from('task_activity').insert({
         task_id: taskId,
-        user_id: user?.id,
-        action: 'completed',
+        actor_id: user?.id,
+        action_type: 'completed',
       });
 
       return data;

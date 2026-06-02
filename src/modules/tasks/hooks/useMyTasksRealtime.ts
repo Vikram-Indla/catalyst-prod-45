@@ -43,7 +43,7 @@ export function useMyTasksRealtime() {
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'planner_activity_log',
+          table: 'task_activity',
         },
         () => {
           queryClient.invalidateQueries({ queryKey: myTasksKeys.activity() });
