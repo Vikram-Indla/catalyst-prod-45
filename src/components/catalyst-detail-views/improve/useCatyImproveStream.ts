@@ -45,14 +45,19 @@ export interface UseCatyImproveStreamResult {
  */
 /**
  * Typewriter tuning. The visible text catches up to the accumulator
- * at a controlled rate, decoupled from how bursty the AI's deltas are.
- *   - TICK_MS: how often the timer fires (16ms ≈ one animation frame).
- *   - CHARS_PER_TICK: how many chars are revealed per tick.
- * 3 chars per 16ms ≈ 187 chars/sec — close to a human-readable typing
- * cadence, fast enough that a 2000-char response finishes in ~10s.
+ * at an ADAPTIVE rate: small queue → slow steady typing (feels like
+ * deliberate typing); big queue → faster catch-up (so the strap
+ * disappears soon after the AI's actual `done` event rather than
+ * lagging by many seconds while the typewriter drains a backlog).
+ *
+ * Per-tick characters = max(MIN, ceil(remaining / CATCHUP_DIVISOR)).
+ * MIN=3 keeps the typing visible even on a near-empty queue.
+ * CATCHUP_DIVISOR=20 means we drain any backlog over ~20 ticks
+ * (~320ms at 16ms/tick) regardless of size.
  */
 const TYPEWRITER_TICK_MS = 16;
-const TYPEWRITER_CHARS_PER_TICK = 3;
+const TYPEWRITER_MIN_CHARS_PER_TICK = 3;
+const TYPEWRITER_CATCHUP_DIVISOR = 20;
 
 export function useCatyImproveStream(
   payload: CatyImprovePayload | null,
@@ -85,7 +90,12 @@ export function useCatyImproveStream(
     const targetLen = fullTextRef.current.length;
     const visible = visibleCharsRef.current;
     if (visible < targetLen) {
-      const next = Math.min(visible + TYPEWRITER_CHARS_PER_TICK, targetLen);
+      const remaining = targetLen - visible;
+      const charsThisTick = Math.max(
+        TYPEWRITER_MIN_CHARS_PER_TICK,
+        Math.ceil(remaining / TYPEWRITER_CATCHUP_DIVISOR),
+      );
+      const next = Math.min(visible + charsThisTick, targetLen);
       visibleCharsRef.current = next;
       setText(fullTextRef.current.slice(0, next));
     } else if (streamCompleteRef.current) {

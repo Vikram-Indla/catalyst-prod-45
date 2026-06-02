@@ -381,32 +381,36 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
             onImproveClick={handleImproveFromToolbar}
             onEditorReady={setEditor}
             /* Snapshot of the content at the moment Improve was clicked
-               — rendered INSIDE the editor's scrollable body, directly
-               under the Tiptap content. As the AI writes more lines
-               above, this is pushed down within the same scroll
-               container. Disappears the moment streaming ends. */
+               + the bottom "Caty is editing" strap — both rendered
+               INSIDE the editor's scrollable body so they share the
+               same container as the AI's live output. As the AI writes
+               more lines above, the snapshot is pushed down within
+               the same scroll container, and the strap (position:
+               sticky, bottom) floats at the bottom of the body. */
             bodyAfterEditor={
-              streamLocked && snapshotAdf ? (
-                <div
-                  data-testid="caty-improve-snapshot"
-                  style={{
-                    opacity: 0.5,
-                    marginTop: 16,
-                    paddingTop: 16,
-                    borderTop: '1px dashed var(--ds-border, #DFE1E6)',
-                    pointerEvents: 'none',
-                    userSelect: 'none',
-                  }}
-                >
-                  <DisplayView adf={snapshotAdf} issueKey={issue.issue_key} />
-                </div>
-              ) : undefined
+              <>
+                {streamLocked && snapshotAdf && (
+                  <div
+                    data-testid="caty-improve-snapshot"
+                    style={{
+                      opacity: 0.5,
+                      marginTop: 16,
+                      paddingTop: 16,
+                      borderTop: '1px dashed var(--ds-border, #DFE1E6)',
+                      pointerEvents: 'none',
+                      userSelect: 'none',
+                    }}
+                  >
+                    <DisplayView adf={snapshotAdf} issueKey={issue.issue_key} />
+                  </div>
+                )}
+                <CatyImproveStrap
+                  phase={catyPhase}
+                  onStop={stopCatyStream}
+                />
+              </>
             }
           />
-
-          {/* Bottom strap: "Caty is editing · Esc · ■" while the stream
-              is in flight. Esc handler lives inside the strap. */}
-          <CatyImproveStrap phase={catyPhase} onStop={stopCatyStream} />
 
           {/* Inline error row — only on `errored` phase. */}
           {catyPhase === 'errored' && catyError && (
