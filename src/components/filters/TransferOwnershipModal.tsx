@@ -71,7 +71,7 @@ export function TransferOwnershipModal({ filter, onClose }: Props) {
           menuPosition="fixed"
           formatOptionLabel={(opt: ProfileOption) => (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Avatar size="small" src={resolveAvatarUrl(opt.avatarUrl)} name={opt.label} />
+              <Avatar size="small" src={resolveAvatarUrl(opt.label)} name={opt.label} />
               <span>{opt.label}</span>
             </div>
           )}

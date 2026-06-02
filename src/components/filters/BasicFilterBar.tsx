@@ -129,7 +129,7 @@ function ChipButton({ label, count, isOpen, onClick, chipRef }: ChipButtonProps)
             background: token('color.background.accent.blue.bolder', '#0C66E4'),
             color: token('color.text.inverse', '#FFFFFF'),
             fontSize: 11,
-            fontWeight: 700,
+            fontWeight: 653,
           }}
         >
           {count}
@@ -221,7 +221,7 @@ function DropdownShell({
           borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
         }}>
           {label && (
-            <span style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtlest', '#6B778C') }}>
+            <span style={{ fontSize: 12, fontWeight: 653, color: token('color.text.subtlest', '#6B778C') }}>
               {label}
             </span>
           )}
@@ -294,7 +294,7 @@ function MoreSection({ label, children }: { label: string; children: React.React
       <div style={{
         padding: '8px 12px 4px',
         fontSize: 11,
-        fontWeight: 600,
+        fontWeight: 653,
         color: token('color.text.subtlest', '#6B778C'),
       }}>
         {label}
@@ -465,7 +465,7 @@ export function BasicFilterBar({
                   label={s.label}
                   isChecked={value.status.includes(s.value)}
                   onChange={() => toggleMulti('status', s.value, value.status)}
-                  icon={<Lozenge appearance={s.appearance as LozengeAppearance}>{s.label}</Lozenge>}
+                  icon={<span data-cp-lozenge-jira-parity><Lozenge appearance={s.appearance as LozengeAppearance}>{s.label}</Lozenge></span>}
                 />
               ))
             )}
