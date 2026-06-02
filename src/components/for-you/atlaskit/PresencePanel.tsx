@@ -10,11 +10,12 @@
  * queries v_user_effective_status + user_availability. Realtime via
  * postgres_changes on user_presence.
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import Spinner from '@atlaskit/spinner';
 import { token } from '@atlaskit/tokens';
 import { PresenceRing } from '@/components/shared/PresenceRing';
 import { useTeamPulse } from '@/hooks/useTeamPulse';
+import { useBackupSuggestion } from '@/hooks/useBackupSuggestion';
 import type { PresenceState } from '@/lib/presence';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -74,6 +75,19 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 
 export function PresencePanel() {
   const { data, isLoading, error } = useTeamPulse();
+  const { suggest, coverage_insight, isPending: isInsightPending } = useBackupSuggestion();
+
+  const membersOnLeaveForInsight = data?.members.filter(m => m.effective_state === 'on_leave') ?? [];
+
+  // Auto-fetch coverage insight for the first on-leave member when panel loads
+  useEffect(() => {
+    const firstOnLeave = membersOnLeaveForInsight[0];
+    if (firstOnLeave && !coverage_insight && !isInsightPending) {
+      void suggest({ assignee_user_id: firstOnLeave.user_id }).catch(() => { /* best-effort */ });
+    }
+    // Only trigger once when on-leave members first appear
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [membersOnLeaveForInsight.length]);
 
   if (isLoading) {
     return (
@@ -135,6 +149,32 @@ export function PresencePanel() {
           <MemberRow key={member.user_id} member={member} />
         ))}
       </div>
+
+      {/* ── Caty coverage insight ───────────────────────────────────────── */}
+      {(coverage_insight || isInsightPending) && membersOnLeaveForInsight.length > 0 && (
+        <div
+          style={{
+            marginTop: 12,
+            padding: '10px 12px',
+            borderRadius: 4,
+            background: token('color.background.information', 'var(--ds-background-information, #E9F2FE)'),
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 8,
+          }}
+        >
+          <span style={{ fontSize: 14, flexShrink: 0 }}>✦</span>
+          <div style={{ fontSize: 13, color: token('color.text', 'var(--ds-text, #172B4D)'), flex: 1 }}>
+            {isInsightPending ? (
+              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+                Analysing coverage…
+              </span>
+            ) : (
+              coverage_insight
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── Who's out this week ─────────────────────────────────────────── */}
       {weekLeave.length > 0 && (
