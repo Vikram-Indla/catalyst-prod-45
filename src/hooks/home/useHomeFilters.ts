@@ -8,7 +8,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 // ============================================
 // DOMAIN FILTER TYPE
 // ============================================
-export type HomeDomain = 'all' | 'operations' | 'delivery' | 'planner';
+export type HomeDomain = 'all' | 'operations' | 'delivery' | 'tasks';
 
 // ============================================
 // UNIFIED FILTER TYPE - Used by ALL modes
@@ -48,7 +48,7 @@ export const DOMAIN_OPTIONS: { value: HomeDomain; label: string }[] = [
   { value: 'all', label: 'All domains' },
   { value: 'operations', label: 'Operations' },
   { value: 'delivery', label: 'Delivery' },
-  { value: 'planner', label: 'Taskhub' },
+  { value: 'tasks', label: 'Taskhub' },
 ];
 
 // ============================================
@@ -225,7 +225,7 @@ export function countActiveHomeFilters(filters: HomeFilters): number {
 // ============================================
 // UNIFIED HOME FILTERS HOOK
 // ============================================
-export type HomeRoleMode = 'all' | 'operations' | 'delivery' | 'planner';
+export type HomeRoleMode = 'all' | 'operations' | 'delivery' | 'tasks';
 
 export function useHomeFilters() {
   const [searchParams, setSearchParams] = useSearchParams();

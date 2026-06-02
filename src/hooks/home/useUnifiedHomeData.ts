@@ -121,8 +121,8 @@ function generateNavigation(
     };
   }
 
-  // Taskhub (Tasks) - domain is 'planner' for internal filtering
-  if (domain === 'planner' || type === 'task') {
+  // Taskhub (Tasks) - domain is 'tasks' for internal filtering
+  if (domain === 'tasks' || type === 'task') {
     return {
       path: `/tasks/list?taskId=${id}`,
       fallbackPath: '/tasks/list',
@@ -234,7 +234,7 @@ export function useUnifiedHomeSummary(mode: HomeRoleMode, userId?: string) {
           };
         }
 
-        case 'planner': {
+        case 'tasks': {
           const [plannedResult, upcomingResult, pendingResult] = await Promise.all([
             supabase.from('tasks').select('id', { count: 'exact', head: true })
               .or('status.in.(Planned,In Progress),ready_for_sprint.eq.true'),
@@ -295,7 +295,7 @@ export function useUnifiedHomeItems(params: UnifiedQueryParams) {
           return await fetchDeliveryItems({ filters, search, sort, from, to, updatedRangeDate, userId });
         }
 
-        case 'planner': {
+        case 'tasks': {
           return await fetchPlannerItems({ filters, search, sort, from, to, updatedRangeDate, userId, page, pageSize });
         }
 
@@ -798,7 +798,7 @@ async function fetchPlannerItems(params: {
       projectKey: 'WM',
       status: task.status,
       type: 'task' as WorkItemType,
-      domain: 'planner' as HomeDomain,
+      domain: 'tasks' as HomeDomain,
       assignee: null, // No FK relationship to profiles - would need separate lookup
       activityDate: new Date(task.updated_at || task.created_at),
       activityType: 'Updated' as const,
@@ -808,7 +808,7 @@ async function fetchPlannerItems(params: {
       decisionRequired: task.decision_required || false,
       reviewStatus: task.review_status || 'none',
       blocked: task.blocked || false,
-      nav: generateNavigation('planner', 'task', task.id, key, context),
+      nav: generateNavigation('tasks', 'task', task.id, key, context),
       context,
     };
   });

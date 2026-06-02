@@ -215,14 +215,14 @@ function getInitials(name: string): string {
 function inferMode(projectKey: string, issueType: string): WorkMode {
   const type = issueType?.toLowerCase() || '';
   if (type.includes('incident') || type.includes('production')) return 'OPS';
-  if (type === 'task' || type === 'planner_task') return 'TSK';
+  if (type === 'task' || type === 'task') return 'TSK';
   return 'DEL';
 }
 
 function inferHub(issueType: string, projectKey: string): HubType {
   const type = (issueType || '').toLowerCase();
   if (type.includes('incident') || type.includes('production')) return 'IncidentHub';
-  if (type === 'planner_task' || projectKey === 'TSK') return 'Tasks';
+  if (type === 'task' || projectKey === 'TSK') return 'Tasks';
   if (type === 'test' || type === 'test case' || type === 'test execution') return 'TestHub';
   if (type === 'epic') return 'ProjectHub';
   if (type === 'story' || type === 'sub-task' || type === 'subtask') return 'ProjectHub';
@@ -254,7 +254,7 @@ function mapPlannerTaskToIssueRow(row: any) {
     issue_key: row.task_key,
     project_key: row.task_key?.split('-')[0] || 'TSK',
     project_name: null,
-    issue_type: 'planner_task',
+    issue_type: 'task',
     summary: row.title || '',
     status: row.status_name || 'Backlog',
     status_category: null,
@@ -1274,10 +1274,10 @@ export function useForYouData(authLoading = false) {
         // Detect item_type from the source row instead of hardcoding 'ph_issue'.
         // Without this, planner_task stars get stored as ph_issue, polluting
         // analytics and downstream filtering. The row already carries
-        // `issue_type` from the mapper (planner tasks use 'planner_task').
+        // `issue_type` from the mapper (planner tasks use 'task').
         const sourceRow = [...(rawData?.assignedItems ?? []), ...(rawData?.workedOnItems ?? [])]
           .find((r: any) => r.issue_key === itemId);
-        const itemType = sourceRow?.issue_type === 'planner_task' ? 'task' : 'ph_issue';
+        const itemType = sourceRow?.issue_type === 'task' ? 'task' : 'ph_issue';
         const { error } = await supabase.from('user_starred_items')
           .insert({ user_id: authUser.id, item_id: itemId, item_type: itemType });
         if (error) throw error;

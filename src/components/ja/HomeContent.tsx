@@ -548,7 +548,7 @@ export function HomeContent() {
     { label: 'Recently updated', value: 'updated' },
     { label: 'Priority', value: 'priority' },
     { label: 'Status', value: 'status' },
-    ...(mode === 'planner' ? [{ label: 'Planned date', value: 'planned-date' }] : []),
+    ...(mode === 'tasks' ? [{ label: 'Planned date', value: 'planned-date' }] : []),
   ];
 
   // Mode-specific focus widgets
@@ -580,7 +580,7 @@ export function HomeContent() {
             />
           </>
         );
-      case 'planner':
+      case 'tasks':
         return (
           <>
             <FocusWidget 
@@ -640,7 +640,7 @@ export function HomeContent() {
   const getModeLabel = () => {
     switch (mode) {
       case 'operations': return 'operations';
-      case 'planner': return 'planner';
+      case 'tasks': return 'tasks';
       default: return 'delivery';
     }
   };

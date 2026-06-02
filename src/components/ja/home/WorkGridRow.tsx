@@ -721,7 +721,7 @@ export function ModeAwareGridRow({
           onResolve={onResolve}
         />
       );
-    case 'planner':
+    case 'tasks':
       return (
         <PlannerGridRow 
           item={item} 

@@ -195,7 +195,7 @@ export function ModeAwareEmptyState({
       }
       return <OperationsNoIncidentsEmptyState className={className} />;
     
-    case 'planner':
+    case 'tasks':
       if (tab === 'upcoming') {
         return <PlannerNoUpcomingEmptyState className={className} />;
       }

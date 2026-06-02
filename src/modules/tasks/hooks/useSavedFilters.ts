@@ -9,7 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import type { SavedFilter, FilterConfig } from '../types/my-tasks';
 
 export const savedFiltersKeys = {
-  all: ['planner', 'saved-filters'] as const,
+  all: ['tasks', 'saved-filters'] as const,
   list: () => [...savedFiltersKeys.all, 'list'] as const,
 };
 

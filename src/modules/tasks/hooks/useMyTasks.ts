@@ -19,7 +19,7 @@ import type {
 
 // Query keys
 export const myTasksKeys = {
-  all: ['planner', 'my-tasks'] as const,
+  all: ['tasks', 'my-tasks'] as const,
   list: (filters: FilterConfig) => [...myTasksKeys.all, 'list', filters] as const,
   summary: () => [...myTasksKeys.all, 'summary'] as const,
   calendar: (month: string) => [...myTasksKeys.all, 'calendar', month] as const,
@@ -439,7 +439,7 @@ export function useReorderMyTask() {
  */
 export function useMyWorkstreams() {
   return useQuery({
-    queryKey: ['planner', 'workstreams', 'filter'],
+    queryKey: ['tasks', 'workstreams', 'filter'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('task_workstreams')

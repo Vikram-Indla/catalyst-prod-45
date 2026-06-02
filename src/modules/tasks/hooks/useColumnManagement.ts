@@ -74,7 +74,7 @@ export function useCreateColumn() {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['planner', 'board', 'columns'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'board', 'columns'] });
       queryClient.invalidateQueries({ queryKey: ['planner-statuses'] });
       catalystToast.success(`Column "${data.name}" created`);
     },
@@ -116,7 +116,7 @@ export function useUpdateColumn() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['planner', 'board', 'columns'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'board', 'columns'] });
       queryClient.invalidateQueries({ queryKey: ['planner-statuses'] });
       catalystToast.success('Column updated');
     },
@@ -173,7 +173,7 @@ export function useDeleteColumn() {
       return { name: status?.name };
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['planner', 'board'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'board'] });
       queryClient.invalidateQueries({ queryKey: ['planner-statuses'] });
       catalystToast.success(`Column "${data.name}" deleted`);
     },
@@ -210,7 +210,7 @@ export function useReorderColumns() {
       return columns;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['planner', 'board', 'columns'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'board', 'columns'] });
       queryClient.invalidateQueries({ queryKey: ['planner-statuses'] });
     },
     onError: (error) => {

@@ -9677,7 +9677,7 @@ export type Database = {
           id: string
           initiative_id: string
           link_type: string | null
-          planner_task_id: string | null
+          task_id: string | null
         }
         Insert: {
           created_at?: string
@@ -9686,7 +9686,7 @@ export type Database = {
           id?: string
           initiative_id: string
           link_type?: string | null
-          planner_task_id?: string | null
+          task_id?: string | null
         }
         Update: {
           created_at?: string
@@ -9695,7 +9695,7 @@ export type Database = {
           id?: string
           initiative_id?: string
           link_type?: string | null
-          planner_task_id?: string | null
+          task_id?: string | null
         }
         Relationships: [
           {
@@ -27723,7 +27723,7 @@ export type Database = {
             foreignKeyName: "task_checklist_items_v2_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
-            referencedRelation: "planner_task_list"
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
           {
@@ -27790,7 +27790,7 @@ export type Database = {
             foreignKeyName: "task_label_assignments_v2_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
-            referencedRelation: "planner_task_list"
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
           {
@@ -27902,7 +27902,7 @@ export type Database = {
             foreignKeyName: "task_lead_notes_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
-            referencedRelation: "planner_task_list"
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
           {
@@ -27962,7 +27962,7 @@ export type Database = {
             foreignKeyName: "task_mentions_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
-            referencedRelation: "planner_task_list"
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
           {
@@ -28068,7 +28068,7 @@ export type Database = {
             foreignKeyName: "task_watchers_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
-            referencedRelation: "planner_task_list"
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
           {
@@ -38308,7 +38308,7 @@ export type Database = {
             foreignKeyName: "task_activity_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
-            referencedRelation: "planner_task_list"
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
           {
@@ -38377,7 +38377,7 @@ export type Database = {
             foreignKeyName: "task_attachments_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
-            referencedRelation: "planner_task_list"
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
           {
@@ -38492,7 +38492,7 @@ export type Database = {
             foreignKeyName: "task_checklist_items_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
-            referencedRelation: "planner_task_list"
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
           {
@@ -38604,7 +38604,7 @@ export type Database = {
             foreignKeyName: "task_comments_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
-            referencedRelation: "planner_task_list"
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
           {
@@ -38716,7 +38716,7 @@ export type Database = {
             foreignKeyName: "task_dependencies_depends_on_task_id_fkey"
             columns: ["depends_on_task_id"]
             isOneToOne: false
-            referencedRelation: "planner_task_list"
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
           {
@@ -38751,7 +38751,7 @@ export type Database = {
             foreignKeyName: "task_dependencies_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
-            referencedRelation: "planner_task_list"
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
           {
@@ -38815,7 +38815,7 @@ export type Database = {
             foreignKeyName: "task_label_assignments_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
-            referencedRelation: "planner_task_list"
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
           {
@@ -61725,7 +61725,7 @@ export type Database = {
           kr_title: string | null
           link_id: string | null
           link_type: string | null
-          planner_task_id: string | null
+          task_id: string | null
           sort_order: number | null
           theme_color: string | null
           theme_id: string | null
@@ -63221,7 +63221,7 @@ export type Database = {
         }
         Relationships: []
       }
-      planner_task_list: {
+      tasks: {
         Row: {
           assignee_avatar: string | null
           assignee_id: string | null

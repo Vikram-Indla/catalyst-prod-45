@@ -13,7 +13,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 // ============================================
 // TYPES
 // ============================================
-export type HomeDomain = 'all' | 'operations' | 'delivery' | 'planner';
+export type HomeDomain = 'all' | 'operations' | 'delivery' | 'tasks';
 export type HomeScope = 'worked-on' | 'assigned' | 'starred';
 export type HomeSort = 'updated' | 'priority' | 'status' | 'planned-date' | 'key' | 'level' | 'assignee';
 
@@ -318,7 +318,7 @@ async function fetchStarredItems(params: {
         level: 'Planner' as HomeLevel,
         status: t.status || 'Open',
         type: 'task' as WorkItemType,
-        domain: 'planner' as HomeDomain,
+        domain: 'tasks' as HomeDomain,
         assignee: t.assignee_id ? profileMap.get(t.assignee_id) || null : null,
         activityDate: new Date(starredItem?.starred_at || t.updated_at || t.created_at),
         activityType: 'Updated' as const,
@@ -806,7 +806,7 @@ async function fetchPlanner(params: {
     level: 'Planner' as HomeLevel, // Tasks are at Planner level
     status: t.status,
     type: 'task' as WorkItemType,
-    domain: 'planner' as HomeDomain,
+    domain: 'tasks' as HomeDomain,
     assignee: t.assignee_id ? taskProfileMap.get(t.assignee_id) || null : null,
     activityDate: new Date(t.updated_at || t.created_at),
     activityType: 'Updated' as const,
@@ -1011,7 +1011,7 @@ export function useHomeWorkItems(params: HomeWorkItemsParams) {
               assignedCount = delRes.counts.assigned;
               break;
             }
-            case 'planner': {
+            case 'tasks': {
               const planRes = await fetchPlanner({ ...fetchParams, scope: 'worked-on' });
               workedOnCount = planRes.counts.workedOn;
               assignedCount = planRes.counts.assigned;
@@ -1048,7 +1048,7 @@ export function useHomeWorkItems(params: HomeWorkItemsParams) {
         case 'all': return fetchAll(fetchParams);
         case 'operations': return fetchOperations(fetchParams);
         case 'delivery': return fetchDelivery(fetchParams);
-        case 'planner': return fetchPlanner(fetchParams);
+        case 'tasks': return fetchPlanner(fetchParams);
         default: return { items: [], counts: { workedOn: 0, assigned: 0, starred: 0, total: 0 }, pagination: { page, pageSize, total: 0, hasMore: false } };
       }
     },
