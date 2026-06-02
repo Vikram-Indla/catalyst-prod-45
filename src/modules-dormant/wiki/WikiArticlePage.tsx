@@ -60,7 +60,7 @@ const Sk = ({ w, h, style, isDark }: { w: string | number; h: number; style?: Re
 
 /* ── Module icon map for cross-links ── */
 const MODULE_COLORS: Record<string, { bg: string; color: string; label: string }> = {
-  task: { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', label: 'TaskHub' },
+  task: { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', label: 'Tasks' },
   product: { bg: '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', label: 'ProductHub' },
   incident: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'IncidentHub' },
   release: { bg: '#ECFDF5', color: 'var(--quality-high, #059669)', label: 'ReleaseHub' },

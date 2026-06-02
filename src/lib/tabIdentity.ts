@@ -5,8 +5,8 @@ export function deriveHubFromPath(pathname: string): string | undefined {
     ['/release-hub', 'ReleaseHub'],
     ['/releasehub', 'ReleaseHub'],
     ['/incident-hub', 'IncidentHub'],
-    ['/task-hub', 'TaskHub'],
-    ['/tasks', 'TaskHub'],
+    ['/task-hub', 'Tasks'],
+    ['/tasks', 'Tasks'],
     ['/testhub', 'TestHub'],
     ['/planhub', 'PlanHub'],
     ['/plan-hub', 'PlanHub'],
@@ -15,7 +15,7 @@ export function deriveHubFromPath(pathname: string): string | undefined {
     ['/wiki', 'WikiHub'],
     ['/strategy', 'StrategyHub'],
     ['/release', 'ReleaseHub'],
-    ['/priorities', 'TaskHub'],
+    ['/priorities', 'Tasks'],
   ];
   for (const [prefix, hub] of HUB_MAP) {
     if (pathname === prefix || pathname.startsWith(prefix + '/')) {

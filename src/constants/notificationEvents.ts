@@ -24,7 +24,7 @@ export type HubSource =
   | 'ReleaseHub'
   | 'TestHub'
   | 'IncidentHub'
-  | 'TaskHub'
+  | 'Tasks'
   | 'PlanHub'
   | 'WikiHub'
   | 'CrossHub';
@@ -2087,7 +2087,7 @@ export const TASK_HUB_EVENTS: NotificationEventDef[] = [
     triggerKey: 'task_created',
     displayName: 'Task Created',
     description: 'A new task is created in TaskHub',
-    hubSource: 'TaskHub', category: 'assignments', priority: 'P3',
+    hubSource: 'Tasks', category: 'assignments', priority: 'P3',
     recipients: ['assignee'],
     channels: ['in_app'], tab: 'direct',
     defaultEnabled: true, isMandatory: false, isSilent: false, entityType: 'work_item',
@@ -2096,7 +2096,7 @@ export const TASK_HUB_EVENTS: NotificationEventDef[] = [
     triggerKey: 'task_assigned',
     displayName: 'Task Assigned',
     description: 'A task is assigned to someone',
-    hubSource: 'TaskHub', category: 'assignments', priority: 'P2',
+    hubSource: 'Tasks', category: 'assignments', priority: 'P2',
     recipients: ['new_assignee'],
     channels: ['in_app', 'email', 'toast'], tab: 'direct',
     defaultEnabled: true, isMandatory: false, isSilent: false, entityType: 'work_item',
@@ -2105,7 +2105,7 @@ export const TASK_HUB_EVENTS: NotificationEventDef[] = [
     triggerKey: 'task_status_changed',
     displayName: 'Task Status Changed',
     description: 'A task status transitions (todo/done)',
-    hubSource: 'TaskHub', category: 'status_changes', priority: 'P3',
+    hubSource: 'Tasks', category: 'status_changes', priority: 'P3',
     recipients: ['assignee', 'reporter', 'watchers'],
     channels: ['in_app'], tab: 'direct/watching',
     defaultEnabled: true, isMandatory: false, isSilent: false, entityType: 'work_item',
@@ -2114,7 +2114,7 @@ export const TASK_HUB_EVENTS: NotificationEventDef[] = [
     triggerKey: 'task_priority_changed',
     displayName: 'Task Priority Changed',
     description: 'A task priority is modified',
-    hubSource: 'TaskHub', category: 'status_changes', priority: 'P4',
+    hubSource: 'Tasks', category: 'status_changes', priority: 'P4',
     recipients: ['assignee'],
     channels: ['in_app'], tab: 'watching',
     defaultEnabled: false, isMandatory: false, isSilent: false, entityType: 'work_item',
@@ -2123,7 +2123,7 @@ export const TASK_HUB_EVENTS: NotificationEventDef[] = [
     triggerKey: 'task_dates_changed',
     displayName: 'Task Due Date Changed',
     description: 'A task due date is modified',
-    hubSource: 'TaskHub', category: 'status_changes', priority: 'P4',
+    hubSource: 'Tasks', category: 'status_changes', priority: 'P4',
     recipients: ['assignee'],
     channels: ['in_app'], tab: 'watching',
     defaultEnabled: false, isMandatory: false, isSilent: false, entityType: 'work_item',
@@ -2132,7 +2132,7 @@ export const TASK_HUB_EVENTS: NotificationEventDef[] = [
     triggerKey: 'task_deleted',
     displayName: 'Task Deleted',
     description: 'A task is soft-deleted',
-    hubSource: 'TaskHub', category: 'status_changes', priority: 'P3',
+    hubSource: 'Tasks', category: 'status_changes', priority: 'P3',
     recipients: ['assignee'],
     channels: ['in_app'], tab: 'direct',
     defaultEnabled: true, isMandatory: false, isSilent: false, entityType: 'work_item',
@@ -2141,7 +2141,7 @@ export const TASK_HUB_EVENTS: NotificationEventDef[] = [
     triggerKey: 'task_restored',
     displayName: 'Task Restored',
     description: 'A soft-deleted task is restored',
-    hubSource: 'TaskHub', category: 'status_changes', priority: 'P3',
+    hubSource: 'Tasks', category: 'status_changes', priority: 'P3',
     recipients: ['assignee'],
     channels: ['in_app'], tab: 'direct',
     defaultEnabled: true, isMandatory: false, isSilent: false, entityType: 'work_item',
@@ -2150,7 +2150,7 @@ export const TASK_HUB_EVENTS: NotificationEventDef[] = [
     triggerKey: 'task_bulk_updated',
     displayName: 'Tasks Bulk Updated',
     description: 'Multiple tasks are updated in a batch operation',
-    hubSource: 'TaskHub', category: 'status_changes', priority: 'P3',
+    hubSource: 'Tasks', category: 'status_changes', priority: 'P3',
     recipients: ['affected_assignees'],
     channels: ['in_app'], tab: 'direct',
     defaultEnabled: true, isMandatory: false, isSilent: false, entityType: 'work_item',
@@ -2159,7 +2159,7 @@ export const TASK_HUB_EVENTS: NotificationEventDef[] = [
     triggerKey: 'task_commented',
     displayName: 'Task Comment Created',
     description: 'A comment is posted on a task',
-    hubSource: 'TaskHub', category: 'comments_mentions', priority: 'P3',
+    hubSource: 'Tasks', category: 'comments_mentions', priority: 'P3',
     recipients: ['assignee', 'watchers'],
     channels: ['in_app'], tab: 'direct/watching',
     defaultEnabled: true, isMandatory: false, isSilent: false, entityType: 'work_item',
@@ -2168,7 +2168,7 @@ export const TASK_HUB_EVENTS: NotificationEventDef[] = [
     triggerKey: 'task_label_changed',
     displayName: 'Task Label Added/Removed',
     description: 'Labels are changed on a task',
-    hubSource: 'TaskHub', category: 'status_changes', priority: 'P4',
+    hubSource: 'Tasks', category: 'status_changes', priority: 'P4',
     recipients: ['watchers'],
     channels: ['in_app'], tab: 'watching',
     defaultEnabled: false, isMandatory: false, isSilent: false, entityType: 'work_item',
@@ -2177,7 +2177,7 @@ export const TASK_HUB_EVENTS: NotificationEventDef[] = [
     triggerKey: 'task_view_changed',
     displayName: 'View/Filter Created/Updated/Deleted',
     description: 'A saved view or filter is changed (personal, usually silent)',
-    hubSource: 'TaskHub', category: 'system_ai', priority: 'P4',
+    hubSource: 'Tasks', category: 'system_ai', priority: 'P4',
     recipients: [], channels: [], tab: 'watching',
     defaultEnabled: false, isMandatory: false, isSilent: true, entityType: 'view',
   },
@@ -2574,7 +2574,7 @@ export function getActiveEvents(): NotificationEventDef[] {
 /** All hub source values */
 export const HUB_SOURCES: HubSource[] = [
   'StrategyHub', 'ProductHub', 'ProjectHub', 'ReleaseHub',
-  'TestHub', 'IncidentHub', 'TaskHub', 'PlanHub', 'WikiHub', 'CrossHub',
+  'TestHub', 'IncidentHub', 'Tasks', 'PlanHub', 'WikiHub', 'CrossHub',
 ];
 
 /** All trigger category values with display labels */

@@ -7,7 +7,7 @@ export const HUB_COLORS: Record<string, string> = {
   ReleaseHub: 'var(--cp-teal-60, #0D9488)',
   TestHub: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   IncidentHub: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-  TaskHub: 'var(--quality-high, #059669)',
+  Tasks: 'var(--quality-high, #059669)',
 };
 
 export const HUB_SHORT: Record<string, string> = {
@@ -17,7 +17,7 @@ export const HUB_SHORT: Record<string, string> = {
   ReleaseHub: 'REL',
   TestHub: 'TEST',
   IncidentHub: 'INC',
-  TaskHub: 'TASK',
+  Tasks: 'TASK',
 };
 
 export const STATUS_CATEGORY_COLORS = {

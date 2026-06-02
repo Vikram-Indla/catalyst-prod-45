@@ -55,7 +55,7 @@ export interface WorkItemAssignee {
   avatarUrl?: string;
 }
 
-export type HubType = 'ProductHub' | 'ProjectHub' | 'ReleaseHub' | 'TestHub' | 'IncidentHub' | 'TaskHub' | 'StrategyHub' | 'PlanHub';
+export type HubType = 'ProductHub' | 'ProjectHub' | 'ReleaseHub' | 'TestHub' | 'IncidentHub' | 'Tasks' | 'StrategyHub' | 'PlanHub';
 
 export interface WorkItem {
   id: string;
@@ -222,7 +222,7 @@ function inferMode(projectKey: string, issueType: string): WorkMode {
 function inferHub(issueType: string, projectKey: string): HubType {
   const type = (issueType || '').toLowerCase();
   if (type.includes('incident') || type.includes('production')) return 'IncidentHub';
-  if (type === 'planner_task' || projectKey === 'TSK') return 'TaskHub';
+  if (type === 'planner_task' || projectKey === 'TSK') return 'Tasks';
   if (type === 'test' || type === 'test case' || type === 'test execution') return 'TestHub';
   if (type === 'epic') return 'ProjectHub';
   if (type === 'story' || type === 'sub-task' || type === 'subtask') return 'ProjectHub';
@@ -233,7 +233,7 @@ function inferHub(issueType: string, projectKey: string): HubType {
 
 const HUB_LABEL_MAP: Record<HubType, string> = {
   ProductHub: 'Product', ProjectHub: 'Project', ReleaseHub: 'Release',
-  TestHub: 'Test', IncidentHub: 'Incident', TaskHub: 'Task',
+  TestHub: 'Test', IncidentHub: 'Incident', Tasks: 'Task',
   StrategyHub: 'Strategy', PlanHub: 'Plan',
 };
 

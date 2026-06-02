@@ -63,7 +63,7 @@ const taskHubSidebarConfig: SidebarConfig = {
   badge: 'TH',
   label: 'Tasks',
   // Design critique (2026-04-19): stripped redundant "Task" prefix from
-  // items where the hub badge ("TH / Task Hub") already provides context.
+  // items where the hub badge ("TH / Tasks") already provides context.
   //   "Task Overview" → "Overview"
   //   "Task Board"    → "Board"
   //   "Task Timeline" → "Timeline"

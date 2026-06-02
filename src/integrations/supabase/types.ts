@@ -69450,7 +69450,7 @@ export type Database = {
         | "ReleaseHub"
         | "TestHub"
         | "IncidentHub"
-        | "TaskHub"
+        | "Tasks"
       r360_priority: "Critical" | "High" | "Medium" | "Low"
       r360_resource_role: "assigned" | "reported"
       r360_status_category: "todo" | "progress" | "done"
@@ -70229,7 +70229,7 @@ export const Constants = {
         "ReleaseHub",
         "TestHub",
         "IncidentHub",
-        "TaskHub",
+        "Tasks",
       ],
       r360_priority: ["Critical", "High", "Medium", "Low"],
       r360_resource_role: ["assigned", "reported"],

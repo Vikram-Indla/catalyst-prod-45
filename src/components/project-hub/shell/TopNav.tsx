@@ -11,7 +11,7 @@ const HUB_TABS = [
   { label: 'ReleaseHub', path: '/releasehub' },
   { label: 'TestHub', path: '/testhub' },
   { label: 'IncidentHub', path: '/release' },
-  { label: 'TaskHub', path: '/tasks' },
+  { label: 'Tasks', path: '/tasks' },
   { label: 'PlanHub', path: '/planhub' },
 ];
 
