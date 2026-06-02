@@ -13,22 +13,25 @@ export interface UserStatus {
   backup_user_id: string | null;
 }
 
-// Ring colors — ADS tokens with canonical fallbacks (2026-06-02 PO spec)
+// Ring colors — evidence-based mental model (2026-06-03 design-critique)
+// Matches Slack, Microsoft Teams, Google Chat, Jira: green=available, amber=away, red=busy, grey=offline
+// on_leave uses dashed blue: blue = informational/planned (calendar), dashed = secondary redundant cue (WCAG-safe)
 export const PRESENCE_RING: Record<PresenceState, string> = {
-  available: 'var(--ds-link, #1868DB)',
-  away:      'var(--ds-link, #1868DB)',     // hollow/dashed via CSS, same blue family
-  busy:      'var(--ds-text-subtlest, #6B6E76)',
-  offline:   'var(--ds-icon-warning, #E2B203)',
-  on_leave:  'var(--ds-icon-danger, #C9372C)',
+  available: 'var(--ds-icon-success, #22A06B)',   // GREEN  — universal "online/available"
+  away:      'var(--ds-icon-warning, #E2B203)',    // AMBER  — universal "away/idle"
+  busy:      'var(--ds-icon-danger, #C9372C)',     // RED    — universal "busy/do not disturb"
+  offline:   'var(--ds-text-subtlest, #6B6E76)',   // GREY   — universal "offline/inactive"
+  on_leave:  'var(--ds-link, #1868DB)',            // BLUE   — "planned/scheduled absence"
 };
 
-// Whether the ring should render as dashed (away = hollow dashed)
+// away: solid ring (distinct amber color; no longer needs dashed treatment)
+// on_leave: dashed blue — secondary cue on top of blue color (safe for colorblind users)
 export const PRESENCE_DASHED: Record<PresenceState, boolean> = {
   available: false,
-  away:      true,
+  away:      false,
   busy:      false,
   offline:   false,
-  on_leave:  false,
+  on_leave:  true,
 };
 
 export const PRESENCE_LABEL: Record<PresenceState, string> = {

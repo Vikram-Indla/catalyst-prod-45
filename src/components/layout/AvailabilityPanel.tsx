@@ -4,10 +4,11 @@ import { usePresence } from '@/hooks/usePresence';
 import { useToast } from '@/hooks/use-toast';
 import type { PresenceState } from '@/lib/presence';
 
-const QUICK_SET: { label: string; state: PresenceState; color: string; outline?: boolean }[] = [
-  { label: 'Available', state: 'available', color: 'var(--ds-icon-success, #22A06B)' },
-  { label: 'Busy',      state: 'busy',      color: 'var(--ds-text-subtlest, #6B6E76)' },
-  { label: 'Away',      state: 'away',      color: 'var(--ds-icon-warning, #D97008)', outline: true },
+// Dot colors match PRESENCE_RING exactly — same mental model on the menu as on the avatar ring.
+const QUICK_SET: { label: string; state: PresenceState; color: string }[] = [
+  { label: 'Available', state: 'available', color: 'var(--ds-icon-success, #22A06B)' },  // GREEN
+  { label: 'Busy',      state: 'busy',      color: 'var(--ds-icon-danger, #C9372C)'  },  // RED
+  { label: 'Away',      state: 'away',      color: 'var(--ds-icon-warning, #E2B203)' },  // AMBER
 ];
 
 interface Props {
@@ -46,7 +47,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 8 }}>
-          {QUICK_SET.map(({ label, state, color, outline }) => {
+          {QUICK_SET.map(({ label, state, color }) => {
             const isActive = currentState === state;
             return (
               <button
@@ -86,8 +87,8 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                     width: 8,
                     height: 8,
                     borderRadius: '50%',
-                    background: outline ? 'transparent' : color,
-                    border: outline ? `2px solid ${color}` : 'none',
+                    background: color,
+                    border: 'none',
                     flexShrink: 0,
                     boxSizing: 'border-box',
                   }}

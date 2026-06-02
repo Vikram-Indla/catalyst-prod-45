@@ -129,7 +129,7 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
     } catch (e: unknown) {
       toast({
         title: 'Failed to schedule leave',
-        description: e instanceof Error ? e.message : 'Unknown error',
+        description: e instanceof Error ? e.message : (e as any)?.message ?? 'Unknown error',
         variant: 'destructive',
       });
     } finally {
