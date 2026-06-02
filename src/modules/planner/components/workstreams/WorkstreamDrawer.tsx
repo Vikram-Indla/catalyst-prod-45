@@ -458,17 +458,17 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
 
   // Navigation handlers
   const navigateToTasks = () => {
-    navigate(`/taskhub/task-list?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
+    navigate(`/tasks/list?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
     onClose();
   };
 
   const navigateToBoard = () => {
-    navigate(`/taskhub/boards?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
+    navigate(`/tasks/board?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
     onClose();
   };
 
   const navigateToCalendar = () => {
-    navigate(`/taskhub/calendar?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
+    navigate(`/tasks/calendar?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
     onClose();
   };
 
@@ -606,7 +606,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
               <button
                 onClick={() => {
-                  navigate(`/taskhub/task-list?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
+                  navigate(`/tasks/list?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
                   onClose();
                 }}
                 style={{ ...statCardStyle, cursor: 'pointer', transition: 'all 0.15s ease' }}
@@ -618,7 +618,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
               </button>
               <button
                 onClick={() => {
-                  navigate(`/taskhub/task-list?workstream=${encodeURIComponent(workstream.slug || workstream.id)}&overdue=true`);
+                  navigate(`/tasks/list?workstream=${encodeURIComponent(workstream.slug || workstream.id)}&overdue=true`);
                   onClose();
                 }}
                 style={{ ...statCardStyle, cursor: 'pointer', transition: 'all 0.15s ease' }}

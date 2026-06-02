@@ -24,9 +24,9 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { id: 'dashboard', label: 'Dashboard', path: '/taskhub/dashboard', icon: LayoutDashboard },
-  { id: 'my-tasks', label: 'My Tasks', path: '/taskhub/my-tasks', icon: CheckSquare },
-  { id: 'boards', label: 'Boards', path: '/taskhub/boards', icon: LayoutGrid },
+  { id: 'dashboard', label: 'Dashboard', path: '/tasks/overview', icon: LayoutDashboard },
+  { id: 'my-tasks', label: 'My Tasks', path: '/tasks/my-tasks', icon: CheckSquare },
+  { id: 'boards', label: 'Boards', path: '/tasks/board', icon: LayoutGrid },
   { id: 'priorities', label: 'Priorities', path: '/priorities', icon: Target },
 ];
 

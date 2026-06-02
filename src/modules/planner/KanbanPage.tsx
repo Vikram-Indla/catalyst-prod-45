@@ -1,5 +1,5 @@
 /**
- * PlanHub Kanban Page — /taskhub-kanban
+ * PlanHub Kanban Page — /tasks/board
  *
  * Migrated onto the canonical KanbanBoardShell (Phase 8 of the Catalyst
  * Kanban consolidation). This page used to render a bespoke `KanbanBoard`

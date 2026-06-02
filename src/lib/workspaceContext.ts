@@ -31,8 +31,8 @@ export function deriveWorkspaceType(pathname: string): WorkspaceType {
     return 'testhub';
   }
   
-  // Taskhub module - includes /taskhub/*, /aqd/*, and /priorities/* (Priorities is part of Taskhub)
-  if (pathname.startsWith('/taskhub') || pathname.startsWith('/aqd') || pathname.startsWith('/priorities')) {
+  // Taskhub module - includes /tasks/*, /aqd/*, and /priorities/* (Priorities is part of Taskhub)
+  if (pathname.startsWith('/tasks') || pathname.startsWith('/aqd') || pathname.startsWith('/priorities')) {
     return 'taskhub';
   }
   

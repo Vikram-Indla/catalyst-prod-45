@@ -62,7 +62,7 @@ export function getWorkItemRoute(item: WorkItemRouteInput): string | null {
       
     case 'task':
       // Tasks open in WorkManager with drawer - use taskId query param
-      return id ? `/taskhub/tasks?taskId=${id}` : null;
+      return id ? `/tasks/list?taskId=${id}` : null;
       
     case 'defect':
     case 'incident':

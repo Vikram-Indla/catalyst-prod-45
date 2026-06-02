@@ -1,7 +1,7 @@
 /**
  * Planner BoardAdapter<KanbanTask> — Phase 8.
  *
- * Converts the legacy PlanHub Kanban (`/taskhub-kanban`) off its bespoke
+ * Converts the legacy PlanHub Kanban (`/tasks/board`) off its bespoke
  * `KanbanBoard` + `@dnd-kit` stack and onto the canonical KanbanBoardShell
  * + Pragmatic drag-drop stack.
  *

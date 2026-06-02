@@ -28,12 +28,12 @@ interface NavItem {
 }
 
 const allNavItems: NavItem[] = [
-  { id: 'dashboard', label: 'Dashboard', path: '/taskhub/dashboard', icon: LayoutDashboard },
-  { id: 'workstreams', label: 'Workstreams', path: '/taskhub/workstreams', icon: Layers },
-  { id: 'my-tasks', label: 'My Tasks', path: '/taskhub/my-tasks', icon: CheckSquare },
-  { id: 'boards', label: 'Boards', path: '/taskhub/boards', icon: LayoutGrid },
-  { id: 'task-list', label: 'Task List', path: '/taskhub/task-list', icon: List },
-  { id: 'timeline', label: 'Timeline', path: '/taskhub/timeline', icon: GanttChartSquare },
+  { id: 'dashboard', label: 'Dashboard', path: '/tasks/overview', icon: LayoutDashboard },
+  { id: 'workstreams', label: 'Workstreams', path: '/tasks/workstreams', icon: Layers },
+  { id: 'my-tasks', label: 'My Tasks', path: '/tasks/my-tasks', icon: CheckSquare },
+  { id: 'boards', label: 'Boards', path: '/tasks/board', icon: LayoutGrid },
+  { id: 'task-list', label: 'Task List', path: '/tasks/list', icon: List },
+  { id: 'timeline', label: 'Timeline', path: '/tasks/timeline', icon: GanttChartSquare },
   { 
     id: 'task10', 
     label: (
@@ -47,7 +47,7 @@ const allNavItems: NavItem[] = [
     path: '/priorities', 
     icon: Target 
   },
-  { id: 'settings', label: 'Settings', path: '/taskhub/settings', icon: Settings },
+  { id: 'settings', label: 'Settings', path: '/tasks/settings', icon: Settings },
 ];
 
 interface MobileMenuDrawerProps {

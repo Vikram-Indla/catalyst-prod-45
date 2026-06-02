@@ -214,7 +214,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   ];
 
   const handleCopyLink = () => {
-    const url = `${window.location.origin}/taskhub/task-list?task=${task?.id}`;
+    const url = `${window.location.origin}/tasks/list?task=${task?.id}`;
     navigator.clipboard.writeText(url);
     catalystToast.success('Link copied to clipboard');
   };
@@ -286,7 +286,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
           label: 'View Task',
           onClick: () => {
             handleClose();
-            navigate(`/taskhub/tasks?taskId=${newTask.id}`);
+            navigate(`/tasks/list?taskId=${newTask.id}`);
           }
         }
       );
@@ -319,7 +319,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   // Handle expand to full page - uses query param pattern per workItemRoutes.ts
   const handleExpand = () => {
     handleClose();
-    navigate(`/taskhub/tasks?taskId=${effectiveTaskId}`);
+    navigate(`/tasks/list?taskId=${effectiveTaskId}`);
   };
 
   return (

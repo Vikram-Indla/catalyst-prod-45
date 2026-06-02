@@ -124,8 +124,8 @@ function generateNavigation(
   // Taskhub (Tasks) - domain is 'planner' for internal filtering
   if (domain === 'planner' || type === 'task') {
     return {
-      path: `/taskhub/tasks?taskId=${id}`,
-      fallbackPath: '/taskhub/tasks',
+      path: `/tasks/list?taskId=${id}`,
+      fallbackPath: '/tasks/list',
       openBehavior: 'push',
     };
   }

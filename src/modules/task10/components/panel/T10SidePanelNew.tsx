@@ -209,7 +209,7 @@ export function T10SidePanelNew({
   // Handle external link
   const handleExternalLink = () => {
     if (item?.taskhub_key) {
-      window.open(`/taskhub/${item.taskhub_key}`, '_blank');
+      window.open(`/tasks/${item.taskhub_key}`, '_blank');
     }
   };
 

@@ -627,10 +627,20 @@ export default function FullAppRoutes() {
 
         <Route path="/work-tree" element={<S><WorkTreePage /></S>} />
 
-        <Route path="/taskhub" element={<Navigate to="/taskhub/boards" replace />} />
-        <Route path="/taskhub/:view" element={<S><PlannerPage /></S>} />
-        <Route path="/taskhub-kanban" element={<S><KanbanPage /></S>} />
-        <Route path="/taskhub/my-tasks" element={<S><MyTasksPage /></S>} />
+        <Route path="/tasks" element={<Navigate to="/tasks/board" replace />} />
+        <Route path="/tasks/:view" element={<S><PlannerPage /></S>} />
+        <Route path="/tasks/my-tasks" element={<S><MyTasksPage /></S>} />
+
+        {/* Backward-compat redirects from old /taskhub routes */}
+        <Route path="/taskhub" element={<Navigate to="/tasks/board" replace />} />
+        <Route path="/taskhub/boards" element={<Navigate to="/tasks/board" replace />} />
+        <Route path="/taskhub/task-list" element={<Navigate to="/tasks/list" replace />} />
+        <Route path="/taskhub/my-tasks" element={<Navigate to="/tasks/my-tasks" replace />} />
+        <Route path="/taskhub/dashboard" element={<Navigate to="/tasks/overview" replace />} />
+        <Route path="/taskhub/workstreams" element={<Navigate to="/tasks/workstreams" replace />} />
+        <Route path="/taskhub/settings" element={<Navigate to="/tasks/settings" replace />} />
+        <Route path="/taskhub/:view" element={<Navigate to="/tasks/board" replace />} />
+        <Route path="/taskhub-kanban" element={<Navigate to="/tasks/board" replace />} />
 
         {/* ═══ TestHub ═══ */}
         <Route path="/testhub" element={<MG k="testhub" t="TestHub"><S><TestHubPage /></S></MG>}>
@@ -705,14 +715,18 @@ export default function FullAppRoutes() {
         <Route path="/releasehub/dashboard" element={<Navigate to="/release-hub/command-center" replace />} />
         <Route path="/releasehub/all" element={<Navigate to="/release-hub/releases" replace />} />
 
-        <Route path="/priorities" element={<S><T10LandingPage /></S>} />
-        <Route path="/priorities/completed" element={<S><T10CompletedPage /></S>} />
-        <Route path="/priorities/list/:listId" element={<S><T10WeekPage /></S>} />
-        <Route path="/priorities/list/:listId/week/:weekId" element={<S><T10WeekPageV3 /></S>} />
-        <Route path="/taskhub/task10" element={<Navigate to="/priorities" replace />} />
-        <Route path="/taskhub/task10/*" element={<Navigate to="/priorities" replace />} />
-        <Route path="/planner" element={<Navigate to="/taskhub/boards" replace />} />
-        <Route path="/planner/*" element={<Navigate to="/taskhub/boards" replace />} />
+        <Route path="/tasks/priorities" element={<S><T10LandingPage /></S>} />
+        <Route path="/tasks/priorities/completed" element={<S><T10CompletedPage /></S>} />
+        <Route path="/tasks/priorities/list/:listId" element={<S><T10WeekPage /></S>} />
+        <Route path="/tasks/priorities/list/:listId/week/:weekId" element={<S><T10WeekPageV3 /></S>} />
+
+        {/* Backward-compat redirects from old /priorities and /planner routes */}
+        <Route path="/priorities" element={<Navigate to="/tasks/priorities" replace />} />
+        <Route path="/priorities/*" element={<Navigate to="/tasks/priorities" replace />} />
+        <Route path="/taskhub/task10" element={<Navigate to="/tasks/priorities" replace />} />
+        <Route path="/taskhub/task10/*" element={<Navigate to="/tasks/priorities" replace />} />
+        <Route path="/planner" element={<Navigate to="/tasks/board" replace />} />
+        <Route path="/planner/*" element={<Navigate to="/tasks/board" replace />} />
 
         <Route path="/planhub" element={<S><PlanLibraryPage /></S>} />
         <Route path="/planhub/plan/:planId" element={<S><PlanEditorPage /></S>} />

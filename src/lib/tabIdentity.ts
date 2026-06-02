@@ -6,7 +6,7 @@ export function deriveHubFromPath(pathname: string): string | undefined {
     ['/releasehub', 'ReleaseHub'],
     ['/incident-hub', 'IncidentHub'],
     ['/task-hub', 'TaskHub'],
-    ['/taskhub', 'TaskHub'],
+    ['/tasks', 'TaskHub'],
     ['/testhub', 'TestHub'],
     ['/planhub', 'PlanHub'],
     ['/plan-hub', 'PlanHub'],
