@@ -21,6 +21,8 @@ import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo
 import { URGENCY_OPTIONS, REQUEST_TYPE_OPTIONS, THEME_OPTIONS, STAKEHOLDER_OPTIONS, CATEGORY_OPTIONS, PLANNED_QUARTER_OPTIONS } from '@/types/business-request';
 import { Checkbox as AkCheckbox } from '@atlaskit/checkbox';
 import InlineEdit from '@atlaskit/inline-edit';
+import { BizArabicTranslateLink } from '@/components/shared/title-translate/BizArabicTranslateLink';
+import { containsArabic as containsArabicHelper } from '@/lib/detectArabic';
 import ReactDOM from 'react-dom';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
@@ -110,6 +112,7 @@ import type {
   AssigneeChoice,
   ParentChoice,
   RowAction,
+  flag,
 } from '@/components/shared/JiraTable';
 
 import { useStoryBacklog, useEpicBacklog, useRequestsByKeys, useRequestLinksByEpicKeys } from '../hooks/useBacklogData';
@@ -796,6 +799,38 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     DEFAULT_VISIBLE_COLUMNS.forEach((c) => fromUrl.add(c));
     return fromUrl;
   });
+  // 2026-06-01 (catalyst-clone F2/F3): when the URL requests a column id
+  // that isn't available on this surface (e.g. `parent`/`assignee` on a
+  // product backlog where the adapter's allowedColumnIds excludes them),
+  // flag the user once + strip from URL so reloads don't keep trying.
+  useEffect(() => {
+    const raw = searchParams.get('cols');
+    if (!raw) return;
+    const urlIds = raw.split(',').filter(Boolean);
+    const adapterAllow = dataSource?.allowedColumnIds
+      ? new Set([...dataSource.allowedColumnIds, '__drag', '__actions'])
+      : null;
+    const unsupported = urlIds.filter((id) => {
+      if (!ALLOWED_COLUMN_IDS.has(id)) return true;
+      if (BANNED_COLUMN_IDS.has(id)) return true;
+      if (PRODUCT_ONLY_COLUMN_IDS.has(id) && !adapterAllow) return true;
+      if (adapterAllow && !adapterAllow.has(id)) return true;
+      return false;
+    });
+    if (unsupported.length === 0) return;
+    flag.warning(
+      'Columns unavailable',
+      `${unsupported.join(', ')} not available on this surface — removed from view.`,
+    );
+    const supportedIds = urlIds.filter((id) => !unsupported.includes(id));
+    const next = new URLSearchParams(searchParams);
+    if (supportedIds.length) next.set('cols', supportedIds.join(','));
+    else next.delete('cols');
+    setSearchParams(next, { replace: true });
+    setVisibleColumns(new Set([...supportedIds, ...DEFAULT_VISIBLE_COLUMNS]));
+    // Run-once on first mount when adapter is ready.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataSource?.allowedColumnIds]);
   // Group-by — matches catalog 076-095. 'none' disables grouping.
   type GroupByKey = 'none' | 'type' | 'status' | 'parent' | 'assignee' | 'priority';
   // Apr 27, 2026 (audit pass 10, IRP-518 alignment): URL param renamed
@@ -2121,6 +2156,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           },
         });
         return function WorkCell(props: any) {
+          // 2026-06-01 (catalyst-clone F7): BR rows with Arabic titles get an
+          // inline "Translate to English" affordance. Project hub rows (English-
+          // only) are unaffected. Translation is per-row, per-session — never
+          // persisted to DB.
+          const row = props.row as BacklogItem;
+          const isBizArabic = (row as any).source === 'biz' && containsArabicHelper(row.title);
           return (
             <span
               style={{
@@ -2132,7 +2173,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               }}
             >
               <span style={{ flexShrink: 0 }}>{keyCellRenderer(props)}</span>
-              <span style={{ flex: 1, minWidth: 0 }}>{summaryCellRenderer(props)}</span>
+              <span style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ flex: 1, minWidth: 0 }}>{summaryCellRenderer(props)}</span>
+                {isBizArabic && row.key && (
+                  <BizArabicTranslateLink
+                    issueKey={row.key}
+                    original={row.title}
+                  />
+                )}
+              </span>
             </span>
           );
         };
@@ -2610,16 +2659,27 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     const adapterAllow = dataSource?.allowedColumnIds
       ? new Set([...dataSource.allowedColumnIds, '__drag', '__actions'])
       : null;
-    return columns.filter((col) => {
+    const allowed = columns.filter((col) => {
       if (!ALLOWED_COLUMN_IDS.has(col.id)) return false;
       if (BANNED_COLUMN_IDS.has(col.id)) return false;
-      // BR-specific columns: only when an adapter explicitly whitelists them.
       if (PRODUCT_ONLY_COLUMN_IDS.has(col.id) && !adapterAllow) return false;
-      // Adapter whitelist (when set) is the final gate.
       if (adapterAllow && !adapterAllow.has(col.id)) return false;
       return true;
     });
-  }, [columns, dataSource?.allowedColumnIds]);
+    // 2026-06-01 (catalyst-clone F11): when URL provides explicit `cols=` order,
+    // honor it. Structural columns (__drag, __actions) and any cols not in URL
+    // keep their registry order, appended after the URL-ordered set.
+    const urlCols = searchParams.get('cols');
+    if (!urlCols) return allowed;
+    const urlOrder = urlCols.split(',').filter(Boolean);
+    const orderIdx = new Map<string, number>();
+    urlOrder.forEach((id, i) => orderIdx.set(id, i));
+    return [...allowed].sort((a, b) => {
+      const ai = orderIdx.has(a.id) ? orderIdx.get(a.id)! : 9999;
+      const bi = orderIdx.has(b.id) ? orderIdx.get(b.id)! : 9999;
+      return ai - bi;
+    });
+  }, [columns, dataSource?.allowedColumnIds, searchParams]);
 
 
   // Editing state — used by EditBacklogItemModal below.
