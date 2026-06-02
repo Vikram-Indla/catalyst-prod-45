@@ -20,6 +20,7 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 import { token } from '@atlaskit/tokens';
 import { PresenceRing } from '@/components/shared/PresenceRing';
 import { useOwnPresence } from '@/hooks/usePresence';
+import { AvailabilityPanel } from '@/components/layout/AvailabilityPanel';
 
 // Atlassian brand purple avatar fallback — canonical Jira/Confluence identity colour.
 const AVATAR_BRAND_PURPLE = token('color.background.brand.boldest', '#5243AA');
@@ -248,6 +249,13 @@ export function ProfileMenu() {
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
+
+          <DropdownMenuSeparator />
+
+          {/* Availability quick-set + leave scheduler */}
+          <div onMouseDown={e => e.preventDefault()}>
+            <AvailabilityPanel onDone={() => setOpen(false)} />
+          </div>
 
           <DropdownMenuSeparator />
 
