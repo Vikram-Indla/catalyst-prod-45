@@ -28,6 +28,7 @@ import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 import { useProjectFavorites, useProjects } from '@/hooks/useProjectHub';
+import { padProjectKey } from '@/lib/project-key';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTheme } from '@/hooks/useTheme';
@@ -91,10 +92,12 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
 
   if (projectKey) {
     const base = `/project-hub/${projectKey}`;
+    const projectName = projects.find(p => p.project_key === projectKey)?.name;
+    const keyCode = padProjectKey(projectKey, projectName);
 
     const projectConfig: SidebarConfig = {
-      badge: projectKey.slice(0, 2).toUpperCase(),
-      label: projectKey.toUpperCase(),
+      badge: keyCode,
+      label: keyCode,
       showFavorites: false,
       // Design critique (2026-04-19): flattened from 3 sections ('', Boards,
       // Planning) to a single unlabeled group. Rationale:

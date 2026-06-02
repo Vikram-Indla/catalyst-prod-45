@@ -23,6 +23,7 @@ import { UWVColumnPicker } from './UWVColumnPicker';
 import { UWVBulkActions } from './UWVBulkActions';
 import { useUWVStatuses, useUWVAssignees } from './useUWVData';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import CatalystAvatar, { type CatalystAvatarSize } from '@/components/shared/CatalystAvatar';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { classifyType, type UWVGroupBy } from './uwv.utils';
 import type { UWVColumn, UWVItem, UWVPrefs } from './uwv.types';
@@ -350,6 +351,20 @@ export function UWVToolbar({
               data={avatarData as any}
               onAvatarClick={handleAvatarClick as any}
               selectedIndexes={selectedAvatarIndexes as any}
+              overrides={{
+                Avatar: {
+                  render: (Component, props) =>
+                    props.src ? (
+                      <Component {...props} />
+                    ) : (
+                      <CatalystAvatar
+                        name={props.name}
+                        size={(props.size as CatalystAvatarSize) ?? 'small'}
+                        borderColor={props.borderColor}
+                      />
+                    ),
+                },
+              }}
             />
           )}
 
