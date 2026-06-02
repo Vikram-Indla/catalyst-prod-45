@@ -11974,7 +11974,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/MobileBottomNav.tsx",
       "src/components/layout/MobileMenuDrawer.tsx",
       "src/components/layout/ReleaseHubSidebar.tsx",
-      "src/components/layout/TaskHubSidebar.tsx",
+      "src/components/layout/TasksSidebar.tsx",
       "src/components/layout/dropdowns/ItemsDropdown.tsx",
       "src/components/project-hub/settings/types/TypeHierarchy.tsx",
       "src/components/resource360/DepartmentIntelligenceOverlay.tsx",
@@ -23979,7 +23979,7 @@ export const usageMap: UsageMap = {
     "origin": "internal",
     "consumers": [
       "src/components/layout/MobileMenuDrawer.tsx",
-      "src/components/layout/TaskHubSidebar.tsx",
+      "src/components/layout/TasksSidebar.tsx",
       "src/components/releases/all-releases/ReleasesToolbar.tsx"
     ]
   },
@@ -27992,7 +27992,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/PlanHubSidebar.tsx",
       "src/components/layout/ProjectHubSidebar.tsx",
       "src/components/layout/ProjectSidebar.tsx",
-      "src/components/layout/TaskHubSidebar.tsx",
+      "src/components/layout/TasksSidebar.tsx",
       "src/components/layout/TestHubSidebar.tsx",
       "src/components/layout/TestManagementSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
@@ -28093,7 +28093,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/ProjectHubSidebar.tsx",
       "src/components/layout/ReleaseHubSidebar.tsx",
       "src/components/layout/ReleasesManagementSidebar.tsx",
-      "src/components/layout/TaskHubSidebar.tsx",
+      "src/components/layout/TasksSidebar.tsx",
       "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/TestManagementSidebar.tsx",
       "src/components/layout/UnifiedSidebar.tsx",
@@ -28123,7 +28123,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/ProductHubSidebar.tsx",
       "src/components/layout/ProductRoomSidebar.tsx",
       "src/components/layout/ProjectHubSidebar.tsx",
-      "src/components/layout/TaskHubSidebar.tsx",
+      "src/components/layout/TasksSidebar.tsx",
       "src/components/layout/TestHubSidebar.tsx",
       "src/components/planhub/PlanHubShell.tsx",
       "src/components/planhub/views/PlanEditor.tsx",
@@ -28796,7 +28796,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/IncidentHubSidebar.tsx",
       "src/components/layout/MobileMenuDrawer.tsx",
       "src/components/layout/OperationsSidebar.tsx",
-      "src/components/layout/TaskHubSidebar.tsx",
+      "src/components/layout/TasksSidebar.tsx",
       "src/components/planner/task-modal/organisms/tabs/ActivityTab.tsx",
       "src/components/project-hub/ProjectToolbar.tsx",
       "src/components/project-hub/shell/SidebarProjectNav.tsx",
@@ -29818,7 +29818,7 @@ export const usageMap: UsageMap = {
     "source": "@/lib/atlaskit-icons",
     "origin": "internal",
     "consumers": [
-      "src/components/layout/TaskHubSidebar.tsx"
+      "src/components/layout/TasksSidebar.tsx"
     ]
   },
   "MagicWandIcon::@atlaskit/icon/core/magic-wand": {
@@ -40673,7 +40673,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/ProjectHubSidebar.tsx",
       "src/components/layout/ProjectSidebar.tsx",
       "src/components/layout/ReleaseHubSidebar.tsx",
-      "src/components/layout/TaskHubSidebar.tsx",
+      "src/components/layout/TasksSidebar.tsx",
       "src/components/layout/TeamRoomSidebar.tsx",
       "src/components/layout/TestHubSidebar.tsx",
       "src/components/layout/TestManagementSidebar.tsx",
@@ -41389,7 +41389,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/ProjectSidebar.tsx",
       "src/components/layout/ReleaseHubSidebar.tsx",
       "src/components/layout/ReleasesManagementSidebar.tsx",
-      "src/components/layout/TaskHubSidebar.tsx",
+      "src/components/layout/TasksSidebar.tsx",
       "src/components/layout/TestHubSidebar.tsx",
       "src/components/layout/TestManagementSidebar.tsx",
       "src/components/layout/WikiSidebar.tsx"
@@ -41420,7 +41420,7 @@ export const usageMap: UsageMap = {
       "src/components/layout/ProjectSidebar.tsx",
       "src/components/layout/ReleaseHubSidebar.tsx",
       "src/components/layout/ReleasesManagementSidebar.tsx",
-      "src/components/layout/TaskHubSidebar.tsx",
+      "src/components/layout/TasksSidebar.tsx",
       "src/components/layout/TestHubSidebar.tsx",
       "src/components/layout/TestManagementSidebar.tsx",
       "src/components/layout/WikiSidebar.tsx"

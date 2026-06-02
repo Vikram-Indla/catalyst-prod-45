@@ -164,9 +164,9 @@ const PlanHubSidebar = lazyWithRetry(
   () => import("./PlanHubSidebar").then((m) => ({ default: m.PlanHubSidebar })),
   "PlanHubSidebar",
 );
-const TaskHubSidebar = lazyWithRetry(
-  () => import("./TaskHubSidebar").then((m) => ({ default: m.TaskHubSidebar })),
-  "TaskHubSidebar",
+const TasksSidebar = lazyWithRetry(
+  () => import("./TasksSidebar").then((m) => ({ default: m.TasksSidebar })),
+  "TasksSidebar",
 );
 const TestHubSidebar = lazyWithRetry(
   () => import("./TestHubSidebar").then((m) => ({ default: m.TestHubSidebar })),
@@ -713,7 +713,7 @@ function CatalystShellContent() {
 
     // TaskHub sidebar
     if (isTaskHubRoute) {
-      return <TaskHubSidebar expanded={true} onToggle={cycleSidebarState} />;
+      return <TasksSidebar expanded={true} onToggle={cycleSidebarState} />;
     }
 
     // TestHub sidebar
