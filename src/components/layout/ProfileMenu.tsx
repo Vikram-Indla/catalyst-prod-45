@@ -19,10 +19,8 @@ import { useTheme } from '@/hooks/useTheme';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { token } from '@atlaskit/tokens';
 
-// Atlassian brand purple — kept as a literal because it is the canonical
-// avatar fallback colour across both light and dark modes (Jira / Confluence
-// parity). Do not migrate to a token; this is a brand identity hex.
-const AVATAR_BRAND_PURPLE = '#5243AA';
+// Atlassian brand purple avatar fallback — canonical Jira/Confluence identity colour.
+const AVATAR_BRAND_PURPLE = token('color.background.brand.boldest', '#5243AA');
 
 /**
  * ProfileMenu — Radix rebuild Apr 2026
@@ -55,10 +53,8 @@ export function ProfileMenu() {
     (user?.user_metadata?.name as string | undefined) ||
     email.split('@')[0] ||
     'User';
-  const avatarUrl =
-    (user?.user_metadata?.avatar_url as string | undefined) ||
-    resolveAvatarUrl(name) ||
-    undefined;
+  // Only use bundled local avatars — external CDN URLs (Google OAuth, Gravatar) are banned per CLAUDE.md G6.
+  const avatarUrl = resolveAvatarUrl(name) || undefined;
 
   const initials =
     name
@@ -138,15 +134,15 @@ export function ProfileMenu() {
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="w-72 p-0 z-[1000]"
+        style={{ width: 288, padding: 0, zIndex: 1000 }}
       >
         {/* Identity header */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 12,
-            padding: '12px 14px',
+            gap: 8,
+            padding: '12px 16px',
             borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             background: token('elevation.surface.sunken', '#F4F5F7'),
           }}
@@ -206,8 +202,14 @@ export function ProfileMenu() {
 
         <div style={{ padding: 4 }}>
           <DropdownMenuLabel
-            className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide"
-            style={{ color: token('color.text.subtle', '#6B778C') }}
+            style={{
+              padding: '4px 8px',
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+              color: token('color.text.subtle', '#6B778C'),
+            }}
           >
             Account
           </DropdownMenuLabel>
@@ -216,9 +218,9 @@ export function ProfileMenu() {
               e.preventDefault();
               go('/profile');
             }}
-            className="cursor-pointer"
+            style={{ cursor: 'pointer' }}
           >
-            <UserIcon className="mr-2 h-4 w-4" />
+            <UserIcon style={{ marginRight: 8, width: 16, height: 16, flexShrink: 0 }} />
             <span>Profile</span>
           </DropdownMenuItem>
           {/* Resource 360 entry REMOVED 2026-05-31 — accessible via the
@@ -229,29 +231,29 @@ export function ProfileMenu() {
               e.preventDefault();
               go('/settings');
             }}
-            className="cursor-pointer"
+            style={{ cursor: 'pointer' }}
           >
-            <SettingsIcon className="mr-2 h-4 w-4" />
+            <SettingsIcon style={{ marginRight: 8, width: 16, height: 16, flexShrink: 0 }} />
             <span>Account settings</span>
           </DropdownMenuItem>
 
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="cursor-pointer">
-              <Palette className="mr-2 h-4 w-4" />
+            <DropdownMenuSubTrigger style={{ cursor: 'pointer' }}>
+              <Palette style={{ marginRight: 8, width: 16, height: 16, flexShrink: 0 }} />
               <span>Theme</span>
             </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="z-[1001]">
+            <DropdownMenuSubContent style={{ zIndex: 1001 }}>
               <DropdownMenuItem
                 onSelect={(e) => {
                   e.preventDefault();
                   setTheme('light');
                 }}
-                className="cursor-pointer"
+                style={{ cursor: 'pointer' }}
               >
-                <Sun className="mr-2 h-4 w-4" />
+                <Sun style={{ marginRight: 8, width: 16, height: 16, flexShrink: 0 }} />
                 Light
                 {theme === 'light' && (
-                  <span className="ml-auto" style={{ color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
+                  <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -259,12 +261,12 @@ export function ProfileMenu() {
                   e.preventDefault();
                   setTheme('dark');
                 }}
-                className="cursor-pointer"
+                style={{ cursor: 'pointer' }}
               >
-                <Moon className="mr-2 h-4 w-4" />
+                <Moon style={{ marginRight: 8, width: 16, height: 16, flexShrink: 0 }} />
                 Dark
                 {theme === 'dark' && (
-                  <span className="ml-auto" style={{ color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
+                  <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -272,12 +274,12 @@ export function ProfileMenu() {
                   e.preventDefault();
                   setTheme('system');
                 }}
-                className="cursor-pointer"
+                style={{ cursor: 'pointer' }}
               >
-                <Monitor className="mr-2 h-4 w-4" />
+                <Monitor style={{ marginRight: 8, width: 16, height: 16, flexShrink: 0 }} />
                 Match system
                 {theme === 'system' && (
-                  <span className="ml-auto" style={{ color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
+                  <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
                 )}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
@@ -290,9 +292,9 @@ export function ProfileMenu() {
               e.preventDefault();
               void handleSignOut();
             }}
-            className="cursor-pointer"
+            style={{ cursor: 'pointer' }}
           >
-            <LogOut className="mr-2 h-4 w-4" />
+            <LogOut style={{ marginRight: 8, width: 16, height: 16, flexShrink: 0 }} />
             <span>Log out</span>
           </DropdownMenuItem>
         </div>
