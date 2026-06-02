@@ -1,8 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { token } from '@atlaskit/tokens';
 import { usePresence } from '@/hooks/usePresence';
 import { useToast } from '@/hooks/use-toast';
-import { ScheduleLeaveModal } from '@/components/layout/ScheduleLeaveModal';
 import type { PresenceState } from '@/lib/presence';
 
 const QUICK_SET: { label: string; state: PresenceState; color: string; outline?: boolean }[] = [
@@ -13,13 +12,13 @@ const QUICK_SET: { label: string; state: PresenceState; color: string; outline?:
 
 interface Props {
   onDone?: () => void;
+  onScheduleLeave?: () => void;
   currentState?: PresenceState | null;
 }
 
-export function AvailabilityPanel({ onDone, currentState }: Props) {
+export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Props) {
   const { setPresence, isPending: isPresencePending } = usePresence();
   const { toast } = useToast();
-  const [showModal, setShowModal] = useState(false);
 
   const handleQuickSet = useCallback(
     async (state: PresenceState) => {
@@ -32,8 +31,7 @@ export function AvailabilityPanel({ onDone, currentState }: Props) {
   );
 
   return (
-    <>
-      <div className="av-panel-compact" style={{ padding: '8px 12px', minWidth: 240 }}>
+    <div className="av-panel-compact" style={{ padding: '8px 12px', minWidth: 240 }}>
         {/* Quick-set section */}
         <div
           style={{
@@ -121,7 +119,7 @@ export function AvailabilityPanel({ onDone, currentState }: Props) {
           }}
         >
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => onScheduleLeave?.()}
             style={{
               background: 'none',
               border: 'none',
@@ -138,11 +136,5 @@ export function AvailabilityPanel({ onDone, currentState }: Props) {
           </button>
         </div>
       </div>
-
-      <ScheduleLeaveModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-      />
-    </>
   );
 }

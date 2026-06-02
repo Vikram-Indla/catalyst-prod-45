@@ -21,6 +21,7 @@ import { token } from '@atlaskit/tokens';
 import { PresenceRing } from '@/components/shared/PresenceRing';
 import { useOwnPresence } from '@/hooks/usePresence';
 import { AvailabilityPanel } from '@/components/layout/AvailabilityPanel';
+import { ScheduleLeaveModal } from '@/components/layout/ScheduleLeaveModal';
 
 
 /**
@@ -49,6 +50,7 @@ export function ProfileMenu() {
   // for the original three-way branch by user role.
 
   const { data: ownPresence } = useOwnPresence();
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
 
   const email = user?.email ?? '';
   const name =
@@ -83,6 +85,7 @@ export function ProfileMenu() {
   };
 
   return (
+    <>
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <button
@@ -263,6 +266,7 @@ export function ProfileMenu() {
           {/* Availability quick-set + leave scheduler */}
           <AvailabilityPanel
             onDone={() => setOpen(false)}
+            onScheduleLeave={() => { setOpen(false); setShowLeaveModal(true); }}
             currentState={ownPresence?.state ?? null}
           />
 
@@ -281,5 +285,11 @@ export function ProfileMenu() {
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
+
+    <ScheduleLeaveModal
+      isOpen={showLeaveModal}
+      onClose={() => setShowLeaveModal(false)}
+    />
+    </>
   );
 }
