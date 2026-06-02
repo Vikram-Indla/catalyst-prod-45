@@ -10,7 +10,7 @@ interface ProjectConfig {
   status_categories?: string[]
   statuses?: string[]  // legacy support
   issue_types?: string[]
-  fix_versions?: string[]
+  sprint_release?: string[]
 }
 
 Deno.serve(async (req) => {
@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
   const body = await req.json().catch(() => ({}))
   const syncType: string = body.sync_type || 'full'
   const overrideIssueTypes: string[] | undefined = body.issue_types
-  const overrideFixVersions: string[] | undefined = body.fix_versions
+  const overrideSprintRelease: string[] | undefined = body.sprint_release
   const overrideProjects: string[] | undefined = body.projects || body.projectKeys
   const overrideProjectConfigs: Record<string, ProjectConfig> | undefined = body.project_configs
 
@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
     const hierarchyLevels: Array<{ level: number; name: string; jiraTypes: string[] }> = cfg.hierarchy_levels || []
     const statusMapping: Record<string, string[]> = cfg.status_mapping || {}
     const syncIssueTypes: string[] = overrideIssueTypes || cfg.sync_issue_types || []
-    const syncFixVersions: string[] = overrideFixVersions || cfg.sync_fix_versions || []
+    const syncSprintRelease: string[] = overrideSprintRelease || cfg.sync_sprint_release || []
     const syncProjects: string[] = overrideProjects || cfg.sync_projects || []
 
     const base = conn.site_url.replace(/\/$/, '')
@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
     const projectsToSync = syncProjects.length > 0 ? syncProjects : allProjectKeys
 
     for (const projectKey of projectsToSync) {
-      const pConfig = projectConfigs[projectKey] || { lookback_months: 3, status_categories: [], issue_types: [], fix_versions: [] }
+      const pConfig = projectConfigs[projectKey] || { lookback_months: 3, status_categories: [], issue_types: [], sprint_release: [] }
       const lookbackMonths = pConfig.lookback_months ?? 3
 
       // Build JQL for this project — SUPER STRICT GUARDRAIL: enforce 2026+ data window
@@ -125,18 +125,18 @@ Deno.serve(async (req) => {
         jqlParts.push(`issuetype in (${syncIssueTypes.map(t => `"${t}"`).join(',')})`)
       }
 
-      // Per-project fix version filter
-      const projFixVersions = (pConfig.fix_versions || []).filter(v => v !== '__NO_VERSION__')
-      const includeNoVersion = (pConfig.fix_versions || []).includes('__NO_VERSION__')
+      // Per-project sprint release filter
+      const projSprintRelease = (pConfig.sprint_release || []).filter(v => v !== '__NO_VERSION__')
+      const includeNoVersion = (pConfig.sprint_release || []).includes('__NO_VERSION__')
 
-      if (projFixVersions.length > 0 && includeNoVersion) {
-        jqlParts.push(`(fixVersion in (${projFixVersions.map(v => `"${v}"`).join(',')}) OR fixVersion is EMPTY)`)
-      } else if (projFixVersions.length > 0) {
-        jqlParts.push(`fixVersion in (${projFixVersions.map(v => `"${v}"`).join(',')})`)
+      if (projSprintRelease.length > 0 && includeNoVersion) {
+        jqlParts.push(`(fixVersion in (${projSprintRelease.map(v => `"${v}"`).join(',')}) OR fixVersion is EMPTY)`)
+      } else if (projSprintRelease.length > 0) {
+        jqlParts.push(`fixVersion in (${projSprintRelease.map(v => `"${v}"`).join(',')})`)
       } else if (includeNoVersion) {
         jqlParts.push(`fixVersion is EMPTY`)
-      } else if (syncFixVersions.length > 0) {
-        jqlParts.push(`fixVersion in (${syncFixVersions.map(v => `"${v}"`).join(',')})`)
+      } else if (syncSprintRelease.length > 0) {
+        jqlParts.push(`fixVersion in (${syncSprintRelease.map(v => `"${v}"`).join(',')})`)
       }
 
       const jql = `${jqlParts.join(' AND ')} ORDER BY updated DESC`
@@ -311,7 +311,7 @@ Deno.serve(async (req) => {
         parent_key: issue.fields.parent?.key || resolveParentFromLinks(issue) || null,
         parent_summary: issue.fields.parent?.fields?.summary || resolveParentSummaryFromLinks(issue) || null,
         hierarchy_level: getHierarchyLevel(issue.fields.issuetype?.name || 'Task'),
-        fix_versions: (issue.fields.fixVersions || []).map((v: any) => ({
+        sprint_release: (issue.fields.fixVersions || []).map((v: any) => ({
           id: v.id, name: v.name, releaseDate: v.releaseDate
         })),
         due_date: issue.fields.duedate || null,

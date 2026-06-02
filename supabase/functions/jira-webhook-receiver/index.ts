@@ -151,11 +151,11 @@ async function handleIssueUpdateForForYou(payload: any) {
   }
 }
 
-async function handleFixVersionsChange(payload: any) {
-  const hasFixVersionChange = payload.changelog?.items?.some(
+async function handleSprintReleaseChange(payload: any) {
+  const hasSprintReleaseChange = payload.changelog?.items?.some(
     (i: any) => i.field === 'fixVersions'
   );
-  if (!hasFixVersionChange) return false; // signal: not handled
+  if (!hasSprintReleaseChange) return false; // signal: not handled
 
   const issueKey = payload.issue.key;
   const issueId = payload.issue.id;
@@ -163,19 +163,19 @@ async function handleFixVersionsChange(payload: any) {
   const issueType = payload.issue.fields.issuetype?.name ?? null;
   const status = payload.issue.fields.status?.name ?? null;
   const storyPts = payload.issue.fields.story_points ?? null;
-  const fixVersionIds: string[] =
+  const sprintReleaseIds: string[] =
     (payload.issue.fields.fixVersions ?? []).map((v: any) => v.id);
 
   // Find matching rh_releases by jira_key
   const { data: matchedReleases } = await supabase
     .from('rh_releases')
     .select('id, jira_key')
-    .in('jira_key', fixVersionIds.length > 0 ? fixVersionIds : ['__none__']);
+    .in('jira_key', sprintReleaseIds.length > 0 ? sprintReleaseIds : ['__none__']);
 
   const releaseIds = (matchedReleases ?? []).map((r: any) => r.id);
 
-  // Delete memberships no longer in fixVersions
-  if (fixVersionIds.length === 0) {
+  // Delete memberships no longer in sprint/release
+  if (sprintReleaseIds.length === 0) {
     await supabase
       .from('rh_release_issues')
       .delete()
@@ -392,7 +392,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ── Issue events — For You page + fixVersions ──
+    // ── Issue events — For You page + Sprint/Release ──
     if (webhookEvent === 'jira:issue_updated' && payload.issue && payload.changelog) {
       try {
         // Record for For You page (assignee + reporter activity)
@@ -402,13 +402,13 @@ Deno.serve(async (req) => {
       }
 
       try {
-        // Handle fix version changes (release hub)
-        const handled = await handleFixVersionsChange(payload);
+        // Handle sprint/release changes (release hub)
+        const handled = await handleSprintReleaseChange(payload);
         if (handled) {
           // Also queue into sync_events for existing issue processing
         }
       } catch (err) {
-        console.error('fixVersions handler error:', err);
+        console.error('sprintRelease handler error:', err);
       }
     }
 

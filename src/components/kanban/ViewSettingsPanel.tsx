@@ -122,7 +122,7 @@ export function ViewSettingsPanel({
     { key: 'linkedWorkItems', label: 'Linked work items' },
     { key: 'priority', label: 'Priority' },
     { key: 'assignee', label: 'Assignee' },
-    { key: 'fixVersions', label: 'Fix versions' },
+    { key: 'sprintRelease', label: 'Sprint/Release' },
   ];
 
   return (

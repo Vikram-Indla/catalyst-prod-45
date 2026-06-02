@@ -112,7 +112,7 @@ export function useEpicBacklog(projectId: string, opts?: { assigneeIds?: string[
       : ['backlog-epics', projectId, projectKey],
     queryFn: async (): Promise<BacklogEpic[]> => {
       if (!hasAssigneeOverride && !projectKey) return [];
-      const SELECT = 'issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, jira_created_at, jira_updated_at, source, labels, fix_versions, sort_order';
+      const SELECT = 'issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, jira_created_at, jira_updated_at, source, labels, sprint_release, sort_order';
       let query = supabase
         .from('ph_issues')
         .select(SELECT)
@@ -154,8 +154,8 @@ export function useEpicBacklog(projectId: string, opts?: { assigneeIds?: string[
         labels: Array.isArray(row.labels)
           ? (row.labels as any[]).map(l => (typeof l === 'string' ? l : (l?.name ?? String(l))))
           : null,
-        fix_versions: Array.isArray(row.fix_versions)
-          ? (row.fix_versions as any[]).map(v => (typeof v === 'string' ? v : (v?.name ?? String(v))))
+        sprint_release: Array.isArray(row.sprint_release)
+          ? (row.sprint_release as any[]).map(v => (typeof v === 'string' ? v : (v?.name ?? String(v))))
           : null,
         rank_order: typeof row.sort_order === 'number' ? row.sort_order : null,
       })) as BacklogEpic[];
@@ -209,7 +209,7 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
       : ['backlog-stories-v2', projectId, projectKey],
     queryFn: async (): Promise<BacklogStory[]> => {
       if (!hasAssigneeOverride && !projectKey) return [];
-      const SELECT = 'issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source, issue_type, labels, fix_versions, sort_order';
+      const SELECT = 'issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source, issue_type, labels, sprint_release, sort_order';
       let query = supabase
         .from('ph_issues')
         .select(SELECT)
@@ -327,8 +327,8 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
         labels: Array.isArray(row.labels)
           ? (row.labels as any[]).map(l => (typeof l === 'string' ? l : (l?.name ?? String(l))))
           : null,
-        fix_versions: Array.isArray(row.fix_versions)
-          ? (row.fix_versions as any[]).map(v => (typeof v === 'string' ? v : (v?.name ?? String(v))))
+        sprint_release: Array.isArray(row.sprint_release)
+          ? (row.sprint_release as any[]).map(v => (typeof v === 'string' ? v : (v?.name ?? String(v))))
           : null,
         rank_order: typeof row.sort_order === 'number' ? row.sort_order : null,
         feature: row.parent_key && epicMap[row.parent_key] ? {

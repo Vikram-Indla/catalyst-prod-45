@@ -6038,12 +6038,12 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
   background-color: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7)) !important;
 }
 
-/* ─── Fix Versions pill styling (right rail) ────────────────────────────────
-   Jira renders fix versions as bordered secondary pills with 1px border,
+/* ─── Sprint/Release pill styling (right rail) ────────────────────────────────
+   Jira renders sprint/releases as bordered secondary pills with 1px border,
    subtle background, and text padding. Applied to @atlaskit/select MultiValue
    components in the CatalystSidebarDetails right rail.
    ────────────────────────────────────────────────────────────────────────── */
-.cv-fixversions-select__multi-value {
+.cv-sprintreleases-select__multi-value {
   border: 1px solid var(--cp-jira-fixver-border, #dfe1e6);
   border-radius: 3px;
   background-color: var(--cp-jira-fixver-bg, #f1f2f4);
@@ -6051,19 +6051,19 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
   margin: 2px;
 }
 
-.cv-fixversions-select__multi-value__label {
+.cv-sprintreleases-select__multi-value__label {
   color: var(--cp-jira-fixver-fg, #172b4d);
   padding: 2px 4px;
   font-size: 13px;
   font-weight: 400;
 }
 
-.cv-fixversions-select__multi-value__remove {
+.cv-sprintreleases-select__multi-value__remove {
   color: var(--cp-jira-fixver-fg, #172b4d);
   padding: 0 2px;
 }
 
-.cv-fixversions-select__multi-value__remove:hover {
+.cv-sprintreleases-select__multi-value__remove:hover {
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 2px;
 }

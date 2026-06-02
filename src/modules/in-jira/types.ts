@@ -49,7 +49,7 @@ export interface Issue {
   storyPoints?: number;
   labels?: string[];
   components?: string[];
-  fixVersions?: string[];
+  sprintRelease?: string[];
   sprintId?: string;
   createdAt: string;
   updatedAt: string;
@@ -163,7 +163,7 @@ export interface CreateIssueData {
   assigneeId?: string;
   labels?: string[];
   components?: string[];
-  fixVersions?: string[];
+  sprintRelease?: string[];
   epicId?: string;
   parentId?: string;
   storyPoints?: number;

@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Search, ChevronDown, Check, X, Milestone, FolderGit2, Layers, Activity, Filter } from '@/lib/atlaskit-icons';
-import { useIssueProjectKeys, useIssueTypes, useIssueStatuses, useIssueFixVersions } from '@/hooks/workhub/useWorkItems';
+import { useIssueProjectKeys, useIssueTypes, useIssueStatuses, useIssueSprintReleases } from '@/hooks/workhub/useWorkItems';
 import type { WorkItemFilterConfig } from '@/hooks/workhub/useWorkItems';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -233,7 +233,7 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
   const { data: projectKeys = [] } = useIssueProjectKeys();
   const { data: issueTypes = [] } = useIssueTypes();
   const { data: statuses = [] } = useIssueStatuses();
-  const { data: fixVersions = [] } = useIssueFixVersions();
+  const { data: sprintReleases = [] } = useIssueSprintReleases();
 
   // Fetch project names from ph_jira_projects for display labels
   const { data: projectNameMap = {} } = useQuery({
@@ -257,8 +257,8 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
   const typeOptions = useMemo(() => issueTypes.map(t => ({ value: t, label: t })), [issueTypes]);
   const statusOptions = useMemo(() => statuses.map(s => ({ value: s, label: s })), [statuses]);
   const releaseOptions = useMemo(
-    () => fixVersions.map(v => ({ value: v.name, label: v.name, meta: v.releaseDate || undefined })),
-    [fixVersions]
+    () => sprintReleases.map(v => ({ value: v.name, label: v.name, meta: v.releaseDate || undefined })),
+    [sprintReleases]
   );
 
   const handleSearch = (val: string) => {

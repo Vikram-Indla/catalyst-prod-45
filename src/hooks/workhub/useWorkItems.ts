@@ -20,7 +20,7 @@ export interface JiraIssue {
   parent_key: string | null;
   parent_summary: string | null;
   hierarchy_level: number;
-  fix_versions: any[];
+  sprint_release: any[];
   due_date: string | null;
   effective_due_date: string | null;
   effective_due_source: string | null;
@@ -55,7 +55,7 @@ export interface WorkItemFilterConfig {
   project_keys?: string[];
   search_query?: string;
   priorities?: string[];
-  fix_version_names?: string[];
+  sprint_release_names?: string[];
   theme_ids?: string[];
 }
 
@@ -135,7 +135,7 @@ export function useWorkItems(
 ) {
   const page = pagination?.page ?? 0;
   const pageSize = pagination?.pageSize ?? 50;
-  const hasVersionFilter = (filters?.fix_version_names?.length ?? 0) > 0;
+  const hasVersionFilter = (filters?.sprint_release_names?.length ?? 0) > 0;
 
   return useQuery({
     queryKey: ['projecthub', 'work-items', filters, page, pageSize],
@@ -143,7 +143,7 @@ export function useWorkItems(
       if (hasVersionFilter) {
         // Use server-side JSONB containment for each version name
         // Build an OR filter using PostgREST contains operator
-        const versionNames = filters!.fix_version_names!;
+        const versionNames = filters!.sprint_release_names!;
         
         // For a single version, use contains directly
         // For multiple, we need to do parallel queries and merge
@@ -159,11 +159,11 @@ export function useWorkItems(
             let q = supabase
               .from('ph_issues')
               .select('*')
-              .contains('fix_versions', JSON.stringify([{ name: vName }]))
+              .contains('sprint_release', JSON.stringify([{ name: vName }]))
               .order('jira_updated_at', { ascending: false })
               .range(from, to);
-            // Apply other filters (not fix_version_names)
-            const otherFilters = { ...filters, fix_version_names: undefined };
+            // Apply other filters (not sprint_release_names)
+            const otherFilters = { ...filters, sprint_release_names: undefined };
             q = buildFilteredQuery(q, otherFilters);
             const { data, error } = await q;
             if (error) throw new Error(error.message);
@@ -230,16 +230,16 @@ function useWorkItemFilters() {
         issue_types: string[];
         statuses: string[];
         project_keys: string[];
-        fix_versions: { name: string; releaseDate?: string }[];
+        sprint_release: { name: string; releaseDate?: string }[];
       };
     },
     staleTime: 120_000,
   });
 }
 
-export function useIssueFixVersions() {
+export function useIssueSprintReleases() {
   const { data, ...rest } = useWorkItemFilters();
-  return { data: data?.fix_versions ?? [], ...rest };
+  return { data: data?.sprint_release ?? [], ...rest };
 }
 
 export function useIssueProjectKeys() {

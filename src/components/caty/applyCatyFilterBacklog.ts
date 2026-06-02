@@ -13,7 +13,7 @@
  * applyCatyFilter to accept accessors — keeps the AllWork code path
  * untouched and zero-risk.
  *
- * Time-window, label, sprint, fix-version and id-based filters are
+ * Time-window, label, sprint, sprint-release and id-based filters are
  * NOT applied (BacklogItem doesn't carry those fields). They're left
  * here as no-ops so future schema additions only need the type
  * extended, not the matcher rewritten.

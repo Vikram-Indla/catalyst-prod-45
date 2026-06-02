@@ -39,7 +39,7 @@ interface DisplayProps {
 /* paddingInlineStart: 8 matches @atlaskit/select's default value-
  * container padding (2px 8px) that every right-rail editable picker
  * (EditableAssignee, EditableReporter, EditablePriority,
- * EditableLabels, EditableFixVersions) inherits. Without it, the
+ * EditableLabels, EditableSprintRelease) inherits. Without it, the
  * read-only fields render flush left and visually jog 8px to the
  * LEFT of the editable rows above — the "Actual end" / "Actual
  * start" / "IR Demo Date" all sat slightly LEFT of the

@@ -16,7 +16,7 @@ const FACET_TO_JQL_FIELD: Partial<Record<keyof FilterState, string>> = {
   priority:    'priority',
   workType:    'issuetype',
   labels:      'labels',
-  fixVersions: 'fixVersion',
+  sprintReleases: 'fixVersion',
   sprint:      'sprint',
   resolution:  'resolution',
 };

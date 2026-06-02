@@ -128,7 +128,7 @@ Time windows
 Hierarchy & grouping
 - parent_keys         string[]  Jira issue keys like "BAU-4466"; use when user references "everything under …", "in this epic", a specific key
 - sprint_names        string[]  exact sprint names
-- fix_versions        string[]  exact fix-version names
+- sprint_release      string[]  exact sprint/release names
 - labels              string[]  exact label strings
 
 Engagement / weight
@@ -350,8 +350,8 @@ function sanitizeFilters(
   const sprintNames = strArr(raw.sprint_names);
   if (sprintNames) out.sprint_names = sprintNames;
 
-  const fixVersions = strArr(raw.fix_versions);
-  if (fixVersions) out.fix_versions = fixVersions;
+  const sprintRelease = strArr(raw.sprint_release);
+  if (sprintRelease) out.sprint_release = sprintRelease;
 
   const labels = strArr(raw.labels);
   if (labels) out.labels = labels;

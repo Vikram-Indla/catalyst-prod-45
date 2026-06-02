@@ -9,7 +9,7 @@ import type {
   ReporterOption,
   StatusFilterOption,
   WorkTypeOption,
-  FixVersionOption,
+  SprintReleaseOption,
   LabelOption,
 } from '@/components/shared/JiraFilterAtlaskit';
 import type { LozengeAppearance } from '@/components/shared/JiraTable';
@@ -34,7 +34,7 @@ export interface FilterOptionPools {
   reporters:    ReporterOption[];
   statuses:     StatusFilterOption[];
   workTypes:    WorkTypeOption[];
-  fixVersions:  FixVersionOption[];
+  sprintReleases:  SprintReleaseOption[];
   labels:       LabelOption[];
   isLoading:    boolean;
 }
@@ -46,7 +46,7 @@ export function useFilterOptionPools(projectKey?: string): FilterOptionPools {
       let q = supabase
         .from('ph_issues')
         .select(
-          'assignee_account_id, assignee_display_name, reporter_account_id, reporter_display_name, status, status_category, issue_type, fix_versions, labels'
+          'assignee_account_id, assignee_display_name, reporter_account_id, reporter_display_name, status, status_category, issue_type, sprint_release, labels'
         )
         .is('deleted_at', null)
         .limit(2000);
@@ -112,17 +112,17 @@ export function useFilterOptionPools(projectKey?: string): FilterOptionPools {
         return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
       });
 
-      // ── Fix versions ──────────────────────────────────────────────────────
+      // ── Sprint/Releases ──────────────────────────────────────────────────────
       const fvSet = new Set<string>();
       for (const r of rows) {
-        const fv = r.fix_versions;
+        const fv = r.sprint_release;
         if (!fv) continue;
         const arr: string[] = Array.isArray(fv)
           ? (fv as any[]).map((v: any) => typeof v === 'string' ? v : v?.name ?? '').filter(Boolean)
           : typeof fv === 'string' ? [fv] : [];
         arr.forEach(v => fvSet.add(v));
       }
-      const fixVersions: FixVersionOption[] = [...fvSet]
+      const sprintReleases: SprintReleaseOption[] = [...fvSet]
         .sort()
         .map(v => ({ id: v, label: v }));
 
@@ -145,7 +145,7 @@ export function useFilterOptionPools(projectKey?: string): FilterOptionPools {
         reporters:   [...reporterMap.values()].sort((a, b) => a.name.localeCompare(b.name)),
         statuses:    [...statusMap.values()].sort((a, b) => a.label.localeCompare(b.label)),
         workTypes,
-        fixVersions,
+        sprintReleases,
         labels,
       };
     },
@@ -156,7 +156,7 @@ export function useFilterOptionPools(projectKey?: string): FilterOptionPools {
     reporters:   data?.reporters   ?? [],
     statuses:    data?.statuses    ?? [],
     workTypes:   data?.workTypes   ?? [],
-    fixVersions: data?.fixVersions ?? [],
+    sprintReleases: data?.sprintReleases ?? [],
     labels:      data?.labels      ?? [],
     isLoading,
   };

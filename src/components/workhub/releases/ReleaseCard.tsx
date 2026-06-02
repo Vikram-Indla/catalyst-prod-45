@@ -1,5 +1,5 @@
 /**
- * ReleaseCard — Shows real Jira fix version data with project groupings and assignee avatars
+ * ReleaseCard — Shows real Jira sprint/release data with project groupings and assignee avatars
  */
 import { useState } from 'react';
 import { ArrowRight, AlertTriangle, FolderGit2 } from '@/lib/atlaskit-icons';

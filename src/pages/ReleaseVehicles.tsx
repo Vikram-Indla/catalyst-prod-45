@@ -16,7 +16,7 @@ export default function ReleaseVehicles() {
             </div>
             <h2 className="text-xl font-semibold mb-2">Release Vehicles Coming Soon</h2>
             <p className="text-muted-foreground">
-              Release vehicle management will be available here. Define and track release vehicles (fix versions) that bundle features and stories for deployment.
+              Release vehicle management will be available here. Define and track release vehicles (sprint/releases) that bundle features and stories for deployment.
             </p>
           </div>
         </Card>

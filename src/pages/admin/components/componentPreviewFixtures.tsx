@@ -52,7 +52,7 @@ const MOCK_ISSUE: PhIssue = {
   reporter_account_id: null,
   reporter_display_name: 'Amadou Ndiaye',
   project_key: 'BAU',
-  fix_versions: null,
+  sprint_release: null,
   labels: ['design-system', 'canonical'],
   jira_created_at: '2026-05-01T09:00:00Z',
   jira_updated_at: '2026-05-18T12:00:00Z',

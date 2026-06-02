@@ -21,7 +21,7 @@
  *
  *   Created              [From] → [To]
  *
- *   Fix versions         [pill] [pill] + ...
+ *   Sprint/Release       [pill] [pill] + ...
  *
  *   Labels               [pill] [pill] [pill] + ...
  *
@@ -76,10 +76,11 @@ export interface ReporterOption {
   avatarUrl?: string | null;
 }
 
-export interface FixVersionOption {
+export interface SprintReleaseOption {
   id: string;
   label: string;
 }
+
 
 export interface LabelOption {
   id: string;
@@ -109,7 +110,7 @@ export interface JiraFilterValue {
   dateRange: { start?: string | null; due?: string | null };
   assignees: string[];
   created: { from?: string | null; to?: string | null };
-  fixVersions: string[];
+  sprintReleases: string[];
   labels: string[];
 }
 
@@ -122,7 +123,7 @@ export const emptyFilterValue: JiraFilterValue = {
   dateRange: {},
   assignees: [],
   created: {},
-  fixVersions: [],
+  sprintReleases: [],
   labels: [],
 };
 
@@ -136,7 +137,7 @@ export function countActiveFilters(v: JiraFilterValue): number {
   if (v.dateRange.start || v.dateRange.due) n += 1;
   n += v.assignees.length;
   if (v.created.from || v.created.to) n += 1;
-  n += v.fixVersions.length;
+  n += v.sprintReleases.length;
   n += v.labels.length;
   return n;
 }
@@ -159,7 +160,7 @@ export interface JiraFilterAtlaskitProps {
   /** Option pools — the parent supplies what's available for the project. */
   assignees?: AssigneeOption[];
   reporters?: ReporterOption[];
-  fixVersions?: FixVersionOption[];
+  sprintReleases?: SprintReleaseOption[];
   labels?: LabelOption[];
   statuses?: StatusFilterOption[];
   workTypes?: WorkTypeOption[];
@@ -173,7 +174,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
     onChange,
     assignees = [],
     reporters = [],
-    fixVersions = [],
+    sprintReleases = [],
     labels = [],
     statuses = [],
     workTypes = [],
@@ -446,15 +447,15 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
             />
           </Section>
 
-          {/* Fix versions — plain pill chips */}
-          <Section label="Fix versions">
+          {/* Sprint/Release — plain pill chips */}
+          <Section label="Sprint/Release">
             <PillChipGrid
-              options={fixVersions}
-              selected={value.fixVersions}
+              options={sprintReleases}
+              selected={value.sprintReleases}
               onToggle={(id) =>
-                update('fixVersions', value.fixVersions.includes(id) ? value.fixVersions.filter(x => x !== id) : [...value.fixVersions, id])
+                update('sprintReleases', value.sprintReleases.includes(id) ? value.sprintReleases.filter(x => x !== id) : [...value.sprintReleases, id])
               }
-              emptyHint="No fix versions yet."
+              emptyHint="No sprint/release versions yet."
             />
           </Section>
 
@@ -749,7 +750,7 @@ function WorkTypeChipGrid({
   );
 }
 
-// ─── PillChipGrid — plain text pills (Fix versions, Labels) ───────────────
+// ─── PillChipGrid — plain text pills (Sprint/Release, Labels) ───────────────
 
 function PillChipGrid({
   options,

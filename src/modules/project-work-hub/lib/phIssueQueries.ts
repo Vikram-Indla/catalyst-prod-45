@@ -38,7 +38,7 @@
  *                  pending_write_back_at
  * Soft-delete:     archived_at, archived_by, deleted_at
  * Body:            description_text, description_adf, acceptance_criteria
- * Json blobs:      comments, changelog, components, fix_versions, labels, raw_json
+ * Json blobs:      comments, changelog, components, sprint_release, labels, raw_json
  * Workflow:        resolution, story_points, sprint_name, theme_id, sort_order, position
  * Misc:            is_flagged, flag_reason, type_icon_url, sync_hash, sync_status
  *

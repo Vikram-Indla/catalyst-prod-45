@@ -360,7 +360,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     { unicode-bidi: plaintext; }
 
     /* jira-compare 2026-05-05 — Dark-theme leak fix (v2):
-       The ~4px black bar before "None" in sidebar selects (Fix versions,
+       The ~4px black bar before "None" in sidebar selects (Sprint/Release,
        Labels, Assignee, etc.) is caused by the Emotion CSS-in-JS class
        (e.g. css-bxfvr9) on the react-select __input-container div setting
        a near-black background. The container itself is the source, not the
@@ -373,17 +373,17 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     .cv-reporter-select__input-container,
     .cv-priority-select__input-container,
     .cv-labels-select__input-container,
-    .cv-fixversions-select__input-container,
+    .cv-sprintrelease-select__input-container,
     [class*="cv-"][class*="-select__input-container"] {
       background-color: transparent !important;
       background: transparent !important;
     }
     [class*="cv-"][class*="-select__control"]:hover { background: transparent !important; }
-    .cv-fixversions-select__menu,
-    .cv-fixversions-select__menu *,
-    .cv-fixversions-select__option,
-    .cv-fixversions-select__option * { font-size: 14px !important; line-height: 20px !important; }
-    .cv-fixversions-select__group-heading { font-size: 11px !important; }
+    .cv-sprintrelease-select__menu,
+    .cv-sprintrelease-select__menu *,
+    .cv-sprintrelease-select__option,
+    .cv-sprintrelease-select__option * { font-size: 14px !important; line-height: 20px !important; }
+    .cv-sprintrelease-select__group-heading { font-size: 11px !important; }
     .cv-rail-value:hover:not(:focus-within) { background: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.08)); }
     /* v2 extra rule: the dark-mode global stylesheet has
        .dark [class*="Drawer"] input { background-color: rgb(10,10,10) !important; }
@@ -394,13 +394,13 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     .dark .cv-reporter-select__input-container input,
     .dark .cv-priority-select__input-container input,
     .dark .cv-labels-select__input-container input,
-    .dark .cv-fixversions-select__input-container input,
+    .dark .cv-sprintrelease-select__input-container input,
     .dark [class*="cv-"][class*="-select__input-container"] input,
     .cv-assignee-select__input-container input,
     .cv-reporter-select__input-container input,
     .cv-priority-select__input-container input,
     .cv-labels-select__input-container input,
-    .cv-fixversions-select__input-container input,
+    .cv-sprintrelease-select__input-container input,
     [class*="cv-"][class*="-select__input-container"] input {
       background-color: transparent !important;
       background: transparent !important;

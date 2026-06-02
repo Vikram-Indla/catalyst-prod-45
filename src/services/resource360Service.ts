@@ -122,20 +122,20 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
 
   const { data, error } = await supabase
     .from('ph_issues' as any)
-    .select('issue_key, project_key, project_name, issue_type, summary, description_text, status, status_category, priority, parent_key, parent_summary, due_date, effective_due_date, story_points, sprint_name, fix_versions, labels, components, type_icon_url, jira_created_at, jira_updated_at, assignee_display_name, reporter_display_name')
+    .select('issue_key, project_key, project_name, issue_type, summary, description_text, status, status_category, priority, parent_key, parent_summary, due_date, effective_due_date, story_points, sprint_name, sprint_release, labels, components, type_icon_url, jira_created_at, jira_updated_at, assignee_display_name, reporter_display_name')
     .eq('assignee_account_id', jiraAccountId)
     .order('jira_updated_at', { ascending: false });
   if (error) throw error;
 
-  // Build lookups of issue_key -> description_text and fix_versions for parent resolution
+  // Build lookups of issue_key -> description_text and sprint_release for parent resolution
   const descLookup: Record<string, string> = {};
   const fvLookup: Record<string, any[]> = {};
   (data ?? []).forEach((i: any) => {
     if (i.issue_key && i.description_text) descLookup[i.issue_key] = i.description_text;
-    if (i.issue_key && Array.isArray(i.fix_versions) && i.fix_versions.length > 0) fvLookup[i.issue_key] = i.fix_versions;
+    if (i.issue_key && Array.isArray(i.sprint_release) && i.sprint_release.length > 0) fvLookup[i.issue_key] = i.sprint_release;
   });
 
-  // Collect parent keys that need additional data (description or fix_versions)
+  // Collect parent keys that need additional data (description or sprint_release)
   const allParentKeys = [...new Set(
     (data ?? []).map((i: any) => i.parent_key).filter(Boolean)
   )] as string[];
@@ -144,28 +144,28 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
   if (missingParentKeys.length > 0) {
     const { data: parentData } = await supabase
       .from('ph_issues' as any)
-      .select('issue_key, description_text, fix_versions')
+      .select('issue_key, description_text, sprint_release')
       .in('issue_key', missingParentKeys);
     (parentData ?? []).forEach((p: any) => {
       if (p.issue_key && p.description_text) descLookup[p.issue_key] = p.description_text;
-      if (p.issue_key && Array.isArray(p.fix_versions) && p.fix_versions.length > 0) fvLookup[p.issue_key] = p.fix_versions;
+      if (p.issue_key && Array.isArray(p.sprint_release) && p.sprint_release.length > 0) fvLookup[p.issue_key] = p.sprint_release;
     });
   }
 
   const items = (data ?? []).map((i: any) => {
-    // Extract fix version names — inherit from parent if empty
-    const fvList = Array.isArray(i.fix_versions) && i.fix_versions.length > 0
-      ? i.fix_versions
+    // Extract sprint/release names — inherit from parent if empty
+    const fvList = Array.isArray(i.sprint_release) && i.sprint_release.length > 0
+      ? i.sprint_release
       : (i.parent_key && fvLookup[i.parent_key] ? fvLookup[i.parent_key] : []);
     const releaseNames = fvList.map((fv: any) => fv?.name).filter(Boolean);
 
-    // Get the latest fix version with a releaseDate for due date
+    // Get the latest sprint/release with a releaseDate for due date
     const fvWithDate = fvList.filter((fv: any) => fv?.releaseDate).sort((a: any, b: any) => (b.releaseDate || '').localeCompare(a.releaseDate || ''));
     const latestFv = fvWithDate[0];
     const releaseDueDate = latestFv?.releaseDate || null;
     const releaseKey = releaseNames.join(', ') || null;
 
-    // Compute days_until_due from fix version releaseDate
+    // Compute days_until_due from sprint/release releaseDate
     const dueDateStr = releaseDueDate || i.effective_due_date || i.due_date;
     let daysUntilDue: number | null = null;
     if (dueDateStr) {
@@ -194,7 +194,7 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
       days_until_due: daysUntilDue,
       story_points: i.story_points,
       sprint_name: i.sprint_name,
-      fix_versions: i.fix_versions,
+      sprint_release: i.sprint_release,
       release_names: releaseNames,
       release_key: releaseKey,
       release_end_date: releaseDueDate,
@@ -213,7 +213,7 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
   return items;
 };
 
-// ── Releases from all projects this resource works on (from fix_versions in ph_issues) ──
+// ── Releases from all projects this resource works on (from sprint_release in ph_issues) ──
 export const fetchProjectReleases = async (jiraAccountId?: string | null): Promise<string[]> => {
   if (!jiraAccountId) return [];
 
@@ -230,16 +230,16 @@ export const fetchProjectReleases = async (jiraAccountId?: string | null): Promi
   const projectKeys = [...new Set((projectRows ?? []).map((r: any) => r.project_key).filter(Boolean))];
   if (!projectKeys.length) return [];
 
-  // 2. Get all issues with fix_versions in those projects
+  // 2. Get all issues with sprint_release in those projects
   const { data: fvRows } = await supabase
     .from('ph_issues' as any)
-    .select('fix_versions')
+    .select('sprint_release')
     .in('project_key', projectKeys)
-    .not('fix_versions', 'is', null);
+    .not('sprint_release', 'is', null);
 
   const releaseSet = new Set<string>();
   (fvRows ?? []).forEach((row: any) => {
-    const fvList = Array.isArray(row.fix_versions) ? row.fix_versions : [];
+    const fvList = Array.isArray(row.sprint_release) ? row.sprint_release : [];
     fvList.forEach((fv: any) => {
       if (fv?.name) releaseSet.add(fv.name);
     });

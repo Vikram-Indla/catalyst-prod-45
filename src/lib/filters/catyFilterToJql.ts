@@ -64,11 +64,11 @@ export function catyFilterToJql(filter: CatyFilter | null): string {
       : `labels in (${qq(filter.labels)})`);
   }
 
-  // Fix versions
-  if (filter.fix_versions?.length) {
-    clauses.push(filter.fix_versions.length === 1
-      ? `fixVersion = ${qq(filter.fix_versions)}`
-      : `fixVersion in (${qq(filter.fix_versions)})`);
+  // Sprint/Releases
+  if (filter.sprint_release?.length) {
+    clauses.push(filter.sprint_release.length === 1
+      ? `fixVersion = ${qq(filter.sprint_release)}`
+      : `fixVersion in (${qq(filter.sprint_release)})`);
   }
 
   // Sprint

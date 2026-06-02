@@ -20,7 +20,7 @@
  *   status        ← incident.status          (triage / open / in_progress / to_committee / resolved)
  *   assigneeName  ← incident.assignee_name
  *   primaryLoz.   ← severity lozenge (SEV-1 red / SEV-2 yellow / SEV-3 blue / SEV-4 neutral)
- *   secondaryLoz. ← null (incidents don't carry fix version / quarter on this board)
+ *   secondaryLoz. ← null (incidents don't carry sprint/release / quarter on this board)
  *   metaText      ← 'Breached' | 'Due <date>' | null
  *   raw           ← original incident row (for adapter callbacks)
  *   isFlagged     ← resolution_breached (visual affordance — red left edge)

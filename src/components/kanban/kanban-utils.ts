@@ -28,9 +28,9 @@ export function groupIssues(issues: BoardIssue[], mode: GroupByMode): GroupBucke
         key = issue.priority || 'NO_PRIORITY';
         label = issue.priority || 'No priority';
         break;
-      case 'fixVersion':
-        key = issue.fixVersion || 'NO_FIX_VERSION';
-        label = issue.fixVersion || 'No fix version';
+      case 'sprintRelease':
+        key = issue.fixVersion || 'NO_SPRINT_RELEASE';
+        label = issue.fixVersion || 'No sprint/release';
         break;
       case 'queries': {
         // Jira standard query swimlanes:

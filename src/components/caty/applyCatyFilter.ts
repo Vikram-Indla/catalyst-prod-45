@@ -36,7 +36,7 @@ export function applyCatyFilter(
   const matchType = new Set((filter.types ?? []).map((t) => t.toLowerCase()));
   const matchLabel = lower(filter.labels);
   const matchSprint = lower(filter.sprint_names);
-  const matchFixVersion = lower(filter.fix_versions);
+  const matchSprintRelease = lower(filter.sprint_releases);
   // Jira issue keys are case-insensitive-ish — normalize to upper.
   const matchParentKey = new Set(
     (filter.parent_keys ?? []).map((k) => k.trim().toUpperCase()).filter((k) => k.length > 0),
@@ -151,9 +151,9 @@ export function applyCatyFilter(
       const s = item.sprintName?.toLowerCase() ?? null;
       if (!s || !matchSprint.has(s)) return false;
     }
-    if (matchFixVersion && matchFixVersion.size > 0) {
+    if (matchSprintRelease && matchSprintRelease.size > 0) {
       const fv = item.fixVersion?.toLowerCase() ?? null;
-      if (!fv || !matchFixVersion.has(fv)) return false;
+      if (!fv || !matchSprintRelease.has(fv)) return false;
     }
     if (matchLabel && matchLabel.size > 0) {
       const ls = (item.labels ?? []).map((l) => l.toLowerCase());

@@ -51,7 +51,7 @@ export async function fetchItemDetail(issueKey: string): Promise<ItemDetailFull 
       parent_summary,
       resolution,
       sprint_name,
-      fix_versions
+      sprint_release
     `)
     .eq('issue_key', issueKey)
     .maybeSingle();
@@ -61,10 +61,10 @@ export async function fetchItemDetail(issueKey: string): Promise<ItemDetailFull 
     return null;
   }
 
-  // Extract first fix_version name as release
+  // Extract first sprint_release name as release
   let releaseName: string | null = null;
-  if (data.fix_versions && Array.isArray(data.fix_versions) && data.fix_versions.length > 0) {
-    const fv = data.fix_versions[0] as any;
+  if (data.sprint_release && Array.isArray(data.sprint_release) && data.sprint_release.length > 0) {
+    const fv = data.sprint_release[0] as any;
     releaseName = typeof fv === 'string' ? fv : fv?.name ?? null;
   }
 

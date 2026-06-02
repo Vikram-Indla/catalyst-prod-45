@@ -3,7 +3,7 @@
  *
  * Layout (top → bottom):
  *   TITLE ROW: summary + hover-reveal edit + three-dots menu
- *   META ROWS: assignee name (plain text) + epic/parent (plain text) + fix-version (plain text)
+ *   META ROWS: assignee name (plain text) + epic/parent (plain text) + sprint-release (plain text)
  *   FOOTER: type-icon + issue_key (left) + priority chevron + assignee avatar (right)
  */
 import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
@@ -177,7 +177,7 @@ export function WorkItemCard({
   // Derive category/initiative from labels and parent
   const vf = visibleFields;
   const epicLabel = (vf?.epic !== false) ? (issue.parentSummary || (issue.labels.length > 0 ? issue.labels[0] : null)) : null;
-  const fixVersionLabel = (vf?.fixVersions !== false) ? (issue.fixVersion || issue.sprintName || null) : null;
+  const sprintReleaseLabel = (vf?.sprintRelease !== false) ? (issue.fixVersion || issue.sprintName || null) : null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
@@ -295,7 +295,7 @@ export function WorkItemCard({
           Jira Kanban cards show:
           - Epic as a colored label chip BELOW the title (NOT plain text)
           - NO assignee name text (avatar in footer only)
-          - NO sprint/fix-version text on the card
+          - NO sprint/release text on the card
           visibleFields.epic controls whether the epic chip shows. ─── */}
       {epicLabel && (vf?.epic !== false) && (
         <div style={{

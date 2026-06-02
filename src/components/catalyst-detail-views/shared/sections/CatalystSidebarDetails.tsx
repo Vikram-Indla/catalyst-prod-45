@@ -6,9 +6,9 @@
  *   - EditableAssignee (Jira-parity user picker with avatars)
  *   - EditablePriority (Jira-native priority SVGs with dropdown)
  *   - EditableLabels (add/remove labels with suggestions)
- *   - EditableFixVersions (multi-select with unreleased/released groups)
+ *   - EditableSprintRelease (multi-select with unreleased/released groups)
  *
- * Renders: Status dropdown → Details header → Assignee → "Assign to me" → {children} → Priority → Reporter → Labels → Fix Versions → Timestamps
+ * Renders: Status dropdown → Details header → Assignee → "Assign to me" → {children} → Priority → Reporter → Labels → Sprint/Release → Timestamps
  *
  * GUARDRAIL: Story Points are BANNED platform-wide (see Catalyst spec). Do NOT re-add.
  *
@@ -36,7 +36,7 @@ import { CatalystConfigureDrawer, loadPinnedFields, PINNABLE_FIELDS } from './Ca
  *
  * jira-compare 2026-05-16 (corrected): Jira right rail uses a STACKED (column)
  * layout — label above, value below. Fresh DOM probe of BAU-1919 right rail:
- *   "Fix versions" label y=192, "None" value y=221 — same x=1394 → stacked
+ *   "Sprint/Release" label y=192, "None" value y=221 — same x=1394 → stacked
  *   "Assignee" label y=263, avatar+name y=293 — same x=1395 → stacked
  *   Label: 14px/500/rgb(80,82,88), Value: 14px/400/rgb(41,42,46)
  *   Row vertical span ~71px (8px top pad + label + ~8px gap + value + 8px bottom pad)
@@ -108,7 +108,7 @@ import { useCatalystAvatarProfile } from '../hooks/useCatalystAvatarProfile';
    directive: Parent does NOT appear in Jira's Details sidebar, only in
    the left "Key details" section. Catalyst was incorrectly showing it
    here. Priority stays in the right rail (conditionally, per issue type). */
-import { EditableAssignee, EditableReporter, EditableLabels, EditableFixVersions, EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import { EditableAssignee, EditableReporter, EditableLabels, EditableSprintReleases as EditableSprintRelease, EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { CatalystParentLinker } from './CatalystParentLinker';
 import type { CatalystItemType } from '../types';
 import { CatalystDueDateField } from '@/components/shared/CatalystDueDateField';
@@ -356,7 +356,7 @@ export function CatalystSidebarDetails({
       {SHOW_RAIL_STATUS && (workflow && currentWorkflowState ? (
         <div style={{ marginBottom: 14 }}>
           {/* jira-compare A2 (2026-04-28): label every right-rail field for
-              consistency with Fix versions / Assignee / Reporter / Labels. */}
+              consistency with Sprint/Release / Assignee / Reporter / Labels. */}
           <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #505258)', marginBottom: 4 }}>Status</div>
           <StatusTransitionDropdown
             issueType={issue?.issue_type ?? 'Defect'}
@@ -532,12 +532,12 @@ export function CatalystSidebarDetails({
                   )}
                 </FieldRow>
               );
-              if (fieldId === 'fixVersions' && issue?.issue_type !== 'Feature') return (
-                <FieldRow key={fieldId} label="Fix versions" alignBlock="start">
+              if (fieldId === 'sprintRelease' && issue?.issue_type !== 'Feature') return (
+                <FieldRow key={fieldId} label="Sprint/Release" alignBlock="start">
                   {issue && (
-                    <EditableFixVersions
+                    <EditableSprintRelease
                       issueId={issue.id}
-                      currentFixVersions={issue.fix_versions}
+                      currentSprintRelease={issue.sprint_release}
                       projectKey={issue.project_key}
                       onUpdate={invalidateIssue}
                     />
@@ -575,18 +575,18 @@ export function CatalystSidebarDetails({
 
         {!detailsCollapsed && <div style={{ padding: '0' }}>
 
-          {/* ── Fix Versions ────
+          {/* ── Sprint/Release ────
               jira-compare 2026-05-10 Fix E-2: Epic RESTORED — Lane B probe of Epic
-              scheme (type 10000) confirms fixVersions IS in the scheme. Prior exclusion
+              scheme (type 10000) confirms sprintRelease IS in the scheme. Prior exclusion
               was based on a BAU-5419 Lane A re-probe that misread the context items.
               Vikram approved 2026-05-10.
-              Feature EXCLUDED: fixVersions NOT in Feature scheme (type 10173). */}
+              Feature EXCLUDED: sprintRelease NOT in Feature scheme (type 10173). */}
           {issue?.issue_type !== 'Feature' && (
-            <FieldRow label="Fix versions" alignBlock="start">
+            <FieldRow label="Sprint/Release" alignBlock="start">
               {issue && (
-                <EditableFixVersions
+                <EditableSprintRelease
                   issueId={issue.id}
-                  currentFixVersions={issue.fix_versions}
+                  currentSprintRelease={issue.sprint_release}
                   projectKey={issue.project_key}
                   onUpdate={invalidateIssue}
                 />

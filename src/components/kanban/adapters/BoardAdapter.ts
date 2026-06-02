@@ -84,7 +84,7 @@ export interface BoardLozenge {
 export interface CanonicalBoardIssue extends BoardIssue {
   /** Primary lozenge — epic / parent / department / roadmap (muted). */
   primaryLozenge?: BoardLozenge | null;
-  /** Secondary lozenge — fix version / sprint / target quarter (bordered). */
+  /** Secondary lozenge — sprint/release / sprint / target quarter (bordered). */
   secondaryLozenge?: BoardLozenge | null;
   /** Right-aligned footer meta (e.g. "updated 3d ago", "due Apr 30"). */
   metaText?: string | null;

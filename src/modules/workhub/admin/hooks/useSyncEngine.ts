@@ -102,16 +102,16 @@ export function useForceSync() {
       sync_type?: 'incremental' | 'full'
       lookback_months?: number
       issue_types?: string[]
-      fix_versions?: string[]
+      sprint_release?: string[]
       projects?: string[]
-      project_configs?: Record<string, { lookback_months: number; status_categories?: string[]; statuses?: string[]; issue_types?: string[]; fix_versions?: string[] }>
+      project_configs?: Record<string, { lookback_months: number; status_categories?: string[]; statuses?: string[]; issue_types?: string[]; sprint_release?: string[] }>
     } = {}) => {
       const { data, error } = await supabase.functions.invoke('wh-jira-bulk-sync', {
         body: {
           sync_type: params.sync_type || 'full',
           lookback_months: params.lookback_months,
           issue_types: params.issue_types?.length ? params.issue_types : undefined,
-          fix_versions: params.fix_versions?.length ? params.fix_versions : undefined,
+          sprint_release: params.sprint_release?.length ? params.sprint_release : undefined,
           projects: params.projects?.length ? params.projects : undefined,
           project_configs: params.project_configs || undefined,
         },
@@ -132,7 +132,7 @@ export function useSyncConfig() {
     queryFn: async () => {
       const { data, error } = await typedQuery('wh_config')
         .select('key, value')
-        .in('key', ['sync_interval_minutes', 'sync_full_time_utc', 'sync_max_months', 'sync_lookback_months', 'sync_issue_types', 'sync_fix_versions', 'sync_projects', 'sync_project_config'])
+        .in('key', ['sync_interval_minutes', 'sync_full_time_utc', 'sync_max_months', 'sync_lookback_months', 'sync_issue_types', 'sync_sprint_release', 'sync_projects', 'sync_project_config'])
       if (error) throw new Error(error.message)
       const cfg: Record<string, any> = {}
       data?.forEach((c: any) => {
@@ -199,9 +199,9 @@ export function useAvailableIssueTypes() {
   })
 }
 
-export function useAvailableFixVersions() {
+export function useAvailableSprintReleases() {
   return useQuery({
-    queryKey: ['wh', 'available-fix-versions'],
+    queryKey: ['wh', 'available-sprint-releases'],
     queryFn: async () => {
       const { data, error } = await typedQuery('ph_versions')
         .select('name, project_key, released')
@@ -248,9 +248,9 @@ export function useSaveFilterSettings() {
     mutationFn: async (input: {
       sync_projects?: string[]
       sync_issue_types?: string[]
-      sync_fix_versions?: string[]
+      sync_sprint_release?: string[]
       sync_lookback_months?: number
-      sync_project_config?: Record<string, { lookback_months: number; status_categories?: string[]; statuses?: string[]; issue_types?: string[]; fix_versions?: string[] }>
+      sync_project_config?: Record<string, { lookback_months: number; status_categories?: string[]; statuses?: string[]; issue_types?: string[]; sprint_release?: string[] }>
     }) => {
       const updates = []
       if (input.sync_projects !== undefined) {
@@ -263,9 +263,9 @@ export function useSaveFilterSettings() {
           typedQuery('wh_config').upsert({ key: 'sync_issue_types', value: input.sync_issue_types }, { onConflict: 'key' })
         )
       }
-      if (input.sync_fix_versions !== undefined) {
+      if (input.sync_sprint_release !== undefined) {
         updates.push(
-          typedQuery('wh_config').upsert({ key: 'sync_fix_versions', value: input.sync_fix_versions }, { onConflict: 'key' })
+          typedQuery('wh_config').upsert({ key: 'sync_sprint_release', value: input.sync_sprint_release }, { onConflict: 'key' })
         )
       }
       if (input.sync_lookback_months !== undefined) {

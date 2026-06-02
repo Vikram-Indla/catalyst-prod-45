@@ -308,7 +308,7 @@ export default function KanbanBoardPage() {
         let from = 0;
         while (true) {
           let q = supabase.from('ph_issues')
-            .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, jira_created_at, archived_at')
+            .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, sprint_release, is_flagged, jira_updated_at, jira_created_at, archived_at')
             .eq('project_key', key.toUpperCase())
             .is('deleted_at', null);
           q = showArchived ? q.not('archived_at', 'is', null) : q.is('archived_at', null);
@@ -339,8 +339,8 @@ export default function KanbanBoardPage() {
 
       const jiraIssues: BoardIssue[] = all.map((r: any): BoardIssue => {
         let fv: string | null = null;
-        if (r.fix_versions && Array.isArray(r.fix_versions) && r.fix_versions.length > 0) {
-          const f = r.fix_versions[0];
+        if (r.sprint_release && Array.isArray(r.sprint_release) && r.sprint_release.length > 0) {
+          const f = r.sprint_release[0];
           fv = typeof f === 'string' ? f : f?.name ?? null;
         }
         return {
@@ -357,7 +357,7 @@ export default function KanbanBoardPage() {
           storyPoints: r.story_points ? Number(r.story_points) : null,
           parentKey: r.parent_key,
           parentSummary: r.parent_summary,
-          fixVersion: fv,
+          sprintRelease: fv,
           isFlagged: !!r.is_flagged,
           updatedAt: r.jira_updated_at,
           createdAt: r.jira_created_at ?? null,
@@ -383,7 +383,7 @@ export default function KanbanBoardPage() {
           storyPoints: null,
           parentKey: r.parent_key ?? null,
           parentSummary: null,
-          fixVersion: null,
+          sprintRelease: null,
           isFlagged: false,
           updatedAt: r.updated_at,
           createdAt: r.created_at,
@@ -507,7 +507,7 @@ export default function KanbanBoardPage() {
     { key: 'epic' as GroupByMode, label: 'Epic', icon: 'parent' },
     { key: 'feature' as GroupByMode, label: 'Feature', icon: 'parent' },
     { key: 'priority' as GroupByMode, label: 'Priority', icon: 'priority' },
-    { key: 'fixVersion' as GroupByMode, label: 'Fix Version' },
+    { key: 'sprintRelease' as GroupByMode, label: 'Sprint/Release' },
   ], []);
 
   // Current user for "Assigned to me"
@@ -580,9 +580,9 @@ export default function KanbanBoardPage() {
     }
 
     // ── Advanced filters ──
-    if (advancedFilters.fixVersions.length > 0) {
-      const fvSet = new Set(advancedFilters.fixVersions);
-      issues = issues.filter(i => i.fixVersion && fvSet.has(i.fixVersion));
+    if (advancedFilters.sprintReleases.length > 0) {
+      const fvSet = new Set(advancedFilters.sprintReleases);
+      issues = issues.filter(i => i.sprintRelease && fvSet.has(i.sprintRelease));
     }
     if (advancedFilters.issueTypes.length > 0) {
       const tSet = new Set(advancedFilters.issueTypes);
@@ -815,7 +815,7 @@ export default function KanbanBoardPage() {
 
       // Fetch next batch from Supabase using offset
       let q = supabase.from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, jira_created_at, archived_at')
+        .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, sprint_release, is_flagged, jira_updated_at, jira_created_at, archived_at')
         .eq('project_key', key.toUpperCase())
         .is('deleted_at', null);
       q = showArchived ? q.not('archived_at', 'is', null) : q.is('archived_at', null);
@@ -843,8 +843,8 @@ export default function KanbanBoardPage() {
       // Map new data to BoardIssue
       const newIssues: BoardIssue[] = newData.map((r: any): BoardIssue => {
         let fv: string | null = null;
-        if (r.fix_versions && Array.isArray(r.fix_versions) && r.fix_versions.length > 0) {
-          const f = r.fix_versions[0];
+        if (r.sprint_release && Array.isArray(r.sprint_release) && r.sprint_release.length > 0) {
+          const f = r.sprint_release[0];
           fv = typeof f === 'string' ? f : f?.name ?? null;
         }
         return {
@@ -861,7 +861,7 @@ export default function KanbanBoardPage() {
           storyPoints: r.story_points ? Number(r.story_points) : null,
           parentKey: r.parent_key,
           parentSummary: r.parent_summary,
-          fixVersion: fv,
+          sprintRelease: fv,
           isFlagged: !!r.is_flagged,
           updatedAt: r.jira_updated_at,
           createdAt: r.jira_created_at ?? null,

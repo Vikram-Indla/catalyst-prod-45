@@ -32,7 +32,7 @@ export interface WorkItem {
   updatedAt: string;
   commentsCount: number;
   labels?: string[];
-  fixVersions?: string[];
+  sprintRelease?: string[];
   parentId?: string;
   parentKey?: string;
   parentSummary?: string;

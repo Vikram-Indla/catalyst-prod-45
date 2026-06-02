@@ -1,7 +1,7 @@
 /**
  * IssueContentView — Jira-parity single issue view:
  * Left side: breadcrumb, title, actions, key details, description, subtasks, linked work, activity
- * Right side: collapsible Details sidebar (Assignee, Priority, Reporter, Labels, Fix versions, MDT Ref)
+ * Right side: collapsible Details sidebar (Assignee, Priority, Reporter, Labels, Sprint/Release, MDT Ref)
  * Implements recommendations #11-16, #17, #19-26, #28-30
  */
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
@@ -30,7 +30,7 @@ import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { IssueKeyLink } from '@/components/shared/IssueKeyLink';
 import { enqueueWriteBack } from '@/lib/jira-writeback';
 import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
-import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
+import { useSprintReleases } from '@/modules/project-work-hub/hooks/useSprintReleases';
 import { ConvertToSubtaskWizard } from './ConvertToSubtaskWizard';
 import { FlagPopover, isFlagged as checkFlagged, CloneWizard, MoveWizard, ArchiveDialog, DeleteDialog } from './IssueActionDialogs';
 // 2026-05-31 — Description renderer + composer are now the canonical
@@ -264,19 +264,19 @@ export function IssueContentView({
 
   const totalChildren = childItems.length || (item?.child_count ?? 0);
 
-  // Fix versions — editable dropdown pulling all releases
-  const { unreleased: unreleasedVersions, released: releasedVersions, isLoading: versionsLoading } = useFixVersions(projectKey || null);
-  const [showFixVersionDropdown, setShowFixVersionDropdown] = useState(false);
-  const [fixVersionSearch, setFixVersionSearch] = useState('');
-  const fixVersionDropdownRef = useRef<HTMLDivElement>(null);
+  // Sprint/Release — editable dropdown pulling all releases
+  const { unreleased: unreleasedVersions, released: releasedVersions, isLoading: versionsLoading } = useSprintReleases(projectKey || null);
+  const [showSprintReleaseDropdown, setShowSprintReleaseDropdown] = useState(false);
+  const [sprintReleaseSearch, setSprintReleaseSearch] = useState('');
+  const sprintReleaseDropdownRef = useRef<HTMLDivElement>(null);
 
-  const fixVersionNames: string[] = useMemo(() => {
+  const sprintReleaseNames: string[] = useMemo(() => {
     if (!item?.fix_version_name) return [];
     return item.fix_version_name.split(',').map(s => s.trim()).filter(Boolean);
   }, [item?.fix_version_name]);
 
-  const handleToggleFixVersion = useCallback((versionName: string) => {
-    const current = fixVersionNames;
+  const handleToggleSprintRelease = useCallback((versionName: string) => {
+    const current = sprintReleaseNames;
     let updated: string[];
     if (current.includes(versionName)) {
       updated = current.filter(v => v !== versionName);
@@ -284,10 +284,10 @@ export function IssueContentView({
       updated = [...current, versionName];
     }
     if (item?.id) {
-      supabase.from('ph_issues').update({ fix_versions: updated } as any).eq('id', item.id)
+      supabase.from('ph_issues').update({ sprint_release: updated } as any).eq('id', item.id)
         .then(async ({ error }) => {
-          if (error) { catalystToast.error('Failed to update fix version'); return; }
-          catalystToast.success('Fix version updated');
+          if (error) { catalystToast.error('Failed to update sprint/release'); return; }
+          catalystToast.success('Sprint/release updated');
           // Log to ph_activity_log so history panel and scope-change gadget
           // have Catalyst-native data (Jira-decommission-ready).
           const { data: { user } } = await supabase.auth.getUser();
@@ -296,7 +296,7 @@ export function IssueContentView({
               work_item_id: item.id,
               user_id: user.id,
               action: 'updated',
-              field_name: 'fix_versions',
+              field_name: 'sprint_release',
               old_value: current.join(', ') || null,
               new_value: updated.join(', ') || null,
             });
@@ -305,20 +305,20 @@ export function IssueContentView({
           queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
         });
     }
-  }, [fixVersionNames, item?.id, queryClient]);
+  }, [sprintReleaseNames, item?.id, queryClient]);
 
-  // Close fix version dropdown on outside click
+  // Close sprint/release dropdown on outside click
   useEffect(() => {
-    if (!showFixVersionDropdown) return;
+    if (!showSprintReleaseDropdown) return;
     const handler = (e: MouseEvent) => {
-      if (fixVersionDropdownRef.current && !fixVersionDropdownRef.current.contains(e.target as Node)) {
-        setShowFixVersionDropdown(false);
-        setFixVersionSearch('');
+      if (sprintReleaseDropdownRef.current && !sprintReleaseDropdownRef.current.contains(e.target as Node)) {
+        setShowSprintReleaseDropdown(false);
+        setSprintReleaseSearch('');
       }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [showFixVersionDropdown]);
+  }, [showSprintReleaseDropdown]);
 
   // + Add menu state
   const [showAddMenu, setShowAddMenu] = useState(false);
@@ -385,14 +385,14 @@ export function IssueContentView({
      further down (`t.includes('bug') || t.includes('defect')`). Hoisted
      so it can gate the Defect-anatomy injections earlier in the render.
      Adapter constructs the minimal PhIssue shape CatalystDefectFields
-     actually reads — `fix_versions` (array of { name }) and `resolution` —
+     actually reads — `sprint_release` (array of { name }) and `resolution` —
      from the normalized AllWorkItem. Keeps the wire additive; no extra
      Supabase round-trip. */
   const _issueTypeLower = (item?.issue_type ?? '').toLowerCase();
   const isBugDefect = _issueTypeLower.includes('bug') || _issueTypeLower.includes('defect');
   const defectPhIssueAdapter: PhIssue | null = isBugDefect && item
     ? ({
-        fix_versions: item.fix_version_name
+        sprint_release: item.fix_version_name
           ? item.fix_version_name
               .split(',')
               .map(s => s.trim())
@@ -861,26 +861,26 @@ export function IssueContentView({
           </div>
           {!collapsed.details && (
             <div>
-              {/* Fix versions — Jira-parity editable dropdown */}
-              <div style={{ marginBottom: 16, position: 'relative' }} ref={fixVersionDropdownRef}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 4 }}>Fix versions</div>
+              {/* Sprint/Release — Jira-parity editable dropdown */}
+              <div style={{ marginBottom: 16, position: 'relative' }} ref={sprintReleaseDropdownRef}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 4 }}>Sprint/Release</div>
                 <div
-                  onClick={() => setShowFixVersionDropdown(!showFixVersionDropdown)}
+                  onClick={() => setShowSprintReleaseDropdown(!showSprintReleaseDropdown)}
                   style={{
                     display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center',
                     padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
                     minHeight: 32, transition: 'background 0.12s',
-                    border: showFixVersionDropdown ? '2px solid var(--ds-border-focused, #4C9AFF)' : '2px solid transparent',
-                    background: showFixVersionDropdown ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'transparent',
+                    border: showSprintReleaseDropdown ? '2px solid var(--ds-border-focused, #4C9AFF)' : '2px solid transparent',
+                    background: showSprintReleaseDropdown ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'transparent',
                   }}
-                  onMouseEnter={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
-                  onMouseLeave={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = 'transparent'; }}
+                  onMouseEnter={e => { if (!showSprintReleaseDropdown) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+                  onMouseLeave={e => { if (!showSprintReleaseDropdown) e.currentTarget.style.background = 'transparent'; }}
                 >
-                  {fixVersionNames.length > 0 ? (
-                    fixVersionNames.map((v, i) => (
+                  {sprintReleaseNames.length > 0 ? (
+                    sprintReleaseNames.map((v, i) => (
                       <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, padding: '4px 8px', borderRadius: 3, background: 'var(--ds-background-information, #DEEBFF)', color: 'var(--ds-text-information, #0747A6)' }}>
                         {v}
-                        <button onClick={e => { e.stopPropagation(); handleToggleFixVersion(v); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', color: 'var(--ds-text-information, #0747A6)' }}>
+                        <button onClick={e => { e.stopPropagation(); handleToggleSprintRelease(v); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', color: 'var(--ds-text-information, #0747A6)' }}>
                           <X size={10} />
                         </button>
                       </span>
@@ -889,10 +889,10 @@ export function IssueContentView({
                     <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 14 }}>None</span>
                   )}
                 </div>
-                {showFixVersionDropdown && (
+                {showSprintReleaseDropdown && (
                   <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, boxShadow: 'var(--ds-shadow-overlay, 0 4px 12px rgba(9,30,66,.15))', zIndex: 100, maxHeight: 320, overflow: 'hidden' }}>
                     <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-border, #F4F5F7)' }}>
-                      <input autoFocus value={fixVersionSearch} onChange={e => setFixVersionSearch(e.target.value)} placeholder="Search versions..."
+                      <input autoFocus value={sprintReleaseSearch} onChange={e => setSprintReleaseSearch(e.target.value)} placeholder="Search versions..."
                         style={{ width: '100%', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '8px 12px', fontSize: 13, color: 'var(--ds-text, #172B4D)', outline: 'none', fontFamily: 'inherit' }}
                         onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-border-focused, #4C9AFF)'; }}
                         onBlur={e => { e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'; }}
@@ -901,15 +901,15 @@ export function IssueContentView({
                     <div style={{ maxHeight: 260, overflowY: 'auto' }}>
                       {versionsLoading && <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>Loading...</div>}
                       {(() => {
-                        const filtered = unreleasedVersions.filter(v => v.name.toLowerCase().includes(fixVersionSearch.toLowerCase()));
+                        const filtered = unreleasedVersions.filter(v => v.name.toLowerCase().includes(sprintReleaseSearch.toLowerCase()));
                         if (filtered.length === 0) return null;
                         return (
                           <>
                             <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>Unreleased</div>
                             {filtered.map(v => {
-                              const isSel = fixVersionNames.includes(v.name);
+                              const isSel = sprintReleaseNames.includes(v.name);
                               return (
-                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent', transition: 'background 0.1s' }}
+                                <div key={v.name} onClick={() => handleToggleSprintRelease(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent', transition: 'background 0.1s' }}
                                   onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                                   onMouseLeave={e => { e.currentTarget.style.background = isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent'; }}
                                 >
@@ -922,15 +922,15 @@ export function IssueContentView({
                         );
                       })()}
                       {(() => {
-                        const filtered = releasedVersions.filter(v => v.name.toLowerCase().includes(fixVersionSearch.toLowerCase()));
+                        const filtered = releasedVersions.filter(v => v.name.toLowerCase().includes(sprintReleaseSearch.toLowerCase()));
                         if (filtered.length === 0) return null;
                         return (
                           <>
                             <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', borderTop: '1px solid var(--ds-border, #F4F5F7)' }}>Released</div>
                             {filtered.map(v => {
-                              const isSel = fixVersionNames.includes(v.name);
+                              const isSel = sprintReleaseNames.includes(v.name);
                               return (
-                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent', transition: 'background 0.1s' }}
+                                <div key={v.name} onClick={() => handleToggleSprintRelease(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent', transition: 'background 0.1s' }}
                                   onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                                   onMouseLeave={e => { e.currentTarget.style.background = isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent'; }}
                                 >

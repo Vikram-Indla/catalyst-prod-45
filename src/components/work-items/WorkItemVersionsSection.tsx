@@ -24,7 +24,7 @@ export function WorkItemVersionsSection({
   workItemType,
   readOnly = false,
 }: WorkItemVersionsSectionProps) {
-  const { fixVersions, affectsVersions, isLoading, addVersion, removeVersion } = useWorkItemVersions(workItemId, workItemType);
+  const { sprintReleases, affectsVersions, isLoading, addVersion, removeVersion } = useWorkItemVersions(workItemId, workItemType);
   const { data: releases = [], isLoading: releasesLoading } = useReleases();
   const [addingFix, setAddingFix] = useState(false);
   const [addingAffects, setAddingAffects] = useState(false);
@@ -54,7 +54,7 @@ export function WorkItemVersionsSection({
   };
 
   const getAvailableReleases = (linkType: 'fix' | 'affects') => {
-    const linkedIds = (linkType === 'fix' ? fixVersions : affectsVersions).map(v => v.release_id);
+    const linkedIds = (linkType === 'fix' ? sprintReleases : affectsVersions).map(v => v.release_id);
     return releases.filter(r => !linkedIds.includes(r.id));
   };
 
@@ -69,12 +69,12 @@ export function WorkItemVersionsSection({
 
   return (
     <div className="space-y-4">
-      {/* Fix Versions */}
+      {/* Sprint/Release */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm font-medium text-foreground">
             <Wrench className="h-4 w-4 text-brand-primary" />
-            Fix Version(s)
+            Sprint/Release
           </div>
           {!readOnly && !addingFix && (
             <Button
@@ -89,7 +89,7 @@ export function WorkItemVersionsSection({
           )}
         </div>
         <div className="flex flex-wrap gap-2">
-          {fixVersions.map((version) => (
+          {sprintReleases.map((version) => (
             <span key={version.id} className="inline-flex items-center gap-1">
               <Lozenge appearance="success">
                 {version.release?.name || 'Unknown'}
@@ -105,7 +105,7 @@ export function WorkItemVersionsSection({
               )}
             </span>
           ))}
-          {fixVersions.length === 0 && !addingFix && (
+          {sprintReleases.length === 0 && !addingFix && (
             <span className="text-sm text-muted-foreground">None</span>
           )}
           {addingFix && (

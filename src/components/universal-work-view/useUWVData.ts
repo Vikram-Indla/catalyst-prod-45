@@ -193,7 +193,7 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
           }
           if (params.releaseFilter && params.releaseFilter.length > 0) {
             const orClause = params.releaseFilter
-              .map((name: string) => `fix_versions.cs.${JSON.stringify([{ name }])}`)
+              .map((name: string) => `sprint_release.cs.${JSON.stringify([{ name }])}`)
               .join(',');
             q = q.or(orClause);
           }
@@ -203,8 +203,8 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
           }
 
           // Skip date filter when drilling into specific releases —
-          // fix_versions scope overrides time scope (releases may pre-date quarter).
-          const skipDateFilter = !!(params.fixVersions && params.fixVersions.length > 0);
+          // sprint_release scope overrides time scope (releases may pre-date quarter).
+          const skipDateFilter = !!(params.sprintReleases && params.sprintReleases.length > 0);
 
           // Scope filter — match gadget semantics.
           // Date column varies by dataType to mirror the originating gadget's filter.
@@ -228,11 +228,11 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
             if (params.dateTo) q = q.lte(dateCol, params.dateTo);
           }
 
-          // fix_versions filter — JSONB containment via PostgREST `cs` operator.
-          // Each release name becomes a containment check: fix_versions @> [{"name":"X"}]
-          if (params.fixVersions && params.fixVersions.length > 0) {
-            const orClause = params.fixVersions
-              .map((name: string) => `fix_versions.cs.${JSON.stringify([{ name }])}`)
+          // sprint_release filter — JSONB containment via PostgREST `cs` operator.
+          // Each release name becomes a containment check: sprint_release @> [{"name":"X"}]
+          if (params.sprintReleases && params.sprintReleases.length > 0) {
+            const orClause = params.sprintReleases
+              .map((name: string) => `sprint_release.cs.${JSON.stringify([{ name }])}`)
               .join(',');
             q = q.or(orClause);
           }

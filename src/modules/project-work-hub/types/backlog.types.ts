@@ -36,7 +36,7 @@ export interface BacklogEpic {
   issue_type?: string | null;
   comment_count?: number | null;
   labels?: string[] | null;
-  fix_versions?: string[] | null;
+  sprint_release?: string[] | null;
   rank_order?: number | null;
 }
 
@@ -92,7 +92,7 @@ export interface BacklogStory {
   parent_key?: string | null;
   parent_summary?: string | null;
   labels?: string[] | null;
-  fix_versions?: string[] | null;
+  sprint_release?: string[] | null;
   rank_order?: number | null;
   // 2026-06-01 — Business Request adapter-only fields. Always undefined on
   // ph_issues rows; populated by bizRequestToBacklogStory for biz rows so

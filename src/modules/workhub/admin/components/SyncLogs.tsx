@@ -20,7 +20,7 @@ import {
   useUpdateSyncSchedule,
   useSaveFilterSettings,
   useAvailableIssueTypes,
-  useAvailableFixVersions,
+  useAvailableSprintReleases,
   useAvailableProjects,
   type SyncLogEntry,
 } from '../hooks/useSyncEngine'
@@ -35,7 +35,7 @@ export function SyncLogs() {
   const updateSchedule = useUpdateSyncSchedule()
   const saveFilters = useSaveFilterSettings()
   const { data: availableTypes } = useAvailableIssueTypes()
-  const { data: availableVersions } = useAvailableFixVersions()
+  const { data: availableVersions } = useAvailableSprintReleases()
   const { data: availableProjects } = useAvailableProjects()
 
   const [intervalMin, setIntervalMin] = useState<number>(15)
@@ -56,8 +56,8 @@ export function SyncLogs() {
       if (Array.isArray(config.sync_issue_types) && config.sync_issue_types.length > 0) {
         setSelectedTypes(config.sync_issue_types)
       }
-      if (Array.isArray(config.sync_fix_versions) && config.sync_fix_versions.length > 0) {
-        setSelectedVersions(config.sync_fix_versions)
+      if (Array.isArray(config.sync_sprint_releases) && config.sync_sprint_releases.length > 0) {
+        setSelectedVersions(config.sync_sprint_releases)
       }
       if (Array.isArray(config.sync_projects) && config.sync_projects.length > 0) {
         setSelectedProjects(config.sync_projects)
@@ -71,7 +71,7 @@ export function SyncLogs() {
 
   const handleFilteredSync = () => {
     if (!hasFilters) {
-      catalystToast.error('Please select at least one project, work item type, or fix version filter before syncing.')
+      catalystToast.error('Please select at least one project, work item type, or sprint/release filter before syncing.')
       setFiltersOpen(true)
       return
     }
@@ -79,7 +79,7 @@ export function SyncLogs() {
       sync_type: 'full',
       lookback_months: lookbackMonths,
       issue_types: selectedTypes,
-      fix_versions: selectedVersions,
+      sprint_releases: selectedVersions,
       projects: selectedProjects,
     }, {
       onSuccess: () => catalystToast.success('Sync completed successfully'),
@@ -97,7 +97,7 @@ export function SyncLogs() {
       sync_type: 'full',
       lookback_months: lookbackMonths,
       issue_types: [],
-      fix_versions: [],
+      sprint_releases: [],
     }, {
       onSuccess: () => catalystToast.success('Full sync completed'),
       onError: (err) => catalystToast.error(`Sync failed: ${err.message}`),
@@ -118,7 +118,7 @@ export function SyncLogs() {
     saveFilters.mutate({
       sync_projects: selectedProjects,
       sync_issue_types: selectedTypes,
-      sync_fix_versions: selectedVersions,
+      sync_sprint_releases: selectedVersions,
       sync_lookback_months: lookbackMonths,
     }, {
       onSuccess: () => catalystToast.success('Filter settings saved'),
@@ -277,13 +277,13 @@ export function SyncLogs() {
               accentColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"
             />
 
-            {/* Fix Versions */}
+            {/* Sprint/Releases */}
             <MultiSelectDropdown
-              label="Fix Version / Releases"
+              label="Sprint/Release"
               options={versionOptions}
               selected={selectedVersions}
               onChange={setSelectedVersions}
-              placeholder="Select fix versions…"
+              placeholder="Select sprint/releases…"
               emptyMessage="Run a sync first to populate versions"
               accentColor="var(--cp-purple-60, #7C3AED)"
             />
@@ -336,7 +336,7 @@ export function SyncLogs() {
         )}
         {!hasFilters && !isSyncing && (
           <span style={{ fontSize: '11px', color: 'var(--ds-text-danger, #EF4444)', fontFamily: 'var(--cp-font-body)' }}>
-            Select work item types or fix versions above
+            Select work item types or sprint/releases above
           </span>
         )}
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>

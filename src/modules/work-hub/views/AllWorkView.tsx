@@ -57,7 +57,7 @@ const availableColumns = [
   { id: 'work-item-key', name: 'Work item key', enabled: true },
   { id: 'summary', name: 'Summary', enabled: true },
   { id: 'status', name: 'Status', enabled: true },
-  { id: 'fix-versions', name: 'Fix versions', enabled: true },
+  { id: 'sprint-releases', name: 'Sprint/Release', enabled: true },
   { id: 'reporter', name: 'Reporter', enabled: true },
   { id: 'assignee', name: 'Assignee', enabled: true },
   { id: 'created', name: 'Created', enabled: true },

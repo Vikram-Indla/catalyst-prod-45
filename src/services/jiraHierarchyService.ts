@@ -52,10 +52,10 @@ function transformJiraIssue(row: any): WorkItem {
   const typeInfo = issueTypeToLevel(row.issue_type);
   const statusColors = statusCategoryToColors(row.status_category);
 
-  let fixVersion: WorkItem['fixVersion'] | undefined;
-  if (row.fix_versions && Array.isArray(row.fix_versions) && row.fix_versions.length > 0) {
-    const v = row.fix_versions[0];
-    fixVersion = { id: v.id || v.name, name: v.name };
+  let sprintRelease: WorkItem['sprintRelease'] | undefined;
+  if (row.sprint_release && Array.isArray(row.sprint_release) && row.sprint_release.length > 0) {
+    const v = row.sprint_release[0];
+    sprintRelease = { id: v.id || v.name, name: v.name };
   }
 
   return {
@@ -82,7 +82,7 @@ function transformJiraIssue(row: any): WorkItem {
       email: '',
     } : undefined,
     priority: priorityToObj(row.priority),
-    fixVersion,
+    sprintRelease,
     children: [],
     stats: { totalDescendants: 0, completedCount: 0 },
     dueDate: row.due_date || undefined,
@@ -149,7 +149,7 @@ export async function fetchJiraHierarchyTree(projectKey: string): Promise<WorkIt
   const [issuesResult, overrides] = await Promise.all([
     supabase
       .from('ph_issues')
-      .select('issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, due_date, labels, jira_created_at, jira_updated_at')
+      .select('issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_account_id, assignee_display_name, parent_key, parent_summary, sprint_release, due_date, labels, jira_created_at, jira_updated_at')
       .eq('project_key', projectKey.toUpperCase())
       .is('jira_removed_at', null)
       .order('jira_created_at', { ascending: true })
