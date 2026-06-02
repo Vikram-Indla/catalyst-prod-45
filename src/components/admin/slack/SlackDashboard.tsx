@@ -106,16 +106,16 @@ function StatCard({
     <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '24px' }}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-500">{title}</p>
-          <p className="text-2xl font-bold text-slate-900 mt-1">{value}</p>
+          <p className=" font-medium ">{title}</p>
+          <p className=" text-slate-900 mt-1">{value}</p>
           {subtitle && (
-            <p className="text-xs text-slate-500 mt-1">{subtitle}</p>
+            <p className=" mt-1">{subtitle}</p>
           )}
           {trend && (
-            <div className="flex items-center gap-1 mt-2">
+            <div className="flex items-center gap-1 ">
               <ChartTrendIcon label="" size="small" />
-              <span className="text-xs text-green-600">+{trend.value}</span>
-              <span className="text-xs text-slate-500">{trend.label}</span>
+              <span className=" text-green-600">+{trend.value}</span>
+              <span className=" ">{trend.label}</span>
             </div>
           )}
         </div>
@@ -202,7 +202,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
         padding: '16px 24px',
       }}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center ">
             <div className={cn(
               'w-10 h-10 rounded-full flex items-center justify-center',
               config.is_active ? 'bg-green-100' : 'bg-amber-100'
@@ -214,8 +214,8 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
               )}
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-slate-900">
+              <div className="flex items-center ">
+                <h3 className=" text-slate-900">
                   {config.workspace_name || 'Slack Integration'}
                 </h3>
                 <Lozenge appearance={config.is_active ? 'success' : 'default'}>
@@ -227,14 +227,14 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                   </Lozenge>
                 )}
               </div>
-              <p className="text-sm text-slate-500">
+              <p className=" ">
                 {config.is_active
                   ? `Last tested: ${config.last_tested_at ? formatDistanceToNow(new Date(config.last_tested_at), { addSuffix: true }) : 'Never'}`
                   : 'Complete setup to enable notifications'}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center ">
             <Button
               appearance="default"
               iconBefore={testConnection.isPending ? RefreshIcon : ToolsIcon}
@@ -257,7 +257,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
 
       {/* Stats Grid */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
           <StatCard
             title="Connected Users"
             value={stats.active_connected_users}
@@ -305,20 +305,20 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4 mt-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 ">
             {/* Configuration Card */}
             <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
               <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
-                <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
+                <h3 className="text-base flex items-center " style={{ fontWeight: 500, margin: 0 }}>
                   <SettingsIcon label="" size="small" />
                   Configuration
                 </h3>
                 <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Current Slack integration settings</p>
               </div>
               <div style={{ padding: '24px' }} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-2 ">
                   <div>
-                    <p className="text-slate-500">App ID</p>
+                    <p className="">App ID</p>
                     <div className="flex items-center gap-1">
                       <p className="font-mono">{config.app_id || '—'}</p>
                       {config.app_id && (
@@ -327,22 +327,22 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                     </div>
                   </div>
                   <div>
-                    <p className="text-slate-500">Workspace ID</p>
+                    <p className="">Workspace ID</p>
                     <p className="font-mono">{config.workspace_id || '—'}</p>
                   </div>
                   <div>
-                    <p className="text-slate-500">Workspace</p>
+                    <p className="">Workspace</p>
                     <p>{config.workspace_name || '—'}</p>
                   </div>
                   <div>
-                    <p className="text-slate-500">Configured</p>
+                    <p className="">Configured</p>
                     <p>{config.configured_at ? format(new Date(config.configured_at), 'MMM d, yyyy') : '—'}</p>
                   </div>
                 </div>
 
                 <div className="pt-4 border-t">
-                  <p className="text-sm text-slate-500 mb-2">Delivery Settings</p>
-                  <div className="flex flex-wrap gap-2">
+                  <p className=" ">Delivery Settings</p>
+                  <div className="flex flex-wrap ">
                     <Lozenge appearance={config.send_dm_by_default ? 'inprogress' : 'default'}>
                       DM: {config.send_dm_by_default ? 'Enabled' : 'Disabled'}
                     </Lozenge>
@@ -353,10 +353,10 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                 </div>
 
                 <div className="pt-4 border-t">
-                  <p className="text-sm text-slate-500 mb-2">OAuth Scopes</p>
+                  <p className=" ">OAuth Scopes</p>
                   <div className="flex flex-wrap gap-1">
                     {config.bot_scopes?.map((scope) => (
-                      <code key={scope} className="text-xs bg-slate-100 px-1.5 py-0.5 rounded">
+                      <code key={scope} className=" px-1.5 py-0.5 rounded">
                         {scope}
                       </code>
                     ))}
@@ -369,7 +369,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
             <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
               <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }} className="flex flex-row items-center justify-between">
                 <div>
-                  <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
+                  <h3 className="text-base flex items-center " style={{ fontWeight: 500, margin: 0 }}>
                     <ChartTrendIcon label="" size="small" />
                     Recent Activity
                   </h3>
@@ -394,29 +394,29 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                   ) : auditData?.logs && auditData.logs.length > 0 ? (
                     <div className="space-y-3">
                       {auditData.logs.slice(0, 10).map((log) => (
-                        <div key={log.id} className="flex items-start gap-3 py-2 border-b last:border-0">
-                          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
+                        <div key={log.id} className="flex items-start gap-3 border-b last:border-0">
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
                             {getActionIcon(log.action, log.status)}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-slate-900">
+                            <p className=" font-medium text-slate-900">
                               {getActionLabel(log.action)}
                             </p>
-                            <p className="text-xs text-slate-500">
+                            <p className=" ">
                               {log.actor_email && `by ${log.actor_email} • `}
                               {formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}
                             </p>
                             {log.status === 'failed' && log.error_message && (
-                              <p className="text-xs text-red-500 mt-1">{log.error_message}</p>
+                              <p className=" text-red-500 mt-1">{log.error_message}</p>
                             )}
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-8 text-slate-500">
+                    <div className="text-center py-8 ">
                       <FileIcon label="" size="small" />
-                      <p className="text-sm">No activity yet</p>
+                      <p className="">No activity yet</p>
                     </div>
                   )}
                 </ScrollArea>
@@ -441,10 +441,10 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
               {usersLoading ? (
                 <div className="space-y-4">
                   {[...Array(5)].map((_, i) => (
-                    <div key={i} className="flex items-center gap-4">
+                    <div key={i} className="flex items-center ">
                       <Skeleton className="w-10 h-10 rounded-full" />
                       <div className="flex-1">
-                        <Skeleton className="h-4 w-1/3 mb-2" />
+                        <Skeleton className="h-4 w-1/3 " />
                         <Skeleton className="h-3 w-1/4" />
                       </div>
                     </div>
@@ -469,13 +469,13 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                           <div className="flex items-center gap-3">
                             <Avatar src={user.avatar_url || undefined} name={user.full_name} size="small" />
                             <div>
-                              <p className="font-medium text-sm">{user.full_name}</p>
-                              <p className="text-xs text-slate-500">{user.email}</p>
+                              <p className="font-medium ">{user.full_name}</p>
+                              <p className=" ">{user.email}</p>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <code className="text-xs bg-slate-100 px-2 py-1 rounded">
+                          <code className=" py-1 rounded">
                             {user.slack_user_id}
                           </code>
                         </TableCell>
@@ -484,13 +484,13 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                             {user.is_active ? 'Active' : 'Disconnected'}
                           </Lozenge>
                         </TableCell>
-                        <TableCell className="text-sm text-slate-500">
+                        <TableCell className=" ">
                           {formatDistanceToNow(new Date(user.connected_at), { addSuffix: true })}
                         </TableCell>
                         <TableCell>
-                          <div className="text-sm">
+                          <div className="">
                             <span className="font-medium">{user.notifications_sent}</span>
-                            <span className="text-slate-500"> sent</span>
+                            <span className=""> sent</span>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -525,8 +525,8 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
               ) : (
                 <div className="text-center py-12">
                   <PeopleGroupIcon label="" size="small" />
-                  <h3 className="text-lg font-medium text-slate-900 mb-1">No connected users</h3>
-                  <p className="text-slate-500 text-sm">
+                  <h3 className=" font-medium text-slate-900 mb-1">No connected users</h3>
+                  <p className=" ">
                     Users can connect their Slack accounts from their notification settings
                   </p>
                 </div>
@@ -570,15 +570,15 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                     {auditData.logs.map((log) => (
                       <TableRow key={log.id}>
                         <TableCell>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center ">
                             {getActionIcon(log.action, log.status)}
-                            <span className="text-sm">{getActionLabel(log.action)}</span>
+                            <span className="">{getActionLabel(log.action)}</span>
                           </div>
                         </TableCell>
-                        <TableCell className="text-sm text-slate-500">
+                        <TableCell className=" ">
                           {log.actor_email || '—'}
                         </TableCell>
-                        <TableCell className="text-sm text-slate-500">
+                        <TableCell className=" ">
                           {log.target_user_email || '—'}
                         </TableCell>
                         <TableCell>
@@ -586,7 +586,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                             {log.status}
                           </Lozenge>
                         </TableCell>
-                        <TableCell className="text-sm text-slate-500">
+                        <TableCell className=" ">
                           {format(new Date(log.created_at), 'MMM d, HH:mm')}
                         </TableCell>
                         <TableCell>
@@ -604,8 +604,8 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
               ) : (
                 <div className="text-center py-12">
                   <FileIcon label="" size="small" />
-                  <h3 className="text-lg font-medium text-slate-900 mb-1">No audit logs</h3>
-                  <p className="text-slate-500 text-sm">
+                  <h3 className=" font-medium text-slate-900 mb-1">No audit logs</h3>
+                  <p className=" ">
                     Activity will appear here once the integration is used
                   </p>
                 </div>

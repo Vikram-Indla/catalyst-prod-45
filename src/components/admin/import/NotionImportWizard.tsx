@@ -68,8 +68,8 @@ function StatPill({ icon: Icon, label, value, color = 'var(--ds-text-brand, var(
   return (
     <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[var(--ds-surface-sunken,#F8FAFC)] border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
       <Icon className="h-3.5 w-3.5 shrink-0" style={{ color }} />
-      <span className="text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">{label}</span>
-      <span className="text-[13px] font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">{value}</span>
+      <span className="text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">{label}</span>
+      <span className="text-[13px] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">{value}</span>
     </div>
   );
 }
@@ -90,7 +90,7 @@ function WizardStepper({ step }: { step: number }) {
         const Icon = s.icon;
         return (
           <div key={s.id} className="flex items-center">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center ">
               <div className={`
                 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200
                 ${done ? 'bg-[var(--ds-text-success,var(--cp-success, #16A34A))] text-white' : ''}
@@ -198,12 +198,12 @@ export function NotionImportWizard() {
   return (
     <div className="flex flex-col h-full">
       {/* ─── Header Bar ─── */}
-      <div className="h-14 flex items-center justify-between border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] px-6 shrink-0 bg-white">
+      <div className="h-14 flex items-center justify-between border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] shrink-0 ">
         <div className="flex items-center gap-3">
           <div className="w-7 h-7 rounded-md bg-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] flex items-center justify-center">
             <DatabaseIcon label="" size="small" />
           </div>
-          <h1 className="text-[15px] font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] tracking-[-0.01em]">
+          <h1 className="text-[15px] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] tracking-[-0.01em]">
             Notion Import
           </h1>
         </div>
@@ -212,21 +212,21 @@ export function NotionImportWizard() {
 
       {/* ─── Content ─── */}
       <div className="flex-1 overflow-auto">
-        <div className="max-w-4xl mx-auto py-6 px-6">
+        <div className="max-w-4xl mx-auto ">
 
           {/* ═══ STEP 1: CONNECT ═══ */}
           {step === 1 && (
             <div className="space-y-4">
               <div className="mb-1">
-                <h2 className="text-[15px] font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">Connect to Notion</h2>
+                <h2 className="text-[15px] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">Connect to Notion</h2>
                 <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] mt-0.5">
                   Enter your integration token and database URL to start.
                 </p>
               </div>
 
-              <div className="bg-white border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg overflow-hidden">
+              <div className=" border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg overflow-hidden">
                 {/* Token */}
-                <div className="px-4 pt-3.5 pb-3 border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]">
+                <div className=" pt-3.5 pb-3 border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]">
                   <label htmlFor="notion-token" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                     <LockLockedIcon label="" size="small" />
                     Integration Token
@@ -249,7 +249,7 @@ export function NotionImportWizard() {
                 </div>
 
                 {/* Database URL */}
-                <div className="px-4 pt-3.5 pb-3 border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]">
+                <div className=" pt-3.5 pb-3 border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]">
                   <label htmlFor="notion-db-url" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                     <LinkIcon label="" size="small" />
                     Database URL
@@ -266,7 +266,7 @@ export function NotionImportWizard() {
                 </div>
 
                 {/* Project + Type */}
-                <div className="px-4 pt-3.5 pb-3.5 grid grid-cols-2 gap-3">
+                <div className=" pt-3.5 pb-3.5 grid grid-cols-2 gap-3">
                   <div>
                     <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                       <BoardsIcon label="" size="small" />
@@ -298,7 +298,7 @@ export function NotionImportWizard() {
                 <div className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--ds-background-danger,#FEF2F2)] border border-[#FECACA]">
                   <CrossCircleIcon label="" size="small" />
                   <div>
-                    <p className="text-[13px] font-semibold text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]">Connection failed</p>
+                    <p className="text-[13px] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]">Connection failed</p>
                     <p className="text-[12px] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]/80 mt-0.5">{fetchError}</p>
                   </div>
                 </div>
@@ -310,26 +310,26 @@ export function NotionImportWizard() {
           {step === 2 && (
             <div className="space-y-4">
               <div>
-                <h2 className="text-[15px] font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">Data Preview</h2>
+                <h2 className="text-[15px] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">Data Preview</h2>
                 <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] mt-0.5">
                   {notionRows.length} rows from <span className="font-medium text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">{dbTitle}</span>
                 </p>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex ">
                 <StatPill icon={DatabaseIcon} label="Rows" value={notionRows.length} />
                 <StatPill icon={GridIcon} label="Columns" value={notionProps.length} />
                 <StatPill icon={BoardsIcon} label="Target" value={projectName} />
               </div>
 
-              <div className="bg-white border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg overflow-hidden">
+              <div className=" border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] bg-[var(--ds-surface-sunken,#F8FAFC)]">
-                        <th className="text-left px-3 py-2 font-semibold text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] w-8">#</th>
+                        <th className="text-left px-3 text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] w-8">#</th>
                         {notionProps.map(p => (
-                          <th key={p.id} className="text-left px-3 py-2 font-semibold text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] whitespace-nowrap">
+                          <th key={p.id} className="text-left px-3 text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] whitespace-nowrap">
                             {p.name}
                           </th>
                         ))}
@@ -350,7 +350,7 @@ export function NotionImportWizard() {
                   </table>
                 </div>
                 {notionRows.length > 8 && (
-                  <div className="px-3 py-2 text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] bg-[var(--ds-surface-sunken,#FAFBFC)] border-t border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]">
+                  <div className="px-3 text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] bg-[var(--ds-surface-sunken,#FAFBFC)] border-t border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]">
                     + {notionRows.length - 8} more rows
                   </div>
                 )}
@@ -363,32 +363,32 @@ export function NotionImportWizard() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-[15px] font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">Map Fields</h2>
+                  <h2 className="text-[15px] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">Map Fields</h2>
                   <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] mt-0.5">
                     Map each Notion column to a Catalyst field.
                   </p>
                 </div>
-                <div className="flex gap-2 text-[11px]">
-                  <span className="px-2 py-1 rounded bg-[var(--ds-background-success,#DCFCE7)] text-[var(--ds-text-success,var(--cp-success, #16A34A))] font-semibold">{mappedCount} mapped</span>
-                  <span className="px-2 py-1 rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] font-semibold">{skippedCount} skipped</span>
+                <div className="flex text-[11px]">
+                  <span className=" py-1 rounded bg-[var(--ds-background-success,#DCFCE7)] text-[var(--ds-text-success,var(--cp-success, #16A34A))] ">{mappedCount} mapped</span>
+                  <span className=" py-1 rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] ">{skippedCount} skipped</span>
                 </div>
               </div>
 
-              <div className="bg-white border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg overflow-hidden">
-                <div className="flex items-center px-4 py-2 bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
-                  <span className="flex-1 text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">Notion Column</span>
+              <div className=" border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg overflow-hidden">
+                <div className="flex items-center bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
+                  <span className="flex-1 text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">Notion Column</span>
                   <ArrowRightIcon label="" size="small" />
-                  <span className="w-44 text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] text-right">Catalyst Field</span>
+                  <span className="w-44 text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] text-right">Catalyst Field</span>
                 </div>
                 {notionProps.map(p => {
                   const mapped = mappings[p.name] || '__skip__';
                   const isSkip = mapped === '__skip__';
                   const isSummary = mapped === 'summary';
                   return (
-                    <div key={p.id} className={`flex items-center px-4 py-2 gap-2 border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] last:border-b-0 ${isSkip ? 'bg-[var(--ds-surface-sunken,#FAFBFC)]' : ''}`}>
-                      <div className="flex-1 flex items-center gap-2 min-w-0">
+                    <div key={p.id} className={`flex items-center ga border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] last:border-b-0 ${isSkip ? 'bg-[var(--ds-surface-sunken,#FAFBFC)]' : ''}`}>
+                      <div className="flex-1 flex items-center min-w-0">
                         <span className={`text-[13px] font-medium truncate ${isSkip ? 'text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]' : 'text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]'}`}>{p.name}</span>
-                        <span className="shrink-0 text-[9px] uppercase tracking-wider font-bold px-1 py-px rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">{p.type}</span>
+                        <span className="shrink-0 text-[9px] uppercase tracking-wider px-1 py-px rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">{p.type}</span>
                       </div>
                       <ArrowRightIcon label="" size="small" />
                       <div className="w-44 shrink-0">
@@ -415,13 +415,13 @@ export function NotionImportWizard() {
           {/* ═══ STEP 4: CONFIRM & IMPORT ═══ */}
           {step === 4 && (
             <div className="space-y-4">
-              <h2 className="text-[15px] font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">
+              <h2 className="text-[15px] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">
                 {importResult ? 'Import Complete' : 'Review & Import'}
               </h2>
 
               {!importResult ? (
                 <>
-                  <div className="bg-white border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg overflow-hidden">
+                  <div className=" border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg overflow-hidden">
                     {[
                       { label: 'Source', value: dbTitle, icon: DatabaseIcon },
                       { label: 'Rows', value: String(notionRows.length), icon: DatabaseIcon },
@@ -429,17 +429,17 @@ export function NotionImportWizard() {
                       { label: 'Type', value: itemType, icon: GridIcon },
                       { label: 'Fields', value: `${mappedCount} / ${notionProps.length}`, icon: ArrowRightIcon },
                     ].map((row, i) => (
-                      <div key={row.label} className={`flex items-center justify-between px-4 py-2.5 ${i < 4 ? 'border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]' : ''}`}>
-                        <div className="flex items-center gap-2">
+                      <div key={row.label} className={`flex items-center justify-between .5 ${i < 4 ? 'border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]' : ''}`}>
+                        <div className="flex items-center ">
                           <row.icon className="h-3.5 w-3.5 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
                           <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{row.label}</span>
                         </div>
-                        <span className="text-[13px] font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">{row.value}</span>
+                        <span className="text-[13px] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">{row.value}</span>
                       </div>
                     ))}
                   </div>
 
-                  <div className="flex items-start gap-2 p-3 rounded-lg bg-[#F0F9FF] border border-[#BAE6FD]">
+                  <div className="flex items-start p-3 rounded-lg bg-[#F0F9FF] border border-[#BAE6FD]">
                     <InformationCircleIcon label="" size="small" />
                     <p className="text-[12px] text-[#0369A1]">
                       Duplicate rows (matched by Notion page ID) are skipped automatically.
@@ -450,7 +450,7 @@ export function NotionImportWizard() {
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between text-[13px]">
                         <span className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">Importing…</span>
-                        <span className="font-mono font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">{importDone}/{notionRows.length}</span>
+                        <span className="font-mono text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">{importDone}/{notionRows.length}</span>
                       </div>
                       <div className="h-1.5 rounded-full bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] overflow-hidden">
                         <div className="h-full rounded-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] transition-all duration-300" style={{ width: `${(importDone / notionRows.length) * 100}%` }} />
@@ -459,7 +459,7 @@ export function NotionImportWizard() {
                   )}
                 </>
               ) : (
-                <div className="bg-white border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg p-6 text-center space-y-4">
+                <div className=" border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg text-center space-y-4">
                   <div className={`mx-auto w-12 h-12 rounded-full flex items-center justify-center ${
                     importResult.failed > 0 && importResult.imported === 0 ? 'bg-[#FEE2E2]' : 'bg-[var(--ds-background-success,#DCFCE7)]'
                   }`}>
@@ -467,10 +467,10 @@ export function NotionImportWizard() {
                       ? <CrossCircleIcon label="" size="small" />
                       : <CheckCircleIcon label="" size="small" />}
                   </div>
-                  <p className="text-[15px] font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">
+                  <p className="text-[15px] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">
                     {importResult.imported > 0 ? `${importResult.imported} items imported` : 'Import failed'}
                   </p>
-                  <div className="flex justify-center gap-2 text-[12px] font-medium">
+                  <div className="flex justify-center text-[12px] font-medium">
                     {importResult.imported > 0 && (
                       <span className="px-2.5 py-1 rounded-full bg-[var(--ds-background-success,#DCFCE7)] text-[var(--ds-text-success,var(--cp-success, #16A34A))]">{importResult.imported} imported</span>
                     )}
@@ -492,7 +492,7 @@ export function NotionImportWizard() {
       </div>
 
       {/* ─── Sticky Footer ─── */}
-      <div className="shrink-0 border-t border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] bg-white px-6 py-3">
+      <div className="shrink-0 border-t border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <Button
             appearance="subtle"
@@ -512,7 +512,7 @@ export function NotionImportWizard() {
                 iconAfter={fetching ? undefined : ArrowRightIcon}
               >
                 {fetching ? (
-                  <span className="flex items-center gap-2"><Spinner size="small" /> Connecting…</span>
+                  <span className="flex items-center "><Spinner size="small" /> Connecting…</span>
                 ) : 'Fetch Database'}
               </Button>
             )}
@@ -546,7 +546,7 @@ export function NotionImportWizard() {
                 iconBefore={importing ? undefined : UploadIcon}
               >
                 {importing ? (
-                  <span className="flex items-center gap-2"><Spinner size="small" /> Importing…</span>
+                  <span className="flex items-center "><Spinner size="small" /> Importing…</span>
                 ) : `Import ${notionRows.length} Items`}
               </Button>
             )}

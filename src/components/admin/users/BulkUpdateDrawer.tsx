@@ -166,7 +166,7 @@ export function BulkUpdateDrawer({ isOpen, onClose, users }: BulkUpdateDrawerPro
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="w-[600px] sm:max-w-[600px]">
         <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
+          <SheetTitle className="flex items-center ">
             <UploadIcon label="" size="small" />
             Bulk Update Users
           </SheetTitle>
@@ -186,7 +186,7 @@ export function BulkUpdateDrawer({ isOpen, onClose, users }: BulkUpdateDrawerPro
               minimumRows={6}
             />
             {parseError && (
-              <p className="text-sm flex items-center gap-1" style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>
+              <p className=" flex items-center gap-1" style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>
                 <CrossCircleIcon label="" size="small" />
                 {parseError}
               </p>
@@ -195,7 +195,7 @@ export function BulkUpdateDrawer({ isOpen, onClose, users }: BulkUpdateDrawerPro
 
           {/* Dry Run Toggle */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center ">
               <Toggle
                 id="dry-run"
                 isChecked={dryRunMode}
@@ -212,47 +212,47 @@ export function BulkUpdateDrawer({ isOpen, onClose, users }: BulkUpdateDrawerPro
           {dryRunResult && (
             <div className="space-y-4">
               {/* Summary Cards */}
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 ">
                 <div className="p-3 rounded-lg bg-muted text-center">
-                  <div className="text-2xl font-bold">{dryRunResult.summary.total}</div>
-                  <div className="text-xs text-muted-foreground">Total</div>
+                  <div className=" ">{dryRunResult.summary.total}</div>
+                  <div className=" text-muted-foreground">Total</div>
                 </div>
                 <div className="p-3 rounded-lg bg-green-50 text-center dark:bg-green-950">
-                  <div className="text-2xl font-bold text-green-700 dark:text-green-400">
+                  <div className=" text-green-700 dark:text-green-400">
                     {dryRunResult.summary.toUpdate}
                   </div>
-                  <div className="text-xs text-muted-foreground">To Update</div>
+                  <div className=" text-muted-foreground">To Update</div>
                 </div>
                 <div className="p-3 rounded-lg bg-muted text-center">
-                  <div className="text-2xl font-bold">{dryRunResult.summary.unchanged}</div>
-                  <div className="text-xs text-muted-foreground">Unchanged</div>
+                  <div className=" ">{dryRunResult.summary.unchanged}</div>
+                  <div className=" text-muted-foreground">Unchanged</div>
                 </div>
                 <div className="p-3 rounded-lg bg-red-50 text-center dark:bg-red-950">
-                  <div className="text-2xl font-bold text-red-700 dark:text-red-400">
+                  <div className=" text-red-700 dark:text-red-400">
                     {dryRunResult.summary.mismatched}
                   </div>
-                  <div className="text-xs text-muted-foreground">Mismatched</div>
+                  <div className=" text-muted-foreground">Mismatched</div>
                 </div>
               </div>
 
               {/* Tabs for different categories */}
               <Tabs defaultValue="matched" className="w-full">
                 <TabsList className="w-full grid grid-cols-4">
-                  <TabsTrigger value="matched" className="text-xs">
+                  <TabsTrigger value="matched" className="">
                     Matched ({dryRunResult.matched.length})
                   </TabsTrigger>
-                  <TabsTrigger value="notfound" className="text-xs">
+                  <TabsTrigger value="notfound" className="">
                     Not Found ({dryRunResult.notFound.length})
                   </TabsTrigger>
-                  <TabsTrigger value="ambiguous" className="text-xs">
+                  <TabsTrigger value="ambiguous" className="">
                     Ambiguous ({dryRunResult.ambiguous.length})
                   </TabsTrigger>
-                  <TabsTrigger value="skipped" className="text-xs">
+                  <TabsTrigger value="skipped" className="">
                     Skipped ({dryRunResult.skipped.length})
                   </TabsTrigger>
                 </TabsList>
 
-                <ScrollArea className="h-[280px] mt-2">
+                <ScrollArea className="h-[280px] ">
                   <TabsContent value="matched" className="mt-0">
                     <div className="space-y-2">
                       {dryRunResult.matched.map((result, idx) => (
@@ -303,7 +303,7 @@ export function BulkUpdateDrawer({ isOpen, onClose, users }: BulkUpdateDrawerPro
                   <TabsContent value="skipped" className="mt-0">
                     <div className="space-y-2">
                       {dryRunResult.skipped.map((result, idx) => (
-                        <div key={idx} className="p-2 rounded bg-muted/50 text-sm">
+                        <div key={idx} className=" rounded bg-muted/50 ">
                           <span className="font-medium">{result.mapping.name || '(no name)'}</span>
                           <span className="text-muted-foreground ml-2">- {result.reason}</span>
                         </div>
@@ -340,7 +340,7 @@ export function BulkUpdateDrawer({ isOpen, onClose, users }: BulkUpdateDrawerPro
               </div>
 
               {hasBlockingErrors && !dryRunMode && (
-                <p className="text-xs flex items-center gap-1" style={{ color: 'var(--ds-text-warning, #974F0C)' }}>
+                <p className=" flex items-center gap-1" style={{ color: 'var(--ds-text-warning, #974F0C)' }}>
                   <WarningIcon label="" size="small" />
                   Resolve mismatches or turn off dry-run mode to proceed
                 </p>
@@ -362,7 +362,7 @@ function MatchedResultRow({ result }: { result: MatchResult }) {
       hasChanges ? "bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800" : "bg-muted/30"
     )}>
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center ">
           <CheckCircleIcon label="" size="small" />
           <span className="font-medium">{result.mapping.name}</span>
           <ArrowRightIcon label="" size="small" />
@@ -409,7 +409,7 @@ function MismatchResultRow({
         : "bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800"
     )}>
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center ">
           {linkedUser ? (
             <CheckCircleIcon label="" size="small" />
           ) : result.matchType === 'not_found' ? (
@@ -444,18 +444,18 @@ function MismatchResultRow({
       </div>
       
       {!linkedUser && (
-        <p className="text-xs text-muted-foreground mt-1">{result.reason}</p>
+        <p className=" text-muted-foreground mt-1">{result.reason}</p>
       )}
 
       {showCandidates && !linkedUser && (
-        <div className="mt-2 space-y-1">
+        <div className=" space-y-1">
           {result.candidates && result.candidates.length > 0 ? (
             result.candidates.map((candidate) => (
               <div 
                 key={candidate.id}
                 className="flex items-center justify-between p-1 rounded bg-background"
               >
-                <span className="text-xs">{candidate.full_name} ({candidate.email})</span>
+                <span className="">{candidate.full_name} ({candidate.email})</span>
                 <Button
                   appearance="default"
                   onClick={() => {
@@ -468,7 +468,7 @@ function MismatchResultRow({
               </div>
             ))
           ) : (
-            <p className="text-xs text-muted-foreground">No similar candidates found</p>
+            <p className=" text-muted-foreground">No similar candidates found</p>
           )}
         </div>
       )}
@@ -480,7 +480,7 @@ function EmptyState({ message, icon: Icon = WarningIcon }: { message: string; ic
   return (
     <div className="flex flex-col items-center justify-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
       <span style={{ marginBottom: '8px' }}><Icon label="" size="large" primaryColor="var(--ds-icon-subtle, #626F86)" /></span>
-      <p className="text-sm">{message}</p>
+      <p className="">{message}</p>
     </div>
   );
 }

@@ -60,7 +60,7 @@ function HealthBadge({ status }: { status: string }) {
   const s = map[status] ?? map['RED'];
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-widest"
+      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 uppercase tracking-widest"
       style={{ background: s.bg, color: s.text }}
     >
       <span className="h-1.5 w-1.5 rounded-full" style={{ background: s.text }} />
@@ -139,25 +139,25 @@ export function SyncHealthDashboard({ connectionId: _connectionId }: SyncHealthD
 
       {/* ── Health banner ──────────────────────────────────────────────────── */}
       <div
-        className="rounded-lg border p-4 flex items-center justify-between"
+        className="rounded-lg border flex items-center justify-between"
         style={{
           borderColor: healthStatus === 'GREEN' ? '#B3D4FF' : healthStatus === 'YELLOW' ? '#FFE380' : '#FF8F73',
           background:  healthStatus === 'GREEN' ? '#DEEBFF22' : healthStatus === 'YELLOW' ? '#FFFAE622' : '#FFECEB22',
         }}
       >
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Sync health</span>
+          <div className="flex items-center mb-1">
+            <span className=" " style={{ color: 'var(--ds-text, #172B4D)' }}>Sync health</span>
             <HealthBadge status={healthStatus} />
             {consecutiveFailures > 0 && (
-              <span className="text-xs" style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>
+              <span className="" style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>
                 {consecutiveFailures} consecutive failure{consecutiveFailures !== 1 ? 's' : ''}
               </span>
             )}
           </div>
           {lastSuccess?.started_at
             ? (
-              <p className="text-xs" style={{ color: 'var(--ds-text-subtle, #42526E)' }}>
+              <p className="" style={{ color: 'var(--ds-text-subtle, #42526E)' }}>
                 Last successful sync{' '}
                 <span className="font-medium">
                   {formatDistanceToNow(new Date(lastSuccess.started_at), { addSuffix: true })}
@@ -165,12 +165,12 @@ export function SyncHealthDashboard({ connectionId: _connectionId }: SyncHealthD
                 {' '}· {lastSuccess.issues_fetched ?? 0} issues fetched
               </p>
             ) : (
-              <p className="text-xs" style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>
+              <p className="" style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>
                 No successful sync recorded — check the Jira API token.
               </p>
             )}
         </div>
-        <p className="text-xs" style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        <p className="" style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>
           {total} syncs tracked
         </p>
       </div>
@@ -185,7 +185,7 @@ export function SyncHealthDashboard({ connectionId: _connectionId }: SyncHealthD
         ].map(({ Icon, label, value, colour }) => (
           <div
             key={label}
-            className="rounded-lg border p-4 flex items-center gap-3"
+            className="rounded-lg border flex items-center gap-3"
             style={{ borderColor: 'var(--ds-border, #DFE1E6)', background: 'var(--ds-surface, #FFFFFF)' }}
           >
             <div
@@ -195,10 +195,10 @@ export function SyncHealthDashboard({ connectionId: _connectionId }: SyncHealthD
               <Icon style={{ width: 16, height: 16, color: colour }} label="" />
             </div>
             <div>
-              <p className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              <p className=" font-medium uppercase tracking-wider" style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>
                 {label}
               </p>
-              <p className="text-lg font-semibold leading-tight" style={{ color: 'var(--ds-text, #172B4D)', fontFamily: 'monospace' }}>
+              <p className=" leading-tight" style={{ color: 'var(--ds-text, #172B4D)', fontFamily: 'monospace' }}>
                 {value}
               </p>
             </div>
@@ -209,8 +209,8 @@ export function SyncHealthDashboard({ connectionId: _connectionId }: SyncHealthD
       {/* ── Per-project sync state ─────────────────────────────────────────── */}
       {(projectStates?.length ?? 0) > 0 && (
         <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'var(--ds-border, #DFE1E6)' }}>
-          <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--ds-border, #DFE1E6)', background: 'var(--ds-surface-sunken, #F7F8F9)' }}>
-            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <div className=" py-3 border-b" style={{ borderColor: 'var(--ds-border, #DFE1E6)', background: 'var(--ds-surface-sunken, #F7F8F9)' }}>
+            <span className=" uppercase tracking-wider" style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>
               Per-project sync state
             </span>
           </div>
@@ -218,7 +218,7 @@ export function SyncHealthDashboard({ connectionId: _connectionId }: SyncHealthD
             <thead>
               <tr style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface-sunken, #F7F8F9)' }}>
                 {['Project', 'Status', 'Last synced', 'Issues', 'Failures'].map(h => (
-                  <th key={h} className="px-4 py-2 text-left" style={{ fontSize: 12, fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                  <th key={h} className=" text-left" style={{ fontSize: 12, fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)' }}>
                     {h}
                   </th>
                 ))}
@@ -227,10 +227,10 @@ export function SyncHealthDashboard({ connectionId: _connectionId }: SyncHealthD
             <tbody>
               {projectStates!.map(ps => (
                 <tr key={ps.project_key} style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-                  <td className="px-4 py-2" style={{ fontSize: 12, fontFamily: 'monospace', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                  <td className=" " style={{ fontSize: 12, fontFamily: 'monospace', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
                     {ps.project_key}
                   </td>
-                  <td className="px-4 py-2">
+                  <td className=" ">
                     {ps.last_sync_status ? (
                       <div className="flex items-center gap-1">
                         <StatusIcon status={ps.last_sync_status} />
@@ -242,18 +242,18 @@ export function SyncHealthDashboard({ connectionId: _connectionId }: SyncHealthD
                       <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>
                     )}
                   </td>
-                  <td className="px-4 py-2" style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
+                  <td className=" " style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
                     {ps.last_synced_at
                       ? formatDistanceToNow(new Date(ps.last_synced_at), { addSuffix: true })
                       : <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>Never</span>}
                   </td>
-                  <td className="px-4 py-2" style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--ds-text, #172B4D)' }}>
+                  <td className=" " style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--ds-text, #172B4D)' }}>
                     {ps.issues_synced ?? '—'}
                   </td>
-                  <td className="px-4 py-2">
+                  <td className=" ">
                     {ps.consecutive_failures > 0 ? (
                       <span
-                        className="rounded-full px-2 py-0.5 font-bold"
+                        className="rounded-full py-0.5 "
                         style={{ fontSize: 10, background: '#FFECEB', color: '#AE2A19' }}
                       >
                         {ps.consecutive_failures}
@@ -271,21 +271,21 @@ export function SyncHealthDashboard({ connectionId: _connectionId }: SyncHealthD
 
       {/* ── Recent sync log ───────────────────────────────────────────────── */}
       <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'var(--ds-border, #DFE1E6)' }}>
-        <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--ds-border, #DFE1E6)', background: 'var(--ds-surface-sunken, #F7F8F9)' }}>
-          <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        <div className=" py-3 border-b" style={{ borderColor: 'var(--ds-border, #DFE1E6)', background: 'var(--ds-surface-sunken, #F7F8F9)' }}>
+          <span className=" uppercase tracking-wider" style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>
             Recent sync activity
           </span>
         </div>
         <div>
           {recentLogs.length === 0 && (
-            <div className="px-4 py-8 text-center" style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <div className=" py-8 text-center" style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
               No sync history found. The cron job may not have run yet.
             </div>
           )}
           {recentLogs.map((log, i) => (
             <div
               key={log.id}
-              className="flex items-start justify-between px-4 py-3 gap-4"
+              className="flex items-start justify-between py-3 "
               style={{
                 borderBottom: i < recentLogs.length - 1 ? '1px solid var(--ds-border, #DFE1E6)' : undefined,
                 background: 'var(--ds-surface, #FFFFFF)',
@@ -294,7 +294,7 @@ export function SyncHealthDashboard({ connectionId: _connectionId }: SyncHealthD
               <div className="flex items-start gap-3 min-w-0">
                 <div className="mt-0.5"><StatusIcon status={log.status} /></div>
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center flex-wrap">
                     <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
                       {log.sync_type}
                     </span>
@@ -342,7 +342,7 @@ export function SyncHealthDashboard({ connectionId: _connectionId }: SyncHealthD
 
       {/* ── Strategy legend ───────────────────────────────────────────────── */}
       <div
-        className="rounded-lg flex items-start gap-3 px-4 py-3"
+        className="rounded-lg flex items-start gap-3 py-3"
         style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', border: '1px solid var(--ds-border, #DFE1E6)' }}
       >
         <DatabaseIcon label="" size="small" />
