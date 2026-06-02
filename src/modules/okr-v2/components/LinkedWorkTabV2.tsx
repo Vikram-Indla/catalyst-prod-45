@@ -204,10 +204,10 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
   const hasAnyKRs = (workGroups?.length || 0) > 0;
 
   return (
-    <div className="p-6 space-y-4 bg-white dark:bg-[#161B22]">
+    <div className="p-6 space-y-4 bg-white dark:bg-[var(--ds-surface,#161B22)]">
       {hasAnyKRs ? (
         <>
-          <div className="text-sm text-[#57606A] dark:text-[#8B949E]">
+          <div className="text-sm text-[var(--ds-text-subtle,#57606A)] dark:text-[var(--ds-text-subtlest,#8B949E)]">
             Work items linked via Key Results. Edit contributions directly in this tab or from Key Results.
           </div>
 
@@ -218,13 +218,13 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
               const isExpanded = expandedKRs.has(group.krId);
 
               return (
-                <div key={group.krId} className="border border-[#E1E4E8] dark:border-[#30363D] rounded-lg overflow-hidden">
+                <div key={group.krId} className="border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] rounded-lg overflow-hidden">
                   {/* Collapsible KR header */}
                   <div
-                    className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] bg-white dark:bg-[#161B22]"
+                    className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[var(--ds-surface-sunken,#F6F8FA)] dark:hover:bg-[var(--ds-surface,#21262D)] bg-white dark:bg-[var(--ds-surface,#161B22)]"
                     onClick={() => toggleKRExpanded(group.krId)}
                   >
-                    <Button variant="ghost" size="icon" className="h-6 w-6 flex-shrink-0 p-0 text-[#57606A] dark:text-[#8B949E]">
+                    <Button variant="ghost" size="icon" className="h-6 w-6 flex-shrink-0 p-0 text-[var(--ds-text-subtle,#57606A)] dark:text-[var(--ds-text-subtlest,#8B949E)]">
                       {isExpanded ? (
                         <ChevronDown className="h-4 w-4" />
                       ) : (
@@ -233,24 +233,24 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                     </Button>
                     <Target className="h-4 w-4 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <span className="text-sm font-medium truncate block text-[#24292F] dark:text-[#E6EDF3]">KR – {group.krName}</span>
+                      <span className="text-sm font-medium truncate block text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">KR – {group.krName}</span>
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
-                      <div className="w-20 h-2 rounded-full bg-[#E1E4E8] dark:bg-[#30363D] overflow-hidden">
-                        <div className="h-full rounded-full bg-[#0d9488] transition-all" style={{ width: `${group.krProgress}%` }} />
+                      <div className="w-20 h-2 rounded-full bg-[var(--ds-border,#E1E4E8)] dark:bg-[var(--ds-border,#30363D)] overflow-hidden">
+                        <div className="h-full rounded-full bg-[var(--ds-text-success,#0d9488)] transition-all" style={{ width: `${group.krProgress}%` }} />
                       </div>
-                      <span className="text-sm text-[#57606A] dark:text-[#8B949E] w-10 text-right">{Math.round(group.krProgress)}%</span>
+                      <span className="text-sm text-[var(--ds-text-subtle,#57606A)] dark:text-[var(--ds-text-subtlest,#8B949E)] w-10 text-right">{Math.round(group.krProgress)}%</span>
                     </div>
                   </div>
 
                   {/* Expanded content */}
                   {isExpanded && (
-                    <div className="border-t border-[#E1E4E8] dark:border-[#30363D] bg-[#F6F8FA] dark:bg-[#0D1117]">
+                    <div className="border-t border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] bg-[var(--ds-surface-sunken,#F6F8FA)] dark:bg-[var(--ds-surface,#0D1117)]">
                       {/* Contribution total */}
                       {hasWorkItems && (
-                        <div className="flex items-center justify-between text-xs px-4 py-2 border-b border-[#E1E4E8] dark:border-[#30363D]">
-                          <span className="text-[#57606A] dark:text-[#8B949E]">Contribution Total</span>
-                          <span className={`font-semibold ${status.valid ? 'text-[#0d9488]' : status.overweight ? 'text-red-600' : 'text-amber-600'}`}>
+                        <div className="flex items-center justify-between text-xs px-4 py-2 border-b border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)]">
+                          <span className="text-[var(--ds-text-subtle,#57606A)] dark:text-[var(--ds-text-subtlest,#8B949E)]">Contribution Total</span>
+                          <span className={`font-semibold ${status.valid ? 'text-[var(--ds-text-success,#0d9488)]' : status.overweight ? 'text-red-600' : 'text-amber-600'}`}>
                             {group.totalContribution}% / 100%
                           </span>
                         </div>
@@ -262,7 +262,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                           <Alert variant={status.overweight ? "destructive" : "default"} className={`py-2 ${status.underweight ? 'border-amber-400 bg-amber-50 text-amber-800' : ''}`}>
                             <AlertCircle className="h-4 w-4" />
                             <AlertDescription className="text-xs">
-                              {status.overweight 
+                              {status.overweight
                                 ? `Contribution total exceeds 100%. Please adjust.`
                                 : `Contribution total is less than 100%. Progress will be underweighted.`
                               }
@@ -276,7 +276,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                         <div className="px-4 py-2">
                           <table className="w-full text-sm">
                             <thead>
-                              <tr className="text-left text-xs text-[#57606A] dark:text-[#8B949E] uppercase tracking-wide border-b border-[#E1E4E8] dark:border-[#30363D]">
+                              <tr className="text-left text-xs text-[var(--ds-text-subtle,#57606A)] dark:text-[var(--ds-text-subtlest,#8B949E)] uppercase tracking-wide border-b border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)]">
                                 <th className="pb-2 font-medium">Work Item</th>
                                 <th className="pb-2 font-medium w-16 text-center">Type</th>
                                 <th className="pb-2 font-medium w-24 text-center">Progress</th>
@@ -286,29 +286,29 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                             </thead>
                             <tbody>
                               {group.workItems.map((item) => (
-                                <tr key={item.id} className="border-b border-[#E1E4E8] dark:border-[#30363D] last:border-0 hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]">
+                                <tr key={item.id} className="border-b border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] last:border-0 hover:bg-[var(--ds-surface-sunken,#F6F8FA)] dark:hover:bg-[var(--ds-surface,#21262D)]">
                                   <td className="py-2.5">
                                     <div className="flex items-center gap-2">
                                       <Target className="h-3.5 w-3.5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] flex-shrink-0" />
                                       <button
                                         onClick={() => setSelectedWorkItem({ id: item.work_item_id, type: item.type })}
-                                        className="truncate text-left hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:underline transition-colors cursor-pointer text-[#24292F] dark:text-[#E6EDF3]"
+                                        className="truncate text-left hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:underline transition-colors cursor-pointer text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]"
                                       >
                                         {item.name}
                                       </button>
                                     </div>
                                   </td>
                                   <td className="py-2.5 text-center">
-                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border border-[#E1E4E8] dark:border-[#30363D] capitalize">
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-[var(--ds-surface-sunken,#F6F8FA)] dark:bg-[var(--ds-surface,#21262D)] text-[var(--ds-text-subtle,#57606A)] dark:text-[var(--ds-text-subtlest,#8B949E)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] capitalize">
                                       {item.type}
                                     </span>
                                   </td>
                                   <td className="py-2.5">
                                     <div className="flex items-center justify-center gap-2">
-                                      <div className="w-12 h-1.5 rounded-full bg-[#E1E4E8] dark:bg-[#30363D] overflow-hidden">
-                                        <div className="h-full rounded-full bg-[#0d9488]" style={{ width: `${item.progress}%` }} />
+                                      <div className="w-12 h-1.5 rounded-full bg-[var(--ds-border,#E1E4E8)] dark:bg-[var(--ds-border,#30363D)] overflow-hidden">
+                                        <div className="h-full rounded-full bg-[var(--ds-text-success,#0d9488)]" style={{ width: `${item.progress}%` }} />
                                       </div>
-                                      <span className="text-xs text-[#57606A] dark:text-[#8B949E] w-8">{item.progress}%</span>
+                                      <span className="text-xs text-[var(--ds-text-subtle,#57606A)] dark:text-[var(--ds-text-subtlest,#8B949E)] w-8">{item.progress}%</span>
                                     </div>
                                   </td>
                                   <td className="py-2.5 text-center">
@@ -325,12 +325,12 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                           if (e.key === 'Enter') handleContributionChange(item.id, group.krId, editingItem.value);
                                           else if (e.key === 'Escape') setEditingItem(null);
                                         }}
-                                        className="w-16 h-7 text-xs text-center mx-auto bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D]"
+                                        className="w-16 h-7 text-xs text-center mx-auto bg-white dark:bg-[var(--ds-surface,#0D1117)] border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)]"
                                       />
                                     ) : (
                                       <button
                                         onClick={() => setEditingItem({ id: item.id, value: item.contributionPercent })}
-                                        className="text-sm font-medium hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] transition-colors px-2 py-0.5 rounded hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[#24292F] dark:text-[#E6EDF3]"
+                                        className="text-sm font-medium hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] transition-colors px-2 py-0.5 rounded hover:bg-[var(--ds-surface-sunken,#F6F8FA)] dark:hover:bg-[var(--ds-surface,#21262D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]"
                                       >
                                         {item.contributionPercent}%
                                       </button>
@@ -341,7 +341,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                       <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-7 w-7 text-[#57606A] dark:text-[#8B949E] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
+                                        className="h-7 w-7 text-[var(--ds-text-subtle,#57606A)] dark:text-[var(--ds-text-subtlest,#8B949E)] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
                                         onClick={() => setEditingItem({ id: item.id, value: item.contributionPercent })}
                                         title="Edit contribution"
                                       >
@@ -350,7 +350,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                       <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-7 w-7 text-[#57606A] dark:text-[#8B949E] hover:text-red-600"
+                                        className="h-7 w-7 text-[var(--ds-text-subtle,#57606A)] dark:text-[var(--ds-text-subtlest,#8B949E)] hover:text-red-600"
                                         onClick={() => setUnlinkConfirm({ id: item.id, krId: group.krId, name: item.name })}
                                         title="Remove link"
                                       >
@@ -366,11 +366,11 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                       )}
 
                       {/* Add Work Item CTA */}
-                      <div className="px-4 py-3 border-t border-[#E1E4E8] dark:border-[#30363D]">
+                      <div className="px-4 py-3 border-t border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)]">
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="w-full justify-center text-[#57606A] dark:text-[#8B949E] hover:text-[#24292F] dark:hover:text-[#E6EDF3] gap-1.5 hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]"
+                          className="w-full justify-center text-[var(--ds-text-subtle,#57606A)] dark:text-[var(--ds-text-subtlest,#8B949E)] hover:text-[var(--ds-text,#24292F)] dark:hover:text-[var(--ds-text,#E6EDF3)] gap-1.5 hover:bg-[var(--ds-surface-sunken,#F6F8FA)] dark:hover:bg-[var(--ds-surface,#21262D)]"
                           onClick={() => openAlignDrawer(group.krId)}
                         >
                           <Plus className="h-4 w-4" />
@@ -385,9 +385,9 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
           </div>
         </>
       ) : (
-        <div className="text-center py-12 text-[#57606A] dark:text-[#8B949E] bg-white dark:bg-[#161B22]">
+        <div className="text-center py-12 text-[var(--ds-text-subtle,#57606A)] dark:text-[var(--ds-text-subtlest,#8B949E)] bg-white dark:bg-[var(--ds-surface,#161B22)]">
           <Target className="h-10 w-10 mx-auto mb-3 opacity-50" />
-          <p className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">No Key Results yet</p>
+          <p className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">No Key Results yet</p>
           <p className="text-xs mt-1">Create Key Results first, then link work items.</p>
         </div>
       )}

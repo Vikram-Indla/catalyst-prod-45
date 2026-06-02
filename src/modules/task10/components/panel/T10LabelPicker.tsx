@@ -9,16 +9,16 @@ const DEFAULT_LABELS: string[] = [];
 export function getLabelColor(label: string): { bg: string; color: string; border: string } {
   const normalized = label.toUpperCase();
   switch (normalized) {
-    case 'CRITICAL': return { bg: 'var(--ds-background-danger, #fef2f2)', color: 'var(--ds-text-danger, #dc2626)', border: '#fecaca' };
-    case 'HIGH': return { bg: '#fff7ed', color: '#ea580c', border: '#fed7aa' };
-    case 'MEDIUM': return { bg: '#fffbeb', color: 'var(--ds-text-warning, #d97706)', border: '#fde68a' };
-    case 'LOW': return { bg: '#f0fdf4', color: 'var(--ds-text-success, #16a34a)', border: '#bbf7d0' };
-    case 'BLOCKED': return { bg: 'var(--ds-background-danger, #fef2f2)', color: '#b91c1c', border: '#fecaca' };
-    case 'NEEDS-REVIEW': return { bg: '#f5f3ff', color: '#7c3aed', border: '#ddd6fe' };
-    case 'HR': return { bg: 'var(--ds-background-selected, #eff6ff)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', border: '#bfdbfe' };
-    case 'BUG FIX': return { bg: 'var(--ds-background-danger, #fef2f2)', color: 'var(--ds-text-danger, #dc2626)', border: '#fecaca' };
-    case 'FEATURE': return { bg: '#ecfdf5', color: 'var(--quality-high, #059669)', border: '#a7f3d0' };
-    case 'DOCUMENTATION': return { bg: '#f0f9ff', color: '#0284c7', border: '#bae6fd' };
+    case 'CRITICAL': return { bg: 'var(--ds-background-danger, #fef2f2)', color: 'var(--ds-text-danger, #dc2626)', border: 'var(--ds-border, #fecaca)' };
+    case 'HIGH': return { bg: 'var(--ds-surface, #fff7ed)', color: 'var(--ds-text, #ea580c)', border: 'var(--ds-border, #fed7aa)' };
+    case 'MEDIUM': return { bg: 'var(--ds-surface, #fffbeb)', color: 'var(--ds-text-warning, #d97706)', border: 'var(--ds-border, #fde68a)' };
+    case 'LOW': return { bg: 'var(--ds-surface, #f0fdf4)', color: 'var(--ds-text-success, #16a34a)', border: 'var(--ds-border, #bbf7d0)' };
+    case 'BLOCKED': return { bg: 'var(--ds-background-danger, #fef2f2)', color: 'var(--ds-text-danger, #b91c1c)', border: 'var(--ds-border, #fecaca)' };
+    case 'NEEDS-REVIEW': return { bg: 'var(--ds-surface, #f5f3ff)', color: 'var(--ds-text-discovery, #7c3aed)', border: 'var(--ds-border, #ddd6fe)' };
+    case 'HR': return { bg: 'var(--ds-background-selected, #eff6ff)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', border: 'var(--ds-border, #bfdbfe)' };
+    case 'BUG FIX': return { bg: 'var(--ds-background-danger, #fef2f2)', color: 'var(--ds-text-danger, #dc2626)', border: 'var(--ds-border, #fecaca)' };
+    case 'FEATURE': return { bg: 'var(--ds-surface, #ecfdf5)', color: 'var(--quality-high, #059669)', border: 'var(--ds-border, #a7f3d0)' };
+    case 'DOCUMENTATION': return { bg: 'var(--ds-surface, #f0f9ff)', color: 'var(--ds-link, #0284c7)', border: 'var(--ds-border, #bae6fd)' };
     default: {
       // Generate consistent color based on label hash
       const hash = label.split('').reduce((acc, char) => char.charCodeAt(0) + acc, 0);
@@ -166,22 +166,22 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
         background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderRadius: '8px',
         boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15), 0 4px 6px -2px rgba(0,0,0,0.08)',
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--ds-border, #e5e7eb)',
         overflow: 'hidden',
       }}
     >
       {/* Search Input */}
-      <div style={{ padding: '8px', borderBottom: '1px solid #f3f4f6' }}>
+      <div style={{ padding: '8px', borderBottom: '1px solid var(--ds-border, #f3f4f6)' }}>
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
           gap: '8px',
           padding: '8px 12px',
-          background: '#f9fafb',
+          background: 'var(--ds-surface-sunken, #f9fafb)',
           borderRadius: '6px',
-          border: '1px solid #e5e7eb',
+          border: '1px solid var(--ds-border, #e5e7eb)',
         }}>
-          <Search size={14} style={{ color: '#9ca3af', flexShrink: 0 }} />
+          <Search size={14} style={{ color: 'var(--ds-text-subtlest, #9ca3af)', flexShrink: 0 }} />
           <input
             ref={searchInputRef}
             type="text"
@@ -195,7 +195,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
               outline: 'none',
               background: 'transparent',
               fontSize: '14px',
-              color: '#374151',
+              color: 'var(--ds-text, #374151)',
             }}
           />
           {search && (
@@ -209,7 +209,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
                 background: 'transparent',
                 border: 'none',
                 cursor: 'pointer',
-                color: '#9ca3af',
+                color: 'var(--ds-text-subtlest, #9ca3af)',
               }}
             >
               <X size={14} />
@@ -220,7 +220,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
 
       {/* Create New Label Option */}
       {isNewLabel && (
-        <div style={{ padding: '4px 8px', borderBottom: '1px solid #f3f4f6' }}>
+        <div style={{ padding: '4px 8px', borderBottom: '1px solid var(--ds-border, #f3f4f6)' }}>
           <button
             onClick={handleCreateLabel}
             style={{
@@ -230,7 +230,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
               width: '100%',
               padding: '10px 12px',
               background: '#f0fdf4',
-              border: '1px solid #bbf7d0',
+              border: '1px solid var(--ds-border, #bbf7d0)',
               borderRadius: '6px',
               cursor: 'pointer',
               fontSize: '14px',
@@ -272,7 +272,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
                 }}
                 onMouseEnter={(e) => {
                   if (!isSelected) {
-                    e.currentTarget.style.background = '#f9fafb';
+                    e.currentTarget.style.background = 'var(--ds-surface-sunken, #f9fafb)';
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -302,7 +302,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
           <div style={{ 
             padding: '20px', 
             textAlign: 'center', 
-            color: '#9ca3af',
+            color: 'var(--ds-text-subtlest, #9ca3af)',
             fontSize: '13px',
           }}>
             No labels found
@@ -373,7 +373,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
                   border: 'none',
                   cursor: 'pointer',
                   fontSize: '13px',
-                  color: '#6b7280',
+                  color: 'var(--ds-text-subtle, #6b7280)',
                   fontWeight: 500,
                 }}
               >
@@ -392,11 +392,11 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
               gap: '6px',
               padding: '8px 12px',
               background: 'transparent',
-              border: '1px dashed #d1d5db',
+              border: '1px dashed var(--ds-border, #d1d5db)',
               borderRadius: '6px',
               cursor: isReadOnly ? 'default' : 'pointer',
               fontSize: '14px',
-              color: '#9ca3af',
+              color: 'var(--ds-text-subtlest, #9ca3af)',
               width: '100%',
             }}
           >

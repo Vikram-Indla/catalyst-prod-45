@@ -279,7 +279,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
       <button
         onClick={() => setRecentsExpanded(p => !p)}
         className="flex items-center w-full"
-        style={{ padding: '6px 12px', border: 'none', background: 'transparent', cursor: 'pointer', gap: 4 }}
+        style={{ padding: '8px 12px', border: 'none', background: 'transparent', cursor: 'pointer', gap: 4 }}
         aria-expanded={recentsExpanded}
       >
         <ChevronRight
@@ -300,7 +300,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
       </button>
 
       {recentsExpanded && (
-        <div style={{ padding: '2px 0' }}>
+        <div style={{ padding: '0px 0' }}>
           {groupedBrs.map((group) => (
             <div key={group.label}>
               <div
@@ -310,7 +310,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
                   color: token('color.text.subtlest'),
-                  padding: '6px 12px 2px 28px',
+                  padding: '8px 12px 0px 24px',
                   fontFamily: 'var(--cp-font-body)',
                 }}
               >
@@ -324,14 +324,14 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
                     openDetail({ id: br.request_key, itemType: 'business_request' });
                   }}
                   className="group"
-                  style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '5px 12px 5px 28px', cursor: 'pointer', borderRadius: 3, margin: '0 4px', transition: 'background 80ms ease' }}
+                  style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '4px 12px 4px 24px', cursor: 'pointer', borderRadius: 3, margin: '0 4px', transition: 'background 80ms ease' }}
                   onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
-                  <span style={{ flexShrink: 0, marginTop: 2, lineHeight: 0 }}>
+                  <span style={{ flexShrink: 0, marginTop: 0, lineHeight: 0 }}>
                     <JiraIssueTypeIcon type={BR_ICON_TYPE} size={14} />
                   </span>
-                  <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 0 }}>
                     <span style={{ fontSize: 13, fontWeight: 500, color: token('color.text'), fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={br.title}>
                       {br.title}
                     </span>

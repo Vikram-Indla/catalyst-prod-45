@@ -150,9 +150,9 @@ function MenuItemBtn({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
         width: '100%',
-        padding: '8px 10px',
+        padding: '8px 8px',
         border: 'none',
         background: active ? token('color.background.selected', '#E9F2FF') : 'transparent',
         color: '#292A2E',

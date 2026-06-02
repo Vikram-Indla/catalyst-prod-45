@@ -314,8 +314,8 @@ function KPICard({
 }) {
   const variantStyles = {
     default: {
-      iconBg: '#EBEBEB',
-      iconColor: '#737373',
+      iconBg: 'var(--ds-background-neutral, #EBEBEB)',
+      iconColor: 'var(--ds-text-subtlest, #737373)',
       valueColor: 'var(--fg-1)',
     },
     warning: {

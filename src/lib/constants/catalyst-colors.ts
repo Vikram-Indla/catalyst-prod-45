@@ -16,63 +16,63 @@
 export const CATALYST_COLORS = {
   // Primary Blue Scale
   primary: {
-    50: '#eff6ff',
-    100: '#dbeafe',
-    200: '#bfdbfe',
-    300: '#93c5fd',
-    400: '#60a5fa',
-    500: '#3b82f6',
-    600: '#2563eb', // MAIN
-    700: '#1d4ed8',
-    800: '#1e40af',
+    50: 'var(--ds-surface, #eff6ff)',
+    100: 'var(--ds-background-neutral, #dbeafe)',
+    200: 'var(--ds-background-neutral, #bfdbfe)',
+    300: 'var(--ds-link, #93c5fd)',
+    400: 'var(--ds-link, #60a5fa)',
+    500: 'var(--ds-link, #3b82f6)',
+    600: 'var(--ds-link, #2563eb)', // MAIN
+    700: 'var(--ds-link, #1d4ed8)',
+    800: 'var(--ds-link, #1e40af)',
   },
-  
+
   // Teal - Success/Available/Healthy Contract
   teal: {
-    50: '#f0fdfa',
-    100: '#ccfbf1',
-    500: '#14b8a6',
-    600: '#0d9488', // MAIN
-    700: '#0f766e',
+    50: 'var(--ds-surface, #f0fdfa)',
+    100: 'var(--ds-background-neutral, #ccfbf1)',
+    500: 'var(--ds-text-success, #14b8a6)',
+    600: 'var(--ds-text-success, #0d9488)', // MAIN
+    700: 'var(--ds-text-success, #0f766e)',
   },
-  
+
   // Warning - Contract 30-60 days
   warning: {
-    50: '#fffbeb',
-    100: '#fef3c7',
-    light: '#f59e0b',
-    DEFAULT: '#d97706', // MAIN
-    dark: '#b45309',
+    50: 'var(--ds-surface, #fffbeb)',
+    100: 'var(--ds-background-neutral, #fef3c7)',
+    light: 'var(--ds-text-warning, #f59e0b)',
+    DEFAULT: 'var(--ds-text-warning, #d97706)', // MAIN
+    dark: 'var(--ds-text-warning, #b45309)',
   },
-  
+
   // Danger - Critical/Over-allocated/<30 days
   danger: {
-    50: '#fef2f2',
-    100: '#fee2e2',
-    light: '#f87171',
-    DEFAULT: '#ef4444', // MAIN
-    dark: '#dc2626',
+    50: 'var(--ds-surface, #fef2f2)',
+    100: 'var(--ds-background-neutral, #fee2e2)',
+    light: 'var(--ds-text-danger, #f87171)',
+    DEFAULT: 'var(--ds-text-danger, #ef4444)', // MAIN
+    dark: 'var(--ds-text-danger, #dc2626)',
   },
-  
+
   // Neutral Gray Scale
   gray: {
-    50: '#f9fafb',
-    100: '#f3f4f6',
-    200: '#e5e7eb',
-    300: '#d1d5db',
-    400: '#9ca3af', // Permanent contract
-    500: '#6b7280',
-    600: '#4b5563',
-    700: '#374151',
-    800: '#1f2937',
-    900: '#111827',
+    50: 'var(--ds-surface-sunken, #f9fafb)',
+    100: 'var(--ds-background-neutral, #f3f4f6)',
+    200: 'var(--ds-border, #e5e7eb)',
+    300: 'var(--ds-border, #d1d5db)',
+    400: 'var(--ds-text-subtlest, #9ca3af)', // Permanent contract
+    500: 'var(--ds-text-subtlest, #6b7280)',
+    600: 'var(--ds-text-subtle, #4b5563)',
+    700: 'var(--ds-text-subtle, #374151)',
+    800: 'var(--ds-text, #1f2937)',
+    900: 'var(--ds-text, #111827)',
   },
-  
+
   // Slate for neutral projects
   slate: {
-    400: '#94a3b8',
-    500: '#64748b',
-    600: '#475569',
+    400: 'var(--ds-text-subtlest, #94a3b8)',
+    500: 'var(--ds-text-subtle, #64748b)',
+    600: 'var(--ds-text-subtle, #475569)',
   },
 } as const;
 

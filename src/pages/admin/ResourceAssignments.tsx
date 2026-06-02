@@ -180,7 +180,7 @@ function SortableRow({
           <button
             onClick={() => onResourceCountClick(assignment, budgetData?.linkedResources || [])}
             className="flex items-center gap-1.5 px-2 py-1 rounded transition-colors cursor-pointer"
-            style={{ background: 'rgba(34,197,94,0.1)', color: '#15803D' }}
+            style={{ background: 'rgba(34,197,94,0.1)', color: 'var(--ds-text-success, #15803D)' }}
             onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(34,197,94,0.2)')}
             onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(34,197,94,0.1)')}
           >
@@ -1188,7 +1188,7 @@ export default function ResourceAssignmentsPage() {
                 disabled={isDeleting}
                 style={{
                   padding: '8px 16px', borderRadius: '4px', fontSize: '14px', fontWeight: 500,
-                  background: 'var(--ds-background-danger-bold, #CA3521)', color: '#FFFFFF',
+                  background: 'var(--ds-background-danger-bold, #CA3521)', color: 'var(--ds-text-inverse, #FFFFFF)',
                   border: 'none', cursor: isDeleting ? 'not-allowed' : 'pointer',
                   opacity: isDeleting ? 0.7 : 1,
                 }}
@@ -1206,7 +1206,7 @@ export default function ResourceAssignmentsPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(34,197,94,0.1)' }}>
-                <span style={{ display: 'inline-flex', color: '#15803D' }}><PeopleGroupIcon label="" size="small" /></span>
+                <span style={{ display: 'inline-flex', color: 'var(--ds-text-success, #15803D)' }}><PeopleGroupIcon label="" size="small" /></span>
               </div>
               <div>
                 <div className="text-lg font-semibold">Linked Resources</div>

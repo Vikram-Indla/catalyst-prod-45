@@ -108,9 +108,9 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
 
   const inputClasses = cn(
     "h-11 bg-white dark:bg-[var(--ds-surface-raised,#1a1a1a)]",
-    "border-gray-300 dark:border-[#333333]",
-    "text-gray-900 dark:text-[#f5f5f5]",
-    "placeholder:text-gray-400 dark:placeholder:text-[#525252]",
+    "border-gray-300 dark:border-[var(--ds-border,#333333)]",
+    "text-gray-900 dark:text-[var(--ds-text,#f5f5f5)]",
+    "placeholder:text-gray-400 dark:placeholder:text-[var(--ds-text-subtlest,#525252)]",
     "focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/30"
   );
 
@@ -118,21 +118,21 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn(
         "sm:max-w-[560px] max-h-[90vh] p-0 flex flex-col overflow-hidden",
-        "bg-white dark:bg-[#141414]",
+        "bg-white dark:bg-[var(--ds-surface,#141414)]",
         "rounded-lg",
         "shadow-xl",
-        "border border-gray-200 dark:border-[#333333]",
+        "border border-gray-200 dark:border-[var(--ds-border,#333333)]",
         "[&>button]:hidden"
       )}>
         {/* Accent Bar */}
-        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] via-[#0d9488] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
+        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] via-[var(--ds-text-success,#0d9488)] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
 
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-[#333333] flex-shrink-0 bg-white dark:bg-[#141414]">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-[var(--ds-border,#333333)] flex-shrink-0 bg-white dark:bg-[var(--ds-surface,#141414)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Target className="h-5 w-5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-[#f5f5f5]">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-[var(--ds-text,#f5f5f5)]">
                 Create Objective
               </h2>
             </div>
@@ -140,7 +140,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
               onClick={handleClose} 
               className={cn(
                 "p-1.5 rounded-md",
-                "text-gray-400 hover:text-gray-600 dark:text-[#737373] dark:hover:text-[#a3a3a3]",
+                "text-gray-400 hover:text-gray-600 dark:text-[var(--ds-text-subtle,#737373)] dark:hover:text-[var(--ds-text-subtle,#a3a3a3)]",
                 "hover:bg-gray-100 dark:hover:bg-[var(--ds-surface-raised,#1a1a1a)]",
                 "transition-colors"
               )}
@@ -155,7 +155,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
           <div className="px-6 py-5 space-y-5">
             {/* Name (required) */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700 dark:text-[#e6e6e6]">
+              <Label className="text-sm font-medium text-gray-700 dark:text-[var(--ds-text,#e6e6e6)]">
                 Name <span className="text-red-500">*</span>
               </Label>
               <Input
@@ -170,7 +170,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
 
             {/* Description */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700 dark:text-[#e6e6e6]">
+              <Label className="text-sm font-medium text-gray-700 dark:text-[var(--ds-text,#e6e6e6)]">
                 Description
               </Label>
               <Textarea
@@ -180,9 +180,9 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
                 rows={3}
                 className={cn(
                   "bg-white dark:bg-[var(--ds-surface-raised,#1a1a1a)]",
-                  "border-gray-300 dark:border-[#333333]",
-                  "text-gray-900 dark:text-[#f5f5f5]",
-                  "placeholder:text-gray-400 dark:placeholder:text-[#525252]",
+                  "border-gray-300 dark:border-[var(--ds-border,#333333)]",
+                  "text-gray-900 dark:text-[var(--ds-text,#f5f5f5)]",
+                  "placeholder:text-gray-400 dark:placeholder:text-[var(--ds-text-subtlest,#525252)]",
                   "focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/30",
                   "resize-y"
                 )}
@@ -191,14 +191,14 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
 
             {/* Theme (required) */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700 dark:text-[#e6e6e6]">
+              <Label className="text-sm font-medium text-gray-700 dark:text-[var(--ds-text,#e6e6e6)]">
                 Theme <span className="text-red-500">*</span>
               </Label>
               <Select value={themeId} onValueChange={setThemeId} disabled={!themes?.length}>
                 <SelectTrigger className={inputClasses}>
                   <SelectValue placeholder={themes?.length ? "Select theme" : "No themes available"} />
                 </SelectTrigger>
-                <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised,#1a1a1a)] border-gray-200 dark:border-[#333333]">
+                <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised,#1a1a1a)] border-gray-200 dark:border-[var(--ds-border,#333333)]">
                   {themes?.filter(theme => theme.id).map((theme) => (
                     <SelectItem key={theme.id} value={theme.id}>
                       {theme.name}
@@ -217,14 +217,14 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
             <div className="grid grid-cols-2 gap-4">
               {/* Status */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700 dark:text-[#e6e6e6]">
+                <Label className="text-sm font-medium text-gray-700 dark:text-[var(--ds-text,#e6e6e6)]">
                   Status
                 </Label>
                 <Select value={status} onValueChange={(v) => setStatus(v as ObjectiveStatusV2)}>
                   <SelectTrigger className={inputClasses}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised,#1a1a1a)] border-gray-200 dark:border-[#333333]">
+                  <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised,#1a1a1a)] border-gray-200 dark:border-[var(--ds-border,#333333)]">
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="in_progress">In Progress</SelectItem>
                     <SelectItem value="on_track">On Track</SelectItem>
@@ -236,14 +236,14 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
 
               {/* Health */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700 dark:text-[#e6e6e6]">
+                <Label className="text-sm font-medium text-gray-700 dark:text-[var(--ds-text,#e6e6e6)]">
                   Health
                 </Label>
                 <Select value={health} onValueChange={(v) => setHealth(v as ObjectiveHealthV2)}>
                   <SelectTrigger className={inputClasses}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised,#1a1a1a)] border-gray-200 dark:border-[#333333]">
+                  <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised,#1a1a1a)] border-gray-200 dark:border-[var(--ds-border,#333333)]">
                     <SelectItem value="good">Good</SelectItem>
                     <SelectItem value="fair">Fair</SelectItem>
                     <SelectItem value="poor">Poor</SelectItem>
@@ -256,7 +256,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
             <div className="grid grid-cols-2 gap-4">
               {/* Start Date */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700 dark:text-[#e6e6e6]">
+                <Label className="text-sm font-medium text-gray-700 dark:text-[var(--ds-text,#e6e6e6)]">
                   Start Date
                 </Label>
                 <CatalystDatePicker
@@ -268,7 +268,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
 
               {/* End Date */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700 dark:text-[#e6e6e6]">
+                <Label className="text-sm font-medium text-gray-700 dark:text-[var(--ds-text,#e6e6e6)]">
                   End Date
                 </Label>
                 <CatalystDatePicker
@@ -281,14 +281,14 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
 
             {/* Owner */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700 dark:text-[#e6e6e6]">
+              <Label className="text-sm font-medium text-gray-700 dark:text-[var(--ds-text,#e6e6e6)]">
                 Owner
               </Label>
               <Select value={ownerId || "__unassigned__"} onValueChange={(v) => setOwnerId(v === "__unassigned__" ? "" : v)}>
                 <SelectTrigger className={inputClasses}>
                   <SelectValue placeholder="Select owner" />
                 </SelectTrigger>
-                <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised,#1a1a1a)] border-gray-200 dark:border-[#333333]">
+                <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised,#1a1a1a)] border-gray-200 dark:border-[var(--ds-border,#333333)]">
                   <SelectItem value="__unassigned__">Unassigned</SelectItem>
                   {users?.filter(user => user.id).map((user) => (
                     <SelectItem key={user.id} value={user.id}>
@@ -301,7 +301,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
 
             {/* Notes */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700 dark:text-[#e6e6e6]">
+              <Label className="text-sm font-medium text-gray-700 dark:text-[var(--ds-text,#e6e6e6)]">
                 Notes
               </Label>
               <Textarea
@@ -311,9 +311,9 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
                 rows={2}
                 className={cn(
                   "bg-white dark:bg-[var(--ds-surface-raised,#1a1a1a)]",
-                  "border-gray-300 dark:border-[#333333]",
-                  "text-gray-900 dark:text-[#f5f5f5]",
-                  "placeholder:text-gray-400 dark:placeholder:text-[#525252]",
+                  "border-gray-300 dark:border-[var(--ds-border,#333333)]",
+                  "text-gray-900 dark:text-[var(--ds-text,#f5f5f5)]",
+                  "placeholder:text-gray-400 dark:placeholder:text-[var(--ds-text-subtlest,#525252)]",
                   "focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/30",
                   "resize-y"
                 )}
@@ -322,12 +322,12 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-[#333333] bg-gray-50 dark:bg-[var(--ds-surface-raised,#1a1a1a)]">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-[var(--ds-border,#333333)] bg-gray-50 dark:bg-[var(--ds-surface-raised,#1a1a1a)]">
             <Button
               type="button"
               variant="ghost"
               onClick={handleClose}
-              className="text-gray-600 dark:text-[#a3a3a3] hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[#262626]"
+              className="text-gray-600 dark:text-[var(--ds-text-subtle,#a3a3a3)] hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[var(--ds-background-neutral,#262626)]"
             >
               Cancel
             </Button>

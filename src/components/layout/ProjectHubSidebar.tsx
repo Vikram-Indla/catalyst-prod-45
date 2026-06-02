@@ -262,7 +262,7 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
       <button
         onClick={() => setRecentsExpanded(p => !p)}
         className="flex items-center w-full"
-        style={{ padding: '6px 12px', border: 'none', background: 'transparent', cursor: 'pointer', gap: 4 }}
+        style={{ padding: '8px 12px', border: 'none', background: 'transparent', cursor: 'pointer', gap: 4 }}
         aria-expanded={recentsExpanded}
       >
         <ChevronRight
@@ -300,7 +300,7 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
       </button>
 
       {recentsExpanded && (
-        <div style={{ padding: '2px 0' }}>
+        <div style={{ padding: '0 0' }}>
           {groupedRecents.map((group) => (
             <div key={group.label}>
               <div

@@ -949,7 +949,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                     delay={300}
                     content={
                       <>
-                        <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: '#C5A86E' }}>
+                        <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: 'var(--ds-text, #C5A86E)' }}>
                           {item.key || item.id.slice(0, 8)}
                         </div>
                         <div className="font-medium" style={{ color: 'white' }}>
@@ -1052,11 +1052,11 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
 
                     const tooltipContent = (
                       <>
-                        <div className="text-xs font-medium mb-1.5" style={{ color: '#B5A48A' }}>{item.key || `TH-${item.id.slice(0, 4).toUpperCase()}`}</div>
+                        <div className="text-xs font-medium mb-1.5" style={{ color: 'var(--ds-text-subtle, #B5A48A)' }}>{item.key || `TH-${item.id.slice(0, 4).toUpperCase()}`}</div>
                         <div className="font-medium text-sm mb-3 leading-snug" style={{ color: 'white' }}>{isRTL ? item.titleAr : item.titleEn}</div>
                         <div className="flex items-center gap-2 mb-3">
-                          <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: '#A89778' }}>STATUS:</span>
-                          <span className="text-xs font-medium px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(166,144,94,0.3)', color: '#DED6CA' }}>{getStatusLabel(item.status)}</span>
+                          <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: 'var(--ds-text-subtle, #A89778)' }}>STATUS:</span>
+                          <span className="text-xs font-medium px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(166,144,94,0.3)', color: 'var(--ds-text, #DED6CA)' }}>{getStatusLabel(item.status)}</span>
                         </div>
                         <div className="flex items-center gap-2 py-2 px-3 rounded-md mb-3" style={{ backgroundColor: 'rgba(166,144,94,0.15)' }}>
                           <Calendar className="w-3.5 h-3.5" style={{ color: '#A89778' }} />

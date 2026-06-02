@@ -830,7 +830,7 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                     <td className="px-3 py-2 font-medium text-foreground">{l.name}</td>
                     <td className="px-3 py-2 text-center text-muted-foreground">{l.userCount || '—'}</td>
                     <td className="px-3 py-2 text-right font-mono text-muted-foreground">{formatFull(l.monthlyCost)}</td>
-                    <td className="px-3 py-2 text-right font-mono font-semibold text-[#7c3aed]">{formatFull(l.annualCost)}</td>
+                    <td className="px-3 py-2 text-right font-mono font-semibold" style={{ color: 'var(--ds-text-discovery, #7c3aed)' }}>{formatFull(l.annualCost)}</td>
                     <td className={cn(
                       "px-3 py-2 text-center text-sm",
                       isRenewingSoon ? "text-amber-600 font-medium" : "text-muted-foreground"

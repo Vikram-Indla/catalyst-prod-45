@@ -131,10 +131,10 @@ export function T10AddItemModal({
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '16px 20px',
-            borderBottom: '1px solid #e5e7eb',
+            borderBottom: '1px solid var(--ds-border, #e5e7eb)',
           }}
         >
-          <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#111827', margin: 0 }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--ds-text, #111827)', margin: 0 }}>
             Add Priority Item
           </h2>
           <button
@@ -149,7 +149,7 @@ export function T10AddItemModal({
               backgroundColor: 'transparent',
               border: 'none',
               borderRadius: '6px',
-              color: '#6b7280',
+              color: 'var(--ds-text-subtlest, #6b7280)',
               cursor: 'pointer',
             }}
           >
@@ -169,7 +169,7 @@ export function T10AddItemModal({
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
-                  color: '#6b7280',
+                  color: 'var(--ds-text-subtlest, #6b7280)',
                   marginBottom: '8px',
                 }}
               >
@@ -186,7 +186,7 @@ export function T10AddItemModal({
                   width: '100%',
                   padding: '12px 14px',
                   fontSize: '14px',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--ds-border, #d1d5db)',
                   borderRadius: '8px',
                   outline: 'none',
                 }}
@@ -207,7 +207,7 @@ export function T10AddItemModal({
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
-                  color: '#6b7280',
+                  color: 'var(--ds-text-subtlest, #6b7280)',
                   marginBottom: '8px',
                 }}
               >
@@ -225,7 +225,7 @@ export function T10AddItemModal({
                   padding: '12px 14px',
                   fontSize: '14px',
                   fontFamily: "'SF Mono', Monaco, monospace",
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--ds-border, #d1d5db)',
                   borderRadius: '8px',
                   outline: 'none',
                 }}
@@ -241,7 +241,7 @@ export function T10AddItemModal({
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
-                  color: '#6b7280',
+                  color: 'var(--ds-text-subtlest, #6b7280)',
                   marginBottom: '8px',
                 }}
               >
@@ -271,19 +271,19 @@ export function T10AddItemModal({
                         color: isSelected
                           ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))'
                           : isOccupied
-                          ? '#9ca3af'
+                          ? 'var(--ds-text-subtlest, #9ca3af)'
                           : isBuffer
-                          ? '#9ca3af'
-                          : '#4b5563',
+                          ? 'var(--ds-text-subtlest, #9ca3af)'
+                          : 'var(--ds-text-subtle, #4b5563)',
                         backgroundColor: isSelected
                           ? 'var(--ds-background-selected, #eff6ff)'
                           : isBuffer
-                          ? '#f9fafb'
-                          : '#f3f4f6',
+                          ? 'var(--ds-surface-sunken, #f9fafb)'
+                          : 'var(--ds-background-neutral, #f3f4f6)',
                         border: isSelected
-                          ? '2px solid #2563eb'
+                          ? '2px solid var(--ds-link, #2563eb)'
                           : isBuffer
-                          ? '2px dashed #d1d5db'
+                          ? '2px dashed var(--ds-border, #d1d5db)'
                           : '2px solid transparent',
                         borderRadius: '8px',
                         cursor: isOccupied ? 'not-allowed' : 'pointer',
@@ -310,7 +310,7 @@ export function T10AddItemModal({
                     fontWeight: 600,
                     textTransform: 'uppercase',
                     letterSpacing: '0.5px',
-                    color: '#6b7280',
+                    color: 'var(--ds-text-subtlest, #6b7280)',
                     marginBottom: '8px',
                   }}
                 >
@@ -325,7 +325,7 @@ export function T10AddItemModal({
                     width: '100%',
                     padding: '12px 14px',
                     fontSize: '14px',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--ds-border, #d1d5db)',
                     borderRadius: '8px',
                     outline: 'none',
                   }}
@@ -343,7 +343,7 @@ export function T10AddItemModal({
                     fontWeight: 600,
                     textTransform: 'uppercase',
                     letterSpacing: '0.5px',
-                    color: '#6b7280',
+                    color: 'var(--ds-text-subtlest, #6b7280)',
                     marginBottom: '8px',
                   }}
                 >
@@ -358,7 +358,7 @@ export function T10AddItemModal({
                     height: '44px',
                     padding: '0 14px',
                     fontSize: '14px',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--ds-border, #d1d5db)',
                     borderRadius: '8px',
                     outline: 'none',
                     backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
@@ -382,8 +382,8 @@ export function T10AddItemModal({
               alignItems: 'center',
               justifyContent: 'space-between',
               padding: '16px 20px',
-              backgroundColor: '#f9fafb',
-              borderTop: '1px solid #e5e7eb',
+              backgroundColor: 'var(--ds-surface-sunken, #f9fafb)',
+              borderTop: '1px solid var(--ds-border, #e5e7eb)',
             }}
           >
             <span
@@ -392,7 +392,7 @@ export function T10AddItemModal({
                 alignItems: 'center',
                 gap: '4px',
                 fontSize: '12px',
-                color: '#9ca3af',
+                color: 'var(--ds-text-subtlest, #9ca3af)',
               }}
             >
               <span
@@ -406,9 +406,9 @@ export function T10AddItemModal({
                   fontFamily: "'SF Mono', Monaco, monospace",
                   fontSize: '11px',
                   fontWeight: 500,
-                  color: '#6b7280',
+                  color: 'var(--ds-text-subtlest, #6b7280)',
                   backgroundColor: 'var(--ds-border, #e5e7eb)',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--ds-border, #d1d5db)',
                   borderRadius: '4px',
                 }}
               >
@@ -424,9 +424,9 @@ export function T10AddItemModal({
                   padding: '10px 20px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  color: '#374151',
+                  color: 'var(--ds-text, #374151)',
                   backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--ds-border, #d1d5db)',
                   borderRadius: '6px',
                   cursor: 'pointer',
                 }}
