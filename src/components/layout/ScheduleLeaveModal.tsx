@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
-import { DatePicker } from '@atlaskit/datetime-picker';
 import Select from '@atlaskit/select';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
@@ -126,20 +125,56 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
             <label style={labelStyle}>From</label>
-            <DatePicker
+            <input
+              type="date"
               value={startsAt}
-              onChange={(val: string) => { setStartsAt(val); setErrors(e => ({ ...e, startsAt: undefined })); }}
-              placeholder="Start date"
+              onChange={(e) => { setStartsAt(e.target.value); setErrors(er => ({ ...er, startsAt: undefined })); }}
+              style={{
+                display: 'block',
+                width: '100%',
+                boxSizing: 'border-box',
+                height: 40,
+                padding: '0 12px',
+                border: '2px solid var(--ds-border, #DFE1E6)',
+                borderRadius: 3,
+                fontSize: 14,
+                fontFamily: 'inherit',
+                color: 'var(--ds-text, #172B4D)',
+                background: 'var(--ds-surface, #FFFFFF)',
+                outline: 'none',
+                cursor: 'pointer',
+                transition: 'border-color 150ms',
+              }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-link, #0052CC)'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; }}
             />
             {errors.startsAt && <div style={errorStyle}>{errors.startsAt}</div>}
           </div>
 
           <div>
             <label style={labelStyle}>Until</label>
-            <DatePicker
+            <input
+              type="date"
               value={endsAt}
-              onChange={(val: string) => { setEndsAt(val); setErrors(e => ({ ...e, endsAt: undefined })); }}
-              placeholder="End date"
+              onChange={(e) => { setEndsAt(e.target.value); setErrors(er => ({ ...er, endsAt: undefined })); }}
+              style={{
+                display: 'block',
+                width: '100%',
+                boxSizing: 'border-box',
+                height: 40,
+                padding: '0 12px',
+                border: '2px solid var(--ds-border, #DFE1E6)',
+                borderRadius: 3,
+                fontSize: 14,
+                fontFamily: 'inherit',
+                color: 'var(--ds-text, #172B4D)',
+                background: 'var(--ds-surface, #FFFFFF)',
+                outline: 'none',
+                cursor: 'pointer',
+                transition: 'border-color 150ms',
+              }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-link, #0052CC)'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; }}
             />
             {errors.endsAt && <div style={errorStyle}>{errors.endsAt}</div>}
           </div>

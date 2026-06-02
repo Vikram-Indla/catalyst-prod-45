@@ -194,9 +194,9 @@ export function ProfileMenu() {
               e.preventDefault();
               go('/profile');
             }}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', gap: 8 }}
           >
-            <UserIcon style={{ marginRight: 8, width: 16, height: 16, flexShrink: 0 }} />
+            <UserIcon style={{ width: 16, height: 16, flexShrink: 0 }} />
             <span>Profile</span>
           </DropdownMenuItem>
           {/* Resource 360 entry REMOVED 2026-05-31 — accessible via the
@@ -207,15 +207,15 @@ export function ProfileMenu() {
               e.preventDefault();
               go('/settings');
             }}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', gap: 8 }}
           >
-            <SettingsIcon style={{ marginRight: 8, width: 16, height: 16, flexShrink: 0 }} />
+            <SettingsIcon style={{ width: 16, height: 16, flexShrink: 0 }} />
             <span>Account settings</span>
           </DropdownMenuItem>
 
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger style={{ cursor: 'pointer' }}>
-              <Palette style={{ marginRight: 8, width: 16, height: 16, flexShrink: 0 }} />
+            <DropdownMenuSubTrigger style={{ cursor: 'pointer', gap: 8 }}>
+              <Palette style={{ width: 16, height: 16, flexShrink: 0 }} />
               <span>Theme</span>
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent style={{ zIndex: 1001 }}>
@@ -224,9 +224,9 @@ export function ProfileMenu() {
                   e.preventDefault();
                   setTheme('light');
                 }}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', gap: 8 }}
               >
-                <Sun style={{ marginRight: 8, width: 16, height: 16, flexShrink: 0 }} />
+                <Sun style={{ width: 16, height: 16, flexShrink: 0 }} />
                 Light
                 {theme === 'light' && (
                   <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
@@ -237,9 +237,9 @@ export function ProfileMenu() {
                   e.preventDefault();
                   setTheme('dark');
                 }}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', gap: 8 }}
               >
-                <Moon style={{ marginRight: 8, width: 16, height: 16, flexShrink: 0 }} />
+                <Moon style={{ width: 16, height: 16, flexShrink: 0 }} />
                 Dark
                 {theme === 'dark' && (
                   <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
@@ -250,9 +250,9 @@ export function ProfileMenu() {
                   e.preventDefault();
                   setTheme('system');
                 }}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', gap: 8 }}
               >
-                <Monitor style={{ marginRight: 8, width: 16, height: 16, flexShrink: 0 }} />
+                <Monitor style={{ width: 16, height: 16, flexShrink: 0 }} />
                 Match system
                 {theme === 'system' && (
                   <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
@@ -277,9 +277,9 @@ export function ProfileMenu() {
               e.preventDefault();
               void handleSignOut();
             }}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', gap: 8 }}
           >
-            <LogOut style={{ marginRight: 8, width: 16, height: 16, flexShrink: 0 }} />
+            <LogOut style={{ width: 16, height: 16, flexShrink: 0 }} />
             <span>Log out</span>
           </DropdownMenuItem>
         </div>
