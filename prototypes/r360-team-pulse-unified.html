@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Resource 360° × Team Pulse — Unified (Prototype)</title>
+<style>
+  :root{
+    --surface:#FFFFFF; --sunken:#F7F8F9; --neutral:#F1F2F4; --hover:rgba(9,30,66,0.06); --selected:#E9F2FE;
+    --text:#172B4D; --subtle:#505258; --subtlest:#6B6E76; --border:#DFE1E6; --link:#1868DB;
+    --available:#1868DB; --away:#1868DB; --busy:#6B6E76; --offline:#E2B203; --leave:#C9372C;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--sunken);color:var(--text);font-size:13px}
+  .wrap{max-width:1280px;margin:0 auto;padding:16px}
+  h1{font-size:22px;font-weight:653;margin:0 0 2px}
+  .sub{color:var(--subtle);margin:0 0 16px;font-size:13px}
+  h2{font-size:15px;font-weight:653;margin:24px 0 8px}
+  .muted{color:var(--subtlest);font-size:11px}
+
+  /* top tabs */
+  .tabs{display:flex;gap:2px;justify-content:flex-end;align-items:center;background:var(--surface);
+        border:1px solid var(--border);border-radius:8px;padding:6px;margin-bottom:12px}
+  .tab{padding:6px 12px;font-size:13px;font-weight:500;color:var(--subtle);border-radius:6px;cursor:pointer}
+  .tab.on{background:var(--surface);color:var(--text);box-shadow:0 0 0 1px var(--border)}
+  .tab .ct{background:var(--link);color:#fff;border-radius:8px;padding:0 6px;font-size:11px;margin-left:6px}
+  .tab.ct-amber .ct{background:#D97008}
+  .tab.killed{text-decoration:line-through;color:var(--subtlest);opacity:.6}
+  .merged{font-size:10px;color:#216E4E;background:#DCFFF1;border-radius:10px;padding:1px 8px;margin-left:6px;text-decoration:none;font-weight:700}
+
+  .app{display:grid;grid-template-columns:240px 1fr;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+
+  /* roster */
+  .roster{border-right:1px solid var(--border);padding:12px;background:var(--surface)}
+  .roster .lbl{font-size:11px;font-weight:653;color:var(--subtlest);margin-bottom:8px;letter-spacing:.02em}
+  .seg{display:flex;background:var(--neutral);border-radius:6px;padding:2px;margin-bottom:8px}
+  .seg button{flex:1;border:none;background:none;font-size:11px;padding:4px;border-radius:4px;cursor:pointer;color:var(--subtle)}
+  .seg button.on{background:var(--surface);color:var(--text);box-shadow:0 0 0 1px var(--border);font-weight:600}
+  .search{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;margin-bottom:10px}
+  .mrow{display:flex;align-items:center;gap:10px;padding:7px 6px;border-radius:6px;cursor:pointer}
+  .mrow:hover{background:var(--hover)}
+  .mrow.sel{background:var(--selected)}
+  .mrow .nm{font-size:13px;font-weight:500;line-height:1.2}
+  .mrow .rl{font-size:11px;color:var(--subtlest)}
+  .mrow .leave{font-size:11px;color:var(--leave);font-weight:600}
+
+  /* avatar + ring */
+  .av{position:relative;flex:0 0 auto;width:30px;height:30px;border-radius:50%}
+  .av .f{width:30px;height:30px;border-radius:50%;background:#5243AA;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+  .av.big,.av.big .f{width:76px;height:76px;font-size:24px}
+  .av.r-available .f{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--available)}
+  .av.r-busy .f{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--busy)}
+  .av.r-offline .f{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--offline)}
+  .av.r-leave .f{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--leave)}
+  .av.r-away .f{box-shadow:0 0 0 2px var(--surface)}
+  .av.r-away::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px dashed var(--away)}
+  .av .dot{position:absolute;right:-1px;bottom:-1px;width:11px;height:11px;border-radius:50%;border:2px solid var(--surface)}
+  .av.big .dot{width:18px;height:18px;right:2px;bottom:2px}
+  .d-available{background:var(--available)} .d-busy{background:var(--busy)}
+  .d-offline{background:var(--offline)} .d-leave{background:var(--leave)}
+  .d-away{background:#fff;border:2px dashed var(--away)}
+
+  /* main */
+  .main{padding:18px 20px}
+  .phead{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+  .phead .nm{font-size:20px;font-weight:653}
+  .phead .tt{color:var(--subtle);font-size:13px}
+  .chip{display:inline-flex;align-items:center;gap:5px;border-radius:14px;padding:2px 9px;font-size:11px;font-weight:600}
+  .chip-av{background:#E9F2FE;color:#1868DB} .chip-leave{background:#FFECEB;color:#C9372C}
+  .chip-off{background:#FFF7D6;color:#7F5F01} .chip-busy{background:#F1F2F4;color:#44546F}
+  .stat{margin-left:auto;text-align:center;border:1px solid var(--border);border-radius:8px;padding:6px 14px}
+  .stat .n{font-size:22px;font-weight:653} .stat .l{font-size:11px;color:var(--subtle)}
+  .vtabs{display:flex;gap:18px;border-bottom:1px solid var(--border);margin:10px 0 16px}
+  .vtab{padding:8px 0;font-size:14px;font-weight:500;color:var(--subtle);border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer}
+  .vtab.on{color:var(--link);border-bottom-color:var(--link);font-weight:600}
+  .vtab.new{color:#216E4E} .vtab.new.on{color:#1868DB}
+
+  .callout{border:1px dashed #94A7CB;background:#F7FAFF;border-radius:8px;padding:10px 12px;margin:10px 0;font-size:12px}
+  .tagnew{background:#DCFFF1;color:#216E4E;border-radius:3px;padding:1px 6px;font-size:10px;font-weight:700}
+  .tagreuse{background:#EAE6FF;color:#403294;border-radius:3px;padding:1px 6px;font-size:10px;font-weight:700}
+
+  table{width:100%;border-collapse:collapse;margin-top:6px}
+  th{font-size:11px;font-weight:653;text-align:left;color:var(--subtle);padding:6px 8px;border-bottom:1.5px solid rgba(11,18,14,.14)}
+  td{padding:8px;border-bottom:1px solid var(--border);font-size:12px}
+  .bar{height:8px;border-radius:4px;background:var(--neutral);overflow:hidden;width:90px;display:inline-block;vertical-align:middle}
+  .bar i{display:block;height:100%}
+  .leave-badge{display:inline-flex;gap:4px;background:#FFECEB;color:#C9372C;padding:1px 6px;border-radius:3px;font-size:11px;font-weight:600}
+  .ph-badge{background:#FFE2CC;color:#A54800}
+  .ok{color:#216E4E;font-weight:600} .warn{color:#A54800;font-weight:600}
+
+  .cal{display:grid;grid-template-columns:130px repeat(7,1fr);font-size:11px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  .cal .h{padding:6px;font-weight:653;color:var(--subtle);background:var(--sunken);border-bottom:1px solid var(--border)}
+  .cal .nm{padding:6px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+  .cal .c{border-bottom:1px solid var(--border);border-left:1px solid var(--border);height:34px;position:relative}
+  .cal .blk{position:absolute;inset:6px 2px;border-radius:4px;color:#fff;font-size:10px;display:flex;align-items:center;padding:0 6px;overflow:hidden}
+  .blk-leave{background:var(--leave)} .blk-ph{background:#A54800}
+
+  .ringwrap{display:flex;justify-content:center;padding:24px;background:var(--sunken);border-radius:10px;position:relative}
+  .ring-node{position:absolute;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 8px;font-size:10px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .ai{background:#F3F0FF;border:1px solid #DFD8FD;border-radius:8px;padding:10px 12px;font-size:12px;color:#403294;margin-top:12px}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 0}
+  .legend span{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--subtle)}
+  .ld{width:10px;height:10px;border-radius:50%}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Resource 360° × Team Pulse — unified</h1>
+  <p class="sub">Presence (available / offline / on-leave) overlaid onto the surface that already owns the team roster. Scheduling stays in the profile.</p>
+
+  <!-- TOP TABS: Team Pulse folded away -->
+  <div class="tabs">
+    <span class="muted" style="margin-right:auto">For You</span>
+    <div class="tab">Assigned to me <span class="ct">58</span></div>
+    <div class="tab">Recommended</div>
+    <div class="tab">Starred</div>
+    <div class="tab on">Resource 360°</div>
+    <div class="tab ct-amber">Ageing <span class="ct">34</span></div>
+    <div class="tab killed">Team Pulse <span class="merged">↳ merged into 360°</span></div>
+  </div>
+
+  <!-- THE UNIFIED SURFACE -->
+  <div class="app">
+    <!-- ROSTER with presence -->
+    <div class="roster">
+      <div class="lbl">TEAM MEMBERS <span class="tagreuse">REUSE roster</span></div>
+      <div class="seg">
+        <button class="on">All</button><button>Available</button><button>On leave</button>
+      </div>
+      <input class="search" placeholder="Search…"/>
+      <div class="mrow sel">
+        <span class="av r-available"><span class="f">VI</span><span class="dot d-available"></span></span>
+        <div><div class="nm">Vikram Indla</div><div class="rl">Delivery Manager</div></div>
+      </div>
+      <div class="mrow">
+        <span class="av r-available"><span class="f">AA</span><span class="dot d-available"></span></span>
+        <div><div class="nm">Adnan Ali</div><div class="rl">React Developer · active now</div></div>
+      </div>
+      <div class="mrow">
+        <span class="av r-away"><span class="f">AY</span><span class="dot d-away"></span></span>
+        <div><div class="nm">Ahmed Yousry</div><div class="rl">.NET Developer · away 12m</div></div>
+      </div>
+      <div class="mrow">
+        <span class="av r-busy"><span class="f">AN</span><span class="dot d-busy"></span></span>
+        <div><div class="nm">Amadou Ndiaye</div><div class="rl">Data Engineer · busy</div></div>
+      </div>
+      <div class="mrow">
+        <span class="av r-offline"><span class="f">AF</span><span class="dot d-offline"></span></span>
+        <div><div class="nm">Andrew Fayyaz</div><div class="rl">React Developer · seen 2d ago</div></div>
+      </div>
+      <div class="mrow">
+        <span class="av r-leave"><span class="f">AI</span><span class="dot d-leave"></span></span>
+        <div><div class="nm">Aya Ibrahims</div><div class="leave">🌴 On leave · back Jun 12</div></div>
+      </div>
+      <div class="mrow">
+        <span class="av r-leave"><span class="f">AM</span><span class="dot d-leave"></span></span>
+        <div><div class="nm">Arslan Malik</div><div class="leave">🏛 Public holiday · back Jun 9</div></div>
+      </div>
+      <div class="legend">
+        <span><i class="ld" style="background:var(--available)"></i>Available</span>
+        <span><i class="ld d-away"></i>Away</span>
+        <span><i class="ld" style="background:var(--busy)"></i>Busy</span>
+        <span><i class="ld" style="background:var(--offline)"></i>Offline</span>
+        <span><i class="ld" style="background:var(--leave)"></i>Leave</span>
+      </div>
+      <div class="callout" style="margin-top:12px">
+        <b>Scope reconciled</b> — roster now respects <span class="tagnew">shared_user_ids</span>: you only see members who share a project/product with you (was: everyone in resource_inventory).
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="phead">
+        <span class="av big r-available"><span class="f">VI</span><span class="dot d-available"></span></span>
+        <div>
+          <div class="nm">Vikram Indla</div>
+          <div class="tt">Delivery Manager · Delivery &nbsp; <span class="chip chip-av">● Available · active now</span></div>
+        </div>
+        <div class="stat"><div class="n">124</div><div class="l">active · 121 stale</div></div>
+      </div>
+
+      <div class="vtabs">
+        <div class="vtab on">Ring</div>
+        <div class="vtab">Chronology</div>
+        <div class="vtab">Board</div>
+        <div class="vtab new on" style="margin-left:auto">Availability <span class="tagnew">NEW lens</span></div>
+      </div>
+
+      <!-- THE CHALLENGE: effective capacity = availability × load -->
+      <div class="callout">
+        💡 <b>The improvement I'd push for — "Effective capacity" = Availability × Load.</b>
+        A person can be a blue ring (available) and still be unassignable because they carry 124 active / 121 stale.
+        R360 <i>already</i> computes load per person; presence adds the other half. Fuse them so a delivery manager sees who's <b>actually</b> free — not just who's online. Neither Slack nor Linear does this.
+      </div>
+
+      <table>
+        <tr><th>Member</th><th>Presence</th><th>Open · stale</th><th>Load</th><th>Effective capacity</th><th>Returns</th></tr>
+        <tr>
+          <td><span class="av r-available" style="width:22px;height:22px"><span class="f" style="width:22px;height:22px;font-size:9px">AA</span></span> Adnan Ali</td>
+          <td><span class="chip chip-av">Available</span></td><td>12 · 0</td>
+          <td><span class="bar"><i style="width:18%;background:#36B37E"></i></span></td>
+          <td><span class="ok">Take work ✓</span></td><td>—</td>
+        </tr>
+        <tr>
+          <td><span class="av r-available" style="width:22px;height:22px"><span class="f" style="width:22px;height:22px;font-size:9px">VI</span></span> Vikram Indla</td>
+          <td><span class="chip chip-av">Available</span></td><td>124 · 121</td>
+          <td><span class="bar"><i style="width:98%;background:#C9372C"></i></span></td>
+          <td><span class="warn">Online but overloaded ⚠</span></td><td>—</td>
+        </tr>
+        <tr>
+          <td><span class="av r-leave" style="width:22px;height:22px"><span class="f" style="width:22px;height:22px;font-size:9px">AI</span></span> Aya Ibrahims</td>
+          <td><span class="leave-badge">🌴 Vacation</span></td><td>8 · 3</td>
+          <td><span class="bar"><i style="width:30%;background:#FFAB00"></i></span></td>
+          <td><span style="color:#C9372C;font-weight:600">Out — don't assign</span></td><td><b>Jun 12</b></td>
+        </tr>
+        <tr>
+          <td><span class="av r-offline" style="width:22px;height:22px"><span class="f" style="width:22px;height:22px;font-size:9px">AF</span></span> Andrew Fayyaz</td>
+          <td><span class="chip chip-off">Offline</span></td><td>21 · 9</td>
+          <td><span class="bar"><i style="width:55%;background:#FFAB00"></i></span></td>
+          <td><span class="muted">Offline · seen 2d ago</span></td><td>—</td>
+        </tr>
+      </table>
+
+      <!-- who's out this week, folded into R360 -->
+      <h2 style="margin-top:20px">Who's out this week <span class="tagreuse">REUSE PresencePanel calendar</span></h2>
+      <div class="cal">
+        <div class="h">Member</div><div class="h">Mon 8</div><div class="h">Tue 9</div><div class="h">Wed 10</div><div class="h">Thu 11</div><div class="h">Fri 12</div><div class="h">Sat 13</div><div class="h">Sun 14</div>
+        <div class="nm"><span class="av r-leave" style="width:20px;height:20px"><span class="f" style="width:20px;height:20px;font-size:8px">AI</span></span> Aya</div>
+        <div class="c"><div class="blk blk-leave">Vacation</div></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div>
+        <div class="nm"><span class="av r-leave" style="width:20px;height:20px"><span class="f" style="width:20px;height:20px;font-size:8px">AM</span></span> Arslan</div>
+        <div class="c"><div class="blk blk-ph">Public holiday</div></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div>
+      </div>
+
+      <div class="ai">✦ <b>Caty staffing insight:</b> 2 of 7 of your shared team are out Mon–Wed and your only truly-free React dev is Adnan (12 open, 0 stale). 3 "Ready for QA" items target Aya (on leave til Jun 12) — reassign to Adnan or hold.</div>
+    </div>
+  </div>
+
+  <!-- THE RADIAL with ring -->
+  <h2>Per-person ring view — center avatar now carries the presence ring</h2>
+  <div class="ringwrap">
+    <span class="av big r-available" style="z-index:2"><span class="f">VI</span><span class="dot d-available"></span></span>
+    <div class="ring-node" style="left:18%;top:30%">MWR-919 · 19d</div>
+    <div class="ring-node" style="right:20%;top:25%">BAU-5805 · 25d</div>
+    <div class="ring-node" style="left:24%;bottom:22%">BAU-5837 · 20d</div>
+    <div class="ring-node" style="right:22%;bottom:26%">BAU-5957 · 13d</div>
+  </div>
+  <p class="muted">The radial work-item ring is unchanged — only the center avatar gains the blue/amber/red presence ring (1-line swap: raw avatar → <span class="tagreuse">PresenceRing</span>).</p>
+
+  <p class="muted" style="margin-top:18px">Prototype only · not wired to live data · ring palette &amp; tokens mirror the planned build.</p>
+</div>
+</body>
+</html>

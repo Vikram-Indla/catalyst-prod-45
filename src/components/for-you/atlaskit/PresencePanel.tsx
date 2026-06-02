@@ -13,9 +13,10 @@
 import React, { useEffect } from 'react';
 import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button/new';
+import Lozenge from '@atlaskit/lozenge';
 import { token } from '@atlaskit/tokens';
 import { PresenceRing } from '@/components/shared/PresenceRing';
-import { useTeamPulse } from '@/hooks/useTeamPulse';
+import { useTeamPulse, type TeamPulseMember } from '@/hooks/useTeamPulse';
 import { useBackupSuggestion } from '@/hooks/useBackupSuggestion';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type { PresenceState } from '@/lib/presence';
@@ -238,7 +239,7 @@ export function PresencePanel() {
 
 // ─── MemberRow ────────────────────────────────────────────────────────────────
 
-function MemberRow({ member }: { member: { user_id: string; full_name: string | null; avatar_url: string | null; effective_state: string; last_seen_at: string; back_on: string | null } }) {
+function MemberRow({ member }: { member: TeamPulseMember }) {
   const state = member.effective_state as PresenceState;
   const isOnLeave = state === 'on_leave';
 
@@ -291,6 +292,24 @@ function MemberRow({ member }: { member: { user_id: string; full_name: string | 
             : formatRelative(member.last_seen_at)}
         </div>
       </div>
+
+      {member.sharedScopes.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+          {member.sharedScopes.slice(0, 2).map((s, i) => (
+            <Lozenge key={`${s.scope_type}-${s.scope_key}-${i}`} appearance={s.scope_type === 'product' ? 'new' : 'default'}>
+              {s.scope_key}
+            </Lozenge>
+          ))}
+          {member.sharedScopes.length > 2 && (
+            <span
+              title={member.sharedScopes.slice(2).map(s => s.scope_key).join(', ')}
+              style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}
+            >
+              +{member.sharedScopes.length - 2}
+            </span>
+          )}
+        </div>
+      )}
 
       <span
         style={{

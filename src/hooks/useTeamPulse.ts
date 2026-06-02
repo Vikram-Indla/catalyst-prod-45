@@ -2,6 +2,11 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { UserStatus } from '@/lib/presence';
+import { aggregateSharedScopes, type SharedScope, type SharedScopeRow } from './teamPulseScopes';
+
+export interface TeamPulseMember extends UserStatus {
+  sharedScopes: SharedScope[];
+}
 
 export interface TeamLeaveEntry {
   user_id: string;
@@ -15,7 +20,7 @@ export interface TeamLeaveEntry {
 }
 
 export interface TeamPulseData {
-  members: UserStatus[];
+  members: TeamPulseMember[];
   weekLeave: TeamLeaveEntry[];
 }
 
@@ -42,13 +47,14 @@ export function useTeamPulse() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { members: [], weekLeave: [] };
 
-      // 1. Resolve audience via shared_user_ids SECURITY DEFINER function
-      const { data: sharedRows, error: rpcErr } = await supabase
-        .rpc('shared_user_ids', { viewer: user.id });
+      // 1. Resolve audience + shared scope keys via shared_user_scopes (SECURITY DEFINER).
+      //    New RPC not yet in generated supabase types → cast.
+      const { data: scopeRows, error: rpcErr } = await (supabase as any)
+        .rpc('shared_user_scopes', { viewer: user.id });
 
-      if (rpcErr) { console.error('[useTeamPulse] shared_user_ids rpc error:', rpcErr); throw rpcErr; }
+      if (rpcErr) { console.error('[useTeamPulse] shared_user_scopes rpc error:', rpcErr); throw rpcErr; }
 
-      const sharedIds: string[] = (sharedRows ?? []).map((r: { shared_id: string }) => r.shared_id);
+      const { ids: sharedIds, scopeMap } = aggregateSharedScopes((scopeRows ?? []) as SharedScopeRow[]);
       if (sharedIds.length === 0) return { members: [], weekLeave: [] };
 
       // 2. Fetch effective status from v_user_effective_status
@@ -60,7 +66,7 @@ export function useTeamPulse() {
 
       if (statusErr) { console.error('[useTeamPulse] v_user_effective_status error:', statusErr); throw statusErr; }
 
-      const members: UserStatus[] = (statusRows ?? []).map((r: any) => ({
+      const members: TeamPulseMember[] = (statusRows ?? []).map((r: any) => ({
         user_id:        r.user_id,
         full_name:      r.full_name,
         avatar_url:     r.avatar_url,
@@ -70,6 +76,7 @@ export function useTeamPulse() {
         leave_ends_at:  r.leave_ends_at,
         back_on:        r.back_on,
         backup_user_id: r.backup_user_id,
+        sharedScopes:   scopeMap.get(r.user_id) ?? [],
       }));
 
       // 3. This-week leave entries from user_availability
