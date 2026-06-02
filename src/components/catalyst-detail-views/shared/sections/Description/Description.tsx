@@ -9,18 +9,22 @@
  * read-mode display + click-to-edit affordance.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { Editor } from '@tiptap/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { useAuth } from '@/hooks/useAuth';
 import { useCatyImprove } from '@/components/catalyst-detail-views/improve/catyImproveStore';
-import { CatyStreamingOverlay } from '@/components/catalyst-detail-views/improve/CatyStreamingOverlay';
+import { useCatyImproveStream } from '@/components/catalyst-detail-views/improve/useCatyImproveStream';
+import { CatyImproveStrap } from '@/components/catalyst-detail-views/improve/CatyImproveStrap';
 import { uploadDescriptionImage } from '@/components/shared/rich-text/atlaskit/supabaseImageUpload';
 import type { PhIssue } from './types';
 
 import { DisplayView } from './_components/DisplayView/DisplayView';
 import { RichTextEditor } from './RichTextEditor';
-import { type AdfDoc } from './utils/adfToTiptap';
+import { adfToTiptap, type AdfDoc, type TiptapDoc } from './utils/adfToTiptap';
+import { tiptapToAdf } from './utils/tiptapToAdf';
+import { adfToMarkdown } from './utils/adfToMarkdown';
 import { catyMarkdownToAdf } from './utils/catyMarkdownToAdf';
 
 interface DescriptionProps {
@@ -33,8 +37,10 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  // Caty integration — when payload matches this issue, force edit mode
-  // and overlay the streaming view on top of the editor body.
+  // Caty integration — when the store payload matches this issue, force
+  // edit mode and pipe the AI's streamed Markdown directly into the
+  // Tiptap editor. The muted snapshot of the ORIGINAL description sits
+  // above the editor for reference while the stream is in flight.
   const catyPayload = useCatyImprove((s) => s.payload);
   const stopCatyImprove = useCatyImprove((s) => s.stop);
   const startCatyImprove = useCatyImprove((s) => s.start);
@@ -43,14 +49,110 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
     issue?.issue_key != null &&
     catyPayload.issueKey === issue.issue_key;
 
-  useEffect(() => {
-    if (catyActiveForThisIssue) setEditing(true);
-  }, [catyActiveForThisIssue]);
+  // Drive the network stream only when this issue's payload is active.
+  const streamPayload = catyActiveForThisIssue ? catyPayload : null;
+  const {
+    phase: catyPhase,
+    text: catyText,
+    errorMessage: catyError,
+    stop: stopCatyStream,
+  } = useCatyImproveStream(streamPayload);
 
+  // Editor instance is owned by RichTextEditor; we receive it via
+  // `onEditorReady` so we can drive content + editable state.
+  const [editor, setEditor] = useState<Editor | null>(null);
+
+  // Snapshot of the editor content at the moment Improve was clicked.
+  // This is the muted "before" view shown below the live editor while
+  // Caty is generating. For the FIRST improve it equals the DB content;
+  // for SUBSEQUENT improves (user re-runs Improve on the AI's previous
+  // output without saving) it equals the editor's current content.
+  // null = not in an improve session.
+  const [snapshotAdf, setSnapshotAdf] = useState<AdfDoc | null>(null);
+
+  // While Caty is producing output, the editor is read-only. Esc / Stop
+  // ends the stream and unlocks it.
+  const streamLocked = catyPhase === 'analyzing' || catyPhase === 'streaming';
+
+  // Hoisted ABOVE the snapshot effect because that effect's dep array
+  // references it — useState/useMemo declarations are subject to the
+  // temporal dead zone, and the effect runs during the same render in
+  // which it's declared.
   const initialAdf: AdfDoc | null = useMemo(() => {
     const raw = (issue?.description_adf ?? null) as unknown;
     return (raw as AdfDoc) ?? null;
   }, [issue?.description_adf]);
+
+  useEffect(() => {
+    if (catyActiveForThisIssue) {
+      setEditing(true);
+      // Fallback for right-rail-initiated improves: the toolbar handler
+      // captures the editor content directly, but the right-rail
+      // dropdown can't see the editor — so when a session starts and
+      // we don't yet have a snapshot, fall back to the DB ADF.
+      setSnapshotAdf((prev) => prev ?? initialAdf);
+    } else {
+      // Session ended (Save / Cancel) — clear the snapshot so the next
+      // improve starts fresh.
+      setSnapshotAdf(null);
+    }
+  }, [catyActiveForThisIssue, initialAdf]);
+
+  // Clear the snapshot the moment Caty finishes (or is stopped / errors
+  // out). The JSX render guard `streamLocked && snapshotAdf` already
+  // hides it on terminal phases, but nulling the state here makes the
+  // intent explicit and guarantees no stale snapshot lingers behind the
+  // editor for any reason.
+  useEffect(() => {
+    if (
+      catyPhase === 'done' ||
+      catyPhase === 'stopped' ||
+      catyPhase === 'errored'
+    ) {
+      setSnapshotAdf(null);
+    }
+  }, [catyPhase]);
+
+  // Sync editor.editable with stream state. setEditable doesn't trigger
+  // a re-render of editor instance, so it's cheap.
+  useEffect(() => {
+    if (!editor) return;
+    editor.setEditable(!streamLocked);
+  }, [editor, streamLocked]);
+
+  // Stream-into-editor: every flush tick from the hook, parse the
+  // accumulated Markdown into Tiptap doc shape and replace the editor
+  // content. setContent on a non-editable editor is fine — only user
+  // input is gated by `editable`. Cursor jumps don't matter because the
+  // user can't type during the stream anyway. Once the stream reaches a
+  // terminal phase (`done` / `stopped`), the final text has already
+  // been flushed by the hook, so the final setContent here is also the
+  // final state the user can edit / save.
+  //
+  // Signature note: uses the positional `(content, emitUpdate)` API to
+  // match the codebase's existing pattern (JiraDescriptionEditor.tsx).
+  // `emitUpdate=false` skips firing onUpdate on every stream tick —
+  // we don't need to thrash currentDocRef during streaming, and the
+  // final terminal-phase flush below emits with true.
+  useEffect(() => {
+    if (!editor || !catyActiveForThisIssue) return;
+    if (catyPhase === 'idle' || catyPhase === 'errored') return;
+    if (!catyText || !catyText.trim()) return;
+    const adf = catyMarkdownToAdf(catyText);
+    const tiptapDoc = adfToTiptap(adf);
+    const emitFinal = catyPhase === 'done' || catyPhase === 'stopped';
+    editor.commands.setContent(tiptapDoc, emitFinal);
+    // Auto-scroll the editor body to the end so the user sees the
+    // newest tokens as they land. Without this, when AI output grows
+    // taller than the viewport, all new content disappears below the
+    // fold and the editor looks static.
+    if (catyPhase === 'streaming') {
+      const body = editor.view.dom.closest<HTMLElement>(
+        '.catalyst-description-editor-body',
+      );
+      if (body) body.scrollTop = body.scrollHeight;
+    }
+  }, [editor, catyActiveForThisIssue, catyPhase, catyText]);
 
   // Resolve Jira-synced media URLs for edit mode. Jira-uploaded
   // images store only `media.attrs.id` (no url) — read mode resolves
@@ -127,6 +229,10 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
       queryClient.invalidateQueries({
         queryKey: ['cv-issue-detail', issue?.issue_key],
       });
+      // Clearing the store payload on save ensures the next "Improve
+      // description" click on this same ticket starts a fresh session
+      // rather than re-running the previous prompt.
+      stopCatyImprove();
       setEditing(false);
     },
     onError: (err) => {
@@ -200,44 +306,39 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
         attachmentUrls = [];
       }
     }
+    // Capture the editor's CURRENT content (Tiptap → ADF) as both the
+    // snapshot to display below and the input to send to the AI. This
+    // is what makes re-running Improve work correctly: the second pass
+    // operates on the AI's first output, not on the unchanged DB row.
+    // First-improve fallback (editor not mounted yet, e.g. from the
+    // right-rail dropdown): use the DB ADF.
+    const currentAdf: AdfDoc | null = editor
+      ? (tiptapToAdf(editor.getJSON() as TiptapDoc) as AdfDoc)
+      : initialAdf;
+    setSnapshotAdf(currentAdf);
+    const currentDescription = currentAdf
+      ? adfToMarkdown(currentAdf)
+      : (issue.description_text ?? null);
     startCatyImprove({
       issueKey: issue.issue_key,
       issueType: issue.issue_type ?? null,
       issueSummary: issue.summary ?? null,
-      currentDescription: issue.description_text ?? null,
+      currentDescription,
       currentAcceptanceCriteria: issue.acceptance_criteria ?? null,
       attachmentUrls,
       improveSubType: 'improve_clarify',
     });
-  }, [issue, startCatyImprove]);
+  }, [issue, initialAdf, editor, startCatyImprove]);
 
-  const handleCatyApply = useCallback(
-    async (
-      _fullMarkdown: string,
-      parts: { description: string; acceptanceCriteria: string },
-    ) => {
-      if (!issue?.issue_key) return;
-      const adfDoc = catyMarkdownToAdf(parts.description);
-      const update: Record<string, unknown> = { description_adf: adfDoc };
-      if (parts.acceptanceCriteria)
-        update.acceptance_criteria = parts.acceptanceCriteria;
-      await supabase
-        .from('ph_issues')
-        .update(update as never)
-        .eq('issue_key', issue.issue_key);
+  // Cancel handler — also halts an in-flight Caty stream and clears the
+  // store payload so the next Improve session is fresh.
+  const handleCancel = useCallback(() => {
+    if (catyActiveForThisIssue) {
+      stopCatyStream();
       stopCatyImprove();
-      setEditing(false);
-      queryClient.invalidateQueries({
-        queryKey: ['cv-issue-detail', issue.issue_key],
-      });
-    },
-    [issue?.issue_key, queryClient, stopCatyImprove],
-  );
-
-  const handleCatyCancel = useCallback(() => {
-    stopCatyImprove();
+    }
     setEditing(false);
-  }, [stopCatyImprove]);
+  }, [catyActiveForThisIssue, stopCatyStream, stopCatyImprove]);
 
   return (
     <div style={{ marginBottom: 24 }}>
@@ -274,29 +375,55 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
           <RichTextEditor
             initialAdf={enrichedAdf}
             onSave={(adfJson) => saveMutation.mutate(adfJson)}
-            onCancel={() => setEditing(false)}
+            onCancel={handleCancel}
             isSaving={saveMutation.isPending}
             onImageUpload={handleImageUpload}
             onImproveClick={handleImproveFromToolbar}
-            bodyOverlay={
-              catyActiveForThisIssue && catyPayload ? (
-                <CatyStreamingOverlay
-                  key={catyPayload.issueKey}
-                  issueKey={catyPayload.issueKey}
-                  issueType={catyPayload.issueType}
-                  issueSummary={catyPayload.issueSummary}
-                  currentDescription={catyPayload.currentDescription}
-                  currentAcceptanceCriteria={
-                    catyPayload.currentAcceptanceCriteria
-                  }
-                  attachmentUrls={catyPayload.attachmentUrls}
-                  improveSubType={catyPayload.improveSubType}
-                  onApply={handleCatyApply}
-                  onCancel={handleCatyCancel}
-                />
+            onEditorReady={setEditor}
+            /* Snapshot of the content at the moment Improve was clicked
+               — rendered INSIDE the editor's scrollable body, directly
+               under the Tiptap content. As the AI writes more lines
+               above, this is pushed down within the same scroll
+               container. Disappears the moment streaming ends. */
+            bodyAfterEditor={
+              streamLocked && snapshotAdf ? (
+                <div
+                  data-testid="caty-improve-snapshot"
+                  style={{
+                    opacity: 0.5,
+                    marginTop: 16,
+                    paddingTop: 16,
+                    borderTop: '1px dashed var(--ds-border, #DFE1E6)',
+                    pointerEvents: 'none',
+                    userSelect: 'none',
+                  }}
+                >
+                  <DisplayView adf={snapshotAdf} issueKey={issue.issue_key} />
+                </div>
               ) : undefined
             }
           />
+
+          {/* Bottom strap: "Caty is editing · Esc · ■" while the stream
+              is in flight. Esc handler lives inside the strap. */}
+          <CatyImproveStrap phase={catyPhase} onStop={stopCatyStream} />
+
+          {/* Inline error row — only on `errored` phase. */}
+          {catyPhase === 'errored' && catyError && (
+            <div
+              role="alert"
+              style={{
+                marginTop: 8,
+                padding: '8px 12px',
+                fontSize: 13,
+                color: 'var(--ds-text-danger, #AE2A19)',
+                background: 'var(--ds-background-danger, #FFECEB)',
+                borderRadius: 4,
+              }}
+            >
+              {catyError}
+            </div>
+          )}
         </div>
       ) : isEmpty ? (
         <div
