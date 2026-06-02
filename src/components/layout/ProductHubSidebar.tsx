@@ -222,7 +222,6 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
       </button>
 
       {recentsExpanded && (
-<<<<<<< HEAD
         <div style={{ padding: '0px 0' }}>
           {groupedBrs.map((group) => (
             <div key={group.label}>
@@ -302,10 +301,6 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
       {recentsExpanded && (
         <div style={{ padding: '2px 0' }}>
           {perProductRecents.map((item) => (
-=======
-        <div style={{ padding: '2px 0' }}>
-          {recentProducts.map((item) => (
->>>>>>> 75a4381a7985737547582fb99dcd2fd70f70ee0c
             <div
               key={item.id}
               onClick={() => navigate(item.nav_path)}
