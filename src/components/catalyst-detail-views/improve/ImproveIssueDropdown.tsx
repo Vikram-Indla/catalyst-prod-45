@@ -44,6 +44,11 @@ import { useCatySummarize } from './catySummarizeStore';
 
 type Mode = 'closed' | 'description' | 'children' | 'similar';
 
+/** Truthy if the description has meaningful content (not blank / whitespace-only). */
+function hasContent(text: string | null | undefined): boolean {
+  return typeof text === 'string' && text.trim().length > 0;
+}
+
 interface ImproveIssueDropdownProps {
   issue: {
     id?: string;
@@ -82,6 +87,8 @@ export function ImproveIssueDropdown({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const portalRef = useRef<HTMLDivElement>(null);
   const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
+  const [emptyHintPos, setEmptyHintPos] = useState<{ top: number; left: number } | null>(null);
+  const emptyHintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startCatyImprove = useCatyImprove((s) => s.start);
   const startSummarize = useCatySummarize((s) => s.start);
 
@@ -108,9 +115,21 @@ export function ImproveIssueDropdown({
    * AI can "see" them as multimodal context (best-effort: if the fetch
    * fails or returns no images, we proceed with a text-only prompt).
    */
+  const showEmptyHint = useCallback(() => {
+    const r = triggerRef.current?.getBoundingClientRect();
+    if (!r) return;
+    setEmptyHintPos({ top: r.bottom + 8, left: r.left });
+    if (emptyHintTimerRef.current) clearTimeout(emptyHintTimerRef.current);
+    emptyHintTimerRef.current = setTimeout(() => setEmptyHintPos(null), 4000);
+  }, []);
+
   const handleStartImproveDescription = useCallback(async () => {
     setOpen(false);
     if (!issue?.issue_key) return;
+    if (!hasContent(issue.description_text)) {
+      showEmptyHint();
+      return;
+    }
 
     let attachmentUrls: string[] = [];
     if (issue.id) {
@@ -146,6 +165,22 @@ export function ImproveIssueDropdown({
       improveSubType: 'improve_clarify',
     });
   }, [issue, startCatyImprove]);
+
+  // Dismiss empty-description hint on click-outside.
+  useEffect(() => {
+    if (!emptyHintPos) return;
+    const h = () => {
+      if (emptyHintTimerRef.current) clearTimeout(emptyHintTimerRef.current);
+      setEmptyHintPos(null);
+    };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [emptyHintPos]);
+
+  // Cleanup timer on unmount.
+  useEffect(() => () => {
+    if (emptyHintTimerRef.current) clearTimeout(emptyHintTimerRef.current);
+  }, []);
 
   // Click-outside to dismiss the popover.
   useEffect(() => {
@@ -194,23 +229,6 @@ export function ImproveIssueDropdown({
     setMode(m);
   };
 
-  const triggerStyle: React.CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 6,
-    height: 30,
-    padding: '0 10px',
-    borderRadius: 4,
-    border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-    background: token('color.background.accent.purple.subtlest', '#F3F0FF'),
-    color: token('color.text.accent.purple', '#5E4DB2'),
-    cursor: 'pointer',
-    fontSize: 13,
-    fontWeight: 500,
-    fontFamily: 'inherit',
-    transition: 'background 0.15s',
-  };
-
   const itemStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
@@ -254,7 +272,7 @@ export function ImproveIssueDropdown({
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             height: 32, padding: '0 10px', borderRadius: 3,
-            border: 'none',
+            border: 'none', outline: 'none', appearance: 'none',
             background: 'transparent',
             color: 'var(--ds-text, #292A2E)',
             cursor: 'pointer', fontSize: 14, fontWeight: 500,
@@ -369,6 +387,35 @@ export function ImproveIssueDropdown({
           document.body,
         )}
       </div>
+
+      {emptyHintPos && createPortal(
+        <div
+          role="status"
+          aria-live="polite"
+          data-testid="catalyst-improve-empty-description-hint"
+          style={{
+            position: 'fixed',
+            top: emptyHintPos.top,
+            left: emptyHintPos.left,
+            zIndex: 2001,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRadius: 8,
+            boxShadow: '0 4px 16px rgba(9, 30, 66, 0.14)',
+            padding: '12px 16px',
+            maxWidth: 260,
+            fontSize: 14,
+            fontWeight: 400,
+            color: token('color.text', '#172B4D'),
+            fontFamily: 'inherit',
+            lineHeight: '20px',
+            pointerEvents: 'none',
+          }}
+        >
+          First enter a description to improve it with Caty AI
+        </div>,
+        document.body,
+      )}
 
       <ImproveDescriptionDialog
         isOpen={mode === 'description'}

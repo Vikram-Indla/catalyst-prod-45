@@ -81,9 +81,8 @@ export function BrCenterDetails({ request, onUpdate }: Props) {
   const categoryRaw = (request as unknown as { category?: string | null }).category ?? null;
 
   return (
-    <section
+    <div
       data-cv-section="br-center-details"
-      aria-label="Details"
       style={{ marginBottom: 16 }}
     >
       {/* Section header — exact Story spec (16px/653, ChevronRight, no uppercase) */}
@@ -186,7 +185,7 @@ export function BrCenterDetails({ request, onUpdate }: Props) {
           </div>
         </div>
       )}
-    </section>
+    </div>
   );
 }
 

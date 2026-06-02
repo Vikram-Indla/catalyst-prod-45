@@ -161,7 +161,7 @@ export default function CatalystViewBusinessRequestV3({
         fullPageMode={fullPageMode}
         itemType="Business Request"
         itemKey={request?.request_key ?? null}
-        projectKey={projectKey ?? request?.project_key ?? 'MIM'}
+        projectKey={projectKey || request?.project_key || 'MIM'}
         projectName="Product Hub"
         moreMenuItems={useMemo(
           () => [
