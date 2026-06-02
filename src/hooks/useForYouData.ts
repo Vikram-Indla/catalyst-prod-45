@@ -43,7 +43,8 @@ export type TabType =
   | 'r360'
   | 'worked'
   | 'viewed'
-  | 'ageing';
+  | 'ageing'
+  | 'team-pulse';
 export type ModeFilter = 'all' | 'ops' | 'del' | 'tsk';
 
 export interface WorkItemAssignee {
