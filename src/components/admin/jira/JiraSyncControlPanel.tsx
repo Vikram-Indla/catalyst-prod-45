@@ -35,7 +35,7 @@ function StatCard({
 }) {
   return (
     <div
-      className="flex items-center gap-3 rounded-lg border p-4"
+      className="flex items-center gap-3 rounded-lg border "
       style={{ borderColor: 'var(--cp-border-default)', background: 'var(--cp-bg-surface)' }}
     >
       <div
@@ -45,10 +45,10 @@ function StatCard({
         <Icon style={{ width: 16, height: 16, color: colour }} />
       </div>
       <div className="min-w-0">
-        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--cp-text-muted)' }}>
+        <p className=" font-medium uppercase tracking-wider" style={{ color: 'var(--cp-text-muted)' }}>
           {label}
         </p>
-        <p className="text-lg font-semibold leading-tight" style={{ color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-mono)' }}>
+        <p className=" leading-tight" style={{ color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-mono)' }}>
           {value ?? '—'}
         </p>
       </div>
@@ -60,7 +60,7 @@ function StatCard({
 function SyncStatusBadge({ enabled }: { enabled: boolean }) {
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-widest"
+      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 uppercase tracking-widest"
       style={
         enabled
           ? { background: '#E3FCEF', color: '#006644' }   // StatusLozenge green
@@ -119,7 +119,7 @@ export function JiraSyncControlPanel() {
           background: isFrozen ? 'var(--ds-surface-sunken, #F8FAFC)' : '#DEEBFF22',
         }}
       >
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-start justify-between flex-wrap">
           <div className="flex items-start gap-3">
             <div
               className="mt-0.5 h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0"
@@ -132,14 +132,14 @@ export function JiraSyncControlPanel() {
               )}
             </div>
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-sm font-semibold" style={{ color: 'var(--cp-text-primary)' }}>
+              <div className="flex items-center mb-1">
+                <span className=" " style={{ color: 'var(--cp-text-primary)' }}>
                   Jira Sync
                 </span>
                 <SyncStatusBadge enabled={isSyncEnabled} />
               </div>
               {isFrozen && config?.frozen_at && (
-                <p className="text-xs" style={{ color: 'var(--cp-text-secondary)' }}>
+                <p className="" style={{ color: 'var(--cp-text-secondary)' }}>
                   Frozen{' '}
                   <span className="font-medium">
                     {formatDistanceToNow(new Date(config.frozen_at), { addSuffix: true })}
@@ -148,12 +148,12 @@ export function JiraSyncControlPanel() {
                 </p>
               )}
               {isFrozen && config?.freeze_note && (
-                <p className="text-xs mt-1 max-w-md" style={{ color: 'var(--cp-text-muted)' }}>
+                <p className=" mt-1 max-w-md" style={{ color: 'var(--cp-text-muted)' }}>
                   {config.freeze_note}
                 </p>
               )}
               {isSyncEnabled && config?.last_sync_at && (
-                <p className="text-xs" style={{ color: 'var(--cp-text-secondary)' }}>
+                <p className="" style={{ color: 'var(--cp-text-secondary)' }}>
                   Last sync:{' '}
                   <span className="font-medium">
                     {formatDistanceToNow(new Date(config.last_sync_at), { addSuffix: true })}
@@ -165,7 +165,7 @@ export function JiraSyncControlPanel() {
 
           {/* Toggle */}
           <div className="flex items-center gap-3">
-            <span className="text-xs font-medium" style={{ color: 'var(--cp-text-secondary)' }}>
+            <span className=" font-medium" style={{ color: 'var(--cp-text-secondary)' }}>
               {isSyncEnabled ? 'Sync ON' : 'Sync OFF'}
             </span>
             <Toggle
@@ -180,9 +180,9 @@ export function JiraSyncControlPanel() {
       {/* ── Preserved-data stats ─────────────────────────────────────────── */}
       {isFrozen && (
         <>
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center mb-3">
             <ShieldIcon label="" size="small" />
-            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--cp-text-muted)' }}>
+            <span className=" uppercase tracking-wider" style={{ color: 'var(--cp-text-muted)' }}>
               Data Preserved in Catalyst (cutoff: {config?.data_cutoff_year ?? 2026})
             </span>
           </div>
@@ -196,8 +196,8 @@ export function JiraSyncControlPanel() {
 
       {/* ── What's dormant ──────────────────────────────────────────────── */}
       <div className="rounded-lg border" style={{ borderColor: 'var(--cp-border-default)' }}>
-        <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--cp-border-default)' }}>
-          <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--cp-text-muted)' }}>
+        <div className=" py-3 border-b" style={{ borderColor: 'var(--cp-border-default)' }}>
+          <span className=" uppercase tracking-wider" style={{ color: 'var(--cp-text-muted)' }}>
             {isFrozen ? 'Tables dormant (Jira OFF)' : 'Tables active (Jira ON)'}
           </span>
         </div>
@@ -212,9 +212,9 @@ export function JiraSyncControlPanel() {
           ].map((row) => (
             <div
               key={row.name}
-              className="flex items-center justify-between px-4 py-2.5 text-xs"
+              className="flex items-center justify-between py-2.5 "
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center ">
                 <DatabaseIcon label="" size="small" />
                 <code style={{ color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-mono)' }}>
                   {row.name}
@@ -224,7 +224,7 @@ export function JiraSyncControlPanel() {
                 <span style={{ color: 'var(--cp-text-secondary)' }}>{row.role}</span>
                 {row.dormant ? (
                   <span
-                    className="rounded-full px-2 py-0.5 font-bold uppercase tracking-widest"
+                    className="rounded-full py-0.5 uppercase tracking-widest"
                     style={{ fontSize: 10, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' }}
                   >
                     DORMANT
@@ -240,11 +240,11 @@ export function JiraSyncControlPanel() {
 
       {/* ── Dropped tables notice ─────────────────────────────────────────── */}
       <div
-        className="mt-4 flex items-start gap-3 rounded-lg px-4 py-3"
+        className="mt-4 flex items-start gap-3 rounded-lg py-3"
         style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid var(--cp-border-default)' }}
       >
         <CheckCircleIcon label="" size="small" />
-        <p className="text-xs leading-relaxed" style={{ color: 'var(--cp-text-secondary)' }}>
+        <p className=" leading-relaxed" style={{ color: 'var(--cp-text-secondary)' }}>
           <strong style={{ color: 'var(--cp-text-primary)' }}>69 Jira-only tables permanently removed</strong>
           {' '}— all <code style={{ fontFamily: 'var(--cp-font-mono)' }}>injira_*</code> mirrors,
           sync queues, webhook event logs, and generic sync infrastructure have been dropped.
@@ -258,7 +258,7 @@ export function JiraSyncControlPanel() {
           {pendingState === 'disable' ? (
             <>
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
+                <DialogTitle className="flex items-center ">
                   <LockLockedIcon label="" size="small" />
                   Freeze Jira Sync
                 </DialogTitle>
@@ -270,15 +270,15 @@ export function JiraSyncControlPanel() {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-1">
-                <div className="rounded-md border px-4 py-3 space-y-1"
+                <div className="rounded-md border py-3 space-y-1"
                   style={{ borderColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', background: 'var(--ds-surface-sunken, #F8FAFC)' }}>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center ">
                     <WarningIcon label="" size="small" />
-                    <span className="text-xs font-semibold" style={{ color: 'var(--cp-text-primary)' }}>
+                    <span className=" " style={{ color: 'var(--cp-text-primary)' }}>
                       What stops
                     </span>
                   </div>
-                  <ul className="text-xs space-y-0.5 mt-1 pl-4 list-disc" style={{ color: 'var(--cp-text-secondary)' }}>
+                  <ul className=" space-y-0.5 mt-1 pl-4 list-disc" style={{ color: 'var(--cp-text-secondary)' }}>
                     <li>Live Jira webhook ingestion</li>
                     <li>Scheduled sync cron jobs</li>
                     <li>Write-back queue to Jira</li>
@@ -312,7 +312,7 @@ export function JiraSyncControlPanel() {
           ) : (
             <>
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
+                <DialogTitle className="flex items-center ">
                   <AutomationIcon label="" size="small" />
                   Re-enable Jira Sync
                 </DialogTitle>
@@ -322,10 +322,10 @@ export function JiraSyncControlPanel() {
                 </DialogDescription>
               </DialogHeader>
               <div
-                className="rounded-md border px-4 py-3"
+                className="rounded-md border py-3"
                 style={{ borderColor: '#DEEBFF', background: '#DEEBFF22' }}
               >
-                <p className="text-xs" style={{ color: '#0747A6' }}>
+                <p className="" style={{ color: '#0747A6' }}>
                   Jira will become the authoritative source again for work items, projects, and
                   user data. Any Catalyst-only edits made during the freeze may be overwritten
                   by the next Jira sync.

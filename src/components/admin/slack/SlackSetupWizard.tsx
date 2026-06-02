@@ -195,32 +195,32 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
           {currentStep === 1 && (
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto ">
                   <SlackIcon className="w-8 h-8 text-blue-600" />
                 </div>
-                <h2 className="text-xl font-semibold text-slate-900">Create a Slack App</h2>
-                <p className="text-slate-500 mt-2">
+                <h2 className="text-xl text-slate-900">Create a Slack App</h2>
+                <p className=" ">
                   First, you need to create a Slack App in your workspace
                 </p>
               </div>
 
-              <div className="bg-slate-50 rounded-lg p-6 space-y-4">
+              <div className=" rounded-lg space-y-4">
                 <h3 className="font-medium text-slate-900">Follow these steps:</h3>
-                <ol className="space-y-3 text-sm text-slate-600">
+                <ol className="space-y-3 text-slate-600">
                   <li className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">1</span>
                     <span>Go to <a href="https://api.slack.com/apps" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">api.slack.com/apps</a></span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">2</span>
                     <span>Click <strong>"Create New App"</strong> → <strong>"From scratch"</strong></span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">3</span>
                     <span>Enter app name (e.g., "Catalyst Notifications") and select your workspace</span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">4</span>
+                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">4</span>
                     <span>Click <strong>"Create App"</strong></span>
                   </li>
                 </ol>
@@ -250,11 +250,11 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
           {currentStep === 2 && (
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto ">
                   <LockLockedIcon label="" size="small" />
                 </div>
-                <h2 className="text-xl font-semibold text-slate-900">Enter App Credentials</h2>
-                <p className="text-slate-500 mt-2">
+                <h2 className="text-xl text-slate-900">Enter App Credentials</h2>
+                <p className=" ">
                   Copy credentials from your Slack App's "Basic Information" page
                 </p>
               </div>
@@ -270,7 +270,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                       onChange={(e) => updateFormData('app_id', (e.target as HTMLInputElement).value)}
                     />
                   </div>
-                  <p className="text-xs text-slate-500 mt-1">Found at the top of Basic Information</p>
+                  <p className=" mt-1">Found at the top of Basic Information</p>
                 </div>
 
                 <div>
@@ -300,7 +300,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                       onChange={(e) => updateFormData('client_secret', (e.target as HTMLInputElement).value)}
                     />
                   </div>
-                  <p className="text-xs text-slate-500 mt-1">Click "Show" button in Slack to reveal</p>
+                  <p className=" mt-1">Click "Show" button in Slack to reveal</p>
                 </div>
 
                 <div>
@@ -345,11 +345,11 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
           {currentStep === 3 && (
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto ">
                   <SettingsIcon label="" size="small" />
                 </div>
-                <h2 className="text-xl font-semibold text-slate-900">Configure OAuth Scopes</h2>
-                <p className="text-slate-500 mt-2">
+                <h2 className="text-xl text-slate-900">Configure OAuth Scopes</h2>
+                <p className=" ">
                   Add these scopes in Slack App → OAuth & Permissions → Bot Token Scopes
                 </p>
               </div>
@@ -379,15 +379,15 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                           }}
                         />
                         <div>
-                          <div className="flex items-center gap-2">
-                            <code className="text-sm font-mono bg-slate-100 px-2 py-0.5 rounded">
+                          <div className="flex items-center ">
+                            <code className=" font-mono py-0.5 rounded">
                               {scope.id}
                             </code>
                             {scope.required && (
                               <Lozenge appearance="default">Required</Lozenge>
                             )}
                           </div>
-                          <p className="text-sm text-slate-500 mt-0.5">{scope.description}</p>
+                          <p className=" mt-0.5">{scope.description}</p>
                         </div>
                       </div>
                       <IconButton
@@ -400,8 +400,8 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                 })}
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <p className="text-sm text-amber-800">
+              <div className="bg-amber-50 border border-amber-200 rounded-lg ">
+                <p className=" text-amber-800">
                   <strong>Important:</strong> Add these scopes in Slack before continuing. 
                   Go to OAuth & Permissions → Scroll to "Bot Token Scopes" → Add each scope.
                 </p>
@@ -422,18 +422,18 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
           {currentStep === 4 && (
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto ">
                   <LinkIcon label="" size="small" />
                 </div>
-                <h2 className="text-xl font-semibold text-slate-900">Set Redirect URL</h2>
-                <p className="text-slate-500 mt-2">
+                <h2 className="text-xl text-slate-900">Set Redirect URL</h2>
+                <p className=" ">
                   Add this URL to your Slack App's OAuth & Permissions → Redirect URLs
                 </p>
               </div>
 
               <div>
                 <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Redirect URL</label>
-                <div className="flex gap-2 mt-1.5">
+                <div className="flex mt-1.5">
                   <div className="flex-1">
                     <Textfield
                       value={formData.redirect_uri}
@@ -448,23 +448,23 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                 </div>
               </div>
 
-              <div className="bg-slate-50 rounded-lg p-6 space-y-3">
+              <div className=" rounded-lg space-y-3">
                 <h3 className="font-medium text-slate-900">In Slack App Console:</h3>
-                <ol className="space-y-2 text-sm text-slate-600">
+                <ol className="space-y-2 text-slate-600">
                   <li className="flex gap-3">
-                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">1</span>
                     <span>Go to <strong>OAuth & Permissions</strong></span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">2</span>
                     <span>Scroll to <strong>Redirect URLs</strong></span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">3</span>
                     <span>Click <strong>Add New Redirect URL</strong></span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">4</span>
+                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">4</span>
                     <span>Paste the URL above and click <strong>Save URLs</strong></span>
                   </li>
                 </ol>
@@ -491,17 +491,17 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
           {currentStep === 5 && (
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto ">
                   <AutomationIcon label="" size="small" />
                 </div>
-                <h2 className="text-xl font-semibold text-slate-900">Install to Workspace</h2>
-                <p className="text-slate-500 mt-2">
+                <h2 className="text-xl text-slate-900">Install to Workspace</h2>
+                <p className=" ">
                   Connect Catalyst to your Slack workspace
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 text-center">
-                <SlackIcon className="w-12 h-12 mx-auto mb-4 text-blue-600" />
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl text-center">
+                <SlackIcon className="w-12 h-12 mx-auto text-blue-600" />
                 <p className="text-slate-600 mb-6">
                   Click below to authorize Catalyst to send notifications to your Slack workspace.
                   You'll be redirected to Slack to approve the permissions.
@@ -527,19 +527,19 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
           {currentStep === 6 && (
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center mx-auto ">
                   <CheckCircleIcon label="" size="small" />
                 </div>
-                <h2 className="text-xl font-semibold text-slate-900">Setup Complete!</h2>
-                <p className="text-slate-500 mt-2">
+                <h2 className="text-xl text-slate-900">Setup Complete!</h2>
+                <p className=" ">
                   Your Slack integration is configured. Send a test notification to verify.
                 </p>
               </div>
 
-              <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
+              <div className="bg-green-50 border border-green-200 rounded-xl text-center">
                 <CheckMarkIcon label="" size="small" />
                 <p className="text-green-800 font-medium">Slack Integration Active</p>
-                <p className="text-green-600 text-sm mt-1">
+                <p className="text-green-600 mt-1">
                   Users can now connect their Slack accounts to receive notifications
                 </p>
               </div>

@@ -65,7 +65,7 @@ export function DesignSystemBaseline() {
   return (
     <div className="space-y-6">
       {/* Baseline Header */}
-      <div style={{ background: 'var(--ds-background-information, #DEEBFF22)', border: '1px solid var(--ds-border-information, #4C9AFF55)', borderRadius: '3px', padding: '16px' }}>
+      <div style={{ background: 'var(--ds-background-information, #DEEBFF22)', border: '0 solid var(--ds-border-information, #4C9AFF55)', borderRadius: '4px', padding: '16px' }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-brand-primary/10 flex items-center justify-center">
@@ -84,13 +84,13 @@ export function DesignSystemBaseline() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Token Categories */}
-        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
-          <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: '0 solid var(--ds-border, #DCDFE4)', borderRadius: '4px' }}>
+          <div style={{ padding: '10 24px', borderBottom: '0 solid var(--ds-border-layout, #EBECF0)' }}>
             <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
               <PaintPaletteIcon label="" size="small" />
               Design Tokens ({baselineTokens.length})
             </h3>
-            <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Semantic tokens defined in index.css</p>
+            <p style={{ fontSize: '16px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Semantic tokens defined in index.css</p>
           </div>
           <div>
             <ScrollArea className="h-[400px]">
@@ -135,7 +135,7 @@ export function DesignSystemBaseline() {
                               )}
                               <div>
                                 <div className="text-xs font-medium">{token.name}</div>
-                                <code className="text-[10px] text-muted-foreground">{token.cssVar}</code>
+                                <code className="text-[8px] text-muted-foreground">{token.cssVar}</code>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
@@ -163,13 +163,13 @@ export function DesignSystemBaseline() {
         </div>
 
         {/* Component Specifications */}
-        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
-          <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: '0 solid var(--ds-border, #DCDFE4)', borderRadius: '4px' }}>
+          <div style={{ padding: '10 24px', borderBottom: '0 solid var(--ds-border-layout, #EBECF0)' }}>
             <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
               <BoardIcon label="" size="small" />
               Component Specs ({componentSpecs.length})
             </h3>
-            <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Target measurements for UI components</p>
+            <p style={{ fontSize: '16px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Target measurements for UI components</p>
           </div>
           <div>
             <ScrollArea className="h-[400px]">
@@ -177,7 +177,7 @@ export function DesignSystemBaseline() {
                 <div key={spec.name} className="border-b last:border-b-0 p-4">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-medium text-sm">{spec.name}</h4>
-                    <code className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded">
+                    <code className="text-[8px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded">
                       {spec.file}
                     </code>
                   </div>
@@ -197,10 +197,10 @@ export function DesignSystemBaseline() {
       </div>
 
       {/* Color Swatches Preview */}
-      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
-        <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
+      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: '0 solid var(--ds-border, #DCDFE4)', borderRadius: '4px' }}>
+        <div style={{ padding: '10 24px', borderBottom: '0 solid var(--ds-border-layout, #EBECF0)' }}>
           <h3 className="text-base" style={{ fontWeight: 500, margin: 0 }}>Golden Hour Chart Palette</h3>
-          <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Mandatory palette for all charts, graphs, and data visualizations</p>
+          <p style={{ fontSize: '16px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Mandatory palette for all charts, graphs, and data visualizations</p>
         </div>
         <div style={{ padding: '24px' }}>
           <div className="flex gap-3 flex-wrap">
@@ -213,7 +213,7 @@ export function DesignSystemBaseline() {
                     style={{ backgroundColor: token.value }}
                   />
                   <div className="text-xs font-medium">{token.name.split(' (')[0]}</div>
-                  <div className="text-[10px] text-muted-foreground">{token.value}</div>
+                  <div className="text-[8px] text-muted-foreground">{token.value}</div>
                 </div>
               ))}
           </div>

@@ -216,7 +216,7 @@ export function ConflictResolutionDialog({
           </div>
         ) : (
           <div className="text-center py-12">
-            <span style={{ display:'inline-flex', color:'var(--ds-icon-subtle, var(--cp-text-secondary, #6B778C))' }}><WarningIcon label="" size="small" /></span>
+            <span style={{ display:'inline-flex', color:'var(--ds-icon-subtle, var(--cp-text-secondary, var(--ds-text-subtlest, #6B778C)))' }}><WarningIcon label="" size="small" /></span>
             <h3 className="font-medium mb-2">No Conflicts</h3>
             <p className="text-sm text-muted-foreground">
               All synchronization conflicts have been resolved

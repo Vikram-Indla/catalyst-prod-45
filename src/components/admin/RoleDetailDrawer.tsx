@@ -142,7 +142,7 @@ export function RoleDetailDrawer({
               <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                 {stats.full}
               </p>
-              <p className="text-[10px] uppercase tracking-wide text-emerald-600/70 dark:text-emerald-400/70 font-medium">
+              <p className="text-[8px] uppercase tracking-wide text-emerald-600/70 dark:text-emerald-400/70 font-medium">
                 Full Access
               </p>
             </div>
@@ -150,7 +150,7 @@ export function RoleDetailDrawer({
               <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
                 {stats.view}
               </p>
-              <p className="text-[10px] uppercase tracking-wide text-amber-600/70 dark:text-amber-400/70 font-medium">
+              <p className="text-[8px] uppercase tracking-wide text-amber-600/70 dark:text-amber-400/70 font-medium">
                 View Only
               </p>
             </div>
@@ -158,7 +158,7 @@ export function RoleDetailDrawer({
               <p className="text-2xl font-bold text-gray-500 dark:text-gray-400">
                 {stats.hidden}
               </p>
-              <p className="text-[10px] uppercase tracking-wide text-gray-500/70 font-medium">
+              <p className="text-[8px] uppercase tracking-wide text-gray-500/70 font-medium">
                 Hidden
               </p>
             </div>
