@@ -1,6 +1,6 @@
 // ============================================================================
 // WORKSTREAM DETAIL DRAWER — PIXEL-PERFECT V2 IMPLEMENTATION
-// File: src/modules/planner/components/workstreams/WorkstreamDrawer.tsx
+// File: src/modules/tasks/components/workstreams/WorkstreamDrawer.tsx
 // ============================================================================
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';

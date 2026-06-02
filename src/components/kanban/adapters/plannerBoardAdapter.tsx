@@ -30,7 +30,7 @@
  */
 import type { ReactNode } from 'react';
 import { CheckCircle2 } from '@/lib/atlaskit-icons';
-import type { KanbanTask, PlannerStatus, KanbanTaskPriority } from '@/modules/planner/types/kanban';
+import type { KanbanTask, PlannerStatus, KanbanTaskPriority } from '@/modules/tasks/types/kanban';
 import type { KanbanColumnDef } from '../kanban-tokens';
 import type { BoardIssue } from '../kanban-types';
 import type {

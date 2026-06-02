@@ -206,9 +206,9 @@ const BoardManagerPage = lazy(() => import("../components/boards/BoardManagerPag
 const BoardCanvasPage = lazy(() => import("../components/boards/BoardCanvasPage"));
 const EpicBalancingPage = lazy(() => import("../modules/epic-balancing").then(m => ({ default: m.EpicBalancingPage })));
 const UserNotificationSettingsPage = lazy(() => import("../pages/UserNotificationSettingsPage"));
-const PlannerPage = lazy(() => import("../modules/planner").then(m => ({ default: m.PlannerPage })));
-const KanbanPage = lazy(() => import("../modules/planner").then(m => ({ default: m.KanbanPage })));
-const MyTasksPage = lazy(() => import("../modules/planner").then(m => ({ default: m.MyTasksPage })));
+const PlannerPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.PlannerPage })));
+const KanbanPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.KanbanPage })));
+const MyTasksPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.MyTasksPage })));
 
 const TestHubPage = lazy(() => import("../modules-dormant/testhub/TestHubPage"));
 const TestHubVerifyPage = lazy(() => import("../modules-dormant/testhub/TestHubVerifyPage"));
