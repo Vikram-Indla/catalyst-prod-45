@@ -5822,6 +5822,14 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
    components/workflow/WorkItemStatusLozenge so any rendered lozenge in
    Catalyst matches Jira typography.
    ────────────────────────────────────────────────────────────────────── */
+/* Jira parity: @atlaskit/dynamic-table applies uppercase to th by default.
+   Catalyst uses sentence-case headers per CLAUDE.md 2026-05-19. */
+[data-testid="the-table--head"] th,
+table th[class*="css-"] {
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
 [data-cp-lozenge-jira-parity] > span,
 [data-cp-lozenge-jira-parity] > span > span,
 [data-cp-lozenge-jira-parity] span[class^="css-"] {

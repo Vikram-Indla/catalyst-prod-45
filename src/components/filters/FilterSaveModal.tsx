@@ -195,7 +195,7 @@ export function FilterSaveModal({
               minimumRows={3}
               maxHeight="120px"
               spellCheck={false}
-              style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12 }}
+              style={{ fontFamily: 'var(--ds-font-family-monospace, monospace)', fontSize: 12 }}
             />
           </div>
 

@@ -198,7 +198,7 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
             <ModalBody>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4, color: token('color.text.subtle') }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
                     Board name
                   </label>
                   <Textfield
@@ -209,7 +209,7 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4, color: token('color.text.subtle') }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
                     Board type
                   </label>
                   <Select

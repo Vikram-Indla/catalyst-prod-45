@@ -163,7 +163,7 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
               {/* JQL preview — monospace, sunken */}
               <div style={{
                 fontSize: 11,
-                fontFamily: 'monospace',
+                fontFamily: 'var(--ds-font-family-monospace, monospace)',
                 color: token('color.text.subtlest'),
                 background: `var(--ds-surface-sunken, #F7F8F9)`,
                 borderRadius: 3,

@@ -16,5 +16,5 @@ const CONFIG: Record<FilterHealth, { label: string; appearance: LozengeAppearanc
 
 export function FilterHealthBadge({ health }: FilterHealthBadgeProps) {
   const { label, appearance } = CONFIG[health] ?? CONFIG.healthy;
-  return <Lozenge appearance={appearance}>{label}</Lozenge>;
+  return <span data-cp-lozenge-jira-parity><Lozenge appearance={appearance}>{label}</Lozenge></span>;
 }

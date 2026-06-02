@@ -81,7 +81,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
           <h1 style={{
             margin: 0,
             fontSize: 24,
-            fontWeight: token('font.weight.bold'),
+            fontWeight: 653,
             color: token('color.text'),
             lineHeight: '28px',
           }}>
@@ -194,7 +194,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                   padding: 12,
                   background: `var(--ds-surface-sunken, #F7F8F9)`,
                   borderRadius: 3,
-                  fontFamily: 'var(--cp-font-mono, monospace)',
+                  fontFamily: 'var(--ds-font-family-monospace, monospace)',
                   fontSize: 12,
                   color: token('color.text.subtle'),
                   display: 'flex',
@@ -234,7 +234,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                   borderRadius: 3,
                   padding: '0 4px',
                   fontSize: 11,
-                  fontFamily: 'monospace',
+                  fontFamily: 'var(--ds-font-family-monospace, monospace)',
                 }}>
                   Ctrl+Enter
                 </kbd>{' '}
@@ -294,7 +294,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                   padding: 12,
                   background: `var(--ds-surface-sunken, #F7F8F9)`,
                   borderRadius: 3,
-                  fontFamily: 'monospace',
+                  fontFamily: 'var(--ds-font-family-monospace, monospace)',
                   fontSize: 12,
                   color: token('color.text.subtle'),
                   display: 'flex',

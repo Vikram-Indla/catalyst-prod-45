@@ -10,6 +10,7 @@ import { FilterVersionHistory } from '@/components/filters/FilterVersionHistory'
 import { FilterUsageSparkline } from '@/components/filters/FilterUsageSparkline';
 import { type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
 import { ArrowLeft, Edit, Clock } from '@/lib/atlaskit-icons';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 interface BoardInfo { id: string; name: string; }
 
@@ -135,7 +136,7 @@ export default function FilterDetailPage() {
             <h1 style={{
               margin: 0,
               fontSize: 24,
-              fontWeight: token('font.weight.bold'),
+              fontWeight: 653,
               color: token('color.text'),
               lineHeight: '28px',
             }}>
@@ -223,7 +224,7 @@ export default function FilterDetailPage() {
             {filter.owner ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <AkAvatar
-                  src={filter.owner.avatar_url ?? undefined}
+                  src={resolveAvatarUrl(filter.owner.full_name)}
                   name={filter.owner.full_name ?? 'Unknown'}
                   size="xsmall"
                 />
@@ -292,7 +293,7 @@ export default function FilterDetailPage() {
               background: token('elevation.surface.sunken'),
               borderRadius: 4,
               border: `1px solid ${token('color.border')}`,
-              fontFamily: 'var(--cp-font-mono, monospace)',
+              fontFamily: 'var(--ds-font-family-monospace, monospace)',
               fontSize: 13,
               color: token('color.text'),
               whiteSpace: 'pre-wrap',
