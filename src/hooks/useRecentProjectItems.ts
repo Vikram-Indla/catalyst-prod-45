@@ -128,6 +128,8 @@ export function useTrackRecentItem() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['recent-project-items'] });
       qc.invalidateQueries({ queryKey: ['global-recent-items'] });
+      qc.invalidateQueries({ queryKey: ['global-recent-projects'] });
+      qc.invalidateQueries({ queryKey: ['product-hub-recent-products'] });
     },
   });
 }
@@ -146,6 +148,8 @@ export function useRemoveRecentItem() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['recent-project-items'] });
       qc.invalidateQueries({ queryKey: ['global-recent-items'] });
+      qc.invalidateQueries({ queryKey: ['global-recent-projects'] });
+      qc.invalidateQueries({ queryKey: ['product-hub-recent-products'] });
     },
   });
 }

@@ -6,11 +6,21 @@
  */
 import { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { createPortal } from 'react-dom';
+import { PresenceRing } from '@/components/shared/PresenceRing';
+import type { PresenceState } from '@/lib/presence';
 
 export interface AssigneeOption {
   name: string;
   email?: string;
   avatarUrl?: string;
+  /** Supabase auth user id — used to look up realtime presence ring. */
+  userId?: string;
+  /** Effective presence state from v_user_effective_status. */
+  presenceState?: PresenceState | null;
+  /** ISO date string (ends_at + 1 day) shown when presenceState === 'on_leave'. */
+  backOn?: string | null;
+  /** Caty-suggested backup when presenceState is on_leave (from user_availability.backup_user_id). */
+  backupSuggestion?: { name: string; avatarUrl?: string | null } | null;
 }
 
 interface EditableAssigneeProps {
@@ -88,6 +98,12 @@ export const EditableAssignee = memo(function EditableAssignee({
     (o.email && o.email.toLowerCase().includes(q))
   );
 
+  // Caty backup suggestion — show when current assignee is on_leave and has a backup
+  const currentOption = options.find(o => o.name.toLowerCase() === currentAssignee?.toLowerCase());
+  const catySuggestion = currentOption?.presenceState === 'on_leave'
+    ? (currentOption?.backupSuggestion ?? null)
+    : null;
+
   // Position calculation
   const triggerRect = triggerRef.current?.getBoundingClientRect();
   const portalStyle: React.CSSProperties = triggerRect
@@ -125,7 +141,7 @@ export const EditableAssignee = memo(function EditableAssignee({
           borderRadius: '3px',
           fontSize: 14,
           fontWeight: 500,
-          color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+          color: 'var(--ds-text, #172B4D)',
           textAlign: 'left',
           fontFamily: 'var(--cp-font-body)',
         }}
@@ -143,7 +159,7 @@ export const EditableAssignee = memo(function EditableAssignee({
           >
             <div
               style={{
-                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                background: 'var(--ds-surface, #ffffff)',
                 borderRadius: 8,
                 border: '1px solid var(--ds-border, #EBECF0)',
                 boxShadow: '0 8px 24px rgba(9,30,66,0.15)',
@@ -158,7 +174,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                   gap: 8,
                   padding: '8px 12px',
                   borderBottom: '1px solid var(--ds-border, #EBECF0)',
-                  background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
+                  background: 'var(--ds-surface-sunken, #F4F5F7)',
                 }}
               >
                 <input
@@ -172,7 +188,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                     outline: 'none',
                     fontSize: 13,
                     fontWeight: 400,
-                    color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+                    color: 'var(--ds-text, #172B4D)',
                     background: 'transparent',
                     fontFamily: 'var(--cp-font-body)',
                   }}
@@ -181,6 +197,60 @@ export const EditableAssignee = memo(function EditableAssignee({
 
               {/* Options list */}
               <div style={{ maxHeight: 280, overflowY: 'auto' }}>
+
+                {/* Caty backup suggestion — only when current assignee is on leave */}
+                {catySuggestion && (
+                  <div style={{ padding: '4px 12px' }}>
+                    {/* AI section label */}
+                    <div style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      color: 'var(--ds-text-subtlest, #6B778C)',
+                      marginBottom: 4,
+                      letterSpacing: '0.04em',
+                    }}>
+                      ✦ Caty suggests
+                    </div>
+                    {/* Rainbow-bordered suggestion button — CLAUDE.md AI CTA carve-out */}
+                    <div style={{
+                      background: `conic-gradient(from 0deg, #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg, #00C9FF 180deg, #92FE9D 240deg, #FFD700 300deg, #FF3CAC 360deg)`,
+                      animation: 'none',
+                      padding: 4,
+                      borderRadius: 4,
+                    }}>
+                      <button
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleSelect(catySuggestion.name);
+                        }}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: 8,
+                          border: 'none',
+                          borderRadius: 3,
+                          cursor: 'pointer',
+                          background: 'var(--ds-surface, #ffffff)',
+                          fontSize: 13,
+                          fontWeight: 500,
+                          color: 'var(--ds-text, #172B4D)',
+                          textAlign: 'left',
+                        }}
+                      >
+                        <PresenceRing
+                          name={catySuggestion.name}
+                          src={catySuggestion.avatarUrl ?? null}
+                          size="small"
+                          state={null}
+                        />
+                        <span>{catySuggestion.name}</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Unassigned option */}
                 <button
                   onClick={e => {
@@ -190,29 +260,29 @@ export const EditableAssignee = memo(function EditableAssignee({
                   style={{
                     width: '100%',
                     display: 'block',
-                    padding: '10px 12px',
+                    padding: '8px 12px',
                     border: 'none',
                     cursor: 'pointer',
                     background:
                       currentAssignee === null
-                        ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'
-                        : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                        ? 'var(--ds-surface-sunken, #F4F5F7)'
+                        : 'var(--ds-surface, #ffffff)',
                     textAlign: 'left',
                     fontFamily: 'var(--cp-font-body)',
                     fontSize: 14,
                     fontWeight: 400,
-                    color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+                    color: 'var(--ds-text, #172B4D)',
                     transition: 'background 150ms',
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.background =
-                      'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
+                      'var(--ds-surface-sunken, #F4F5F7)';
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.background =
                       currentAssignee === null
-                        ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'
-                        : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+                        ? 'var(--ds-surface-sunken, #F4F5F7)'
+                        : 'var(--ds-surface, #ffffff)';
                   }}
                 >
                   Unassigned
@@ -223,6 +293,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                   const isActive =
                     currentAssignee?.toLowerCase() ===
                     person.name.toLowerCase();
+                  const isOnLeave = person.presenceState === 'on_leave';
                   return (
                     <button
                       key={person.name}
@@ -232,43 +303,63 @@ export const EditableAssignee = memo(function EditableAssignee({
                       }}
                       style={{
                         width: '100%',
-                        display: 'block',
-                        padding: '10px 12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '8px 12px',
                         border: 'none',
                         cursor: 'pointer',
                         background: isActive
-                          ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'
-                          : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                          ? 'var(--ds-surface-sunken, #F4F5F7)'
+                          : 'var(--ds-surface, #ffffff)',
                         textAlign: 'left',
                         fontFamily: 'var(--cp-font-body)',
                         fontSize: 14,
                         fontWeight: 400,
-                        color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+                        color: 'var(--ds-text, #172B4D)',
                         transition: 'background 150ms',
                       }}
                       onMouseEnter={e => {
                         e.currentTarget.style.background =
-                          'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
+                          'var(--ds-surface-sunken, #F4F5F7)';
                       }}
                       onMouseLeave={e => {
                         e.currentTarget.style.background = isActive
-                          ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'
-                          : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+                          ? 'var(--ds-surface-sunken, #F4F5F7)'
+                          : 'var(--ds-surface, #ffffff)';
                       }}
                     >
-                      <div style={{ marginBottom: 2 }}>
-                        {person.name}
-                      </div>
-                      {person.email && (
-                        <div
-                          style={{
-                            fontSize: 12,
-                            color: 'var(--ds-text-subtlest, #5E6C84)',
-                          }}
-                        >
-                          {person.email}
+                      <PresenceRing
+                        name={person.name}
+                        src={person.avatarUrl ?? null}
+                        size="small"
+                        state={person.presenceState ?? null}
+                      />
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{ fontSize: 14, fontWeight: 400 }}>{person.name}</span>
+                          {isOnLeave && person.backOn && (
+                            <span style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              background: 'var(--ds-background-danger, #FFECEB)',
+                              color: 'var(--ds-icon-danger, #C9372C)',
+                              padding: '0 8px',
+                              borderRadius: 3,
+                              fontSize: 11,
+                              fontWeight: 600,
+                            }}>
+                              Back {person.backOn}
+                            </span>
+                          )}
                         </div>
-                      )}
+                        {person.email && (
+                          <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #5E6C84)' }}>
+                            {person.email}
+                          </div>
+                        )}
+                      </div>
                     </button>
                   );
                 })}

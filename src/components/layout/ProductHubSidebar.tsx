@@ -12,7 +12,7 @@
  * Dual-mode added 2026-05-16 so /product-hub/INV/* shows per-product nav.
  */
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import {
   LayoutGrid,
@@ -26,13 +26,11 @@ import {
   Settings,
   Filter,
 } from '@/lib/atlaskit-icons';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTheme } from '@/hooks/useTheme';
-import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 interface ProductHubSidebarProps {
   expanded: boolean;
@@ -40,15 +38,7 @@ interface ProductHubSidebarProps {
   className?: string;
 }
 
-interface BrRecentRow {
-  id: string;
-  title: string;
-  request_key: string;
-  request_type: string;
-  updated_at: string;
-}
-
-interface RecentItemRow {
+interface RecentProductRow {
   id: string;
   entity_type: string;
   entity_id: string;
@@ -143,13 +133,10 @@ function daysAgo(iso: string): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
-// All business requests use the amber lightbulb icon — never the request_type subtype icon.
-// The correct type string is 'Business Request' which maps to the amber lightbulb in
-// JiraIssueTypeIcon (src/lib/jira-issue-type-icons.tsx → iconFile: 'business-request').
-const BR_ICON_TYPE = 'Business Request';
 
 export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubSidebarProps) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const { isDark } = useTheme();
   const [recentsExpanded, setRecentsExpanded] = useState(true);
 
@@ -173,30 +160,10 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
 
   const isScoped = !!scopedProduct && !!productCode;
 
-  // Recent BRs — only shown in global mode (no product scoped)
-  const { data: recentBrs = [] } = useQuery<BrRecentRow[]>({
-    queryKey: ['product-hub-recent-brs'],
-    enabled: !isScoped,
-    queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('business_requests')
-        .select('id, title, request_key, request_type, updated_at')
-        .not('process_step', 'in', '("done","canceled")')
-        .order('updated_at', { ascending: false })
-        .limit(15);
-      if (error) { console.warn('[ProductHubSidebar] recent BRs error:', error.message); return []; }
-      return (data ?? []) as BrRecentRow[];
-    },
-    staleTime: 30_000,
-    refetchOnWindowFocus: false,
-  });
-
-  // Per-product recents — shown when scoped to a product (parity with Project Hub sidebar).
-  // Queries user_recent_items filtered to nav_paths under /product-hub/{code}/
-  // so only items the user actually visited in this product appear.
-  const { data: perProductRecents = [] } = useQuery<RecentItemRow[]>({
-    queryKey: ['product-hub-per-product-recents', productCode],
-    enabled: isScoped && !!productCode,
+  // Recently visited products — architecture change 2026-06-02.
+  // Shows recently accessed products instead of individual BR tickets.
+  const { data: recentProducts = [] } = useQuery<RecentProductRow[]>({
+    queryKey: ['product-hub-recent-products'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
@@ -204,30 +171,19 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
         .from('user_recent_items')
         .select('id, entity_type, entity_id, entity_key, display_summary, nav_path, visited_at')
         .eq('user_id', user.id)
-        .ilike('nav_path', `/product-hub/${productCode}/%`)
+        .eq('entity_type', 'product')
         .order('visited_at', { ascending: false })
-        .limit(50);
-      if (error) { console.warn('[ProductHubSidebar] per-product recents error:', error.message); return []; }
-      // Filter out done/canceled BRs by cross-referencing entity_key
-      const entityKeys = (data ?? []).map((d: any) => d.entity_key).filter(Boolean);
-      let doneKeys = new Set<string>();
-      if (entityKeys.length > 0) {
-        const { data: doneRows } = await supabase
-          .from('business_requests')
-          .select('request_key')
-          .in('request_key', entityKeys)
-          .in('process_step', ['done', 'canceled']);
-        if (doneRows) doneKeys = new Set(doneRows.map((r: any) => r.request_key));
-      }
-      // Deduplicate by nav_path — newest-first, cap at 15, exclude done/canceled
+        .limit(40);
+      if (error) { console.warn('[ProductHubSidebar] recent products error:', error.message); return []; }
+      // Deduplicate by entity_key (product code) — newest-first, cap at 10.
       const seen = new Set<string>();
-      const deduped: RecentItemRow[] = [];
-      for (const item of data ?? []) {
-        if (doneKeys.has(item.entity_key)) continue;
-        if (!seen.has(item.nav_path)) {
-          seen.add(item.nav_path);
-          deduped.push(item as RecentItemRow);
-          if (deduped.length === 15) break;
+      const deduped: RecentProductRow[] = [];
+      for (const item of (data ?? []) as RecentProductRow[]) {
+        const key = item.entity_key ?? item.entity_id;
+        if (!seen.has(key)) {
+          seen.add(key);
+          deduped.push(item);
+          if (deduped.length === 10) break;
         }
       }
       return deduped;
@@ -238,41 +194,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
 
   const config: SidebarConfig = isScoped ? buildPerProductConfig(scopedProduct!) : GLOBAL_CONFIG;
 
-
-  // Group BRs by time bucket — TODAY + YESTERDAY, fallback to MOST RECENT when empty
-  // H1 gate: show TODAY and YESTERDAY (max 48 hours), then fallback to most recent (capped 15)
-  const groupedBrs = useMemo(() => {
-    const now = Date.now();
-    const dayMs = 24 * 60 * 60 * 1000;
-    const today: typeof recentBrs = [];
-    const yesterday: typeof recentBrs = [];
-
-    for (const br of recentBrs) {
-      const age = now - new Date(br.updated_at).getTime();
-      if (age < dayMs) today.push(br);
-      else if (age < 2 * dayMs) yesterday.push(br);
-    }
-
-    const groups: { label: string; items: typeof recentBrs }[] = [
-      { label: 'Today', items: today },
-      { label: 'Yesterday', items: yesterday },
-    ];
-
-    // When both TODAY and YESTERDAY are empty, show MOST RECENT (up to 15 items)
-    if (today.length === 0 && yesterday.length === 0 && recentBrs.length > 0) {
-      const mostRecent = recentBrs
-        .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
-        .slice(0, 15);
-      if (mostRecent.length > 0) {
-        groups.push({ label: 'Most Recent', items: mostRecent });
-      }
-    }
-
-    return groups.filter(g => g.items.length > 0);
-  }, [recentBrs]);
-
-  // Global mode: recent BRs section (matches ProjectHubSidebar pattern)
-  const recentsSection = !isScoped && expanded && groupedBrs.some(g => g.items.length > 0) ? (
+  const recentsSection = expanded && recentProducts.length > 0 ? (
     <div style={{ marginTop: 8 }}>
       <div style={{ height: 1, background: token('color.border'), margin: '4px 12px 8px' }} />
 
@@ -295,11 +217,12 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
           Recent
         </span>
         <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-mono)' }}>
-          {groupedBrs.reduce((acc, g) => acc + g.items.length, 0)}
+          {recentProducts.length}
         </span>
       </button>
 
       {recentsExpanded && (
+<<<<<<< HEAD
         <div style={{ padding: '0px 0' }}>
           {groupedBrs.map((group) => (
             <div key={group.label}>
@@ -379,26 +302,29 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
       {recentsExpanded && (
         <div style={{ padding: '2px 0' }}>
           {perProductRecents.map((item) => (
+=======
+        <div style={{ padding: '2px 0' }}>
+          {recentProducts.map((item) => (
+>>>>>>> 75a4381a7985737547582fb99dcd2fd70f70ee0c
             <div
               key={item.id}
-              onClick={() => {
-                const { openDetail } = useGlobalSearchStore.getState();
-                openDetail({ id: item.entity_key || item.entity_id, itemType: item.entity_type as any });
-              }}
+              onClick={() => navigate(item.nav_path)}
               className="group"
-              style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '5px 12px 5px 28px', cursor: 'pointer', borderRadius: 3, margin: '0 4px', transition: 'background 80ms ease' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 12px 5px 28px', cursor: 'pointer', borderRadius: 3, margin: '0 4px', transition: 'background 80ms ease' }}
               onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <span style={{ flexShrink: 0, marginTop: 1 }}>
-                <JiraIssueTypeIcon type={BR_ICON_TYPE} size={14} />
-              </span>
+              {/* Color dot as product identifier — products have no icon registry */}
+              <span style={{
+                flexShrink: 0, width: 8, height: 8, borderRadius: '50%',
+                background: token('color.background.brand.bold', '#0052CC'),
+              }} />
               <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: token('color.text'), fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.display_summary ?? ''}>
+                <span style={{ fontSize: 13, fontWeight: 500, color: token('color.text'), fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.display_summary ?? undefined}>
                   {item.display_summary || item.entity_key || '—'}
                 </span>
                 <span style={{ fontSize: 11, fontWeight: 400, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-mono)', letterSpacing: '0.01em' }}>
-                  {item.entity_key ?? item.entity_type} · {daysAgo(item.visited_at)}
+                  {item.entity_key}
                 </span>
               </span>
             </div>
@@ -408,7 +334,6 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
     </div>
   ) : null;
 
-
   return (
     <SidebarBase
       config={config}
@@ -416,7 +341,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
       onToggle={onToggle}
       className={className}
     >
-      {isScoped ? perProductRecentsSection : recentsSection}
+      {recentsSection}
     </SidebarBase>
   );
 }

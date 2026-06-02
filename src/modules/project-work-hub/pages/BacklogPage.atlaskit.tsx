@@ -120,9 +120,9 @@ import { BIZ_SOURCE, type BacklogDataSource } from '../adapters/backlogDataSourc
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
 import { useCatySearch } from '@/components/caty/catySearchStore';
 import { applyCatyFilterBacklog } from '@/components/caty/applyCatyFilterBacklog';
-// Same Atlaskit "ai-chat" glyph used by the AllWork toolbar Ask Caty button —
-// keeps the two surfaces visually identical (icon + "Ask Caty" wording).
-import AskCatyAiIcon from '@atlaskit/icon/core/ai-chat';
+// Canonical AI affordance — white pill + sparkle + static rainbow ring.
+// Shared with the AllWork toolbar so both surfaces read identically.
+import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { useProject } from '@/hooks/useProjects';
 // Apr 28, 2026 (carryover #9): Star/Unstar persisted via the canonical
 // starred_items table chokepoint. Replaces the prior local useState toggle
@@ -3258,22 +3258,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             digital-transformation.atlassian.net BAU list view). Catalyst
             previously rendered Ask CATY in the global top nav — wrong
             location. Moved here per jira-compare 2026-05-12 finding. */}
-        <Tooltip content="Ask Caty about this backlog" position="bottom">
-          <Button
-            appearance="subtle"
-            spacing="compact"
-            onClick={() => setAskCatyOpen(true)}
-            iconBefore={
-              <AskCatyAiIcon
-                label=""
-                color="var(--ds-text-subtlest, #6B778C)"
-              />
-            }
-            testId="catalyst-backlog-toolbar.ask-caty"
-          >
-            Ask Caty
-          </Button>
-        </Tooltip>
+        <AIIntelligenceButton
+          label="Ask Caty"
+          onClick={() => setAskCatyOpen(true)}
+          tooltip="Ask Caty about this backlog"
+        />
         {/* Apr 28, 2026 (jira-compare cycle 2 T5): wrapper width fixed
             280 → flex:1 with min/max so the input expands like Jira's
             (probed Jira width=625px) instead of cramming at 280. */}

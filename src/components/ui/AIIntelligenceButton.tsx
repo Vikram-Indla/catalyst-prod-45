@@ -73,12 +73,18 @@ export function AIIntelligenceButton({
       style={{
         // White pill — matches panel-header digest CTA + AskCatalystPill.
         // Single source of visual truth for AI affordances across the app.
+        // isActive (e.g. toggle keeping a CATY panel open) uses the ADS
+        // selected token so the open state reads without losing the ring.
         background: isInert
           ? token('color.background.disabled', '#F1F2F4')
-          : token('elevation.surface', '#FFFFFF'),
+          : isActive
+            ? token('color.background.selected', '#E9F2FE')
+            : token('elevation.surface', '#FFFFFF'),
         color: isInert
           ? token('color.text.disabled', '#8590A2')
-          : token('color.text', '#172B4D'),
+          : isActive
+            ? token('color.text.selected', '#0C66E4')
+            : token('color.text', '#172B4D'),
         border: 'none',
         borderRadius: 18,
         padding: '0 14px',
@@ -96,12 +102,16 @@ export function AIIntelligenceButton({
       }}
       onMouseEnter={e => {
         if (!isInert) {
-          e.currentTarget.style.background = token('elevation.surface.hovered', '#F1F2F4');
+          e.currentTarget.style.background = isActive
+            ? token('color.background.selected.hovered', '#CCE0FF')
+            : token('elevation.surface.hovered', '#F1F2F4');
         }
       }}
       onMouseLeave={e => {
         if (!isInert) {
-          e.currentTarget.style.background = token('elevation.surface', '#FFFFFF');
+          e.currentTarget.style.background = isActive
+            ? token('color.background.selected', '#E9F2FE')
+            : token('elevation.surface', '#FFFFFF');
         }
       }}
     >

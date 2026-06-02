@@ -5990,15 +5990,13 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
 }
 [data-cv-section="br-center-details"] [class$="__control"],
 [data-cv-section="br-center-details"] [class*="-select__control"] {
-  border-color: transparent !important;
-  background: transparent !important;
-  box-shadow: none !important;
   min-height: 32px;
+  border-width: 1px !important;
+  box-shadow: none !important;
 }
 [data-cv-section="br-center-details"] [class$="__control"]:hover,
 [data-cv-section="br-center-details"] [class*="-select__control"]:hover {
   background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7)) !important;
-  border-color: transparent !important;
 }
 
 /* @atlaskit/datetime-picker v17 uses compiled CSS with obfuscated class names.
@@ -6097,3 +6095,4 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
 }
 .catalyst-ai-dot:nth-child(2) { animation-delay: 0.2s; }
 .catalyst-ai-dot:nth-child(3) { animation-delay: 0.4s; }
+

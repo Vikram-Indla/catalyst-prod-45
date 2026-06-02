@@ -23,6 +23,7 @@
 import { useMemo, useState, useCallback, useEffect, lazy, Suspense, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link as RouterLink } from 'react-router-dom';
+import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import { Plus, Star, MoreHorizontal, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
@@ -405,6 +406,18 @@ export default function AllProductsPage() {
   const [filterType, setFilterType] = useState<string | null>(null);
   const [filterLead, setFilterLead] = useState<string | null>(null);
 
+  const trackRecent = useTrackRecentItem();
+
+  const recordProductView = useCallback((p: Product) => {
+    trackRecent.mutate({
+      entityType: 'product',
+      entityId: p.id,
+      entityKey: p.code,
+      displaySummary: p.name,
+      navPath: `/product-hub/${p.code}/backlog`,
+    });
+  }, [trackRecent]);
+
   // Resizable / drag-reorder columns — matches AllProjectsTable pattern
   const {
     orderedColumns, columnWidths, dragKey, dragOverKey,
@@ -547,6 +560,7 @@ export default function AllProductsPage() {
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+                onClick={() => recordProductView(p)}
               >
                 {p.name}
               </RouterLink>

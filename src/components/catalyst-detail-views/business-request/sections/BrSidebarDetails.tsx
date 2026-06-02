@@ -242,10 +242,10 @@ export function BrSidebarDetails({ request, onUpdate, statusPill, improveDropdow
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 4,
+          gap: 8,
           marginBottom: 8,
-          minHeight: 28,
-          flexWrap: 'wrap',
+          minHeight: 32,
+          flexWrap: 'nowrap',
         }}>
           {statusPill}
           {watchersChip}

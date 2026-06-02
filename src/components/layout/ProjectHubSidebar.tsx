@@ -25,13 +25,12 @@ import {
   Filter,
 } from '@/lib/atlaskit-icons';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
-import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 import { useProjectFavorites, useProjects } from '@/hooks/useProjectHub';
+import { padProjectKey } from '@/lib/project-key';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { useTheme } from '@/hooks/useTheme';
 
 const preloaded = { done: false };
@@ -93,10 +92,12 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
 
   if (projectKey) {
     const base = `/project-hub/${projectKey}`;
+    const projectName = projects.find(p => p.project_key === projectKey)?.name;
+    const keyCode = padProjectKey(projectKey, projectName);
 
     const projectConfig: SidebarConfig = {
-      badge: projectKey.slice(0, 2).toUpperCase(),
-      label: projectKey.toUpperCase(),
+      badge: keyCode,
+      label: keyCode,
       showFavorites: false,
       // Design critique (2026-04-19): flattened from 3 sections ('', Boards,
       // Planning) to a single unlabeled group. Rationale:
@@ -160,11 +161,10 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
   const { isDark } = useTheme();
   const [recentsExpanded, setRecentsExpanded] = useState(true);
 
-  // Fetch global recent items (across all projects)
-  // Excludes 'subtask' per Apr 2026 owner directive — subtasks are too granular
-  // for the Recents rail; users want to see the parent context (Story / Task).
+  // Fetch recently visited projects only — architecture change 2026-06-02.
+  // Shows recently accessed projects instead of individual tickets.
   const { data: recentItems = [] } = useQuery({
-    queryKey: ['global-recent-items'],
+    queryKey: ['global-recent-projects'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
@@ -172,30 +172,19 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
         .from('user_recent_items')
         .select('id, entity_type, entity_id, entity_key, display_summary, nav_path, visited_at, project_id')
         .eq('user_id', user.id)
-        .neq('entity_type', 'subtask')
+        .eq('entity_type', 'project')
         .order('visited_at', { ascending: false })
-        .limit(75);
+        .limit(40);
       if (error) { console.warn('global recents error:', error.message); return []; }
-      // Filter out done/canceled issues by cross-referencing entity_key against ph_issues
-      const entityKeys = (data ?? []).map((d: any) => d.entity_key).filter(Boolean);
-      let doneKeys = new Set<string>();
-      if (entityKeys.length > 0) {
-        const { data: doneRows } = await supabase
-          .from('ph_issues')
-          .select('issue_key')
-          .in('issue_key', entityKeys)
-          .eq('status_category', 'Done');
-        if (doneRows) doneKeys = new Set(doneRows.map((r: any) => r.issue_key));
-      }
-      // Deduplicate by nav_path — rows are newest-first so first occurrence = most recent visit.
+      // Deduplicate by entity_key (project key) — newest-first, cap at 10.
       const seen = new Set<string>();
       const deduped: typeof data = [];
       for (const item of data ?? []) {
-        if (doneKeys.has(item.entity_key)) continue;
-        if (!seen.has(item.nav_path)) {
-          seen.add(item.nav_path);
+        const key = item.entity_key ?? item.entity_id;
+        if (!seen.has(key)) {
+          seen.add(key);
           deduped.push(item);
-          if (deduped.length === 15) break;
+          if (deduped.length === 10) break;
         }
       }
       return deduped;
@@ -228,10 +217,7 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
   };
 
   const handleRecentClick = (item: typeof recentItems[0]) => {
-    const { openDetail } = useGlobalSearchStore.getState();
-    // CatalystDetailRouter queries ph_issues by issue_key (text), not UUID.
-    // entity_key holds the Jira key (e.g. "BAU-5757"); entity_id is the UUID.
-    openDetail({ id: item.entity_key || item.entity_id, itemType: item.entity_type as any });
+    navigate(item.nav_path);
   };
 
 
@@ -330,13 +316,8 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
                   onMouseEnter={e => e.currentTarget.style.background = token('color.background.neutral.subtle.hovered')}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
-                  {/* Icon: ProjectIcon for project entities, JiraIssueTypeIcon for work items */}
                   <span style={{ flexShrink: 0, marginTop: 2, lineHeight: 0 }}>
-                    {item.entity_type === 'project' ? (
-                      <ProjectIcon projectKey={item.entity_key ?? ''} size="xsmall" />
-                    ) : (
-                      <JiraIssueTypeIcon type={item.entity_type} size={14} />
-                    )}
+                    <ProjectIcon projectKey={item.entity_key ?? ''} size="xsmall" />
                   </span>
                   {/* Two-line block: summary (primary) + key (secondary)
                       Strip leading bracket tags e.g. "[CRUD-H] Story" → "Story"
