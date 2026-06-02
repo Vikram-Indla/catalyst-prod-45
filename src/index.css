@@ -5990,15 +5990,13 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
 }
 [data-cv-section="br-center-details"] [class$="__control"],
 [data-cv-section="br-center-details"] [class*="-select__control"] {
-  border-color: transparent !important;
-  background: transparent !important;
-  box-shadow: none !important;
   min-height: 32px;
+  border-width: 1px !important;
+  box-shadow: none !important;
 }
 [data-cv-section="br-center-details"] [class$="__control"]:hover,
 [data-cv-section="br-center-details"] [class*="-select__control"]:hover {
   background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7)) !important;
-  border-color: transparent !important;
 }
 
 /* @atlaskit/datetime-picker v17 uses compiled CSS with obfuscated class names.
@@ -6097,3 +6095,28 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
 }
 .catalyst-ai-dot:nth-child(2) { animation-delay: 0.2s; }
 .catalyst-ai-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* AvailabilityPanel in-dropdown compact override
+   AtlasKit DatePicker/Select/Textfield default to 16px font inside menus.
+   Scale down to 13px and trim container height so the form reads as a
+   compact in-menu panel, not a standalone page form.                        */
+.av-panel-compact input,
+.av-panel-compact textarea {
+  font-size: 13px !important;
+}
+.av-panel-compact [class*="-container"] {
+  font-size: 13px !important;
+  min-height: 28px !important;
+  height: 28px !important;
+}
+.av-panel-compact [class*="-control"],
+.av-panel-compact [class*="__control"] {
+  min-height: 28px !important;
+  height: 28px !important;
+  font-size: 13px !important;
+}
+.av-panel-compact [class*="__value-container"],
+.av-panel-compact [class*="__single-value"],
+.av-panel-compact [class*="__placeholder"] {
+  font-size: 13px !important;
+}

@@ -103,7 +103,7 @@ export function AvailabilityPanel({ onDone }: Props) {
   }, [startsAt, endsAt, kind, note, backupUserId, onDone]);
 
   return (
-    <div style={{ padding: '8px 12px', minWidth: 240 }}>
+    <div className="av-panel-compact" style={{ padding: '8px 12px', minWidth: 240 }}>
       {/* Quick-set section */}
       <div
         style={{
