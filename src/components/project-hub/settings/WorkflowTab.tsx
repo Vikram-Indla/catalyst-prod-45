@@ -10,6 +10,7 @@ import GridIcon from '@atlaskit/icon/core/grid';
 import BoardIcon from '@atlaskit/icon/core/board';
 import Spinner from '@atlaskit/spinner';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 
 interface WorkflowTabProps {
   projectId: string;
@@ -59,13 +60,12 @@ export function WorkflowTab({ projectId: _ }: WorkflowTabProps) {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Button
-            appearance={catyOpen ? 'primary' : 'default'}
-            isSelected={catyOpen}
+          <AIIntelligenceButton
+            label="Ask Caty"
+            isActive={catyOpen}
             onClick={() => setCatyOpen(o => !o)}
-          >
-            ✦ Ask CATY
-          </Button>
+            tooltip="Ask Caty about workflows"
+          />
 
           <div
             style={{

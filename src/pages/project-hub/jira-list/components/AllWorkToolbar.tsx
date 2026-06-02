@@ -83,6 +83,7 @@ import ThumbsDownIconCore from "@atlaskit/icon/core/thumbs-down";
 import InfoIconCore from "@atlaskit/icon/core/information";
 // ListIconCore and SplitIconCore removed — view toggle removed 2026-05-04
 import SparkIconCore from "@atlaskit/icon/core/ai-chat";
+import { AIIntelligenceButton } from "@/components/ui/AIIntelligenceButton";
 /* jira-compare 2026-05-03 cycle 4 (Vikram caught ADS drift): chevron-down
    is glyph-only in this Atlaskit version (CLAUDE.md canonical replacement
    map). Replacing unicode `▾` character with the canonical Atlaskit glyph. */
@@ -1898,15 +1899,11 @@ export function AllWorkToolbar({
       {/* 3. Ask Caty — replaces Jira's "Ask AI". Click → expands to full-width
           AI query bar (mirrors Jira BAU Ask AI probe: full toolbar replacement,
           40px white bar with blue focus border, contextual placeholder). */}
-      <Button
-        appearance="subtle"
-        spacing="compact"
-        iconBefore={SparkIcon}
+      <AIIntelligenceButton
+        label="Ask Caty"
         onClick={() => setAskCatyOpen(true)}
-        testId="catalyst-allwork-toolbar.ask-caty"
-      >
-        Ask Caty
-      </Button>
+        tooltip="Ask Caty about this view"
+      />
 
       {/* 4. Search */}
       <div style={{ flex: "0 1 220px", minWidth: 140 }}>
