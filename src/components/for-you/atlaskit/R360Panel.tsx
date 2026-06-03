@@ -443,7 +443,7 @@ export default function R360Panel() {
         </div>
       ) : null}
 
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', background: token('elevation.surface', '#FFFFFF') }}>
         <R360MemberDetail
           resourceId={activeResourceId}
           embedded
