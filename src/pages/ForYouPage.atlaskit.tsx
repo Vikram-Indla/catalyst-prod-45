@@ -277,8 +277,8 @@ export default function ForYouPageAtlaskit() {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
-        minHeight: '100vh',
+        minHeight: '100%',
+        flex: 1,
         width: '100%',
         background: token('elevation.surface', '#FFFFFF'),
         color: token('color.text', '#292A2E'),
