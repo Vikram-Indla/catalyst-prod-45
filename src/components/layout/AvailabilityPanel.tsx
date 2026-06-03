@@ -7,9 +7,9 @@ import { catalystToast } from '@/lib/catalystToast';
 import type { PresenceState } from '@/lib/presence';
 
 const QUICK_SET: { label: string; state: PresenceState; color: string }[] = [
-  { label: 'Available', state: 'available', color: 'var(--ds-icon-success, #22A06B)' },
-  { label: 'Busy',      state: 'busy',      color: 'var(--ds-icon-danger, #C9372C)'  },
-  { label: 'Away',      state: 'away',      color: 'var(--ds-icon-warning, #E2B203)' },
+  { label: 'Onsite',   state: 'available', color: 'var(--ds-icon-success, #22A06B)' },
+  { label: 'Offsite',  state: 'busy',      color: 'var(--ds-icon-danger, #C9372C)'  },
+  { label: 'Away',     state: 'away',      color: 'var(--ds-icon-warning, #E2B203)' },
 ];
 
 const LEAVE_KIND_LABELS: Record<string, string> = {
