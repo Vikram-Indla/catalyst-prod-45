@@ -26,6 +26,7 @@ import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import { useParams, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useR360Overview, useR360WorkItems } from '@/hooks/useR360';
+import { useAuth } from '@/lib/auth';
 import { computeCarriedFromLabel } from '@/services/r360Service';
 import { R360_DEPT_COLORS } from '@/constants/r360';
 import { initials } from '@/utils/r360Utils';
@@ -129,7 +130,9 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
   const { data: overview, isLoading: overviewLoading } = useR360Overview(resourceId || '');
 
   // Reporting structure — "Reports to" row with inline edit
+  const { user: authUser } = useAuth();
   const profileId = (overview as any)?.profile_id ?? null;
+  const isOwnProfile = !!(authUser?.id && profileId && authUser.id === profileId);
   const { managerName, options: managerOptions, updateManager, isUpdating } = useR360Reporting(profileId);
   const [editingManager, setEditingManager] = useState(false);
   const [pendingManagerId, setPendingManagerId] = useState<string>('');
@@ -572,7 +575,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                     opens the profile/intelligence panel, not a generic AI chat. */}
                 <AIIntelligenceButton
                   label="Ask Caty - Profile"
-                  onClick={() => setAiOpen(true)}
+                  onClick={() => isOwnProfile ? navigate('/profile?tab=caty') : setAiOpen(true)}
                   tooltip="Ask Caty about this profile"
                 />
               </div>

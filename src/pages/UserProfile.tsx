@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,7 +11,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { catalystToast } from '@/lib/catalystToast';
 import { User, Mail, Briefcase, Save, Shield, History } from '@/lib/atlaskit-icons';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useAuth } from '@/lib/auth';
 import { formatDistanceToNow } from 'date-fns';
+import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
+
+const R360ProfileDrawer = lazy(() => import('@/components/r360/R360ProfileDrawer'));
 
 const ROLE_LABELS = {
   admin: 'Admin',
@@ -29,10 +34,15 @@ const ROLE_COLORS: Record<string, LozengeAppearance> = {
 export default function UserProfile() {
   const queryClient = useQueryClient();
   const { role: userAppRole } = useUserRole();
+  const { user: authUser } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
+
+  const initialTab = searchParams.get('tab') === 'caty' ? 1 : 0;
+  const [selectedTab, setSelectedTab] = useState(initialTab);
 
   const { data: user } = useQuery({
     queryKey: ['current-user'],
@@ -73,6 +83,19 @@ export default function UserProfile() {
     enabled: !!user?.id,
   });
 
+  const { data: myResourceId } = useQuery({
+    queryKey: ['my-resource-id', authUser?.id],
+    queryFn: async () => {
+      if (!authUser?.id) return null;
+      const { data } = await typedQuery('resource_inventory')
+        .select('id')
+        .eq('profile_id', authUser.id)
+        .maybeSingle();
+      return data?.id ?? null;
+    },
+    enabled: !!authUser?.id,
+  });
+
   useEffect(() => {
     if (profile) {
       setFullName(profile.full_name || '');
@@ -111,14 +134,30 @@ export default function UserProfile() {
     updateMutation.mutate();
   };
 
+  const handleTabChange = (index: number) => {
+    setSelectedTab(index);
+    if (index === 1) {
+      setSearchParams({ tab: 'caty' }, { replace: true });
+    } else {
+      searchParams.delete('tab');
+      setSearchParams(searchParams, { replace: true });
+    }
+  };
+
   return (
-    <div className="p-8 space-y-6 max-w-4xl mx-auto">
-      <div>
-        <h1 className="text-3xl font-bold">User Profile</h1>
-        <p className="text-muted-foreground">Manage your account settings and preferences</p>
+    <div style={{ padding: 32, maxWidth: 896, margin: '0 auto' }}>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #292A2E)', margin: 0 }}>User profile</h1>
+        <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>Manage your account settings and preferences</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <Tabs id="profile-tabs" onChange={handleTabChange} selected={selectedTab}>
+        <TabList>
+          <Tab>Profile</Tab>
+          <Tab>✦ Ask Caty</Tab>
+        </TabList>
+        <TabPanel>
+      <div className="grid grid-cols-3 gap-6" style={{ marginTop: 24 }}>
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Profile Picture</CardTitle>
@@ -301,6 +340,21 @@ export default function UserProfile() {
           )}
         </CardContent>
       </Card>
+        </TabPanel>
+        <TabPanel>
+          <div style={{ marginTop: 24 }}>
+            {myResourceId ? (
+              <Suspense fallback={<div style={{ padding: 32, textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)' }}>Loading...</div>}>
+                <R360ProfileDrawer resourceId={myResourceId} onClose={() => handleTabChange(0)} />
+              </Suspense>
+            ) : (
+              <div style={{ padding: 32, textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                No R360 profile linked to your account.
+              </div>
+            )}
+          </div>
+        </TabPanel>
+      </Tabs>
     </div>
   );
 }
