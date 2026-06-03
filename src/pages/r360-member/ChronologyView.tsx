@@ -3,6 +3,7 @@
  * Extracted from R360MemberDetail.tsx
  */
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { token } from '@atlaskit/tokens';
 import { ChevronDown } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { getJiraIcon } from '@/components/r360/R360JiraIcons';
@@ -10,10 +11,12 @@ import type { R360WorkItem } from '@/types/r360';
 import { getFromTagClass, getFromTagPrefix } from './helpers';
 import { getChronologyStatusLozengeColors } from './StatusLozenge';
 import { ProjTag, MiniAvatar, CompletedSummaryBar } from './SmallComponents';
+import { QuickSearchInput } from './QuickSearchInput';
 
 export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void; weekStart: Date; weekEnd: Date }) {
   const { isDark } = useTheme();
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set(['__carryover__']));
+  const [quickSearch, setQuickSearch] = useState('');
   const groupRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const carryoverRef = useRef<HTMLDivElement | null>(null);
 
@@ -23,21 +26,31 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
   const yesterdayStr = `${y.getFullYear()}-${String(y.getMonth() + 1).padStart(2, '0')}-${String(y.getDate()).padStart(2, '0')}`;
   const todayLabel = `Today, ${today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
 
+  // Quick search filter — matches key or title
+  const filteredItems = useMemo(() => {
+    const q = quickSearch.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(i =>
+      (i.item_key || '').toLowerCase().includes(q) ||
+      (i.title || '').toLowerCase().includes(q)
+    );
+  }, [items, quickSearch]);
+
   // Separate items with activity vs carryover (no activity this week)
   const weekStartStr = weekStart.toISOString().slice(0, 10);
   const weekEndStr = weekEnd.toISOString().slice(0, 10);
   const carryoverItems = useMemo(() => {
-    return items.filter(item => {
+    return filteredItems.filter(item => {
       if (item.status_category === 'done') return false;
       const updStr = item.updated_at?.slice(0, 10) || '';
       return updStr < weekStartStr || updStr > weekEndStr;
     });
-  }, [items, weekStartStr, weekEndStr]);
+  }, [filteredItems, weekStartStr, weekEndStr]);
 
   const activeItems = useMemo(() => {
     const carryoverIds = new Set(carryoverItems.map(i => i.id));
-    return items.filter(i => !carryoverIds.has(i.id));
-  }, [items, carryoverItems]);
+    return filteredItems.filter(i => !carryoverIds.has(i.id));
+  }, [filteredItems, carryoverItems]);
 
   const groups = useMemo(() => {
     const map = new Map<string, { label: string; items: R360WorkItem[] }>();
@@ -178,6 +191,8 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
 
   return (
     <div className="r3-chrono">
+      <QuickSearchInput value={quickSearch} onChange={setQuickSearch} resultCount={quickSearch.trim() ? filteredItems.length : undefined} totalCount={items.length} />
+
       {/* D-13: Green completed summary bar */}
       <CompletedSummaryBar
         items={items}

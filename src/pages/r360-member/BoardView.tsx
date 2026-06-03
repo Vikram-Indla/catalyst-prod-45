@@ -5,37 +5,51 @@
  * Priority uses text label (no colored dots).
  * Status uses StatusLozenge (token-based).
  */
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { token } from '@atlaskit/tokens';
 import Badge from '@atlaskit/badge';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { R360WorkItem } from '@/types/r360';
 import { StatusLozenge } from './StatusLozenge';
+import { QuickSearchInput } from './QuickSearchInput';
 
 export function BoardView({ items, onSelect, quarterLabel }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void; quarterLabel?: string }) {
+  const [quickSearch, setQuickSearch] = useState('');
+
+  const filteredItems = useMemo(() => {
+    const q = quickSearch.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(i =>
+      (i.item_key || '').toLowerCase().includes(q) ||
+      (i.title || '').toLowerCase().includes(q)
+    );
+  }, [items, quickSearch]);
+
   const columns = useMemo(() => [
     {
       key: 'to_do',
       label: 'To do',
       color: token('color.text.warning', '#974F0C'),
-      items: items.filter(i => i.status_category === 'to_do' || i.status_category === 'blocked'),
+      items: filteredItems.filter(i => i.status_category === 'to_do' || i.status_category === 'blocked'),
     },
     {
       key: 'in_progress',
       label: 'In progress',
       color: token('color.text.information', '#0055CC'),
-      items: items.filter(i => i.status_category === 'in_progress' || i.status_category === 'in_qa'),
+      items: filteredItems.filter(i => i.status_category === 'in_progress' || i.status_category === 'in_qa'),
     },
     {
       key: 'done',
       label: 'Done',
       color: token('color.text.success', '#216E4E'),
-      items: items.filter(i => i.status_category === 'done'),
+      items: filteredItems.filter(i => i.status_category === 'done'),
     },
-  ], [items]);
+  ], [filteredItems]);
 
   return (
     <div>
+      <QuickSearchInput value={quickSearch} onChange={setQuickSearch} resultCount={quickSearch.trim() ? filteredItems.length : undefined} totalCount={items.length} />
+
       {quarterLabel && (
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
