@@ -476,46 +476,7 @@ function FeedSection({
             {label}
           </h4>
         </div>
-        {/* "Ask Caty" digest CTA — opens SummarizeDigestModal with interactive triage.
-            Outlier positioning vs Jira: dynamic count + inline action triage modal.
-            See CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (static rainbow border). */}
-        {onOpenDigest && (
-          <div style={{
-            display: 'inline-flex',
-            padding: 2,
-            borderRadius: 20,
-            background: ASK_CATY_RAINBOW,
-          }}>
-            <button
-              type="button"
-              onClick={onOpenDigest}
-              aria-label={`Ask Caty to summarize ${rows.length} ${rows.length === 1 ? 'item' : 'items'}`}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                height: 28,
-                padding: '0 12px',
-                border: 'none',
-                borderRadius: 18,
-                background: token('elevation.surface', '#FFFFFF'),
-                cursor: 'pointer',
-                color: token('color.text', '#172B4D'),
-                fontFamily: 'var(--cp-font-body, inherit)',
-                fontSize: 12,
-                fontWeight: 600,
-                lineHeight: 1,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = token('elevation.surface.hovered', '#F1F2F4'); }}
-              onMouseLeave={e => { e.currentTarget.style.background = token('elevation.surface', '#FFFFFF'); }}
-            >
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
-                <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" />
-              </svg>
-              Ask Caty — summarize {rows.length}
-            </button>
-          </div>
-        )}
+        {/* "Ask Caty" digest CTA removed 2026-06-03 per Vikram directive. */}
       </div>
       <p
         style={{
