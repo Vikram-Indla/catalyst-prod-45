@@ -3,7 +3,7 @@
  * Shows both archived AND deleted items with who/when/type metadata.
  * Admin-only unarchive control. Items shredded after 12 months.
  */
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { token } from '@atlaskit/tokens';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
@@ -35,6 +35,94 @@ interface ManagedItem {
 }
 
 type TypeFilter = 'all' | 'archived' | 'deleted';
+
+// ─── Project filter dropdown with ProjectIcon per option ─────────────────────
+// Native <select> can't render icons, so this is a self-rolled popover
+// (canonical Catalyst pattern: useRef + mousedown click-outside).
+function ProjectFilterDropdown({ value, options, onChange }: {
+  value: string; options: string[]; onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const allOptions = ['', ...options];
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '6px 8px', borderRadius: 3, fontSize: 14,
+          border: `1px solid ${token('color.border', '#DFE1E6')}`,
+          background: token('color.background.input', '#FAFBFC'),
+          color: token('color.text', '#292A2E'), cursor: 'pointer',
+          minWidth: 160, justifyContent: 'space-between',
+        }}
+      >
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {value && <ProjectIcon projectKey={value} name={value} size="xsmall" />}
+          {value || 'All projects'}
+        </span>
+        <span style={{ fontSize: 10, color: token('color.icon.subtle', '#6B778C') }}>▾</span>
+      </button>
+      {open && (
+        <div
+          role="listbox"
+          style={{
+            position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 9999,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRadius: 8,
+            boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+            minWidth: 200, padding: '4px 0', maxHeight: 320, overflowY: 'auto',
+          }}
+        >
+          {allOptions.map(opt => {
+            const selected = opt === value;
+            return (
+              <button
+                key={opt || '__all'}
+                role="option"
+                aria-selected={selected}
+                type="button"
+                onClick={() => { onChange(opt); setOpen(false); }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+                  padding: '8px 12px', textAlign: 'left', border: 'none', cursor: 'pointer',
+                  fontSize: 14,
+                  background: selected
+                    ? token('color.background.selected', '#E9F2FE')
+                    : 'transparent',
+                  color: selected
+                    ? token('color.text.selected', '#0052CC')
+                    : token('color.text', '#292A2E'),
+                }}
+                onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+                onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+              >
+                {opt
+                  ? <ProjectIcon projectKey={opt} name={opt} size="xsmall" />
+                  : <span style={{ width: 16, display: 'inline-block' }} />}
+                {opt || 'All projects'}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function ArchiveManagerPage() {
   const { role } = useUserRole();
@@ -173,19 +261,11 @@ export default function ArchiveManagerPage() {
             onChange={(e: any) => setSearch(e.target.value)}
           />
         </div>
-        <select
+        <ProjectFilterDropdown
           value={filterProject}
-          onChange={e => setFilterProject(e.target.value)}
-          style={{
-            padding: '6px 8px', borderRadius: 3, fontSize: 14,
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            background: token('color.background.input', '#FAFBFC'),
-            color: token('color.text', '#292A2E'),
-          }}
-        >
-          <option value="">All projects</option>
-          {projects.map(p => <option key={p} value={p}>{p}</option>)}
-        </select>
+          options={projects}
+          onChange={setFilterProject}
+        />
         {/* Type filter tabs */}
         <div style={{ display: 'flex', gap: token('space.050', '4px') }}>
           {([
