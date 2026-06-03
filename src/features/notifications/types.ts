@@ -8,7 +8,9 @@ export type DirectVerb =
   | 'approved'
   | 'reassigned'
   | 'archive'
-  | 'archive_warning';
+  | 'archive_warning'
+  | 'deleted'
+  | 'shredding_warning';
 
 export type DirectWorkItemIconType = 'bug' | 'story' | 'task' | 'epic' | 'incident';
 
