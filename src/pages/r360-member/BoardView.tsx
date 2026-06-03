@@ -143,7 +143,7 @@ export function BoardView({ items, onSelect, quarterLabel }: { items: R360WorkIt
                     marginLeft: 'auto', fontSize: 11,
                     color: item.age_days > 60 ? token('color.text.warning', '#974F0C') : token('color.text.subtlest', '#626F86'),
                   }}>
-                    {item.age_days} days
+                    since {item.age_days}d
                   </span>
                 </div>
 

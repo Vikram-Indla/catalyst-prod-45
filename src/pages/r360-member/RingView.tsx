@@ -318,7 +318,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                       {getJiraIcon(item.item_type)}
                       <span style={{ fontSize: 11, fontWeight: 600, color: T.textInfo(), fontFamily: MONO }}>{item.item_key}</span>
                       <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 5px', borderRadius: 3, background: T.bgNeutral(), color: T.textSubtle() }}>{item.project_key}</span>
-                      <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: item.age_days > 30 ? T.textWarning() : T.textSubtlest(), fontFamily: MONO }}>{item.age_days}d</span>
+                      <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: item.age_days > 30 ? T.textWarning() : T.textSubtlest(), fontFamily: MONO }}>since {item.age_days}d</span>
                     </div>
                     {/* Title */}
                     <div style={{ fontSize: 12, fontWeight: 500, color: T.text(), lineHeight: '1.35', marginBottom: 6 }}>{item.title}</div>
@@ -429,7 +429,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                 {getJiraIcon(item.item_type)}
                 <span style={{ fontSize: 11, fontWeight: 600, color: T.textInfo(), fontFamily: MONO, letterSpacing: '-0.01em' }}>{item.item_key}</span>
                 <span style={{ fontSize: 9, fontWeight: 600, padding: '1px 5px', borderRadius: 3, background: T.bgNeutral(), color: T.textSubtle(), lineHeight: '14px', whiteSpace: 'nowrap' }}>{item.project_key}</span>
-                <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: ageColor, fontFamily: MONO, whiteSpace: 'nowrap' }}>{item.age_days}d</span>
+                <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: ageColor, fontFamily: MONO, whiteSpace: 'nowrap' }}>since {item.age_days}d</span>
               </div>
 
               {/* Row 2 (title): 2-line clamp, 12px/500 ── flex fills remaining space */}
