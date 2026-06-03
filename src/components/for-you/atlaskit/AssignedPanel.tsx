@@ -43,8 +43,8 @@ type CategoryBucket = 'in_progress' | 'to_do' | 'done';
 
 function toBucket(statusCategory?: string, status?: string): CategoryBucket {
   if (isDone(statusCategory, status)) return 'done';
-  const cat = (statusCategory || '').toLowerCase().replace(/[\s_-]/g, '');
-  if (cat === 'indeterminate') return 'in_progress';
+  const cat = (statusCategory || '').toLowerCase().trim();
+  if (cat === 'in progress' || cat === 'indeterminate') return 'in_progress';
   return 'to_do';
 }
 
