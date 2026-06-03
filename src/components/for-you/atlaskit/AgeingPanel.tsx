@@ -451,7 +451,7 @@ export default function AgeingPanel() {
             onChange={(e: any) => setSearch(e.target.value)}
           />
         </div>
-        <Button appearance="subtle" onClick={() => navigate('/profile/archives')}>
+        <Button appearance="default" onClick={() => navigate('/profile/archives')}>
           Archive manager
         </Button>
       </div>
