@@ -391,10 +391,13 @@ export async function getArchivedIssues(filters?: {
   issueType?: string;
   search?: string;
   typeFilter?: 'all' | 'archived' | 'deleted';
+  jiraAccountId?: string;
+  isAdmin?: boolean;
 }): Promise<any[]> {
-  const SELECT_FIELDS = 'issue_key, project_key, summary, issue_type, status, status_category, priority, assignee_display_name, reporter_display_name, jira_created_at, archived_at, archived_by, deleted_at, deleted_by';
+  const SELECT_FIELDS = 'issue_key, project_key, summary, issue_type, status, status_category, priority, assignee_display_name, reporter_display_name, jira_created_at, archived_at, archived_by, deleted_at, deleted_by, assignee_account_id, reporter_account_id';
   const cutoff = new Date(Date.now() - 60 * 86_400_000).toISOString();
   const typeFilter = filters?.typeFilter || 'all';
+  const jiraId = filters?.jiraAccountId;
 
   // Fetch archived items (by age or by archived_at)
   let archivedItems: any[] = [];
@@ -405,6 +408,10 @@ export async function getArchivedIssues(filters?: {
       .or(`archived_at.not.is.null,jira_created_at.lt.${cutoff}`)
       .order('jira_created_at', { ascending: true })
       .limit(200);
+    // Non-admins only see their own items
+    if (jiraId && !filters?.isAdmin) {
+      q = q.or(`assignee_account_id.eq.${jiraId},reporter_account_id.eq.${jiraId}`);
+    }
     if (filters?.projectKey) q = q.eq('project_key', filters.projectKey);
     if (filters?.search) q = q.or(`issue_key.ilike.%${filters.search}%,summary.ilike.%${filters.search}%`);
     const { data } = await q;
@@ -418,6 +425,9 @@ export async function getArchivedIssues(filters?: {
       .not('deleted_at', 'is', null)
       .order('deleted_at', { ascending: false })
       .limit(200);
+    if (jiraId && !filters?.isAdmin) {
+      q = q.or(`assignee_account_id.eq.${jiraId},reporter_account_id.eq.${jiraId}`);
+    }
     if (filters?.projectKey) q = q.eq('project_key', filters.projectKey);
     if (filters?.search) q = q.or(`issue_key.ilike.%${filters.search}%,summary.ilike.%${filters.search}%`);
     const { data } = await q;

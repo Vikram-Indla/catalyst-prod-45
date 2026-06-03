@@ -47,6 +47,14 @@ export default function ArchiveManagerPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [unarchiving, setUnarchiving] = useState<Set<string>>(new Set());
   const [profileMap, setProfileMap] = useState<Record<string, string>>({});
+  const [myJiraId, setMyJiraId] = useState<string | null>(null);
+
+  // Resolve current user's Jira account ID
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase.from('profiles').select('jira_account_id').eq('id', user.id).single()
+      .then(({ data }) => { if (data?.jira_account_id) setMyJiraId(data.jira_account_id); });
+  }, [user?.id]);
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -55,6 +63,8 @@ export default function ArchiveManagerPage() {
         search: search || undefined,
         projectKey: filterProject || undefined,
         typeFilter,
+        jiraAccountId: myJiraId || undefined,
+        isAdmin,
       });
       setItems(data as ManagedItem[]);
 
@@ -76,7 +86,7 @@ export default function ArchiveManagerPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, filterProject, typeFilter]);
+  }, [search, filterProject, typeFilter, myJiraId, isAdmin]);
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
 
