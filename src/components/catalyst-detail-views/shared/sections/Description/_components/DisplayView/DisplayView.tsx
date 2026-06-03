@@ -20,6 +20,11 @@ import {
 } from '@/components/shared/rich-text/atlaskit/adfLightRenderer';
 import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
 import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
+import {
+  injectMentionStyles,
+  markMentionsSelfStatus,
+} from '@/components/shared/rich-text/mentions/mentionStyles';
+import { useAuth } from '@/hooks/useAuth';
 import type { AdfDoc } from '../../utils/adfToTiptap';
 
 interface DisplayViewProps {
@@ -120,11 +125,14 @@ function injectDirectionStyles() {
 
 export function DisplayView({ adf, issueKey }: DisplayViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const currentUserId = user?.id ?? null;
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     injectDirectionStyles();
+    injectMentionStyles();
     const widths = extractTableWidths(adf);
 
     const apply = () => {
@@ -147,6 +155,9 @@ export function DisplayView({ adf, issueKey }: DisplayViewProps) {
       // borders to the correct side even when Atlaskit's heavy
       // renderer is in use.
       applyDirectionToTree(container);
+      // Stamp current-user vs other-user mentions for the
+      // two-tone chip styling.
+      markMentionsSelfStatus(container, currentUserId);
     };
 
     apply();
@@ -155,7 +166,7 @@ export function DisplayView({ adf, issueKey }: DisplayViewProps) {
     const observer = new MutationObserver(apply);
     observer.observe(container, { childList: true, subtree: true });
     return () => observer.disconnect();
-  }, [adf]);
+  }, [adf, currentUserId]);
 
   const isComplex = hasComplexAdfNodes(adf as unknown);
   return (

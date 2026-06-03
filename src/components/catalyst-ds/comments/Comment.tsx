@@ -8,6 +8,11 @@ import {
   hasComplexAdfNodes,
 } from '@/components/shared/rich-text/atlaskit/adfLightRenderer';
 import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
+import {
+  injectMentionStyles,
+  markMentionsSelfStatus,
+} from '@/components/shared/rich-text/mentions/mentionStyles';
+import { useAuth } from '@/hooks/useAuth';
 
 // ─── Per-block direction detection for read mode ─────────────────────
 //
@@ -148,36 +153,26 @@ function renderContent(content: string): React.ReactNode {
       );
     } else if (match.startsWith('@[')) {
       const name = m[3] ?? '';
+      // Extract the id portion from `@[Name](id)` so the runtime
+      // walker can stamp self vs other classes on this chip.
+      const idMatch = /^@\[[^\]]+\]\(([^)]+)\)$/.exec(match);
+      const mentionId = idMatch?.[1] ?? '';
       nodes.push(
         <span
           key={key++}
-          style={{
-            display: 'inline-block',
-            background: 'var(--ds-background-information, #E9F2FF)',
-            color: 'var(--ds-text-brand, #0C66E4)',
-            borderRadius: 3,
-            padding: '0 4px',
-            fontSize: '0.9em',
-            fontWeight: 500,
-          }}
+          data-mention-id={mentionId}
+          style={{ display: 'inline-block', fontSize: '0.9em' }}
         >
           @{name}
         </span>
       );
     } else {
-      // Plain @word mention
+      // Plain @word mention — no id, so always renders as other-user.
       nodes.push(
         <span
           key={key++}
-          style={{
-            display: 'inline-block',
-            background: 'var(--ds-background-information, #E9F2FF)',
-            color: 'var(--ds-text-brand, #0C66E4)',
-            borderRadius: 3,
-            padding: '0 4px',
-            fontSize: '0.9em',
-            fontWeight: 500,
-          }}
+          data-mention-id=""
+          style={{ display: 'inline-block', fontSize: '0.9em' }}
         >
           {match}
         </span>
@@ -199,16 +194,22 @@ function renderContent(content: string): React.ReactNode {
  */
 function CommentBody({ content }: { content: string }) {
   const ref = React.useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const currentUserId = user?.id ?? null;
   React.useEffect(() => {
     const root = ref.current;
     if (!root) return;
     injectCommentDirectionStyles();
-    const apply = () => applyCommentDirection(root);
+    injectMentionStyles();
+    const apply = () => {
+      applyCommentDirection(root);
+      markMentionsSelfStatus(root, currentUserId);
+    };
     apply();
     const observer = new MutationObserver(apply);
     observer.observe(root, { childList: true, subtree: true });
     return () => observer.disconnect();
-  }, [content]);
+  }, [content, currentUserId]);
   return (
     <div
       ref={ref}

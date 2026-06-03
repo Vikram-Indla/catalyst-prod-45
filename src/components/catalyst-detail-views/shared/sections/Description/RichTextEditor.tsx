@@ -52,6 +52,11 @@ import type {
 import { type AdfDoc, type TiptapDoc } from './utils/adfToTiptap';
 import { tiptapToAdf } from './utils/tiptapToAdf';
 import type { SlashCommand } from './data/slashCommands';
+import {
+  injectMentionStyles,
+  markMentionsSelfStatus,
+} from '@/components/shared/rich-text/mentions/mentionStyles';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface RichTextEditorProps {
   initialAdf: AdfDoc | null;
@@ -159,6 +164,26 @@ export function RichTextEditor({
     onEditorReady?.(editor ?? null);
     return () => onEditorReady?.(null);
   }, [editor, onEditorReady]);
+
+  // Two-tone mention chips: stamp `data-mention-self` on the
+  // current user's mentions after every transaction so the global
+  // mention CSS paints them in the brand color instead of the
+  // default subtle gray.
+  const { user } = useAuth();
+  const currentUserId = user?.id ?? null;
+  useEffect(() => {
+    if (!editor) return;
+    injectMentionStyles();
+    const root = editor.view.dom as HTMLElement;
+    const apply = () => markMentionsSelfStatus(root, currentUserId);
+    apply();
+    editor.on('update', apply);
+    editor.on('transaction', apply);
+    return () => {
+      editor.off('update', apply);
+      editor.off('transaction', apply);
+    };
+  }, [editor, currentUserId]);
 
   // ── Voice-to-text language detection ──
   const editorRootRef = useRef<HTMLDivElement | null>(null);
