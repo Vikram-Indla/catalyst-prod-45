@@ -164,6 +164,8 @@ const CatyFabPlaceholderLazy = ENABLE_AI ? lazy(() => import("../components/caty
 const QAAssistantFabLazy = ENABLE_AI ? lazy(() => import("../components/testhub-ai").then(m => ({ default: m.QAAssistantFab }))) : () => null;
 const KnowledgeAssistFabLazy = ENABLE_AI ? lazy(() => import("../components/kb/KAFab").then(m => ({ default: m.KAFab }))) : () => null;
 
+const ChatPageLazy = lazy(() => import("../pages/chat/ChatPage"));
+const ChatDockMountLazy = lazy(() => import("../components/chat/ChatDockMount"));
 const TeamRoutesShell = lazy(() => import("../routes/TeamRoutesShell").then(m => ({ default: m.TeamRoutes })));
 const TeamsRoutesShell = lazy(() => import("../routes/TeamRoutesShell").then(m => ({ default: m.TeamsRoutes })));
 const PortfolioRoutesShell = lazy(() => import("../routes/PortfolioRoutesShell").then(m => ({ default: m.PortfolioRoutes })));
@@ -459,6 +461,14 @@ function KnowledgeAssistFabRouteGuard() {
   return <Suspense fallback={null}><KnowledgeAssistFabLazy /></Suspense>;
 }
 
+function ChatDockRouteGuard() {
+  const location = useLocation();
+  // Always-on chat dock for authenticated users. Hidden on the full-page chat
+  // surface (redundant there) and on auth screens.
+  if (location.pathname.startsWith('/chat') || location.pathname.startsWith('/auth')) return null;
+  return <Suspense fallback={null}><ChatDockMountLazy /></Suspense>;
+}
+
 export default function FullAppRoutes() {
   return (
     <>
@@ -466,6 +476,7 @@ export default function FullAppRoutes() {
         <Route path="/kb-admin-setup" element={<S><KBAdminSetup /></S>} />
         <Route path="/kb-admin" element={<Navigate to="/admin/kb" replace />} />
         <Route path="/kb-data-audit" element={<S><KBDataAuditPage /></S>} />
+        <Route path="/chat" element={<S><ChatPageLazy /></S>} />
         
         <Route path="/work-hub-test" element={<S><WorkHubLayout /></S>}>
           <Route index element={<Navigate to="summary" replace />} />
@@ -1001,6 +1012,7 @@ export default function FullAppRoutes() {
       <CatyWidgetRouteGuard />
       <QAAssistantRouteGuard />
       <KnowledgeAssistFabRouteGuard />
+      <ChatDockRouteGuard />
     </>
   );
 }
