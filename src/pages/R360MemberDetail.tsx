@@ -649,7 +649,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
               {view === 'ring' && (
                 <div style={{ position: 'relative' }}>
                   <div style={effectiveState === 'on_leave' ? { opacity: 0.45, filter: 'grayscale(25%)', pointerEvents: 'none', userSelect: 'none' } : undefined}>
-                    <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={embedded ? (item) => useGlobalSearchStore.getState().openDetail({ id: item.item_key }) : setSelectedItem} selected={selectedItem} overview={overview} onAvatarClick={() => setAiOpen(true)} />
+                    <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={embedded ? (item) => useGlobalSearchStore.getState().openDetail({ id: item.item_key }) : setSelectedItem} selected={selectedItem} overview={overview} onAvatarClick={() => setAiOpen(true)} presenceState={effectiveState as any} />
                   </div>
                   {effectiveState === 'on_leave' && (
                     <div style={{

@@ -20,6 +20,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { PresenceRing } from '@/components/shared/PresenceRing';
+import type { PresenceState } from '@/lib/presence';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useMyR360ResourceId, useTeamResourceIds } from '@/hooks/useR360PanelData';
 import { useAuth } from '@/lib/auth';
@@ -95,7 +97,7 @@ function SidebarMemberRow({
         textAlign: 'left' as const,
       }}
     >
-      <CatalystAvatar name={name} src={avatarUrl ?? null} size="small" />
+      <PresenceRing name={name} src={avatarUrl ?? null} size="small" state={presenceState as PresenceState | undefined} />
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
@@ -442,7 +444,12 @@ export default function R360Panel() {
       ) : null}
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <R360MemberDetail resourceId={activeResourceId} embedded />
+        <R360MemberDetail
+          resourceId={activeResourceId}
+          embedded
+          effectiveState={selectedId ? pulseMap.get(filteredTeam.find(r => r.id === selectedId)?.profile_id ?? '')?.state : undefined}
+          backOn={selectedId ? pulseMap.get(filteredTeam.find(r => r.id === selectedId)?.profile_id ?? '')?.backOn : undefined}
+        />
       </div>
     </div>
   );
