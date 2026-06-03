@@ -64,15 +64,17 @@ interface ForYouTabsProps {
   activeTab: TabType;
   tabCounts: Record<TabType, number>;
   onChange: (tab: TabType) => void;
+  /** Override the default tab strip. Used to inject role-gated tabs (e.g. Team Pulse). */
+  tabs?: ForYouTabDefinition[];
 }
 
-export default function ForYouTabs({ activeTab, tabCounts, onChange }: ForYouTabsProps) {
+export default function ForYouTabs({ activeTab, tabCounts, onChange, tabs }: ForYouTabsProps) {
   // Ageing count is owned by the shared useAgeingItems hook — same source
   // of truth the Ageing panel itself renders from. Resolved here so the
   // pill badge stays in lockstep with panel content without plumbing the
   // count back through useForYouData.
   const ageingCount = useAgeingCount();
-  const visibleTabs = FOR_YOU_TAB_ORDER;
+  const visibleTabs = tabs ?? FOR_YOU_TAB_ORDER;
 
   // WAI-ARIA tab pattern: ArrowLeft/Right navigate and select within the strip.
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {

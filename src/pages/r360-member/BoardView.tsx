@@ -97,7 +97,7 @@ export function BoardView({ items, onSelect, quarterLabel }: { items: R360WorkIt
               <div style={{
                 padding: '24px 16px', textAlign: 'center',
                 fontSize: 12, color: token('color.text.subtlest', '#626F86'),
-                border: `1px dashed ${token('color.border', '#091E4224')}`,
+                border: `1px dashed ${token('color.border', '#DFE1E6')}`,
                 borderRadius: 8,
               }}>
                 {col.key === 'done' ? 'No completed items this period' : 'Nothing here'}
@@ -108,22 +108,26 @@ export function BoardView({ items, onSelect, quarterLabel }: { items: R360WorkIt
                 key={item.id}
                 onClick={() => onSelect(item)}
                 style={{
-                  background: 'transparent',
-                  border: `1px solid ${token('color.border', '#091E4224')}`,
+                  background: token('elevation.surface.raised', '#FFFFFF'),
+                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
                   borderRadius: 8,
                   padding: 12,
                   cursor: 'pointer',
-                  transition: 'box-shadow 150ms cubic-bezier(0.2, 0, 0, 1), border-color 150ms cubic-bezier(0.2, 0, 0, 1)',
+                  transition: 'all 200ms cubic-bezier(0.2, 0, 0, 1)',
                 }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.background = token('elevation.surface.hovered', 'rgba(9,30,66,0.04)');
-                  (e.currentTarget as HTMLElement).style.boxShadow = token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.25), 0 0 1px 0 rgba(9,30,66,0.31)');
-                  (e.currentTarget as HTMLElement).style.borderColor = token('color.border', 'rgba(11,18,14,0.2)');
+                  const el = e.currentTarget as HTMLElement;
+                  el.style.background = token('elevation.surface.hovered', 'rgba(9,30,66,0.04)');
+                  el.style.boxShadow = token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.25), 0 0 1px 0 rgba(9,30,66,0.31)');
+                  el.style.borderColor = token('color.border.focused', '#388BFF');
+                  el.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.background = 'transparent';
-                  (e.currentTarget as HTMLElement).style.boxShadow = 'none';
-                  (e.currentTarget as HTMLElement).style.borderColor = token('color.border', '#091E4224');
+                  const el = e.currentTarget as HTMLElement;
+                  el.style.background = token('elevation.surface.raised', '#FFFFFF');
+                  el.style.boxShadow = 'none';
+                  el.style.borderColor = token('color.border', '#DFE1E6');
+                  el.style.transform = 'none';
                 }}
               >
                 {/* Row 1: Type icon + key + age as subtle text */}

@@ -42,7 +42,7 @@ import { token } from '@atlaskit/tokens';
 import { useAuth } from '@/lib/auth';
 import { useForYouData, type TabType, type WorkItem } from '@/hooks/useForYouData';
 import RecommendedProjectsStrip from '@/components/for-you/atlaskit/RecommendedProjectsStrip';
-import ForYouTabs, { FOR_YOU_TAB_KEY } from '@/components/for-you/atlaskit/ForYouTabs';
+import ForYouTabs, { FOR_YOU_TAB_KEY, FOR_YOU_TAB_ORDER, type ForYouTabDefinition } from '@/components/for-you/atlaskit/ForYouTabs';
 import RecommendedPanel from '@/components/for-you/atlaskit/RecommendedPanel';
 import AssignedPanel from '@/components/for-you/atlaskit/AssignedPanel';
 import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
@@ -85,6 +85,8 @@ function isBusinessRequest(item: WorkItem | null | undefined): boolean {
   return BUSINESS_REQUEST_TYPES.has(String(item.issueType || '').trim());
 }
 
+
+
 export default function ForYouPageAtlaskit() {
   const { user: authUser, loading: authLoading } = useAuth();
   // Don't start data fetching until auth is fully established
@@ -125,9 +127,6 @@ export default function ForYouPageAtlaskit() {
       } else if (stored === 'worked' || stored === 'viewed') {
         initialStoredTabRef.current = 'recommended';
         localStorage.setItem(FOR_YOU_TAB_KEY, 'recommended');
-      } else if (stored === 'team-pulse') {
-        initialStoredTabRef.current = 'r360';
-        localStorage.setItem(FOR_YOU_TAB_KEY, 'r360');
       } else if (stored) {
         initialStoredTabRef.current = stored as TabType;
       } else {
@@ -142,7 +141,16 @@ export default function ForYouPageAtlaskit() {
   const { tab: urlTab } = useParams<{ tab?: string }>();
   const navigate = useNavigate();
 
-  const VALID_TABS: Set<string> = useMemo(() => new Set(['ai-theme', 'recommended', 'assigned', 'starred', 'r360', 'ageing', 'board', 'timeline']), []);
+  // Build the visible tab strip — Team Pulse appended for leads/admins only.
+  const visibleTabs = useMemo<ForYouTabDefinition[]>(
+    () => FOR_YOU_TAB_ORDER,
+    [],
+  );
+
+  const VALID_TABS: Set<string> = useMemo(
+    () => new Set(['ai-theme', 'recommended', 'assigned', 'starred', 'r360', 'ageing', 'board', 'timeline']),
+    [],
+  );
 
   // useLayoutEffect runs before paint — applies the stored tab to the hook
   // state before the user sees any UI. URL param takes precedence over localStorage.
@@ -318,6 +326,7 @@ export default function ForYouPageAtlaskit() {
           activeTab={activeTab}
           tabCounts={tabCounts}
           onChange={handleTabChange}
+          tabs={visibleTabs}
         />
       </div>
 

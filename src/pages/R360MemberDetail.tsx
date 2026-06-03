@@ -37,6 +37,7 @@ import { useTheme } from '@/hooks/useTheme';
 import '@/styles/r360.css';
 import '@/components/resource360/r360-member.css';
 import R360ProfileDrawer from '@/components/r360/R360ProfileDrawer';
+import R360SummarizeDrawer from '@/components/r360/R360SummarizeDrawer';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
@@ -127,6 +128,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<R360WorkItem | null>(null);
   const [aiOpen, setAiOpen] = useState(() => searchParams.get('intel') === 'true');
+  const [summarizeOpen, setSummarizeOpen] = useState(false);
   const [ticketListMode, setTicketListMode] = useState<'open' | 'stale' | null>(null);
 
   // R360 Profile Drawer removed — intelligence icon now opens AIIntelligencePanel directly
@@ -357,7 +359,8 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
       <div id="r360-root" data-r360-page-content style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden' }}>
         <div className="r3-page" style={{ background: token('elevation.surface', '#FFFFFF'), height: '100%', overflow: 'auto', paddingTop: '8px' }}>
           {/* ── Sticky Header: Profile + Week Nav ── */}
-          <div style={{ position: 'sticky', top: 0, zIndex: 10, background: token('elevation.surface', '#FFFFFF'), ...(embedded ? { display: 'none' } : {}) }}>
+          <div style={{ position: 'sticky', top: 0, zIndex: 10, background: token('elevation.surface', '#FFFFFF') }}>
+            {!embedded && (<>
             {/* ── Profile Header ── */}
             <div className="r3-profile">
               <div className="r3-profile-top">
@@ -580,8 +583,14 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                   onClick={() => setAiOpen(true)}
                   tooltip="Ask Caty about this profile"
                 />
+                <AIIntelligenceButton
+                  label="Ask Caty - Summarize"
+                  onClick={() => setSummarizeOpen(true)}
+                  tooltip="Summarize all work for this resource"
+                />
               </div>
             </div>
+            </>)}
 
             {/* ── Period Navigation — V12 Redesign ── */}
             <WeekStripCollapsible
@@ -640,7 +649,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
               {view === 'ring' && (
                 <div style={{ position: 'relative' }}>
                   <div style={effectiveState === 'on_leave' ? { opacity: 0.45, filter: 'grayscale(25%)', pointerEvents: 'none', userSelect: 'none' } : undefined}>
-                    <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} overview={overview} onAvatarClick={() => setAiOpen(true)} />
+                    <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={embedded ? (item) => useGlobalSearchStore.getState().openDetail({ id: item.item_key }) : setSelectedItem} selected={selectedItem} overview={overview} onAvatarClick={() => setAiOpen(true)} />
                   </div>
                   {effectiveState === 'on_leave' && (
                     <div style={{
@@ -719,6 +728,40 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
             }}
           >
             <R360ProfileDrawer resourceId={resourceId} onClose={() => setAiOpen(false)} />
+          </div>
+        </>,
+        document.body
+      )}
+
+      {/* Ask Caty — Summarize Drawer */}
+      {summarizeOpen && resourceId && createPortal(
+        <>
+          <div
+            onClick={() => setSummarizeOpen(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              top: 48,
+              backgroundColor: 'rgba(0, 0, 0, 0.15)',
+              zIndex: 300,
+            }}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              top: 48,
+              right: 0,
+              width: 700,
+              height: 'calc(100vh - 48px)',
+              backgroundColor: token('elevation.surface.overlay', '#FFFFFF'),
+              zIndex: 301,
+              overflowY: 'auto',
+              boxShadow: token('elevation.shadow.overlay', 'none'),
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <R360SummarizeDrawer resourceId={resourceId} onClose={() => setSummarizeOpen(false)} />
           </div>
         </>,
         document.body

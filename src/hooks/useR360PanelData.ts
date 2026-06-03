@@ -38,6 +38,7 @@ export function useMyR360ResourceId() {
 
 export interface TeamResourceEntry {
   id: string;        // resource_inventory.id — passed to R360MemberDetail
+  profile_id: string; // profiles.id = auth user_id — for presence matching
   name: string;
   role_name: string | null;
   avatar_url: string | null;
@@ -53,7 +54,7 @@ export function useTeamResourceIds(myProfileId: string | null | undefined) {
       // auth user (profile_id set), excluding the current user's own entry.
       // Sorted by name for a stable sidebar order.
       const { data: resources } = await typedQuery('resource_inventory')
-        .select('id, name, role_name, avatar_url')
+        .select('id, profile_id, name, role_name, avatar_url')
         .eq('is_active', true)
         .not('profile_id', 'is', null)
         .neq('profile_id', myProfileId)
@@ -69,6 +70,7 @@ export function useTeamResourceIds(myProfileId: string | null | undefined) {
         })
         .map(r => ({
           id:         r.id         as string,
+          profile_id: r.profile_id as string,
           name:       r.name       as string,
           role_name:  r.role_name  as string | null,
           avatar_url: r.avatar_url as string | null,
