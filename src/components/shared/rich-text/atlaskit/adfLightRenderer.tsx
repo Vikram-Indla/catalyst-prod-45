@@ -133,19 +133,57 @@ function renderInline(node: AdfNode, index: number): React.ReactNode {
   return <React.Fragment key={key}>{node.text ?? ''}</React.Fragment>;
 }
 
+// ─── Direction detection ────────────────────────────────────────────────
+//
+// Mirrors the editor's `AutoDirection` extension so read mode flips
+// bullets / numbering / blockquote borders / panel icons to the same
+// inline-end side that edit mode shows. First an explicit `dir` attr
+// on the node wins (set by translation / AutoDirection at write time);
+// otherwise we run the same first-strong-character algorithm browsers
+// use for `dir='auto'`.
+
+const ARABIC_DIR_RE =
+  /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/;
+const LATIN_DIR_RE = /[A-Za-z]/;
+
+function collectNodeText(node: AdfNode): string {
+  if (typeof node.text === 'string') return node.text;
+  if (!node.content) return '';
+  let out = '';
+  for (const c of node.content) out += collectNodeText(c);
+  return out;
+}
+
+function blockDir(node: AdfNode): 'rtl' | 'ltr' | undefined {
+  const explicit = node.attrs?.dir;
+  if (explicit === 'rtl' || explicit === 'ltr') return explicit;
+  const text = collectNodeText(node);
+  for (const ch of text) {
+    if (ARABIC_DIR_RE.test(ch)) return 'rtl';
+    if (LATIN_DIR_RE.test(ch)) return 'ltr';
+  }
+  return undefined;
+}
+
 // ─── Block content ───────────────────────────────────────────────────────
 
 function renderBlock(node: AdfNode, index: number): React.ReactNode {
   const key = `block-${index}`;
   const inline = (node.content ?? []).map((c, i) => renderInline(c, i));
+  const dir = blockDir(node);
 
   switch (node.type) {
     case 'paragraph':
       return (
-        <p key={key} style={{
-          margin: '0 0 8px', fontWeight: 400,
-          unicodeBidi: 'plaintext',
-        }}>
+        <p
+          key={key}
+          dir={dir}
+          style={{
+            margin: '0 0 8px',
+            fontWeight: 400,
+            unicodeBidi: 'plaintext',
+          }}
+        >
           {inline}
         </p>
       );
@@ -162,6 +200,7 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
         `h${level}`,
         {
           key,
+          dir,
           style: {
             fontSize: sizes[level] ?? '14px',
             fontWeight: weights[level] ?? 600,
@@ -177,28 +216,56 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
 
     case 'bulletList':
       return (
-        <ul key={key} style={{ margin: '4px 0 8px', paddingLeft: 24, listStyleType: 'disc' }}>
+        <ul
+          key={key}
+          dir={dir}
+          style={{
+            margin: '4px 0 8px',
+            paddingInlineStart: 24,
+            listStyleType: 'disc',
+          }}
+        >
           {(node.content ?? []).map((item, i) => renderBlock(item, i))}
         </ul>
       );
 
     case 'orderedList':
       return (
-        <ol key={key} style={{ margin: '4px 0 8px', paddingLeft: 24, listStyleType: 'decimal' }}>
+        <ol
+          key={key}
+          dir={dir}
+          style={{
+            margin: '4px 0 8px',
+            paddingInlineStart: 24,
+            listStyleType: 'decimal',
+          }}
+        >
           {(node.content ?? []).map((item, i) => renderBlock(item, i))}
         </ol>
       );
 
     case 'listItem':
       return (
-        <li key={key} style={{ marginBottom: 4, unicodeBidi: 'plaintext' }}>
+        <li
+          key={key}
+          dir={dir}
+          style={{ marginBottom: 4, unicodeBidi: 'plaintext' }}
+        >
           {(node.content ?? []).map((c, i) => renderBlock(c, i))}
         </li>
       );
 
     case 'taskList':
       return (
-        <ul key={key} style={{ margin: '4px 0 8px', paddingLeft: 24, listStyle: 'none' }}>
+        <ul
+          key={key}
+          dir={dir}
+          style={{
+            margin: '4px 0 8px',
+            paddingInlineStart: 24,
+            listStyle: 'none',
+          }}
+        >
           {(node.content ?? []).map((item, i) => renderBlock(item, i))}
         </ul>
       );
@@ -206,7 +273,16 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
     case 'taskItem': {
       const done = node.attrs?.state === 'DONE';
       return (
-        <li key={key} style={{ display: 'flex', gap: 8, marginBottom: 4, alignItems: 'flex-start' }}>
+        <li
+          key={key}
+          dir={dir}
+          style={{
+            display: 'flex',
+            gap: 8,
+            marginBottom: 4,
+            alignItems: 'flex-start',
+          }}
+        >
           <input type="checkbox" readOnly checked={done} style={{ marginTop: 3 }} />
           <span style={{ flex: 1, unicodeBidi: 'plaintext' }}>
             {(node.content ?? []).map((c, i) => renderInline(c, i))}
@@ -217,11 +293,16 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
 
     case 'blockquote':
       return (
-        <blockquote key={key} style={{
-          borderLeft: `2px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
-          padding: '8px 12px', margin: '8px 0',
-          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-        }}>
+        <blockquote
+          key={key}
+          dir={dir}
+          style={{
+            borderInlineStart: `2px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+            padding: '8px 12px',
+            margin: '8px 0',
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+          }}
+        >
           {(node.content ?? []).map((c, i) => renderBlock(c, i))}
         </blockquote>
       );
@@ -263,12 +344,19 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
       };
       const style = panelStyles[panelType] ?? panelStyles.info;
       return (
-        <div key={key} style={{
-          display: 'flex', gap: 8, padding: '10px 12px',
-          background: style.bg,
-          border: `1px solid ${style.border}`,
-          borderRadius: 4, margin: '8px 0',
-        }}>
+        <div
+          key={key}
+          dir={dir}
+          style={{
+            display: 'flex',
+            gap: 8,
+            padding: '10px 12px',
+            background: style.bg,
+            border: `1px solid ${style.border}`,
+            borderRadius: 4,
+            margin: '8px 0',
+          }}
+        >
           <span style={{ flexShrink: 0, fontSize: 14, lineHeight: '24px' }} aria-hidden="true">{style.icon}</span>
           <div style={{ flex: 1 }}>
             {(node.content ?? []).map((c, i) => renderBlock(c, i))}
@@ -301,25 +389,35 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
 
     case 'tableHeader':
       return (
-        <th key={key} style={{
-          border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
-          padding: '6px 10px', textAlign: 'left',
-          background: token('elevation.surface.sunken', '#F7F8F9'),
-          fontWeight: 600, fontSize: 12,
-          color: token('color.text', 'rgb(41,42,46)'),
-        }}>
+        <th
+          key={key}
+          dir={dir}
+          style={{
+            border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+            padding: '6px 10px',
+            textAlign: 'start',
+            background: token('elevation.surface.sunken', '#F7F8F9'),
+            fontWeight: 600,
+            fontSize: 12,
+            color: token('color.text', 'rgb(41,42,46)'),
+          }}
+        >
           {(node.content ?? []).map((c, i) => renderBlock(c, i))}
         </th>
       );
 
     case 'tableCell':
       return (
-        <td key={key} style={{
-          border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
-          padding: '6px 10px',
-          verticalAlign: 'top',
-          color: token('color.text', 'rgb(41,42,46)'),
-        }}>
+        <td
+          key={key}
+          dir={dir}
+          style={{
+            border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+            padding: '6px 10px',
+            verticalAlign: 'top',
+            color: token('color.text', 'rgb(41,42,46)'),
+          }}
+        >
           {(node.content ?? []).map((c, i) => renderBlock(c, i))}
         </td>
       );
@@ -327,7 +425,11 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
     default:
       // Unknown block — render children as inline fallback
       return (
-        <p key={key} style={{ margin: '0 0 8px', unicodeBidi: 'plaintext' }}>
+        <p
+          key={key}
+          dir={dir}
+          style={{ margin: '0 0 8px', unicodeBidi: 'plaintext' }}
+        >
           {(node.content ?? []).map((c, i) => renderInline(c, i))}
         </p>
       );

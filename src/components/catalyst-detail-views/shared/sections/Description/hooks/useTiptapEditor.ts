@@ -381,6 +381,8 @@ import { SelectionDragCursor } from '../extensions/SelectionDragCursor';
 import { TableSelection } from '../extensions/TableSelection';
 import { TableShortcuts } from '../extensions/TableShortcuts';
 import { CodeBlockHighlight } from '../extensions/CodeBlockHighlight';
+import { Direction } from '../extensions/Direction';
+import { AutoDirection } from '../extensions/AutoDirection';
 import type { AdfDoc, TiptapDoc } from '../utils/adfToTiptap';
 import { adfToTiptap } from '../utils/adfToTiptap';
 
@@ -490,6 +492,8 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
         TableSelection,
         TableShortcuts,
         CodeBlockHighlight,
+        Direction,
+        AutoDirection,
       ],
       content: adfToTiptap(options.initialAdf),
       editable: options.editable ?? true,
