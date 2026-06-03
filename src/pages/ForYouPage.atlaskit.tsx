@@ -332,6 +332,8 @@ export default function ForYouPageAtlaskit() {
           flex: 1,
           minHeight: 0,
           overflowY: isR360Active ? 'auto' : 'visible',
+          position: 'relative',
+          zIndex: 0,
         }}
       >
         {panel}
