@@ -146,7 +146,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
             </span>
           </div>
           <span style={{ fontSize: 11, fontWeight: 400, color: item.age_days > 60 ? 'var(--ds-text-warning, #974F0C)' : 'var(--ds-text-subtlest, #626F86)', whiteSpace: 'nowrap' }}>
-            since {item.age_days}d
+            since {item.age_days} days
           </span>
         </div>
       </div>
