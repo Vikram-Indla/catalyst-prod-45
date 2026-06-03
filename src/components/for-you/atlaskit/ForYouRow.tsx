@@ -251,13 +251,11 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             {item.key}
           </span>
           {!hideProject && (
-            // Project name uses `color.text.subtlest` — one tier below the key.
-            // Earlier both spans were `color.text.subtle`, flattening hierarchy.
             <Tooltip content={item.project}>
               <span
                 style={{
-                  font: `400 12px/16px "Inter", system-ui, sans-serif`,
-                  color: token('color.text.subtlest', '#626F86'),
+                  font: `500 12px/16px "Inter", system-ui, sans-serif`,
+                  color: token('color.link', '#0052CC'),
                   maxWidth: 180,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
