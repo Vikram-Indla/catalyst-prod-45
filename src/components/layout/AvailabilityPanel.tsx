@@ -8,7 +8,7 @@ import type { PresenceState } from '@/lib/presence';
 
 const QUICK_SET: { label: string; state: PresenceState; color: string }[] = [
   { label: 'Onsite',   state: 'available', color: 'var(--ds-icon-success, #22A06B)' },
-  { label: 'Remote',   state: 'busy',      color: 'var(--ds-icon-danger, #C9372C)'  },
+  { label: 'Remote',   state: 'busy',      color: 'var(--ds-icon-information, #1D7AFC)' },
   { label: 'Away',     state: 'away',      color: 'var(--ds-icon-warning, #E2B203)' },
 ];
 
