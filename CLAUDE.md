@@ -1513,3 +1513,20 @@ CREATE POLICY "Members can view comments" ON ph_comments
 **Rule:** When a `ph_comments`-style anchor table is non-PII and its reactions table already uses `USING (true)`, match both policies for consistency — divergent USING clauses between a parent row and its child table create hidden multi-user failure modes. The ownership short-circuit (`author_id = auth.uid()`) is the right first step but is never the final step for tables where multiple users react to the same anchor. Before calling an RLS fix "done", test with a SECOND authenticated user — single-user smoke tests miss the INSERT+RETURNING UNIQUE collision entirely.
 
 **Severity:** P1 (the `author_id` partial fix resolved the author's own reactions but left every other user's reactions silently broken)
+
+---
+
+## 2026-06-03 — RLS membership policies must NEVER self-reference their own table inline; use a SECURITY DEFINER helper
+**Surface:** Catalyst Chat — `chat_conversations` / `chat_conversation_members` / `chat_messages` RLS (Phase-0 chat engine, branch `Products-chat-engine-01`)
+**Pattern:** The chat membership/visibility policies checked membership with an inline subquery against `chat_conversation_members` from WITHIN a policy on that same table (and from policies on `chat_messages` / `chat_conversations` that also read it). Postgres evaluated the members policy to read members, which re-invoked the members policy → `ERROR: 42P17: infinite recursion detected in policy for relation "chat_conversation_members"`. Every chat read errored. A single-user smoke test would not surface this cleanly; the 2-user RLS isolation test (simulating each user via `SET LOCAL ROLE authenticated; SET LOCAL "request.jwt.claims" = '{"sub":"<uuid>"}'`) reproduced it immediately, then proved the fix (non-member sees 0, member sees 1).
+**Rule:** Any RLS policy whose USING/WITH CHECK needs to test "is the current user a member of this conversation/row-group" MUST route that check through a `SECURITY DEFINER` helper function, never an inline `EXISTS (SELECT ... FROM the_same_or_membership_table ...)`. Canonical pattern:
+```sql
+CREATE OR REPLACE FUNCTION public.<entity>_is_member(grp uuid, uid uuid)
+RETURNS boolean LANGUAGE sql SECURITY DEFINER STABLE SET search_path = public AS $$
+  SELECT EXISTS (SELECT 1 FROM public.<membership_table> m
+                 WHERE m.<group_col> = grp AND m.user_id = uid);
+$$;
+```
+The function owner is not subject to RLS (no FORCE ROW LEVEL SECURITY), so its internal read bypasses the policy and breaks the cycle. Keep the `author_id = auth.uid()` short-circuit on message SELECT (the PostgREST v12 INSERT+RETURNING trap, 2026-05-29). ALWAYS run a 2-user RLS isolation test before declaring any new RLS surface done — it is the only reliable way to catch both recursion and cross-user leaks. Seed a private row owned by user A, simulate user B (non-member) expecting 0 rows, simulate A expecting their rows, then clean up.
+**Fix:** Migration `20260603000100_chat_rls_recursion_fix.sql` — added `public.chat_is_member(uuid, uuid)` and rewrote the members/conversations/messages policies to call it. Verified live on prod (`lmqwtldpfacrrlvdnmld`): b_nonmember_sees=0, a_member_sees=1.
+**Severity:** P0 (self-referential membership RLS makes the entire feature unreadable — caught only because the 2-user test was mandatory).
