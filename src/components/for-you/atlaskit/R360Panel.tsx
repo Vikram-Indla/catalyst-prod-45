@@ -46,25 +46,25 @@ function SidebarMemberRow({
 }) {
   const [hover, setHover] = React.useState(false);
 
-  let pillBg = token('color.background.neutral', '#F1F2F4');
-  let pillColor = token('color.text.subtlest', '#626F86');
-  let pillText = 'Remote';
+  let pillBg = token('color.background.warning.subtle', '#FFF7D6');
+  let pillColor = token('color.text.warning', '#974F0C');
+  let pillText = 'Away';
 
   if (presenceState === 'available' || presenceState === 'active' || presenceState === 'on_site') {
     pillBg = token('color.background.success.subtle', '#DCFFF1');
     pillColor = token('color.text.success', '#216E4E');
     pillText = 'On site';
-  } else if (presenceState === 'away' || presenceState === 'busy' || presenceState === 'on_leave') {
+  } else if (presenceState === 'remote') {
+    pillBg = token('color.background.information.subtle', '#E9F2FF');
+    pillColor = token('color.text.information', '#0055CC');
+    pillText = 'Remote';
+  } else {
     pillBg = token('color.background.warning.subtle', '#FFF7D6');
     pillColor = token('color.text.warning', '#974F0C');
     pillText = 'Away';
     if (backOn) {
       pillText = `Away · Back ${new Date(backOn).toLocaleDateString('en', { month: 'short', day: 'numeric' })}`;
     }
-  } else {
-    pillBg = token('color.background.information.subtle', '#E9F2FF');
-    pillColor = token('color.text.information', '#0055CC');
-    pillText = 'Remote';
   }
 
   return (
