@@ -4,7 +4,7 @@
  * Archiving system (2026-06-03):
  *   - 90+ days & 60–90 days: auto-archived, collapsed by default, click shows inline "archived" message
  *   - 30–60 days: active with countdown timer (days/hours until auto-archive at 60d)
- *   - "Archiving soon" section: items within 7 days of 60-day threshold
+ *   - "Auto-archiving soon" section: items within 7 days of 60-day threshold
  *   - Search bar to filter items on this page
  *   - Avatars show REPORTER (not assignee) per Vikram directive
  *   - No emoji lock icons — uses ADS tokens only
@@ -151,7 +151,7 @@ function SectionHeading({ label, count, collapsed, onToggle, isArchived }: {
         {label}
       </span>
       {isArchived && (
-        <Lozenge appearance="moved">archived</Lozenge>
+        <Lozenge appearance="default">archived</Lozenge>
       )}
       <span style={{
         fontSize: 12, fontWeight: 400, lineHeight: '16px',
@@ -382,7 +382,7 @@ export default function AgeingPanel() {
     }
 
     const labels: Record<AgeBracket, string> = {
-      archivingSoon: 'Archiving soon — auto-archives in < 7 days',
+      archivingSoon: 'Auto-archiving soon — auto-archives in < 7 days',
       ninetyPlus: '90+ days — critical',
       sixtyNinety: '60–90 days',
       thirtySixty: '30–60 days',
