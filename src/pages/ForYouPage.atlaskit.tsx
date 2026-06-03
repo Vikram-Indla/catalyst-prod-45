@@ -275,42 +275,36 @@ export default function ForYouPageAtlaskit() {
     <div
       data-r360-fullscreen={isR360Active ? 'true' : undefined}
       style={{
-        minHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        minHeight: '100vh',
         width: '100%',
-        // Phase 12 (2026-04-29): reverted to Atlaskit token() calls. Phase 11
-        // unblocked Atlaskit's bundled dark theme — `elevation.surface` /
-        // `color.text` resolve correctly via --ds-* in both modes natively.
         background: token('elevation.surface', '#FFFFFF'),
         color: token('color.text', '#292A2E'),
-        paddingInline: isR360Active ? 0 : 'clamp(16px, 3vw, 32px)',
-        paddingBlockStart: isR360Active ? 0 : 24,
-        paddingBlockEnd: isR360Active ? 0 : 48,
-        maxWidth: isR360Active ? 'none' : 1280,
-        marginInline: isR360Active ? 0 : 'auto',
+        paddingInline: 'clamp(16px, 3vw, 32px)',
+        maxWidth: 1280,
+        marginInline: 'auto',
         boxSizing: 'border-box',
       }}
     >
-      <div style={isR360Active ? { paddingInline: 'clamp(16px, 3vw, 32px)' } : { marginBlockEnd: 16 }}>
+      <div style={{ marginBlockEnd: 16, paddingBlockStart: 24 }}>
         <RecommendedProjectsStrip projects={allUserProjects} />
       </div>
 
-      {/* Heading — only visible on non-R360 tabs */}
-      {!isR360Active && (
-        <h1
-          style={{
-            font: `653 24px/28px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
-            color: token('color.text', '#292A2E'),
-            margin: 0,
-            marginBlockStart: 16,
-            letterSpacing: 0,
-          }}
-        >
-          For you
-        </h1>
-      )}
+      <h1
+        style={{
+          font: `653 24px/28px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
+          color: token('color.text', '#292A2E'),
+          margin: 0,
+          marginBlockStart: 16,
+          letterSpacing: 0,
+        }}
+      >
+        For you
+      </h1>
 
-      {/* Tab strip — sticky, always left-aligned, never shifts on tab switch.
-          Separated from H1 so justifyContent changes don't move the strip. */}
+      {/* Tab strip — sticky, always at the same vertical position regardless of active tab */}
       <div
         style={{
           position: 'sticky',
@@ -318,7 +312,6 @@ export default function ForYouPageAtlaskit() {
           zIndex: 10,
           background: token('elevation.surface', '#FFFFFF'),
           paddingBlock: 8,
-          marginBlockStart: isR360Active ? 8 : 0,
           marginBlockEnd: 16,
         }}
       >
@@ -330,12 +323,16 @@ export default function ForYouPageAtlaskit() {
         />
       </div>
 
-      {/* Active panel — R360 gets min-height to fill viewport below the navbar */}
+      {/* Active panel — fills remaining viewport height, scrolls independently */}
       <div
         role="tabpanel"
         id={`for-you-panel-${activeTab}`}
         aria-labelledby={`for-you-tab-${activeTab}`}
-        style={isR360Active ? { minHeight: 'calc(100vh - 110px)' } : { minHeight: 'calc(100vh - 240px)' }}
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: isR360Active ? 'auto' : 'visible',
+        }}
       >
         {panel}
       </div>
