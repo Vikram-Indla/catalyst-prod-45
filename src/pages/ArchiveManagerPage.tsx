@@ -3,7 +3,7 @@
  * Shows both archived AND deleted items with who/when/type metadata.
  * Admin-only unarchive control. Items shredded after 12 months.
  */
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { token } from '@atlaskit/tokens';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
@@ -13,6 +13,7 @@ import { useUserRole } from '@/hooks/useUserRole';
 import { useAuth } from '@/hooks/useAuth';
 import { getArchivedIssues, unarchiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import ProjectIcon from '@/components/shared/ProjectIcon';
 import { supabase } from '@/integrations/supabase/client';
 
 interface ManagedItem {
@@ -48,6 +49,9 @@ export default function ArchiveManagerPage() {
   const [unarchiving, setUnarchiving] = useState<Set<string>>(new Set());
   const [profileMap, setProfileMap] = useState<Record<string, string>>({});
   const [myJiraId, setMyJiraId] = useState<string | null>(null);
+  // Stable project list — populated once from the unfiltered fetch so the
+  // dropdown doesn't collapse when a project is selected.
+  const [allProjects, setAllProjects] = useState<string[]>([]);
 
   // Resolve current user's Jira account ID
   useEffect(() => {
@@ -67,6 +71,13 @@ export default function ArchiveManagerPage() {
         isAdmin,
       });
       setItems(data as ManagedItem[]);
+
+      // Populate the stable project list only on the unfiltered "all" fetch,
+      // so selecting a project doesn't shrink the dropdown options.
+      if (!filterProject && !search && typeFilter === 'all') {
+        const projSet = new Set((data as ManagedItem[]).map(i => i.project_key).filter(Boolean));
+        setAllProjects(Array.from(projSet).sort());
+      }
 
       // Resolve archived_by / deleted_by UUIDs to names
       const uuids = [...new Set(
@@ -90,10 +101,7 @@ export default function ArchiveManagerPage() {
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
 
-  const projects = useMemo(() => {
-    const set = new Set(items.map(i => i.project_key).filter(Boolean));
-    return Array.from(set).sort();
-  }, [items]);
+  const projects = allProjects;
 
   const handleUnarchive = async (issueKey: string) => {
     if (!user?.id) return;
@@ -292,9 +300,12 @@ export default function ArchiveManagerPage() {
                     <Lozenge appearance="default">{item.status}</Lozenge>
                   </td>
                   <td style={tdStyle}>
-                    <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
-                      {item.project_key}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                      <ProjectIcon projectKey={item.project_key} name={item.project_key} size="xsmall" />
+                      <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
+                        {item.project_key}
+                      </span>
+                    </div>
                   </td>
                   <td style={tdStyle}>
                     <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
