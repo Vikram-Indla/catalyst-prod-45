@@ -13,7 +13,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { R360WorkItem } from '@/types/r360';
 import { StatusLozenge } from './StatusLozenge';
 
-export function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void }) {
+export function BoardView({ items, onSelect, quarterLabel }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void; quarterLabel?: string }) {
   const columns = useMemo(() => [
     {
       key: 'to_do',
@@ -36,7 +36,23 @@ export function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect
   ], [items]);
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, padding: '0 0 24px' }}>
+    <div>
+      {quarterLabel && (
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+          marginBottom: 12, padding: '0 4px',
+        }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            fontSize: 13, fontWeight: 500, padding: '4px 12px', borderRadius: 4,
+            background: token('color.background.neutral', '#F1F2F4'),
+            color: token('color.text', '#292A2E'),
+          }}>
+            {quarterLabel}
+          </span>
+        </div>
+      )}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, paddingBottom: 24 }}>
       {columns.map(col => (
         <div key={col.key}>
           {/* Column header */}
@@ -147,6 +163,7 @@ export function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect
           </div>
         </div>
       ))}
+      </div>
     </div>
   );
 }

@@ -64,9 +64,13 @@ interface R360MemberDetailProps {
   embedded?: boolean;
   /** When set, locks the view to this mode and hides the Ring/Chronology/Board sub-tab switcher. */
   forceView?: R360ViewType;
+  /** Presence state of the member being viewed — used to render OOO overlay on the ring. */
+  effectiveState?: string | null;
+  /** ISO date string — shown in the OOO overlay badge ("Back Jun 15"). */
+  backOn?: string | null;
 }
 
-export default function R360MemberDetail({ resourceId: resourceIdProp, projectScope, embedded = false, forceView }: R360MemberDetailProps = {}) {
+export default function R360MemberDetail({ resourceId: resourceIdProp, projectScope, embedded = false, forceView, effectiveState, backOn }: R360MemberDetailProps = {}) {
   const { isDark } = useTheme();
   const { resourceId: resourceIdFromParams } = useParams<{ resourceId: string }>();
   const resourceId = resourceIdProp ?? resourceIdFromParams;
@@ -633,9 +637,39 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
             </div>
           ) : (
             <>
-              {view === 'ring' && <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} overview={overview} onAvatarClick={() => setAiOpen(true)} />}
+              {view === 'ring' && (
+                <div style={{ position: 'relative' }}>
+                  <div style={effectiveState === 'on_leave' ? { opacity: 0.45, filter: 'grayscale(25%)', pointerEvents: 'none', userSelect: 'none' } : undefined}>
+                    <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} overview={overview} onAvatarClick={() => setAiOpen(true)} />
+                  </div>
+                  {effectiveState === 'on_leave' && (
+                    <div style={{
+                      position: 'absolute',
+                      top: 12,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '4px 12px',
+                      borderRadius: 999,
+                      background: token('color.background.information', '#E9F2FE'),
+                      color: token('color.text.information', '#0052CC'),
+                      fontSize: 12,
+                      fontWeight: 500,
+                      fontFamily: 'var(--ds-font-family-body, "Inter"), system-ui, sans-serif',
+                      boxShadow: token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.12)'),
+                      pointerEvents: 'none',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      On leave
+                      {backOn && ` · Back ${new Date(backOn).toLocaleDateString('en', { month: 'short', day: 'numeric' })}`}
+                    </div>
+                  )}
+                </div>
+              )}
               {view === 'chronology' && <ChronologyView items={filteredWeekItems} onSelect={setSelectedItem} weekStart={period.start} weekEnd={period.end} />}
-              {view === 'board' && <BoardView items={filteredWeekItems} onSelect={embedded ? (item) => useGlobalSearchStore.getState().openDetail({ id: item.item_key }) : setSelectedItem} />}
+              {view === 'board' && <BoardView items={filteredWeekItems} onSelect={embedded ? (item) => useGlobalSearchStore.getState().openDetail({ id: item.item_key }) : setSelectedItem} quarterLabel={embedded ? `Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}` : undefined} />}
             </>
           )}
 
