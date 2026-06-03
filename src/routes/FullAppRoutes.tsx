@@ -164,6 +164,7 @@ const CatyFabPlaceholderLazy = ENABLE_AI ? lazy(() => import("../components/caty
 const QAAssistantFabLazy = ENABLE_AI ? lazy(() => import("../components/testhub-ai").then(m => ({ default: m.QAAssistantFab }))) : () => null;
 const KnowledgeAssistFabLazy = ENABLE_AI ? lazy(() => import("../components/kb/KAFab").then(m => ({ default: m.KAFab }))) : () => null;
 
+const ChatPageLazy = lazy(() => import("../pages/chat/ChatPage"));
 const TeamRoutesShell = lazy(() => import("../routes/TeamRoutesShell").then(m => ({ default: m.TeamRoutes })));
 const TeamsRoutesShell = lazy(() => import("../routes/TeamRoutesShell").then(m => ({ default: m.TeamsRoutes })));
 const PortfolioRoutesShell = lazy(() => import("../routes/PortfolioRoutesShell").then(m => ({ default: m.PortfolioRoutes })));
@@ -465,6 +466,7 @@ export default function FullAppRoutes() {
         <Route path="/kb-admin-setup" element={<S><KBAdminSetup /></S>} />
         <Route path="/kb-admin" element={<Navigate to="/admin/kb" replace />} />
         <Route path="/kb-data-audit" element={<S><KBDataAuditPage /></S>} />
+        <Route path="/chat" element={<S><ChatPageLazy /></S>} />
         
         <Route path="/work-hub-test" element={<S><WorkHubLayout /></S>}>
           <Route index element={<Navigate to="summary" replace />} />
