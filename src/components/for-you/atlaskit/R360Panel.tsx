@@ -161,18 +161,22 @@ function SidebarRoster({
       )
     : team;
 
+  const selectedIndex = selectedId ? team.findIndex(r => r.id === selectedId) + 1 : 0;
+
   return (
     <div
       data-testid="r360-roster-sidebar"
       style={{
         width: 220, flexShrink: 0,
-        borderInlineEnd: `1px solid ${token('color.border', '#091E4224')}`,
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRadius: 8,
         display: 'flex', flexDirection: 'column',
         position: 'sticky',
         top: 0,
         maxHeight: 'calc(100vh - 200px)',
         alignSelf: 'flex-start',
         background: token('elevation.surface.sunken', '#F7F8F9'),
+        overflow: 'hidden',
       }}
     >
       <div style={{
@@ -242,6 +246,26 @@ function SidebarRoster({
             No team members yet
           </div>
         )}
+      </div>
+
+      {/* Footer — resource counter */}
+      <div style={{
+        flexShrink: 0,
+        padding: '8px 12px',
+        borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+        background: token('elevation.surface.sunken', '#F7F8F9'),
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <span style={{
+          fontSize: 12,
+          fontWeight: 500,
+          color: token('color.text.subtle', '#44546F'),
+          fontVariantNumeric: 'tabular-nums',
+        }}>
+          {selectedIndex > 0 ? selectedIndex : '–'} of {team.length}
+        </span>
       </div>
     </div>
   );
