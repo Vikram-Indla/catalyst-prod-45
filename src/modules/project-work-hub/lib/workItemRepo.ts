@@ -346,11 +346,16 @@ export async function getArchivedIssues(filters?: {
   issueType?: string;
   search?: string;
 }): Promise<any[]> {
+  // Items are "archived" if: archived_at IS NOT NULL OR open >= 60 days (auto-archive threshold).
+  // The cron may not have run yet, so we also catch items by age.
+  const cutoff = new Date(Date.now() - 60 * 86_400_000).toISOString();
   let query = supabase
     .from('ph_issues')
     .select('issue_key, project_key, summary, issue_type, status, status_category, priority, assignee_display_name, reporter_display_name, jira_created_at, archived_at, archived_by')
-    .not('archived_at', 'is', null)
-    .order('archived_at', { ascending: false });
+    .is('deleted_at', null)
+    .neq('status_category', 'done')
+    .or(`archived_at.not.is.null,jira_created_at.lt.${cutoff}`)
+    .order('jira_created_at', { ascending: true });
 
   if (filters?.projectKey) query = query.eq('project_key', filters.projectKey);
   if (filters?.issueType) query = query.eq('issue_type', filters.issueType);

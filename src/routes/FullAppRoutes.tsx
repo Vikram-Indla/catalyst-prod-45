@@ -940,7 +940,9 @@ export default function FullAppRoutes() {
 
         <Route path="/value-stream" element={<S><ValueStreamView /></S>} />
         <Route path="/profile" element={<S><UserProfile /></S>} />
-        <Route path="/profile/archives" element={<S><ArchiveManagerPage /></S>} />
+        <Route path="/for-you/archives" element={<S><ArchiveManagerPage /></S>} />
+        {/* Legacy redirect */}
+        <Route path="/profile/archives" element={<Navigate to="/for-you/archives" replace />} />
         <Route path="/items/:type" element={<S><PlaceholderPage /></S>} />
 
         <Route path="/project-hub" element={<Navigate to="/project-hub/projects" replace />} />

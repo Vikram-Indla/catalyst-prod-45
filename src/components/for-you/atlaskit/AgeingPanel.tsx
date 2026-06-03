@@ -176,8 +176,8 @@ function SectionHeading({ label, count, collapsed, onToggle, isArchived, bracket
 }
 
 // ─── Archived row (compact, read-only — NO emoji lock icons) ─────────────────
-function ArchivedRow({ item, isAdmin, onUnarchive }: {
-  item: AgeingItem; isAdmin: boolean; onUnarchive: (key: string) => void;
+function ArchivedRow({ item }: {
+  item: AgeingItem;
 }) {
   const [showMessage, setShowMessage] = useState(false);
 
@@ -223,19 +223,6 @@ function ArchivedRow({ item, isAdmin, onUnarchive }: {
             {formatDate(item.archived_at)}
           </span>
         )}
-        {isAdmin && (
-          <button
-            type="button"
-            onClick={e => { e.stopPropagation(); onUnarchive(item.issue_key); }}
-            style={{
-              background: 'transparent', border: 'none', cursor: 'pointer',
-              fontSize: 12, fontWeight: 500, color: token('color.link', '#0052CC'),
-              flexShrink: 0, padding: '2px 8px',
-            }}
-          >
-            Unarchive
-          </button>
-        )}
       </div>
 
       {/* Archived item inline message — NOT a detail modal */}
@@ -276,16 +263,12 @@ function ArchivedRow({ item, isAdmin, onUnarchive }: {
               color: token('color.text.subtle', '#505258'),
               marginBottom: token('space.200', '16px'),
             }}>
-              {isAdmin
-                ? 'Archived items are read-only. As an admin, you can unarchive from Archive manager.'
-                : 'This item is archived and read-only. Only an admin can unarchive it. Contact your administrator.'}
+              This item is archived and read-only. To unarchive, go to the Archive manager.
             </p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: token('space.100', '8px') }}>
-              {isAdmin && (
-                <Button appearance="primary" onClick={() => { onUnarchive(item.issue_key); setShowMessage(false); }}>
-                  Unarchive
-                </Button>
-              )}
+              <Button appearance="primary" onClick={() => { setShowMessage(false); navigate('/for-you/archives'); }}>
+                Go to Archive manager
+              </Button>
               <Button appearance="subtle" onClick={() => setShowMessage(false)}>
                 Close
               </Button>
@@ -461,7 +444,7 @@ export default function AgeingPanel() {
             onChange={(e: any) => setSearch(e.target.value)}
           />
         </div>
-        <Button appearance="default" onClick={() => navigate('/profile/archives')}>
+        <Button appearance="default" onClick={() => navigate('/for-you/archives')}>
           Archive manager
         </Button>
       </div>
@@ -490,8 +473,6 @@ export default function AgeingPanel() {
                       <ArchivedRow
                         key={a.id}
                         item={a}
-                        isAdmin={isAdmin}
-                        onUnarchive={handleUnarchive}
                       />
                     ))
                   : items.map(a => (
