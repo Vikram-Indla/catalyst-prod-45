@@ -19,7 +19,7 @@ export interface UserStatus {
 export const PRESENCE_RING: Record<PresenceState, string> = {
   available: 'var(--ds-icon-success, #22A06B)',   // GREEN  — universal "online/available"
   away:      'var(--ds-icon-warning, #E2B203)',    // AMBER  — universal "away/idle"
-  busy:      'var(--ds-icon-danger, #C9372C)',     // RED    — universal "busy/do not disturb"
+  busy:      'var(--ds-icon-information, #1D7AFC)', // BLUE   — "remote/offsite" (renamed from busy)
   offline:   'var(--ds-text-subtlest, #6B6E76)',   // GREY   — universal "offline/inactive"
   on_leave:  'var(--ds-link, #1868DB)',            // BLUE   — "planned/scheduled absence"
 };
