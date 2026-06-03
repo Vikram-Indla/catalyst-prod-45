@@ -328,6 +328,7 @@ const NotificationTriggers = lazy(() => import("../pages/admin/NotificationTrigg
 
 const ValueStreamView = lazy(() => import("../pages/ValueStreamView"));
 const UserProfile = lazy(() => import("../pages/UserProfile"));
+const ArchiveManagerPage = lazy(() => import("../pages/ArchiveManagerPage"));
 const ProgramDirectory = lazy(() => import("../pages/ProgramDirectory"));
 const ProjectDirectory = lazy(() => import("../pages/ProjectDirectory"));
 const ProjectSettingsPage = lazy(() => import("../pages/ProjectSettingsPage"));
@@ -939,6 +940,7 @@ export default function FullAppRoutes() {
 
         <Route path="/value-stream" element={<S><ValueStreamView /></S>} />
         <Route path="/profile" element={<S><UserProfile /></S>} />
+        <Route path="/profile/archives" element={<S><ArchiveManagerPage /></S>} />
         <Route path="/items/:type" element={<S><PlaceholderPage /></S>} />
 
         <Route path="/project-hub" element={<Navigate to="/project-hub/projects" replace />} />

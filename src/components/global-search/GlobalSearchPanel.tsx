@@ -5,6 +5,7 @@ import SearchIcon from '@atlaskit/icon/glyph/search';
 import WorldIcon from '@atlaskit/icon/glyph/world';
 import PersonIcon from '@atlaskit/icon/glyph/person';
 import Spinner from '@atlaskit/spinner';
+import Lozenge from '@atlaskit/lozenge';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -227,6 +228,10 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         id: it.id,
         item: it,
         activate: () => {
+          if (it.archived_at) {
+            alert(`${it.item_key} is archived and read-only. Only an admin can unarchive this item from Profile → Archive Manager.`);
+            return;
+          }
           if (it.item_key && it.project_key) {
             navigate(`/project-hub/${it.project_key}/allwork/${encodeURIComponent(it.item_key)}`);
           } else if (it.item_key) {
@@ -386,9 +391,12 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
                   {': '}
                   {highlight(it.title, debouncedQuery)}
                 </div>
-                <div style={{ fontSize: 12, color: token('color.text.subtle', '#626F86') }}>
+                <div style={{ fontSize: 12, color: token('color.text.subtle', '#626F86'), display: 'flex', alignItems: 'center', gap: 4 }}>
                   {typeLabel}{projectLabel ? ` • ${projectLabel}` : ''}
                   {it.assignee_name ? ` • ${it.assignee_name}` : ''}
+                  {it.archived_at && (
+                    <Lozenge appearance="moved">Archived</Lozenge>
+                  )}
                 </div>
               </div>
             </>,

@@ -304,12 +304,61 @@ export async function moveIssue(
 // Soft-archives a ph_issues row by setting archived_at to the current timestamp.
 // ph_issues has no is_archived boolean — archiving is tracked via archived_at (nullable timestamp).
 // A non-null archived_at means the issue is archived.
-export async function archiveIssue(issueKey: string): Promise<void> {
+export async function archiveIssue(issueKey: string, userId?: string): Promise<void> {
+  const { data: issue } = await supabase
+    .from('ph_issues')
+    .select('issue_key, project_key, summary, issue_type, status, assignee_account_id, reporter_account_id')
+    .eq('issue_key', issueKey)
+    .single();
+
   const { error } = await supabase
     .from('ph_issues')
-    .update({ archived_at: new Date().toISOString() } as any)
+    .update({ archived_at: new Date().toISOString(), archived_by: userId || null } as any)
     .eq('issue_key', issueKey);
   if (error) throw error;
+
+  if (issue) {
+    await supabase.from('ph_archive_log').insert({
+      issue_key: issueKey,
+      project_key: issue.project_key,
+      summary: issue.summary,
+      issue_type: issue.issue_type,
+      status: issue.status,
+      assignee_account_id: issue.assignee_account_id,
+      reporter_account_id: issue.reporter_account_id,
+      action: 'archived',
+      reason: 'manual',
+      performed_by: userId || null,
+    } as any);
+  }
+}
+
+export async function unarchiveIssue(issueKey: string, userId: string): Promise<void> {
+  const { data, error: rpcError } = await supabase.rpc('unarchive_issue', {
+    p_issue_key: issueKey,
+    p_user_id: userId,
+  });
+  if (rpcError) throw rpcError;
+}
+
+export async function getArchivedIssues(filters?: {
+  projectKey?: string;
+  issueType?: string;
+  search?: string;
+}): Promise<any[]> {
+  let query = supabase
+    .from('ph_issues')
+    .select('issue_key, project_key, summary, issue_type, status, status_category, priority, assignee_display_name, reporter_display_name, jira_created_at, archived_at, archived_by')
+    .not('archived_at', 'is', null)
+    .order('archived_at', { ascending: false });
+
+  if (filters?.projectKey) query = query.eq('project_key', filters.projectKey);
+  if (filters?.issueType) query = query.eq('issue_type', filters.issueType);
+  if (filters?.search) query = query.or(`issue_key.ilike.%${filters.search}%,summary.ilike.%${filters.search}%`);
+
+  const { data, error } = await query.limit(200);
+  if (error) throw error;
+  return data || [];
 }
 
 // ─── Clone ───────────────────────────────────────────────────────────────────

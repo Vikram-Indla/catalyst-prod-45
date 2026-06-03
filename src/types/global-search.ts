@@ -17,6 +17,7 @@ export interface SearchResult {
   assignee_name: string | null;
   reporter_name: string | null;
   viewed_at: string;
+  archived_at?: string | null;
 }
 
 export interface RecentSearchEntry {

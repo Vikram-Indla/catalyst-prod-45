@@ -6,7 +6,9 @@ export type DirectVerb =
   | 'status_changed'
   | 'resolved'
   | 'approved'
-  | 'reassigned';
+  | 'reassigned'
+  | 'archive'
+  | 'archive_warning';
 
 export type DirectWorkItemIconType = 'bug' | 'story' | 'task' | 'epic' | 'incident';
 

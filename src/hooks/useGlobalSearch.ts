@@ -2,7 +2,7 @@ import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tansta
 import { supabase } from '@/integrations/supabase/client';
 import type { SearchResult, RecentSearchEntry, ActiveFilters } from '@/types/global-search';
 
-const SEARCH_SELECT = 'id, issue_key, summary, project_name, project_key, issue_type, jira_updated_at, jira_created_at, assignee_display_name, reporter_display_name';
+const SEARCH_SELECT = 'id, issue_key, summary, project_name, project_key, issue_type, jira_updated_at, jira_created_at, assignee_display_name, reporter_display_name, archived_at';
 const CAT_SELECT = 'id, issue_key, title, issue_type, assignee_id, created_at, updated_at, project_id, projects(name, key)';
 
 function mapIssueToSearchResult(row: any): SearchResult {
@@ -17,6 +17,7 @@ function mapIssueToSearchResult(row: any): SearchResult {
     assignee_name: row.assignee_display_name || null,
     reporter_name: row.reporter_display_name || null,
     viewed_at: row.jira_updated_at || row.jira_created_at || new Date().toISOString(),
+    archived_at: row.archived_at || null,
   };
 }
 

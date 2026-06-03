@@ -1,64 +1,58 @@
 /**
  * AgeingPanel — For You / Ageing tab.
  *
- * Grouping: 3 age brackets (Cooper goal-centric + Raskin Hick's Law, 2026-05-16)
- *   🔴 90+ days · 🟠 60-90 days · 🟡 30-60 days
- *
- * Filter: exclude items updated within the last 21 days — those are
- * being actively worked on and are false positives in a "stale" panel.
- *
- * Each row has a hover-reveal 3-dot menu (Reassign · Archive · Escalate).
- *
- * Data source: useAgeingItems() — filters to assignee_account_id = me.
+ * Archiving system (2026-06-03):
+ *   - 90+ days & 60–90 days: auto-archived, collapsed by default, click shows inline "archived" message
+ *   - 30–60 days: active with countdown timer (days/hours until auto-archive at 60d)
+ *   - "Archiving soon" section: items within 7 days of 60-day threshold
+ *   - Search bar to filter items on this page
+ *   - Avatars show REPORTER (not assignee) per Vikram directive
+ *   - No emoji lock icons — uses ADS tokens only
  */
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { token } from '@atlaskit/tokens';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import Spinner from '@atlaskit/spinner';
+import Lozenge from '@atlaskit/lozenge';
+import Textfield from '@atlaskit/textfield';
+import Button from '@atlaskit/button/new';
 import { useAgeingItems, type AgeingItem } from '@/hooks/useAgeingItems';
 import ForYouRow from './ForYouRow';
 import { ForYouEmptyState } from './helpers';
 import { text } from '@/lib/typography';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { useJiraBaseUrl } from '@/hooks/useJiraBaseUrl';
+import { useUserRole } from '@/hooks/useUserRole';
+import { useAuth } from '@/hooks/useAuth';
+import { archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import type { WorkItem, HubType, WorkMode, WorkGroup } from '@/hooks/useForYouData';
 
-// ─── Age bracket config ───────────────────────────────────────────────────────
-type AgeBracket = 'ninetyPlus' | 'sixtyNinety' | 'thirtySixty';
+type AgeBracket = 'archivingSoon' | 'ninetyPlus' | 'sixtyNinety' | 'thirtySixty';
+const BRACKET_ORDER: AgeBracket[] = ['archivingSoon', 'thirtySixty', 'sixtyNinety', 'ninetyPlus'];
+const STALE_DAYS = 21;
+const ARCHIVE_THRESHOLD_DAYS = 60;
 
-const BRACKET_LABELS: Record<AgeBracket, string> = {
-  ninetyPlus:   '🔴 90+ days — critical',
-  sixtyNinety:  '🟠 60–90 days',
-  thirtySixty:  '🟡 30–60 days',
-};
-
-const BRACKET_ORDER: AgeBracket[] = ['ninetyPlus', 'sixtyNinety', 'thirtySixty'];
-
-function bracketFor(daysOpen: number): AgeBracket | null {
-  if (daysOpen >= 90) return 'ninetyPlus';
-  if (daysOpen >= 60) return 'sixtyNinety';
-  if (daysOpen >= 30) return 'thirtySixty';
-  return null; // < 30 days: not stale enough to surface
+function bracketFor(daysOpen: number, isArchived: boolean): AgeBracket | null {
+  if (isArchived && daysOpen >= 90) return 'ninetyPlus';
+  if (isArchived && daysOpen >= 60) return 'sixtyNinety';
+  if (!isArchived && daysOpen >= 53 && daysOpen < 60) return 'archivingSoon';
+  if (!isArchived && daysOpen >= 30 && daysOpen < 60) return 'thirtySixty';
+  if (!isArchived && daysOpen >= 60) return 'ninetyPlus';
+  return null;
 }
 
-// A-3: exclude items updated within 21 days (actively worked on = false positive)
-const STALE_DAYS = 21;
 function isStale(a: AgeingItem): boolean {
   if (!a.jira_updated_at) return true;
-  const daysSinceUpdate = (Date.now() - new Date(a.jira_updated_at).getTime()) / 86_400_000;
-  return daysSinceUpdate >= STALE_DAYS;
+  return (Date.now() - new Date(a.jira_updated_at).getTime()) / 86_400_000 >= STALE_DAYS;
 }
 
-// ─── Row mapping ────────────────────────────────────────────────────────────
 function formatRelative(dateStr: string): string {
   if (!dateStr) return '—';
-  const diffMs = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diffMs / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
+  const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86_400_000);
+  if (days === 0) return 'today';
   if (days === 1) return 'yesterday';
   if (days < 7) return `${days}d ago`;
   return `${Math.floor(days / 7)}w ago`;
@@ -68,8 +62,29 @@ function initials(name: string): string {
   return (name || '').split(/\s+/).map(p => p[0]).filter(Boolean).join('').toUpperCase().slice(0, 2);
 }
 
+function countdownText(daysOpen: number, createdAt?: string): string {
+  if (!createdAt) {
+    const daysLeft = ARCHIVE_THRESHOLD_DAYS - daysOpen;
+    if (daysLeft <= 0) return 'Archiving today';
+    return `Auto-archives in ${Math.floor(daysLeft)}d`;
+  }
+  const archiveMs = new Date(createdAt).getTime() + ARCHIVE_THRESHOLD_DAYS * 86_400_000;
+  const remainMs = archiveMs - Date.now();
+  if (remainMs <= 0) return 'Archiving today';
+  const totalHours = Math.floor(remainMs / 3_600_000);
+  const d = Math.floor(totalHours / 24);
+  const h = totalHours % 24;
+  if (d === 0) return `Auto-archives in ${h}h`;
+  return `Auto-archives in ${d}d ${h}h`;
+}
+
+function formatDate(d: string): string {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
 function ageingToWorkItem(a: AgeingItem, jiraBaseUrl: string | null): WorkItem {
-  const assigneeName = a.assignee_display_name || 'Unassigned';
+  const reporterName = a.reporter_display_name || 'Unknown';
   return {
     id: a.issue_key,
     key: a.issue_key,
@@ -91,11 +106,11 @@ function ageingToWorkItem(a: AgeingItem, jiraBaseUrl: string | null): WorkItem {
     createdAt: a.jira_created_at || '—',
     jiraUrl: a.issue_key && jiraBaseUrl ? `${jiraBaseUrl}/browse/${a.issue_key}` : undefined,
     assignee: {
-      id: a.assignee_account_id || 'none',
-      name: assigneeName,
-      initials: initials(assigneeName),
+      id: a.reporter_account_id || 'none',
+      name: reporterName,
+      initials: initials(reporterName),
       avatarColor: '#6B7280',
-      avatarUrl: resolveAvatarUrl(assigneeName) || undefined,
+      avatarUrl: resolveAvatarUrl(reporterName) || undefined,
     },
     reporter: a.reporter_display_name || undefined,
     group: 'EARLIER' as WorkGroup,
@@ -104,193 +119,298 @@ function ageingToWorkItem(a: AgeingItem, jiraBaseUrl: string | null): WorkItem {
 }
 
 // ─── Section heading ─────────────────────────────────────────────────────────
-function SectionHeading({ label, count }: { label: string; count: number }) {
+function SectionHeading({ label, count, collapsed, onToggle, isArchived }: {
+  label: string; count: number; collapsed: boolean; onToggle: () => void; isArchived?: boolean;
+}) {
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: token('space.100', '8px'),
-      paddingInline: token('space.150', '12px'),
-      paddingBlockStart: token('space.200', '16px'),
-      paddingBlockEnd: token('space.100', '8px'),
-    }}>
+    <button
+      type="button"
+      onClick={onToggle}
+      style={{
+        display: 'flex', alignItems: 'center', gap: token('space.100', '8px'),
+        padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
+        background: isArchived
+          ? token('color.background.neutral.subtle', '#F7F8F9')
+          : 'transparent',
+        border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left',
+        borderRadius: 0,
+        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+      }}
+    >
       <span style={{
-        font: `500 14px/20px "Inter", system-ui, sans-serif`,
-        letterSpacing: 'normal', color: text.subtlest, textTransform: 'none',
+        transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+        transition: 'transform 150ms', display: 'inline-flex', fontSize: 12,
+        color: token('color.icon.subtle', '#6B778C'),
+      }}>
+        ▾
+      </span>
+      <span style={{
+        fontSize: 14, fontWeight: 500, lineHeight: '20px',
+        color: token('color.text.subtle', '#505258'),
       }}>
         {label}
       </span>
+      {isArchived && (
+        <Lozenge appearance="moved">archived</Lozenge>
+      )}
       <span style={{
-        font: `400 12px/16px "Inter", system-ui, sans-serif`,
-        color: text.subtle,
-        backgroundColor: token('elevation.surface.sunken', '#F7F8F9'),
-        paddingInline: token('space.075', '6px'), borderRadius: 999,
+        fontSize: 12, fontWeight: 400, lineHeight: '16px',
+        color: token('color.text.subtlest', '#6B778C'),
+        background: token('color.background.neutral', '#F1F2F4'),
+        padding: '0 6px', borderRadius: 999,
       }}>
         {count}
       </span>
-    </div>
+    </button>
   );
 }
 
-// ─── A-4: Hover-reveal 3-dot menu ────────────────────────────────────────────
-type MenuAction = 'reassign' | 'archive' | 'escalate';
-
-interface DotMenuProps {
-  onAction: (action: MenuAction) => void;
-}
-
-function ThreeDotMenu({ onAction }: DotMenuProps) {
-  const [open, setOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
+// ─── Archived row (compact, read-only — NO emoji lock icons) ─────────────────
+function ArchivedRow({ item, isAdmin, onUnarchive }: {
+  item: AgeingItem; isAdmin: boolean; onUnarchive: (key: string) => void;
+}) {
+  const [showMessage, setShowMessage] = useState(false);
 
   return (
-    <div ref={menuRef} style={{ position: 'relative', flexShrink: 0 }}>
-      <button
-        type="button"
-        aria-label="More actions"
-        onClick={e => { e.stopPropagation(); setOpen(o => !o); }}
+    <>
+      <div
+        onClick={() => setShowMessage(true)}
         style={{
-          width: 28, height: 28,
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          background: open ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)') : 'transparent',
-          border: 'none', borderRadius: 4, cursor: 'pointer',
-          color: token('color.icon.subtle', '#6B778C'),
-          transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1)',
-          padding: 0,
+          display: 'flex', alignItems: 'center', gap: token('space.100', '8px'),
+          padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
+          cursor: 'pointer', width: '100%',
+          opacity: 0.65,
+          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
         }}
-        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
-        onMouseLeave={e => { if (!open) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
       >
-        {/* ⋯ vertical ellipsis — 3 dots */}
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-          <circle cx="8" cy="3" r="1.2" /><circle cx="8" cy="8" r="1.2" /><circle cx="8" cy="13" r="1.2" />
-        </svg>
-      </button>
-      {open && (
+        <JiraIssueTypeIcon type={item.issue_type} size={16} />
+        <span style={{
+          fontFamily: '"SFMono-Regular", "Consolas", monospace', fontSize: 12, fontWeight: 500,
+          color: token('color.text.subtlest', '#6B778C'),
+          flexShrink: 0, minWidth: 72,
+        }}>
+          {item.issue_key}
+        </span>
+        <span style={{
+          fontSize: 14, color: token('color.text', '#292A2E'),
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          flex: 1, minWidth: 0,
+        }}>
+          {item.summary}
+        </span>
+        <Lozenge appearance="default">{item.status}</Lozenge>
+        <span style={{
+          fontSize: 11, color: token('color.text.subtlest', '#6B778C'),
+          flexShrink: 0, minWidth: 40, textAlign: 'right',
+        }}>
+          {item.days_open}d
+        </span>
+        {item.archived_at && (
+          <span style={{
+            fontSize: 11, color: token('color.text.subtlest', '#6B778C'),
+            flexShrink: 0,
+          }}>
+            {formatDate(item.archived_at)}
+          </span>
+        )}
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={e => { e.stopPropagation(); onUnarchive(item.issue_key); }}
+            style={{
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              fontSize: 12, fontWeight: 500, color: token('color.link', '#0052CC'),
+              flexShrink: 0, padding: '2px 8px',
+            }}
+          >
+            Unarchive
+          </button>
+        )}
+      </div>
+
+      {/* Archived item inline message — NOT a detail modal */}
+      {showMessage && (
         <div
-          role="menu"
+          onClick={() => setShowMessage(false)}
           style={{
-            position: 'absolute', right: 0, top: 32, zIndex: 9999,
-            background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DCDFE4')}`,
-            borderRadius: 8,
-            boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
-            minWidth: 160, padding: '4px 0',
+            position: 'fixed', inset: 0,
+            background: 'rgba(9,30,66,0.54)', zIndex: 99999,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >
-          {[
-            { id: 'reassign' as MenuAction, label: 'Reassign' },
-            { id: 'archive' as MenuAction, label: 'Move to Archive' },
-            { id: 'escalate' as MenuAction, label: 'Escalate' },
-          ].map(opt => (
-            <button
-              key={opt.id}
-              role="menuitem"
-              type="button"
-              onClick={e => { e.stopPropagation(); setOpen(false); onAction(opt.id); }}
-              style={{
-                display: 'block', width: '100%', textAlign: 'left',
-                padding: '8px 16px', background: 'transparent', border: 'none',
-                font: `400 14px/20px "Inter", system-ui, sans-serif`,
-                color: token('color.text', '#292A2E'), cursor: 'pointer',
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
-            >
-              {opt.label}
-            </button>
-          ))}
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: token('elevation.surface.overlay', '#FFFFFF'),
+              borderRadius: 8, padding: token('space.300', '24px'),
+              maxWidth: 480, width: '90%',
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.25)'),
+            }}
+          >
+            <h2 style={{
+              margin: 0, fontSize: 16, fontWeight: 653,
+              color: token('color.text', '#292A2E'),
+              marginBottom: token('space.200', '16px'),
+            }}>
+              This item is archived
+            </h2>
+            <p style={{
+              margin: 0, fontSize: 14, fontWeight: 500,
+              color: token('color.text', '#292A2E'),
+              marginBottom: token('space.050', '4px'),
+            }}>
+              {item.issue_key} — {item.summary}
+            </p>
+            <p style={{
+              margin: 0, fontSize: 13,
+              color: token('color.text.subtle', '#505258'),
+              marginBottom: token('space.200', '16px'),
+            }}>
+              {isAdmin
+                ? 'Archived items are read-only. As an admin, you can unarchive from Archive manager.'
+                : 'This item is archived and read-only. Only an admin can unarchive it. Contact your administrator.'}
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: token('space.100', '8px') }}>
+              {isAdmin && (
+                <Button appearance="primary" onClick={() => { onUnarchive(item.issue_key); setShowMessage(false); }}>
+                  Unarchive
+                </Button>
+              )}
+              <Button appearance="subtle" onClick={() => setShowMessage(false)}>
+                Close
+              </Button>
+            </div>
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
-// ─── Row wrapper: ForYouRow + hover-reveal 3-dot menu ────────────────────────
-function AgeingRow({ item, onSelect, suggestion }: {
-  item: WorkItem;
+// ─── Active row with countdown timer ────────────────────────────────────────
+function ActiveAgeingRow({ item, onSelect, isArchivingSoon }: {
+  item: WorkItem & { daysOpen: number; jiraCreatedAt?: string };
   onSelect: (item: WorkItem) => void;
-  suggestion?: string;
+  isArchivingSoon?: boolean;
 }) {
-  const [hovered, setHovered] = useState(false);
-
-  const handleAction = (action: MenuAction) => {
-    // Actions are affordances — no backend wiring yet (deferred per handover).
-    // They are surfaced so users can see the intent. Escalate could open a Jira
-    // deep-link; Reassign and Archive need confirmation flows (Row 19 deferred).
-    console.log('[AgeingPanel] action:', action, item.key);
-  };
-
   return (
-    <div
-      style={{ position: 'relative', display: 'flex', alignItems: 'center' }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <ForYouRow item={item} onSelect={onSelect} suggestion={suggestion} />
-      </div>
-      {/* 3-dot menu sits in the row's right gutter, z-index above row hover bg */}
+    <div style={{
+      borderLeft: isArchivingSoon
+        ? `3px solid ${token('color.border.warning', '#FF991F')}`
+        : undefined,
+    }}>
+      <ForYouRow item={item} onSelect={onSelect} />
       <div style={{
-        position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)',
-        opacity: hovered ? 1 : 0,
-        transition: 'opacity 150ms cubic-bezier(0.15, 1, 0.3, 1)',
-        pointerEvents: hovered ? 'auto' : 'none',
-        zIndex: 1,
+        paddingLeft: token('space.600', '48px'),
+        paddingBottom: token('space.100', '8px'),
+        display: 'flex', alignItems: 'center', gap: token('space.100', '8px'),
       }}>
-        <ThreeDotMenu onAction={handleAction} />
+        <span style={{
+          fontSize: 11, fontWeight: 500,
+          color: item.daysOpen >= 53
+            ? token('color.text.warning', '#FF991F')
+            : token('color.text.subtlest', '#6B778C'),
+        }}>
+          {countdownText(item.daysOpen, item.jiraCreatedAt)}
+        </span>
+        <span style={{ fontSize: 11, color: token('color.text.subtlest', '#6B778C') }}>
+          · Open {item.daysOpen}d
+        </span>
       </div>
     </div>
   );
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// ─── Main component ─────────────────────────────────────────────────────────
 export default function AgeingPanel() {
-  const { data: ageingItems, isLoading, isError } = useAgeingItems();
+  const { data: ageingItems, isLoading, isError, refetch } = useAgeingItems();
   const jiraBaseUrl = useJiraBaseUrl();
+  const { role } = useUserRole();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const isAdmin = role === 'admin';
+  const [search, setSearch] = useState('');
+  const [collapsedSections, setCollapsedSections] = useState<Set<AgeBracket>>(
+    new Set(['ninetyPlus', 'sixtyNinety'])
+  );
+
+  const toggleSection = useCallback((bracket: AgeBracket) => {
+    setCollapsedSections(prev => {
+      const n = new Set(prev);
+      if (n.has(bracket)) n.delete(bracket); else n.add(bracket);
+      return n;
+    });
+  }, []);
+
+  const handleUnarchive = useCallback(async (issueKey: string) => {
+    if (!user?.id || !isAdmin) {
+      alert('Only admins can unarchive items. Contact your administrator.');
+      return;
+    }
+    try {
+      const { error } = await supabase.rpc('unarchive_issue', {
+        p_issue_key: issueKey,
+        p_user_id: user.id,
+      });
+      if (error) throw error;
+      refetch();
+    } catch (e: any) {
+      alert(e.message || 'Failed to unarchive.');
+    }
+  }, [user?.id, isAdmin, refetch]);
 
   const grouped = useMemo(() => {
     if (!ageingItems) return [];
-    // A-3: filter out items updated within the past 21 days
     const staleItems = ageingItems.filter(isStale);
+    const filtered = search
+      ? staleItems.filter(a =>
+          a.issue_key.toLowerCase().includes(search.toLowerCase()) ||
+          a.summary.toLowerCase().includes(search.toLowerCase())
+        )
+      : staleItems;
 
     const buckets = new Map<AgeBracket, AgeingItem[]>();
-    for (const a of staleItems) {
-      const b = bracketFor(a.days_open);
-      if (!b) continue; // < 30 days: not stale enough
+    for (const a of filtered) {
+      const isArchived = !!a.archived_at;
+      const b = bracketFor(a.days_open, isArchived);
+      if (!b) continue;
       if (!buckets.has(b)) buckets.set(b, []);
       buckets.get(b)!.push(a);
     }
     for (const list of buckets.values()) {
       list.sort((x, y) => y.days_open - x.days_open);
     }
-    return BRACKET_ORDER
-      .map(b => ({ bracket: b, label: BRACKET_LABELS[b], items: buckets.get(b) ?? [] }))
-      .filter(g => g.items.length > 0);
-  }, [ageingItems]);
 
-  const handleSelect = (item: WorkItem) => {
+    const labels: Record<AgeBracket, string> = {
+      archivingSoon: 'Archiving soon — auto-archives in < 7 days',
+      ninetyPlus: '90+ days — critical',
+      sixtyNinety: '60–90 days',
+      thirtySixty: '30–60 days',
+    };
+
+    return BRACKET_ORDER
+      .map(b => ({
+        bracket: b,
+        label: labels[b],
+        items: buckets.get(b) ?? [],
+        isArchived: b === 'ninetyPlus' || b === 'sixtyNinety',
+      }))
+      .filter(g => g.items.length > 0);
+  }, [ageingItems, search]);
+
+  const handleSelect = useCallback((item: WorkItem) => {
     useGlobalSearchStore.getState().openDetail({
       id: item.id,
       itemType: item.issueType,
       projectKey: item.projectKey,
     });
-  };
+  }, []);
 
   if (isLoading) {
     return (
-      <div style={{ padding: token('space.300', '24px'), display: 'flex', alignItems: 'center', gap: token('space.150', '12px') }}>
+      <div style={{ padding: token('space.400', '32px'), display: 'flex', alignItems: 'center', gap: token('space.150', '12px') }}>
         <Spinner size="small" />
-        <span style={{ color: token('color.text.subtle', '#626F86'), font: `400 14px/20px "Inter", system-ui, sans-serif` }}>
+        <span style={{ color: token('color.text.subtle', '#626F86'), fontSize: 14 }}>
           Loading ageing items…
         </span>
       </div>
@@ -306,34 +426,86 @@ export default function AgeingPanel() {
     );
   }
 
-  if (!grouped.length) {
+  if (!grouped.length && !search) {
     return (
       <ForYouEmptyState
         title="No stalled work — you're on top of things"
-        description="Items updated in the last 21 days or open fewer than 30 days are filtered out. Nothing left to chase."
+        description="Items updated in the last 21 days or open fewer than 30 days are filtered out."
       />
     );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      {grouped.map(({ bracket, label, items }) => (
-        <div key={bracket}>
-          <SectionHeading label={label} count={items.length} />
-          {items.map(a => (
-            <AgeingRow
-              key={a.id}
-              item={ageingToWorkItem(a, jiraBaseUrl)}
-              onSelect={handleSelect}
-              suggestion={
-                a.days_open >= 90
-                  ? `Open ${a.days_open}d — consider reassigning or closing`
-                  : undefined
-              }
-            />
-          ))}
+    <div style={{ width: '100%' }}>
+      {/* Toolbar */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: token('space.200', '16px'),
+        padding: `${token('space.150', '12px')} 0`,
+        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+        marginBottom: token('space.100', '8px'),
+      }}>
+        <div style={{ flex: 1, maxWidth: 360 }}>
+          <Textfield
+            placeholder="Search ageing items..."
+            value={search}
+            onChange={(e: any) => setSearch(e.target.value)}
+          />
         </div>
-      ))}
+        <Button appearance="subtle" onClick={() => navigate('/profile/archives')}>
+          Archive manager
+        </Button>
+      </div>
+
+      {/* Sections */}
+      {grouped.map(({ bracket, label, items, isArchived }) => {
+        const collapsed = collapsedSections.has(bracket);
+        return (
+          <div key={bracket} style={{ marginBottom: token('space.050', '4px') }}>
+            <SectionHeading
+              label={label}
+              count={items.length}
+              collapsed={collapsed}
+              onToggle={() => toggleSection(bracket)}
+              isArchived={isArchived}
+            />
+            {!collapsed && (
+              <div style={{
+                background: isArchived
+                  ? token('color.background.neutral.subtle', '#F7F8F9')
+                  : undefined,
+              }}>
+                {isArchived
+                  ? items.map(a => (
+                      <ArchivedRow
+                        key={a.id}
+                        item={a}
+                        isAdmin={isAdmin}
+                        onUnarchive={handleUnarchive}
+                      />
+                    ))
+                  : items.map(a => (
+                      <ActiveAgeingRow
+                        key={a.id}
+                        item={Object.assign(ageingToWorkItem(a, jiraBaseUrl), { daysOpen: a.days_open, jiraCreatedAt: a.jira_created_at })}
+                        onSelect={handleSelect}
+                        isArchivingSoon={bracket === 'archivingSoon'}
+                      />
+                    ))
+                }
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {grouped.length === 0 && search && (
+        <div style={{
+          padding: token('space.400', '32px'), textAlign: 'center',
+          color: token('color.text.subtle', '#505258'), fontSize: 14,
+        }}>
+          No items match "{search}".
+        </div>
+      )}
     </div>
   );
 }
