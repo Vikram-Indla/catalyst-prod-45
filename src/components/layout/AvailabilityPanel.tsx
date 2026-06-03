@@ -1,15 +1,23 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import { usePresence } from '@/hooks/usePresence';
-import { useToast } from '@/hooks/use-toast';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { catalystToast } from '@/lib/catalystToast';
 import type { PresenceState } from '@/lib/presence';
 
-// Dot colors match PRESENCE_RING exactly — same mental model on the menu as on the avatar ring.
 const QUICK_SET: { label: string; state: PresenceState; color: string }[] = [
-  { label: 'Available', state: 'available', color: 'var(--ds-icon-success, #22A06B)' },  // GREEN
-  { label: 'Busy',      state: 'busy',      color: 'var(--ds-icon-danger, #C9372C)'  },  // RED
-  { label: 'Away',      state: 'away',      color: 'var(--ds-icon-warning, #E2B203)' },  // AMBER
+  { label: 'Available', state: 'available', color: 'var(--ds-icon-success, #22A06B)' },
+  { label: 'Busy',      state: 'busy',      color: 'var(--ds-icon-danger, #C9372C)'  },
+  { label: 'Away',      state: 'away',      color: 'var(--ds-icon-warning, #E2B203)' },
 ];
+
+const LEAVE_KIND_LABELS: Record<string, string> = {
+  vacation: 'Vacation',
+  public_holiday: 'Public holiday',
+  sick: 'Sick leave',
+  ooo: 'Out of office',
+};
 
 interface Props {
   onDone?: () => void;
@@ -19,17 +27,62 @@ interface Props {
 
 export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Props) {
   const { setPresence, isPending: isPresencePending } = usePresence();
-  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [clearing, setClearing] = useState(false);
+
+  const { data: activeLeave } = useQuery({
+    queryKey: ['active-leave'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      const now = new Date().toISOString();
+      const { data, error } = await supabase
+        .from('user_availability')
+        .select('id, kind, starts_at, ends_at, backup_user_id')
+        .eq('user_id', user.id)
+        .gte('ends_at', now)
+        .order('starts_at', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    staleTime: 30_000,
+  });
 
   const handleQuickSet = useCallback(
     async (state: PresenceState) => {
       await setPresence({ state });
-      const label = QUICK_SET.find(q => q.state === state)?.label ?? state;
-      toast({ title: `Status set to ${label}` });
       onDone?.();
     },
-    [setPresence, onDone, toast]
+    [setPresence, onDone]
   );
+
+  const handleClearLeave = useCallback(async () => {
+    if (!activeLeave) return;
+    setClearing(true);
+    try {
+      const { error } = await supabase
+        .from('user_availability')
+        .delete()
+        .eq('id', activeLeave.id);
+      if (error) throw error;
+      catalystToast.success('Leave cleared');
+      void queryClient.invalidateQueries({ queryKey: ['active-leave'] });
+      void queryClient.invalidateQueries({ queryKey: ['own-presence'] });
+      void queryClient.invalidateQueries({ queryKey: ['team-pulse'] });
+      void queryClient.invalidateQueries({ queryKey: ['leave-history'] });
+    } catch (e: unknown) {
+      catalystToast.error(e instanceof Error ? e.message : 'Failed to clear leave');
+    } finally {
+      setClearing(false);
+    }
+  }, [activeLeave, queryClient]);
+
+  const formatDate = (iso: string) => {
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+  };
 
   return (
     <div className="av-panel-compact" style={{ padding: '8px 12px', minWidth: 240 }}>
@@ -112,11 +165,68 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
           })}
         </div>
 
+        {/* Active leave indicator */}
+        {activeLeave && (
+          <div
+            style={{
+              borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              paddingTop: 8,
+              marginBottom: 4,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: '0.06em',
+                color: token('color.text.subtle', '#6B778C'),
+                marginBottom: 4,
+              }}
+            >
+              Scheduled leave
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '4px 8px',
+                borderRadius: 3,
+                background: token('color.background.information.subtle', '#E9F2FF'),
+                fontSize: 12,
+                color: token('color.text', '#172B4D'),
+              }}
+            >
+              <span>
+                {LEAVE_KIND_LABELS[activeLeave.kind] ?? activeLeave.kind}
+                {' · '}
+                {formatDate(activeLeave.starts_at)} – {formatDate(activeLeave.ends_at)}
+              </span>
+              <button
+                onClick={() => void handleClearLeave()}
+                disabled={clearing}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: clearing ? 'not-allowed' : 'pointer',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: token('color.text.danger', '#AE2A19'),
+                  padding: '2px 4px',
+                  opacity: clearing ? 0.5 : 1,
+                }}
+              >
+                {clearing ? 'Clearing…' : 'Clear'}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Schedule leave trigger */}
         <div
           style={{
-            borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-            paddingTop: 6,
+            borderTop: activeLeave ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+            paddingTop: activeLeave ? 4 : 6,
           }}
         >
           <button

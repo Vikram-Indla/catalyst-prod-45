@@ -7,7 +7,7 @@ import Textfield from '@atlaskit/textfield';
 import InlineEdit from '@atlaskit/inline-edit';
 import Spinner from '@atlaskit/spinner';
 import { catalystToast } from '@/lib/catalystToast';
-import { Shield, History } from '@/lib/atlaskit-icons';
+import { Shield, History, Calendar } from '@/lib/atlaskit-icons';
 import { useUserRole } from '@/hooks/useUserRole';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -81,6 +81,37 @@ export default function UserProfile() {
         .single();
       if (error) throw error;
       return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  const { data: leaveHistory } = useQuery({
+    queryKey: ['leave-history', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const { data, error } = await supabase
+        .from('user_availability')
+        .select('id, kind, starts_at, ends_at, note, backup_user_id, created_at')
+        .eq('user_id', user.id)
+        .order('starts_at', { ascending: false })
+        .limit(20);
+      if (error) throw error;
+      if (!data || data.length === 0) return [];
+      const backupIds = data.map(d => d.backup_user_id).filter(Boolean) as string[];
+      let backupMap: Record<string, string> = {};
+      if (backupIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', backupIds);
+        if (profiles) {
+          backupMap = Object.fromEntries(profiles.map(p => [p.id, p.full_name ?? p.id]));
+        }
+      }
+      return data.map(d => ({
+        ...d,
+        backup_name: d.backup_user_id ? (backupMap[d.backup_user_id] ?? '—') : null,
+      }));
     },
     enabled: !!user?.id,
   });
@@ -386,6 +417,84 @@ export default function UserProfile() {
         ) : (
           <div style={{ fontSize: 14, color: token('color.text.subtlest', '#6B778C'), textAlign: 'center', padding: 32 }}>
             No role history available
+          </div>
+        )}
+      </div>
+      {/* Leave history */}
+      <div style={{ ...cardStyle, marginTop: 24 }}>
+        <div style={{ ...sectionTitle, display: 'flex', alignItems: 'center', gap: 4 }}>
+          <Calendar style={{ width: 14, height: 14 }} />
+          Leave history
+        </div>
+        {leaveHistory && leaveHistory.length > 0 ? (
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                {['From', 'Until', 'Type', 'Backup', 'Note', 'Status'].map((h) => (
+                  <th
+                    key={h}
+                    style={{
+                      fontSize: 12, fontWeight: 653,
+                      color: token('color.text.subtle', '#505258'),
+                      textAlign: 'left',
+                      padding: '4px 8px 4px 0',
+                      borderBottom: `1.67px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+                    }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {leaveHistory.map((leave: any) => {
+                const now = new Date();
+                const start = new Date(leave.starts_at);
+                const end = new Date(leave.ends_at);
+                const isActive = start <= now && end >= now;
+                const isUpcoming = start > now;
+                const statusLabel = isActive ? 'Active' : isUpcoming ? 'Upcoming' : 'Completed';
+                const statusAppearance: LozengeAppearance = isActive ? 'inprogress' : isUpcoming ? 'new' : 'default';
+                const kindLabels: Record<string, string> = {
+                  vacation: 'Vacation', sick: 'Sick leave',
+                  public_holiday: 'Public holiday', ooo: 'Out of office',
+                };
+                const kindAppearance: Record<string, LozengeAppearance> = {
+                  vacation: 'inprogress', sick: 'removed',
+                  public_holiday: 'default', ooo: 'moved',
+                };
+                return (
+                  <tr key={leave.id}>
+                    <td style={{ padding: '8px 8px 8px 0', fontSize: 14, color: token('color.text', '#172B4D') }}>
+                      {new Date(leave.starts_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </td>
+                    <td style={{ padding: '8px 8px 8px 0', fontSize: 14, color: token('color.text', '#172B4D') }}>
+                      {new Date(leave.ends_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </td>
+                    <td style={{ padding: '8px 8px 8px 0', fontSize: 14 }}>
+                      <Lozenge appearance={kindAppearance[leave.kind] ?? 'default'}>
+                        {kindLabels[leave.kind] ?? leave.kind}
+                      </Lozenge>
+                    </td>
+                    <td style={{ padding: '8px 8px 8px 0', fontSize: 14, color: token('color.text', '#172B4D') }}>
+                      {leave.backup_name ?? '—'}
+                    </td>
+                    <td style={{ padding: '8px 8px 8px 0', fontSize: 14, color: token('color.text.subtlest', '#6B778C') }}>
+                      {leave.note ?? '—'}
+                    </td>
+                    <td style={{ padding: '8px 8px 8px 0', fontSize: 14 }}>
+                      <Lozenge appearance={statusAppearance}>
+                        {statusLabel}
+                      </Lozenge>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        ) : (
+          <div style={{ fontSize: 14, color: token('color.text.subtlest', '#6B778C'), textAlign: 'center', padding: 32 }}>
+            No leave history available
           </div>
         )}
       </div>
