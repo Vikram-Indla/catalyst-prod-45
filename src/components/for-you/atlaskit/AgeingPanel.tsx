@@ -118,10 +118,21 @@ function ageingToWorkItem(a: AgeingItem, jiraBaseUrl: string | null): WorkItem {
   };
 }
 
-// ─── Section heading ─────────────────────────────────────────────────────────
-function SectionHeading({ label, count, collapsed, onToggle, isArchived }: {
-  label: string; count: number; collapsed: boolean; onToggle: () => void; isArchived?: boolean;
+// ─── Section heading — ADS accent bar per severity tier ──────────────────────
+// Left border color uses ADS border-intent tokens to visually separate tiers.
+// fontWeight 653 matches Jira section headers (CLAUDE.md 2026-05-12 re-probe).
+const BRACKET_ACCENT: Record<AgeBracket, string> = {
+  archivingSoon: token('color.border.warning', '#FF991F'),
+  thirtySixty:   token('color.border.information', '#1D7AFC'),
+  sixtyNinety:   token('color.border.bold', '#758195'),
+  ninetyPlus:    token('color.border.danger', '#E5493A'),
+};
+
+function SectionHeading({ label, count, collapsed, onToggle, isArchived, bracket }: {
+  label: string; count: number; collapsed: boolean; onToggle: () => void;
+  isArchived?: boolean; bracket: AgeBracket;
 }) {
+  const accent = BRACKET_ACCENT[bracket];
   return (
     <button
       type="button"
@@ -129,11 +140,10 @@ function SectionHeading({ label, count, collapsed, onToggle, isArchived }: {
       style={{
         display: 'flex', alignItems: 'center', gap: token('space.100', '8px'),
         padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
-        background: isArchived
-          ? token('color.background.neutral.subtle', '#F7F8F9')
-          : 'transparent',
+        background: token('color.background.neutral', '#F1F2F4'),
         border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left',
         borderRadius: 0,
+        borderLeft: `3px solid ${accent}`,
         borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
       }}
     >
@@ -145,8 +155,8 @@ function SectionHeading({ label, count, collapsed, onToggle, isArchived }: {
         ▾
       </span>
       <span style={{
-        fontSize: 14, fontWeight: 500, lineHeight: '20px',
-        color: token('color.text.subtle', '#505258'),
+        fontSize: 14, fontWeight: 653, lineHeight: '20px',
+        color: token('color.text', '#292A2E'),
       }}>
         {label}
       </span>
@@ -467,6 +477,7 @@ export default function AgeingPanel() {
               collapsed={collapsed}
               onToggle={() => toggleSection(bracket)}
               isArchived={isArchived}
+              bracket={bracket}
             />
             {!collapsed && (
               <div style={{
