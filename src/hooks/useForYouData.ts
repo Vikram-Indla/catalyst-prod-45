@@ -1093,14 +1093,15 @@ export function useForYouData(authLoading = false) {
 
   // Single query — no serial gate. User mapping resolved inside fetchForYouRawData.
   const rawDataKey = useMemo(() => ['for-you-data', authUser?.id ?? ''], [authUser?.id]);
-  const { data: rawData, isPending: dataPending } = useQuery({
+  const { data: rawData, isPending: dataPending, isFetching } = useQuery({
     queryKey: rawDataKey,
     queryFn: () => fetchForYouRawData(authUser!.id),
     enabled: !!authUser?.id && !authLoading,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 2 * 60 * 1000,
+    refetchOnMount: 'always',
   });
 
-  const isLoading = dataPending;
+  const isLoading = dataPending || (isFetching && !rawData);
 
   // Reconstruct Maps from JSON-safe serialized arrays
   const projectNameMap = useMemo(() => new Map<string, string>(rawData?.projectNameMap ?? []), [rawData]);
@@ -1311,6 +1312,7 @@ export function useForYouData(authLoading = false) {
     aiData,
     performanceStats,
     isLoading,
+    isRefreshing: isFetching && !dataPending,
     handleStartTask,
     generateStatusUpdate,
     generateImpactReport,

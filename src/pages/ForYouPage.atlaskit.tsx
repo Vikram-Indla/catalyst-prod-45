@@ -97,6 +97,7 @@ export default function ForYouPageAtlaskit() {
     workItems,
     user,
     isLoading,
+    isRefreshing,
     toggleStar,
     trackView,
     recommendedMentions,
@@ -236,6 +237,7 @@ export default function ForYouPageAtlaskit() {
     const panelProps = {
       items: visibleItems,
       isLoading,
+      isRefreshing,
       onSelect: handleSelect,
       onToggleStar: toggleStar,
     };
@@ -261,7 +263,7 @@ export default function ForYouPageAtlaskit() {
       case 'starred':     return <StarredPanel     {...panelProps} onSwitchTab={onSwitchTab} />;
       default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
     }
-  }, [activeTab, visibleItems, isLoading, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName, allUserProjects, handleTabChange]);
+  }, [activeTab, visibleItems, isLoading, isRefreshing, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName, allUserProjects, handleTabChange]);
 
   // AI Theme and Ageing render their own vertical lists/grids internally —
   // neither shares the client-side pagination window that the row-feed tabs
@@ -288,21 +290,25 @@ export default function ForYouPageAtlaskit() {
         boxSizing: 'border-box',
       }}
     >
-      <div style={isR360Active ? { paddingInline: 'clamp(16px, 3vw, 32px)' } : undefined}>
+      <div style={isR360Active ? { paddingInline: 'clamp(16px, 3vw, 32px)' } : { marginBlockEnd: 16 }}>
         <RecommendedProjectsStrip projects={allUserProjects} />
       </div>
 
-      {/* Heading + tabs — heading is hidden in R360 full-screen mode; tabs stay
-          visible so the user can switch back to other tabs. */}
+      {/* Heading + tabs — sticky so tabs never cause layout shift on switch */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: isR360Active ? 'flex-end' : 'space-between',
           gap: 16,
-          marginBlockStart: isR360Active ? 8 : 20,
-          marginBlockEnd: 12,
+          marginBlockStart: isR360Active ? 8 : 16,
+          marginBlockEnd: 16,
           flexWrap: 'wrap',
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          background: token('elevation.surface', '#FFFFFF'),
+          paddingBlock: 8,
         }}
       >
         {!isR360Active && (
@@ -335,7 +341,7 @@ export default function ForYouPageAtlaskit() {
         role="tabpanel"
         id={`for-you-panel-${activeTab}`}
         aria-labelledby={`for-you-tab-${activeTab}`}
-        style={isR360Active ? { minHeight: 'calc(100vh - 110px)' } : undefined}
+        style={isR360Active ? { minHeight: 'calc(100vh - 110px)' } : { minHeight: 'calc(100vh - 240px)' }}
       >
         {panel}
       </div>
