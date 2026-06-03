@@ -46,8 +46,8 @@ function SidebarMemberRow({
 }) {
   const [hover, setHover] = React.useState(false);
 
-  let pillBg = token('color.background.warning.subtle', '#FFF7D6');
-  let pillColor = token('color.text.warning', '#974F0C');
+  let pillBg = token('color.background.neutral', '#F1F2F4');
+  let pillColor = token('color.text.subtle', '#44546F');
   let pillText = 'Away';
 
   if (presenceState === 'available' || presenceState === 'active' || presenceState === 'on_site') {
@@ -59,8 +59,8 @@ function SidebarMemberRow({
     pillColor = token('color.text.information', '#0055CC');
     pillText = 'Remote';
   } else {
-    pillBg = token('color.background.warning.subtle', '#FFF7D6');
-    pillColor = token('color.text.warning', '#974F0C');
+    pillBg = token('color.background.neutral', '#F1F2F4');
+    pillColor = token('color.text.subtle', '#44546F');
     pillText = 'Away';
     if (backOn) {
       pillText = `Away · Back ${new Date(backOn).toLocaleDateString('en', { month: 'short', day: 'numeric' })}`;
