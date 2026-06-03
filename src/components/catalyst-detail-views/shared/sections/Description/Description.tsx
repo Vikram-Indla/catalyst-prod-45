@@ -138,19 +138,40 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
     if (!editor || !catyActiveForThisIssue) return;
     if (catyPhase === 'idle' || catyPhase === 'errored') return;
     if (!catyText || !catyText.trim()) return;
-    const adf = catyMarkdownToAdf(catyText);
+
+    // Auto-scroll-follow: only stick to the bottom while the user is
+    // ALREADY at the bottom. If they have scrolled up to re-read
+    // earlier output, leave them there — don't yank them back down on
+    // every tick. They can manually scroll back to the bottom to
+    // resume auto-follow.
+    const body = editor.view.dom.closest<HTMLElement>(
+      '.catalyst-description-editor-body',
+    );
+    const SCROLL_FOLLOW_THRESHOLD = 24;
+    const wasNearBottom = body
+      ? body.scrollHeight - body.scrollTop - body.clientHeight <
+        SCROLL_FOLLOW_THRESHOLD
+      : false;
+
+    // The typewriter reveals chars before the AI's next ones arrive —
+    // so the very last line in `catyText` is frequently a partial
+    // Markdown marker like "##", "- ", or "1." with no content yet.
+    // `catyMarkdownToAdf` can't parse that as a heading/bullet (it
+    // needs marker+space+content) so the literal "##" would render
+    // as plain paragraph text and the user sees raw Markdown. Strip
+    // such tail lines during streaming; they reappear as proper
+    // structured blocks on the next tick once content has been
+    // revealed after the marker.
+    const streamingText =
+      catyPhase === 'streaming' ? stripIncompleteTail(catyText) : catyText;
+    if (!streamingText.trim()) return;
+    const adf = catyMarkdownToAdf(streamingText);
     const tiptapDoc = adfToTiptap(adf);
     const emitFinal = catyPhase === 'done' || catyPhase === 'stopped';
     editor.commands.setContent(tiptapDoc, emitFinal);
-    // Auto-scroll the editor body to the end so the user sees the
-    // newest tokens as they land. Without this, when AI output grows
-    // taller than the viewport, all new content disappears below the
-    // fold and the editor looks static.
-    if (catyPhase === 'streaming') {
-      const body = editor.view.dom.closest<HTMLElement>(
-        '.catalyst-description-editor-body',
-      );
-      if (body) body.scrollTop = body.scrollHeight;
+
+    if (body && catyPhase === 'streaming' && wasNearBottom) {
+      body.scrollTop = body.scrollHeight;
     }
   }, [editor, catyActiveForThisIssue, catyPhase, catyText]);
 
@@ -471,6 +492,109 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
       )}
     </div>
   );
+}
+
+/**
+ * Hide partially-typed Markdown syntax from the streaming view so the
+ * user doesn't see literal `##`, `**`, `` ` ``, or `[label](` flashes
+ * before the closing chars arrive.
+ *
+ * Two passes:
+ *   1. BLOCK-level — if the LAST line is just a marker with no content
+ *      (`##`, `### `, `- `, `1. `), drop the whole line.
+ *   2. INLINE-level — on the last line, find the position where every
+ *      open inline delimiter (`**`, `` ` ``, `[`, `[…](`) was last
+ *      balanced; truncate to that position so half-typed marks are
+ *      hidden.
+ *
+ * Anything stripped reappears as a proper structured / styled token
+ * on the next typewriter tick once the AI's next chars complete the
+ * pattern.
+ */
+function stripIncompleteTail(md: string): string {
+  if (!md) return md;
+  const lastNl = md.lastIndexOf('\n');
+  const lastLine = lastNl === -1 ? md : md.slice(lastNl + 1);
+  const beforeLastInclNl = lastNl === -1 ? '' : md.slice(0, lastNl + 1);
+
+  // Block-level — last line is JUST an unfinished marker
+  const trimmed = lastLine.trimEnd();
+  if (/^#{1,6}\s*$/.test(trimmed)) {
+    return lastNl === -1 ? '' : md.slice(0, lastNl);
+  }
+  if (/^[-*]\s*$/.test(trimmed)) {
+    return lastNl === -1 ? '' : md.slice(0, lastNl);
+  }
+  if (/^\d+\.\s*$/.test(trimmed)) {
+    return lastNl === -1 ? '' : md.slice(0, lastNl);
+  }
+
+  // Inline-level — truncate the last line so it ends at the last
+  // position where every inline delimiter is balanced.
+  const safeEnd = lastBalancedPosition(lastLine);
+  return beforeLastInclNl + lastLine.slice(0, safeEnd);
+}
+
+/**
+ * Walk `line` left to right tracking open inline delimiters; return
+ * the last character position at which every delimiter is balanced.
+ * Tracks: `**` (bold), single `*` and `_` (italic), `` ` `` (code),
+ * `[` (link label), and `[label](` (link URL).
+ */
+function lastBalancedPosition(line: string): number {
+  let openBold = false;
+  let openItalicStar = false;
+  let openItalicUnderscore = false;
+  let openCode = false;
+  let openLinkLabel = false;
+  let openLinkUrl = false;
+  let safe = 0;
+  let i = 0;
+  const len = line.length;
+  while (i < len) {
+    const ch = line[i];
+    const next = line[i + 1];
+    if (ch === '*' && next === '*') {
+      openBold = !openBold;
+      i += 2;
+    } else if (ch === '*' && !openBold) {
+      openItalicStar = !openItalicStar;
+      i++;
+    } else if (ch === '_') {
+      openItalicUnderscore = !openItalicUnderscore;
+      i++;
+    } else if (ch === '`') {
+      openCode = !openCode;
+      i++;
+    } else if (ch === '[' && !openLinkLabel && !openLinkUrl) {
+      openLinkLabel = true;
+      i++;
+    } else if (ch === ']' && openLinkLabel) {
+      openLinkLabel = false;
+      if (line[i + 1] === '(') {
+        openLinkUrl = true;
+        i += 2;
+      } else {
+        i++;
+      }
+    } else if (ch === ')' && openLinkUrl) {
+      openLinkUrl = false;
+      i++;
+    } else {
+      i++;
+    }
+    if (
+      !openBold &&
+      !openItalicStar &&
+      !openItalicUnderscore &&
+      !openCode &&
+      !openLinkLabel &&
+      !openLinkUrl
+    ) {
+      safe = i;
+    }
+  }
+  return safe;
 }
 
 /**

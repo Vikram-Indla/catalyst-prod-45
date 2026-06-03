@@ -41,7 +41,7 @@ const DEFAULT_MODEL = "gemini-2.5-flash";
 
 const SUB_TYPE_INSTRUCTION: Record<string, string> = {
   improve_clarify:
-    'Lightly edit the existing content for grammar, spelling, clarity, and concision. Preserve the original meaning, length, and overall structure exactly. Do not add new sections, headings, or content that was not already there. Do not add labelled sub-headers like "**Examples:**", "**Note:**", "**Flow:**", "**Logged Information:**", or any similar bold-prefixed labels. Do not convert paragraphs into bullet lists or bullet lists into paragraphs. Do not nest bullets unless the original was already nested. Do not pad. Do not rephrase content that is already clear. If the input contains a Markdown table, preserve it exactly with the same columns and rows.',
+    'ACTIVELY improve the existing content for grammar, spelling, clarity, concision, and readability. Tighten verbose sentences. Replace weak verbs with stronger ones. Untangle confusing phrasing. Convert passive voice to active where it reads more naturally. The output should be NOTICEABLY better than the input — if a sentence can be sharper, sharpen it. At the same time: do NOT add new sections, headings, or content not already there; do NOT add labelled sub-headers like "**Examples:**", "**Note:**", "**Flow:**"; do NOT convert paragraphs into bullet lists or bullet lists into paragraphs; do NOT nest bullets that weren\'t nested in the original; do NOT pad. If the input contains a Markdown table, preserve its columns and rows exactly (you may edit the text inside cells).',
   expand_detail:
     'Expand the current description into a fuller story. You may add detail, context, and examples, but stay on the same topic and scope as the original.',
   add_acceptance_criteria:
@@ -120,7 +120,17 @@ function buildImproveDescriptionPrompt(
       : '';
 
   const lines = [
-    'You are an editing assistant for an enterprise portfolio management platform used by the Saudi Ministry of Industry. Write in English. Output Markdown — no code fences, no preamble, no commentary about the changes you made.',
+    'You are an editing assistant for an enterprise portfolio management platform used by the Saudi Ministry of Industry. Output Markdown — no code fences, no preamble, no commentary about the changes you made.',
+    '',
+    '═══════════════════════════════════════════════════════════════════',
+    'LANGUAGE PRESERVATION — THE MOST IMPORTANT RULE:',
+    'You are NOT a translator. You NEVER change the language of any text.',
+    '  - If the input paragraph is in English, your output paragraph stays in English.',
+    '  - If the input paragraph is in Arabic, your output paragraph stays in Arabic.',
+    '  - If the input has mixed-language blocks (e.g. one bullet English and the next Arabic), you keep EACH block in its original language. The Arabic bullet stays Arabic; the English bullet stays English.',
+    '  - If a single sentence mixes Arabic and English words/terms, keep that exact mix.',
+    'Translating a block to a different language is REJECTED output. Read every block of input, identify its language, and write your improved version of that block in the SAME language.',
+    '═══════════════════════════════════════════════════════════════════',
     '',
     'Your ONLY allowed operations are editorial:',
     '  - Fix grammar, spelling, and punctuation.',

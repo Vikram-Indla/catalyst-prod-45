@@ -44,20 +44,18 @@ export interface UseCatyImproveStreamResult {
  * hook resets to `idle` and discards any in-flight state.
  */
 /**
- * Typewriter tuning. The visible text catches up to the accumulator
- * at an ADAPTIVE rate: small queue → slow steady typing (feels like
- * deliberate typing); big queue → faster catch-up (so the strap
- * disappears soon after the AI's actual `done` event rather than
- * lagging by many seconds while the typewriter drains a backlog).
+ * Typewriter tuning. STEADY rate — no catch-up acceleration so the
+ * cadence feels like a human typing and the user can read along.
  *
- * Per-tick characters = max(MIN, ceil(remaining / CATCHUP_DIVISOR)).
- * MIN=3 keeps the typing visible even on a near-empty queue.
- * CATCHUP_DIVISOR=20 means we drain any backlog over ~20 ticks
- * (~320ms at 16ms/tick) regardless of size.
+ * Tick CADENCE is also bounded by render cost: every tick parses the
+ * accumulated markdown, converts to a Tiptap doc, and runs
+ * `editor.commands.setContent` — plus the AutoDirection plugin then
+ * walks the doc. On a sizeable description, doing that 60 times/sec
+ * (16ms tick) freezes the app. 80ms tick × 3 chars = 37 chars/sec is
+ * close to a comfortable reading speed AND ~5× fewer renders.
  */
-const TYPEWRITER_TICK_MS = 16;
-const TYPEWRITER_MIN_CHARS_PER_TICK = 3;
-const TYPEWRITER_CATCHUP_DIVISOR = 20;
+const TYPEWRITER_TICK_MS = 80;
+const TYPEWRITER_CHARS_PER_TICK = 3;
 
 export function useCatyImproveStream(
   payload: CatyImprovePayload | null,
@@ -90,12 +88,7 @@ export function useCatyImproveStream(
     const targetLen = fullTextRef.current.length;
     const visible = visibleCharsRef.current;
     if (visible < targetLen) {
-      const remaining = targetLen - visible;
-      const charsThisTick = Math.max(
-        TYPEWRITER_MIN_CHARS_PER_TICK,
-        Math.ceil(remaining / TYPEWRITER_CATCHUP_DIVISOR),
-      );
-      const next = Math.min(visible + charsThisTick, targetLen);
+      const next = Math.min(visible + TYPEWRITER_CHARS_PER_TICK, targetLen);
       visibleCharsRef.current = next;
       setText(fullTextRef.current.slice(0, next));
     } else if (streamCompleteRef.current) {
