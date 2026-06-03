@@ -318,16 +318,16 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
           width: 100% !important;
         }
         /* NUCLEAR: kill grey on every ancestor when R360 is mounted.
-           The CatalystShell <main> uses var(--cp-bg) which resolves to
-           grey. Every intermediate div between <main> and #r360-root
-           must be white so no grey bleeds through scrollbar gutters,
-           flex gaps, or overflow areas. */
+           var(--ds-surface) resolves to #F8F8F8 in some theme configs,
+           not #FFFFFF. Force literal white on every layer. */
         [data-catalyst-main],
         [data-catalyst-main] > div,
         [data-catalyst-main] > div > div,
         [data-r360-fullscreen],
-        [data-r360-fullscreen] > div {
-          background: var(--ds-surface, #FFFFFF) !important;
+        [data-r360-fullscreen] > div,
+        #r360-root,
+        #r360-root > .r3-page {
+          background-color: #FFFFFF !important;
         }
       `;
       document.head.appendChild(style);
