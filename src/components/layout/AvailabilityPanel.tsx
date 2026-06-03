@@ -41,11 +41,9 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
         .select('id, kind, starts_at, ends_at, backup_user_id')
         .eq('user_id', user.id)
         .gte('ends_at', now)
-        .order('starts_at', { ascending: true })
-        .limit(1)
-        .maybeSingle();
+        .order('starts_at', { ascending: true });
       if (error) return null;
-      return data;
+      return data ?? [];
     },
     staleTime: 30_000,
   });
@@ -58,14 +56,20 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
     [setPresence, onDone]
   );
 
+  const hasActiveLeave = activeLeave && activeLeave.length > 0;
+
   const handleClearLeave = useCallback(async () => {
-    if (!activeLeave) return;
+    if (!hasActiveLeave) return;
     setClearing(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      const now = new Date().toISOString();
       const { error } = await supabase
         .from('user_availability')
         .delete()
-        .eq('id', activeLeave.id);
+        .eq('user_id', user.id)
+        .gte('ends_at', now);
       if (error) throw error;
       catalystToast.success('Leave cleared');
       void queryClient.invalidateQueries({ queryKey: ['active-leave'] });
@@ -77,7 +81,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
     } finally {
       setClearing(false);
     }
-  }, [activeLeave, queryClient]);
+  }, [hasActiveLeave, queryClient]);
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
@@ -166,7 +170,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
         </div>
 
         {/* Active leave indicator */}
-        {activeLeave && (
+        {hasActiveLeave && (
           <div
             style={{
               borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
@@ -176,31 +180,21 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
           >
             <div
               style={{
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: '0.06em',
-                color: token('color.text.subtle', '#6B778C'),
-                marginBottom: 4,
-              }}
-            >
-              Scheduled leave
-            </div>
-            <div
-              style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: '4px 8px',
-                borderRadius: 3,
-                background: token('color.background.information.subtle', '#E9F2FF'),
-                fontSize: 12,
-                color: token('color.text', '#172B4D'),
+                marginBottom: 4,
               }}
             >
-              <span>
-                {LEAVE_KIND_LABELS[activeLeave.kind] ?? activeLeave.kind}
-                {' · '}
-                {formatDate(activeLeave.starts_at)} – {formatDate(activeLeave.ends_at)}
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                  color: token('color.text.subtle', '#6B778C'),
+                }}
+              >
+                Scheduled leave
               </span>
               <button
                 onClick={() => void handleClearLeave()}
@@ -216,8 +210,26 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                   opacity: clearing ? 0.5 : 1,
                 }}
               >
-                {clearing ? 'Clearing…' : 'Clear'}
+                {clearing ? 'Clearing…' : `Clear all (${activeLeave!.length})`}
               </button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {activeLeave!.map((leave) => (
+                <div
+                  key={leave.id}
+                  style={{
+                    padding: '4px 8px',
+                    borderRadius: 3,
+                    background: token('color.background.information.subtle', '#E9F2FF'),
+                    fontSize: 12,
+                    color: token('color.text', '#172B4D'),
+                  }}
+                >
+                  {LEAVE_KIND_LABELS[leave.kind] ?? leave.kind}
+                  {' · '}
+                  {formatDate(leave.starts_at)} – {formatDate(leave.ends_at)}
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -225,8 +237,8 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
         {/* Schedule leave trigger */}
         <div
           style={{
-            borderTop: activeLeave ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-            paddingTop: activeLeave ? 4 : 6,
+            borderTop: hasActiveLeave ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+            paddingTop: hasActiveLeave ? 4 : 6,
           }}
         >
           <button
