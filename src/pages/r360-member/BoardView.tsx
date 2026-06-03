@@ -7,7 +7,6 @@
  */
 import React, { useMemo } from 'react';
 import { token } from '@atlaskit/tokens';
-import Lozenge from '@atlaskit/lozenge';
 import Badge from '@atlaskit/badge';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { R360WorkItem } from '@/types/r360';
@@ -95,7 +94,7 @@ export function BoardView({ items, onSelect, quarterLabel }: { items: R360WorkIt
                 key={item.id}
                 onClick={() => onSelect(item)}
                 style={{
-                  background: token('elevation.surface', '#FFFFFF'),
+                  background: 'transparent',
                   border: `1px solid ${token('color.border', '#091E4224')}`,
                   borderRadius: 8,
                   padding: 12,
@@ -103,10 +102,12 @@ export function BoardView({ items, onSelect, quarterLabel }: { items: R360WorkIt
                   transition: 'box-shadow 150ms cubic-bezier(0.2, 0, 0, 1), border-color 150ms cubic-bezier(0.2, 0, 0, 1)',
                 }}
                 onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.background = token('elevation.surface.hovered', 'rgba(9,30,66,0.04)');
                   (e.currentTarget as HTMLElement).style.boxShadow = token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.25), 0 0 1px 0 rgba(9,30,66,0.31)');
-                  (e.currentTarget as HTMLElement).style.borderColor = token('color.border.focused', '#388BFF');
+                  (e.currentTarget as HTMLElement).style.borderColor = token('color.border', 'rgba(11,18,14,0.2)');
                 }}
                 onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.background = 'transparent';
                   (e.currentTarget as HTMLElement).style.boxShadow = 'none';
                   (e.currentTarget as HTMLElement).style.borderColor = token('color.border', '#091E4224');
                 }}
@@ -122,9 +123,9 @@ export function BoardView({ items, onSelect, quarterLabel }: { items: R360WorkIt
                   </span>
                   <span style={{
                     marginLeft: 'auto', fontSize: 11,
-                    color: token('color.text.subtlest', '#626F86'),
+                    color: item.age_days > 60 ? token('color.text.warning', '#974F0C') : token('color.text.subtlest', '#626F86'),
                   }}>
-                    {item.age_days}d
+                    {item.age_days} days
                   </span>
                 </div>
 
@@ -147,16 +148,7 @@ export function BoardView({ items, onSelect, quarterLabel }: { items: R360WorkIt
                   }}>
                     {item.priority}
                   </span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <StatusLozenge status={item.status} statusCategory={item.status_category} />
-                    {item.carried_from_label && (
-                      <span data-cp-lozenge-jira-parity>
-                        <Lozenge appearance="moved" isBold={false}>
-                          {item.carried_from_label}
-                        </Lozenge>
-                      </span>
-                    )}
-                  </div>
+                  <StatusLozenge status={item.status} statusCategory={item.status_category} />
                 </div>
               </div>
             ))}

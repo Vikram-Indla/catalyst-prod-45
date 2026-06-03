@@ -357,7 +357,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
       <div id="r360-root" data-r360-page-content style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden' }}>
         <div className="r3-page" style={{ background: token('elevation.surface', '#FFFFFF'), height: '100%', overflow: 'auto', paddingTop: '8px' }}>
           {/* ── Sticky Header: Profile + Week Nav ── */}
-          <div style={{ position: 'sticky', top: 0, zIndex: 10, background: token('elevation.surface', '#FFFFFF'), ...(embedded && forceView === 'board' ? { display: 'none' } : {}) }}>
+          <div style={{ position: 'sticky', top: 0, zIndex: 10, background: token('elevation.surface', '#FFFFFF'), ...(embedded ? { display: 'none' } : {}) }}>
             {/* ── Profile Header ── */}
             <div className="r3-profile">
               <div className="r3-profile-top">
@@ -668,7 +668,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                   )}
                 </div>
               )}
-              {view === 'chronology' && <ChronologyView items={filteredWeekItems} onSelect={setSelectedItem} weekStart={period.start} weekEnd={period.end} />}
+              {view === 'chronology' && <ChronologyView items={filteredWeekItems} onSelect={embedded ? (item) => useGlobalSearchStore.getState().openDetail({ id: item.item_key }) : setSelectedItem} weekStart={period.start} weekEnd={period.end} />}
               {view === 'board' && <BoardView items={filteredWeekItems} onSelect={embedded ? (item) => useGlobalSearchStore.getState().openDetail({ id: item.item_key }) : setSelectedItem} quarterLabel={embedded ? `Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}` : undefined} />}
             </>
           )}
