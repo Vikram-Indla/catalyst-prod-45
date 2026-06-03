@@ -383,7 +383,9 @@ function AgeingRow({ item }: { item: AgeingItem }) {
 export function useAgeingCount(): number {
   const { data: sharedItems, isLoading } = useAgeingItems();
   if (isLoading || !sharedItems) return 0;
-  return sharedItems.length;
+  // Only count NON-archived items (archiving soon + 30-60 day active items).
+  // Archived items (90+, 60-90 with archived_at set) must NOT inflate the badge.
+  return sharedItems.filter(item => !item.archived_at).length;
 }
 
 // /design-critique callout ⑦ — every accent resolves to an Atlaskit

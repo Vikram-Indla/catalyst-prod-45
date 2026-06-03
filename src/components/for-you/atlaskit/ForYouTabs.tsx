@@ -55,9 +55,9 @@ export const FOR_YOU_TAB_ORDER: ForYouTabDefinition[] = [
   { id: 'recommended', label: 'Recommended',     showCount: false },
   { id: 'starred',     label: 'Starred',         showCount: false },
   { id: 'r360',        label: 'Resource 360°',   showCount: false },
-  { id: 'ageing',      label: 'Ageing',          showCount: true  },
   { id: 'board',       label: 'Board',           showCount: false },
   { id: 'timeline',    label: 'Timeline',        showCount: false },
+  { id: 'ageing',      label: 'Ageing',          showCount: true  },
 ];
 
 interface ForYouTabsProps {
