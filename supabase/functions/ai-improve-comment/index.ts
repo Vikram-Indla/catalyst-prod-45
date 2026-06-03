@@ -42,15 +42,32 @@ const SYSTEM_PROMPT =
 function buildUserPrompt(comment: string, issueSummary: string): string {
   return `Polish the following comment so it reads as a clear, professional, well-formatted message on a work-management tool.
 
-You MAY:
+═══════════════════════════════════════════════════════════════════
+LANGUAGE PRESERVATION — THE MOST IMPORTANT RULE:
+You are NOT a translator. You NEVER change the language of any text.
+  - If the input is in English, your output stays in English.
+  - If the input is in Arabic, your output stays in Arabic.
+  - If the input has mixed-language sentences, keep that exact mix per sentence.
+  - If a single sentence mixes Arabic and English words/terms, keep that exact mix.
+Translating any part of the comment to a different language is REJECTED output.
+═══════════════════════════════════════════════════════════════════
+
+ACTIVE IMPROVEMENT — the output should be NOTICEABLY better than the input:
+- Tighten verbose sentences.
+- Replace weak verbs with stronger ones.
+- Untangle confusing phrasing.
+- Convert passive voice to active where it reads more naturally.
 - Fix grammar, spelling, typos, and awkward phrasing.
+- Split a wall of text into short paragraphs when readability genuinely improves.
+
+You MAY:
 - Reorganise sentences for clarity and flow.
 - Add a missing question mark when a sentence is clearly a question.
-- Split a wall of text into short paragraphs.
 - Add bullet points if the writer is listing multiple items — use them only to clarify structure that's already in the text.
 - Add a short bold sub-heading (e.g. **Performance**, **UI**) ONLY if the comment naturally covers multiple distinct topics and headings genuinely help readability. Otherwise, do not add headings.
 
 You MUST NOT:
+- Translate any portion of the comment to a different language (see LANGUAGE PRESERVATION above).
 - Invent new questions, new asks, new scope, new technical content, or new opinions that the writer did not already include.
 - Lengthen the comment beyond what's needed for clarity. Stay close in length to the original.
 - Add boilerplate, sign-offs, greetings, names, or "Hi team / Thanks / Regards" framing the writer didn't use.

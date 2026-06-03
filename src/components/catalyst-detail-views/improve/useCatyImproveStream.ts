@@ -150,18 +150,33 @@ export function useCatyImproveStream(
         const { data: sessionData } = await supabase.auth.getSession();
         const accessToken = sessionData?.session?.access_token ?? null;
 
-        const requestBody = {
-          improve_type: "improve_description_v2",
-          stream: true,
-          improve_sub_type: payload.improveSubType ?? "improve_clarify",
-          issue_type: payload.issueType ?? "Default",
-          issue_summary: payload.issueSummary ?? "",
-          current_description: payload.currentDescription ?? "",
-          current_ac: payload.currentAcceptanceCriteria ?? "",
-          attachment_urls: payload.attachmentUrls ?? [],
-        };
+        // Route to the right edge function + body shape based on what
+        // we're polishing. Comments and descriptions have distinct
+        // prompts on the server side; the streaming envelope (NDJSON
+        // {type:"text",delta:"..."}) is identical so the rest of this
+        // hook treats them the same.
+        const isCommentMode =
+          payload.improveType === "improve_comment_v1";
+        const endpointName = isCommentMode
+          ? "ai-improve-comment"
+          : "ai-improve-story";
+        const requestBody = isCommentMode
+          ? {
+              current_comment: payload.currentDescription ?? "",
+              issue_summary: payload.issueSummary ?? "",
+            }
+          : {
+              improve_type: "improve_description_v2",
+              stream: true,
+              improve_sub_type: payload.improveSubType ?? "improve_clarify",
+              issue_type: payload.issueType ?? "Default",
+              issue_summary: payload.issueSummary ?? "",
+              current_description: payload.currentDescription ?? "",
+              current_ac: payload.currentAcceptanceCriteria ?? "",
+              attachment_urls: payload.attachmentUrls ?? [],
+            };
 
-        const res = await fetchFunction("ai-improve-story", {
+        const res = await fetchFunction(endpointName, {
           method: "POST",
           accessToken,
           headers: { "Content-Type": "application/json" },

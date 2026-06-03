@@ -33,6 +33,16 @@ export interface CatyImprovePayload {
   /** Sub-instruction for the AI. Defaults to `improve_clarify` to match
    *  Jira's "Improve description" default. */
   improveSubType?: string;
+  /**
+   * Which AI endpoint to call.
+   *   - 'improve_description_v2' (default) → routes to ai-improve-story,
+   *     full multimodal description editing.
+   *   - 'improve_comment_v1' → routes to ai-improve-comment, polishes
+   *     comment text only (no AC, no attachments).
+   * Lets the same hook power both Description's toolbar/right-rail and
+   * the comment editor's "Improve writing" button.
+   */
+  improveType?: 'improve_description_v2' | 'improve_comment_v1';
 }
 
 interface CatyImproveState {

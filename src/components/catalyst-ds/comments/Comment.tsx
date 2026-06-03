@@ -9,6 +9,68 @@ import {
 } from '@/components/shared/rich-text/atlaskit/adfLightRenderer';
 import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
 
+// ─── Per-block direction detection for read mode ─────────────────────
+//
+// Mirrors DisplayView and the editor's AutoDirection: walk the
+// rendered comment DOM, detect direction per block, and set the
+// `dir` attribute so bullets / numbers / blockquote borders / panel
+// decorations follow the content's language. Idempotent — the
+// MutationObserver re-runs the walker on every DOM mutation (Suspense
+// resolution, async loaders, etc.).
+
+const ARABIC_DIR_RE_CMT =
+  /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/;
+const LATIN_DIR_RE_CMT = /[A-Za-z]/;
+const DIR_BLOCK_SELECTOR_CMT =
+  'p, h1, h2, h3, h4, h5, h6, ul, ol, li, blockquote, [data-panel-type], [data-block-type="panel"]';
+
+function detectCommentBlockDir(el: HTMLElement): 'rtl' | 'ltr' | null {
+  const text = el.textContent ?? '';
+  for (const ch of text) {
+    if (ARABIC_DIR_RE_CMT.test(ch)) return 'rtl';
+    if (LATIN_DIR_RE_CMT.test(ch)) return 'ltr';
+  }
+  return null;
+}
+
+function applyCommentDirection(root: HTMLElement) {
+  const blocks = root.querySelectorAll<HTMLElement>(DIR_BLOCK_SELECTOR_CMT);
+  blocks.forEach((el) => {
+    const detected = detectCommentBlockDir(el);
+    if (!detected) return;
+    if (el.getAttribute('dir') !== detected) {
+      el.setAttribute('dir', detected);
+    }
+  });
+}
+
+const CMT_DIRECTION_STYLE_ID = 'catalyst-comment-direction-styles';
+function injectCommentDirectionStyles() {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById(CMT_DIRECTION_STYLE_ID)) return;
+  const style = document.createElement('style');
+  style.id = CMT_DIRECTION_STYLE_ID;
+  style.textContent = `
+    .cds-comment-body ul[dir="rtl"],
+    .cds-comment-body ol[dir="rtl"] {
+      padding-inline-start: 24px !important;
+      padding-left: 0 !important;
+    }
+    .cds-comment-body ul[dir="ltr"],
+    .cds-comment-body ol[dir="ltr"] {
+      padding-inline-start: 24px !important;
+      padding-right: 0 !important;
+    }
+    .cds-comment-body blockquote[dir="rtl"],
+    .cds-comment-body blockquote[dir="ltr"] {
+      border-inline-start: 2px solid var(--ds-border, rgba(11,18,14,0.14)) !important;
+      border-left: none !important;
+      border-right: none !important;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 function tryParseAdf(content: string): unknown | null {
   const v = content.trim();
   if (!v.startsWith('{')) return null;
@@ -130,6 +192,33 @@ function renderContent(content: string): React.ReactNode {
   return nodes;
 }
 
+/**
+ * Rendered comment body wrapped with a ref + MutationObserver so the
+ * direction walker fires whenever the inner ADF renderer (Atlaskit or
+ * AdfLight) finishes mounting / hydrates async content.
+ */
+function CommentBody({ content }: { content: string }) {
+  const ref = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    injectCommentDirectionStyles();
+    const apply = () => applyCommentDirection(root);
+    apply();
+    const observer = new MutationObserver(apply);
+    observer.observe(root, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [content]);
+  return (
+    <div
+      ref={ref}
+      className="cds-comment-body text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] whitespace-pre-wrap leading-relaxed"
+    >
+      {renderContent(content)}
+    </div>
+  );
+}
+
 export interface CommentProps {
   comment: CdsComment;
   actions?: React.ReactNode;
@@ -180,9 +269,7 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
             )}
           </div>
 
-          <div className="text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] whitespace-pre-wrap leading-relaxed">
-            {renderContent(content)}
-          </div>
+          <CommentBody content={content} />
 
           {actions && (
             <div className="flex items-center gap-3 mt-2">

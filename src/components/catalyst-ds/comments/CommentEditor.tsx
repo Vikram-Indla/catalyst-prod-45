@@ -1,12 +1,94 @@
 import * as React from 'react';
+import type { Editor } from '@tiptap/react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ads';
 import type { CdsUser, CdsQuickReply } from '../types';
 import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
 import { MentionSuggestionPill } from '@/components/catalyst-detail-views/shared/sections/Description/_components/MentionSuggestionPill/MentionSuggestionPill';
-import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
+import {
+  adfToTiptap,
+  type AdfDoc,
+  type TiptapDoc,
+} from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
+import { catyMarkdownToAdf } from '@/components/catalyst-detail-views/shared/sections/Description/utils/catyMarkdownToAdf';
 import { isAdfEmpty, adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
-import { CatyStreamingOverlay } from '@/components/catalyst-detail-views/improve/CatyStreamingOverlay';
+import { DisplayView } from '@/components/catalyst-detail-views/shared/sections/Description/_components/DisplayView/DisplayView';
+import { useCatyImprove } from '@/components/catalyst-detail-views/improve/catyImproveStore';
+import { useCatyImproveStream } from '@/components/catalyst-detail-views/improve/useCatyImproveStream';
+import { CatyImproveStrap } from '@/components/catalyst-detail-views/improve/CatyImproveStrap';
+
+/**
+ * Same partial-markdown guard as Description.tsx — hides incomplete
+ * heading markers and unbalanced inline delimiters mid-stream so the
+ * user never sees raw `##` or `**foo` flashes in the editor.
+ */
+function stripIncompleteTail(md: string): string {
+  if (!md) return md;
+  const lastNl = md.lastIndexOf('\n');
+  const lastLine = lastNl === -1 ? md : md.slice(lastNl + 1);
+  const beforeLastInclNl = lastNl === -1 ? '' : md.slice(0, lastNl + 1);
+  const trimmed = lastLine.trimEnd();
+  if (/^#{1,6}\s*$/.test(trimmed)) return lastNl === -1 ? '' : md.slice(0, lastNl);
+  if (/^[-*]\s*$/.test(trimmed)) return lastNl === -1 ? '' : md.slice(0, lastNl);
+  if (/^\d+\.\s*$/.test(trimmed)) return lastNl === -1 ? '' : md.slice(0, lastNl);
+  const safeEnd = lastBalancedPosition(lastLine);
+  return beforeLastInclNl + lastLine.slice(0, safeEnd);
+}
+
+function lastBalancedPosition(line: string): number {
+  let openBold = false;
+  let openItalicStar = false;
+  let openItalicUnderscore = false;
+  let openCode = false;
+  let openLinkLabel = false;
+  let openLinkUrl = false;
+  let safe = 0;
+  let i = 0;
+  while (i < line.length) {
+    const ch = line[i];
+    const next = line[i + 1];
+    if (ch === '*' && next === '*') {
+      openBold = !openBold;
+      i += 2;
+    } else if (ch === '*' && !openBold) {
+      openItalicStar = !openItalicStar;
+      i++;
+    } else if (ch === '_') {
+      openItalicUnderscore = !openItalicUnderscore;
+      i++;
+    } else if (ch === '`') {
+      openCode = !openCode;
+      i++;
+    } else if (ch === '[' && !openLinkLabel && !openLinkUrl) {
+      openLinkLabel = true;
+      i++;
+    } else if (ch === ']' && openLinkLabel) {
+      openLinkLabel = false;
+      if (line[i + 1] === '(') {
+        openLinkUrl = true;
+        i += 2;
+      } else {
+        i++;
+      }
+    } else if (ch === ')' && openLinkUrl) {
+      openLinkUrl = false;
+      i++;
+    } else {
+      i++;
+    }
+    if (
+      !openBold &&
+      !openItalicStar &&
+      !openItalicUnderscore &&
+      !openCode &&
+      !openLinkLabel &&
+      !openLinkUrl
+    ) {
+      safe = i;
+    }
+  }
+  return safe;
+}
 
 export interface CommentImproveContext {
   issueKey: string;
@@ -134,7 +216,86 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
     const [currentAdfJson, setCurrentAdfJson] = React.useState<string>(() =>
       initialContent ? JSON.stringify(initialContent) : '',
     );
-    const [improving, setImproving] = React.useState(false);
+
+    // ── Caty Improve writing ────────────────────────────────────────
+    // Mirrors Description.tsx: drives the AI stream directly into the
+    // editor (no separate overlay), shows a muted snapshot of the
+    // current comment below, and exits the improve session once the
+    // user clicks Save / Cancel on the editor itself.
+    const catyPayload = useCatyImprove((s) => s.payload);
+    const startCatyImprove = useCatyImprove((s) => s.start);
+    const stopCatyImprove = useCatyImprove((s) => s.stop);
+    // Comment improve sessions are keyed by `<issueKey>:comment` so
+    // they don't collide with the issue's description improve session
+    // that runs on the same page.
+    const commentSessionKey = improveContext?.issueKey
+      ? `${improveContext.issueKey}:comment`
+      : null;
+    const catyActiveForThisEditor =
+      catyPayload != null &&
+      commentSessionKey != null &&
+      catyPayload.issueKey === commentSessionKey;
+    const streamPayload = catyActiveForThisEditor ? catyPayload : null;
+    const {
+      phase: catyPhase,
+      text: catyText,
+      errorMessage: catyError,
+      stop: stopCatyStream,
+    } = useCatyImproveStream(streamPayload);
+
+    const [editor, setEditor] = React.useState<Editor | null>(null);
+    const [snapshotAdf, setSnapshotAdf] = React.useState<AdfDoc | null>(null);
+    const streamLocked =
+      catyPhase === 'analyzing' || catyPhase === 'streaming';
+
+    // Lock the editor while the AI is producing output.
+    React.useEffect(() => {
+      if (!editor) return;
+      editor.setEditable(!streamLocked);
+    }, [editor, streamLocked]);
+
+    // Clear snapshot whenever the session ends (terminal phase OR
+    // store cleared by Save / Cancel).
+    React.useEffect(() => {
+      if (!catyActiveForThisEditor) setSnapshotAdf(null);
+    }, [catyActiveForThisEditor]);
+    React.useEffect(() => {
+      if (
+        catyPhase === 'done' ||
+        catyPhase === 'stopped' ||
+        catyPhase === 'errored'
+      ) {
+        setSnapshotAdf(null);
+      }
+    }, [catyPhase]);
+
+    // Stream-into-editor: parse the visible markdown (with partial
+    // syntax stripped) and replace the editor content. Same scroll
+    // follow + auto-scroll logic Description.tsx uses.
+    React.useEffect(() => {
+      if (!editor || !catyActiveForThisEditor) return;
+      if (catyPhase === 'idle' || catyPhase === 'errored') return;
+      if (!catyText || !catyText.trim()) return;
+      const body = editor.view.dom.closest<HTMLElement>(
+        '.catalyst-description-editor-body',
+      );
+      const SCROLL_FOLLOW_THRESHOLD = 24;
+      const wasNearBottom = body
+        ? body.scrollHeight - body.scrollTop - body.clientHeight <
+          SCROLL_FOLLOW_THRESHOLD
+        : false;
+      const streamingText =
+        catyPhase === 'streaming' ? stripIncompleteTail(catyText) : catyText;
+      if (!streamingText.trim()) return;
+      const adf = catyMarkdownToAdf(streamingText);
+      const tiptapDoc = adfToTiptap(adf);
+      const emitFinal =
+        catyPhase === 'done' || catyPhase === 'stopped';
+      editor.commands.setContent(tiptapDoc, emitFinal);
+      if (body && catyPhase === 'streaming' && wasNearBottom) {
+        body.scrollTop = body.scrollHeight;
+      }
+    }, [editor, catyActiveForThisEditor, catyPhase, catyText]);
 
     const isCurrentEmpty = React.useMemo(() => {
       if (!currentAdfJson) return true;
@@ -154,46 +315,62 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
           isEmpty = !adfJson || adfJson.trim().length === 0;
         }
         if (isEmpty) return;
+        stopCatyImprove();
         onSubmit(adfJson);
         if (!isExistingEdit) setEditing(false);
       },
-      [onSubmit, isExistingEdit],
+      [onSubmit, isExistingEdit, stopCatyImprove],
     );
 
     const handleCancel = React.useCallback(() => {
+      if (catyActiveForThisEditor) {
+        stopCatyStream();
+        stopCatyImprove();
+      }
       onCancel?.();
       if (!isExistingEdit) setEditing(false);
-    }, [onCancel, isExistingEdit]);
+    }, [
+      onCancel,
+      isExistingEdit,
+      catyActiveForThisEditor,
+      stopCatyStream,
+      stopCatyImprove,
+    ]);
 
     const handleImproveClick = React.useCallback(() => {
-      if (!improveContext) return;
+      if (!improveContext || !commentSessionKey) return;
       if (isCurrentEmpty) return;
-      setImproving(true);
-    }, [improveContext, isCurrentEmpty]);
-
-    const handleImproveApply = React.useCallback(
-      (_fullMd: string, parts: { description: string }) => {
-        const adfDoc = markdownToAdf(parts.description ?? _fullMd ?? '');
-        const adfJson = JSON.stringify(adfDoc);
-        setImproving(false);
-        onSubmit(adfJson);
-        if (!isExistingEdit) setEditing(false);
-      },
-      [onSubmit, isExistingEdit],
-    );
-
-    const handleImproveCancel = React.useCallback(() => {
-      setImproving(false);
-    }, []);
-
-    const currentPlainText = React.useMemo(() => {
-      if (!currentAdfJson) return '';
-      try {
-        return adfToPlainText(JSON.parse(currentAdfJson));
-      } catch {
-        return '';
-      }
-    }, [currentAdfJson]);
+      // Capture the editor's current ADF as the snapshot + the AI
+      // input. Falls back to the initial comment content for the
+      // very first improve before the user has typed.
+      const currentAdf: AdfDoc | null = (() => {
+        try {
+          return currentAdfJson ? (JSON.parse(currentAdfJson) as AdfDoc) : null;
+        } catch {
+          return null;
+        }
+      })();
+      setSnapshotAdf(currentAdf);
+      const plainText = currentAdf
+        ? adfToPlainText(currentAdf as unknown)
+        : '';
+      startCatyImprove({
+        issueKey: commentSessionKey,
+        issueType: improveContext.issueType,
+        issueSummary: improveContext.issueSummary,
+        currentDescription: plainText,
+        currentAcceptanceCriteria: null,
+        attachmentUrls: [],
+        improveSubType: 'improve_clarify',
+        improveType: 'improve_comment_v1',
+      });
+    }, [
+      improveContext,
+      commentSessionKey,
+      isCurrentEmpty,
+      currentAdfJson,
+      startCatyImprove,
+    ]);
 
     if (!editing) {
       return (
@@ -259,30 +436,53 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
             minHeight={80}
             onImproveClick={improveContext ? handleImproveClick : undefined}
             improveLabel="Improve writing"
+            onEditorReady={setEditor}
             belowEditor={(editor) => (
               <MentionSuggestionPill
                 editor={editor}
                 workItemId={workItemId}
               />
             )}
-            bodyOverlay={
-              improving && improveContext ? (
-                <CatyStreamingOverlay
-                  key={`${improveContext.issueKey}-comment`}
-                  issueKey={improveContext.issueKey}
-                  issueType={improveContext.issueType}
-                  issueSummary={improveContext.issueSummary}
-                  currentDescription={currentPlainText}
-                  currentAcceptanceCriteria={null}
-                  attachmentUrls={[]}
-                  improveSubType="improve_clarify"
-                  improveType="improve_comment_v1"
-                  onApply={handleImproveApply}
-                  onCancel={handleImproveCancel}
+            bodyAfterEditor={
+              <>
+                {streamLocked && snapshotAdf && improveContext && (
+                  <div
+                    data-testid="caty-comment-snapshot"
+                    style={{
+                      opacity: 0.5,
+                      marginTop: 16,
+                      paddingTop: 16,
+                      borderTop:
+                        '1px dashed var(--ds-border, #DFE1E6)',
+                      pointerEvents: 'none',
+                      userSelect: 'none',
+                    }}
+                  >
+                    <DisplayView adf={snapshotAdf} />
+                  </div>
+                )}
+                <CatyImproveStrap
+                  phase={catyPhase}
+                  onStop={stopCatyStream}
                 />
-              ) : undefined
+              </>
             }
           />
+          {catyPhase === 'errored' && catyError && (
+            <div
+              role="alert"
+              style={{
+                marginTop: 8,
+                padding: '8px 12px',
+                fontSize: 13,
+                color: 'var(--ds-text-danger, #AE2A19)',
+                background: 'var(--ds-background-danger, #FFECEB)',
+                borderRadius: 4,
+              }}
+            >
+              {catyError}
+            </div>
+          )}
           {shortcutHint && !isExistingEdit && (
             <p
               className={cn(
