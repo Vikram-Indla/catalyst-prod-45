@@ -97,7 +97,7 @@ function SidebarMemberRow({
         textAlign: 'left' as const,
       }}
     >
-      <PresenceRing name={name} src={avatarUrl ?? null} size="small" state={presenceState as PresenceState | undefined} />
+      <PresenceRing name={name} src={avatarUrl ?? null} size="small" state={(presenceState ?? 'away') as PresenceState} />
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
