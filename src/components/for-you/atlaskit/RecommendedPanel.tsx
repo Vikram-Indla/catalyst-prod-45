@@ -2267,7 +2267,7 @@ function MentionChip({ label }: { label: string }) {
     <span
       style={{
         display: 'inline-block',
-        padding: '0 4px',
+        padding: '2px 8px',
         borderRadius: 20,
         background: 'var(--ds-background-information, #DEEBFF)',
         border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
