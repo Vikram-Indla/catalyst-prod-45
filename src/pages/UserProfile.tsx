@@ -148,6 +148,37 @@ export default function UserProfile() {
   });
 
   const [uploading, setUploading] = useState(false);
+  const [emailChanging, setEmailChanging] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [showEmailEdit, setShowEmailEdit] = useState(false);
+  const [emailPassword, setEmailPassword] = useState('');
+
+  const handleEmailChange = useCallback(async () => {
+    if (!newEmail || !emailPassword) {
+      catalystToast.error('Please enter both your password and new email');
+      return;
+    }
+    setEmailChanging(true);
+    try {
+      const { error: signInErr } = await supabase.auth.signInWithPassword({
+        email: user?.email || '',
+        password: emailPassword,
+      });
+      if (signInErr) throw new Error('Password verification failed');
+
+      const { error } = await supabase.auth.updateUser({ email: newEmail });
+      if (error) throw error;
+
+      catalystToast.success('Confirmation email sent to both old and new addresses. Please confirm both to complete the change.');
+      setShowEmailEdit(false);
+      setNewEmail('');
+      setEmailPassword('');
+    } catch (err: any) {
+      catalystToast.error(`Email change failed: ${err.message}`);
+    } finally {
+      setEmailChanging(false);
+    }
+  }, [newEmail, emailPassword, user?.email]);
 
   const handleAvatarUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -175,7 +206,7 @@ export default function UserProfile() {
       if (upErr) throw upErr;
 
       const { data: urlData } = supabase.storage.from('attachments').getPublicUrl(path);
-      const publicUrl = urlData.publicUrl;
+      const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
 
       await updateField('avatar_url', publicUrl);
       catalystToast.success('Avatar updated');
@@ -276,13 +307,85 @@ export default function UserProfile() {
           </div>
 
           <div style={{ marginBottom: 16 }}>
+            <div style={fieldLabel}>Nickname</div>
+            <InlineEdit
+              defaultValue={profile?.nickname || ''}
+              editView={({ errorMessage, ...fieldProps }) => (
+                <Textfield {...fieldProps} autoFocus placeholder="e.g., Vik, V" />
+              )}
+              readView={() => (
+                <div style={{ ...fieldValue, padding: '4px 0', minHeight: 24 }}>
+                  {profile?.nickname || <span style={{ color: token('color.text.disabled', '#A5ADBA') }}>Click to add nickname</span>}
+                </div>
+              )}
+              onConfirm={(value) => {
+                if (value !== profile?.nickname) {
+                  updateFieldMutation.mutate({ field: 'nickname', value });
+                }
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
             <div style={fieldLabel}>Email</div>
             <div style={{ ...fieldValue, padding: '4px 0', color: token('color.text.subtle', '#42526E') }}>
               {profile?.email || user?.email || '—'}
             </div>
-            <div style={{ fontSize: 11, color: token('color.text.subtlest', '#6B778C'), marginTop: 2 }}>
-              Email cannot be changed
-            </div>
+            {!showEmailEdit ? (
+              <button
+                onClick={() => setShowEmailEdit(true)}
+                style={{
+                  fontSize: 11, color: token('color.link', '#0052CC'),
+                  background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                  marginTop: 2,
+                }}
+              >
+                Change email
+              </button>
+            ) : (
+              <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 320 }}>
+                <Textfield
+                  type="password"
+                  placeholder="Current password"
+                  value={emailPassword}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmailPassword(e.target.value)}
+                />
+                <Textfield
+                  type="email"
+                  placeholder="New email address"
+                  value={newEmail}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewEmail(e.target.value)}
+                />
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    onClick={handleEmailChange}
+                    disabled={emailChanging || !newEmail || !emailPassword}
+                    style={{
+                      fontSize: 12, fontWeight: 500, padding: '4px 12px', borderRadius: 3,
+                      border: 'none', cursor: emailChanging ? 'not-allowed' : 'pointer',
+                      background: token('color.background.brand.bold', '#0052CC'),
+                      color: '#FFFFFF', opacity: emailChanging ? 0.7 : 1,
+                    }}
+                  >
+                    {emailChanging ? 'Sending…' : 'Confirm'}
+                  </button>
+                  <button
+                    onClick={() => { setShowEmailEdit(false); setNewEmail(''); setEmailPassword(''); }}
+                    style={{
+                      fontSize: 12, fontWeight: 500, padding: '4px 12px', borderRadius: 3,
+                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      background: 'none', cursor: 'pointer',
+                      color: token('color.text', '#172B4D'),
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <div style={{ fontSize: 11, color: token('color.text.subtlest', '#6B778C') }}>
+                  A confirmation link will be sent to both your current and new email addresses.
+                </div>
+              </div>
+            )}
           </div>
 
           <div>
