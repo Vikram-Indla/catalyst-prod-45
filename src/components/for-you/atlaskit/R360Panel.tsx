@@ -48,20 +48,23 @@ function SidebarMemberRow({
 
   let pillBg = token('color.background.neutral', '#F1F2F4');
   let pillColor = token('color.text.subtlest', '#626F86');
-  let pillText = 'Offline';
+  let pillText = 'Remote';
 
-  if (presenceState === 'available' || presenceState === 'active') {
+  if (presenceState === 'available' || presenceState === 'active' || presenceState === 'on_site') {
     pillBg = token('color.background.success.subtle', '#DCFFF1');
     pillColor = token('color.text.success', '#216E4E');
-    pillText = 'Available';
-  } else if (presenceState === 'away' || presenceState === 'busy') {
+    pillText = 'On site';
+  } else if (presenceState === 'away' || presenceState === 'busy' || presenceState === 'on_leave') {
     pillBg = token('color.background.warning.subtle', '#FFF7D6');
     pillColor = token('color.text.warning', '#974F0C');
     pillText = 'Away';
-  } else if (presenceState === 'on_leave') {
-    pillBg = token('color.background.danger.subtle', '#FFEDEB');
-    pillColor = token('color.text.danger', '#AE2E24');
-    pillText = `On leave${backOn ? ' · Back ' + new Date(backOn).toLocaleDateString('en', { month: 'short', day: 'numeric' }) : ''}`;
+    if (backOn) {
+      pillText = `Away · Back ${new Date(backOn).toLocaleDateString('en', { month: 'short', day: 'numeric' })}`;
+    }
+  } else {
+    pillBg = token('color.background.information.subtle', '#E9F2FF');
+    pillColor = token('color.text.information', '#0055CC');
+    pillText = 'Remote';
   }
 
   return (
