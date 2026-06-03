@@ -1,92 +1,152 @@
 /**
- * R360 Board View
- * Extracted from R360MemberDetail.tsx
+ * R360 Board View — ADS-compliant rewrite
+ * Cards use @atlaskit/tokens exclusively. No custom --cp-* tokens.
+ * Age displayed as subtle meta text, not large colored numbers.
+ * Priority uses text label (no colored dots).
+ * Status uses StatusLozenge (token-based).
  */
-import React, { useMemo, useRef } from 'react';
-import { useTheme } from '@/hooks/useTheme';
-import { getJiraIcon } from '@/components/r360/R360JiraIcons';
+import React, { useMemo } from 'react';
+import { token } from '@atlaskit/tokens';
+import Lozenge from '@atlaskit/lozenge';
+import Badge from '@atlaskit/badge';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { R360WorkItem } from '@/types/r360';
-import { priorityDotColor, priorityBorderColor, getFromTagClass, getFromTagPrefix } from './helpers';
 import { StatusLozenge } from './StatusLozenge';
-import { ProjTag, AgeBadge, MiniAvatar, CompletedSummaryBar } from './SmallComponents';
 
 export function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void }) {
-  const { isDark } = useTheme();
-  const doneColRef = useRef<HTMLDivElement>(null);
   const columns = useMemo(() => [
-    { key: 'to_do', label: 'To do', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', items: items.filter(i => i.status_category === 'to_do' || i.status_category === 'blocked') },
-    { key: 'in_progress', label: 'In progress', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', items: items.filter(i => i.status_category === 'in_progress' || i.status_category === 'in_qa') },
-    { key: 'done', label: 'Done', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', items: items.filter(i => i.status_category === 'done') },
+    {
+      key: 'to_do',
+      label: 'To do',
+      color: token('color.text.warning', '#974F0C'),
+      items: items.filter(i => i.status_category === 'to_do' || i.status_category === 'blocked'),
+    },
+    {
+      key: 'in_progress',
+      label: 'In progress',
+      color: token('color.text.information', '#0055CC'),
+      items: items.filter(i => i.status_category === 'in_progress' || i.status_category === 'in_qa'),
+    },
+    {
+      key: 'done',
+      label: 'Done',
+      color: token('color.text.success', '#216E4E'),
+      items: items.filter(i => i.status_category === 'done'),
+    },
   ], [items]);
 
   return (
-    <div>
-      {/* D-13: Green completed summary bar */}
-      <CompletedSummaryBar
-        items={items}
-        testId="r360-board-completed-bar"
-        onViewClick={() => {
-          const doneItem = items.find(i => i.status_category === 'done');
-          if (doneItem) onSelect(doneItem);
-        }}
-      />
-      <div className="r3-board">
-        {columns.map(col => (
-          <div key={col.key} ref={col.key === 'done' ? doneColRef : undefined}>
-            <div className="r3-board-col-header" style={{ borderBottom: `2px solid ${col.color}` }}>
-              <span className="r3-board-col-dot" style={{ background: col.color }} />
-              <span className="r3-board-col-title">{col.label}</span>
-              <span className="r3-board-col-count" style={{ background: col.color }}>{col.items.length}</span>
-            </div>
-            <div className="r3-board-cards">
-              {col.items.length === 0 && (
-                <div style={{
-                  padding: '20px 12px', textAlign: 'center' as const,
-                  fontSize: 12, color: 'var(--ds-text-subtlest, #626F86)',
-                  border: '1px dashed var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 8,
-                }}>
-                  {col.key === 'done' ? 'No completed items this period' : 'Nothing here'}
-                </div>
-              )}
-              {col.items.map(item => {
-                const fromClass = getFromTagClass(item.age_days);
-                return (
-                  <div key={item.id} className="r3-board-card" onClick={() => onSelect(item)}>
-                    <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? 'var(--ds-background-discovery-bold, #5E4DB2)' : priorityBorderColor(item.priority) }} />
-                    {/* Row 1: Type icon + key + project badge + age */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                      {getJiraIcon(item.item_type)}
-                      <span className="r3-card-key">{item.item_key}</span>
-                      <ProjTag projectKey={item.project_key} />
-                      {item.role_on_item === 'Contributor' && (
-                        <MiniAvatar name={item.assignee_name} size={18} />
-                      )}
-                      <span style={{ marginLeft: 'auto' }}><AgeBadge days={item.age_days} ageClass={item.age_class} /></span>
-                    </div>
-                    {/* Row 2: Title */}
-                    <div className="r3-card-title" style={{ fontSize: 13.5, marginBottom: 8 }}>{item.title}</div>
-                    {/* Row 3: Priority + StatusLozenge + From tag */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <span className="r3-priority-dot" style={{ background: priorityDotColor(item.priority) }} />
-                        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{item.priority}</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <StatusLozenge status={item.status} statusCategory={item.status_category} />
-                        {item.carried_from_label && (
-                          <span className={`r3-from-tag ${fromClass}`} style={{ fontSize: '10px' }}>
-                            {getFromTagPrefix(item.age_days)}{item.carried_from_label}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, padding: '0 0 24px' }}>
+      {columns.map(col => (
+        <div key={col.key}>
+          {/* Column header */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            paddingBottom: 8, marginBottom: 8,
+            borderBottom: `2px solid ${col.color}`,
+          }}>
+            <span style={{
+              width: 8, height: 8, borderRadius: '50%',
+              background: col.color, flexShrink: 0,
+            }} />
+            <span style={{
+              fontSize: 12, fontWeight: 600, letterSpacing: '0.01em',
+              color: token('color.text', '#292A2E'),
+            }}>
+              {col.label}
+            </span>
+            <span style={{ marginLeft: 'auto' }}>
+              <Badge appearance={col.key === 'done' ? 'added' : col.key === 'in_progress' ? 'primary' : 'default'}>
+                {col.items.length}
+              </Badge>
+            </span>
           </div>
-        ))}
-      </div>
+
+          {/* Cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {col.items.length === 0 && (
+              <div style={{
+                padding: '24px 16px', textAlign: 'center',
+                fontSize: 12, color: token('color.text.subtlest', '#626F86'),
+                border: `1px dashed ${token('color.border', '#091E4224')}`,
+                borderRadius: 8,
+              }}>
+                {col.key === 'done' ? 'No completed items this period' : 'Nothing here'}
+              </div>
+            )}
+            {col.items.map(item => (
+              <div
+                key={item.id}
+                onClick={() => onSelect(item)}
+                style={{
+                  background: token('elevation.surface', '#FFFFFF'),
+                  border: `1px solid ${token('color.border', '#091E4224')}`,
+                  borderRadius: 8,
+                  padding: 12,
+                  cursor: 'pointer',
+                  transition: 'box-shadow 150ms cubic-bezier(0.2, 0, 0, 1), border-color 150ms cubic-bezier(0.2, 0, 0, 1)',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.25), 0 0 1px 0 rgba(9,30,66,0.31)');
+                  (e.currentTarget as HTMLElement).style.borderColor = token('color.border.focused', '#388BFF');
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+                  (e.currentTarget as HTMLElement).style.borderColor = token('color.border', '#091E4224');
+                }}
+              >
+                {/* Row 1: Type icon + key + age as subtle text */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+                  <JiraIssueTypeIcon type={item.item_type} size={16} />
+                  <span style={{
+                    fontSize: 12, fontWeight: 600,
+                    color: token('color.text.brand', '#0052CC'),
+                  }}>
+                    {item.item_key}
+                  </span>
+                  <span style={{
+                    marginLeft: 'auto', fontSize: 11,
+                    color: token('color.text.subtlest', '#626F86'),
+                  }}>
+                    {item.age_days}d
+                  </span>
+                </div>
+
+                {/* Row 2: Title */}
+                <div style={{
+                  fontSize: 14, fontWeight: 400, lineHeight: '20px',
+                  color: token('color.text', '#292A2E'),
+                  display: '-webkit-box', WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                  marginBottom: 8,
+                }}>
+                  {item.title}
+                </div>
+
+                {/* Row 3: Priority + Status + Carried-from */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{
+                    fontSize: 12, fontWeight: 500,
+                    color: token('color.text.subtle', '#44546F'),
+                  }}>
+                    {item.priority}
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <StatusLozenge status={item.status} statusCategory={item.status_category} />
+                    {item.carried_from_label && (
+                      <span data-cp-lozenge-jira-parity>
+                        <Lozenge appearance="moved" isBold={false}>
+                          {item.carried_from_label}
+                        </Lozenge>
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

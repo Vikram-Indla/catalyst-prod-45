@@ -38,6 +38,7 @@ import '@/styles/r360.css';
 import '@/components/resource360/r360-member.css';
 import R360ProfileDrawer from '@/components/r360/R360ProfileDrawer';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 // Extracted sub-components
 import {
@@ -352,7 +353,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
       <div id="r360-root" data-r360-page-content style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden' }}>
         <div className="r3-page" style={{ background: token('elevation.surface', '#FFFFFF'), height: '100%', overflow: 'auto', paddingTop: '8px' }}>
           {/* ── Sticky Header: Profile + Week Nav ── */}
-          <div style={{ position: 'sticky', top: 0, zIndex: 10, background: token('elevation.surface', '#FFFFFF') }}>
+          <div style={{ position: 'sticky', top: 0, zIndex: 10, background: token('elevation.surface', '#FFFFFF'), ...(embedded && forceView === 'board' ? { display: 'none' } : {}) }}>
             {/* ── Profile Header ── */}
             <div className="r3-profile">
               <div className="r3-profile-top">
@@ -634,12 +635,12 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
             <>
               {view === 'ring' && <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} overview={overview} onAvatarClick={() => setAiOpen(true)} />}
               {view === 'chronology' && <ChronologyView items={filteredWeekItems} onSelect={setSelectedItem} weekStart={period.start} weekEnd={period.end} />}
-              {view === 'board' && <BoardView items={filteredWeekItems} onSelect={setSelectedItem} />}
+              {view === 'board' && <BoardView items={filteredWeekItems} onSelect={embedded ? (item) => useGlobalSearchStore.getState().openDetail({ id: item.item_key }) : setSelectedItem} />}
             </>
           )}
 
-          {/* ── Detail Panel ── */}
-          {selectedItem && (
+          {/* ── Detail Panel — hidden when embedded (uses canonical CatalystDetailRouter instead) ── */}
+          {selectedItem && !embedded && (
             <DetailPanel item={selectedItem} onClose={() => setSelectedItem(null)} onSelectItem={setSelectedItem} />
           )}
 
