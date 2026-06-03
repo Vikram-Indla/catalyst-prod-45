@@ -334,6 +334,7 @@ export default function ForYouPageAtlaskit() {
           overflowY: isR360Active ? 'auto' : 'visible',
           position: 'relative',
           zIndex: 0,
+          background: token('elevation.surface', '#FFFFFF'),
         }}
       >
         {panel}
