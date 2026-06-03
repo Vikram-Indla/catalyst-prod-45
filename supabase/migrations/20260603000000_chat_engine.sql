@@ -292,6 +292,57 @@ CREATE TRIGGER chat_messages_touch_conversation
   FOR EACH ROW
   EXECUTE FUNCTION public.chat_touch_last_message_at();
 
+-- Membership bootstrap: when a conversation is created, add its participants as
+-- members so RLS (member-gated INSERT + member-only SELECT) lets the right
+-- people in. Creator is always added (admin). Ticket conversations add the
+-- assignee + reporter (Jira account_id -> profiles.id). Channel conversations
+-- add the active org roster. Participant resolution is wrapped in an exception
+-- block so a mapping miss can NEVER block conversation creation.
+CREATE OR REPLACE FUNCTION public.chat_add_members_on_create()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $fn$
+BEGIN
+  IF NEW.created_by IS NOT NULL THEN
+    INSERT INTO public.chat_conversation_members (conversation_id, user_id, role)
+    VALUES (NEW.id, NEW.created_by, 'admin')
+    ON CONFLICT (conversation_id, user_id) DO NOTHING;
+  END IF;
+
+  BEGIN
+    IF NEW.kind = 'ticket' AND NEW.ticket_key IS NOT NULL THEN
+      INSERT INTO public.chat_conversation_members (conversation_id, user_id, role)
+      SELECT NEW.id, p.id, 'member'
+        FROM public.ph_issues i
+        JOIN public.profiles p
+          ON p.jira_account_id IN (i.assignee_account_id, i.reporter_account_id)
+       WHERE i.issue_key = NEW.ticket_key
+         AND p.jira_account_id IS NOT NULL
+      ON CONFLICT (conversation_id, user_id) DO NOTHING;
+    ELSIF NEW.kind = 'channel' THEN
+      INSERT INTO public.chat_conversation_members (conversation_id, user_id, role)
+      SELECT NEW.id, ri.profile_id, 'member'
+        FROM public.resource_inventory ri
+       WHERE ri.is_active = true
+         AND ri.profile_id IS NOT NULL
+      ON CONFLICT (conversation_id, user_id) DO NOTHING;
+    END IF;
+  EXCEPTION WHEN OTHERS THEN
+    NULL; -- never block conversation creation on participant resolution
+  END;
+
+  RETURN NEW;
+END;
+$fn$;
+
+DROP TRIGGER IF EXISTS chat_conversations_add_members ON public.chat_conversations;
+CREATE TRIGGER chat_conversations_add_members
+  AFTER INSERT ON public.chat_conversations
+  FOR EACH ROW
+  EXECUTE FUNCTION public.chat_add_members_on_create();
+
 -- Idle-archive sweep: archive conversations untouched for 21+ days, move their
 -- messages to cold storage, then delete the live rows. Read-only after archive.
 CREATE OR REPLACE FUNCTION public.chat_archive_idle()
