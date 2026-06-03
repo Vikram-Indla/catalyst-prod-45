@@ -173,17 +173,19 @@ function TabButton({
       onMouseLeave={() => setHover(false)}
       style={{
         position: 'relative',
-        // Grid overlap technique: both the visible content and a hidden
-        // bold sizer occupy the same cell. The cell is always as wide as
-        // the bold variant, so switching font-weight never changes width.
-        display: 'inline-grid',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: token('space.050', '4px'),
         height: 24,
         padding: `${token('space.025', '2px')} ${token('space.150', '12px')}`,
         background,
         border: 'none',
         borderRadius: 6,
         cursor: 'pointer',
-        font: `${isActive ? 600 : 400} 13.33px/normal "Inter", system-ui, sans-serif`,
+        // Fixed weight 500 for ALL tabs — active is distinguished by
+        // white bg + shadow elevation (Jira pattern). Variable weight
+        // (400↔600) caused layout shift in the inline-flex strip.
+        font: `500 13.33px/normal "Inter", system-ui, sans-serif`,
         color: token('color.text', '#292A2E'),
         whiteSpace: 'nowrap',
         outline: 'none',
@@ -193,36 +195,6 @@ function TabButton({
         transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.15, 1, 0.3, 1)',
       }}
     >
-      {/* Hidden bold sizer — occupies the same grid cell as the visible
-          content so the button is always sized to the widest (600) state.
-          Prevents tab strip layout shift when switching active tab. */}
-      <span
-        aria-hidden="true"
-        style={{
-          gridArea: '1 / 1',
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: token('space.050', '4px'),
-          visibility: 'hidden',
-          font: `600 13.33px/normal "Inter", system-ui, sans-serif`,
-        }}
-      >
-        {tab.label}
-        {showCounter && (
-          <span style={{ minWidth: 16, height: 16, padding: `0 ${token('space.050', '4px')}`, font: `600 11px/14px "Inter", system-ui, sans-serif` }}>
-            {count > 99 ? '99+' : count}
-          </span>
-        )}
-      </span>
-      {/* Visible content — same grid cell, rendered on top */}
-      <span
-        style={{
-          gridArea: '1 / 1',
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: token('space.050', '4px'),
-        }}
-      >
       {tab.label}
       {showCounter && (
         <span
@@ -262,7 +234,6 @@ function TabButton({
           {count > 99 ? '99+' : count}
         </span>
       )}
-      </span>
     </button>
   );
 }
