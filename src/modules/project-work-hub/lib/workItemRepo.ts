@@ -408,8 +408,9 @@ export async function getArchivedIssues(filters?: {
       .or(`archived_at.not.is.null,jira_created_at.lt.${cutoff}`)
       .order('jira_created_at', { ascending: true })
       .limit(200);
-    // Non-admins only see their own items
-    if (jiraId && !filters?.isAdmin) {
+    // Always scope to current user's items (assignee OR reporter).
+    // Admin privilege controls unarchive ability, not visibility.
+    if (jiraId) {
       q = q.or(`assignee_account_id.eq.${jiraId},reporter_account_id.eq.${jiraId}`);
     }
     if (filters?.projectKey) q = q.eq('project_key', filters.projectKey);
@@ -425,7 +426,7 @@ export async function getArchivedIssues(filters?: {
       .not('deleted_at', 'is', null)
       .order('deleted_at', { ascending: false })
       .limit(200);
-    if (jiraId && !filters?.isAdmin) {
+    if (jiraId) {
       q = q.or(`assignee_account_id.eq.${jiraId},reporter_account_id.eq.${jiraId}`);
     }
     if (filters?.projectKey) q = q.eq('project_key', filters.projectKey);
