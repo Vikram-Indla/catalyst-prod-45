@@ -294,40 +294,34 @@ export default function ForYouPageAtlaskit() {
         <RecommendedProjectsStrip projects={allUserProjects} />
       </div>
 
-      {/* Heading + tabs — sticky so tabs never cause layout shift on switch */}
+      {/* Heading — only visible on non-R360 tabs */}
+      {!isR360Active && (
+        <h1
+          style={{
+            font: `653 24px/28px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
+            color: token('color.text', '#292A2E'),
+            margin: 0,
+            marginBlockStart: 16,
+            letterSpacing: 0,
+          }}
+        >
+          For you
+        </h1>
+      )}
+
+      {/* Tab strip — sticky, always left-aligned, never shifts on tab switch.
+          Separated from H1 so justifyContent changes don't move the strip. */}
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: isR360Active ? 'flex-end' : 'space-between',
-          gap: 16,
-          marginBlockStart: isR360Active ? 8 : 16,
-          marginBlockEnd: 16,
-          flexWrap: 'wrap',
           position: 'sticky',
           top: 0,
           zIndex: 10,
           background: token('elevation.surface', '#FFFFFF'),
           paddingBlock: 8,
+          marginBlockStart: isR360Active ? 8 : 0,
+          marginBlockEnd: 16,
         }}
       >
-        {!isR360Active && (
-          <h1
-            style={{
-              // 2026-05-17 jira-compare re-probe: Jira /jira/for-you H1 is
-              // 24px/28px 600 (semibold). Earlier this rendered at weight
-              // 500 — visibly lighter than the Jira reference. Probe of the
-              // Catalyst H1 confirmed `inline-style font-weight: 500` was
-              // landing on the rendered DOM. Fixed to 600.
-              font: `653 24px/28px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
-              color: token('color.text', '#292A2E'),
-              margin: 0,
-              letterSpacing: 0,
-            }}
-          >
-            For you
-          </h1>
-        )}
         <ForYouTabs
           activeTab={activeTab}
           tabCounts={tabCounts}
