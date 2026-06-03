@@ -4,13 +4,13 @@
  * mirrored into ph_comments/ph_activity_log by wh-jira-sync and wh-jira-bulk-sync,
  * so a single query per source covers both Catalyst-native and Jira rows.
  */
-import { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { catalystToast } from '@/lib/catalystToast';
 import { ActivityPanel } from '@/components/catalyst-ds';
-import type { CdsComment, CdsActivityItem, CdsUser, CdsQuickReply, JiraUserMap } from '@/components/catalyst-ds';
+import type { CdsComment, CdsActivityItem, CdsUser, CdsQuickReply, CdsReaction, JiraUserMap } from '@/components/catalyst-ds';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { CommentsSummaryCard } from '@/components/catalyst-detail-views/improve/CommentsSummaryCard';
 import { useCommentsSummaryStream } from '@/components/catalyst-detail-views/improve/useCommentsSummaryStream';
@@ -244,7 +244,46 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     },
   });
 
-  const mappedComments: CdsComment[] = comments.map(mapComment);
+  // Reactions: ph_comment_reactions for all comments on this work item
+  const commentIds = comments.map((c: any) => c.id).filter(Boolean);
+  const { data: reactionsRaw = [] } = useQuery({
+    queryKey: ['cv-reactions', resolvedWorkItemId],
+    enabled: !!resolvedWorkItemId && isOpen && commentIds.length > 0,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_comment_reactions')
+        .select('id, comment_id, user_id, emoji')
+        .in('comment_id', commentIds);
+      return data || [];
+    },
+  });
+
+  // Build reaction map: commentId -> CdsReaction[]
+  const reactionMap = useMemo(() => {
+    const map = new Map<string, CdsReaction[]>();
+    const myId = user?.id;
+    const grouped = new Map<string, Map<string, { count: number; mine: boolean }>>();
+    for (const r of reactionsRaw as { comment_id: string; user_id: string; emoji: string }[]) {
+      if (!grouped.has(r.comment_id)) grouped.set(r.comment_id, new Map());
+      const emojiMap = grouped.get(r.comment_id)!;
+      const entry = emojiMap.get(r.emoji) || { count: 0, mine: false };
+      entry.count++;
+      if (r.user_id === myId) entry.mine = true;
+      emojiMap.set(r.emoji, entry);
+    }
+    for (const [cid, emojiMap] of grouped) {
+      map.set(cid, [...emojiMap.entries()].map(([emoji, v]) => ({
+        emoji, count: v.count, reacted_by_me: v.mine,
+      })));
+    }
+    return map;
+  }, [reactionsRaw, user?.id]);
+
+  const mappedComments: CdsComment[] = comments.map((c: any) => {
+    const mapped = mapComment(c);
+    mapped.reactions = reactionMap.get(c.id) || [];
+    return mapped;
+  });
   const mappedHistory: CdsActivityItem[] = historyItems.map(mapActivity);
 
   // Mutations — Catalyst-native comments only (source='catalyst')
@@ -313,6 +352,44 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   const handleEdit = useCallback((id: string, content: string) => editMutation.mutateAsync({ id, body: content }), [editMutation]);
   const handleDelete = useCallback((id: string) => deleteMutation.mutateAsync(id), [deleteMutation]);
 
+  // Toggle emoji reaction on a comment
+  const reactionMutation = useMutation({
+    mutationFn: async ({ commentId, emoji }: { commentId: string; emoji: string }) => {
+      if (!user) throw new Error('Not authenticated');
+      const { data: existing } = await supabase
+        .from('ph_comment_reactions')
+        .select('id')
+        .eq('comment_id', commentId)
+        .eq('user_id', user.id)
+        .eq('emoji', emoji)
+        .maybeSingle();
+      if (existing) {
+        await supabase.from('ph_comment_reactions').delete().eq('id', existing.id);
+      } else {
+        const { error } = await supabase
+          .from('ph_comment_reactions')
+          .insert({ comment_id: commentId, user_id: user.id, emoji });
+        if (error) throw new Error(error.message);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cv-reactions', resolvedWorkItemId] });
+    },
+  });
+
+  const handleToggleReaction = useCallback(
+    (commentId: string, emoji: string) => reactionMutation.mutate({ commentId, emoji }),
+    [reactionMutation],
+  );
+
+  const handleCopyCommentLink = useCallback((commentId: string) => {
+    const url = `${window.location.origin}${window.location.pathname}?focusedCommentId=${commentId}`;
+    navigator.clipboard.writeText(url).then(
+      () => catalystToast.success('Link copied'),
+      () => catalystToast.error('Failed to copy link'),
+    );
+  }, []);
+
   // ── Comments summary (Improve dropdown → Summarize comments) ─────
   useCommentsSummaryStream({ mountedForIssueKey: resolvedIssueKey });
   const summaryPayload = useCatySummarize((s) => s.payload);
@@ -380,6 +457,8 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
         onAddComment={handleAdd}
         onEditComment={handleEdit}
         onDeleteComment={handleDelete}
+        onToggleReaction={handleToggleReaction}
+        onCopyCommentLink={handleCopyCommentLink}
         isSubmitting={addMutation.isPending}
         isLoadingComments={isLoadingComments}
         isLoadingHistory={isLoadingHistory}

@@ -7,6 +7,12 @@ export interface CdsUser {
   email?: string;
 }
 
+export interface CdsReaction {
+  emoji: string;
+  count: number;
+  reacted_by_me: boolean;
+}
+
 export interface CdsComment {
   id: string;
   author: CdsUser;
@@ -15,6 +21,7 @@ export interface CdsComment {
   updatedAt?: string;
   isEdited?: boolean;
   isSystem?: boolean;
+  reactions?: CdsReaction[];
 }
 
 export interface CdsFieldChange {

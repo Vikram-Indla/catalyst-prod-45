@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { MessageSquare, Edit, Trash2, Quote } from '@/lib/atlaskit-icons';
+import { MessageSquare } from '@/lib/atlaskit-icons';
 import type { CdsComment, CdsSortOrder, CdsUser, CdsQuickReply } from '../types';
 import { Comment } from './Comment';
-import { CommentAction } from './CommentAction';
 import { CommentEditor } from './CommentEditor';
 import { DescriptionTranslateBar } from '@/components/shared/title-translate/DescriptionTranslateBar';
 import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
@@ -29,15 +28,15 @@ export interface CommentThreadProps {
   onAddComment: (content: string) => void | Promise<void>;
   onEditComment?: (id: string, content: string) => void | Promise<void>;
   onDeleteComment?: (id: string) => void | Promise<void>;
+  onToggleReaction?: (commentId: string, emoji: string) => void;
+  onCopyLink?: (commentId: string) => void;
   quickReplies?: CdsQuickReply[];
   isSubmitting?: boolean;
   isLoading?: boolean;
   emptyMessage?: string;
   className?: string;
   workItemId?: string;
-  /** Jira issue key for comment translation caching. Omit to disable translate bars. */
   issueKey?: string;
-  /** Shared translation state from parent (ActivityPanel). commentId → translated text. */
   translatedComments?: Record<string, string>;
   onCommentTranslated?: (id: string, text: string) => void;
   onCommentRevert?: (id: string) => void;
@@ -52,6 +51,8 @@ function CommentThread({
   onAddComment,
   onEditComment,
   onDeleteComment,
+  onToggleReaction,
+  onCopyLink,
   quickReplies,
   isSubmitting = false,
   isLoading = false,
@@ -64,8 +65,6 @@ function CommentThread({
   onCommentRevert,
 }: CommentThreadProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState('');
-  // E3: quote reply — pre-fills the editor with a blockquote prefix
   const [quotePrefix, setQuotePrefix] = useState('');
 
   const sortedComments = useMemo(() => {
@@ -77,21 +76,21 @@ function CommentThread({
     return sorted;
   }, [comments, sortOrder]);
 
-  const startEdit = (comment: CdsComment) => {
-    setEditingId(comment.id);
-    setEditValue(comment.content);
+  const handleQuote = (commentId: string) => {
+    const comment = comments.find(c => c.id === commentId);
+    if (!comment) return;
+    const lines = comment.content.split('\n').map((l: string) => `> ${l}`).join('\n');
+    setQuotePrefix(`${lines}\n\n`);
+    setTimeout(() => {
+      const textarea = document.querySelector<HTMLTextAreaElement>('.cat-comment-editor textarea');
+      textarea?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
   };
 
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditValue('');
-  };
-
-  const confirmEdit = async () => {
-    if (!editingId || !onEditComment) return;
-    await onEditComment(editingId, editValue);
-    setEditingId(null);
-    setEditValue('');
+  const handleReply = (commentId: string) => {
+    const comment = comments.find(c => c.id === commentId);
+    if (!comment) return;
+    setQuotePrefix(`@[${comment.author.name}](${comment.author.id}) `);
   };
 
   return (
@@ -112,15 +111,15 @@ function CommentThread({
       <div className="mt-4">
         {isLoading ? (
           <div className="text-center py-8">
-            <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">Loading comments...</p>
+            <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">Loading comments...</p>
           </div>
         ) : sortedComments.length === 0 ? (
           <div className="text-center py-10">
             <MessageSquare className="h-10 w-10 mx-auto mb-3 text-[#C1C7D0] dark:text-[var(--ds-border-bold,#454545)]" />
-            <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{emptyMessage}</p>
+            <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">{emptyMessage}</p>
           </div>
         ) : (
-          <div className="divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+          <div className="divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,#2E2E2E)]">
             {sortedComments.map((comment) => {
               if (editingId === comment.id) {
                 return (
@@ -135,26 +134,12 @@ function CommentThread({
                         await onEditComment(comment.id, content);
                         setEditingId(null);
                       }}
-                      onCancel={cancelEdit}
+                      onCancel={() => setEditingId(null)}
                       workItemId={workItemId}
                     />
                   </div>
                 );
               }
-
-              const canEdit = onEditComment && currentUser && comment.author.id === currentUser.id;
-              const canDelete = onDeleteComment && currentUser && comment.author.id === currentUser.id;
-
-              const handleQuote = () => {
-                // E3: pre-fill editor with blockquote of this comment's text
-                const lines = comment.content.split('\n').map((l: string) => `> ${l}`).join('\n');
-                setQuotePrefix(`${lines}\n\n`);
-                // Scroll the editor into view
-                setTimeout(() => {
-                  const textarea = document.querySelector<HTMLTextAreaElement>('.cat-comment-editor textarea');
-                  textarea?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 50);
-              };
 
               const displayComment: CdsComment = translatedComments[comment.id]
                 ? { ...comment, content: translatedComments[comment.id] }
@@ -165,34 +150,13 @@ function CommentThread({
                 <div key={comment.id}>
                   <Comment
                     comment={displayComment}
-                    actions={
-                      !comment.isSystem ? (
-                        <>
-                          <CommentAction
-                            onClick={handleQuote}
-                            icon={<Quote />}
-                            aria-label="Quote reply"
-                            title="Quote reply"
-                          />
-                          {canEdit && (
-                            <CommentAction
-                              onClick={() => startEdit(comment)}
-                              icon={<Edit />}
-                              aria-label="Edit comment"
-                              title="Edit comment"
-                            />
-                          )}
-                          {canDelete && (
-                            <CommentAction
-                              onClick={() => onDeleteComment!(comment.id)}
-                              icon={<Trash2 />}
-                              aria-label="Delete comment"
-                              title="Delete comment"
-                            />
-                          )}
-                        </>
-                      ) : undefined
-                    }
+                    currentUser={currentUser}
+                    onReply={handleReply}
+                    onQuote={handleQuote}
+                    onEdit={onEditComment ? (id) => setEditingId(id) : undefined}
+                    onDelete={onDeleteComment}
+                    onToggleReaction={onToggleReaction}
+                    onCopyLink={onCopyLink}
                   />
                   {!comment.isSystem && commentPlainText.trim() && issueKey && onCommentTranslated && onCommentRevert && (
                     <DescriptionTranslateBar

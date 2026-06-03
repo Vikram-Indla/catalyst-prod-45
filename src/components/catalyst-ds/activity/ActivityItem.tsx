@@ -1,31 +1,20 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { ArrowRight, Plus, Pencil, Trash2, Zap } from '@/lib/atlaskit-icons';
+import { ArrowRight } from '@/lib/atlaskit-icons';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
-import { formatDistanceToNow } from 'date-fns';
-import type { CdsActivityItem, CdsActivityAction, CdsAppearance } from '../types';
+import type { CdsActivityItem, CdsAppearance } from '../types';
 import { Lozenge } from '../status/Lozenge';
 import { renderJiraContent, normalizeJiraText, type JiraUserMap } from '../utils/jiraContent';
 
-function formatRelativeTime(dateStr: string): string {
+function formatAbsoluteDate(dateStr: string): string {
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return '';
-  try {
-    return formatDistanceToNow(d, { addSuffix: true });
-  } catch {
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  }
+  return (
+    d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) +
+    ' at ' +
+    d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+  );
 }
-
-const actionConfig: Record<
-  CdsActivityAction,
-  { icon: React.ElementType; bg: string; darkBg: string; color: string }
-> = {
-  create: { icon: Plus, bg: 'bg-[#E3FCEF]', darkBg: 'dark:bg-[#1C3D2E]', color: 'text-[#006644] dark:text-[#57D9A3]' },
-  update: { icon: Pencil, bg: 'bg-[#DEEBFF]', darkBg: 'dark:bg-[#1C3A5C]', color: 'text-[#0747A6] dark:text-[#4C9AFF]' },
-  delete: { icon: Trash2, bg: 'bg-[#FFEBE6]', darkBg: 'dark:bg-[#4A1A1A]', color: 'text-[#BF2600] dark:text-[#FF5630]' },
-  comment: { icon: Zap, bg: 'bg-[#EAE6FF]', darkBg: 'dark:bg-[#2D2359]', color: 'text-[#403294] dark:text-[#B8ACF6]' },
-};
 
 function formatFieldName(field: string): string {
   return field.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -53,22 +42,18 @@ function statusAppearance(value: string | null): CdsAppearance | undefined {
   return 'default';
 }
 
-/** Fields that render as rich content (multi-line, long, may have Jira markup). */
 const RICH_TEXT_FIELDS = new Set(['description', 'summary', 'comment', 'title']);
-
-/** Fields that render as status lozenges. */
 const STATUS_FIELDS = new Set(['process_step', 'status', 'health']);
 
 export interface ActivityItemProps {
   item: CdsActivityItem;
   jiraUserMap?: JiraUserMap;
+  showTypeBadge?: boolean;
   className?: string;
 }
 
-function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps) {
+function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, className }: ActivityItemProps) {
   const { type, actor, timestamp, fieldChange, description } = item;
-  const config = actionConfig[type];
-  const Icon = config.icon;
 
   const fieldKey = fieldChange ? fieldChange.field.toLowerCase().replace(/\s/g, '_') : '';
   const isStatus = STATUS_FIELDS.has(fieldKey);
@@ -78,83 +63,93 @@ function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps
       ((fieldChange.oldValue?.length ?? 0) > 80 || (fieldChange.newValue?.length ?? 0) > 80));
 
   return (
-    <div className={cn('flex gap-3 py-3', className)}>
-      <div
-        className={cn(
-          'h-8 w-8 rounded-full flex items-center justify-center shrink-0',
-          config.bg,
-          config.darkBg
-        )}
-      >
-        <Icon className={cn('h-3.5 w-3.5', config.color)} />
-      </div>
+    <div className={cn('flex gap-3 py-4', className)}>
+      {/* Avatar only — no colored action-type circles */}
+      <span className="shrink-0">
+        <CatalystAvatar size="medium" name={actor.name} src={actor.avatarUrl} />
+      </span>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <CatalystAvatar size="xsmall" name={actor.name} src={actor.avatarUrl} />
-          <span className="text-[13px] font-semibold text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
+        {/* Author + action line */}
+        <div className="flex items-baseline gap-1 flex-wrap">
+          <span className="text-[14px] font-semibold text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]">
             {actor.name}
           </span>
 
           {type === 'create' && (
-            <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
+            <span className="text-[14px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] font-normal">
               {description || 'created this item'}
             </span>
           )}
 
           {type === 'update' && fieldChange && (
-            <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
-              updated the{' '}
-              <span className="font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
+            <span className="text-[14px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] font-normal">
+              changed the{' '}
+              <span className="font-semibold">
                 {formatFieldName(fieldChange.field)}
               </span>
             </span>
           )}
 
           {type === 'delete' && (
-            <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
+            <span className="text-[14px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] font-normal">
               {description || 'deleted this item'}
             </span>
           )}
-
-          <span className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
-            {formatRelativeTime(timestamp)}
-          </span>
         </div>
 
+        {/* Date — absolute format */}
+        <div className="text-[12px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5">
+          {formatAbsoluteDate(timestamp)}
+        </div>
+
+        {/* Type badge — shown in "All" tab to distinguish history from comments */}
+        {showTypeBadge && (
+          <div className="mt-2">
+            <Lozenge appearance="default" isBold={false}>
+              HISTORY
+            </Lozenge>
+          </div>
+        )}
+
+        {/* Field change content */}
         {type === 'update' && fieldChange && (
-          <div className="mt-1.5">
+          <div className="mt-2">
             {isStatus ? (
-              <div className="flex items-center gap-2">
-                <Lozenge appearance={statusAppearance(fieldChange.oldValue)}>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span
+                  className="inline-flex items-center rounded-[3px] border border-[var(--ds-border,#DFE1E6)] bg-[var(--ds-background-neutral,#F4F5F7)] dark:bg-[var(--ds-surface-raised,#2E2E2E)] dark:border-[var(--ds-border,#454545)] px-2 py-0.5 text-[12px] font-bold uppercase text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] whitespace-nowrap"
+                >
                   {formatDisplayValue(fieldChange.oldValue)}
-                </Lozenge>
-                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] shrink-0" />
-                <Lozenge appearance={statusAppearance(fieldChange.newValue)}>
+                </span>
+                <span className="text-[14px] text-[var(--ds-text-subtlest,#6B778C)]">→</span>
+                <span
+                  className="inline-flex items-center rounded-[3px] border border-[var(--ds-border,#DFE1E6)] bg-[var(--ds-background-neutral,#F4F5F7)] dark:bg-[var(--ds-surface-raised,#2E2E2E)] dark:border-[var(--ds-border,#454545)] px-2 py-0.5 text-[12px] font-bold uppercase text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] whitespace-nowrap"
+                >
                   {formatDisplayValue(fieldChange.newValue)}
-                </Lozenge>
+                </span>
               </div>
             ) : isRich ? (
               <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-start">
-                <div className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] whitespace-pre-wrap break-words">
+                <div className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] whitespace-pre-wrap break-words">
                   {fieldChange.oldValue
                     ? renderJiraContent(fieldChange.oldValue, { userMap: jiraUserMap })
                     : <span className="italic">None</span>}
                 </div>
-                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] shrink-0 mt-1.5" />
-                <div className="text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] whitespace-pre-wrap break-words">
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0 mt-1.5" />
+                <div className="text-[13px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] whitespace-pre-wrap break-words">
                   {fieldChange.newValue
                     ? renderJiraContent(fieldChange.newValue, { userMap: jiraUserMap })
-                    : <span className="italic text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">None</span>}
+                    : <span className="italic text-[var(--ds-text-subtlest,#6B778C)]">None</span>}
                 </div>
               </div>
             ) : (
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] line-through">
+                <span className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] line-through">
                   {normalizeJiraText(fieldChange.oldValue, { userMap: jiraUserMap }) || 'None'}
                 </span>
-                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] shrink-0" />
-                <span className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0" />
+                <span className="text-[13px] font-medium text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]">
                   {normalizeJiraText(fieldChange.newValue, { userMap: jiraUserMap }) || 'None'}
                 </span>
               </div>
