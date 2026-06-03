@@ -2058,7 +2058,7 @@ function HeadlineIssueTitle({
       border: `1px solid ${token('color.border', 'rgba(11, 18, 14, 0.14)')}`,
       borderRadius: 4,
       backgroundColor: token('elevation.surface', '#FFFFFF'),
-      padding: '0px 4px',
+      padding: '4px 8px',
     }}>
       <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
         <WorkItemIcon type={normalizeIconType(issueType)} size={16} />
