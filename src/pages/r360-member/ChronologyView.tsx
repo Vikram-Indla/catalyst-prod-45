@@ -15,7 +15,7 @@ import { QuickSearchInput } from './QuickSearchInput';
 
 export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void; weekStart: Date; weekEnd: Date }) {
   const { isDark } = useTheme();
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set(['__carryover__']));
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [quickSearch, setQuickSearch] = useState('');
   const groupRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const carryoverRef = useRef<HTMLDivElement | null>(null);
