@@ -173,34 +173,56 @@ function TabButton({
       onMouseLeave={() => setHover(false)}
       style={{
         position: 'relative',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: token('space.050', '4px'),
+        // Grid overlap technique: both the visible content and a hidden
+        // bold sizer occupy the same cell. The cell is always as wide as
+        // the bold variant, so switching font-weight never changes width.
+        display: 'inline-grid',
         height: 24,
         padding: `${token('space.025', '2px')} ${token('space.150', '12px')}`,
         background,
         border: 'none',
         borderRadius: 6,
         cursor: 'pointer',
-        // 13.33px / line-height normal — matches Jira's "Atlassian Sans 13.33px"
-        // tab text, routed through Catalyst's Inter. Weight 600 on the active
-        // tab adds a visual distinction on top of the shadow lift so the
-        // selected tab reads clearly without relying on colour alone.
         font: `${isActive ? 600 : 400} 13.33px/normal "Inter", system-ui, sans-serif`,
         color: token('color.text', '#292A2E'),
         whiteSpace: 'nowrap',
         outline: 'none',
-        // Only the selected pill gets a shadow — the visual lift that
-        // distinguishes it inside the neutral container.
         boxShadow: isActive
           ? token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.12), 0 0 1px rgba(9,30,66,0.16)')
           : 'none',
         transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.15, 1, 0.3, 1)',
       }}
     >
-      {/* 2026-05-31: Caty Focus rainbow sparkle removed — tab no longer
-          in strip. The same rainbow-sparkle glyph now lives on the
-          "Ask Caty - Themify" button inside AssignedPanel. */}
+      {/* Hidden bold sizer — occupies the same grid cell as the visible
+          content so the button is always sized to the widest (600) state.
+          Prevents tab strip layout shift when switching active tab. */}
+      <span
+        aria-hidden="true"
+        style={{
+          gridArea: '1 / 1',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: token('space.050', '4px'),
+          visibility: 'hidden',
+          font: `600 13.33px/normal "Inter", system-ui, sans-serif`,
+        }}
+      >
+        {tab.label}
+        {showCounter && (
+          <span style={{ minWidth: 16, height: 16, padding: `0 ${token('space.050', '4px')}`, font: `600 11px/14px "Inter", system-ui, sans-serif` }}>
+            {count > 99 ? '99+' : count}
+          </span>
+        )}
+      </span>
+      {/* Visible content — same grid cell, rendered on top */}
+      <span
+        style={{
+          gridArea: '1 / 1',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: token('space.050', '4px'),
+        }}
+      >
       {tab.label}
       {showCounter && (
         <span
@@ -240,6 +262,7 @@ function TabButton({
           {count > 99 ? '99+' : count}
         </span>
       )}
+      </span>
     </button>
   );
 }
