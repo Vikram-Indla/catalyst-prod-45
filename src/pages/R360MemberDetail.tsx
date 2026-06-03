@@ -356,7 +356,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
 
   return (
     <>
-      <div id="r360-root" data-r360-page-content style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden' }}>
+      <div id="r360-root" data-r360-page-content style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden', background: token('elevation.surface', '#FFFFFF') }}>
         <div className="r3-page" style={{ background: token('elevation.surface', '#FFFFFF'), height: '100%', overflow: 'auto', paddingTop: '8px' }}>
           {/* ── Sticky Header: Profile + Week Nav ── */}
           <div style={{ position: 'sticky', top: 0, zIndex: 10, background: token('elevation.surface', '#FFFFFF') }}>
