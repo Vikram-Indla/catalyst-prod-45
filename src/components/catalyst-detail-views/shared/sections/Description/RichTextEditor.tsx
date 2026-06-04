@@ -52,6 +52,11 @@ import type {
 import { type AdfDoc, type TiptapDoc } from './utils/adfToTiptap';
 import { tiptapToAdf } from './utils/tiptapToAdf';
 import type { SlashCommand } from './data/slashCommands';
+import {
+  injectMentionStyles,
+  markMentionsSelfStatus,
+} from '@/components/shared/rich-text/mentions/mentionStyles';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface RichTextEditorProps {
   initialAdf: AdfDoc | null;
@@ -96,6 +101,19 @@ export interface RichTextEditorProps {
    *  inserts / read selection. Used by the comment editor to render the
    *  mention-suggestion pill. */
   belowEditor?: (editor: Editor) => ReactNode;
+
+  /** Fires when the Tiptap editor instance becomes available (and again
+   *  with `null` on unmount). Lets parents drive the editor imperatively
+   *  — e.g. Caty Improve pipes streaming text in by calling
+   *  `editor.commands.setContent(...)`. */
+  onEditorReady?: (editor: Editor | null) => void;
+
+  /** Content rendered INSIDE the editor's scrollable body, directly
+   *  after `<EditorContent>`. Used by Caty Improve to position the muted
+   *  "before" snapshot inside the editor frame, so as the AI writes new
+   *  content above, the snapshot is pushed down within the same scroll
+   *  container. */
+  bodyAfterEditor?: ReactNode;
 }
 
 type VoiceMode = 'auto' | 'en' | 'ar';
@@ -115,6 +133,8 @@ export function RichTextEditor({
   saveLabel = 'Save',
   hideActionButtons = false,
   belowEditor,
+  onEditorReady,
+  bodyAfterEditor,
 }: RichTextEditorProps) {
   const [emojiPanelAnchor, setEmojiPanelAnchor] = useState<HTMLElement | null>(
     null,
@@ -137,6 +157,33 @@ export function RichTextEditor({
 
   const { trigger, dismiss: dismissTrigger, commit: commitTrigger } =
     useInlineTriggers(editor);
+
+  // Notify the parent whenever the editor instance changes — typically
+  // null → ready on mount, then ready → null on unmount.
+  useEffect(() => {
+    onEditorReady?.(editor ?? null);
+    return () => onEditorReady?.(null);
+  }, [editor, onEditorReady]);
+
+  // Two-tone mention chips: stamp `data-mention-self` on the
+  // current user's mentions after every transaction so the global
+  // mention CSS paints them in the brand color instead of the
+  // default subtle gray.
+  const { user } = useAuth();
+  const currentUserId = user?.id ?? null;
+  useEffect(() => {
+    if (!editor) return;
+    injectMentionStyles();
+    const root = editor.view.dom as HTMLElement;
+    const apply = () => markMentionsSelfStatus(root, currentUserId);
+    apply();
+    editor.on('update', apply);
+    editor.on('transaction', apply);
+    return () => {
+      editor.off('update', apply);
+      editor.off('transaction', apply);
+    };
+  }, [editor, currentUserId]);
 
   // ── Voice-to-text language detection ──
   const editorRootRef = useRef<HTMLDivElement | null>(null);
@@ -312,6 +359,7 @@ export function RichTextEditor({
         }
         bodyOverlay={bodyOverlay}
         footer={belowEditor ? belowEditor(editor) : undefined}
+        bodyAfterEditor={bodyAfterEditor}
       />
 
       {/* Mic session pill — centered above save row, outside flex container

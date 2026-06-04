@@ -22,6 +22,11 @@ import {
   highlightToHtml,
   resolvePrismId,
 } from '@/components/catalyst-detail-views/shared/sections/Description/utils/prismHighlight';
+import {
+  TicketLinkCard,
+  extractIssueKey,
+  TICKET_KEY_REGEX,
+} from '@/components/shared/TicketLinkCard';
 
 // ─── Complexity classifier ─────────────────────────────────────────────────
 
@@ -32,18 +37,12 @@ const COMPLEX_TYPES = new Set([
   'extension', 'inlineExtension', 'bodiedExtension',
   'status', 'date',
   'decisionList', 'decisionItem',
-  // 2026-05-21 — `mention` is an inline node Atlaskit's renderer
-  // styles as a chip. The light renderer has no case for it, so without
-  // marking the parent doc "complex" the mention would silently drop.
-  'mention',
-  // Smart links (Jira "inline card" + "block card") — pasted URLs that
-  // Jira hydrates into a titled chip / preview. Tiptap renders these in
-  // edit mode via the InlineCard/BlockCard extensions; if we don't mark
-  // the doc complex on read, AdfLightRenderer has no case for them and
-  // the entire link disappears from the view (Epic read-mode bug
-  // 2026-05-31). Routing through EpicDescriptionRenderer gives us
-  // Atlaskit's full smart-card rendering with hover preview + icon.
-  'inlineCard', 'blockCard',
+  // NB: `mention`, `inlineCard`, and `blockCard` are handled directly
+  // below by the light renderer — `mention` as a simple chip,
+  // smart-cards via TicketLinkCard for ph_issues-backed cards.
+  // Atlaskit's heavy renderer is intentionally bypassed for these so
+  // the smart-card detection (link-marks pointing at browse URLs)
+  // gets to fire on the read path.
 ]);
 
 export function hasComplexAdfNodes(adf: unknown): boolean {
@@ -119,12 +118,112 @@ interface AdfNode {
   content?: AdfNode[];
 }
 
+/**
+ * Splits a plain text run into alternating string / ticket-key
+ * segments using TICKET_KEY_REGEX. Used to convert bare Jira keys
+ * inside paragraph text into TicketLinkCards while preserving the
+ * surrounding text.
+ */
+function splitByTicketKeys(
+  text: string,
+): Array<{ type: 'text'; value: string } | { type: 'key'; value: string }> {
+  if (!text) return [];
+  // Reset stateful regex before iteration.
+  TICKET_KEY_REGEX.lastIndex = 0;
+  const out: Array<{ type: 'text'; value: string } | { type: 'key'; value: string }> = [];
+  let last = 0;
+  let m: RegExpExecArray | null;
+  while ((m = TICKET_KEY_REGEX.exec(text)) !== null) {
+    if (m.index > last) out.push({ type: 'text', value: text.slice(last, m.index) });
+    out.push({ type: 'key', value: m[0] });
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) out.push({ type: 'text', value: text.slice(last) });
+  return out;
+}
+
 function renderInline(node: AdfNode, index: number): React.ReactNode {
   const key = `inline-${index}`;
   if (node.type === 'hardBreak') return <br key={key} />;
+
+  // ADF mention — render as a simple chip. data-mention-id is
+  // consumed by the runtime walker in Comment.tsx / DisplayView to
+  // paint self vs other styling. Matches the token-based renderer.
+  if (node.type === 'mention') {
+    const text = String(node.attrs?.text ?? '');
+    const id = String(node.attrs?.id ?? '');
+    return (
+      <span
+        key={key}
+        data-mention-id={id}
+        style={{ display: 'inline-block', fontSize: '0.9em' }}
+      >
+        {text}
+      </span>
+    );
+  }
+
+  // Smart-card inline node — Jira/ADF "inlineCard" carries a URL that
+  // usually points at a browse link. Render our internal TicketLinkCard
+  // when the URL resolves to a key; otherwise fall back to a plain link.
+  if (node.type === 'inlineCard') {
+    const url = String(node.attrs?.url ?? '');
+    const issueKey = extractIssueKey(url);
+    if (issueKey) return <TicketLinkCard key={key} issueKey={issueKey} />;
+    if (url) {
+      return (
+        <a
+          key={key}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: token('color.link', '#0052CC') }}
+        >
+          {url}
+        </a>
+      );
+    }
+    return null;
+  }
+
   if (node.type === 'text') {
-    let children: React.ReactNode = node.text ?? '';
-    (node.marks ?? []).forEach((mark, mi) => {
+    const text = node.text ?? '';
+    const marks = node.marks ?? [];
+
+    // A `link` mark whose href OR visible text contains a Jira
+    // ticket key renders as the smart card. Checking the visible
+    // text covers the case where the editor stored just the host as
+    // the display string ("digital-transformation.atlassian.net")
+    // while the href carries the full /browse/KEY path.
+    const linkMark = marks.find((m) => m.type === 'link');
+    if (linkMark) {
+      const href = String(linkMark.attrs?.href ?? linkMark.attrs?.url ?? '');
+      const issueKey = extractIssueKey(href) ?? extractIssueKey(text);
+      if (issueKey) return <TicketLinkCard key={key} issueKey={issueKey} />;
+    }
+
+    // No marks → safe to split on bare ticket keys. With marks we keep
+    // the mark wrappers intact and skip card detection (avoids losing
+    // bold/italic on the surrounding text).
+    if (marks.length === 0) {
+      const segs = splitByTicketKeys(text);
+      if (segs.length > 1) {
+        return (
+          <React.Fragment key={key}>
+            {segs.map((s, i) =>
+              s.type === 'key' ? (
+                <TicketLinkCard key={`${key}-k${i}`} issueKey={s.value} />
+              ) : (
+                <React.Fragment key={`${key}-t${i}`}>{s.value}</React.Fragment>
+              ),
+            )}
+          </React.Fragment>
+        );
+      }
+    }
+
+    let children: React.ReactNode = text;
+    marks.forEach((mark, mi) => {
       children = renderMark(children, mark, `${key}-m${mi}`);
     });
     return <React.Fragment key={key}>{children}</React.Fragment>;
@@ -133,19 +232,57 @@ function renderInline(node: AdfNode, index: number): React.ReactNode {
   return <React.Fragment key={key}>{node.text ?? ''}</React.Fragment>;
 }
 
+// ─── Direction detection ────────────────────────────────────────────────
+//
+// Mirrors the editor's `AutoDirection` extension so read mode flips
+// bullets / numbering / blockquote borders / panel icons to the same
+// inline-end side that edit mode shows. First an explicit `dir` attr
+// on the node wins (set by translation / AutoDirection at write time);
+// otherwise we run the same first-strong-character algorithm browsers
+// use for `dir='auto'`.
+
+const ARABIC_DIR_RE =
+  /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/;
+const LATIN_DIR_RE = /[A-Za-z]/;
+
+function collectNodeText(node: AdfNode): string {
+  if (typeof node.text === 'string') return node.text;
+  if (!node.content) return '';
+  let out = '';
+  for (const c of node.content) out += collectNodeText(c);
+  return out;
+}
+
+function blockDir(node: AdfNode): 'rtl' | 'ltr' | undefined {
+  const explicit = node.attrs?.dir;
+  if (explicit === 'rtl' || explicit === 'ltr') return explicit;
+  const text = collectNodeText(node);
+  for (const ch of text) {
+    if (ARABIC_DIR_RE.test(ch)) return 'rtl';
+    if (LATIN_DIR_RE.test(ch)) return 'ltr';
+  }
+  return undefined;
+}
+
 // ─── Block content ───────────────────────────────────────────────────────
 
 function renderBlock(node: AdfNode, index: number): React.ReactNode {
   const key = `block-${index}`;
   const inline = (node.content ?? []).map((c, i) => renderInline(c, i));
+  const dir = blockDir(node);
 
   switch (node.type) {
     case 'paragraph':
       return (
-        <p key={key} style={{
-          margin: '0 0 8px', fontWeight: 400,
-          unicodeBidi: 'plaintext',
-        }}>
+        <p
+          key={key}
+          dir={dir}
+          style={{
+            margin: '0 0 8px',
+            fontWeight: 400,
+            unicodeBidi: 'plaintext',
+          }}
+        >
           {inline}
         </p>
       );
@@ -162,6 +299,7 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
         `h${level}`,
         {
           key,
+          dir,
           style: {
             fontSize: sizes[level] ?? '14px',
             fontWeight: weights[level] ?? 600,
@@ -177,28 +315,56 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
 
     case 'bulletList':
       return (
-        <ul key={key} style={{ margin: '4px 0 8px', paddingLeft: 24, listStyleType: 'disc' }}>
+        <ul
+          key={key}
+          dir={dir}
+          style={{
+            margin: '4px 0 8px',
+            paddingInlineStart: 24,
+            listStyleType: 'disc',
+          }}
+        >
           {(node.content ?? []).map((item, i) => renderBlock(item, i))}
         </ul>
       );
 
     case 'orderedList':
       return (
-        <ol key={key} style={{ margin: '4px 0 8px', paddingLeft: 24, listStyleType: 'decimal' }}>
+        <ol
+          key={key}
+          dir={dir}
+          style={{
+            margin: '4px 0 8px',
+            paddingInlineStart: 24,
+            listStyleType: 'decimal',
+          }}
+        >
           {(node.content ?? []).map((item, i) => renderBlock(item, i))}
         </ol>
       );
 
     case 'listItem':
       return (
-        <li key={key} style={{ marginBottom: 4, unicodeBidi: 'plaintext' }}>
+        <li
+          key={key}
+          dir={dir}
+          style={{ marginBottom: 4, unicodeBidi: 'plaintext' }}
+        >
           {(node.content ?? []).map((c, i) => renderBlock(c, i))}
         </li>
       );
 
     case 'taskList':
       return (
-        <ul key={key} style={{ margin: '4px 0 8px', paddingLeft: 24, listStyle: 'none' }}>
+        <ul
+          key={key}
+          dir={dir}
+          style={{
+            margin: '4px 0 8px',
+            paddingInlineStart: 24,
+            listStyle: 'none',
+          }}
+        >
           {(node.content ?? []).map((item, i) => renderBlock(item, i))}
         </ul>
       );
@@ -206,7 +372,16 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
     case 'taskItem': {
       const done = node.attrs?.state === 'DONE';
       return (
-        <li key={key} style={{ display: 'flex', gap: 8, marginBottom: 4, alignItems: 'flex-start' }}>
+        <li
+          key={key}
+          dir={dir}
+          style={{
+            display: 'flex',
+            gap: 8,
+            marginBottom: 4,
+            alignItems: 'flex-start',
+          }}
+        >
           <input type="checkbox" readOnly checked={done} style={{ marginTop: 3 }} />
           <span style={{ flex: 1, unicodeBidi: 'plaintext' }}>
             {(node.content ?? []).map((c, i) => renderInline(c, i))}
@@ -217,11 +392,16 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
 
     case 'blockquote':
       return (
-        <blockquote key={key} style={{
-          borderLeft: `2px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
-          padding: '8px 12px', margin: '8px 0',
-          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-        }}>
+        <blockquote
+          key={key}
+          dir={dir}
+          style={{
+            borderInlineStart: `2px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+            padding: '8px 12px',
+            margin: '8px 0',
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+          }}
+        >
           {(node.content ?? []).map((c, i) => renderBlock(c, i))}
         </blockquote>
       );
@@ -250,6 +430,34 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
         }} />
       );
 
+    // ── Smart link block — ph_issues-backed TicketLinkCard ───────────────
+    case 'blockCard': {
+      const url = String(node.attrs?.url ?? '');
+      const issueKey = extractIssueKey(url);
+      if (issueKey) {
+        return (
+          <div key={key} style={{ margin: '8px 0' }}>
+            <TicketLinkCard issueKey={issueKey} block />
+          </div>
+        );
+      }
+      if (url) {
+        return (
+          <div key={key} style={{ margin: '8px 0' }}>
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: token('color.link', '#0052CC') }}
+            >
+              {url}
+            </a>
+          </div>
+        );
+      }
+      return null;
+    }
+
     // ── Panel (info / note / warning / error / success / tip) ────────────
     case 'panel': {
       const panelType = String(node.attrs?.panelType ?? 'info');
@@ -263,12 +471,19 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
       };
       const style = panelStyles[panelType] ?? panelStyles.info;
       return (
-        <div key={key} style={{
-          display: 'flex', gap: 8, padding: '10px 12px',
-          background: style.bg,
-          border: `1px solid ${style.border}`,
-          borderRadius: 4, margin: '8px 0',
-        }}>
+        <div
+          key={key}
+          dir={dir}
+          style={{
+            display: 'flex',
+            gap: 8,
+            padding: '10px 12px',
+            background: style.bg,
+            border: `1px solid ${style.border}`,
+            borderRadius: 4,
+            margin: '8px 0',
+          }}
+        >
           <span style={{ flexShrink: 0, fontSize: 14, lineHeight: '24px' }} aria-hidden="true">{style.icon}</span>
           <div style={{ flex: 1 }}>
             {(node.content ?? []).map((c, i) => renderBlock(c, i))}
@@ -301,25 +516,35 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
 
     case 'tableHeader':
       return (
-        <th key={key} style={{
-          border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
-          padding: '6px 10px', textAlign: 'left',
-          background: token('elevation.surface.sunken', '#F7F8F9'),
-          fontWeight: 600, fontSize: 12,
-          color: token('color.text', 'rgb(41,42,46)'),
-        }}>
+        <th
+          key={key}
+          dir={dir}
+          style={{
+            border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+            padding: '6px 10px',
+            textAlign: 'start',
+            background: token('elevation.surface.sunken', '#F7F8F9'),
+            fontWeight: 600,
+            fontSize: 12,
+            color: token('color.text', 'rgb(41,42,46)'),
+          }}
+        >
           {(node.content ?? []).map((c, i) => renderBlock(c, i))}
         </th>
       );
 
     case 'tableCell':
       return (
-        <td key={key} style={{
-          border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
-          padding: '6px 10px',
-          verticalAlign: 'top',
-          color: token('color.text', 'rgb(41,42,46)'),
-        }}>
+        <td
+          key={key}
+          dir={dir}
+          style={{
+            border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+            padding: '6px 10px',
+            verticalAlign: 'top',
+            color: token('color.text', 'rgb(41,42,46)'),
+          }}
+        >
           {(node.content ?? []).map((c, i) => renderBlock(c, i))}
         </td>
       );
@@ -327,7 +552,11 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
     default:
       // Unknown block — render children as inline fallback
       return (
-        <p key={key} style={{ margin: '0 0 8px', unicodeBidi: 'plaintext' }}>
+        <p
+          key={key}
+          dir={dir}
+          style={{ margin: '0 0 8px', unicodeBidi: 'plaintext' }}
+        >
           {(node.content ?? []).map((c, i) => renderInline(c, i))}
         </p>
       );

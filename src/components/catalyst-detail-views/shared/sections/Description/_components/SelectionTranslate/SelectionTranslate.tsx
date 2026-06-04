@@ -25,11 +25,10 @@
  * onTranslatingChange callback so the parent (EditorView) can apply
  * the animated rainbow border to the shell.
  */
-import { useEffect, useState, type RefObject } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 import type { Editor } from '@tiptap/react';
 import { TextSelection } from '@tiptap/pm/state';
-import { Slice, Fragment, type Node as PMNode } from '@tiptap/pm/model';
-import { toast } from 'sonner';
+import { Fragment, type Node as PMNode } from '@tiptap/pm/model';
 import { useTranslation } from '@/hooks/useTranslation';
 import { containsArabic } from '@/lib/detectArabic';
 
@@ -47,37 +46,24 @@ interface Anchor {
   to: number;
 }
 
-const LIST_CONTAINER_TYPES = new Set([
+/** True leaf text-bearing blocks. Their textContent IS the unit to translate. */
+const LEAF_TEXT_TYPES = new Set(['paragraph', 'heading']);
+
+/** Structural wrappers that get their `dir` attr updated to match the
+ *  translation target. These don't carry text directly — they wrap
+ *  leaf blocks whose own dir flips. The dir attr on the container is
+ *  what flips bullets / numbering / blockquote border / panel icon. */
+const STRUCTURAL_CONTAINERS = new Set([
   'bulletList',
   'orderedList',
   'taskList',
-]);
-const LEAF_BLOCK_TYPES = new Set([
-  'paragraph',
-  'heading',
-  'blockquote',
   'listItem',
   'taskItem',
+  'blockquote',
+  'panel',
 ]);
-const SKIP_TYPES = new Set(['codeBlock', 'horizontalRule', 'image']);
 
-function collectLeafBlocks(frag: Fragment, out: PMNode[]): void {
-  frag.forEach((node) => {
-    const name = node.type.name;
-    if (SKIP_TYPES.has(name)) return;
-    if (LIST_CONTAINER_TYPES.has(name)) {
-      collectLeafBlocks(node.content, out);
-      return;
-    }
-    if (LEAF_BLOCK_TYPES.has(name)) {
-      out.push(node);
-      return;
-    }
-    // Unknown wrapper — recurse defensively so we still catch any
-    // paragraphs/lists buried inside.
-    if (node.content.size > 0) collectLeafBlocks(node.content, out);
-  });
-}
+const SKIP_TYPES = new Set(['codeBlock', 'horizontalRule', 'image']);
 
 export function SelectionTranslate({
   editor,
@@ -86,12 +72,32 @@ export function SelectionTranslate({
 }: Props) {
   const [anchor, setAnchor] = useState<Anchor | null>(null);
   const [isBatchTranslating, setIsBatchTranslating] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { translate, isTranslating } = useTranslation();
   const isAnyTranslating = isBatchTranslating || isTranslating;
 
   useEffect(() => {
     onTranslatingChange?.(isAnyTranslating);
   }, [isAnyTranslating, onTranslatingChange]);
+
+  // Inline error toast with its own X. Atlaskit's flag system hides
+  // the dismiss button for colored appearances, so we render our own
+  // pill above the editor body when translation can't proceed.
+  const showError = (msg: string) => {
+    setErrorMsg(msg);
+    if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+    errorTimerRef.current = setTimeout(() => setErrorMsg(null), 5000);
+  };
+  const dismissError = () => {
+    setErrorMsg(null);
+    if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+  };
+  useEffect(() => {
+    return () => {
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     const update = () => {
@@ -135,23 +141,88 @@ export function SelectionTranslate({
     };
   }, [editor, containerRef]);
 
-  if (!anchor || !editor.isEditable || isAnyTranslating) return null;
+  // Render the floating Translate button ONLY when there's a live
+  // selection anchor and the editor is editable. The error pill is
+  // independent — it shows whenever `errorMsg` is set, regardless of
+  // selection state, so the user can read and dismiss it.
+  const showButton = !!anchor && editor.isEditable && !isAnyTranslating;
 
   const handleClick = async () => {
     const { from, to, target } = anchor;
-    const slice = editor.state.doc.slice(from, to);
-    const leafBlocks: PMNode[] = [];
-    collectLeafBlocks(slice.content, leafBlocks);
 
+    // Walk the live document (NOT a slice) for nodes whose range
+    // intersects the selection. `doc.slice(from, to)` is unreliable
+    // for in-paragraph selections — its content is just the inline
+    // text and the wrapping paragraph/list-item are "open" rather
+    // than part of the content, so leaf blocks can't be found there.
+    // `nodesBetween` gives us the real positions to replace in place.
+    const leafBlocks: Array<{ node: PMNode; pos: number }> = [];
+    const containers: Array<{ node: PMNode; pos: number }> = [];
+    editor.state.doc.nodesBetween(from, to, (node, pos) => {
+      const name = node.type.name;
+      if (SKIP_TYPES.has(name)) return false;
+      if (LEAF_TEXT_TYPES.has(name)) {
+        leafBlocks.push({ node, pos });
+        return false; // leaves' children are inline — don't descend
+      }
+      if (STRUCTURAL_CONTAINERS.has(name)) {
+        containers.push({ node, pos });
+      }
+      return true; // descend into containers and unknowns
+    });
+
+    // Fallback for edge cases: selection inside content that has no
+    // paragraph/heading (e.g., only a codeBlock, a smart card, or a
+    // single text node Tiptap doesn't expose as a block via
+    // nodesBetween). Translate the raw textBetween and replace [from,
+    // to] inline. Guarantees we never bail with "Nothing to translate"
+    // when the user has selected real text.
     if (leafBlocks.length === 0) {
-      toast.error('Nothing to translate');
+      const rawText = editor.state.doc.textBetween(from, to, ' ').trim();
+      if (!rawText) {
+        showError('Select some text to translate.');
+        return;
+      }
+      setIsBatchTranslating(true);
+      try {
+        const translated = await translate(rawText, {
+          issueKey: '',
+          field: 'description-selection',
+          target,
+        });
+        if (!translated) {
+          showError('Translation failed. Please try again.');
+          return;
+        }
+        const leafDir: 'rtl' | 'ltr' = target === 'ar' ? 'rtl' : 'ltr';
+        const tr = editor.state.tr.insertText(translated.trim(), from, to);
+        // setNodeMarkup on the wrapping paragraph (if any) so the
+        // direction flips for this inline replacement too.
+        const $pos = tr.doc.resolve(from);
+        for (let d = $pos.depth; d > 0; d--) {
+          const node = $pos.node(d);
+          const name = node.type.name;
+          if (LEAF_TEXT_TYPES.has(name) || STRUCTURAL_CONTAINERS.has(name)) {
+            const blockPos = $pos.before(d);
+            tr.setNodeMarkup(blockPos, undefined, {
+              ...node.attrs,
+              dir: leafDir,
+            });
+          }
+        }
+        editor.view.dispatch(tr);
+        editor.view.focus();
+        setAnchor(null);
+      } finally {
+        setIsBatchTranslating(false);
+      }
       return;
     }
 
     setIsBatchTranslating(true);
     try {
       const translations = await Promise.all(
-        leafBlocks.map((node) => {
+        leafBlocks.map(({ node }) => {
           const text = node.textContent.trim();
           if (!text) return Promise.resolve('');
           return translate(text, {
@@ -163,60 +234,44 @@ export function SelectionTranslate({
       );
 
       if (translations.some((t) => t === null)) {
-        toast.error('Translation failed');
+        showError('Translation failed. Please try again.');
         return;
       }
 
       const schema = editor.state.schema;
-      const idxRef = { v: 0 };
+      const leafDir: 'rtl' | 'ltr' = target === 'ar' ? 'rtl' : 'ltr';
 
-      const transformFragment = (frag: Fragment): Fragment => {
-        const newChildren: PMNode[] = [];
-        frag.forEach((node) => {
-          newChildren.push(transformNode(node));
-        });
-        return Fragment.fromArray(newChildren);
-      };
+      let tr = editor.state.tr;
 
-      const transformNode = (node: PMNode): PMNode => {
-        const name = node.type.name;
-        if (SKIP_TYPES.has(name)) return node;
-        if (LIST_CONTAINER_TYPES.has(name)) {
-          return node.copy(transformFragment(node.content));
-        }
-        if (LEAF_BLOCK_TYPES.has(name)) {
-          const translated = (translations[idxRef.v++] || '').trim();
-          if (!translated) return node;
-          // listItem / taskItem / blockquote wrap text in a paragraph;
-          // paragraph / heading take text directly.
-          if (
-            name === 'listItem' ||
-            name === 'taskItem' ||
-            name === 'blockquote'
-          ) {
-            const paragraph = schema.nodes.paragraph.create(
-              null,
-              schema.text(translated),
-            );
-            return node.copy(Fragment.from(paragraph));
-          }
-          return node.copy(Fragment.from(schema.text(translated)));
-        }
-        // Unknown wrapper — recurse so any nested paragraphs/lists get
-        // their text swapped too.
-        if (node.content.size > 0) {
-          return node.copy(transformFragment(node.content));
-        }
-        return node;
-      };
+      // Replace leaf blocks in REVERSE document order so earlier
+      // positions remain valid as we apply each replacement (each
+      // replace shifts positions of subsequent — already-processed —
+      // nodes only).
+      for (let i = leafBlocks.length - 1; i >= 0; i--) {
+        const { node, pos } = leafBlocks[i];
+        const translated = (translations[i] || '').trim();
+        if (!translated) continue;
+        const newAttrs = { ...node.attrs, dir: leafDir };
+        const newNode = node.type.create(
+          newAttrs,
+          Fragment.from(schema.text(translated)),
+          node.marks,
+        );
+        tr = tr.replaceWith(pos, pos + node.nodeSize, newNode);
+      }
 
-      const newContent = transformFragment(slice.content);
-      // Preserve the slice's open ends so partial-block edges merge
-      // cleanly with the surrounding document on either side of the
-      // selection. Skipping this would force PM to wrap the inserted
-      // content in new paragraphs and orphan the unselected halves.
-      const newSlice = new Slice(newContent, slice.openStart, slice.openEnd);
-      const tr = editor.state.tr.replace(from, to, newSlice);
+      // Flip the dir on every structural container the selection
+      // touched (bulletList / orderedList / taskList / listItem /
+      // taskItem / blockquote / panel). setNodeMarkup only changes
+      // attrs (no size delta), so subsequent containers' positions
+      // stay valid. We map the original positions through the
+      // transaction to account for leaf replacements that resized.
+      for (const { pos, node } of containers) {
+        const mappedPos = tr.mapping.map(pos);
+        const newAttrs = { ...node.attrs, dir: leafDir };
+        tr = tr.setNodeMarkup(mappedPos, undefined, newAttrs);
+      }
+
       editor.view.dispatch(tr);
       editor.view.focus();
       setAnchor(null);
@@ -226,34 +281,91 @@ export function SelectionTranslate({
   };
 
   return (
-    <button
-      type="button"
-      onMouseDown={(e) => e.preventDefault()}
-      onClick={handleClick}
-      style={{
-        position: 'absolute',
-        top: anchor.top,
-        left: anchor.left,
-        zIndex: 20,
-        background: 'var(--ds-surface, #FFFFFF)',
-        border: 'none',
-        color: 'var(--ds-link, #0C66E4)',
-        fontSize: 12,
-        fontWeight: 500,
-        cursor: 'pointer',
-        padding: '2px 8px',
-        textDecoration: 'underline',
-        textUnderlineOffset: 2,
-        borderRadius: 3,
-        boxShadow: '0 1px 3px rgba(9,30,66,0.12)',
-      }}
-      aria-label={
-        anchor.target === 'ar'
-          ? 'Translate to Arabic'
-          : 'Translate to English'
-      }
-    >
-      {anchor.target === 'ar' ? 'Translate to Arabic' : 'Translate to English'}
-    </button>
+    <>
+      {showButton && anchor && (
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={handleClick}
+          style={{
+            position: 'absolute',
+            top: anchor.top,
+            left: anchor.left,
+            zIndex: 20,
+            background: 'var(--ds-surface, #FFFFFF)',
+            border: 'none',
+            color: 'var(--ds-link, #0C66E4)',
+            fontSize: 12,
+            fontWeight: 500,
+            cursor: 'pointer',
+            padding: '2px 8px',
+            textDecoration: 'underline',
+            textUnderlineOffset: 2,
+            borderRadius: 3,
+            boxShadow: '0 1px 3px rgba(9,30,66,0.12)',
+          }}
+          aria-label={
+            anchor.target === 'ar'
+              ? 'Translate to Arabic'
+              : 'Translate to English'
+          }
+        >
+          {anchor.target === 'ar'
+            ? 'Translate to Arabic'
+            : 'Translate to English'}
+        </button>
+      )}
+
+      {errorMsg && (
+        <div
+          role="alert"
+          style={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            zIndex: 30,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 8px 8px 12px',
+            background: 'var(--ds-background-danger, #FFECEB)',
+            color: 'var(--ds-text-danger, #AE2A19)',
+            border:
+              '1px solid var(--ds-border-danger, rgba(174, 42, 25, 0.25))',
+            borderRadius: 6,
+            fontSize: 13,
+            fontWeight: 500,
+            boxShadow: '0 4px 12px rgba(9, 30, 66, 0.18)',
+            maxWidth: 320,
+          }}
+        >
+          <span>{errorMsg}</span>
+          <button
+            type="button"
+            onClick={dismissError}
+            aria-label="Dismiss"
+            title="Dismiss"
+            style={{
+              flexShrink: 0,
+              width: 22,
+              height: 22,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: 'none',
+              borderRadius: 4,
+              background: 'transparent',
+              color: 'inherit',
+              cursor: 'pointer',
+              fontSize: 16,
+              lineHeight: 1,
+              padding: 0,
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+    </>
   );
 }

@@ -9,7 +9,91 @@ import {
   hasComplexAdfNodes,
 } from '@/components/shared/rich-text/atlaskit/adfLightRenderer';
 import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
-import { Reply, SmilePlus, MoreHorizontal, Edit, Trash2, Link2, Quote } from '@/lib/atlaskit-icons';
+import {
+  injectMentionStyles,
+  markMentionsSelfStatus,
+} from '@/components/shared/rich-text/mentions/mentionStyles';
+import { useAuth } from '@/hooks/useAuth';
+import { TicketLinkCard } from '@/components/shared/TicketLinkCard';
+
+// ─── Per-block direction detection for read mode ─────────────────────
+//
+// Mirrors DisplayView and the editor's AutoDirection: walk the
+// rendered comment DOM, detect direction per block, and set the
+// `dir` attribute so bullets / numbers / blockquote borders / panel
+// decorations follow the content's language. Idempotent — the
+// MutationObserver re-runs the walker on every DOM mutation (Suspense
+// resolution, async loaders, etc.).
+
+const ARABIC_DIR_RE_CMT =
+  /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/;
+const LATIN_DIR_RE_CMT = /[A-Za-z]/;
+const DIR_BLOCK_SELECTOR_CMT =
+  'p, h1, h2, h3, h4, h5, h6, ul, ol, li, blockquote, [data-panel-type], [data-block-type="panel"]';
+
+function detectCommentBlockDir(el: HTMLElement): 'rtl' | 'ltr' | null {
+  const text = el.textContent ?? '';
+  for (const ch of text) {
+    if (ARABIC_DIR_RE_CMT.test(ch)) return 'rtl';
+    if (LATIN_DIR_RE_CMT.test(ch)) return 'ltr';
+  }
+  return null;
+}
+
+function applyCommentDirection(root: HTMLElement) {
+  const blocks = root.querySelectorAll<HTMLElement>(DIR_BLOCK_SELECTOR_CMT);
+  blocks.forEach((el) => {
+    const detected = detectCommentBlockDir(el);
+    if (!detected) return;
+    if (el.getAttribute('dir') !== detected) {
+      el.setAttribute('dir', detected);
+    }
+  });
+}
+
+const CMT_DIRECTION_STYLE_ID = 'catalyst-comment-direction-styles';
+function injectCommentDirectionStyles() {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById(CMT_DIRECTION_STYLE_ID)) return;
+  const style = document.createElement('style');
+  style.id = CMT_DIRECTION_STYLE_ID;
+  style.textContent = `
+    .cds-comment-body ul[dir="rtl"],
+    .cds-comment-body ol[dir="rtl"] {
+      padding-inline-start: 24px !important;
+      padding-left: 0 !important;
+    }
+    .cds-comment-body ul[dir="ltr"],
+    .cds-comment-body ol[dir="ltr"] {
+      padding-inline-start: 24px !important;
+      padding-right: 0 !important;
+    }
+    .cds-comment-body blockquote[dir="rtl"],
+    .cds-comment-body blockquote[dir="ltr"] {
+      border-inline-start: 2px solid var(--ds-border, rgba(11,18,14,0.14)) !important;
+      border-left: none !important;
+      border-right: none !important;
+    }
+    /* Atlaskit's renderer uses appearance="comment" which injects its
+       own padding around the rendered document. Strip it so the body
+       starts at the same left edge as the toolbar that follows. */
+    .cds-comment-body > div,
+    .cds-comment-body .ak-renderer-wrapper,
+    .cds-comment-body .ak-renderer-document {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+    .cds-comment-body p:first-child,
+    .cds-comment-body h1:first-child,
+    .cds-comment-body h2:first-child,
+    .cds-comment-body h3:first-child {
+      margin-top: 0 !important;
+    }
+  `;
+  document.head.appendChild(style);
+}
 
 function tryParseAdf(content: string): unknown | null {
   const v = content.trim();
@@ -62,7 +146,19 @@ function renderContent(content: string, currentUserId?: string): React.ReactNode
     }
     return <AdfLightRenderer adf={adf} />;
   }
-  const pattern = /!\[([^\]]*)\]\(([^)]+)\)|@\[([^\]]+)\]\(([^)]*)\)|@[A-Z][\w.]*(?:\s[A-Z][\w.]*)*|@\w+/g;
+  // Token-based renderer — handles inline images `![alt](url)`,
+  // legacy ADF mentions `@[Name](id)`, multi-word `@Capitalized Name`
+  // mentions, plain `@word` mentions, Atlassian browse URLs, and
+  // bare ticket keys (BAU-1234) → all rendered as smart TicketLinkCards.
+  //
+  // URL alternative is listed before the bare-key alternative so that
+  // when a full URL appears, the regex captures the whole URL in one
+  // go (rather than matching the bare key inside it).
+  // Bare-key alternative uses negative look-arounds so it never
+  // matches a key sitting INSIDE a URL — those are handled by the
+  // browse-URL alternative above.
+  const pattern =
+    /!\[([^\]]*)\]\(([^)]+)\)|@\[([^\]]+)\]\([^)]+\)|@[A-Z][\w.]*(?:\s[A-Z][\w.]*)*|@\w+|https?:\/\/[a-z0-9-]+\.atlassian\.net\/browse\/([A-Z][A-Z0-9]{0,9}-\d+)(?:\?[^\s)]*)?(?:#[^\s)]*)?|(?<![A-Za-z0-9/?&=:_-])([A-Z][A-Z0-9]{0,9}-\d+)(?![A-Za-z0-9/?&=_-])/g;
   const nodes: React.ReactNode[] = [];
   let lastIndex = 0;
   let key = 0;
@@ -86,41 +182,32 @@ function renderContent(content: string, currentUserId?: string): React.ReactNode
       );
     } else if (match.startsWith('@[')) {
       const name = m[3] ?? '';
-      const mentionId = m[4] ?? '';
-      const isSelf = currentUserId && mentionId === currentUserId;
+      // Extract the id portion from `@[Name](id)` so the runtime
+      // walker can stamp self vs other classes on this chip.
+      const idMatch = /^@\[[^\]]+\]\(([^)]+)\)$/.exec(match);
+      const mentionId = idMatch?.[1] ?? '';
       nodes.push(
         <span
           key={key++}
-          style={{
-            display: 'inline-block',
-            background: isSelf
-              ? 'var(--ds-background-selected, #DEEBFF)'
-              : 'var(--ds-background-neutral, #F4F5F7)',
-            color: isSelf
-              ? 'var(--ds-text-selected, #0747A6)'
-              : 'var(--ds-link, #0052CC)',
-            borderRadius: 3,
-            padding: '2px 4px',
-            fontSize: '0.9em',
-            fontWeight: 500,
-          }}
+          data-mention-id={mentionId}
+          style={{ display: 'inline-block', fontSize: '0.9em' }}
         >
           @{name}
         </span>
       );
-    } else {
+    } else if (m[4]) {
+      // Full Atlassian browse URL — group 4 captures the ticket key.
+      nodes.push(<TicketLinkCard key={key++} issueKey={m[4]} />);
+    } else if (m[5]) {
+      // Bare ticket key (BAU-1234).
+      nodes.push(<TicketLinkCard key={key++} issueKey={m[5]} />);
+    } else if (match.startsWith('@')) {
+      // Plain @word mention — no id, so always renders as other-user.
       nodes.push(
         <span
           key={key++}
-          style={{
-            display: 'inline-block',
-            background: 'var(--ds-background-neutral, #F4F5F7)',
-            color: 'var(--ds-link, #0052CC)',
-            borderRadius: 3,
-            padding: '0 4px',
-            fontSize: '0.9em',
-            fontWeight: 500,
-          }}
+          data-mention-id=""
+          style={{ display: 'inline-block', fontSize: '0.9em' }}
         >
           {match}
         </span>
@@ -135,47 +222,54 @@ function renderContent(content: string, currentUserId?: string): React.ReactNode
   return nodes;
 }
 
-const QUICK_EMOJIS = ['👍', '👏', '🎉', '❤️', '🚀', '👀'];
+/**
+ * Rendered comment body wrapped with a ref + MutationObserver so the
+ * direction walker fires whenever the inner ADF renderer (Atlaskit or
+ * AdfLight) finishes mounting / hydrates async content.
+ */
+function CommentBody({ content }: { content: string }) {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const currentUserId = user?.id ?? null;
+  React.useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    injectCommentDirectionStyles();
+    injectMentionStyles();
+    const apply = () => {
+      applyCommentDirection(root);
+      markMentionsSelfStatus(root, currentUserId);
+    };
+    apply();
+    const observer = new MutationObserver(apply);
+    observer.observe(root, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [content, currentUserId]);
+  return (
+    <div
+      ref={ref}
+      className="cds-comment-body text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] whitespace-pre-wrap leading-relaxed"
+    >
+      {renderContent(content)}
+    </div>
+  );
+}
 
 export interface CommentProps {
   comment: CdsComment;
-  currentUser?: CdsUser;
-  onReply?: (commentId: string) => void;
-  onEdit?: (commentId: string) => void;
-  onDelete?: (commentId: string) => void;
-  onCopyLink?: (commentId: string) => void;
-  onQuote?: (commentId: string) => void;
-  onToggleReaction?: (commentId: string, emoji: string) => void;
+  /** Renders between the message body and the actions toolbar. Use
+   *  for affordances that belong to the message (e.g. the Translate
+   *  bar) but should sit directly under the text, not below the
+   *  toolbar. */
+  extras?: React.ReactNode;
   actions?: React.ReactNode;
   isHighlighted?: boolean;
   className?: string;
 }
 
 const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
-  ({ comment, currentUser, onReply, onEdit, onDelete, onCopyLink, onQuote, onToggleReaction, actions, isHighlighted, className }, ref) => {
-    const { author, content, createdAt, isEdited, isSystem, reactions } = comment;
-    const [moreOpen, setMoreOpen] = useState(false);
-    const [emojiOpen, setEmojiOpen] = useState(false);
-    const moreRef = useRef<HTMLDivElement>(null);
-    const emojiRef = useRef<HTMLDivElement>(null);
-
-    const canEdit = onEdit && currentUser && author.id === currentUser.id;
-    const canDelete = onDelete && currentUser && author.id === currentUser.id;
-
-    useEffect(() => {
-      if (!moreOpen && !emojiOpen) return;
-      const handler = (e: MouseEvent) => {
-        if (moreOpen && moreRef.current && !moreRef.current.contains(e.target as Node)) setMoreOpen(false);
-        if (emojiOpen && emojiRef.current && !emojiRef.current.contains(e.target as Node)) setEmojiOpen(false);
-      };
-      document.addEventListener('mousedown', handler);
-      return () => document.removeEventListener('mousedown', handler);
-    }, [moreOpen, emojiOpen]);
-
-    const handleCopyLink = useCallback(() => {
-      onCopyLink?.(comment.id);
-      setMoreOpen(false);
-    }, [onCopyLink, comment.id]);
+  ({ comment, extras, actions, isHighlighted, className }, ref) => {
+    const { author, content, createdAt, isEdited, isSystem } = comment;
 
     return (
       <div
@@ -214,9 +308,9 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
             )}
           </div>
 
-          <div className="text-[14px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] whitespace-pre-wrap leading-relaxed">
-            {renderContent(content, currentUser?.id)}
-          </div>
+          <CommentBody content={content} />
+
+          {extras}
 
           {/* Reaction chips */}
           {reactions && reactions.length > 0 && (

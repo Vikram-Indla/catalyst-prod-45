@@ -13,7 +13,7 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = "catalyst-tiptap-editor-styles-v49";
+const STYLE_ID = "catalyst-tiptap-editor-styles-v50";
 
 export function injectEditorStyles(): void {
   if (typeof document === "undefined") return;
@@ -360,20 +360,11 @@ export function injectEditorStyles(): void {
       height: 0;
     }
 
-    /* Mention chip — informational blue background, matches the existing
-       CatalystDescriptionSection mention styling for visual continuity
-       across surfaces. */
-    .catalyst-tiptap-editor span[data-mention-id] {
-      background: var(--ds-background-information, #DEEBFF);
-      color: var(--ds-text-information, #1868DB);
-      border-radius: 3px;
-      padding: 0 4px;
-      font-weight: 500;
-      cursor: pointer;
-    }
-    .catalyst-tiptap-editor span[data-mention-id]:hover {
-      background: var(--ds-background-information-hovered, #CCE0FF);
-    }
+    /* Mention chip styling has been moved to the shared
+       mentionStyles utility (injected globally) so read mode and
+       edit mode use the same pill regardless of which renderer owns
+       the surface. Keeping nothing here ensures editorStyles never
+       competes with the shared rules. */
 
     /* SmallText mark renders as <small>; the inline style block on the
        mark itself sets the size/color, this rule just removes the browser
