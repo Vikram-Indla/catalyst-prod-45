@@ -13,6 +13,7 @@ import {
   markMentionsSelfStatus,
 } from '@/components/shared/rich-text/mentions/mentionStyles';
 import { useAuth } from '@/hooks/useAuth';
+import { TicketLinkCard } from '@/components/shared/TicketLinkCard';
 
 // ─── Per-block direction detection for read mode ─────────────────────
 //
@@ -145,8 +146,17 @@ function renderContent(content: string): React.ReactNode {
   }
   // Token-based renderer — handles inline images `![alt](url)`,
   // legacy ADF mentions `@[Name](id)`, multi-word `@Capitalized Name`
-  // mentions, and plain `@word` mentions.
-  const pattern = /!\[([^\]]*)\]\(([^)]+)\)|@\[([^\]]+)\]\([^)]+\)|@[A-Z][\w.]*(?:\s[A-Z][\w.]*)*|@\w+/g;
+  // mentions, plain `@word` mentions, Atlassian browse URLs, and
+  // bare ticket keys (BAU-1234) → all rendered as smart TicketLinkCards.
+  //
+  // URL alternative is listed before the bare-key alternative so that
+  // when a full URL appears, the regex captures the whole URL in one
+  // go (rather than matching the bare key inside it).
+  // Bare-key alternative uses negative look-arounds so it never
+  // matches a key sitting INSIDE a URL — those are handled by the
+  // browse-URL alternative above.
+  const pattern =
+    /!\[([^\]]*)\]\(([^)]+)\)|@\[([^\]]+)\]\([^)]+\)|@[A-Z][\w.]*(?:\s[A-Z][\w.]*)*|@\w+|https?:\/\/[a-z0-9-]+\.atlassian\.net\/browse\/([A-Z][A-Z0-9]{0,9}-\d+)(?:\?[^\s)]*)?(?:#[^\s)]*)?|(?<![A-Za-z0-9/?&=:_-])([A-Z][A-Z0-9]{0,9}-\d+)(?![A-Za-z0-9/?&=_-])/g;
   const nodes: React.ReactNode[] = [];
   let lastIndex = 0;
   let key = 0;
@@ -183,7 +193,13 @@ function renderContent(content: string): React.ReactNode {
           @{name}
         </span>
       );
-    } else {
+    } else if (m[4]) {
+      // Full Atlassian browse URL — group 4 captures the ticket key.
+      nodes.push(<TicketLinkCard key={key++} issueKey={m[4]} />);
+    } else if (m[5]) {
+      // Bare ticket key (BAU-1234).
+      nodes.push(<TicketLinkCard key={key++} issueKey={m[5]} />);
+    } else if (match.startsWith('@')) {
       // Plain @word mention — no id, so always renders as other-user.
       nodes.push(
         <span
