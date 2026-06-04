@@ -15,9 +15,21 @@ import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-q
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { chatRealtime } from '@/lib/chat/ChatRealtimeManager';
+import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import type { ChatMessage, ChatReaction } from '@/types/chat';
 
 const PAGE_SIZE = 50;
+
+function parseAdfDoc(content: string): { type: string } | null {
+  const v = content.trim();
+  if (!v.startsWith('{')) return null;
+  try {
+    const parsed = JSON.parse(v);
+    return parsed && parsed.type === 'doc' ? parsed : null;
+  } catch {
+    return null;
+  }
+}
 
 const db = supabase as unknown as { from: (table: string) => any };
 
@@ -212,14 +224,18 @@ export function useMessages(conversationId: string | null): {
     .flatMap((p) => p.messages);
 
   const sendMessage = useCallback(
-    async (bodyText: string, parentId?: string) => {
-      if (!conversationId || !myId || !bodyText.trim()) return;
+    async (content: string, parentId?: string) => {
+      if (!conversationId || !myId || !content.trim()) return;
       try {
+        const adf = parseAdfDoc(content);
+        const insertRow = adf
+          ? { body_adf: adf, body_text: adfToPlainText(adf) }
+          : { body_adf: null, body_text: content };
         const { error: insertErr } = await db.from('chat_messages').insert({
           conversation_id: conversationId,
           parent_id: parentId ?? null,
           author_id: myId,
-          body_text: bodyText,
+          ...insertRow,
         });
         if (insertErr) {
           setError(insertErr);

@@ -23,6 +23,10 @@ interface NewMessageModalProps {
   isOpen: boolean;
   onClose: () => void;
   onStart: (personIds: string[]) => void;
+  /** Selecting a person creates/opens a 1:1 DM with that user. */
+  onStartDM?: (userId: string) => void;
+  /** Selecting a channel opens that channel conversation. */
+  onOpenChannel?: (conversationId: string) => void;
 }
 
 const PRESENCE_DOT: Record<ChatPresence, string> = {
@@ -100,7 +104,13 @@ function Avatar({ person, size = 32 }: { person: ChatPerson; size?: number }) {
   );
 }
 
-export function NewMessageModal({ isOpen, onClose, onStart }: NewMessageModalProps) {
+export function NewMessageModal({
+  isOpen,
+  onClose,
+  onStart,
+  onStartDM,
+  onOpenChannel,
+}: NewMessageModalProps) {
   const { groups, isLoading } = useChatPeople();
   const { conversations } = useConversations();
   const [query, setQuery] = useState('');
@@ -154,12 +164,25 @@ export function NewMessageModal({ isOpen, onClose, onStart }: NewMessageModalPro
     );
   };
 
-  const handleStart = () => {
-    if (selectedIds.length === 0) return;
-    onStart(selectedIds);
+  const startDM = (userId: string) => {
+    if (onStartDM) onStartDM(userId);
+    else onStart([userId]);
     setSelectedIds([]);
     setQuery('');
     onClose();
+  };
+
+  const openChannel = (conversationId: string) => {
+    if (onOpenChannel) onOpenChannel(conversationId);
+    else onStart([conversationId]);
+    setSelectedIds([]);
+    setQuery('');
+    onClose();
+  };
+
+  const handleStart = () => {
+    if (selectedIds.length === 0) return;
+    startDM(selectedIds[0]);
   };
 
   const hasResults = filteredGroups.length > 0 || filteredChannels.length > 0;
@@ -275,12 +298,22 @@ export function NewMessageModal({ isOpen, onClose, onStart }: NewMessageModalPro
               {filteredChannels.map((c) => (
                 <div
                   key={c.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => openChannel(c.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      openChannel(c.id);
+                    }
+                  }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: 12,
                     padding: 8,
                     borderRadius: 3,
+                    cursor: 'pointer',
                   }}
                 >
                   <span
@@ -310,8 +343,15 @@ export function NewMessageModal({ isOpen, onClose, onStart }: NewMessageModalPro
                       </div>
                     )}
                   </div>
-                  <Button appearance="default" spacing="compact" onClick={() => onStart([c.id])}>
-                    Message
+                  <Button
+                    appearance="default"
+                    spacing="compact"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openChannel(c.id);
+                    }}
+                  >
+                    Open
                   </Button>
                 </div>
               ))}
@@ -373,7 +413,7 @@ export function NewMessageModal({ isOpen, onClose, onStart }: NewMessageModalPro
                           spacing="compact"
                           onClick={(e) => {
                             e.stopPropagation();
-                            onStart([person.id]);
+                            startDM(person.id);
                           }}
                         >
                           Message

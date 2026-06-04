@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChatRealtimeProvider } from '@/hooks/chat/ChatRealtimeProvider';
 import { ChatDock } from '@/components/chat/dock/ChatDock';
 import { NewMessageModal } from '@/components/chat/NewMessageModal';
+import { useCreateConversation } from '@/hooks/chat/useCreateConversation';
 
 /**
  * ChatDockMount — the always-on chat dock for the global app shell.
@@ -15,6 +16,7 @@ import { NewMessageModal } from '@/components/chat/NewMessageModal';
  */
 export default function ChatDockMount() {
   const navigate = useNavigate();
+  const { createDM } = useCreateConversation();
   const [collapsed, setCollapsed] = useState(true);
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [activeId, setActiveId] = useState<string | undefined>(undefined);
@@ -25,6 +27,29 @@ export default function ChatDockMount() {
     setActiveId(id);
     setCollapsed(false);
   }, []);
+
+  const handleStartDM = useCallback(
+    async (userId: string) => {
+      setNewOpen(false);
+      try {
+        const convId = await createDM(userId);
+        handleSelect(convId);
+      } catch {
+        // surface nothing — empty state is acceptable per chat defensive pattern
+      }
+      navigate('/chat');
+    },
+    [createDM, handleSelect, navigate],
+  );
+
+  const handleOpenChannel = useCallback(
+    (conversationId: string) => {
+      setNewOpen(false);
+      handleSelect(conversationId);
+      navigate('/chat');
+    },
+    [handleSelect, navigate],
+  );
 
   const handleClose = useCallback((id: string) => {
     setOpenIds((prev) => prev.filter((x) => x !== id));
@@ -50,6 +75,8 @@ export default function ChatDockMount() {
           setNewOpen(false);
           navigate('/chat');
         }}
+        onStartDM={handleStartDM}
+        onOpenChannel={handleOpenChannel}
       />
     </ChatRealtimeProvider>
   );

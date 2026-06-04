@@ -62,8 +62,17 @@ export function ConversationList({
     dms: true,
     archived: false,
   });
+  const [search, setSearch] = useState('');
 
   const { channels, tickets, dms, archived } = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    const matches = (c: ChatConversation) => {
+      if (!q) return true;
+      return (
+        (c.title ?? '').toLowerCase().includes(q) ||
+        (c.lastMessagePreview ?? '').toLowerCase().includes(q)
+      );
+    };
     const acc = {
       channels: [] as ChatConversation[],
       tickets: [] as ChatConversation[],
@@ -71,6 +80,7 @@ export function ConversationList({
       archived: [] as ChatConversation[],
     };
     for (const c of conversations) {
+      if (!matches(c)) continue;
       if (c.isArchived) {
         acc.archived.push(c);
         continue;
@@ -80,7 +90,7 @@ export function ConversationList({
       else acc.dms.push(c);
     }
     return acc;
-  }, [conversations]);
+  }, [conversations, search]);
 
   const isActive = (id: string) => id === activeConversationId;
   const select = (id: string) => onSelectConversation?.(id);
@@ -103,7 +113,22 @@ export function ConversationList({
             <circle cx="11" cy="11" r="7" />
             <line x1="21" y1="21" x2="16.5" y2="16.5" />
           </svg>
-          <span>Search conversations</span>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search conversations"
+            aria-label="Search conversations"
+            style={{
+              border: 'none',
+              outline: 'none',
+              background: 'transparent',
+              flex: 1,
+              minWidth: 0,
+              font: 'inherit',
+              color: 'inherit',
+            }}
+          />
         </div>
       </div>
 
