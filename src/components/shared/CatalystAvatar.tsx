@@ -123,7 +123,7 @@ export default function CatalystAvatar({
           userSelect: 'none',
           letterSpacing: 0,
           boxShadow: borderColor ? `0 0 0 2px ${borderColor}` : undefined,
-          fontFamily: 'var(--ds-font-family-body, "Inter"), system-ui, sans-serif',
+          fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
         }}
       >
         {initials}

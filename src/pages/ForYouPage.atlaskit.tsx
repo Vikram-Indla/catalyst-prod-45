@@ -294,7 +294,7 @@ export default function ForYouPageAtlaskit() {
 
       <h1
         style={{
-          font: `653 24px/28px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
+          font: `653 24px/28px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
           color: token('color.text', '#292A2E'),
           margin: 0,
           marginBlockStart: 16,
@@ -374,7 +374,7 @@ export default function ForYouPageAtlaskit() {
               border: 'none',
               borderRadius: 3,
               cursor: 'pointer',
-              font: `500 14px/20px "Inter", system-ui, sans-serif`,
+              font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             }}
           >
             Load more

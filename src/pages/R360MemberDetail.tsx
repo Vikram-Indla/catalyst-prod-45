@@ -678,7 +678,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       color: token('color.text.information', '#0052CC'),
                       fontSize: 12,
                       fontWeight: 500,
-                      fontFamily: 'var(--ds-font-family-body, "Inter"), system-ui, sans-serif',
+                      fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
                       boxShadow: token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.12)'),
                       pointerEvents: 'none',
                       whiteSpace: 'nowrap',

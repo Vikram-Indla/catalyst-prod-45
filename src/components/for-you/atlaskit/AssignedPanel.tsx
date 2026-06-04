@@ -150,7 +150,7 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
   return (
     <div style={{
       paddingInlineStart: 0, paddingInlineEnd: 0,
-      paddingBlockStart: 12, paddingBlockEnd: 4,
+      paddingBlockStart: 16, paddingBlockEnd: 4,
       display: 'flex', alignItems: 'baseline', gap: 8,
     }}>
       <span style={{
@@ -183,7 +183,7 @@ function AskCatyThemifyButton({ onClick, count }: { onClick: () => void; count: 
       display: 'flex',
       justifyContent: 'flex-end',
       paddingBlockStart: 8,
-      paddingBlockEnd: 12,
+      paddingBlockEnd: 16,
     }}>
       <div style={{
         display: 'inline-flex',
@@ -200,9 +200,9 @@ function AskCatyThemifyButton({ onClick, count }: { onClick: () => void; count: 
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
-            height: 28,
-            padding: '0 14px',
+            gap: 8,
+            height: 32,
+            padding: '0 16px',
             border: 'none',
             borderRadius: 18,
             background: hover

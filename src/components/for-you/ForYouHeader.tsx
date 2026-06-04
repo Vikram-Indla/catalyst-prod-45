@@ -20,7 +20,7 @@ export function ForYouHeader() {
     }}>
       <h1 style={{
         margin: 0,
-        font: '600 24px/28px var(--ds-font-family-body, "Inter", system-ui, sans-serif)',
+        font: '600 24px/28px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
         letterSpacing: 'normal',
         color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
       }}>
