@@ -466,7 +466,7 @@ function FeedSection({
               // DOM probe 2026-05-29 confirmed fontWeight 653 (not 600).
               fontSize: 16,
               lineHeight: '20px',
-              fontFamily: '"Inter", system-ui, sans-serif',
+              fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
               fontWeight: 653,
               color: token('color.text', '#292A2E'),
               margin: 0,
@@ -480,7 +480,7 @@ function FeedSection({
       </div>
       <p
         style={{
-          font: `400 14px/20px "Inter", system-ui, sans-serif`,
+          font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
           color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
           margin: 0,
           marginBlockEnd: 4,
@@ -668,7 +668,7 @@ function FeedCard({
             display: 'block',
             width: '100%',
             cursor: 'pointer',
-            font: `400 14px/20px "Inter", system-ui, sans-serif`,
+            font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', '#292A2E'),
             textAlign: 'start',
           }}
@@ -680,7 +680,7 @@ function FeedCard({
             (Jira parity: flat weight, color-only hierarchy). */}
         <div
           style={{
-            font: `400 12px/16px "Inter", system-ui, sans-serif`,
+            font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             display: 'flex',
             alignItems: 'center',
@@ -729,7 +729,7 @@ function FeedCard({
         >
           <div
             style={{
-              font: `400 14px/20px "Inter", system-ui, sans-serif`,
+              font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
               color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
               whiteSpace: 'pre-wrap',
               wordBreak: 'break-word',
@@ -934,7 +934,7 @@ function ReplyComposer({
         >
           <span
             style={{
-              font: `400 12px/16px "Inter", system-ui, sans-serif`,
+              font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
               color: token('color.text.subtle', '#505258'),
             }}
           >
@@ -1022,7 +1022,7 @@ function ReplyComposer({
                 <span
                   style={{
                     flex: 1,
-                    font: `400 14px/20px "Inter", system-ui, sans-serif`,
+                    font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                     color: token('color.text.subtlest', '#6B778C'),
                     display: 'flex',
                     alignItems: 'center',
@@ -1048,7 +1048,7 @@ function ReplyComposer({
                     cursor: 'pointer',
                     padding: '4px 8px',
                     borderRadius: 3,
-                    font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                    font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                     color: token('color.text.subtle', '#505258'),
                   }}
                 >
@@ -1122,7 +1122,7 @@ function ReplyComposer({
                     cursor: 'pointer',
                     padding: '4px 8px',
                     borderRadius: 3,
-                    font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                    font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                     color: token('color.text.subtle', '#505258'),
                   }}
                 >
@@ -1141,7 +1141,7 @@ function ReplyComposer({
                       cursor: 'pointer',
                       padding: '4px 12px',
                       borderRadius: 3,
-                      font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                      font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                       color: token('color.text.inverse', '#FFFFFF'),
                       background: token('color.background.brand.bold', '#0C66E4'),
                     }}
@@ -1159,7 +1159,7 @@ function ReplyComposer({
                       cursor: canSubmit ? 'pointer' : 'not-allowed',
                       padding: '4px 12px',
                       borderRadius: 3,
-                      font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                      font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                       color: canSubmit
                         ? token('color.text.inverse', '#FFFFFF')
                         : token('color.text.disabled', '#B3B9C4'),
@@ -1197,7 +1197,7 @@ function ReplyComposer({
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span
                     style={{
-                      font: `500 11px/14px "Inter", system-ui, sans-serif`,
+                      font: `500 11px/14px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                       color: token('color.text', '#292A2E'),
                       border: `1px solid ${token('color.border', '#DFE1E6')}`,
                       borderRadius: 2,
@@ -1215,7 +1215,7 @@ function ReplyComposer({
                   </svg>
                   <span
                     style={{
-                      font: `400 13px/20px "Inter", system-ui, sans-serif`,
+                      font: `400 13px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                       color: token('color.text.subtle', '#505258'),
                     }}
                   >
@@ -1227,7 +1227,7 @@ function ReplyComposer({
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span
                     style={{
-                      font: `500 13px/20px "Inter", system-ui, sans-serif`,
+                      font: `500 13px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                       color: token('color.text.subtle', '#505258'),
                     }}
                   >
@@ -1313,7 +1313,7 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error'; onSug
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
-            font: `500 12px/16px "Inter", system-ui, sans-serif`,
+            font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text.warning-inverse', '#7F5F01'),
             background: token('color.background.warning', '#FFF7D6'),
             border: `1px solid ${token('color.border.warning', '#B38600')}`,
@@ -1349,7 +1349,7 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error'; onSug
             gap: 4,
             padding: '4px 8px',
             borderRadius: 3,
-            font: `500 12px/16px "Inter", system-ui, sans-serif`,
+            font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', '#172B4D'),
             background: token('elevation.surface', '#FFFFFF'),
           }}
@@ -2233,7 +2233,7 @@ function MentionChip({ label }: { label: string }) {
         background: 'var(--ds-background-information, #DEEBFF)',
         border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
         color: token('color.link', '#0052CC'),
-        font: `500 13px/20px "Inter", system-ui, sans-serif`,
+        font: `500 13px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
         whiteSpace: 'nowrap',
       }}
     >
