@@ -17,6 +17,11 @@ import { CommentToolbar } from '../comments/CommentToolbar';
 import { CommentEditor, type CommentImproveContext } from '../comments/CommentEditor';
 import { CommentNode } from '../comments/CommentNode';
 import { ActivityItem } from './ActivityItem';
+import { JiraActivityRow, useActivityLookups, HistoryPill } from './JiraActivityRow';
+import { WorkLogPanel, WorkLogEntry } from './worklog/WorkLogPanel';
+import { useWorkLogs } from './worklog/useWorkLogs';
+import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { DescriptionTranslateBar } from '@/components/shared/title-translate/DescriptionTranslateBar';
 import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 
@@ -419,47 +424,19 @@ function ActivityPanel({
       )}
 
       {activeTab === 'worklog' && (
-        <div className="text-center py-10">
-          <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">
-            No worklog entries yet
-          </p>
-          <p className="text-[12px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] mt-2">
-            Track time spent on this work item via the Worklog tab. Coming soon.
-          </p>
+        <div className="mt-2">
+          <WorkLogPanel workItemId={workItemId ?? undefined} />
         </div>
       )}
 
       {activeTab === 'all' && (
         <div className="flex flex-col">
-          {/* All tab is read-only — no composer, no toolbar, no reply
-              affordance. Comment writes / reactions / replies live on
-              the Comments tab. This tab is a placeholder until the
-              history feed lands; for now it just shows existing
-              comments interleaved with activity events. */}
-          <div className="mt-4 divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
-            {(isLoadingComments || isLoadingHistory) ? (
-              <div className="text-center py-8">
-                <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">Loading activity...</p>
-              </div>
-            ) : mergedAll.length === 0 ? (
-              <div className="text-center py-10">
-                <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">
-                  No activity yet
-                </p>
-              </div>
-            ) : (
-              mergedAll.map((item) => {
-                if (item.type === 'comment' && item.comment) {
-                  return (
-                    <div key={item.id}>
-                      <Comment comment={item.comment} />
-                    </div>
-                  );
-                }
-                return <ActivityItem key={item.id} item={item} jiraUserMap={jiraUserMap} />;
-              })
-            )}
-          </div>
+          <AllTabFeed
+            mergedAll={mergedAll}
+            isLoadingComments={isLoadingComments}
+            isLoadingHistory={isLoadingHistory}
+            workItemId={workItemId}
+          />
 
           {hasMoreHistory && (
             <div className="py-3 text-center">
@@ -475,6 +452,113 @@ function ActivityPanel({
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── All tab — Jira-parity merged feed ─────────────────────────────
+//
+// Comments + history events in one stream. Each row renders with a
+// HISTORY (or COMMENT) pill so the type is obvious. History rows use
+// JiraActivityRow (field-type dispatcher → StatusPill / Avatar /
+// plain text / side-by-side description diff). Comment rows use the
+// read-only <Comment> we landed last step.
+function AllTabFeed({
+  mergedAll,
+  isLoadingComments,
+  isLoadingHistory,
+  workItemId,
+}: {
+  mergedAll: CdsActivityItem[];
+  isLoadingComments: boolean;
+  isLoadingHistory: boolean;
+  workItemId?: string;
+}) {
+  const historyOnly = useMemo(
+    () => mergedAll.filter((i) => i.type !== 'comment'),
+    [mergedAll],
+  );
+  const { statusByNames, userByNames } = useActivityLookups(historyOnly);
+  const { user } = useAuth();
+  const { isAdmin } = useUserRole();
+  const { entries: workLogs, updateEntry, deleteEntry } = useWorkLogs(workItemId);
+
+  // Build a single chronological stream of comments + history +
+  // worklogs. Each kind keeps its rendering and pill on the All tab.
+  type StreamItem =
+    | { kind: 'event'; ts: number; key: string; item: CdsActivityItem }
+    | { kind: 'worklog'; ts: number; key: string; entry: typeof workLogs[number] };
+
+  const stream: StreamItem[] = [];
+  for (const it of mergedAll) {
+    stream.push({ kind: 'event', ts: new Date(it.timestamp).getTime(), key: it.id, item: it });
+  }
+  for (const w of workLogs) {
+    stream.push({ kind: 'worklog', ts: new Date(w.created_at).getTime(), key: `wl-${w.id}`, entry: w });
+  }
+  stream.sort((a, b) => b.ts - a.ts);
+
+  if (isLoadingComments || isLoadingHistory) {
+    return (
+      <div className="mt-4 text-center py-8">
+        <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">
+          Loading activity...
+        </p>
+      </div>
+    );
+  }
+  if (mergedAll.length === 0) {
+    return (
+      <div className="mt-4 text-center py-10">
+        <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">
+          No activity yet
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4 divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+      {stream.map((s) => {
+        if (s.kind === 'worklog') {
+          const isAuthor = user?.id === s.entry.author_id;
+          return (
+            <div key={s.key}>
+              <WorkLogEntry
+                entry={s.entry}
+                canEdit={isAuthor || isAdmin}
+                canDelete={isAuthor || isAdmin}
+                onSaveEdit={(input) => updateEntry.mutateAsync(input)}
+                onDelete={(id) => deleteEntry.mutateAsync(id)}
+                showPill
+              />
+            </div>
+          );
+        }
+        const item = s.item;
+        if (item.type === 'comment' && item.comment) {
+          return (
+            <div key={item.id} style={{ paddingTop: 4, paddingBottom: 4 }}>
+              <Comment
+                comment={item.comment}
+                extras={<div style={{ marginTop: 4 }}><HistoryPill label="COMMENT" /></div>}
+              />
+            </div>
+          );
+        }
+        // Use the existing ActivityItem with its built-in HISTORY
+        // lozenge (showTypeBadge) — known-good path. Field rendering
+        // (status / priority / assignee diff widgets) already lives
+        // inside ActivityItem, so we get all of it for free.
+        return (
+          <ActivityItem
+            key={item.id}
+            item={item}
+            jiraUserMap={undefined}
+            showTypeBadge
+          />
+        );
+      })}
     </div>
   );
 }

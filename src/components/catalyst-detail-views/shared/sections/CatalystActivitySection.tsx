@@ -197,9 +197,15 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   });
 
   // Comments: ph_comments (Catalyst-native + Jira-mirrored)
+  // Polling backup — keeps the feed fresh even when Realtime is not
+  // enabled on the table publication. 4s is short enough that new
+  // comments + new history rows feel near-instant without burning
+  // bandwidth.
   const { data: comments = [], isLoading: isLoadingComments } = useQuery({
     queryKey: ['cv-comments', resolvedWorkItemId],
     enabled: !!resolvedWorkItemId && isOpen,
+    refetchInterval: 4000,
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       // Use SELECT * so the query stays robust whether or not the
       // 20260604_add_parent_comment_id_to_ph_comments migration has
@@ -272,10 +278,65 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     return map;
   }, [reactionRows, user?.id]);
 
-  // History: ph_activity_log (Catalyst-native + Jira-mirrored)
+  // Live updates — subscribe to Supabase Realtime on ph_activity_log
+  // and ph_comments filtered by this work item. Inserts/updates/
+  // deletes invalidate the React Query caches so the All / History /
+  // Comments tabs reflect changes instantly (no refresh needed).
+  useEffect(() => {
+    if (!resolvedWorkItemId || !isOpen) return;
+    const channel = supabase
+      .channel(`cv-activity-realtime:${resolvedWorkItemId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'ph_activity_log',
+          filter: `work_item_id=eq.${resolvedWorkItemId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['cv-activity', resolvedWorkItemId] });
+        },
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'ph_comments',
+          filter: `work_item_id=eq.${resolvedWorkItemId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['cv-comments', resolvedWorkItemId] });
+          queryClient.invalidateQueries({ queryKey: ['cv-comment-reactions', resolvedWorkItemId] });
+        },
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'ph_comment_reactions',
+        },
+        () => {
+          // No work_item_id column on reactions — invalidate all
+          // reaction queries scoped to this work item.
+          queryClient.invalidateQueries({ queryKey: ['cv-comment-reactions', resolvedWorkItemId] });
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [resolvedWorkItemId, isOpen, queryClient]);
+
+  // History: ph_activity_log (Catalyst-native + Jira-mirrored).
+  // Polling backup (see comments query above).
   const { data: historyItems = [], isLoading: isLoadingHistory } = useQuery({
     queryKey: ['cv-activity', resolvedWorkItemId],
     enabled: !!resolvedWorkItemId && isOpen,
+    refetchInterval: 4000,
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_activity_log')
