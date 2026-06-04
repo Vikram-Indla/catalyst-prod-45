@@ -457,17 +457,11 @@ function ActivityPanel({
 
       {activeTab === 'all' && (
         <div className="flex flex-col">
-          <CommentEditor
-            currentUser={currentUser}
-            mentionableUsers={mentionableUsers}
-            onSubmit={onAddComment}
-            quickReplies={quickReplies}
-            isSubmitting={isSubmitting}
-            shortcutHint="Pro tip: press **M** to comment"
-            workItemId={workItemId}
-            improveContext={improveContext}
-          />
-
+          {/* All tab is read-only — no composer, no toolbar, no reply
+              affordance. Comment writes / reactions / replies live on
+              the Comments tab. This tab is a placeholder until the
+              history feed lands; for now it just shows existing
+              comments interleaved with activity events. */}
           <div className="mt-4 divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
             {(isLoadingComments || isLoadingHistory) ? (
               <div className="text-center py-8">
@@ -484,11 +478,7 @@ function ActivityPanel({
                 if (item.type === 'comment' && item.comment) {
                   return (
                     <div key={item.id}>
-                      <CommentNode
-                        comment={item.comment}
-                        childrenByParentId={childrenByParentId}
-                        renderComment={renderCommentBlock}
-                      />
+                      <Comment comment={item.comment} />
                     </div>
                   );
                 }
