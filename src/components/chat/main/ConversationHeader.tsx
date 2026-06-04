@@ -84,11 +84,12 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
       </button>
 
       <DropdownMenu
-        trigger={({ triggerRef, ...props }) => (
+        trigger={({ triggerRef, isSelected: _isSelected, testId, ...props }) => (
           <button
             type="button"
             className="cc-iconbtn"
             aria-label="Conversation actions"
+            data-testid={testId}
             ref={triggerRef as React.Ref<HTMLButtonElement>}
             {...props}
           >
