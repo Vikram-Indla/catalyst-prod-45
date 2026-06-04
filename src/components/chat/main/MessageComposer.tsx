@@ -1,7 +1,8 @@
 /**
  * MessageComposer — bottom composer of the active conversation. A styled
  * auto-growing textarea plus a tool row (attach / emoji / @ mention / slash),
- * the static-rainbow "Ask Caty" CTA, and a primary Send button.
+ * a subtle "Suggest reply" affordance (drops a usable draft into the box),
+ * and a primary Send button.
  *
  * Send is @atlaskit/button (primary). The textarea is intentionally NOT
  * @atlaskit/textfield (per spec — textfield is single-line).
@@ -13,17 +14,26 @@ export interface MessageComposerProps {
   conversationTitle?: string;
   disabled?: boolean;
   onSend: (text: string) => void | Promise<void>;
-  onAskCaty?: () => void;
+  /** Optional override — supply AI-generated suggested reply text/handling. */
+  onSuggestReply?: () => void;
 }
+
+const SUGGESTED_REPLIES = [
+  'Thanks for the update — taking a look now.',
+  "Got it. I'll pick this up and follow up shortly.",
+  "Makes sense — let's sync and I'll confirm next steps.",
+  'Appreciate the heads-up. Reviewing and will get back to you.',
+];
 
 export function MessageComposer({
   conversationTitle,
   disabled,
   onSend,
-  onAskCaty,
+  onSuggestReply,
 }: MessageComposerProps) {
   const [value, setValue] = useState('');
   const [sending, setSending] = useState(false);
+  const [suggestIdx, setSuggestIdx] = useState(0);
   const taRef = useRef<HTMLTextAreaElement>(null);
 
   const placeholder = conversationTitle ? `Message ${conversationTitle}` : 'Write a message…';
@@ -34,6 +44,22 @@ export function MessageComposer({
     el.style.height = 'auto';
     el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
   }, []);
+
+  // Suggest reply — drop a usable draft into the composer. Cycles through
+  // suggestions on repeat clicks; never overwrites text the user already typed.
+  const handleSuggestReply = useCallback(() => {
+    if (onSuggestReply) {
+      onSuggestReply();
+      return;
+    }
+    const next = SUGGESTED_REPLIES[suggestIdx % SUGGESTED_REPLIES.length];
+    setSuggestIdx((i) => i + 1);
+    setValue((v) => (v.trim() ? v : next));
+    requestAnimationFrame(() => {
+      taRef.current?.focus();
+      autoGrow();
+    });
+  }, [onSuggestReply, suggestIdx, autoGrow]);
 
   const submit = useCallback(async () => {
     const text = value.trim();
@@ -110,13 +136,11 @@ export function MessageComposer({
 
           <div className="cc-composer-tools__spacer" />
 
-          <button type="button" className="cc-caty-btn is-sm" onClick={onAskCaty} aria-label="Ask Caty">
-            <span className="cc-caty-btn__inner">
-              <svg viewBox="0 0 24 24" fill="none" stroke="var(--ds-icon-discovery, #6E5DC6)" strokeWidth={2}>
-                <path d="M12 3l1.9 5.8L20 10l-5.1 1.9L12 18l-1.9-6.1L5 10l5.1-1.2z" />
-              </svg>
-              Ask Caty
-            </span>
+          <button type="button" className="cc-suggest-btn" onClick={handleSuggestReply} aria-label="Suggest a reply">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ds-icon-discovery, #6E5DC6)" strokeWidth={2}>
+              <path d="M12 3l1.9 5.8L20 10l-5.1 1.9L12 18l-1.9-6.1L5 10l5.1-1.2z" />
+            </svg>
+            Suggest reply
           </button>
 
           <Button

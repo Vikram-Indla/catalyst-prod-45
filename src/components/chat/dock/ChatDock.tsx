@@ -192,7 +192,7 @@ export function ChatDock({
               <ConvGlyph conversation={c} />
               <div className="cc-conv__body">
                 <div className="cc-conv__top">
-                  <span className="cc-conv__name">{c.kind === 'channel' ? `# ${c.title}` : c.title}</span>
+                  <span className="cc-conv__name">{c.title}</span>
                   <span className="cc-conv__time">{relativeTime(c.lastMessageAt)}</span>
                 </div>
                 <div className="cc-conv__top">
@@ -208,11 +208,7 @@ export function ChatDock({
       <div className="cc-tabs">
         {openConversationIds.map((id) => {
           const conv = byId.get(id);
-          const label = conv
-            ? conv.kind === 'channel'
-              ? `# ${conv.title}`
-              : conv.title
-            : id;
+          const label = conv ? conv.title : id;
           const isActive = id === activeId;
           return (
             <div
