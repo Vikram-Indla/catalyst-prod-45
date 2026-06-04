@@ -96,7 +96,7 @@ import {
   makeParentEditCell,
   makeLabelsCell,
   makeLabelsEditCell,
-  makeSprintReleasesCell,
+  makeSprintReleaseCell,
   makeDateEditCell,
   makeRowActionsCell,
   makeRowMenuCell,
@@ -2290,7 +2290,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       sortable: false,
       defaultVisible: true,
       accessor: (r: BacklogItem) => (r.sprint_release || []).join(', '),
-      cell: makeSprintReleasesCell((r: BacklogItem) => r.sprint_release),
+      cell: makeSprintReleaseCell((r: BacklogItem) => r.sprint_release),
       include: (row: BacklogItem) => row.issue_type !== 'Feature',
     },
     {
