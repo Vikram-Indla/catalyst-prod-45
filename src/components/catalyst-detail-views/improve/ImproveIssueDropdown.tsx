@@ -41,6 +41,8 @@ import { LinkSimilarItemsDialog } from './LinkSimilarItemsDialog';
 import { canSuggestChildren, improveTriggerLabel } from './improve-config';
 import { useCatyImprove } from './catyImproveStore';
 import { useCatySummarize } from './catySummarizeStore';
+import { adfToMarkdown } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToMarkdown';
+import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
 
 type Mode = 'closed' | 'description' | 'children' | 'similar';
 
@@ -56,6 +58,10 @@ interface ImproveIssueDropdownProps {
     issue_type?: string | null;
     summary?: string | null;
     description_text?: string | null;
+    /** Rich-text representation. When present, "Improve description"
+     *  sends the AI a Markdown serialization (preserves tables, lists,
+     *  headings) instead of the flat `description_text` projection. */
+    description_adf?: AdfDoc | unknown | null;
     acceptance_criteria?: string | null;
     project_key?: string | null;
     project_id?: string | null;
@@ -155,11 +161,16 @@ export function ImproveIssueDropdown({
       }
     }
 
+    // Prefer Markdown serialization of the ADF (preserves tables /
+    // lists / headings) over the flat plain-text projection.
+    const currentDescription = issue.description_adf
+      ? adfToMarkdown(issue.description_adf as AdfDoc)
+      : (issue.description_text ?? null);
     startCatyImprove({
       issueKey: issue.issue_key,
       issueType: issue.issue_type ?? null,
       issueSummary: issue.summary ?? null,
-      currentDescription: issue.description_text ?? null,
+      currentDescription,
       currentAcceptanceCriteria: issue.acceptance_criteria ?? null,
       attachmentUrls,
       improveSubType: 'improve_clarify',

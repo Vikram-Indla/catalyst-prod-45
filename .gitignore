@@ -80,3 +80,5 @@ supabase/migrations/20260427014500_jira_write_back_queue_unified_no_fk.sql
 /docs/plans/business-request-feature-unification.md
 /.claude/worktrees
 package-lock.json
+
+.obsidian

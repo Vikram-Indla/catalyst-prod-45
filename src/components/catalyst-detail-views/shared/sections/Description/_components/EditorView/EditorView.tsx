@@ -36,6 +36,12 @@ interface EditorViewProps {
    *  the scrolling body. Used by the comment editor for the mention-
    *  suggestion pill so it visually sits inside the editor frame. */
   footer?: ReactNode;
+  /** Optional content rendered INSIDE the scrollable body, directly
+   *  AFTER `<EditorContent>`. Used by Caty's Improve flow to show the
+   *  muted "before" snapshot below the live editor content — they
+   *  share the same scroll container, so as the AI writes more lines
+   *  the snapshot gets pushed down naturally. */
+  bodyAfterEditor?: ReactNode;
 }
 
 export function EditorView({
@@ -44,6 +50,7 @@ export function EditorView({
   bodyOverlay,
   minHeight = 220,
   footer,
+  bodyAfterEditor,
 }: EditorViewProps) {
   const bodyRef = useRef<HTMLDivElement | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
@@ -89,6 +96,7 @@ export function EditorView({
       >
         <div style={{ display: overlayActive ? "none" : "block" }}>
           <EditorContent editor={editor} />
+          {bodyAfterEditor}
           <BlockDragHandle editor={editor} containerRef={bodyRef} />
           <SelectionTranslate
             editor={editor}

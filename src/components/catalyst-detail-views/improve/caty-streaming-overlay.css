@@ -164,16 +164,25 @@
   pointer-events: auto;
 }
 
+/* Jira-Rovo style: surface-colored pill with shadow. ADS surface +
+   text tokens adapt to light/dark themes automatically — light
+   theme = white bg + dark text, dark theme = dark bg + white text.
+   Rounded corners and the soft elevation shadow match the live
+   Jira reference. */
 .caty-improve__strap {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 16px;
-  border-radius: 12px;
-  background: var(--ds-background-neutral-bold, #292A2E);
-  color: var(--ds-text-inverse, #FFFFFF);
+  padding: 10px 16px;
+  border-radius: 16px;
+  background: var(--ds-surface-overlay, #FFFFFF);
+  color: var(--ds-text, #172B4D);
+  border: 1px solid var(--ds-border, rgba(9, 30, 66, 0.08));
+  box-shadow:
+    0 8px 24px rgba(9, 30, 66, 0.15),
+    0 0 1px rgba(9, 30, 66, 0.1);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 14px;
   white-space: nowrap;
   max-width: 100%;
 }
@@ -190,19 +199,21 @@
 }
 
 .caty-improve__strap-label {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ds-text, #172B4D);
 }
 
 .caty-improve__strap-esc {
   display: inline-flex;
   align-items: center;
-  padding: 1px 6px;
-  border-radius: 3px;
-  border: 1px solid var(--ds-border-inverse, rgba(255, 255, 255, 0.18));
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--ds-border, #DFE1E6);
+  background: var(--ds-background-neutral, #F1F2F4);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
   font-size: 11px;
-  color: var(--ds-text-subtlest, #96999E);
+  color: var(--ds-text-subtle, #44546F);
 }
 
 .caty-improve__strap-stop {

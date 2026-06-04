@@ -62,9 +62,18 @@ export function useInlineTriggers(editor: Editor | null) {
 
     editor.on('selectionUpdate', recalc);
     editor.on('update', recalc);
+    // Re-anchor the picker as the page scrolls or the viewport resizes
+    // so the popup tracks the @ character smoothly instead of staying
+    // at its first viewport position. Capture phase catches scrolls in
+    // every ancestor (sidebar, modal body, page) without each needing
+    // its own listener.
+    window.addEventListener('scroll', recalc, true);
+    window.addEventListener('resize', recalc);
     return () => {
       editor.off('selectionUpdate', recalc);
       editor.off('update', recalc);
+      window.removeEventListener('scroll', recalc, true);
+      window.removeEventListener('resize', recalc);
     };
   }, [editor]);
 
