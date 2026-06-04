@@ -282,9 +282,7 @@ export default function ForYouPageAtlaskit() {
         width: '100%',
         background: token('elevation.surface', '#FFFFFF'),
         color: token('color.text', '#292A2E'),
-        paddingInline: 'clamp(16px, 3vw, 32px)',
-        maxWidth: 1280,
-        marginInline: 'auto',
+        paddingInline: 24,
         boxSizing: 'border-box',
       }}
     >
