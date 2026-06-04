@@ -167,7 +167,7 @@ function SectionHeading({ label, count, collapsed, onToggle, isArchived, bracket
         fontSize: 12, fontWeight: 400, lineHeight: '16px',
         color: token('color.text.subtlest', '#6B778C'),
         background: token('color.background.neutral', '#F1F2F4'),
-        padding: '0 6px', borderRadius: 999,
+        padding: `0 ${token('space.100', '8px')}`, borderRadius: 999,
       }}>
         {count}
       </span>
@@ -189,7 +189,7 @@ function ArchivedRow({ item }: {
           display: 'flex', alignItems: 'center', gap: token('space.100', '8px'),
           padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
           cursor: 'pointer', width: '100%',
-          opacity: 0.65,
+          /* opacity removed — use color tokens for dimming, not blanket opacity (ADS) */
           borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
         }}
       >
@@ -375,7 +375,7 @@ export default function AgeingPanel() {
     }
 
     const labels: Record<AgeBracket, string> = {
-      archivingSoon: 'Auto-archiving soon — auto-archives in < 7 days',
+      archivingSoon: 'Auto-archiving soon — in < 7 days',
       ninetyPlus: '90+ days — critical',
       sixtyNinety: '60–90 days',
       thirtySixty: '30–60 days',
