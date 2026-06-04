@@ -18,6 +18,7 @@ import { useAuth } from '@/hooks/useAuth';
 // types yet — cast to bypass typed-table inference (mirrors useConversations).
 const db = supabase as unknown as {
   from: (table: string) => any;
+  rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
 };
 
 export function useCreateConversation(): {
@@ -36,53 +37,18 @@ export function useCreateConversation(): {
     async (otherUserId: string): Promise<string> => {
       if (!userId) throw new Error('Not authenticated');
 
-      // Dedup: find an existing dm where BOTH users are members.
-      const { data: mine } = await db
-        .from('chat_conversation_members')
-        .select('conversation_id, chat_conversations:conversation_id ( id, kind )')
-        .eq('user_id', userId);
-
-      const myDmIds: string[] = (mine ?? [])
-        .filter((m: any) => {
-          const conv = Array.isArray(m.chat_conversations)
-            ? m.chat_conversations[0]
-            : m.chat_conversations;
-          return conv?.kind === 'dm';
-        })
-        .map((m: any) => m.conversation_id as string);
-
-      if (myDmIds.length > 0) {
-        const { data: shared } = await db
-          .from('chat_conversation_members')
-          .select('conversation_id')
-          .eq('user_id', otherUserId)
-          .in('conversation_id', myDmIds);
-        const existingId = (shared ?? [])[0]?.conversation_id as string | undefined;
-        if (existingId) return existingId;
+      // Atomic create-or-return via SECURITY DEFINER RPC: dedups by member pair
+      // and adds BOTH members regardless of the creator's role (a client-side
+      // insert can't add the other user under member-gated RLS).
+      const { data, error } = await db.rpc('chat_create_dm', {
+        other_user_id: otherUserId,
+      });
+      if (error || !data) {
+        throw error ?? new Error('Failed to create DM');
       }
-
-      const { data: created, error: insertErr } = await db
-        .from('chat_conversations')
-        .insert({ kind: 'dm', title: null })
-        .select('id')
-        .single();
-      if (insertErr || !created?.id) {
-        throw insertErr ?? new Error('Failed to create conversation');
-      }
-      const convId = created.id as string;
-
-      await db
-        .from('chat_conversation_members')
-        .upsert(
-          [
-            { conversation_id: convId, user_id: userId, role: 'admin' },
-            { conversation_id: convId, user_id: otherUserId, role: 'member' },
-          ],
-          { onConflict: 'conversation_id,user_id', ignoreDuplicates: true },
-        );
 
       invalidate();
-      return convId;
+      return data as string;
     },
     [userId, invalidate],
   );
