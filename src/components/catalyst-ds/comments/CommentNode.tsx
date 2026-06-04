@@ -22,14 +22,20 @@ import type { CdsComment } from '../types';
 //
 // Replies of replies: each level draws its own trunk for ITS own
 // children. The grand-trunk does NOT inherit downward — Jira parity.
-const TRUNK_X = 12;
-const TRUNK_TOP = 36; // parent avatar bottom
-const BRANCH_WIDTH = 28; // x=12 → x=40, aligns with reply paddingLeft
-const BRANCH_HEIGHT = 24; // bottom at y=24 (avatar center)
-const REPLY_INDENT = 40;
-const REPLY_GAP = 12;
-const LINE_COLOR = 'var(--ds-border, #DFE1E6)';
-const LINE_WIDTH = 1.5;
+// Geometry constants — exported so the For You reply tree can reuse
+// the exact same numbers (single source of truth for the trunk +
+// branch alignment).
+export const TRUNK_X = 12;
+// Parent avatar BOTTOM (avatar 24px starts at y=12 via py-3 padding,
+// bottom at y=36). Trunk emerges from BELOW the avatar at its
+// horizontal center — Jira parity.
+export const TRUNK_TOP = 36;
+export const BRANCH_WIDTH = 28; // x=12 → x=40, aligns with reply paddingLeft
+export const BRANCH_HEIGHT = 24; // bottom at y=24 (avatar center)
+export const REPLY_INDENT = 40;
+export const REPLY_GAP = 12;
+export const LINE_COLOR = 'var(--ds-border, #DFE1E6)';
+export const LINE_WIDTH = 1.5;
 
 export interface CommentNodeProps {
   comment: CdsComment;

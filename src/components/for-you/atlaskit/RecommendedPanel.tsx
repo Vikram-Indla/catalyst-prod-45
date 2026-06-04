@@ -60,6 +60,16 @@ import ForYouRow from './ForYouRow';
 import { SummarizeDigestModal, type DigestMention } from './SummarizeDigestModal';
 import { ForYouEmptyState, GroupHeading, groupByRecency, MentionSparkleArt } from './helpers';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
+import { TicketLinkCard } from '@/components/shared/TicketLinkCard';
+import { renderContent as renderCommentContent } from '@/components/catalyst-ds/comments/Comment';
+import { Comment } from '@/components/catalyst-ds/comments/Comment';
+import { CommentToolbar } from '@/components/catalyst-ds/comments/CommentToolbar';
+import { CommentEditor } from '@/components/catalyst-ds/comments/CommentEditor';
+import { CommentNode, TRUNK_X, LINE_COLOR, LINE_WIDTH } from '@/components/catalyst-ds/comments/CommentNode';
+import type { CdsComment, CdsCommentReaction, CdsUser } from '@/components/catalyst-ds/types';
+import { useAuth } from '@/hooks/useAuth';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useLayoutEffect } from 'react';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { useWorkItemComments } from '@/hooks/useWorkItemComments';
 import { useCommentReactions } from '@/hooks/useCommentReactions';
@@ -306,7 +316,7 @@ export default function RecommendedPanel({
                       visibly bolder than the "mentioned you on" connector. */}
                   <span style={{ color: token('color.text', '#292A2E'), fontWeight: 600 }}>{m.mentionerName}</span>
                   <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), fontWeight: 400 }}>{' '}mentioned you on{' '}</span>
-                  <HeadlineIssueTitle issueType={m.issueType} issueSummary={m.issueSummary} issueKey={m.issueKey} issueStatus={m.issueStatus} issueStatusCategory={m.issueStatusCategory} />
+                  <TicketLinkCard issueKey={m.issueKey} />
                 </>
               ),
               authorName: m.mentionerName,
@@ -338,7 +348,7 @@ export default function RecommendedPanel({
                 <>
                   <span style={{ color: token('color.text', '#292A2E'), fontWeight: 600 }}>{c.authorName}</span>
                   <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), fontWeight: 400 }}>{' '}commented on{' '}</span>
-                  <HeadlineIssueTitle issueType={c.issueType} issueSummary={c.issueSummary} issueKey={c.issueKey} issueStatus={c.issueStatus} issueStatusCategory={c.issueStatusCategory} />
+                  <TicketLinkCard issueKey={c.issueKey} />
                 </>
               ),
               authorName: c.authorName,
@@ -627,6 +637,7 @@ function FeedCard({
 
   return (
     <div
+      data-fy-feedcard
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
@@ -642,9 +653,11 @@ function FeedCard({
         position: 'relative',
       }}
     >
-      {/* 32px circular avatar of the author */}
+      {/* 32px circular avatar of the author — data attribute lets the
+          reply tree's trunk locate this element so it can extend the
+          curved-tree line up from the avatar bottom through the body. */}
       <Tooltip content={row.authorName}>
-        <span style={{ flexShrink: 0, paddingBlockStart: 2 }}>
+        <span data-fy-avatar style={{ flexShrink: 0, paddingBlockStart: 2 }}>
           <Avatar size="medium" name={row.authorName} src={avatarSrc} />
         </span>
       </Tooltip>
@@ -774,7 +787,7 @@ function FeedCard({
               wordBreak: 'break-word',
             }}
           >
-            {renderCommentWithMentions(row.commentBody)}
+            {renderCommentContent(row.commentBody)}
           </div>
         </div>
 
@@ -787,20 +800,7 @@ function FeedCard({
           flexDirection: 'column',
           gap: 8,
         }}>
-          <ReactionStrip
-            phCommentId={row.phCommentId}
-            jiraCommentId={row.commentId}
-            issueId={row.issueId}
-            commentBody={row.commentBody}
-          />
-          <ReplyComposer
-            issueId={row.issueId}
-            currentUserName={currentUserName}
-            commentBody={row.commentBody}
-            issueSummary={row.issueSummary}
-            issueType={row.issueType}
-            commenterName={row.authorName}
-          />
+          <ForYouCardFooter row={row} currentUserName={currentUserName} />
         </div>
       </div>
     </div>
@@ -1737,6 +1737,556 @@ const EMOJI_CHAR: Record<string, string> = Object.fromEntries([
   ...ALL_EMOJIS.map(e => [e.key, e.char]),
   ...DEFAULT_REACTIONS.map(r => [r.key, r.char]),
 ]);
+
+// ─── ForYouReplyTree — nested replies under a For You card ───────────
+//
+// Fetches every reply (descendant) of a top-level For You comment from
+// ph_comments (filtered to the parent's work_item, descendants of the
+// parent's resolved id) and renders the tree using our shared
+// CommentNode — continuous vertical trunk with a single quadratic
+// Bezier branch to each child's avatar.
+//
+// The trunk for the IMMEDIATE children of the For You comment is drawn
+// here (since the For You card uses its own avatar layout, not our
+// standard <Comment>). Nested grand-children get their own trunks
+// drawn by their parent CommentNodes — Jira parity.
+
+interface ReplyRow {
+  id: string;
+  body: string;
+  author_id: string | null;
+  parent_comment_id: string | null;
+  created_at: string;
+  updated_at: string | null;
+}
+
+function ForYouReplyTree({
+  parentResolvedId,
+  issueUuid,
+  ensurePhComment,
+  onSubmitReplyTo,
+}: {
+  parentResolvedId: string | null;
+  issueUuid: string | null;
+  ensurePhComment: () => Promise<string | null>;
+  onSubmitReplyTo: (parentId: string, content: string) => Promise<void>;
+}) {
+  const { user } = useAuth();
+  const mentionableUsers = useMentionableUsersFY();
+  const queryClient = useQueryClient();
+  const [replyingToId, setReplyingToId] = useState<string | null>(null);
+
+  // Fetch every reply on this work item — we filter to descendants of
+  // parentResolvedId client-side. Keyed on issueUuid so a card shares
+  // its query across re-renders.
+  const { data: replyComments = [] } = useQuery<CdsComment[]>({
+    queryKey: ['fy-reply-tree', issueUuid],
+    enabled: !!issueUuid,
+    staleTime: 30 * 1000,
+    queryFn: async () => {
+      if (!issueUuid) return [];
+      const { data } = await supabase
+        .from('ph_comments')
+        .select('id, body, author_id, parent_comment_id, created_at, updated_at')
+        .eq('work_item_id', issueUuid)
+        .not('parent_comment_id', 'is', null)
+        .order('created_at', { ascending: true });
+      const rows = (data ?? []) as ReplyRow[];
+      if (rows.length === 0) return [];
+      const authorIds = [...new Set(rows.map((c) => c.author_id).filter((v): v is string => !!v))];
+      const profileMap = new Map<string, { full_name: string | null; avatar_url: string | null; email: string | null }>();
+      if (authorIds.length) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url, email')
+          .in('id', authorIds);
+        for (const p of (profiles ?? [])) profileMap.set(p.id, p);
+      }
+      return rows.map<CdsComment>((c) => {
+        const p = c.author_id ? profileMap.get(c.author_id) : null;
+        return {
+          id: c.id,
+          author: {
+            id: c.author_id ?? 'unknown',
+            name: p?.full_name || p?.email || 'Unknown',
+            avatarUrl: resolveAvatarUrl(p?.full_name ?? undefined) || p?.avatar_url || null,
+            email: p?.email ?? undefined,
+          },
+          content: c.body || '',
+          createdAt: c.created_at,
+          updatedAt: c.updated_at ?? undefined,
+          isEdited: !!c.updated_at && c.updated_at !== c.created_at,
+          parentId: c.parent_comment_id,
+        };
+      });
+    },
+  });
+
+  // Group by parent id and find immediate children of parentResolvedId.
+  const childrenByParentId = useMemo(() => {
+    const map: Record<string, CdsComment[]> = {};
+    for (const c of replyComments) {
+      if (c.parentId) (map[c.parentId] ??= []).push(c);
+    }
+    return map;
+  }, [replyComments]);
+
+  const immediateChildren = parentResolvedId
+    ? childrenByParentId[parentResolvedId] ?? []
+    : [];
+
+  // The trunk needs to start at the For You parent's AVATAR bottom
+  // and end at the last reply's branch corner — both measured at
+  // runtime since they live in different DOM subtrees (the For You
+  // avatar sits in FeedCard's outer flex row, the trunk lives here
+  // inside the content column).
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lastChildRef = useRef<HTMLDivElement>(null);
+  const [trunkTop, setTrunkTop] = useState(0);
+  const [trunkBottom, setTrunkBottom] = useState(40);
+  // The horizontal shift to apply to the reply tree container so
+  // each child's Bezier branch (drawn at x=TRUNK_X of the child
+  // wrapper) lands exactly at the For You avatar's horizontal
+  // CENTER. Measured at runtime instead of hardcoded — neither the
+  // FeedCard's padding nor the avatar's width are stable enough to
+  // assume.
+  const [marginLeft, setMarginLeft] = useState(0);
+
+  useLayoutEffect(() => {
+    if (immediateChildren.length === 0) return;
+    const update = () => {
+      const wrapper = containerRef.current;
+      const lastChild = lastChildRef.current;
+      if (!wrapper || !lastChild) return;
+      const parent = wrapper.parentElement;
+      const feedCard = wrapper.closest('[data-fy-feedcard]');
+      const avatar = feedCard?.querySelector('[data-fy-avatar]') as HTMLElement | null;
+
+      // Horizontal alignment — shift the container so its left edge
+      // sits TRUNK_X (12) pixels to the LEFT of the avatar's center.
+      // That way the trunk drawn at left:TRUNK_X of the container
+      // and each child's branch drawn at left:TRUNK_X of the child
+      // wrapper both align on the avatar's center x.
+      if (parent && avatar) {
+        const aRect = avatar.getBoundingClientRect();
+        const pRect = parent.getBoundingClientRect();
+        const avatarCenterX = aRect.left + aRect.width / 2;
+        const desiredMargin = avatarCenterX - pRect.left - TRUNK_X;
+        setMarginLeft(desiredMargin);
+      }
+
+      // Re-measure with the shift applied so the trunk math below
+      // uses the post-layout rect.
+      const wRect = wrapper.getBoundingClientRect();
+      const cRect = lastChild.getBoundingClientRect();
+      // Trunk bottom — stops at the last reply's branch corner (top
+      // of the last child wrapper).
+      const bottomDistance = wRect.bottom - cRect.top;
+      setTrunkBottom(bottomDistance > 0 ? bottomDistance : 0);
+
+      // Trunk top — extends UP from our container so the line
+      // emerges from BELOW the For You parent's avatar (avatar
+      // bottom y). The line visually passes through the parent's
+      // body / toolbar / composer area.
+      if (avatar) {
+        const aRect = avatar.getBoundingClientRect();
+        const upDistance = wRect.top - aRect.bottom;
+        setTrunkTop(-Math.max(0, upDistance));
+      } else {
+        setTrunkTop(0);
+      }
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    if (containerRef.current) ro.observe(containerRef.current);
+    const feedCard = containerRef.current?.closest('[data-fy-feedcard]');
+    if (feedCard) ro.observe(feedCard);
+    window.addEventListener('resize', update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', update);
+    };
+  }, [immediateChildren.length, replyComments.length]);
+
+  const currentUser: CdsUser | undefined = user
+    ? {
+        id: user.id,
+        name: user.email || 'You',
+        email: user.email ?? undefined,
+      }
+    : undefined;
+
+  // Per-reply toolbar + inline composer renderer. Shared with
+  // CommentNode so every nesting level renders consistently.
+  const renderReply = (c: CdsComment) => {
+    const canEdit = !!user && c.author.id === user.id;
+    return (
+      <>
+        <Comment
+          comment={c}
+          actions={
+            <CommentToolbar
+              onReply={() => setReplyingToId(c.id)}
+              onEdit={canEdit ? () => { /* edit reply — same modal/flow TODO */ } : undefined}
+              onCopyLink={() => {
+                const u = new URL(window.location.origin + `/browse/`);
+                void navigator.clipboard?.writeText(u.toString() + c.id);
+              }}
+            />
+          }
+        />
+        {replyingToId === c.id && (
+          <div style={{ paddingLeft: 44, paddingTop: 8 }}>
+            <div style={{
+              fontSize: 12, fontWeight: 500,
+              color: 'var(--ds-text-subtle, #44546F)',
+              marginBottom: 6,
+            }}>Replying to {c.author.name}</div>
+            <CommentEditor
+              currentUser={currentUser}
+              mentionableUsers={mentionableUsers}
+              autoFocus
+              placeholder={`Reply to ${c.author.name}…`}
+              onSubmit={async (content) => {
+                await onSubmitReplyTo(c.id, content);
+                setReplyingToId(null);
+                queryClient.invalidateQueries({ queryKey: ['fy-reply-tree', issueUuid] });
+              }}
+              onCancel={() => setReplyingToId(null)}
+              workItemId={issueUuid ?? undefined}
+            />
+          </div>
+        )}
+      </>
+    );
+  };
+
+  if (!parentResolvedId || immediateChildren.length === 0) return null;
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        position: 'relative',
+        marginBlockStart: 8,
+        // Measured shift so the trunk drawn at left:TRUNK_X of this
+        // container, AND each child's Bezier branch (also at left:
+        // TRUNK_X of the child wrapper), both align on the For You
+        // avatar's horizontal center. See useLayoutEffect above.
+        marginInlineStart: marginLeft,
+        paddingInlineStart: 0,
+      }}
+    >
+      {/* Single trunk for the IMMEDIATE children — extends UP to the
+          For You parent's avatar bottom (via negative top measured at
+          runtime) and DOWN to the last child's branch corner. Each
+          child draws its own Bezier branch hooking onto this trunk. */}
+      <span
+        aria-hidden
+        style={{
+          position: 'absolute',
+          left: TRUNK_X,
+          top: trunkTop,
+          bottom: trunkBottom,
+          width: 0,
+          borderLeft: `${LINE_WIDTH}px solid ${LINE_COLOR}`,
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+      {immediateChildren.map((child, idx) => (
+        <div
+          key={child.id}
+          ref={idx === immediateChildren.length - 1 ? lastChildRef : undefined}
+        >
+          <CommentNode
+            comment={child}
+            childrenByParentId={childrenByParentId}
+            renderComment={renderReply}
+            isReply
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── ForYouCardFooter — unified toolbar + reply composer ─────────────
+//
+// Replaces the legacy ReactionStrip + ReplyComposer pair with our
+// shared CommentToolbar + CommentEditor. Reactions hit ph_comment_reactions
+// directly (with on-demand ph_comments upsert for Jira-synced comments
+// that haven't been mirrored yet). Replies insert a new ph_comments
+// row with parent_comment_id pointing at this comment.
+//
+// Ask Caty stays as a small button below the editor — clicking it
+// generates a suggestion via ai-improve-comment and remounts the
+// editor with the suggestion pre-filled (`composerKey` bump).
+const UUID_RE_FY =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function useMentionableUsersFY(): CdsUser[] {
+  const { data = [] } = useQuery({
+    queryKey: ['fy-mentionable-users'],
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, avatar_url')
+        .eq('approval_status', 'APPROVED')
+        .order('full_name');
+      return (data ?? []).map((p: { id: string; full_name: string | null; email: string | null; avatar_url: string | null }) => ({
+        id: p.id,
+        name: p.full_name || p.email || 'Unknown',
+        avatarUrl: p.avatar_url ?? undefined,
+        email: p.email ?? undefined,
+      }));
+    },
+  });
+  return data;
+}
+
+function ForYouCardFooter({
+  row,
+  currentUserName,
+}: {
+  row: FeedRow;
+  currentUserName?: string;
+}) {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const mentionableUsers = useMentionableUsersFY();
+  const [resolvedId, setResolvedId] = useState<string | null>(row.phCommentId);
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [composerKey, setComposerKey] = useState(0);
+  const [composerDefault, setComposerDefault] = useState('');
+  const [suggestPhase, setSuggestPhase] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
+
+  // Sync if a refetch surfaces a non-null phCommentId after first paint.
+  useEffect(() => {
+    if (row.phCommentId && !resolvedId) setResolvedId(row.phCommentId);
+  }, [row.phCommentId, resolvedId]);
+
+  const issueUuid = UUID_RE_FY.test(row.issueId) ? row.issueId : null;
+  const { reactions, toggleReaction } = useCommentReactions(resolvedId);
+  const pendingEmojiRef = useRef<string | null>(null);
+
+  // Once resolvedId arrives via the upsert below, fire any queued emoji.
+  useEffect(() => {
+    if (resolvedId && pendingEmojiRef.current) {
+      const emoji = pendingEmojiRef.current;
+      pendingEmojiRef.current = null;
+      toggleReaction(emoji);
+    }
+  }, [resolvedId, toggleReaction]);
+
+  const ensurePhComment = useCallback(async (): Promise<string | null> => {
+    if (resolvedId) return resolvedId;
+    if (!issueUuid || !user?.id) return null;
+    try {
+      const { data: existing } = await (supabase as unknown as { from: (t: string) => { select: (s: string) => { eq: (k: string, v: string) => { maybeSingle: () => Promise<{ data: { id: string } | null }> } } } })
+        .from('ph_comments')
+        .select('id')
+        .eq('jira_comment_id', row.commentId)
+        .maybeSingle();
+      if (existing?.id) {
+        setResolvedId(existing.id);
+        return existing.id;
+      }
+      const { data, error } = await supabase
+        .from('ph_comments')
+        .insert({
+          work_item_id: issueUuid,
+          body: row.commentBody || '',
+          jira_comment_id: row.commentId,
+          author_id: user.id,
+        })
+        .select('id')
+        .single();
+      if (error) throw error;
+      setResolvedId(data.id);
+      return data.id;
+    } catch (err) {
+      console.warn('[ForYouCardFooter] ensurePhComment failed', err);
+      return null;
+    }
+  }, [resolvedId, issueUuid, user?.id, row.commentId, row.commentBody]);
+
+  // Map useCommentReactions's CommentReactionAggregate → CdsCommentReaction.
+  const cdsReactions: CdsCommentReaction[] = reactions.map((r) => ({
+    emoji: r.emoji,
+    count: r.count,
+    hasMine: r.reactedByMe,
+  }));
+
+  const handleToggleReaction = useCallback(
+    async (emoji: string) => {
+      if (!resolvedId) {
+        pendingEmojiRef.current = emoji;
+        await ensurePhComment();
+        return;
+      }
+      toggleReaction(emoji);
+    },
+    [resolvedId, ensurePhComment, toggleReaction],
+  );
+
+  const currentUser: CdsUser | undefined = user
+    ? {
+        id: user.id,
+        name: currentUserName || user.email || 'You',
+        avatarUrl: resolveAvatarUrl(currentUserName) || undefined,
+        email: user.email ?? undefined,
+      }
+    : undefined;
+
+  const handleSuggestReply = async () => {
+    if (suggestPhase === 'loading') return;
+    setSuggestPhase('loading');
+    try {
+      const res = await fetchFunction('ai-improve-comment', {
+        method: 'POST',
+        body: JSON.stringify({
+          improve_type: 'suggest_reply',
+          parent_comment: row.commentBody,
+          issue_summary: row.issueSummary,
+          issue_type: row.issueType,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!res.ok || !res.body) {
+        setSuggestPhase('error');
+        catalystToast.error('Could not generate a suggestion. Try again.');
+        return;
+      }
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let buffer = '';
+      let accum = '';
+      while (true) {
+        const { value: chunk, done } = await reader.read();
+        if (done) break;
+        buffer += dec.decode(chunk, { stream: true });
+        let nl;
+        while ((nl = buffer.indexOf('\n')) !== -1) {
+          const line = buffer.slice(0, nl).trim();
+          buffer = buffer.slice(nl + 1);
+          if (!line) continue;
+          try {
+            const ev = JSON.parse(line);
+            if (ev.type === 'text' && typeof ev.delta === 'string') accum += ev.delta;
+          } catch { /* skip */ }
+        }
+      }
+      if (accum.length > 0) {
+        setComposerDefault(accum);
+        setComposerKey((k) => k + 1);
+        setComposerOpen(true);
+        setSuggestPhase('done');
+      } else {
+        setSuggestPhase('error');
+      }
+    } catch {
+      setSuggestPhase('error');
+    }
+  };
+
+  const handleSubmitReply = async (content: string) => {
+    if (!user?.id || !issueUuid) return;
+    const parentId = await ensurePhComment();
+    await supabase.from('ph_comments').insert({
+      work_item_id: issueUuid,
+      body: content,
+      author_id: user.id,
+      parent_comment_id: parentId ?? null,
+    });
+    catalystToast.success('Reply added');
+    setComposerOpen(false);
+    setComposerDefault('');
+    queryClient.invalidateQueries({ queryKey: ['fy-reply-tree', issueUuid] });
+  };
+
+  // Used by ForYouReplyTree when the user replies to a nested reply.
+  // Inserts directly with the given parent (no on-demand upsert
+  // needed — the nested replies already exist in ph_comments).
+  const handleSubmitReplyTo = async (parentId: string, content: string) => {
+    if (!user?.id || !issueUuid) return;
+    await supabase.from('ph_comments').insert({
+      work_item_id: issueUuid,
+      body: content,
+      author_id: user.id,
+      parent_comment_id: parentId,
+    });
+    catalystToast.success('Reply added');
+    queryClient.invalidateQueries({ queryKey: ['fy-reply-tree', issueUuid] });
+  };
+
+  return (
+    <>
+      <CommentToolbar
+        reactions={cdsReactions}
+        onToggleReaction={handleToggleReaction}
+        onReply={() => {
+          setComposerDefault('');
+          setComposerKey((k) => k + 1);
+          setComposerOpen(true);
+        }}
+        onCopyLink={() => {
+          const url = new URL(window.location.origin + `/browse/${row.issueKey}`);
+          if (row.commentId) url.searchParams.set('comment', row.commentId);
+          void navigator.clipboard?.writeText(url.toString());
+        }}
+      />
+      {composerOpen && (
+        <div style={{ marginBlockStart: 4 }}>
+          <CommentEditor
+            key={composerKey}
+            currentUser={currentUser}
+            mentionableUsers={mentionableUsers}
+            defaultValue={composerDefault}
+            autoFocus
+            placeholder={`Reply to ${row.authorName}…`}
+            onSubmit={handleSubmitReply}
+            onCancel={() => setComposerOpen(false)}
+            workItemId={issueUuid ?? undefined}
+            improveContext={{
+              issueKey: row.issueKey,
+              issueType: row.issueType,
+              issueSummary: row.issueSummary,
+            }}
+          />
+          {/* Ask Caty — suggest a reply (stream into the editor). */}
+          <button
+            type="button"
+            onClick={handleSuggestReply}
+            disabled={suggestPhase === 'loading'}
+            style={{
+              marginBlockStart: 6,
+              border: 'none',
+              background: 'transparent',
+              color: token('color.link', '#0C66E4'),
+              fontSize: 12,
+              fontWeight: 500,
+              cursor: suggestPhase === 'loading' ? 'wait' : 'pointer',
+              padding: '4px 6px',
+            }}
+          >
+            {suggestPhase === 'loading' ? 'Ask Caty…' : '✦ Ask Caty to suggest a reply'}
+          </button>
+        </div>
+      )}
+      {/* Nested reply tree — every descendant of this top-level
+          comment in ph_comments. Renders the curved trunk + Bezier
+          branches via CommentNode (Jira parity). */}
+      <ForYouReplyTree
+        parentResolvedId={resolvedId}
+        issueUuid={issueUuid}
+        ensurePhComment={ensurePhComment}
+        onSubmitReplyTo={handleSubmitReplyTo}
+      />
+    </>
+  );
+}
 
 function ReactionStrip({
   phCommentId,
