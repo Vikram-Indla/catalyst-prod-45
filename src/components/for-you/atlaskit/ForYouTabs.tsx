@@ -185,7 +185,7 @@ function TabButton({
         // Fixed weight 500 for ALL tabs — active is distinguished by
         // white bg + shadow elevation (Jira pattern). Variable weight
         // (400↔600) caused layout shift in the inline-flex strip.
-        font: `500 13.33px/normal "Inter", system-ui, sans-serif`,
+        font: `500 14px/normal var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
         color: token('color.text', '#292A2E'),
         whiteSpace: 'nowrap',
         outline: 'none',

@@ -122,7 +122,7 @@ export default function AssignedPanel({ items, isLoading, isRefreshing, onSelect
             alignSelf: 'flex-start',
             margin: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
             background: 'transparent', border: 'none',
-            font: `400 13px/20px "Inter", system-ui, sans-serif`,
+            font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text.subtlest', '#626F86'),
             cursor: 'pointer', padding: `${token('space.050', '4px')} 0`,
             textDecoration: 'underline', textDecorationColor: 'transparent',
@@ -154,13 +154,13 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
       display: 'flex', alignItems: 'baseline', gap: 8,
     }}>
       <span style={{
-        font: `500 14px/20px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
+        font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
         letterSpacing: 'normal', color: text.subtlest, textTransform: 'none',
       }}>
         {label}
       </span>
       <span style={{
-        font: `400 12px/16px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
+        font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
         color: token('color.text.subtlest', '#626F86'),
       }}>
         {count}
