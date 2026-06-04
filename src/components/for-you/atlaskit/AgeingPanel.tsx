@@ -195,8 +195,8 @@ function ArchivedRow({ item }: {
       >
         <JiraIssueTypeIcon type={item.issue_type} size={16} />
         <span style={{
-          fontFamily: '"SFMono-Regular", "Consolas", monospace', fontSize: 12, fontWeight: 500,
-          color: token('color.text.subtlest', '#6B778C'),
+          fontFamily: 'var(--ds-font-family-monospace, "Charlie Code", ui-monospace, monospace)', fontSize: 12, fontWeight: 500,
+          color: token('color.text.subtle', '#505258'),
           flexShrink: 0, minWidth: 72,
         }}>
           {item.issue_key}
