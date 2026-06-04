@@ -4,13 +4,13 @@
  * mirrored into ph_comments/ph_activity_log by wh-jira-sync and wh-jira-bulk-sync,
  * so a single query per source covers both Catalyst-native and Jira rows.
  */
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { catalystToast } from '@/lib/catalystToast';
 import { ActivityPanel } from '@/components/catalyst-ds';
-import type { CdsComment, CdsActivityItem, CdsUser, CdsQuickReply, JiraUserMap } from '@/components/catalyst-ds';
+import type { CdsComment, CdsActivityItem, CdsUser, CdsQuickReply, JiraUserMap, CdsCommentReaction } from '@/components/catalyst-ds';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { CommentsSummaryCard } from '@/components/catalyst-detail-views/improve/CommentsSummaryCard';
 import { useCommentsSummaryStream } from '@/components/catalyst-detail-views/improve/useCommentsSummaryStream';
@@ -46,6 +46,7 @@ function mapComment(raw: any): CdsComment {
     createdAt: raw.created_at,
     updatedAt: raw.updated_at,
     isEdited: !isJira && raw.updated_at && raw.updated_at !== raw.created_at,
+    parentId: raw.parent_comment_id ?? null,
   };
 }
 
@@ -200,11 +201,21 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     queryKey: ['cv-comments', resolvedWorkItemId],
     enabled: !!resolvedWorkItemId && isOpen,
     queryFn: async () => {
-      const { data } = await supabase
+      // Use SELECT * so the query stays robust whether or not the
+      // 20260604_add_parent_comment_id_to_ph_comments migration has
+      // been applied yet. mapComment reads raw.parent_comment_id with
+      // a null coalesce — missing column → null → treated as top
+      // level. Once the migration lands, threading lights up
+      // automatically for new replies.
+      const { data, error } = await supabase
         .from('ph_comments')
-        .select('id, work_item_id, body, author_id, created_at, updated_at')
+        .select('*')
         .eq('work_item_id', resolvedWorkItemId!)
         .order('created_at', { ascending: true });
+      if (error) {
+        console.error('[CatalystActivitySection] ph_comments select failed', error);
+        return [];
+      }
       if (!data?.length) return [];
       const authorIds = [...new Set(data.map(c => c.author_id).filter(Boolean))];
       if (authorIds.length === 0) return data.map(c => ({ ...c, author: null }));
@@ -216,6 +227,50 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
       return data.map(c => ({ ...c, author: c.author_id ? profileMap.get(c.author_id) ?? null : null }));
     },
   });
+
+  // Reactions: ph_comment_reactions, scoped to the loaded comment ids.
+  // Refetches when the comments list changes (new comment / delete) so
+  // newly-added rows show up immediately.
+  const commentIds = useMemo(
+    () => comments.map((c) => c.id),
+    [comments],
+  );
+  const { data: reactionRows = [] } = useQuery({
+    queryKey: ['cv-comment-reactions', resolvedWorkItemId, commentIds],
+    enabled: !!resolvedWorkItemId && isOpen && commentIds.length > 0,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_comment_reactions')
+        .select('id, comment_id, user_id, emoji, created_at')
+        .in('comment_id', commentIds)
+        .order('created_at', { ascending: true });
+      return data ?? [];
+    },
+  });
+
+  // Aggregate raw reaction rows into per-comment groups with count +
+  // hasMine. Iteration preserves first-applied order — the chip you
+  // added first stays leftmost in the toolbar.
+  const reactionsByCommentId = useMemo(() => {
+    const map = new Map<string, CdsCommentReaction[]>();
+    const me = user?.id ?? null;
+    for (const row of reactionRows) {
+      const list = map.get(row.comment_id) ?? [];
+      const existing = list.find((r) => r.emoji === row.emoji);
+      if (existing) {
+        existing.count += 1;
+        if (row.user_id === me) existing.hasMine = true;
+      } else {
+        list.push({
+          emoji: row.emoji,
+          count: 1,
+          hasMine: row.user_id === me,
+        });
+        map.set(row.comment_id, list);
+      }
+    }
+    return map;
+  }, [reactionRows, user?.id]);
 
   // History: ph_activity_log (Catalyst-native + Jira-mirrored)
   const { data: historyItems = [], isLoading: isLoadingHistory } = useQuery({
@@ -244,28 +299,31 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     },
   });
 
-  const mappedComments: CdsComment[] = comments.map(mapComment);
+  const mappedComments: CdsComment[] = comments.map((c) => {
+    const base = mapComment(c);
+    const reactions = reactionsByCommentId.get(c.id);
+    return reactions ? { ...base, reactions } : base;
+  });
   const mappedHistory: CdsActivityItem[] = historyItems.map(mapActivity);
 
   // Mutations — Catalyst-native comments only (source='catalyst')
   const addMutation = useMutation({
-    mutationFn: async (body: string) => {
+    mutationFn: async ({ body, parentId }: { body: string; parentId?: string | null }) => {
       if (!resolvedWorkItemId) throw new Error('Work item not resolved yet — try again in a moment.');
       // Apr 28 2026 (cycle 8 fix): dropped `source: 'catalyst'` from
       // the insert payload — `ph_comments` has no `source` column
       // (verified columns: id / work_item_id / author_id / body /
-      // created_at / updated_at). PostgREST's schema cache was
-      // rejecting every comment insert with "Could not find the
-      // 'source' column of 'ph_comments' in the schema cache".
+      // parent_comment_id / created_at / updated_at).
       await supabase.from('ph_comments').insert({
         work_item_id: resolvedWorkItemId,
         body,
         author_id: user!.id,
+        parent_comment_id: parentId ?? null,
       });
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['cv-comments', resolvedWorkItemId] });
-      catalystToast.success('Comment added');
+      catalystToast.success(variables.parentId ? 'Reply added' : 'Comment added');
     },
     onError: () => catalystToast.error('Failed to add comment'),
   });
@@ -309,9 +367,61 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     },
   });
 
-  const handleAdd = useCallback((content: string) => addMutation.mutateAsync(content), [addMutation]);
+  // Toggle a reaction on a comment. Single mutation that either
+  // inserts a row (this user did not have this emoji yet) or deletes
+  // a row (already had it → remove). Wrapped in optimistic mutations
+  // via the React-Query refetch on success so the chip count updates
+  // immediately on the toolbar.
+  const toggleReactionMutation = useMutation({
+    mutationFn: async ({
+      commentId,
+      emoji,
+      hasMine,
+    }: {
+      commentId: string;
+      emoji: string;
+      hasMine: boolean;
+    }) => {
+      if (!user?.id) return;
+      if (hasMine) {
+        await supabase
+          .from('ph_comment_reactions')
+          .delete()
+          .eq('comment_id', commentId)
+          .eq('user_id', user.id)
+          .eq('emoji', emoji);
+      } else {
+        await supabase.from('ph_comment_reactions').insert({
+          comment_id: commentId,
+          user_id: user.id,
+          emoji,
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['cv-comment-reactions', resolvedWorkItemId],
+      });
+    },
+    onError: () => catalystToast.error('Failed to update reaction'),
+  });
+
+  const handleAdd = useCallback(
+    (content: string) => addMutation.mutateAsync({ body: content }),
+    [addMutation],
+  );
+  const handleAddReply = useCallback(
+    (parentId: string, content: string) =>
+      addMutation.mutateAsync({ body: content, parentId }),
+    [addMutation],
+  );
   const handleEdit = useCallback((id: string, content: string) => editMutation.mutateAsync({ id, body: content }), [editMutation]);
   const handleDelete = useCallback((id: string) => deleteMutation.mutateAsync(id), [deleteMutation]);
+  const handleToggleReaction = useCallback(
+    (commentId: string, emoji: string, hasMine: boolean) =>
+      toggleReactionMutation.mutateAsync({ commentId, emoji, hasMine }),
+    [toggleReactionMutation],
+  );
 
   // ── Comments summary (Improve dropdown → Summarize comments) ─────
   useCommentsSummaryStream({ mountedForIssueKey: resolvedIssueKey });
@@ -378,8 +488,10 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
         currentUser={currentUser}
         mentionableUsers={mentionableUsers}
         onAddComment={handleAdd}
+        onAddReply={handleAddReply}
         onEditComment={handleEdit}
         onDeleteComment={handleDelete}
+        onToggleReaction={handleToggleReaction}
         isSubmitting={addMutation.isPending}
         isLoadingComments={isLoadingComments}
         isLoadingHistory={isLoadingHistory}

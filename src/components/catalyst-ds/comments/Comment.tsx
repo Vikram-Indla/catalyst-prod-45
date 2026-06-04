@@ -72,6 +72,23 @@ function injectCommentDirectionStyles() {
       border-left: none !important;
       border-right: none !important;
     }
+    /* Atlaskit's renderer uses appearance="comment" which injects its
+       own padding around the rendered document. Strip it so the body
+       starts at the same left edge as the toolbar that follows. */
+    .cds-comment-body > div,
+    .cds-comment-body .ak-renderer-wrapper,
+    .cds-comment-body .ak-renderer-document {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+    .cds-comment-body p:first-child,
+    .cds-comment-body h1:first-child,
+    .cds-comment-body h2:first-child,
+    .cds-comment-body h3:first-child {
+      margin-top: 0 !important;
+    }
   `;
   document.head.appendChild(style);
 }
@@ -222,13 +239,18 @@ function CommentBody({ content }: { content: string }) {
 
 export interface CommentProps {
   comment: CdsComment;
+  /** Renders between the message body and the actions toolbar. Use
+   *  for affordances that belong to the message (e.g. the Translate
+   *  bar) but should sit directly under the text, not below the
+   *  toolbar. */
+  extras?: React.ReactNode;
   actions?: React.ReactNode;
   isHighlighted?: boolean;
   className?: string;
 }
 
 const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
-  ({ comment, actions, isHighlighted, className }, ref) => {
+  ({ comment, extras, actions, isHighlighted, className }, ref) => {
     const { author, content, createdAt, isEdited, isSystem } = comment;
 
     return (
@@ -271,6 +293,8 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
           </div>
 
           <CommentBody content={content} />
+
+          {extras}
 
           {actions && (
             <div className="flex items-center gap-3 mt-2">

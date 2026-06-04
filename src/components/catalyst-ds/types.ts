@@ -7,6 +7,19 @@ export interface CdsUser {
   email?: string;
 }
 
+/**
+ * One reaction group on a comment — every user who picked the same
+ * emoji is aggregated into a single chip. `hasMine` lets the toolbar
+ * paint the current user's own reactions with the "active" treatment
+ * (light blue background + dark blue border) and toggle them off on
+ * click.
+ */
+export interface CdsCommentReaction {
+  emoji: string;
+  count: number;
+  hasMine: boolean;
+}
+
 export interface CdsComment {
   id: string;
   author: CdsUser;
@@ -15,6 +28,12 @@ export interface CdsComment {
   updatedAt?: string;
   isEdited?: boolean;
   isSystem?: boolean;
+  /** Aggregated reactions for this comment, ordered by first-applied. */
+  reactions?: CdsCommentReaction[];
+  /** Self-referencing FK — points to the immediate parent comment.
+   *  NULL for top-level comments. The tree is built client-side and
+   *  rendered with a curved L connector from parent to each child. */
+  parentId?: string | null;
 }
 
 export interface CdsFieldChange {

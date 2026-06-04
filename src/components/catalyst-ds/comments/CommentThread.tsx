@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { cn } from '@/lib/utils';
-import { MessageSquare, Edit, Trash2, Quote } from '@/lib/atlaskit-icons';
+import { MessageSquare } from '@/lib/atlaskit-icons';
 import type { CdsComment, CdsSortOrder, CdsUser, CdsQuickReply } from '../types';
 import { Comment } from './Comment';
-import { CommentAction } from './CommentAction';
+import { CommentToolbar } from './CommentToolbar';
 import { CommentEditor } from './CommentEditor';
+import { CommentNode } from './CommentNode';
 import { DescriptionTranslateBar } from '@/components/shared/title-translate/DescriptionTranslateBar';
 import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 
@@ -27,8 +28,18 @@ export interface CommentThreadProps {
   sortOrder?: CdsSortOrder;
   onSortChange?: (order: CdsSortOrder) => void;
   onAddComment: (content: string) => void | Promise<void>;
+  /** Threaded reply — posts a new comment with parent_comment_id set
+   *  to `parentId`. Falls back to onAddComment if omitted. */
+  onAddReply?: (parentId: string, content: string) => void | Promise<void>;
   onEditComment?: (id: string, content: string) => void | Promise<void>;
   onDeleteComment?: (id: string) => void | Promise<void>;
+  /** Same shape as ActivityPanel — toggles a single reaction on the
+   *  given comment. Connects to ph_comment_reactions via the parent. */
+  onToggleReaction?: (
+    commentId: string,
+    emoji: string,
+    hasMine: boolean,
+  ) => void | Promise<void>;
   quickReplies?: CdsQuickReply[];
   isSubmitting?: boolean;
   isLoading?: boolean;
@@ -50,8 +61,10 @@ function CommentThread({
   sortOrder = 'newest',
   onSortChange,
   onAddComment,
+  onAddReply,
   onEditComment,
   onDeleteComment,
+  onToggleReaction,
   quickReplies,
   isSubmitting = false,
   isLoading = false,
@@ -67,15 +80,38 @@ function CommentThread({
   const [editValue, setEditValue] = useState('');
   // E3: quote reply — pre-fills the editor with a blockquote prefix
   const [quotePrefix, setQuotePrefix] = useState('');
+  // ID of the comment being replied to — when set, an inline editor
+  // renders directly below that comment (same pattern as the All tab
+  // and the For You RecommendedPanel).
+  const [replyingToId, setReplyingToId] = useState<string | null>(null);
 
-  const sortedComments = useMemo(() => {
-    const sorted = [...comments];
-    sorted.sort((a, b) => {
+  // Top-level comments only — replies render nested under their
+  // parent via CommentNode. Sort order applies only to top-level rows;
+  // children are always rendered oldest-first under each parent.
+  const sortedTopLevelComments = useMemo(() => {
+    const topLevel = comments.filter((c) => !c.parentId);
+    topLevel.sort((a, b) => {
       const diff = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       return sortOrder === 'newest' ? -diff : diff;
     });
-    return sorted;
+    return topLevel;
   }, [comments, sortOrder]);
+
+  const childrenByParentId = useMemo(() => {
+    const map: Record<string, CdsComment[]> = {};
+    for (const c of comments) {
+      if (c.parentId) {
+        (map[c.parentId] ??= []).push(c);
+      }
+    }
+    for (const list of Object.values(map)) {
+      list.sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      );
+    }
+    return map;
+  }, [comments]);
 
   const startEdit = (comment: CdsComment) => {
     setEditingId(comment.id);
@@ -93,6 +129,137 @@ function CommentThread({
     setEditingId(null);
     setEditValue('');
   };
+
+  // Renders one comment + its toolbar + (optional) edit editor +
+  // translate bar + inline reply composer. Shared with CommentNode so
+  // every nesting level renders consistently.
+  const renderCommentBlock = useCallback(
+    (comment: CdsComment) => {
+      if (editingId === comment.id) {
+        return (
+          <div className="py-3">
+            <CommentEditor
+              currentUser={currentUser}
+              mentionableUsers={mentionableUsers}
+              defaultValue={comment.content}
+              autoFocus
+              onSubmit={async (content) => {
+                if (!onEditComment) return;
+                await onEditComment(comment.id, content);
+                setEditingId(null);
+              }}
+              onCancel={cancelEdit}
+              workItemId={workItemId}
+            />
+          </div>
+        );
+      }
+
+      const canEdit =
+        !!onEditComment && !!currentUser && comment.author.id === currentUser.id;
+      const canDelete =
+        !!onDeleteComment && !!currentUser && comment.author.id === currentUser.id;
+
+      const displayComment: CdsComment = translatedComments[comment.id]
+        ? { ...comment, content: translatedComments[comment.id] }
+        : comment;
+      const commentPlainText = commentToPlainText(comment.content);
+
+      return (
+        <>
+          <Comment
+            comment={displayComment}
+            extras={
+              !comment.isSystem &&
+              commentPlainText.trim() &&
+              issueKey &&
+              onCommentTranslated &&
+              onCommentRevert ? (
+                <DescriptionTranslateBar
+                  plainText={commentPlainText}
+                  issueKey={issueKey}
+                  field={`comment:${comment.id}`}
+                  isTranslated={!!translatedComments[comment.id]}
+                  onTranslated={(text) => onCommentTranslated(comment.id, text)}
+                  onRevert={() => onCommentRevert(comment.id)}
+                  style={{ marginTop: 4, marginBottom: 0 }}
+                />
+              ) : undefined
+            }
+            actions={
+              !comment.isSystem ? (
+                <CommentToolbar
+                  reactions={comment.reactions}
+                  onToggleReaction={
+                    onToggleReaction
+                      ? (emoji, hasMine) =>
+                          onToggleReaction(comment.id, emoji, hasMine)
+                      : undefined
+                  }
+                  onReply={() => setReplyingToId(comment.id)}
+                  onEdit={canEdit ? () => startEdit(comment) : undefined}
+                  onCopyLink={() => {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('comment', comment.id);
+                    void navigator.clipboard?.writeText(url.toString());
+                  }}
+                  onDelete={
+                    canDelete ? () => onDeleteComment!(comment.id) : undefined
+                  }
+                />
+              ) : undefined
+            }
+          />
+          {replyingToId === comment.id && (
+            <div style={{ paddingLeft: 44, paddingTop: 8, paddingBottom: 8 }}>
+              <div
+                style={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: 'var(--ds-text-subtle, #44546F)',
+                  marginBottom: 6,
+                }}
+              >
+                Replying to {comment.author.name}
+              </div>
+              <CommentEditor
+                currentUser={currentUser}
+                mentionableUsers={mentionableUsers}
+                autoFocus
+                placeholder={`Reply to ${comment.author.name}…`}
+                onSubmit={async (content) => {
+                  if (onAddReply) {
+                    await onAddReply(comment.id, content);
+                  } else {
+                    await onAddComment(content);
+                  }
+                  setReplyingToId(null);
+                }}
+                onCancel={() => setReplyingToId(null)}
+                workItemId={workItemId}
+              />
+            </div>
+          )}
+        </>
+      );
+    },
+    [
+      editingId,
+      replyingToId,
+      translatedComments,
+      currentUser,
+      mentionableUsers,
+      issueKey,
+      workItemId,
+      onEditComment,
+      onDeleteComment,
+      onToggleReaction,
+      onAddReply,
+      onAddComment,
+      onCommentTranslated,
+      onCommentRevert,
+    ],
+  );
 
   return (
     <div className={cn('flex flex-col', className)}>
@@ -114,100 +281,22 @@ function CommentThread({
           <div className="text-center py-8">
             <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">Loading comments...</p>
           </div>
-        ) : sortedComments.length === 0 ? (
+        ) : sortedTopLevelComments.length === 0 ? (
           <div className="text-center py-10">
             <MessageSquare className="h-10 w-10 mx-auto mb-3 text-[#C1C7D0] dark:text-[var(--ds-border-bold,#454545)]" />
             <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{emptyMessage}</p>
           </div>
         ) : (
           <div className="divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
-            {sortedComments.map((comment) => {
-              if (editingId === comment.id) {
-                return (
-                  <div key={comment.id} className="py-3">
-                    <CommentEditor
-                      currentUser={currentUser}
-                      mentionableUsers={mentionableUsers}
-                      defaultValue={comment.content}
-                      autoFocus
-                      onSubmit={async (content) => {
-                        if (!onEditComment) return;
-                        await onEditComment(comment.id, content);
-                        setEditingId(null);
-                      }}
-                      onCancel={cancelEdit}
-                      workItemId={workItemId}
-                    />
-                  </div>
-                );
-              }
-
-              const canEdit = onEditComment && currentUser && comment.author.id === currentUser.id;
-              const canDelete = onDeleteComment && currentUser && comment.author.id === currentUser.id;
-
-              const handleQuote = () => {
-                // E3: pre-fill editor with blockquote of this comment's text
-                const lines = comment.content.split('\n').map((l: string) => `> ${l}`).join('\n');
-                setQuotePrefix(`${lines}\n\n`);
-                // Scroll the editor into view
-                setTimeout(() => {
-                  const textarea = document.querySelector<HTMLTextAreaElement>('.cat-comment-editor textarea');
-                  textarea?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 50);
-              };
-
-              const displayComment: CdsComment = translatedComments[comment.id]
-                ? { ...comment, content: translatedComments[comment.id] }
-                : comment;
-              const commentPlainText = commentToPlainText(comment.content);
-
-              return (
-                <div key={comment.id}>
-                  <Comment
-                    comment={displayComment}
-                    actions={
-                      !comment.isSystem ? (
-                        <>
-                          <CommentAction
-                            onClick={handleQuote}
-                            icon={<Quote />}
-                            aria-label="Quote reply"
-                            title="Quote reply"
-                          />
-                          {canEdit && (
-                            <CommentAction
-                              onClick={() => startEdit(comment)}
-                              icon={<Edit />}
-                              aria-label="Edit comment"
-                              title="Edit comment"
-                            />
-                          )}
-                          {canDelete && (
-                            <CommentAction
-                              onClick={() => onDeleteComment!(comment.id)}
-                              icon={<Trash2 />}
-                              aria-label="Delete comment"
-                              title="Delete comment"
-                            />
-                          )}
-                        </>
-                      ) : undefined
-                    }
-                  />
-                  {!comment.isSystem && commentPlainText.trim() && issueKey && onCommentTranslated && onCommentRevert && (
-                    <DescriptionTranslateBar
-                      plainText={commentPlainText}
-                      issueKey={issueKey}
-                      field={`comment:${comment.id}`}
-                      isTranslated={!!translatedComments[comment.id]}
-                      onTranslated={(text) => onCommentTranslated(comment.id, text)}
-                      onRevert={() => onCommentRevert(comment.id)}
-                      style={{ paddingLeft: 44, marginTop: 0, marginBottom: 4 }}
-                    />
-                  )}
-                </div>
-              );
-            })}
+            {sortedTopLevelComments.map((comment) => (
+              <div key={comment.id}>
+                <CommentNode
+                  comment={comment}
+                  childrenByParentId={childrenByParentId}
+                  renderComment={renderCommentBlock}
+                />
+              </div>
+            ))}
           </div>
         )}
       </div>

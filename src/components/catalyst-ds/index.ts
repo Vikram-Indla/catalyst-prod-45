@@ -1,6 +1,7 @@
 export type {
   CdsUser,
   CdsComment,
+  CdsCommentReaction,
   CdsFieldChange,
   CdsActivityAction,
   CdsActivityItem,
