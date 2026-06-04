@@ -228,7 +228,7 @@ function TabButton({
             // Jira parity: ageing + assigned use square badges (borderRadius 2px),
             // all others use the pill treatment (borderRadius 999).
             borderRadius: isAgeingBadge || isAssignedBadge ? 2 : 999,
-            font: `600 11px/14px "Inter", system-ui, sans-serif`,
+            font: `600 11px/14px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
           }}
         >
           {count > 99 ? '99+' : count}

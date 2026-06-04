@@ -130,7 +130,7 @@ export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: Rec
       <div style={{ paddingInline: 2 }}>
         <h2
           style={{
-            font: `600 16px/20px "Inter", system-ui, sans-serif`,
+            font: `600 16px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', '#292A2E'),
             margin: 0,
           }}
@@ -202,7 +202,7 @@ function SpaceCardButton({ card, onClick }: { card: SpaceCard; onClick: () => vo
       <div style={{ flex: 1, minWidth: 0 }}>
         <div
           style={{
-            font: `600 14px/20px "Inter", system-ui, sans-serif`,
+            font: `600 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', '#292A2E'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
