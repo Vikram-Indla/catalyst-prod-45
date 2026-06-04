@@ -33,6 +33,7 @@ const CatalystShell = lazy(() => import("./components/layout/CatalystShell").the
 // surface; leaving it in place gives us a one-line rollback if parity
 // issues surface during the visual audit loop (P7).
 const ForYouPage = lazy(() => import("./pages/ForYouPage.atlaskit"));
+const ArchiveManagerPage = lazy(() => import("./pages/ArchiveManagerPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 // Admin routes are owned by FullAppRoutes (single source of truth) —
 // no admin lazy imports here. See RCA 2026-05-19 in CLAUDE.md.
@@ -195,6 +196,7 @@ function App() {
                 <Route element={<ProtectedRoute><S><CatalystShell /></S></ProtectedRoute>}>
                   <Route index element={<S><ForYouPage /></S>} />
                   <Route path="for-you" element={<S><ForYouPage /></S>} />
+                  <Route path="for-you/archives" element={<S><ArchiveManagerPage /></S>} />
                   <Route path="for-you/:tab" element={<S><ForYouPage /></S>} />
                   <Route path="home" element={<Navigate to="/" replace />} />
 

@@ -47,8 +47,9 @@ export function usePresence() {
       if (error) throw error;
     },
     onSuccess: () => {
-      // Invalidate any useUserStatus queries that might include the current user
       queryClient.invalidateQueries({ queryKey: ['user-status'] });
+      queryClient.invalidateQueries({ queryKey: ['own-presence'] });
+      queryClient.invalidateQueries({ queryKey: ['team-pulse'] });
     },
   });
 

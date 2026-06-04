@@ -8,40 +8,66 @@
  * ┌──────────────────────────────────────────────────────────────────┐
  * │  Wide (≥1200px):                                                 │
  * │  ┌─ Roster sidebar ─┐  ┌─ R360MemberDetail ────────────────┐   │
- * │  │  ● Me            │  │  (ring / chronology / board)       │   │
- * │  │  · Alice Tan     │  │                                    │   │
+ * │  │  · Alice Tan     │  │  (ring / chronology / board)       │   │
  * │  │  · Bob Smith     │  │                                    │   │
  * │  └──────────────────┘  └────────────────────────────────────┘   │
  * │                                                                  │
  * │  Narrow (<1200px): horizontal pill strip at top (unchanged)      │
  * └──────────────────────────────────────────────────────────────────┘
  *
- * For ICs: no picker shown; only their own view is rendered.
+ * Self-view excluded — sidebar always shows teammates only.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { PresenceRing } from '@/components/shared/PresenceRing';
+import type { PresenceState } from '@/lib/presence';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useMyR360ResourceId, useTeamResourceIds } from '@/hooks/useR360PanelData';
 import { useAuth } from '@/lib/auth';
+import { useTeamPulseManagedTeam } from '@/hooks/useTeamPulse';
 import R360MemberDetail from '@/pages/R360MemberDetail';
+
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface TeamResource { id: string; name: string; role_name: string | null; avatar_url: string | null }
+interface TeamResource { id: string; profile_id: string; name: string; role_name: string | null; avatar_url: string | null }
 
 // ─── Sidebar roster row ───────────────────────────────────────────────────────
 
 function SidebarMemberRow({
-  name, sublabel, avatarUrl, active, onClick,
+  name, sublabel, avatarUrl, active, onClick, presenceState, backOn,
 }: {
   name: string;
   sublabel?: string | null;
   avatarUrl?: string | null;
   active: boolean;
   onClick: () => void;
+  presenceState?: string;
+  backOn?: string | null;
 }) {
   const [hover, setHover] = React.useState(false);
+
+  let pillBg = token('color.background.neutral', '#F1F2F4');
+  let pillColor = token('color.text.subtle', '#44546F');
+  let pillText = 'Away';
+
+  if (presenceState === 'available' || presenceState === 'active' || presenceState === 'on_site') {
+    pillBg = token('color.background.success.subtle', '#DCFFF1');
+    pillColor = token('color.text.success', '#216E4E');
+    pillText = 'On site';
+  } else if (presenceState === 'remote') {
+    pillBg = token('color.background.information.subtle', '#E9F2FF');
+    pillColor = token('color.text.information', '#0055CC');
+    pillText = 'Remote';
+  } else {
+    pillBg = token('color.background.neutral', '#F1F2F4');
+    pillColor = token('color.text.subtle', '#44546F');
+    pillText = 'Away';
+    if (backOn) {
+      pillText = `Away · Back ${new Date(backOn).toLocaleDateString('en', { month: 'short', day: 'numeric' })}`;
+    }
+  }
 
   return (
     <button
@@ -54,12 +80,13 @@ function SidebarMemberRow({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
         width: '100%',
         padding: '8px 12px',
-        borderRadius: 6,
+        borderRadius: 8,
         border: 'none',
-        borderInlineStart: active ? `3px solid ${token('color.border.brand', 'var(--cp-primary-60, #0052CC)')}` : '3px solid transparent',
+        borderInlineStart: active ? `3px solid ${token('color.border.brand', '#0052CC')}` : '3px solid transparent',
+        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
         background: active
           ? token('color.background.selected', '#DEEBFF')
           : hover
@@ -70,39 +97,49 @@ function SidebarMemberRow({
         textAlign: 'left' as const,
       }}
     >
-      {/* Avatar — face image when available, initials fallback, never both */}
-      <CatalystAvatar name={name} src={avatarUrl ?? null} size="small" />
+      <PresenceRing name={name} src={avatarUrl ?? null} size="small" state={(presenceState ?? 'away') as PresenceState} />
 
-      {/* Name + role */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
           fontSize: 13, fontWeight: active ? 600 : 400,
-          color: active ? token('color.text.selected', 'var(--cp-primary-60, #0052CC)') : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+          color: active ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {name}
         </div>
         {sublabel && (
           <div style={{
-            fontSize: 10, color: token('color.text.subtlest', '#8590A2'),
+            fontSize: 11, color: token('color.text.subtlest', '#8590A2'),
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
             {sublabel}
           </div>
         )}
+        <div style={{
+          marginTop: 4,
+          display: 'inline-flex',
+          alignItems: 'center',
+          padding: '2px 8px',
+          borderRadius: 8,
+          fontSize: 11,
+          fontWeight: 500,
+          background: pillBg,
+          color: pillColor,
+          whiteSpace: 'nowrap',
+        }}>
+          {pillText}
+        </div>
       </div>
     </button>
   );
 }
 
-// ─── Section label (used by both "Your view" and "Team members") ─────────────
+// ─── Section label (used by "Team members") ─────────────────────────────────
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      fontSize: 10, fontWeight: 600,
+      fontSize: 11, fontWeight: 600,
       color: token('color.text.subtlest', '#8590A2'),
-      letterSpacing: '0.05em',
-      textTransform: 'uppercase' as const,
     }}>
       {children}
     </div>
@@ -112,11 +149,12 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 // ─── Sidebar container ────────────────────────────────────────────────────────
 
 function SidebarRoster({
-  team, selectedId, onSelect,
+  team, selectedId, onSelect, pulseMap,
 }: {
   team: TeamResource[];
   selectedId: string | null;
-  onSelect: (id: string | null) => void;
+  onSelect: (id: string) => void;
+  pulseMap: Map<string, { state: string; backOn: string | null }>;
 }) {
   const [search, setSearch] = React.useState('');
   const [focused, setFocused] = React.useState(false);
@@ -128,35 +166,28 @@ function SidebarRoster({
       )
     : team;
 
+  const selectedIndex = selectedId ? team.findIndex(r => r.id === selectedId) + 1 : 0;
+
   return (
     <div
       data-testid="r360-roster-sidebar"
       style={{
-        // Widened 200 → 220 (design-critique 2026-05-17 H6 P1) — at 200px
-        // names like "Ayaz Muhammad" and "Divyam Kshatriya" were forced to
-        // truncate to "Ayaz Muhamm…" / "Divyam Kshatri…". The extra 20px
-        // fits the longest BAU-team display names without ellipsis while
-        // keeping the sidebar comfortably inside the 1200px viewport.
         width: 220, flexShrink: 0,
-        borderInlineEnd: `1px solid ${token('color.border', '#091E4224')}`,
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRadius: 8,
         display: 'flex', flexDirection: 'column',
         position: 'sticky',
         top: 0,
         maxHeight: 'calc(100vh - 200px)',
         alignSelf: 'flex-start',
-        // No overflowY here — only the list section below scrolls
+        background: token('elevation.surface.sunken', '#F7F8F9'),
+        overflow: 'hidden',
       }}
     >
-      {/* ── Team members (header + search, then scrollable list) ─────────────
-          The "Your view / Me" tile was removed 2026-05-17 — the detail panel
-          header (right side: avatar + name + role + active/stale badge) is
-          already the identity indicator. Re-stating "Me" in the picker was
-          redundant. When the user is viewing a teammate, a small "← My view"
-          link appears at the top of the list as the return affordance. */}
       <div style={{
         flexShrink: 0,
         padding: '12px 12px 8px',
-        background: token('elevation.surface', '#FFFFFF'),
+        background: token('elevation.surface.sunken', '#F7F8F9'),
       }}>
         <SectionLabel>Team members</SectionLabel>
         <input
@@ -169,12 +200,12 @@ function SidebarRoster({
           style={{
             width: '100%',
             marginTop: 8,
-            padding: '5px 8px',
+            padding: '4px 8px',
             fontSize: 12,
             border: `2px solid ${focused ? token('color.border.focused', '#388BFF') : token('color.border.input', '#8590A2')}`,
             borderRadius: 3,
             background: token('color.background.input', '#FAFBFC'),
-            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+            color: token('color.text', '#172B4D'),
             outline: 'none',
             boxSizing: 'border-box' as const,
             transition: 'border-color 120ms ease',
@@ -182,44 +213,22 @@ function SidebarRoster({
         />
       </div>
 
-      {/* Scrollable team list */}
-      <div style={{ overflowY: 'auto', flex: 1, padding: '4px 12px 12px 8px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {/* "← My view" return link — only shown when viewing a teammate. */}
-        {selectedId !== null && (
-          <button
-            type="button"
-            onClick={() => onSelect(null)}
-            style={{
-              all: 'unset',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '6px 10px',
-              marginBottom: 6,
-              borderRadius: 4,
-              cursor: 'pointer',
-              fontSize: 12,
-              fontWeight: 500,
-              color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)'),
-              background: 'transparent',
-            }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'); }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
-          >
-            ← My view
-          </button>
-        )}
-
-        {filtered.map(r => (
-          <SidebarMemberRow
-            key={r.id}
-            name={r.name}
-            sublabel={r.role_name}
-            avatarUrl={r.avatar_url}
-            active={selectedId === r.id}
-            onClick={() => onSelect(r.id)}
-          />
-        ))}
+      <div style={{ overflowY: 'auto', flex: 1, padding: '4px 12px 12px 8px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {filtered.map(r => {
+          const pulse = pulseMap.get(r.profile_id);
+          return (
+            <SidebarMemberRow
+              key={r.id}
+              name={r.name}
+              sublabel={r.role_name}
+              avatarUrl={r.avatar_url}
+              active={selectedId === r.id}
+              onClick={() => onSelect(r.id)}
+              presenceState={pulse?.state}
+              backOn={pulse?.backOn}
+            />
+          );
+        })}
 
         {search.trim() && filtered.length === 0 && (
           <div style={{
@@ -243,6 +252,26 @@ function SidebarRoster({
           </div>
         )}
       </div>
+
+      {/* Footer — resource counter */}
+      <div style={{
+        flexShrink: 0,
+        padding: '8px 12px',
+        borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+        background: token('elevation.surface.sunken', '#F7F8F9'),
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <span style={{
+          fontSize: 12,
+          fontWeight: 500,
+          color: token('color.text.subtle', '#44546F'),
+          fontVariantNumeric: 'tabular-nums',
+        }}>
+          {selectedIndex > 0 ? selectedIndex : '–'} of {team.length}
+        </span>
+      </div>
     </div>
   );
 }
@@ -265,21 +294,21 @@ function MemberPill({
       onMouseLeave={() => setHover(false)}
       style={{
         display: 'inline-flex', flexDirection: 'column', alignItems: 'center',
-        padding: '5px 14px', borderRadius: 20,
+        padding: '4px 16px', borderRadius: 20,
         border: active
-          ? `2px solid ${token('color.border.brand', 'var(--cp-primary-60, #0052CC)')}`
-          : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+          ? `2px solid ${token('color.border.brand', '#0052CC')}`
+          : `1px solid ${token('color.border', '#DFE1E6')}`,
         background: active
           ? token('color.background.selected', '#DEEBFF')
           : hover ? token('color.background.neutral.hovered', '#EBECF0') : token('elevation.surface', '#FFFFFF'),
-        cursor: 'pointer', transition: 'all 120ms ease', gap: 1,
+        cursor: 'pointer', transition: 'all 120ms ease', gap: 0,
       }}
     >
-      <span style={{ fontSize: 13, fontWeight: active ? 600 : 400, color: active ? token('color.text.selected', 'var(--cp-primary-60, #0052CC)') : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 13, fontWeight: active ? 600 : 400, color: active ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'), whiteSpace: 'nowrap' }}>
         {label}
       </span>
       {sublabel && (
-        <span style={{ fontSize: 10, color: token('color.text.subtle', '#6B778C'), whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 11, color: token('color.text.subtle', '#6B778C'), whiteSpace: 'nowrap' }}>
           {sublabel}
         </span>
       )}
@@ -300,12 +329,7 @@ function R360Skeleton() {
 
 // ─── Main panel ──────────────────────────────────────────────────────────────
 
-// Sidebar shows when viewport is wide enough OR when the team is too large for pills.
-// Uses viewport width (innerWidth) — not container offsetWidth — because the panel
-// sits inside a padded card that significantly under-reports its own width (CLAUDE.md 2026-05-11).
 const WIDE_THRESHOLD = 900;
-// Pill strip is only usable for very small teams. Beyond this count the sidebar
-// (with its search box) is always used regardless of viewport width.
 const MAX_PILLS_TEAM = 5;
 
 export default function R360Panel() {
@@ -315,13 +339,33 @@ export default function R360Panel() {
   const { data: teamResources = [], isLoading: teamLoading } = useTeamResourceIds(
     isTeamLead ? (user?.id ?? null) : null,
   );
+  const { data: pulseData } = useTeamPulseManagedTeam();
 
-  // null = "show my own view"; a resource ID string = "show that member's view"
+  const pulseMap = React.useMemo(() => {
+    const m = new Map<string, { state: string; backOn: string | null }>();
+    if (pulseData?.members) {
+      for (const member of pulseData.members) {
+        if (member.user_id) {
+          m.set(member.user_id, { state: member.effective_state ?? 'offline', backOn: member.back_on ?? null });
+        }
+      }
+    }
+    return m;
+  }, [pulseData]);
+
+  const filteredTeam = React.useMemo(
+    () => teamResources.filter(r => r.id !== myResourceId),
+    [teamResources, myResourceId],
+  );
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // Responsive layout: sidebar on wide viewports, pill strip on narrow.
-  // Uses viewport width (innerWidth) — the panel container shrinks significantly
-  // inside the For You card padding, so container width would under-report.
+  useEffect(() => {
+    if (filteredTeam.length > 0 && selectedId === null) {
+      setSelectedId(filteredTeam[0].id);
+    }
+  }, [filteredTeam, selectedId]);
+
   const [isWide, setIsWide] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth >= WIDE_THRESHOLD : false,
   );
@@ -333,14 +377,13 @@ export default function R360Panel() {
     return () => window.removeEventListener('resize', handler);
   }, []);
 
-  const handleSelect = useCallback((id: string | null) => {
+  const handleSelect = useCallback((id: string) => {
     setSelectedId(id);
   }, []);
 
   const activeResourceId = selectedId ?? myResourceId ?? null;
-  const hasTeam = isTeamLead && !teamLoading && teamResources.length > 0;
-  // Use sidebar when wide enough OR when team is too large for the pill strip
-  const useSidebar = hasTeam && (isWide || teamResources.length > MAX_PILLS_TEAM);
+  const hasTeam = isTeamLead && !teamLoading && filteredTeam.length > 0;
+  const useSidebar = hasTeam && (isWide || filteredTeam.length > MAX_PILLS_TEAM);
 
   if (idLoading) return <R360Skeleton />;
 
@@ -371,36 +414,24 @@ export default function R360Panel() {
       }}
     >
       {useSidebar ? (
-        /* ── Sidebar roster (wide viewport OR large team) ── */
         <SidebarRoster
-          team={teamResources}
+          team={filteredTeam}
           selectedId={selectedId}
           onSelect={handleSelect}
+          pulseMap={pulseMap}
         />
       ) : hasTeam ? (
-        // Narrow pill strip — only for small teams (≤ MAX_PILLS_TEAM).
-        // "Me" pill removed 2026-05-17 — the R360MemberDetail header is the
-        // identity indicator (avatar + name + role). When viewing a teammate,
-        // a "← My view" pill renders at the start of the strip as the return
-        // affordance.
         <div
           role="tablist"
           aria-label="Team member view"
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '12px 0 16px', flexWrap: 'wrap',
-            borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
             marginBottom: 8,
           }}
         >
-          {selectedId !== null && (
-            <MemberPill
-              label="← My view"
-              active={false}
-              onClick={() => handleSelect(null)}
-            />
-          )}
-          {teamResources.map(r => (
+          {filteredTeam.map(r => (
             <MemberPill
               key={r.id}
               label={r.name}
@@ -412,9 +443,13 @@ export default function R360Panel() {
         </div>
       ) : null}
 
-      {/* ── R360 weekly view (fills remaining space) ── */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <R360MemberDetail resourceId={activeResourceId} embedded />
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', background: token('elevation.surface', '#FFFFFF') }}>
+        <R360MemberDetail
+          resourceId={activeResourceId}
+          embedded
+          effectiveState={selectedId ? pulseMap.get(filteredTeam.find(r => r.id === selectedId)?.profile_id ?? '')?.state : undefined}
+          backOn={selectedId ? pulseMap.get(filteredTeam.find(r => r.id === selectedId)?.profile_id ?? '')?.backOn : undefined}
+        />
       </div>
     </div>
   );

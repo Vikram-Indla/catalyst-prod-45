@@ -31,7 +31,7 @@ import React from 'react';
 import { token } from '@atlaskit/tokens';
 import type { TabType } from '@/hooks/useForYouData';
 import { useAgeingCount } from '@/components/notifications/AgeingTab';
-import { useModuleEnabled } from '@/contexts/FeatureFlagContext';
+
 
 export const FOR_YOU_TAB_KEY = 'catalyst.forYou.activeTab.v1';
 
@@ -55,27 +55,26 @@ export const FOR_YOU_TAB_ORDER: ForYouTabDefinition[] = [
   { id: 'recommended', label: 'Recommended',     showCount: false },
   { id: 'starred',     label: 'Starred',         showCount: false },
   { id: 'r360',        label: 'Resource 360°',   showCount: false },
+  { id: 'board',       label: 'Board',           showCount: false },
+  { id: 'timeline',    label: 'Timeline',        showCount: false },
   { id: 'ageing',      label: 'Ageing',          showCount: true  },
-  { id: 'team-pulse',  label: 'Team Pulse',      showCount: false },
 ];
 
 interface ForYouTabsProps {
   activeTab: TabType;
   tabCounts: Record<TabType, number>;
   onChange: (tab: TabType) => void;
+  /** Override the default tab strip. Used to inject role-gated tabs (e.g. Team Pulse). */
+  tabs?: ForYouTabDefinition[];
 }
 
-export default function ForYouTabs({ activeTab, tabCounts, onChange }: ForYouTabsProps) {
+export default function ForYouTabs({ activeTab, tabCounts, onChange, tabs }: ForYouTabsProps) {
   // Ageing count is owned by the shared useAgeingItems hook — same source
   // of truth the Ageing panel itself renders from. Resolved here so the
   // pill badge stays in lockstep with panel content without plumbing the
   // count back through useForYouData.
   const ageingCount = useAgeingCount();
-  const presenceEnabled = useModuleEnabled('presence_availability');
-
-  const visibleTabs = FOR_YOU_TAB_ORDER.filter(
-    tab => tab.id !== 'team-pulse' || presenceEnabled,
-  );
+  const visibleTabs = tabs ?? FOR_YOU_TAB_ORDER;
 
   // WAI-ARIA tab pattern: ArrowLeft/Right navigate and select within the strip.
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -183,25 +182,19 @@ function TabButton({
         border: 'none',
         borderRadius: 6,
         cursor: 'pointer',
-        // 13.33px / line-height normal — matches Jira's "Atlassian Sans 13.33px"
-        // tab text, routed through Catalyst's Inter. Weight 600 on the active
-        // tab adds a visual distinction on top of the shadow lift so the
-        // selected tab reads clearly without relying on colour alone.
-        font: `${isActive ? 600 : 400} 13.33px/normal "Inter", system-ui, sans-serif`,
+        // Fixed weight 500 for ALL tabs — active is distinguished by
+        // white bg + shadow elevation (Jira pattern). Variable weight
+        // (400↔600) caused layout shift in the inline-flex strip.
+        font: `500 14px/normal var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
         color: token('color.text', '#292A2E'),
         whiteSpace: 'nowrap',
         outline: 'none',
-        // Only the selected pill gets a shadow — the visual lift that
-        // distinguishes it inside the neutral container.
         boxShadow: isActive
           ? token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.12), 0 0 1px rgba(9,30,66,0.16)')
           : 'none',
         transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.15, 1, 0.3, 1)',
       }}
     >
-      {/* 2026-05-31: Caty Focus rainbow sparkle removed — tab no longer
-          in strip. The same rainbow-sparkle glyph now lives on the
-          "Ask Caty - Themify" button inside AssignedPanel. */}
       {tab.label}
       {showCounter && (
         <span
@@ -235,7 +228,7 @@ function TabButton({
             // Jira parity: ageing + assigned use square badges (borderRadius 2px),
             // all others use the pill treatment (borderRadius 999).
             borderRadius: isAgeingBadge || isAssignedBadge ? 2 : 999,
-            font: `600 11px/14px "Inter", system-ui, sans-serif`,
+            font: `600 11px/14px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
           }}
         >
           {count > 99 ? '99+' : count}

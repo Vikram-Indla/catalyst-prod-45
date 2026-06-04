@@ -45,6 +45,31 @@ interface BackupOption {
 
 // Render each backup option with a CatalystAvatar for immediate recognition.
 // resolveAvatarUrl uses only bundled local assets (CLAUDE.md G6 — no external CDN).
+const LEAVE_DOT_COLORS: Record<LeaveKind, string> = {
+  vacation: 'var(--ds-icon-information, #1D7AFC)',
+  sick: 'var(--ds-icon-danger, #C9372C)',
+  public_holiday: 'var(--ds-icon-subtle, #6B778C)',
+  ooo: 'var(--ds-icon-warning, #E2B203)',
+};
+
+function LeaveOptionLabel({ label, value }: { label: string; value: LeaveKind }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <span
+        aria-hidden="true"
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: '50%',
+          background: LEAVE_DOT_COLORS[value],
+          flexShrink: 0,
+        }}
+      />
+      <span style={{ fontSize: 14 }}>{label}</span>
+    </div>
+  );
+}
+
 function BackupOptionLabel({ label }: { label: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -119,17 +144,18 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
         });
 
       if (insertError) throw insertError;
-      toast({ title: 'Leave scheduled' });
       // Invalidate own-presence so the ring changes immediately (v_user_effective_status
       // will now return on_leave for the current user). Also invalidate team-pulse so
       // teammates see the update without waiting for the 30s stale window.
       void queryClient.invalidateQueries({ queryKey: ['own-presence'] });
       void queryClient.invalidateQueries({ queryKey: ['team-pulse'] });
+      void queryClient.invalidateQueries({ queryKey: ['active-leave'] });
+      void queryClient.invalidateQueries({ queryKey: ['leave-history'] });
       onClose();
     } catch (e: unknown) {
       toast({
         title: 'Failed to schedule leave',
-        description: e instanceof Error ? e.message : 'Unknown error',
+        description: e instanceof Error ? e.message : (e as any)?.message ?? 'Unknown error',
         variant: 'destructive',
       });
     } finally {
@@ -228,6 +254,7 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
               placeholder="Select type..."
               menuPortalTarget={document.body}
               styles={SELECT_PORTAL_STYLES}
+              formatOptionLabel={(opt) => <LeaveOptionLabel label={opt.label} value={opt.value} />}
             />
             {errors.kind && <div style={errorStyle}>{errors.kind}</div>}
           </div>

@@ -2,18 +2,21 @@
  * R360 Chronology View
  * Extracted from R360MemberDetail.tsx
  */
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { token } from '@atlaskit/tokens';
 import { ChevronDown } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { getJiraIcon } from '@/components/r360/R360JiraIcons';
 import type { R360WorkItem } from '@/types/r360';
 import { getFromTagClass, getFromTagPrefix } from './helpers';
 import { getChronologyStatusLozengeColors } from './StatusLozenge';
-import { ProjTag, AgeBadge, MiniAvatar, CompletedSummaryBar } from './SmallComponents';
+import { ProjTag, MiniAvatar, CompletedSummaryBar } from './SmallComponents';
+import { QuickSearchInput } from './QuickSearchInput';
 
 export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void; weekStart: Date; weekEnd: Date }) {
   const { isDark } = useTheme();
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [quickSearch, setQuickSearch] = useState('');
   const groupRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const carryoverRef = useRef<HTMLDivElement | null>(null);
 
@@ -23,21 +26,31 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
   const yesterdayStr = `${y.getFullYear()}-${String(y.getMonth() + 1).padStart(2, '0')}-${String(y.getDate()).padStart(2, '0')}`;
   const todayLabel = `Today, ${today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
 
+  // Quick search filter — matches key or title
+  const filteredItems = useMemo(() => {
+    const q = quickSearch.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(i =>
+      (i.item_key || '').toLowerCase().includes(q) ||
+      (i.title || '').toLowerCase().includes(q)
+    );
+  }, [items, quickSearch]);
+
   // Separate items with activity vs carryover (no activity this week)
   const weekStartStr = weekStart.toISOString().slice(0, 10);
   const weekEndStr = weekEnd.toISOString().slice(0, 10);
   const carryoverItems = useMemo(() => {
-    return items.filter(item => {
+    return filteredItems.filter(item => {
       if (item.status_category === 'done') return false;
       const updStr = item.updated_at?.slice(0, 10) || '';
       return updStr < weekStartStr || updStr > weekEndStr;
     });
-  }, [items, weekStartStr, weekEndStr]);
+  }, [filteredItems, weekStartStr, weekEndStr]);
 
   const activeItems = useMemo(() => {
     const carryoverIds = new Set(carryoverItems.map(i => i.id));
-    return items.filter(i => !carryoverIds.has(i.id));
-  }, [items, carryoverItems]);
+    return filteredItems.filter(i => !carryoverIds.has(i.id));
+  }, [filteredItems, carryoverItems]);
 
   const groups = useMemo(() => {
     const map = new Map<string, { label: string; items: R360WorkItem[] }>();
@@ -48,14 +61,34 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
     return Array.from(map.entries()).sort(([a], [b]) => b.localeCompare(a));
   }, [activeItems]);
 
+  const CARRYOVER_PAGE = 20;
+  const [carryoverVisible, setCarryoverVisible] = useState(CARRYOVER_PAGE);
+  const carryoverSentinelRef = useRef<HTMLDivElement | null>(null);
+  const visibleCarryover = useMemo(() => carryoverItems.slice(0, carryoverVisible), [carryoverItems, carryoverVisible]);
+  const hasMoreCarryover = carryoverVisible < carryoverItems.length;
+  const loadMoreCarryover = useCallback(() => {
+    setCarryoverVisible(c => Math.min(c + CARRYOVER_PAGE, carryoverItems.length));
+  }, [carryoverItems.length]);
+
+  useEffect(() => {
+    if (!hasMoreCarryover || collapsed.has('__carryover__')) return;
+    const el = carryoverSentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(e => e.isIntersecting)) {
+        setCarryoverVisible(c => Math.min(c + CARRYOVER_PAGE, carryoverItems.length));
+      }
+    }, { rootMargin: '200px' });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMoreCarryover, carryoverItems.length, collapsed]);
+
   // Split out Today's group from the rest -- memoized
   const todayGroup = useMemo(() => groups.find(([k]) => k === todayStr), [groups, todayStr]);
   const otherGroups = useMemo(() => groups.filter(([k]) => k !== todayStr), [groups, todayStr]);
 
   // D-19: No auto-scroll -- Chronology renders Today first at the top.
   // The tab-switch handler already scrolls to top on view change.
-
-  const accentColor = (cat: string) => cat === 'in_progress' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : cat === 'in_qa' ? 'var(--cp-teal-60, #0D9488)' : cat === 'blocked' ? 'var(--ds-text-danger, #EF4444)' : cat === 'done' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
 
   // Render a single chronology card
   const renderChronoCard = (item: R360WorkItem) => {
@@ -65,7 +98,6 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
 
     return (
       <div key={item.id} className="r3-chrono-card" onClick={() => onSelect(item)}>
-        <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? 'var(--ds-background-discovery-bold, #5E4DB2)' : accentColor(item.status_category) }} />
         <div style={{ width: 24, display: 'flex', alignItems: 'center', flexShrink: 0 }}>{getJiraIcon(item.item_type)}</div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
@@ -113,7 +145,9 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
               {statusText || 'To do'}
             </span>
           </div>
-          <AgeBadge days={item.age_days} ageClass={item.age_class} />
+          <span style={{ fontSize: 11, fontWeight: 400, color: item.age_days > 60 ? 'var(--ds-text-warning, #974F0C)' : 'var(--ds-text-subtlest, #626F86)', whiteSpace: 'nowrap' }}>
+            since {item.age_days} days
+          </span>
         </div>
       </div>
     );
@@ -157,6 +191,8 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
 
   return (
     <div className="r3-chrono">
+      <QuickSearchInput value={quickSearch} onChange={setQuickSearch} resultCount={quickSearch.trim() ? filteredItems.length : undefined} totalCount={items.length} />
+
       {/* D-13: Green completed summary bar */}
       <CompletedSummaryBar
         items={items}
@@ -216,7 +252,18 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
       {/* D-12: Carried Over section at the bottom */}
       {carryoverItems.length > 0 && (
         <div data-testid="r360-chrono-carryover" ref={carryoverRef} className="r3-date-group">
-          <div className="r3-date-header" onClick={() => setCollapsed(prev => { const n = new Set(prev); n.has('__carryover__') ? n.delete('__carryover__') : n.add('__carryover__'); return n; })}>
+          <div className="r3-date-header" onClick={() => {
+            setCollapsed(prev => {
+              const n = new Set(prev);
+              if (n.has('__carryover__')) {
+                n.delete('__carryover__');
+                setCarryoverVisible(CARRYOVER_PAGE);
+              } else {
+                n.add('__carryover__');
+              }
+              return n;
+            });
+          }}>
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', border: '2px solid var(--ds-text-warning, var(--cp-warning, #D97706))', background: 'transparent', flexShrink: 0 }} />
             <span className="r3-date-label" style={{ fontWeight: 650, fontSize: '13px' }}>Carried Over</span>
             <span className="r3-date-count">{carryoverItems.length} items</span>
@@ -225,7 +272,23 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
           </div>
           {!collapsed.has('__carryover__') && (
             <div className="r3-chrono-items">
-              {carryoverItems.map(renderChronoCard)}
+              {visibleCarryover.map(renderChronoCard)}
+              {hasMoreCarryover && (
+                <>
+                  <div ref={carryoverSentinelRef} style={{ height: 1 }} />
+                  <button
+                    onClick={loadMoreCarryover}
+                    style={{
+                      display: 'block', width: '100%', padding: '8px 0',
+                      background: 'transparent', border: 'none', cursor: 'pointer',
+                      fontSize: 12, fontWeight: 500,
+                      color: 'var(--ds-link, #0052CC)',
+                    }}
+                  >
+                    Show more ({carryoverItems.length - carryoverVisible} remaining)
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>

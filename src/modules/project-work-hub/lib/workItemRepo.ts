@@ -89,12 +89,57 @@ export async function setParent(
 
 // ─── Soft delete ─────────────────────────────────────────────────
 // F-iter9 unification + PK fix: keyed by issue_key.
-export async function softDelete(resolved: ResolvedSource): Promise<void> {
+// Logs to ph_archive_log + sends immediate notification to assignee + reporter.
+export async function softDelete(resolved: ResolvedSource, userId?: string): Promise<void> {
+  const { data: issue } = await supabase
+    .from('ph_issues')
+    .select('issue_key, project_key, summary, issue_type, status, assignee_account_id, reporter_account_id')
+    .eq('issue_key', resolved.id)
+    .single();
+
   const { error } = await supabase
     .from('ph_issues')
-    .update({ deleted_at: new Date().toISOString() })
+    .update({ deleted_at: new Date().toISOString(), deleted_by: userId || null } as any)
     .eq('issue_key', resolved.id);
   if (error) throw error;
+
+  if (issue) {
+    // Log to archive log
+    await supabase.from('ph_archive_log').insert({
+      issue_key: issue.issue_key,
+      project_key: issue.project_key,
+      summary: issue.summary,
+      issue_type: issue.issue_type,
+      status: issue.status,
+      assignee_account_id: issue.assignee_account_id,
+      reporter_account_id: issue.reporter_account_id,
+      action: 'deleted',
+      reason: 'user_delete',
+      performed_by: userId || null,
+    } as any);
+
+    // Send immediate notification to assignee + reporter
+    const jiraIds = [issue.assignee_account_id, issue.reporter_account_id].filter(Boolean);
+    if (jiraIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, jira_account_id')
+        .in('jira_account_id', jiraIds);
+
+      for (const p of profiles || []) {
+        await supabase.from('notifications').insert({
+          user_id: p.id,
+          type: 'deleted',
+          title: `${issue.issue_key} has been deleted`,
+          body: `Issue "${issue.summary || issue.issue_key}" was deleted.`,
+          entity_type: 'issue',
+          entity_key: issue.issue_key,
+          entity_id: issue.issue_key,
+          is_read: false,
+        } as any);
+      }
+    }
+  }
 }
 
 // ─── Comments ────────────────────────────────────────────────────
@@ -304,12 +349,93 @@ export async function moveIssue(
 // Soft-archives a ph_issues row by setting archived_at to the current timestamp.
 // ph_issues has no is_archived boolean — archiving is tracked via archived_at (nullable timestamp).
 // A non-null archived_at means the issue is archived.
-export async function archiveIssue(issueKey: string): Promise<void> {
+export async function archiveIssue(issueKey: string, userId?: string): Promise<void> {
+  const { data: issue } = await supabase
+    .from('ph_issues')
+    .select('issue_key, project_key, summary, issue_type, status, assignee_account_id, reporter_account_id')
+    .eq('issue_key', issueKey)
+    .single();
+
   const { error } = await supabase
     .from('ph_issues')
-    .update({ archived_at: new Date().toISOString() } as any)
+    .update({ archived_at: new Date().toISOString(), archived_by: userId || null } as any)
     .eq('issue_key', issueKey);
   if (error) throw error;
+
+  if (issue) {
+    await supabase.from('ph_archive_log').insert({
+      issue_key: issueKey,
+      project_key: issue.project_key,
+      summary: issue.summary,
+      issue_type: issue.issue_type,
+      status: issue.status,
+      assignee_account_id: issue.assignee_account_id,
+      reporter_account_id: issue.reporter_account_id,
+      action: 'archived',
+      reason: 'manual',
+      performed_by: userId || null,
+    } as any);
+  }
+}
+
+export async function unarchiveIssue(issueKey: string, userId: string): Promise<void> {
+  const { data, error: rpcError } = await supabase.rpc('unarchive_issue', {
+    p_issue_key: issueKey,
+    p_user_id: userId,
+  });
+  if (rpcError) throw rpcError;
+}
+
+export async function getArchivedIssues(filters?: {
+  projectKey?: string;
+  issueType?: string;
+  search?: string;
+  typeFilter?: 'all' | 'archived' | 'deleted';
+  jiraAccountId?: string;
+  isAdmin?: boolean;
+}): Promise<any[]> {
+  const SELECT_FIELDS = 'issue_key, project_key, summary, issue_type, status, status_category, priority, assignee_display_name, reporter_display_name, jira_created_at, archived_at, archived_by, deleted_at, deleted_by, assignee_account_id, reporter_account_id';
+  const cutoff = new Date(Date.now() - 60 * 86_400_000).toISOString();
+  const typeFilter = filters?.typeFilter || 'all';
+  const jiraId = filters?.jiraAccountId;
+
+  // Fetch archived items (by age or by archived_at)
+  let archivedItems: any[] = [];
+  if (typeFilter === 'all' || typeFilter === 'archived') {
+    let q = supabase.from('ph_issues').select(SELECT_FIELDS)
+      .is('deleted_at', null)
+      .neq('status_category', 'done')
+      .or(`archived_at.not.is.null,jira_created_at.lt.${cutoff}`)
+      .order('jira_created_at', { ascending: true })
+      .limit(200);
+    // Always scope to current user's items (assignee OR reporter).
+    // Admin privilege controls unarchive ability, not visibility.
+    if (jiraId) {
+      q = q.or(`assignee_account_id.eq.${jiraId},reporter_account_id.eq.${jiraId}`);
+    }
+    if (filters?.projectKey) q = q.eq('project_key', filters.projectKey);
+    if (filters?.search) q = q.or(`issue_key.ilike.%${filters.search}%,summary.ilike.%${filters.search}%`);
+    const { data } = await q;
+    archivedItems = (data || []).map((r: any) => ({ ...r, _type: 'archived' as const }));
+  }
+
+  // Fetch deleted items
+  let deletedItems: any[] = [];
+  if (typeFilter === 'all' || typeFilter === 'deleted') {
+    let q = supabase.from('ph_issues').select(SELECT_FIELDS)
+      .not('deleted_at', 'is', null)
+      .order('deleted_at', { ascending: false })
+      .limit(200);
+    if (jiraId) {
+      q = q.or(`assignee_account_id.eq.${jiraId},reporter_account_id.eq.${jiraId}`);
+    }
+    if (filters?.projectKey) q = q.eq('project_key', filters.projectKey);
+    if (filters?.search) q = q.or(`issue_key.ilike.%${filters.search}%,summary.ilike.%${filters.search}%`);
+    const { data } = await q;
+    deletedItems = (data || []).map((r: any) => ({ ...r, _type: 'deleted' as const }));
+  }
+
+  return [...archivedItems, ...deletedItems];
 }
 
 // ─── Clone ───────────────────────────────────────────────────────────────────

@@ -46,9 +46,7 @@ export interface CommentThreadProps {
   emptyMessage?: string;
   className?: string;
   workItemId?: string;
-  /** Jira issue key for comment translation caching. Omit to disable translate bars. */
   issueKey?: string;
-  /** Shared translation state from parent (ActivityPanel). commentId → translated text. */
   translatedComments?: Record<string, string>;
   onCommentTranslated?: (id: string, text: string) => void;
   onCommentRevert?: (id: string) => void;
@@ -77,8 +75,6 @@ function CommentThread({
   onCommentRevert,
 }: CommentThreadProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState('');
-  // E3: quote reply — pre-fills the editor with a blockquote prefix
   const [quotePrefix, setQuotePrefix] = useState('');
   // ID of the comment being replied to — when set, an inline editor
   // renders directly below that comment (same pattern as the All tab
@@ -118,16 +114,10 @@ function CommentThread({
     setEditValue(comment.content);
   };
 
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditValue('');
-  };
-
-  const confirmEdit = async () => {
-    if (!editingId || !onEditComment) return;
-    await onEditComment(editingId, editValue);
-    setEditingId(null);
-    setEditValue('');
+  const handleReply = (commentId: string) => {
+    const comment = comments.find(c => c.id === commentId);
+    if (!comment) return;
+    setQuotePrefix(`@[${comment.author.name}](${comment.author.id}) `);
   };
 
   // Renders one comment + its toolbar + (optional) edit editor +
@@ -279,12 +269,12 @@ function CommentThread({
       <div className="mt-4">
         {isLoading ? (
           <div className="text-center py-8">
-            <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">Loading comments...</p>
+            <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">Loading comments...</p>
           </div>
         ) : sortedTopLevelComments.length === 0 ? (
           <div className="text-center py-10">
             <MessageSquare className="h-10 w-10 mx-auto mb-3 text-[#C1C7D0] dark:text-[var(--ds-border-bold,#454545)]" />
-            <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{emptyMessage}</p>
+            <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">{emptyMessage}</p>
           </div>
         ) : (
           <div className="divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">

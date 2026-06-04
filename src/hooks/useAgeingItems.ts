@@ -43,9 +43,10 @@ export interface AgeingItem {
   fixed_sprint_releases: string | null;
   created_at: string;
   assignee_is_active: boolean;
+  archived_at: string | null;
 }
 
-const BASE_SELECT = `id, issue_key, issue_type, summary, status, status_category, priority, jira_created_at, jira_updated_at, parent_key, parent_summary, project_key, project_name, reporter_account_id, reporter_display_name, assignee_account_id, assignee_display_name, sprint_release, hierarchy_level, labels, story_points, sprint_name, resolution, deleted_at`;
+const BASE_SELECT = `id, issue_key, issue_type, summary, status, status_category, priority, jira_created_at, jira_updated_at, parent_key, parent_summary, project_key, project_name, reporter_account_id, reporter_display_name, assignee_account_id, assignee_display_name, sprint_release, hierarchy_level, labels, story_points, sprint_name, resolution, deleted_at, archived_at`;
 
 function mapIssueType(raw: string): string {
   const v = (raw || '').toLowerCase();
@@ -213,6 +214,7 @@ export function useAgeingItems() {
           fixed_sprint_releases: fixVer,
           created_at: item.jira_created_at || '',
           assignee_is_active: !assignee_is_inactive,
+          archived_at: (item as any).archived_at ?? null,
         } as AgeingItem;
       });
     },

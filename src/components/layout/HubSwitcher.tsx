@@ -36,46 +36,6 @@ import SearchIcon from '@atlaskit/icon/glyph/search';
 import { MenuGroup, LinkItem, Section } from '@atlaskit/menu';
 import { useHubShortcuts } from '@/hooks/useHubShortcuts';
 
-const RECENT_KEY = 'catalyst-recent-hubs';
-const RECENT_MAX = 3;
-
-/**
- * Hubs excluded from the Recent list.
- *
- * `home` is the ambient state every user returns to — having it occupy
- * one of the 3 Recent slots wastes the slot on a non-informational signal
- * (design-critique 2026-05-17 H8 P0). The Home hub is always one tap away
- * via the app's home affordance, so it never needs to be a Recent shortcut.
- */
-const RECENT_EXCLUDE = new Set(['home']);
-
-function readRecentHubs(): string[] {
-  try {
-    const raw = window.localStorage.getItem(RECENT_KEY);
-    const list = raw ? JSON.parse(raw) : [];
-    // Filter at READ time too — pre-existing localStorage that already
-    // contains "home" would otherwise persist across the fix until the
-    // user visits 3 non-home hubs. Read-time exclusion makes the change
-    // visible on next page load.
-    return Array.isArray(list)
-      ? list.filter((x) => typeof x === 'string' && !RECENT_EXCLUDE.has(x))
-      : [];
-  } catch {
-    return [];
-  }
-}
-
-function recordRecentHub(key: string) {
-  // Don't record excluded hubs — keeps the store clean from this point on.
-  if (RECENT_EXCLUDE.has(key)) return;
-  try {
-    const prev = readRecentHubs().filter((k) => k !== key);
-    const next = [key, ...prev].slice(0, 6);
-    window.localStorage.setItem(RECENT_KEY, JSON.stringify(next));
-  } catch {
-    /* localStorage may be unavailable in private mode — silent fail */
-  }
-}
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -198,21 +158,13 @@ function HubRowLabel({ hub }: { hub: HubEntry }) {
 export function HubSwitcher() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  // Lazy-init reads localStorage once on mount — tests that pre-seed the
-  // store before render see the recents immediately, no useEffect timing.
-  const [recentKeys, setRecentKeys] = useState<string[]>(() => readRecentHubs());
   const navigate = useNavigate();
   const location = useLocation();
   const { setSidebarHidden, setSidebarExpanded, setSidebarPinned } = useCatalystContext();
   const searchRef = useRef<HTMLInputElement>(null);
 
-  // Re-read recents whenever the popover re-opens — keeps the list fresh
-  // across cross-tab updates without polling. Also clears the query.
   useEffect(() => {
-    if (open) {
-      setRecentKeys(readRecentHubs());
-      setQuery('');
-    }
+    if (open) setQuery('');
   }, [open]);
 
   const isActive = (href: string) =>
@@ -239,13 +191,12 @@ export function HubSwitcher() {
   useHubShortcuts({
     targets: shortcutTargets,
     navigate: shortcutNavigate,
-    recordRecent: recordRecentHub,
+    recordRecent: () => {},
   });
 
   const handleNavClick = (e: ReactMouseEvent<HTMLElement>, hub: HubEntry) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     e.preventDefault();
-    recordRecentHub(hub.key);
     setOpen(false);
     if (hub.href !== '/for-you') {
       setSidebarHidden(false);
@@ -255,20 +206,9 @@ export function HubSwitcher() {
     navigate(hub.href);
   };
 
-  const hubsByKey = useMemo(() => {
-    const map = new Map<string, HubEntry>();
-    for (const h of HUBS) map.set(h.key, h);
-    return map;
-  }, []);
-
   const normalisedQuery = query.trim().toLowerCase();
   const matches = (hub: HubEntry) =>
     !normalisedQuery || hub.label.toLowerCase().includes(normalisedQuery);
-
-  const recentHubs: HubEntry[] = recentKeys
-    .map((k) => hubsByKey.get(k))
-    .filter((h): h is HubEntry => Boolean(h && matches(h)))
-    .slice(0, RECENT_MAX);
 
   const hubsBySection = (key: SectionKey) =>
     HUBS.filter((h) => h.section === key && matches(h));
@@ -362,22 +302,6 @@ export function HubSwitcher() {
         </div>
 
         <MenuGroup>
-          {recentHubs.length > 0 && (
-            <Section title="Recent">
-              {recentHubs.map((hub) => (
-                <LinkItem
-                  key={`recent-${hub.key}`}
-                  href={hub.href}
-                  isSelected={isActive(hub.href)}
-                  iconBefore={<HubTile hub={hub} />}
-                  onClick={(e) => handleNavClick(e, hub)}
-                >
-                  {hub.label}
-                </LinkItem>
-              ))}
-            </Section>
-          )}
-
           {SECTIONS.map(({ key, title }) => {
             const rows = hubsBySection(key);
             if (rows.length === 0) return null;

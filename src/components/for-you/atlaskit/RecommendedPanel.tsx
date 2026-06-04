@@ -476,7 +476,7 @@ function FeedSection({
               // DOM probe 2026-05-29 confirmed fontWeight 653 (not 600).
               fontSize: 16,
               lineHeight: '20px',
-              fontFamily: '"Inter", system-ui, sans-serif',
+              fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
               fontWeight: 653,
               color: token('color.text', '#292A2E'),
               margin: 0,
@@ -486,50 +486,11 @@ function FeedSection({
             {label}
           </h4>
         </div>
-        {/* "Ask Caty" digest CTA — opens SummarizeDigestModal with interactive triage.
-            Outlier positioning vs Jira: dynamic count + inline action triage modal.
-            See CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (static rainbow border). */}
-        {onOpenDigest && (
-          <div style={{
-            display: 'inline-flex',
-            padding: 2,
-            borderRadius: 20,
-            background: ASK_CATY_RAINBOW,
-          }}>
-            <button
-              type="button"
-              onClick={onOpenDigest}
-              aria-label={`Ask Caty to summarize ${rows.length} ${rows.length === 1 ? 'item' : 'items'}`}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                height: 28,
-                padding: '0 12px',
-                border: 'none',
-                borderRadius: 18,
-                background: token('elevation.surface', '#FFFFFF'),
-                cursor: 'pointer',
-                color: token('color.text', '#172B4D'),
-                fontFamily: 'var(--cp-font-body, inherit)',
-                fontSize: 12,
-                fontWeight: 600,
-                lineHeight: 1,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = token('elevation.surface.hovered', '#F1F2F4'); }}
-              onMouseLeave={e => { e.currentTarget.style.background = token('elevation.surface', '#FFFFFF'); }}
-            >
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
-                <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" />
-              </svg>
-              Ask Caty — summarize {rows.length}
-            </button>
-          </div>
-        )}
+        {/* "Ask Caty" digest CTA removed 2026-06-03 per Vikram directive. */}
       </div>
       <p
         style={{
-          font: `400 14px/20px "Inter", system-ui, sans-serif`,
+          font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
           color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
           margin: 0,
           marginBlockEnd: 4,
@@ -720,7 +681,7 @@ function FeedCard({
             display: 'block',
             width: '100%',
             cursor: 'pointer',
-            font: `400 14px/20px "Inter", system-ui, sans-serif`,
+            font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', '#292A2E'),
             textAlign: 'start',
           }}
@@ -732,7 +693,7 @@ function FeedCard({
             (Jira parity: flat weight, color-only hierarchy). */}
         <div
           style={{
-            font: `400 12px/16px "Inter", system-ui, sans-serif`,
+            font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             display: 'flex',
             alignItems: 'center',
@@ -781,7 +742,7 @@ function FeedCard({
         >
           <div
             style={{
-              font: `400 14px/20px "Inter", system-ui, sans-serif`,
+              font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
               color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
               whiteSpace: 'pre-wrap',
               wordBreak: 'break-word',
@@ -973,7 +934,7 @@ function ReplyComposer({
         >
           <span
             style={{
-              font: `400 12px/16px "Inter", system-ui, sans-serif`,
+              font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
               color: token('color.text.subtle', '#505258'),
             }}
           >
@@ -1061,7 +1022,7 @@ function ReplyComposer({
                 <span
                   style={{
                     flex: 1,
-                    font: `400 14px/20px "Inter", system-ui, sans-serif`,
+                    font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                     color: token('color.text.subtlest', '#6B778C'),
                     display: 'flex',
                     alignItems: 'center',
@@ -1087,7 +1048,7 @@ function ReplyComposer({
                     cursor: 'pointer',
                     padding: '4px 8px',
                     borderRadius: 3,
-                    font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                    font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                     color: token('color.text.subtle', '#505258'),
                   }}
                 >
@@ -1161,7 +1122,7 @@ function ReplyComposer({
                     cursor: 'pointer',
                     padding: '4px 8px',
                     borderRadius: 3,
-                    font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                    font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                     color: token('color.text.subtle', '#505258'),
                   }}
                 >
@@ -1180,7 +1141,7 @@ function ReplyComposer({
                       cursor: 'pointer',
                       padding: '4px 12px',
                       borderRadius: 3,
-                      font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                      font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                       color: token('color.text.inverse', '#FFFFFF'),
                       background: token('color.background.brand.bold', '#0C66E4'),
                     }}
@@ -1198,7 +1159,7 @@ function ReplyComposer({
                       cursor: canSubmit ? 'pointer' : 'not-allowed',
                       padding: '4px 12px',
                       borderRadius: 3,
-                      font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                      font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                       color: canSubmit
                         ? token('color.text.inverse', '#FFFFFF')
                         : token('color.text.disabled', '#B3B9C4'),
@@ -1236,7 +1197,7 @@ function ReplyComposer({
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span
                     style={{
-                      font: `500 11px/14px "Inter", system-ui, sans-serif`,
+                      font: `500 11px/14px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                       color: token('color.text', '#292A2E'),
                       border: `1px solid ${token('color.border', '#DFE1E6')}`,
                       borderRadius: 2,
@@ -1254,7 +1215,7 @@ function ReplyComposer({
                   </svg>
                   <span
                     style={{
-                      font: `400 13px/20px "Inter", system-ui, sans-serif`,
+                      font: `400 13px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                       color: token('color.text.subtle', '#505258'),
                     }}
                   >
@@ -1266,7 +1227,7 @@ function ReplyComposer({
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span
                     style={{
-                      font: `500 13px/20px "Inter", system-ui, sans-serif`,
+                      font: `500 13px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                       color: token('color.text.subtle', '#505258'),
                     }}
                   >
@@ -1352,7 +1313,7 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error'; onSug
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
-            font: `500 12px/16px "Inter", system-ui, sans-serif`,
+            font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text.warning-inverse', '#7F5F01'),
             background: token('color.background.warning', '#FFF7D6'),
             border: `1px solid ${token('color.border.warning', '#B38600')}`,
@@ -1388,7 +1349,7 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error'; onSug
             gap: 4,
             padding: '4px 8px',
             borderRadius: 3,
-            font: `500 12px/16px "Inter", system-ui, sans-serif`,
+            font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', '#172B4D'),
             background: token('elevation.surface', '#FFFFFF'),
           }}
@@ -2608,7 +2569,7 @@ function HeadlineIssueTitle({
       border: `1px solid ${token('color.border', 'rgba(11, 18, 14, 0.14)')}`,
       borderRadius: 4,
       backgroundColor: token('elevation.surface', '#FFFFFF'),
-      padding: '0px 4px',
+      padding: '4px 8px',
     }}>
       <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
         <WorkItemIcon type={normalizeIconType(issueType)} size={16} />
@@ -2817,12 +2778,12 @@ function MentionChip({ label }: { label: string }) {
     <span
       style={{
         display: 'inline-block',
-        padding: '0 4px',
+        padding: '2px 8px',
         borderRadius: 20,
         background: 'var(--ds-background-information, #DEEBFF)',
         border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
         color: token('color.link', '#0052CC'),
-        font: `500 13px/20px "Inter", system-ui, sans-serif`,
+        font: `500 13px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
         whiteSpace: 'nowrap',
       }}
     >

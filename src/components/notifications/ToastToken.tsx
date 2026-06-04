@@ -22,6 +22,10 @@ function getActionVerb(type: string): string {
     commented: 'commented on',
     status_changed: 'changed status of',
     due_date_approaching: 'due date approaching for',
+    archive: 'auto-archived',
+    archive_warning: 'will be archived tomorrow:',
+    deleted: 'deleted',
+    shredding_warning: 'will be permanently shredded:',
   };
   return map[type] || 'updated';
 }

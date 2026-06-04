@@ -102,11 +102,11 @@ export function GroupHeading({ bucket }: { bucket: Recency }) {
   return (
     <div
       style={{
-        font: `500 14px/20px "Inter", system-ui, sans-serif`,
+        font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
         letterSpacing: 'normal',
         color: text.subtlest,
         textTransform: 'none',
-        paddingInline: 12,
+        paddingInline: 16,
         paddingBlockEnd: 8,
         paddingBlockStart: 16,
       }}
@@ -165,13 +165,13 @@ export function ForYouEmptyState({
               type="button"
               onClick={onPrimaryAction}
               style={{
-                padding: '6px 14px',
+                padding: '8px 16px',
                 background: token('color.background.selected.bold', '#0C66E4'),
                 color: token('color.text.inverse', '#FFFFFF'),
                 border: 'none',
                 borderRadius: 3,
                 cursor: 'pointer',
-                font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
               }}
             >
               {primaryActionText}
@@ -184,13 +184,13 @@ export function ForYouEmptyState({
               type="button"
               onClick={onSecondaryAction}
               style={{
-                padding: '6px 14px',
+                padding: '8px 16px',
                 background: 'transparent',
                 color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                 border: 'none',
                 borderRadius: 3,
                 cursor: 'pointer',
-                font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
               }}
             >
               {secondaryActionText}

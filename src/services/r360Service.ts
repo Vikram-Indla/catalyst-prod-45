@@ -204,7 +204,7 @@ export const r360Service = {
       .single();
     if (!resource) return [];
 
-    const ISSUE_FIELDS = 'issue_key, project_key, project_name, summary, issue_type, status, priority, assignee_display_name, reporter_display_name, parent_key, parent_summary, sprint_name, story_points, sprint_release, due_date, jira_created_at, jira_updated_at, resolution, labels, assignee_account_id, reporter_account_id';
+    const ISSUE_FIELDS = 'issue_key, project_key, project_name, summary, issue_type, status, status_category, priority, assignee_display_name, reporter_display_name, parent_key, parent_summary, sprint_name, story_points, sprint_release, due_date, jira_created_at, jira_updated_at, resolution, labels, assignee_account_id, reporter_account_id';
 
     // Fetch assigned items — prefer jira_account_id for accurate matching
     let assigneeQuery = typedQuery('ph_issues')
@@ -252,6 +252,15 @@ export const r360Service = {
 
     const mapItem = (item: any, roleOnItem: 'Assignee' | 'Contributor'): R360WorkItem => {
       const st = mapStatus(item.status);
+      // Use Jira's canonical status_category from ph_issues (source of truth for board columns).
+      // Map Jira values ('To Do', 'In Progress', 'Done') to internal keys.
+      // Fall back to R360_STATUS_MAP only when the DB column is missing.
+      const jiraCat = (item.status_category || '').toLowerCase().trim();
+      const resolvedCategory = jiraCat === 'done' ? 'done'
+        : jiraCat === 'in progress' || jiraCat === 'indeterminate' ? 'in_progress'
+        : jiraCat === 'to do' || jiraCat === 'new' ? 'to_do'
+        : jiraCat ? 'to_do' // unknown Jira category → default to_do
+        : st.category; // no DB value → fall back to R360_STATUS_MAP
       // Use assignment date for age, fall back to jira_created_at
       const assignedAt = assignmentDates[item.issue_key] || item.jira_created_at;
       const age = computeAge(assignedAt);
@@ -270,7 +279,7 @@ export const r360Service = {
         item_type: item.issue_type || 'Task',
         priority: item.priority || 'Medium',
         status: item.status || '',
-        status_category: st.category,
+        status_category: resolvedCategory,
         status_label: st.label,
         status_color: st.color,
         status_bg: st.bg,
@@ -324,12 +333,17 @@ export const r360Service = {
     }
 
     const { data, error } = await typedQuery('ph_issues')
-      .select('issue_key, summary, status, assignee_display_name, jira_created_at')
+      .select('issue_key, summary, status, status_category, assignee_display_name, jira_created_at')
       .eq('parent_key', parentKey)
       .order('issue_key');
     if (error) throw error;
     return (data || []).map((item: any) => {
       const st = mapStatus(item.status);
+      const jiraCat = (item.status_category || '').toLowerCase().trim();
+      const resolvedCat = jiraCat === 'done' ? 'done'
+        : jiraCat === 'in progress' || jiraCat === 'indeterminate' ? 'in_progress'
+        : jiraCat === 'to do' || jiraCat === 'new' ? 'to_do'
+        : jiraCat ? 'to_do' : st.category;
       const age = computeAge(item.jira_created_at);
       return {
         id: item.issue_key,
@@ -339,7 +353,7 @@ export const r360Service = {
         status_color: st.color,
         status_bg: st.bg,
         status_dot: st.dot,
-        status_category: st.category,
+        status_category: resolvedCat,
         assignee_name: item.assignee_display_name || '',
         ...age,
       };

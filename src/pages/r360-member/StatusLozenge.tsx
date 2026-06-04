@@ -61,7 +61,7 @@ export function getChronologyStatusLozengeColors(status: string, statusCategory?
   const cat = (statusCategory || '').toLowerCase().replace(/[_ ]/g, '');
   if (cat === 'done' || cat === 'completed') return { background: token('color.background.success.bold', '#1F845A'), color: token('color.text.inverse', '#FFFFFF') };
   if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started') return { background: token('color.background.information.bold', '#0055CC'), color: token('color.text.inverse', '#FFFFFF') };
-  if (cat === 'new' || cat === 'todo') return { background: token('color.background.neutral', 'rgba(9,30,66,0.06)'), color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') };
+  // cat === 'new' | 'todo' | '' -> fall through to string matching for refined label/color
 
   // 2. Fallback: string match
   const s = (status || '').toUpperCase().trim();

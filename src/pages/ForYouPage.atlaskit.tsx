@@ -42,7 +42,7 @@ import { token } from '@atlaskit/tokens';
 import { useAuth } from '@/lib/auth';
 import { useForYouData, type TabType, type WorkItem } from '@/hooks/useForYouData';
 import RecommendedProjectsStrip from '@/components/for-you/atlaskit/RecommendedProjectsStrip';
-import ForYouTabs, { FOR_YOU_TAB_KEY } from '@/components/for-you/atlaskit/ForYouTabs';
+import ForYouTabs, { FOR_YOU_TAB_KEY, FOR_YOU_TAB_ORDER, type ForYouTabDefinition } from '@/components/for-you/atlaskit/ForYouTabs';
 import RecommendedPanel from '@/components/for-you/atlaskit/RecommendedPanel';
 import AssignedPanel from '@/components/for-you/atlaskit/AssignedPanel';
 import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
@@ -52,8 +52,9 @@ import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
 import AiThemePanel from '@/components/for-you/atlaskit/AiThemePanel';
 import AgeingPanel from '@/components/for-you/atlaskit/AgeingPanel';
 import R360Panel from '@/components/for-you/atlaskit/R360Panel';
-import { PresencePanel } from '@/components/for-you/atlaskit/PresencePanel';
-import { useModuleEnabled } from '@/contexts/FeatureFlagContext';
+import BoardPanel from '@/components/for-you/atlaskit/BoardPanel';
+import TimelinePanel from '@/components/for-you/atlaskit/TimelinePanel';
+
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 const PAGE_SIZE = 20;
@@ -84,10 +85,10 @@ function isBusinessRequest(item: WorkItem | null | undefined): boolean {
   return BUSINESS_REQUEST_TYPES.has(String(item.issueType || '').trim());
 }
 
+
+
 export default function ForYouPageAtlaskit() {
   const { user: authUser, loading: authLoading } = useAuth();
-  const presenceEnabled = useModuleEnabled('presence_availability');
-
   // Don't start data fetching until auth is fully established
   const data = useForYouData(authLoading);
   const {
@@ -96,6 +97,7 @@ export default function ForYouPageAtlaskit() {
     workItems,
     user,
     isLoading,
+    isRefreshing,
     toggleStar,
     trackView,
     recommendedMentions,
@@ -140,7 +142,16 @@ export default function ForYouPageAtlaskit() {
   const { tab: urlTab } = useParams<{ tab?: string }>();
   const navigate = useNavigate();
 
-  const VALID_TABS: Set<string> = useMemo(() => new Set(['ai-theme', 'recommended', 'assigned', 'starred', 'r360', 'ageing']), []);
+  // Build the visible tab strip — Team Pulse appended for leads/admins only.
+  const visibleTabs = useMemo<ForYouTabDefinition[]>(
+    () => FOR_YOU_TAB_ORDER,
+    [],
+  );
+
+  const VALID_TABS: Set<string> = useMemo(
+    () => new Set(['ai-theme', 'recommended', 'assigned', 'starred', 'r360', 'ageing', 'board', 'timeline']),
+    [],
+  );
 
   // useLayoutEffect runs before paint — applies the stored tab to the hook
   // state before the user sees any UI. URL param takes precedence over localStorage.
@@ -226,6 +237,7 @@ export default function ForYouPageAtlaskit() {
     const panelProps = {
       items: visibleItems,
       isLoading,
+      isRefreshing,
       onSelect: handleSelect,
       onToggleStar: toggleStar,
     };
@@ -243,93 +255,87 @@ export default function ForYouPageAtlaskit() {
       // useForYouData itself — see note in AiThemePanel.tsx for rationale.
       case 'ai-theme':    return <AiThemePanel allUserProjects={allUserProjects} />;
       case 'ageing':      return <AgeingPanel />;
-      // R360 and Team Pulse own their own data pipelines — no row-feed props.
       case 'r360':        return <R360Panel />;
-      case 'team-pulse':  return presenceEnabled ? <PresencePanel /> : (
-        <div style={{ padding: 32, textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)' }}>
-          Team Pulse is not enabled for your organisation.
-        </div>
-      );
+      case 'board':       return <BoardPanel />;
+      case 'timeline':    return <TimelinePanel />;
       case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
       case 'assigned':    return <AssignedPanel    {...panelProps} onAskCatyThemify={() => handleTabChange('ai-theme')} />;
       case 'starred':     return <StarredPanel     {...panelProps} onSwitchTab={onSwitchTab} />;
       default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
     }
-  }, [activeTab, visibleItems, isLoading, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName, allUserProjects, handleTabChange]);
+  }, [activeTab, visibleItems, isLoading, isRefreshing, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName, allUserProjects, handleTabChange]);
 
   // AI Theme and Ageing render their own vertical lists/grids internally —
   // neither shares the client-side pagination window that the row-feed tabs
   // use. Suppress Load more + sentinel for those tabs to avoid dead chrome.
-  const showPagination = activeTab !== 'ai-theme' && activeTab !== 'ageing' && activeTab !== 'r360' && activeTab !== 'team-pulse';
-  const isR360Active = activeTab === 'r360';
+  const showPagination = activeTab !== 'ai-theme' && activeTab !== 'ageing' && activeTab !== 'r360' && activeTab !== 'board' && activeTab !== 'timeline';
+  const isR360Active = activeTab === 'r360' || activeTab === 'board' || activeTab === 'timeline';
 
   return (
     <div
       data-r360-fullscreen={isR360Active ? 'true' : undefined}
       style={{
+        display: 'flex',
+        flexDirection: 'column',
         minHeight: '100%',
+        flex: 1,
         width: '100%',
-        // Phase 12 (2026-04-29): reverted to Atlaskit token() calls. Phase 11
-        // unblocked Atlaskit's bundled dark theme — `elevation.surface` /
-        // `color.text` resolve correctly via --ds-* in both modes natively.
         background: token('elevation.surface', '#FFFFFF'),
         color: token('color.text', '#292A2E'),
-        paddingInline: isR360Active ? 0 : 'clamp(16px, 3vw, 32px)',
-        paddingBlockStart: isR360Active ? 0 : 24,
-        paddingBlockEnd: isR360Active ? 0 : 48,
-        maxWidth: isR360Active ? 'none' : 1280,
-        marginInline: isR360Active ? 0 : 'auto',
+        paddingInline: 'clamp(16px, 3vw, 32px)',
+        maxWidth: 1280,
+        marginInline: 'auto',
         boxSizing: 'border-box',
       }}
     >
-      {/* Recommended projects strip — hidden when R360 tab is active. */}
-      {!isR360Active && (
+      <div style={{ marginBlockEnd: 16, paddingBlockStart: 24 }}>
         <RecommendedProjectsStrip projects={allUserProjects} />
-      )}
+      </div>
 
-      {/* Heading + tabs — heading is hidden in R360 full-screen mode; tabs stay
-          visible so the user can switch back to other tabs. */}
-      <div
+      <h1
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: isR360Active ? 'flex-end' : 'space-between',
-          gap: 16,
-          marginBlockStart: isR360Active ? 8 : 20,
-          marginBlockEnd: 12,
-          flexWrap: 'wrap',
+          font: `653 24px/28px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+          color: token('color.text', '#292A2E'),
+          margin: 0,
+          marginBlockStart: 16,
+          letterSpacing: 0,
         }}
       >
-        {!isR360Active && (
-          <h1
-            style={{
-              // 2026-05-17 jira-compare re-probe: Jira /jira/for-you H1 is
-              // 24px/28px 600 (semibold). Earlier this rendered at weight
-              // 500 — visibly lighter than the Jira reference. Probe of the
-              // Catalyst H1 confirmed `inline-style font-weight: 500` was
-              // landing on the rendered DOM. Fixed to 600.
-              font: `653 24px/28px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
-              color: token('color.text', '#292A2E'),
-              margin: 0,
-              letterSpacing: 0,
-            }}
-          >
-            For you
-          </h1>
-        )}
+        For you
+      </h1>
+
+      {/* Tab strip — sticky, always at the same vertical position regardless of active tab */}
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          background: token('elevation.surface', '#FFFFFF'),
+          paddingBlock: 8,
+          marginBlockEnd: 16,
+        }}
+      >
         <ForYouTabs
           activeTab={activeTab}
           tabCounts={tabCounts}
           onChange={handleTabChange}
+          tabs={visibleTabs}
         />
       </div>
 
-      {/* Active panel — R360 gets min-height to fill viewport below the navbar */}
+      {/* Active panel — fills remaining viewport height, scrolls independently */}
       <div
         role="tabpanel"
         id={`for-you-panel-${activeTab}`}
         aria-labelledby={`for-you-tab-${activeTab}`}
-        style={isR360Active ? { minHeight: 'calc(100vh - 110px)' } : undefined}
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: isR360Active ? 'auto' : 'visible',
+          position: 'relative',
+          zIndex: 0,
+          background: token('elevation.surface', '#FFFFFF'),
+        }}
       >
         {panel}
       </div>
@@ -368,7 +374,7 @@ export default function ForYouPageAtlaskit() {
               border: 'none',
               borderRadius: 3,
               cursor: 'pointer',
-              font: `500 14px/20px "Inter", system-ui, sans-serif`,
+              font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             }}
           >
             Load more

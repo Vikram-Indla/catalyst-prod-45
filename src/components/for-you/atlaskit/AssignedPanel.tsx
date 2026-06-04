@@ -1,23 +1,22 @@
 /**
  * AssignedPanel — "Assigned to me" tab.
  *
- * 2026-05-17 jira-compare (LIVE Jira DOM probe):
- *   Jira's /jira/for-you Assigned tab groups by RAW STATUS NAME, NOT by
- *   statusCategory bucket. The visible section headers in the live DOM are
- *   "In Progress", "In Development", "TODO", "In Requirements" — i.e. the
- *   actual `issue.fields.status.name` values, NOT category labels.
- *   The earlier Catalyst grouping invented "Waiting" / "Active" bucket
- *   labels by rolling up statusCategory `new` / `indeterminate` — neither
- *   label exists in Jira and confused the user ("what is Waiting? from
- *   where? this doesn't exist?").
+ * Grouping strategy (2026-06-03 redesign):
+ *   Groups by status_category into 2 visible buckets:
+ *   - "To do" (statusCategory 'new' or unset)
+ *   - "In progress" (statusCategory 'indeterminate')
+ *   - Done items hidden by default, toggleable
  *
- *   Ordering: Active statuses first (statusCategory indeterminate), Done
- *   last, To Do family in the middle. Within each, alphabetical.
+ *   Each item still shows its specific status chip (e.g. "In Requirements",
+ *   "In Development") so the user can see the exact status — but the section
+ *   headers collapse 10+ raw statuses into 2 actionable groups.
  *
- * Done items are hidden by default. "Show completed (N)" toggle appears at
- * the bottom when there are any.
+ * Data load fix (2026-06-03):
+ *   Shows a loading state during background refetches to prevent the
+ *   stale → fresh two-phase render flicker.
  */
 import React, { useMemo, useState } from 'react';
+import Spinner from '@atlaskit/spinner';
 import { token } from '@atlaskit/tokens';
 import ForYouRow from './ForYouRow';
 import { ForYouEmptyState } from './helpers';
@@ -27,14 +26,9 @@ import type { WorkItem } from '@/hooks/useForYouData';
 interface AssignedPanelProps {
   items: WorkItem[];
   isLoading: boolean;
+  isRefreshing?: boolean;
   onSelect: (item: WorkItem) => void;
   onToggleStar: (id: string) => void;
-  /** When provided, renders the "Ask Caty - Themify" rainbow CTA at top.
-   *  Click handler is owned by the parent (ForYouPage) — typically a
-   *  navigation to /for-you/ai-theme so themes appear in the existing
-   *  AiThemePanel surface. Modal-wrap pattern was tried and failed to
-   *  render (likely an @atlaskit/modal-dialog v14 interaction with
-   *  AiThemePanel) — direct navigation is the reliable path. */
   onAskCatyThemify?: () => void;
 }
 
@@ -45,37 +39,41 @@ function isDone(statusCategory?: string, status?: string): boolean {
   return s.includes('done') || s.includes('closed') || s.includes('complet') || s.includes('approved');
 }
 
-function categoryRank(statusCategory?: string): number {
-  // Active (indeterminate) → 0 (top), To Do (new) → 1, Done → 2
-  const cat = (statusCategory || '').toLowerCase().replace(/[\s_-]/g, '');
-  if (cat === 'indeterminate') return 0;
-  if (cat === 'done' || cat === 'closed') return 2;
-  return 1;
+type CategoryBucket = 'in_progress' | 'to_do' | 'done';
+
+function toBucket(statusCategory?: string, status?: string): CategoryBucket {
+  if (isDone(statusCategory, status)) return 'done';
+  const cat = (statusCategory || '').toLowerCase().trim();
+  if (cat === 'in progress' || cat === 'indeterminate') return 'in_progress';
+  return 'to_do';
 }
 
-export default function AssignedPanel({ items, isLoading, onSelect, onToggleStar, onAskCatyThemify }: AssignedPanelProps) {
+const BUCKET_LABELS: Record<CategoryBucket, string> = {
+  in_progress: 'In progress',
+  to_do: 'To do',
+  done: 'Done',
+};
+
+const BUCKET_ORDER: CategoryBucket[] = ['in_progress', 'to_do', 'done'];
+
+export default function AssignedPanel({ items, isLoading, isRefreshing, onSelect, onToggleStar, onAskCatyThemify }: AssignedPanelProps) {
   const [showDone, setShowDone] = useState(false);
 
   const { groups, doneCount } = useMemo(() => {
-    // Group by raw status NAME (preserves Jira's section labels exactly)
-    const byStatus = new Map<string, { status: string; statusCategory: string | undefined; items: WorkItem[] }>();
+    const buckets = new Map<CategoryBucket, WorkItem[]>();
     let done = 0;
     for (const item of items) {
-      if (isDone(item.statusCategory, item.status)) {
+      const bucket = toBucket(item.statusCategory, item.status);
+      if (bucket === 'done') {
         done++;
         if (!showDone) continue;
       }
-      const key = item.status || 'Unknown';
-      if (!byStatus.has(key)) byStatus.set(key, { status: key, statusCategory: item.statusCategory, items: [] });
-      byStatus.get(key)!.items.push(item);
+      if (!buckets.has(bucket)) buckets.set(bucket, []);
+      buckets.get(bucket)!.push(item);
     }
-    // Sort: by category rank first (Active → To Do → Done), then alphabetical
-    const ordered = Array.from(byStatus.values()).sort((a, b) => {
-      const ra = categoryRank(a.statusCategory);
-      const rb = categoryRank(b.statusCategory);
-      if (ra !== rb) return ra - rb;
-      return a.status.localeCompare(b.status);
-    });
+    const ordered = BUCKET_ORDER
+      .filter(b => buckets.has(b))
+      .map(b => ({ bucket: b, label: BUCKET_LABELS[b], items: buckets.get(b)!, count: buckets.get(b)!.length }));
     return { groups: ordered, doneCount: done };
   }, [items, showDone]);
 
@@ -83,7 +81,7 @@ export default function AssignedPanel({ items, isLoading, onSelect, onToggleStar
     return <div style={{ padding: 24, color: token('color.text.subtle', '#626F86') }}>Loading…</div>;
   }
 
-  if (items.length === 0) {
+  if (items.length === 0 && !isRefreshing) {
     return (
       <ForYouEmptyState
         title="You're all caught up"
@@ -94,12 +92,22 @@ export default function AssignedPanel({ items, isLoading, onSelect, onToggleStar
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {isRefreshing && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '8px 16px',
+          color: token('color.text.subtlest', '#626F86'),
+          fontSize: 12,
+        }}>
+          <Spinner size="small" /> Refreshing…
+        </div>
+      )}
       {onAskCatyThemify && (
         <AskCatyThemifyButton onClick={onAskCatyThemify} count={items.length} />
       )}
       {groups.map(group => (
-        <div key={group.status}>
-          <SectionHeading label={group.status} />
+        <div key={group.bucket}>
+          <SectionHeading label={group.label} count={group.count} />
           {group.items.map(item => (
             <ForYouRow key={item.id} item={item} variant="jira-assigned" onSelect={onSelect} onToggleStar={onToggleStar} />
           ))}
@@ -114,7 +122,7 @@ export default function AssignedPanel({ items, isLoading, onSelect, onToggleStar
             alignSelf: 'flex-start',
             margin: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
             background: 'transparent', border: 'none',
-            font: `400 13px/20px "Inter", system-ui, sans-serif`,
+            font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text.subtlest', '#626F86'),
             cursor: 'pointer', padding: `${token('space.050', '4px')} 0`,
             textDecoration: 'underline', textDecorationColor: 'transparent',
@@ -138,35 +146,30 @@ export default function AssignedPanel({ items, isLoading, onSelect, onToggleStar
   );
 }
 
-function SectionHeading({ label }: { label: string }) {
-  // 2026-05-17 jira-compare LIVE probe: section header is
-  //   14px / 500 / rgb(107,110,118) [subtlest] / textTransform:none
-  //   parent padding: 12px 0 4px
-  // Earlier 12/500/subtle was based on the user's spec sheet — live DOM is
-  // 14/500/subtlest. Trusting the live probe over the spec sheet.
+function SectionHeading({ label, count }: { label: string; count: number }) {
   return (
     <div style={{
-      // 2026-05-17 LIVE Jira probe: section header parent has padding
-      // `12px 0 4px` — text sits at the panel's LEFT EDGE while rows
-      // indent 16px (row padding). Aligning to Jira exactly.
       paddingInlineStart: 0, paddingInlineEnd: 0,
-      paddingBlockStart: 12, paddingBlockEnd: 4,
+      paddingBlockStart: 16, paddingBlockEnd: 4,
+      display: 'flex', alignItems: 'baseline', gap: 8,
     }}>
       <span style={{
-        font: `500 14px/20px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
+        font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
         letterSpacing: 'normal', color: text.subtlest, textTransform: 'none',
       }}>
         {label}
+      </span>
+      <span style={{
+        font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+        color: token('color.text.subtlest', '#626F86'),
+      }}>
+        {count}
       </span>
     </div>
   );
 }
 
 // ─── "Ask Caty - Themify" rainbow CTA ───────────────────────────────────────
-// Replaces the removed Caty Focus tab as a contextual entry point for the
-// AI Themify functionality. Static rainbow border + rainbow-fill sparkle.
-// CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out — animation:none, AI surfaces ONLY.
-
 const THEMIFY_RAINBOW = `conic-gradient(
   from 0deg,
   #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg,
@@ -180,7 +183,7 @@ function AskCatyThemifyButton({ onClick, count }: { onClick: () => void; count: 
       display: 'flex',
       justifyContent: 'flex-end',
       paddingBlockStart: 8,
-      paddingBlockEnd: 12,
+      paddingBlockEnd: 16,
     }}>
       <div style={{
         display: 'inline-flex',
@@ -197,9 +200,9 @@ function AskCatyThemifyButton({ onClick, count }: { onClick: () => void; count: 
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
-            height: 28,
-            padding: '0 14px',
+            gap: 8,
+            height: 32,
+            padding: '0 16px',
             border: 'none',
             borderRadius: 18,
             background: hover
@@ -214,7 +217,6 @@ function AskCatyThemifyButton({ onClick, count }: { onClick: () => void; count: 
             transition: 'background 150ms ease',
           }}
         >
-          {/* Rainbow-fill sparkle — same userSpaceOnUse pattern as Caty Focus */}
           <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style={{ flexShrink: 0 }}>
             <defs>
               <linearGradient id="themify-rainbow" gradientUnits="userSpaceOnUse" x1="1" y1="7" x2="13" y2="7">

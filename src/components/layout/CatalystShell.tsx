@@ -96,6 +96,7 @@ import { useRecentPlaceTracker } from "@/hooks/useRecentPlaceTracker";
 import { useRecordProjectVisit } from "@/hooks/home/useRecentProjects";
 import { useCatalystTitle } from "@/hooks/useCatalystTitle";
 import { derivePageFromPath } from "@/lib/tabIdentity";
+import { usePresenceHeartbeat } from "@/hooks/usePresenceHeartbeat";
 
 // ─── Lazy-loaded sidebars (only the active one loads into memory) ────
 const UnifiedSidebar = lazyWithRetry(
@@ -252,6 +253,11 @@ function CatalystShellContent() {
   if (import.meta.env.DEV) {
     console.debug("[CatalystShell] render");
   }
+
+  // Presence heartbeat — writes available/away to user_presence every 45s.
+  // Detects idle (10 min no input → away) and tab visibility changes.
+  // Must mount in the app shell so it runs for the full authenticated session.
+  usePresenceHeartbeat();
 
   // Track last visited route for session persistence
   useTrackLastRoute();

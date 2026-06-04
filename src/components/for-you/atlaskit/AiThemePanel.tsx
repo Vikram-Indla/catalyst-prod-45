@@ -268,7 +268,7 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
             paddingBlock: '2px',
             borderRadius: 4,
             background: token('color.background.neutral', '#F1F2F4'),
-            font: `400 11px/16px "Inter", system-ui, sans-serif`,
+            font: `400 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             whiteSpace: 'nowrap',
           }}>
@@ -302,7 +302,7 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
       {/* no_delta indicator — shown briefly after a Re-analyze that found no changes */}
       {data?.no_delta && !isRefreshing && (
         <span style={{
-          font: `400 11px/16px "Inter", system-ui, sans-serif`,
+          font: `400 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
           color: token('color.text.subtlest', '#626F86'),
           whiteSpace: 'nowrap',
         }}>

@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/lib/auth';
 import type { UserStatus } from '@/lib/presence';
 import { aggregateSharedScopes, type SharedScope, type SharedScopeRow } from './teamPulseScopes';
 
@@ -126,6 +127,106 @@ export function useTeamPulse() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'user_availability' }, handler)
       .subscribe();
 
+    return () => { void supabase.removeChannel(channel); };
+  }, [queryClient]);
+
+  return result;
+}
+
+/**
+ * useTeamPulseManagedTeam — manager-scoped variant.
+ *
+ * Returns presence + leave for every member on projects the current user
+ * belongs to (union across all the user's ph_project_members rows).
+ * Used exclusively in the Team Pulse tab (team_lead / admin only).
+ */
+export function useTeamPulseManagedTeam() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const result = useQuery<TeamPulseData>({
+    queryKey: ['team-pulse-managed', user?.id],
+    queryFn: async () => {
+      if (!user) return { members: [], weekLeave: [] };
+
+      // 1. Projects this user belongs to.
+      const { data: myMemberships, error: memErr } = await supabase
+        .from('ph_project_members')
+        .select('project_id')
+        .eq('user_id', user.id);
+
+      if (memErr || !myMemberships?.length) return { members: [], weekLeave: [] };
+
+      const projectIds = myMemberships.map((m: any) => m.project_id);
+
+      // 2. All other members in those projects (deduped).
+      const { data: projectMembers, error: pmErr } = await supabase
+        .from('ph_project_members')
+        .select('user_id')
+        .in('project_id', projectIds)
+        .neq('user_id', user.id);
+
+      if (pmErr || !projectMembers?.length) return { members: [], weekLeave: [] };
+
+      const memberIds = [...new Set((projectMembers as any[]).map((m: any) => m.user_id as string))];
+
+      // 3. Effective presence / leave status.
+      const { data: statusRows, error: statusErr } = await supabase
+        .from('v_user_effective_status')
+        .select('user_id, full_name, avatar_url, last_seen_at, effective_state, leave_kind, leave_ends_at, back_on, backup_user_id')
+        .in('user_id', memberIds)
+        .order('full_name');
+
+      if (statusErr) { console.error('[useTeamPulseManagedTeam] status error:', statusErr); throw statusErr; }
+
+      const members: TeamPulseMember[] = ((statusRows ?? []) as any[]).map((r: any) => ({
+        user_id:         r.user_id,
+        full_name:       r.full_name,
+        avatar_url:      r.avatar_url,
+        last_seen_at:    r.last_seen_at,
+        effective_state: r.effective_state,
+        leave_kind:      r.leave_kind,
+        leave_ends_at:   r.leave_ends_at,
+        back_on:         r.back_on,
+        backup_user_id:  r.backup_user_id,
+        sharedScopes:    [],
+      }));
+
+      // 4. This-week leave entries.
+      const { data: leaveRows } = await supabase
+        .from('user_availability')
+        .select('user_id, kind, starts_at, ends_at, note, backup_user_id')
+        .in('user_id', memberIds)
+        .lte('starts_at', endOfWeek())
+        .gte('ends_at', startOfWeek())
+        .order('starts_at');
+
+      const profileMap = new Map(members.map(m => [m.user_id, { full_name: m.full_name, avatar_url: m.avatar_url }]));
+
+      const weekLeave: TeamLeaveEntry[] = ((leaveRows ?? []) as any[]).map((r: any) => ({
+        user_id:        r.user_id,
+        full_name:      profileMap.get(r.user_id)?.full_name ?? null,
+        avatar_url:     profileMap.get(r.user_id)?.avatar_url ?? null,
+        kind:           r.kind,
+        starts_at:      r.starts_at,
+        ends_at:        r.ends_at,
+        note:           r.note,
+        backup_user_id: r.backup_user_id,
+      }));
+
+      return { members, weekLeave };
+    },
+    staleTime: 30_000,
+    enabled: !!user,
+  });
+
+  useEffect(() => {
+    const handler = () => { void queryClient.invalidateQueries({ queryKey: ['team-pulse-managed'] }); };
+    const channel = supabase
+      .channel('team-pulse-managed-rt')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_presence' },     handler)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_availability' }, handler)
+      .subscribe();
     return () => { void supabase.removeChannel(channel); };
   }, [queryClient]);
 

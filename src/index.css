@@ -3199,7 +3199,7 @@ input[type="range"]::-moz-range-thumb {
 :root {
   --cp-font-body:    "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif;
   --cp-font-heading: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif;
-  --cp-font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+  --cp-font-mono:    var(--ds-font-family-monospace, 'Charlie Code', ui-monospace, 'SF Mono', Consolas, monospace);
   --cp-font-weight-regular:  400;
   --cp-font-weight-medium:   500;
   --cp-font-weight-semibold: 650;

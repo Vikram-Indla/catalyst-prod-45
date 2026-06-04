@@ -204,7 +204,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             // 2026-05-17 LIVE Jira probe: title is 500/14/20 (NOT 400).
             // A prior comment claimed 400 was correct — live DOM disproves
             // that. The user-visible weight in Jira's For You is medium 500.
-            font: `${isJiraAssigned ? 500 : 400} 14px/20px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
+            font: `${isJiraAssigned ? 500 : 400} 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', '#292A2E'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -220,7 +220,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             // the leading meta token: "Epic · MWR-754 · MIM Website Revamp".
             <span
               style={{
-                font: `400 12px/16px "Inter", system-ui, sans-serif`,
+                font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                 color: token('color.text.subtlest', '#626F86'),
                 letterSpacing: 0,
               }}
@@ -232,7 +232,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             <span
               aria-hidden="true"
               style={{
-                font: `400 12px/16px "Inter", system-ui, sans-serif`,
+                font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                 color: token('color.text.subtlest', '#626F86'),
               }}
             >
@@ -243,7 +243,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             style={{
               // Key is the primary identifier — render at color.text.subtle
               // so it sits above project name in the meta-row hierarchy.
-              font: `400 12px/16px "Inter", system-ui, sans-serif`,
+              font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
               color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
               letterSpacing: 0,
             }}
@@ -251,13 +251,11 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             {item.key}
           </span>
           {!hideProject && (
-            // Project name uses `color.text.subtlest` — one tier below the key.
-            // Earlier both spans were `color.text.subtle`, flattening hierarchy.
             <Tooltip content={item.project}>
               <span
                 style={{
-                  font: `400 12px/16px "Inter", system-ui, sans-serif`,
-                  color: token('color.text.subtlest', '#626F86'),
+                  font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+                  color: token('color.link', '#0052CC'),
                   maxWidth: 180,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -282,7 +280,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           {!isJiraAssigned && (
             <span
               style={{
-                font: `400 12px/16px "Inter", system-ui, sans-serif`,
+                font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                 color: token('color.text.subtlest', '#626F86'),
               }}
             >
@@ -298,7 +296,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             <Tooltip content={suggestion}>
               <span
                 style={{
-                  font: `400 12px/16px "Inter", system-ui, sans-serif`,
+                  font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                   color: token('color.text.subtle', '#626F86'),
                   maxWidth: 260,
                   overflow: 'hidden',
@@ -379,7 +377,7 @@ function JiraForYouLozenge({ status, statusCategory }: { status: string; statusC
       height: 20,
     }}>
       <span style={{
-        font: `653 11px/16px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
+        font: `653 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
         color: 'rgb(41, 42, 46)',
         textTransform: 'uppercase',
         letterSpacing: '0.165px',

@@ -1087,104 +1087,11 @@ Surface-level "measured X column widths" reports without per-issue-type round-ro
 
 ---
 
-## 2026-05-18 — ON-DEMAND BRANCH CREATION — CLEAN SLATE PER CONVERSATION
+## 2026-06-03 — BRANCH POLICY (simplified)
 
-**Every conversation starts completely clean.** No branch exists until you explicitly request implementation work. When you ask for a task, I immediately create and activate a named feature branch based ONLY on your request in THIS conversation. Existing branches are ignored unless you specifically reference them.
+**Default: work on `main`.** Every conversation starts on whatever branch is currently checked out (usually `main`). No automatic branch creation.
 
-### Branch Naming Convention (with Numeric Identifier)
-
-```
-{Project}-{SideMenu}-{Component}-{NN}
-```
-
-Where `{NN}` = two-digit branch identifier: `01`, `02`, `03`, etc.
-This identifier links to the Obsidian handover for context retrieval.
-
-**Components:**
-- **Project** (from Hub): `BAU`, `INV`, `Projects`, `Incidents`, `Reports`, `Admin`, `Products`, `Releases` (derived from screenshot or task context)
-- **SideMenu** (from left sidebar): `backlog`, `allwork`, `detail`, `incidents`, `projects`, `products`, `releases`, `admin`, `resources`, `settings`, etc.
-- **Component** (main element): `table`, `filter`, `modal`, `sidebar`, `detail-view`, `dashboard`, `panel`, `form`, etc.
-
-**Examples:**
-- `BAU-backlog-table-01` — Building/fixing the backlog list table in BAU project (first branch)
-- `BAU-backlog-table-02` — Second iteration of backlog table work
-- `Incidents-detail-view-01` — Work on incident detail panel
-- `Projects-dashboard-filter-01` — Projects module dashboard filters
-- `Admin-users-management-01` — Admin users page
-- `General-deploy-01` — Deployment automation
-- `General-hotfix-01` — Urgent production fix
-
-**Exception: Infrastructure Tasks**
-- `General-deploy` — Deployment, CI/CD, infrastructure changes
-- `General-hotfix` — Emergency production fixes
-- `General-refactor` — Codebase-wide refactoring
-
-### Enforcement Rules
-
-1. **Immediate Activation**
-   - When a task/feature is requested in chat, STOP immediately before writing any code
-   - Read the task context (screenshot, conversation, Jira link, or description)
-   - Derive: Project (Hub key), SideMenu (sidebar item), Component (main element)
-   - Run: `git -C $PROJECT_DIR switch --create <branch-name>` or `git -C $PROJECT_DIR switch <branch-name>` if exists
-   - Confirm branch is active: `git -C $PROJECT_DIR branch --show-current`
-
-2. **Branch Persistence**
-   - All commits in this conversation go to the named branch
-   - Push to `origin <branch-name>` (not main)
-   - GitHub PR title and description reference the branch
-   - Do NOT merge to main without explicit Vikram approval
-
-3. **Context Derivation Rules**
-   - **Project**: If task mentions "BAU project" or screenshot shows BAU hub → `BAU`. If ambiguous, ask in chat: "Which hub are we working in?"
-   - **SideMenu**: From current sidebar context or explicitly stated. If ambiguous: "Which sidebar menu item?"
-   - **Component**: The main element being built/fixed. If it spans multiple components, name the primary one or use a descriptor like `integration`, `refactor`, `audit`.
-   - If ANY part is ambiguous, halt and ask the user to clarify before creating the branch.
-
-4. **One-Off Branches (Ad-Hoc Tasks)**
-   - If the conversation is purely research, explanation, or no code changes → no branch needed
-   - If the conversation turns into implementation mid-way, create the branch at that point
-   - Example: "Explain how X works" (no branch) → "Now fix X" (create branch immediately)
-
-5. **Multi-Task Conversations**
-   - If a conversation covers multiple tasks (e.g., "fix table AND add filter"), create the FIRST feature branch for the primary task
-   - After completing the primary task and pushing, explicitly ask: "Move to next task?" before creating a new branch
-   - Do NOT try to cram multiple unrelated tasks into one branch
-
-### Implementation (On-Demand)
-
-Branch creation is triggered ONLY when you request implementation work in the conversation:
-
-- `.claude/scripts/branch-manager.sh` utility handles branch creation and validation
-- When you ask for a task, I derive the branch name from your request
-- I echo the derived branch name and wait for confirmation before creating it
-- The branch is created fresh based on THIS conversation, not pre-existing branches
-- CLAUDE.md (this section) serves as the enforcement spec
-
-### Commit Messages
-
-All commits on the feature branch follow this format (unchanged from existing CLAUDE.md rules):
-```
-<imperative verb> <what>
-
-- Optional: bullet-point details
-- Reference Jira keys if applicable (BAU-1234)
-```
-
-Example: `Add bulk-edit footer bar to backlog table`
-
-### Before Pushing
-
-1. Ensure all commits are on the feature branch: `git -C $PROJECT_DIR log --oneline -5`
-2. Confirm tests pass (if applicable)
-3. Confirm design-audit passes: `node design-governance/cli/index.js audit src/`
-4. Push: `git -C $PROJECT_DIR push origin <branch-name>`
-5. GitHub Actions will run CI — address any failures before requesting PR review
-
-### After Pushing
-
-- Create a PR with the branch name as the title
-- Link any associated Jira tickets
-- Await Vikram's review and approval before merging to main
+**Exception: if Vikram specifies a branch name**, create/switch to that branch before writing any code. Otherwise, commit directly to the current branch.
 
 ---
 
@@ -1389,31 +1296,21 @@ If the secret is missing, the job logs a clear "skipping" message and exits 0 �
 
 ---
 
-## PLANNING / EXECUTION SPLIT — MANDATORY PROCESS RULE (P0, Global, Non-Negotiable)
+## PLANNING / EXECUTION SPLIT — ALLOWED IN SAME CONVERSATION (Updated 2026-06-03)
 
-**Planning and execution MUST NEVER occur in the same chat conversation when starting a new feature.** No exceptions.
-
-### Definitions
-
-**Planning conversation** — any conversation that produces gap reports, jira-compare cycles, design-critique runs, preflight plans, outlier reviews, visual mockup sign-offs, or Obsidian saves. Zero code is written, zero files modified, zero git commits made.
-
-**Execution conversation** — any conversation that writes files, runs Bash, creates migrations, commits, or pushes. Starts by loading the Obsidian handover block from the planning conversation.
+**Planning and execution MAY occur in the same conversation** as long as context usage stays below 80%.
 
 ### Rules
 
-1. **Plan → Save → Stop.** The planning conversation ends with `/obsidian save` + HANDOVER BLOCK printed in chat. Nothing else follows.
-2. **Execute in the next conversation.** The user opens a new chat, pastes the handover block, and execution begins from the Obsidian plan. Multiple sequential chunks CAN run in one execution conversation while context < 70%.
-3. **Branch isolation is absolute.** A feature branch (e.g., `BAU-filters-01`) contains ONLY changes from its named feature. If any unrelated task arrives while a feature branch is active, stop immediately and state: `"Branch [name] is active for [feature]. Open a new conversation for unrelated work."` Never commit unrelated changes to a feature branch. Never switch branches mid-conversation without explicit user approval + a new Obsidian save.
-4. **Context health is non-negotiable.**
-   - At 70%: print WARNING CONTEXT GUARD block, finish current chunk, do not start a new one.
-   - At 90%: print EMERGENCY CONTEXT GUARD block, invoke `/obsidian save`, print HANDOVER BLOCK, STOP. No compressing, no squeezing more in. Hard stop.
-5. **Violation protocol.** If Claude accidentally begins execution in a planning conversation: stop, print `"PROCESS VIOLATION — planning/execution split rule broken"`, invoke `/obsidian save`, print HANDOVER BLOCK, wait for user to open new conversation.
+1. **Plan → get approval → execute.** Planning (design proposals, gap reports, visual mockups) and execution (code changes, commits) can happen sequentially in one conversation.
+2. **Context health triggers handover.**
+   - At 80%: print WARNING CONTEXT GUARD block, finish current chunk, save handover, do not start a new chunk.
+   - At 90%: print EMERGENCY CONTEXT GUARD block, save handover, STOP.
+3. **Branch isolation is absolute.** A feature branch contains ONLY changes from its named feature. If any unrelated task arrives while a feature branch is active, stop and state: `"Branch [name] is active for [feature]. Open a new conversation for unrelated work."`
 
-### Why this rule exists (2026-05-21)
+### History
 
-Sessions that combined planning and execution within the same context window accumulated hallucinated architecture decisions, half-baked migrations, and branches with unrelated fixes. Separating concerns keeps every execution conversation focused, auditable, and resumable from Obsidian without loss.
-
-**Severity:** P0 — process integrity. A planning session that drifts into execution contaminates the branch and wastes session budget on work that may need to be undone.
+Originally (2026-05-21) planning and execution were split into separate conversations. Vikram lifted this restriction 2026-06-03 — the split was causing unnecessary friction for small-to-medium features where design + implementation fits comfortably in one context window.
 
 ---
 
@@ -1513,3 +1410,20 @@ CREATE POLICY "Members can view comments" ON ph_comments
 **Rule:** When a `ph_comments`-style anchor table is non-PII and its reactions table already uses `USING (true)`, match both policies for consistency — divergent USING clauses between a parent row and its child table create hidden multi-user failure modes. The ownership short-circuit (`author_id = auth.uid()`) is the right first step but is never the final step for tables where multiple users react to the same anchor. Before calling an RLS fix "done", test with a SECOND authenticated user — single-user smoke tests miss the INSERT+RETURNING UNIQUE collision entirely.
 
 **Severity:** P1 (the `author_id` partial fix resolved the author's own reactions but left every other user's reactions silently broken)
+
+---
+
+## 2026-06-03 — RLS membership policies must NEVER self-reference their own table inline; use a SECURITY DEFINER helper
+**Surface:** Catalyst Chat — `chat_conversations` / `chat_conversation_members` / `chat_messages` RLS (Phase-0 chat engine, branch `Products-chat-engine-01`)
+**Pattern:** The chat membership/visibility policies checked membership with an inline subquery against `chat_conversation_members` from WITHIN a policy on that same table (and from policies on `chat_messages` / `chat_conversations` that also read it). Postgres evaluated the members policy to read members, which re-invoked the members policy → `ERROR: 42P17: infinite recursion detected in policy for relation "chat_conversation_members"`. Every chat read errored. A single-user smoke test would not surface this cleanly; the 2-user RLS isolation test (simulating each user via `SET LOCAL ROLE authenticated; SET LOCAL "request.jwt.claims" = '{"sub":"<uuid>"}'`) reproduced it immediately, then proved the fix (non-member sees 0, member sees 1).
+**Rule:** Any RLS policy whose USING/WITH CHECK needs to test "is the current user a member of this conversation/row-group" MUST route that check through a `SECURITY DEFINER` helper function, never an inline `EXISTS (SELECT ... FROM the_same_or_membership_table ...)`. Canonical pattern:
+```sql
+CREATE OR REPLACE FUNCTION public.<entity>_is_member(grp uuid, uid uuid)
+RETURNS boolean LANGUAGE sql SECURITY DEFINER STABLE SET search_path = public AS $$
+  SELECT EXISTS (SELECT 1 FROM public.<membership_table> m
+                 WHERE m.<group_col> = grp AND m.user_id = uid);
+$$;
+```
+The function owner is not subject to RLS (no FORCE ROW LEVEL SECURITY), so its internal read bypasses the policy and breaks the cycle. Keep the `author_id = auth.uid()` short-circuit on message SELECT (the PostgREST v12 INSERT+RETURNING trap, 2026-05-29). ALWAYS run a 2-user RLS isolation test before declaring any new RLS surface done — it is the only reliable way to catch both recursion and cross-user leaks. Seed a private row owned by user A, simulate user B (non-member) expecting 0 rows, simulate A expecting their rows, then clean up.
+**Fix:** Migration `20260603000100_chat_rls_recursion_fix.sql` — added `public.chat_is_member(uuid, uuid)` and rewrote the members/conversations/messages policies to call it. Verified live on prod (`lmqwtldpfacrrlvdnmld`): b_nonmember_sees=0, a_member_sees=1.
+**Severity:** P0 (self-referential membership RLS makes the entire feature unreadable — caught only because the 2-user test was mandatory).

@@ -79,11 +79,11 @@ const ADS = {
    don't pull in @atlaskit/primitives Text here because the grouped table
    is hand-rolled; the font shorthand encodes the same metrics. */
 const ADS_FONT = {
-  body:      `400 14px/20px "Inter", system-ui, sans-serif`,
-  bodyBold:  `600 14px/20px "Inter", system-ui, sans-serif`,
-  bodySmall: `400 12px/16px "Inter", system-ui, sans-serif`,
-  label:     `600 11px/16px "Inter", system-ui, sans-serif`, // uppercase section label
-  mono:      `700 13px/20px "JetBrains Mono", monospace`,
+  body:      `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+  bodyBold:  `600 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+  bodySmall: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+  label:     `600 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+  mono:      `700 13px/20px var(--ds-font-family-monospace, "Charlie Code"), ui-monospace, monospace`,
 };
 
 /* ═══════════════════════════════════════
@@ -383,7 +383,10 @@ function AgeingRow({ item }: { item: AgeingItem }) {
 export function useAgeingCount(): number {
   const { data: sharedItems, isLoading } = useAgeingItems();
   if (isLoading || !sharedItems) return 0;
-  return sharedItems.length;
+  // Only count items < 60 days old (active: archiving soon + 30-60d bracket).
+  // Items >= 60 days are auto-archive candidates and must NOT inflate the badge,
+  // regardless of whether archived_at is set (cron may not have run yet).
+  return sharedItems.filter(item => item.days_open < 60).length;
 }
 
 // /design-critique callout ⑦ — every accent resolves to an Atlaskit
@@ -919,7 +922,7 @@ function StatChip({ label, value, intent }: { label: string; value: string | num
 
 const thStyle: React.CSSProperties = {
   padding: '10px 12px',
-  font: `600 11px/16px "Inter", system-ui, sans-serif`,
+  font: `600 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
   textTransform: 'uppercase',
   letterSpacing: '0.05em',
   color: ADS.textSubtle,

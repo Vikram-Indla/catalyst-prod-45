@@ -27,6 +27,8 @@ import {
 } from './helpers';
 import { StatusLozenge } from './StatusLozenge';
 import { MiniAvatar } from './SmallComponents';
+import { PresenceRing } from '@/components/shared/PresenceRing';
+import type { PresenceState } from '@/lib/presence';
 
 // ── Monospace font stack (replaces --cp-font-mono) ──────────────────────────
 const MONO = '"ui-monospace","SFMono-Regular","SF Mono",Menlo,monospace';
@@ -58,11 +60,12 @@ const T = {
   borderSuccess:     () => token('color.border.success', '#4BCE97'),
 } as const;
 
-export function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, onAvatarClick }: {
+export function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, onAvatarClick, presenceState }: {
   items: R360WorkItem[]; name: string; role: string; avatarUrl?: string | null;
   onSelect: (i: R360WorkItem) => void; selected: R360WorkItem | null;
   overview?: { department?: string } | null;
   onAvatarClick?: () => void;
+  presenceState?: PresenceState | null;
 }) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const doneRef = useRef<HTMLDivElement>(null);
@@ -315,7 +318,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                       {getJiraIcon(item.item_type)}
                       <span style={{ fontSize: 11, fontWeight: 600, color: T.textInfo(), fontFamily: MONO }}>{item.item_key}</span>
                       <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 5px', borderRadius: 3, background: T.bgNeutral(), color: T.textSubtle() }}>{item.project_key}</span>
-                      <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: item.age_days > 30 ? T.textWarning() : T.textSubtlest(), fontFamily: MONO }}>{item.age_days}d</span>
+                      <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: item.age_days > 30 ? T.textWarning() : T.textSubtlest(), fontFamily: MONO }}>since {item.age_days} days</span>
                     </div>
                     {/* Title */}
                     <div style={{ fontSize: 12, fontWeight: 500, color: T.text(), lineHeight: '1.35', marginBottom: 6 }}>{item.title}</div>
@@ -389,29 +392,14 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
         ))}
       </svg>
 
-      {/* CENTRE AVATAR — 72px (V13: was 56px), z-index 2 */}
+      {/* CENTRE AVATAR — 72px with PresenceRing, z-index 2 */}
       <div
         onClick={onAvatarClick}
         style={{
           position: 'absolute', left: `${CX}px`, top: `${CY}px`,
           transform: 'translate(-50%,-50%)', zIndex: 2, cursor: onAvatarClick ? 'pointer' : 'default',
         }}>
-        <div style={{
-          width: 72, height: 72, borderRadius: '50%',
-          overflow: 'hidden',
-          background: avatarUrl ? T.surface() : avatarGradient,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 2px 8px rgba(9,30,66,0.12)',
-          border: `2px solid ${T.surface()}`,
-          outline: `1px solid ${T.border()}`,
-        }}>
-          {avatarUrl ? (
-            <img src={avatarUrl} alt={name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-          ) : (
-            <span style={{ fontSize: 22, fontWeight: 700, color: T.textInverse() }}>{initials(name)}</span>
-          )}
-        </div>
+        <PresenceRing name={name} src={avatarUrl} size="xlarge" state={presenceState ?? undefined} />
       </div>
 
       {/* ORBITAL CARDS — 8-slot, viewport-proportional positions */}
@@ -441,7 +429,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                 {getJiraIcon(item.item_type)}
                 <span style={{ fontSize: 11, fontWeight: 600, color: T.textInfo(), fontFamily: MONO, letterSpacing: '-0.01em' }}>{item.item_key}</span>
                 <span style={{ fontSize: 9, fontWeight: 600, padding: '1px 5px', borderRadius: 3, background: T.bgNeutral(), color: T.textSubtle(), lineHeight: '14px', whiteSpace: 'nowrap' }}>{item.project_key}</span>
-                <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: ageColor, fontFamily: MONO, whiteSpace: 'nowrap' }}>{item.age_days}d</span>
+                <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: ageColor, fontFamily: MONO, whiteSpace: 'nowrap' }}>since {item.age_days} days</span>
               </div>
 
               {/* Row 2 (title): 2-line clamp, 12px/500 ── flex fills remaining space */}
