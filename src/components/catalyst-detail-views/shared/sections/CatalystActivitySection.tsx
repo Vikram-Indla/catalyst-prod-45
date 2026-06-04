@@ -423,44 +423,6 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     [toggleReactionMutation],
   );
 
-  // Toggle emoji reaction on a comment
-  const reactionMutation = useMutation({
-    mutationFn: async ({ commentId, emoji }: { commentId: string; emoji: string }) => {
-      if (!user) throw new Error('Not authenticated');
-      const { data: existing } = await supabase
-        .from('ph_comment_reactions')
-        .select('id')
-        .eq('comment_id', commentId)
-        .eq('user_id', user.id)
-        .eq('emoji', emoji)
-        .maybeSingle();
-      if (existing) {
-        await supabase.from('ph_comment_reactions').delete().eq('id', existing.id);
-      } else {
-        const { error } = await supabase
-          .from('ph_comment_reactions')
-          .insert({ comment_id: commentId, user_id: user.id, emoji });
-        if (error) throw new Error(error.message);
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cv-reactions', resolvedWorkItemId] });
-    },
-  });
-
-  const handleToggleReaction = useCallback(
-    (commentId: string, emoji: string) => reactionMutation.mutate({ commentId, emoji }),
-    [reactionMutation],
-  );
-
-  const handleCopyCommentLink = useCallback((commentId: string) => {
-    const url = `${window.location.origin}${window.location.pathname}?focusedCommentId=${commentId}`;
-    navigator.clipboard.writeText(url).then(
-      () => catalystToast.success('Link copied'),
-      () => catalystToast.error('Failed to copy link'),
-    );
-  }, []);
-
   // ── Comments summary (Improve dropdown → Summarize comments) ─────
   useCommentsSummaryStream({ mountedForIssueKey: resolvedIssueKey });
   const summaryPayload = useCatySummarize((s) => s.payload);
