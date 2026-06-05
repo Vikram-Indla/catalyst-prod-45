@@ -310,23 +310,13 @@ export function CatalystDueDateField({
         width: "100%",
         minHeight: 32,
         padding: "0px 6px",
-        border: "2px solid transparent",
-        borderRadius: 3,
+        border: "none",
         background: "transparent",
         cursor: disabled ? "default" : "pointer",
         outline: "none",
         font: "inherit",
         textAlign: "left",
         boxSizing: "border-box",
-        transition: "background 100ms ease",
-      }}
-      onMouseEnter={(e) => {
-        if (!disabled)
-          (e.currentTarget as HTMLElement).style.background =
-            "var(--ds-background-input-hovered, rgba(9,30,66,0.06))";
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.background = "transparent";
       }}
     >
       {displayText ? (
@@ -335,11 +325,6 @@ export function CatalystDueDateField({
             display: "inline-flex",
             alignItems: "center",
             gap: 4,
-            padding: "0px 4px",
-            borderRadius: 3,
-            border: overdue
-              ? "1px solid var(--ds-border-danger, rgb(226,72,61))"
-              : "1px solid transparent",
             color: overdue
               ? "var(--ds-text-danger, #AE2E24)"
               : "var(--ds-text, #172B4D)",
