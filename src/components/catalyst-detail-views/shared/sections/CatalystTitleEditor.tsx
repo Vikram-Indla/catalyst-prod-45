@@ -93,6 +93,17 @@ if (typeof document !== 'undefined' && !document.getElementById(CV_TITLE_STYLE_I
       text-decoration-color: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
       text-decoration-thickness: 1px;
     }
+    /* When the translate button is the actual hover target, suppress the
+       InlineEdit's read-view hover state on the title (background +
+       underline). The button is a descendant of the read-view container,
+       so hovering it normally bubbles up. :has() lets us scope-out that
+       case so only the button's own hover effect (blue underline) shows. */
+    .cv-title-edit-hide-label [data-read-view-fit-container-width]:has(.ttw-translate-btn:hover) {
+      background: transparent !important;
+    }
+    .cv-title-edit-hide-label [data-read-view-fit-container-width]:has(.ttw-translate-btn:hover) h1 {
+      text-decoration: none !important;
+    }
   `;
   document.head.appendChild(s);
 }
