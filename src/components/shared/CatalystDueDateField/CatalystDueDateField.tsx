@@ -309,7 +309,7 @@ export function CatalystDueDateField({
         alignItems: "center",
         width: "100%",
         minHeight: 32,
-        padding: "0px 6px",
+        padding: "0px 8px",
         border: "none",
         background: "transparent",
         cursor: disabled ? "default" : "pointer",

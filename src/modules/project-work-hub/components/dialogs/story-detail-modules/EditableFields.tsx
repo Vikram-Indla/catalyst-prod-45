@@ -366,7 +366,7 @@ export function EditableAssignee({
     <div style={{
       flex: 1,
       minWidth: 0,
-      border: menuIsOpen ? "2px solid var(--ds-border-focused, #388BFF)" : "2px solid transparent",
+      outline: menuIsOpen ? "2px solid var(--ds-border-focused, #388BFF)" : "none",
       borderRadius: 4,
     }}>
       <Select<AssigneeOption>
@@ -604,7 +604,7 @@ export function EditableReporter({
     <div style={{
       flex: 1,
       minWidth: 0,
-      border: menuIsOpen ? "2px solid var(--ds-border-focused, #388BFF)" : "2px solid transparent",
+      outline: menuIsOpen ? "2px solid var(--ds-border-focused, #388BFF)" : "none",
       borderRadius: 4,
     }}>
       <Select<ReporterOption>
