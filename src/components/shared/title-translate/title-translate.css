@@ -67,6 +67,7 @@
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
+  margin-left: -10px;
   background: none;
   border: none;
   border-radius: 3px;
@@ -77,6 +78,10 @@
   cursor: pointer;
   user-select: none;
   transition: background 100ms ease;
+}
+.ttw-root[data-dir="rtl"] .ttw-translate-btn {
+  margin-left: 0;
+  margin-right: -10px;
 }
 
 .ttw-translate-btn:hover:not(:disabled) {
@@ -107,8 +112,12 @@
 .ttw-action-row {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   margin-top: 4px;
   min-height: 20px;
+}
+.ttw-root[data-dir="rtl"] .ttw-action-row {
+  justify-content: flex-end;
 }
 
 /* STATE 1: "✦ CATY is translating  〰" */
