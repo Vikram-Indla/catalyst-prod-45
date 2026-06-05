@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { catalystToast } from '@/lib/catalystToast';
 import { SeverityBadge } from '@/components/releases/defects/SeverityBadge';
-import { DefectStatusBadge } from '@/components/releases/defects/DefectStatusBadge';
+import { StatusLozenge as DefectStatusBadge } from '@/components/ui/StatusLozenge';
 import { PriorityBadge } from '@/components/releases/defects/PriorityBadge';
 import { InlineTextEdit } from '@/components/releases/defects/InlineTextEdit';
 import { EditDefectModal } from '@/components/releases/defects/EditDefectModal';

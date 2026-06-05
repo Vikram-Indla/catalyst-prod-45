@@ -8,7 +8,7 @@ import { createPortal } from 'react-dom';
 import { format, differenceInDays } from 'date-fns';
 import type { RequestStatus } from '@/types/request';
 import { STATUS_DISPLAY, getPriorityLevel, getAvatarColor, getInitials } from '@/types/request';
-import { StatusBadge } from '@/components/ui/StatusBadge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { BusinessRequestIcon } from '@/components/producthub/shared/BusinessRequestBadge';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import Avatar from '@atlaskit/avatar';
@@ -29,7 +29,7 @@ function mapBrTypeToIconType(requestType: string): string {
 export const StatusCell = React.memo(function StatusCell({ status }: { status: RequestStatus }) {
   const s = STATUS_DISPLAY[status];
   return (
-    <StatusBadge status={s.label} />
+    <StatusLozenge status={s.label} />
   );
 });
 

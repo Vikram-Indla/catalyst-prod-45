@@ -17,7 +17,7 @@ import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
 import Spinner from '@atlaskit/spinner';
 import WarningIcon from '@atlaskit/icon/core/warning';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
-import { StatusBadge } from '@/components/ui/StatusBadge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import Textfield from '@atlaskit/textfield';
 import { formatDistanceToNowStrict, format } from 'date-fns';

@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProductionIncident } from '@/hooks/useIncidentHub';
-import { StatusLozenge } from './components/StatusLozenge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { SeverityChip } from './components/SeverityChip';
 import { PriorityChip } from './components/PriorityChip';
 import { CommitteeModal } from './components/CommitteeModal';

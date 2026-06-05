@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { CollapsibleSection } from './CollapsibleSection';
-import { StatusLozenge } from './StatusLozenge';
+import { StatusLozenge as AdsStatusLozenge, toStatusCategory } from '@/components/ads';
 import { Plus, Search, X, Link as LinkIcon, Check } from '@/lib/atlaskit-icons';
 import { catalystToast } from '@/lib/catalystToast';
 
@@ -61,7 +61,7 @@ export function LinkedItemsSection({ workItemId, projectId, linkedItems, onNavig
               <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: TYPE_COLORS[link.type_name] || link.type_color }} />
               <span className="text-[10px] shrink-0" style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-3)' }}>{link.item_key}</span>
               <span className="text-[13px] font-medium truncate" style={{ color: 'var(--fg-1)' }}>{link.title}</span>
-              <StatusLozenge name={link.status_name} category={link.status_category} />
+              <AdsStatusLozenge status={toStatusCategory(link.status_category)}>{(link.status_name)}</AdsStatusLozenge>
             </button>
           ))}
         </div>
@@ -211,7 +211,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
                 <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: TYPE_COLORS[item.type_name] || item.type_color }} />
                 <span className="text-[10px] shrink-0" style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-3)' }}>{item.item_key}</span>
                 <span className="text-[13px] font-medium truncate" style={{ color: 'var(--fg-1)' }}>{item.title}</span>
-                <StatusLozenge name={item.status_name} category={item.status_category} />
+                <AdsStatusLozenge status={toStatusCategory(item.status_category)}>{(item.status_name)}</AdsStatusLozenge>
                 {selectedId === item.id && <Check size={13} className="ml-auto text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />}
               </button>
             ))}

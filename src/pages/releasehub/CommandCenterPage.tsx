@@ -3,10 +3,10 @@ import { Rocket, ArrowLeftRight, CheckSquare, FlaskConical, Sparkles, ChevronRig
 import { useReleases, useChanges, useCommandCenterKPIs, usePendingSignOffs, useProductionEvents } from '@/hooks/useReleaseHub';
 import { RH, CHG_STATUS_LABELS, CHG_STATUS_ORDER } from '@/constants/releasehub.design';
 import { useTheme } from '@/hooks/useTheme';
-import { ReleaseStatusBadge } from '@/components/releasehub/ReleaseStatusBadge';
-import { ChgStatusBadge } from '@/components/releasehub/ChgStatusBadge';
+import { StatusLozenge as ReleaseStatusBadge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge as ChgStatusBadge } from '@/components/ui/StatusLozenge';
 import { DeployResultBadge } from '@/components/releasehub/DeployResultBadge';
-import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
 import { EmptyState } from '@/components/releasehub/EmptyState';
 import { ReleaseDrawer } from '@/components/releasehub/ReleaseDrawer';

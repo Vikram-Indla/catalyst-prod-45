@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { PlanStatusBadge } from './PlanStatusBadge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { TestPlan } from '@/types/testPlans';
 import { usePlanProgress, useDuplicateTestPlan } from '@/hooks/useTestPlansG26';
 import { format } from 'date-fns';
@@ -37,7 +37,7 @@ export function TestPlanCard({ plan, onDelete }: Props) {
             <p className="text-sm text-muted-foreground line-clamp-2">{plan.description || 'No description'}</p>
           </div>
           <div className="flex items-center gap-2 ml-4">
-            <PlanStatusBadge status={plan.status} />
+            <StatusLozenge status={plan.status} />
             <DropdownMenu>
               <DropdownMenuTrigger asChild onClick={e => e.stopPropagation()}>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><MoreVertical className="h-4 w-4" /></Button>

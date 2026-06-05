@@ -3,7 +3,7 @@ import { Search, LayoutGrid, List, Plus, Package, Download, Clock, AlertTriangle
 import { useReleaseSummary, useFreezeWindows } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
 import { useTheme } from '@/hooks/useTheme';
-import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { SourceBadge } from '@/components/releasehub/SourceBadge';
 import { ReleaseDrawer } from '@/components/releasehub/ReleaseDrawer';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';

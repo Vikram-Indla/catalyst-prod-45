@@ -20,7 +20,7 @@ import { JiraBulkActionBar } from '@/components/shared/JiraBulkActionBar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { StatusBadge } from '@/components/ui/StatusBadge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { ChevronDown, ChevronRight, ChevronLeft, Plus, Pencil, Trash2, BookOpen, Search, X, Star } from '@/lib/atlaskit-icons';
 import { GroupByPopover as SharedGroupByPopover } from '@/components/shared/GroupByPopover';
 import type { GroupByOption } from '@/components/shared/GroupByPopover';
@@ -274,7 +274,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     });
     const statusOptions = Array.from(statusSet.entries()).map(([id, label]) => ({
       id, label,
-      iconNode: <StatusBadge status={id} />,
+      iconNode: <StatusLozenge status={id} />,
       hideLabel: true,
     }));
 
@@ -492,7 +492,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       case 'status':
         return (
           <td key={colKey} style={{ width: columnWidths.status }}>
-            {story.status && <StatusBadge status={story.status} />}
+            {story.status && <StatusLozenge status={story.status} />}
           </td>
         );
       case 'parent':
@@ -665,7 +665,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       label: 'Status',
       header: 'STATUS',
       sortingFn: (a, b) => (a.original.status || '').localeCompare(b.original.status || ''),
-      cell: ({ row }) => (row.original.status ? <StatusBadge status={row.original.status} /> : null),
+      cell: ({ row }) => (row.original.status ? <StatusLozenge status={row.original.status} /> : null),
     },
     {
       id: 'parent',

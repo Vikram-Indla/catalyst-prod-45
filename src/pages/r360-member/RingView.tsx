@@ -25,7 +25,7 @@ import {
   getCardPixelPosDynH, getSpokeEndpoints,
   getFromTagClass, getFromTagPrefix,
 } from './helpers';
-import { StatusLozenge } from './StatusLozenge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { MiniAvatar } from './SmallComponents';
 import { PresenceRing } from '@/components/shared/PresenceRing';
 import type { PresenceState } from '@/lib/presence';
@@ -324,7 +324,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     <div style={{ fontSize: 12, fontWeight: 500, color: T.text(), lineHeight: '1.35', marginBottom: 6 }}>{item.title}</div>
                     {/* Status + from-tag */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                      <StatusLozenge status={item.status} statusCategory={item.status_category} />
+                      <StatusLozenge status={item.status} />
                       {item.carried_from_label && (
                         <span className={`r3-from-tag ${fromClass}`}>{getFromTagPrefix(item.age_days)}{item.carried_from_label}</span>
                       )}
@@ -437,7 +437,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
 
               {/* Row 3 (status bar): lozenge + from-tag + contributor ── 24px, pinned to bottom */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 'auto', flexShrink: 0, minHeight: 24 }}>
-                <StatusLozenge status={item.status} statusCategory={item.status_category} />
+                <StatusLozenge status={item.status} />
                 {item.carried_from_label && (
                   <span className={`r3-from-tag ${fromClass}`} title="Carried over from an earlier period">
                     {getFromTagPrefix(item.age_days)}{item.carried_from_label}

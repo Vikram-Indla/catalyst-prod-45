@@ -4,7 +4,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { usePendingSignOffs, useApproveSignoff, useRejectSignoff } from '@/hooks/useReleaseHub';
 import { RH, SIGNOFF_LOZENGE, LOZENGE } from '@/constants/releasehub.design';
 import { RiskBadge } from '@/components/releasehub/RiskBadge';
-import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
 import { EmptyState } from '@/components/releasehub/EmptyState';
 import { ChgDrawer } from '@/components/releasehub/ChgDrawer';

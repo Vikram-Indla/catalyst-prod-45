@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTriageCount, useChanges, useReleases } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
-import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { SourceBadge } from '@/components/releasehub/SourceBadge';
 import { RiskBadge } from '@/components/releasehub/RiskBadge';
 import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
