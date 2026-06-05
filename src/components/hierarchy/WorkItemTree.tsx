@@ -9,7 +9,7 @@ import { useTheme } from '@/hooks/useTheme';
 import type { WorkItem } from '@/types/hierarchy';
 import { canBeParentOf, HIERARCHY_LEVELS } from '@/types/hierarchy';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusBadge } from './StatusBadge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 
 interface WorkItemTreeProps {
   items: WorkItem[];
@@ -71,7 +71,7 @@ function priorityToLevel(name?: string): number {
   return 0;
 }
 
-/* StatusPill is now StatusBadge (filled Jira-style) */
+/* Status rendered via canonical ui/StatusLozenge (consolidated 2026, d194dc02f) */
 
 /* ── Assignee avatar ── */
 /* ── Avatar color palette (no purple/yellow) ── */
@@ -284,7 +284,7 @@ function TreeRow({
         </span>
       )}
 
-      <StatusBadge status={item.status.name} />
+      <StatusLozenge status={item.status.name} />
       <AssigneeAvatar assignee={item.assignee} />
       <ActionsMenu item={item} onDelete={onDelete} />
     </div>
