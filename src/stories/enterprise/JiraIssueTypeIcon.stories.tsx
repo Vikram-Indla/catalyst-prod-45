@@ -36,7 +36,7 @@ function IconSizes() {
 }
 
 const meta: Meta<typeof JiraIssueTypeIcon> = {
-  title: 'Enterprise/Jira Issue Type Icon',
+  title: 'Catalyst AI & Feed/Jira Issue Type Icon',
   component: JiraIssueTypeIcon,
   parameters: { layout: 'padded' },
 };

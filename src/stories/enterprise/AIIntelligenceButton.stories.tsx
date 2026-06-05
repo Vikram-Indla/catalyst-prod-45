@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 
 const meta: Meta<typeof AIIntelligenceButton> = {
-  title: 'Enterprise/AI Intelligence Button',
+  title: 'Catalyst AI & Feed/AI Intelligence Button',
   component: AIIntelligenceButton,
   parameters: { layout: 'padded' },
 };

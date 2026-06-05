@@ -25,7 +25,7 @@ const MOCK_BUG: WorkItem = {
 };
 
 const meta: Meta<typeof ForYouRow> = {
-  title: 'Enterprise/For You Row',
+  title: 'Catalyst AI & Feed/For You Row',
   component: ForYouRow,
   parameters: { layout: 'padded' },
 };
