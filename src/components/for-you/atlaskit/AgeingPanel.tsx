@@ -29,6 +29,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { WorkItem, HubType, WorkMode, WorkGroup } from '@/hooks/useForYouData';
+import { CatyAgeingTriage } from './CatyAgeingTriage';
 
 type AgeBracket = 'needsAttention' | 'coolingDown' | 'archivingSoon' | 'ninetyPlus' | 'sixtyNinety' | 'thirtySixty';
 const BRACKET_ORDER: AgeBracket[] = ['needsAttention', 'coolingDown', 'archivingSoon', 'thirtySixty', 'sixtyNinety', 'ninetyPlus'];
@@ -462,6 +463,7 @@ export default function AgeingPanel() {
       </div>
 
       {/* Sections */}
+      <CatyAgeingTriage items={ageingItems ?? []} onOpenDetail={(key) => useGlobalSearchStore.getState().openDetail({ id: key })} />
       {grouped.map(({ bracket, label, items, isArchived }) => {
         const collapsed = collapsedSections.has(bracket);
         return (

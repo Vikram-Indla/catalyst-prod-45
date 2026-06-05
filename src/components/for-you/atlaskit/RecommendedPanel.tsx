@@ -1301,8 +1301,8 @@ function ReplyComposer({
           2026-05-31: pass phase down so the tile can render an INLINE error
           message when Gemini is rate-limited (was: silent toast that users
           missed → "nothing happens" UX bug). */}
-      {(suggestionPhase === 'idle' || suggestionPhase === 'error') && (
-        <SuggestReplyTile phase={suggestionPhase} onSuggest={handleSuggestReply} />
+      {(suggestionPhase === 'idle' || suggestionPhase === 'error' || suggestionPhase === 'loading') && (
+        <SuggestReplyTile phase={suggestionPhase as 'idle' | 'error' | 'loading'} onSuggest={handleSuggestReply} />
       )}
     </div>
   );
@@ -1326,7 +1326,7 @@ const ASK_CATY_RAINBOW = `conic-gradient(
   #FF3CAC 360deg
 )`;
 
-function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error'; onSuggest: () => void }) {
+function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loading'; onSuggest: () => void }) {
   const [hover, setHover] = useState(false);
   return (
     <div
@@ -1384,11 +1384,13 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error'; onSug
       >
         <button
           type="button"
-          onClick={onSuggest}
-          aria-label="Ask Caty to draft a reply"
+          onClick={phase === 'loading' ? undefined : onSuggest}
+          disabled={phase === 'loading'}
+          aria-label={phase === 'loading' ? 'Caty is thinking...' : 'Ask Caty to draft a reply'}
+          aria-busy={phase === 'loading' || undefined}
           style={{
             all: 'unset',
-            cursor: 'pointer',
+            cursor: phase === 'loading' ? 'not-allowed' : 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
@@ -1396,13 +1398,20 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error'; onSug
             borderRadius: 3,
             font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', '#172B4D'),
-            background: token('elevation.surface', '#FFFFFF'),
+            background: phase === 'loading'
+              ? token('color.background.disabled', '#F1F2F4')
+              : token('elevation.surface', '#FFFFFF'),
           }}
         >
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-            <path d="M11.013 1.427a1.75 1.75 0 0 1 2.474 0l1.086 1.086a1.75 1.75 0 0 1 0 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 0 1-.927-.928l.929-3.25a1.75 1.75 0 0 1 .445-.758zm.354 1.06a.75.75 0 0 0-.671.207L2.95 10.44l-.612 2.143 2.143-.612 7.745-7.745a.75.75 0 0 0-.121-1.062z"/>
-          </svg>
-          Ask Caty - Suggest?
+          {phase === 'loading' ? (
+            <Spinner size="small" />
+          ) : (
+            <svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true" style={{ flexShrink: 0 }}>
+              <defs><linearGradient id="srt-rainbow" gradientUnits="userSpaceOnUse" x1="1" y1="7" x2="13" y2="7"><stop offset="0%" stopColor="#FF3CAC" /><stop offset="20%" stopColor="#784BA0" /><stop offset="40%" stopColor="#2B86C5" /><stop offset="60%" stopColor="#00C9FF" /><stop offset="80%" stopColor="#92FE9D" /><stop offset="100%" stopColor="#FFD700" /></linearGradient></defs>
+              <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" fill="url(#srt-rainbow)" />
+            </svg>
+          )}
+          {phase === 'loading' ? 'Thinking...' : 'Ask Caty - Suggest?'}
         </button>
       </div>
     </div>

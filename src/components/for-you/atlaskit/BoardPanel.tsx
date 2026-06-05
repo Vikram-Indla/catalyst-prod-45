@@ -13,6 +13,7 @@ import { useAuth } from '@/lib/auth';
 import R360MemberDetail from '@/pages/R360MemberDetail';
 import Spinner from '@atlaskit/spinner';
 
+import { CatyBoardInsight } from './CatyBoardInsight';
 export default function BoardPanel() {
   const { user } = useAuth();
   const { isTeamLead } = useUserRole();
@@ -44,6 +45,7 @@ export default function BoardPanel() {
 
   return (
     <div style={{ minHeight: 600 }}>
+      <CatyBoardInsight resourceId={activeResourceId} />
       <R360MemberDetail resourceId={activeResourceId} embedded forceView="board" />
     </div>
   );

@@ -1,69 +1,81 @@
+import React, { useState } from 'react';
 import type { Editor } from '@tiptap/react';
-// eslint-disable-next-line no-restricted-imports
-import MagicWandIcon from '@atlaskit/icon/core/magic-wand';
+import Spinner from '@atlaskit/spinner';
+
+const RAINBOW = `conic-gradient(from 0deg, #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg, #00C9FF 180deg, #92FE9D 240deg, #FFD700 300deg, #FF3CAC 360deg)`;
 
 interface Props {
   editor: Editor | null;
   onImprove?: () => void;
-  /** Button label. Defaults to "Improve description"; comment editor
-   *  uses "Improve writing". */
   label?: string;
+  isImproving?: boolean;
 }
 
 export function ImproveButton({
   editor,
   onImprove,
   label = 'Improve description',
+  isImproving = false,
 }: Props) {
-  // Empty when the document is just an empty paragraph and has no image
-  // or other atomic node. Tiptap's `isEmpty` already accounts for that.
   const isEmpty = editor?.isEmpty ?? true;
-  const disabled = isEmpty;
+  const disabled = isEmpty && !isImproving;
+  const isInert = disabled || isImproving;
+  const [hover, setHover] = useState(false);
 
   return (
-    <button
-      type="button"
-      title={disabled ? `${label} — add content first` : label}
-      aria-label={label}
-      disabled={disabled}
-      onMouseDown={(e) => e.preventDefault()}
-      onClick={() => {
-        if (disabled) return;
-        onImprove?.();
-      }}
-      style={{
-        height: 28,
-        padding: '0 8px',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 4,
-        border: 'none',
-        borderRadius: 3,
-        background: 'transparent',
-        color: disabled
-          ? 'var(--ds-text-disabled, #B3B9C4)'
-          : 'var(--ds-text-subtle, #44546F)',
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.6 : 1,
-        fontSize: 13,
-        fontWeight: 500,
-        fontFamily:
-          '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, sans-serif',
-        transition: 'background 100ms ease, color 100ms ease',
-      }}
-      onMouseEnter={(e) => {
-        if (disabled) return;
-        e.currentTarget.style.background =
-          'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
-      }}
-      onMouseLeave={(e) => {
-        if (disabled) return;
-        e.currentTarget.style.background = 'transparent';
-      }}
-      data-testid="catalyst-desc-toolbar-improve"
-    >
-      <MagicWandIcon label="" />
-      <span>{label}</span>
-    </button>
+    <div style={{ display: 'inline-flex', padding: 2, borderRadius: 16, background: RAINBOW }}>
+      <button
+        type="button"
+        title={disabled ? `${label} — add content first` : isImproving ? 'Caty is thinking...' : label}
+        aria-label={isImproving ? 'Caty is thinking...' : label}
+        aria-busy={isImproving || undefined}
+        disabled={isInert}
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => { if (!isInert) onImprove?.(); }}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        data-testid="catalyst-desc-toolbar-improve"
+        style={{
+          height: 28,
+          padding: '0 10px',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          border: 'none',
+          borderRadius: 14,
+          background: isInert
+            ? 'var(--ds-background-disabled, #F1F2F4)'
+            : hover
+              ? 'var(--ds-surface-hovered, #F1F2F4)'
+              : 'var(--ds-surface, #FFFFFF)',
+          color: 'var(--ds-text, #172B4D)',
+          cursor: isInert ? 'not-allowed' : 'pointer',
+          fontSize: 12,
+          fontWeight: 600,
+          fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
+          lineHeight: 1,
+          transition: 'background 150ms ease',
+        }}
+      >
+        {isImproving ? (
+          <Spinner size="small" />
+        ) : (
+          <svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true" style={{ flexShrink: 0 }}>
+            <defs>
+              <linearGradient id="improve-btn-rainbow" gradientUnits="userSpaceOnUse" x1="1" y1="7" x2="13" y2="7">
+                <stop offset="0%" stopColor="#FF3CAC" />
+                <stop offset="20%" stopColor="#784BA0" />
+                <stop offset="40%" stopColor="#2B86C5" />
+                <stop offset="60%" stopColor="#00C9FF" />
+                <stop offset="80%" stopColor="#92FE9D" />
+                <stop offset="100%" stopColor="#FFD700" />
+              </linearGradient>
+            </defs>
+            <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" fill="url(#improve-btn-rainbow)" />
+          </svg>
+        )}
+        <span>{isImproving ? 'Thinking...' : label}</span>
+      </button>
+    </div>
   );
 }

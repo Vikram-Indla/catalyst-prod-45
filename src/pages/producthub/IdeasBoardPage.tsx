@@ -31,6 +31,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
+import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
 import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
 import { buildIdeasBoardAdapter } from '@/components/kanban/adapters/ideasBoardAdapter';
 import { useIdeasHub, type IdeaRow } from '@/hooks/useIdeasHub';
@@ -160,6 +161,7 @@ export default function IdeasBoardPage() {
 
   return (
     <>
+      <CatyBoardInsight projectKey={null} resourceId="product-board" />
       <KanbanBoardShell adapter={adapter} title="Ideas Board" />
 
       {drawerKey && (

@@ -18,6 +18,7 @@ import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 import Button from '@atlaskit/button/new';
+import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
 import { KanbanToolbar } from '@/components/kanban/toolbar/KanbanToolbar';
 import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -1293,6 +1294,7 @@ export default function KanbanBoardPage() {
         </div>
       )}
 
+      <CatyBoardInsight projectKey={key ?? null} resourceId={key ?? 'project'} />
       {/* ── Toolbar — canonical <KanbanToolbar/> (Phase 1 extraction) ── */}
       {/* Offset matches standup panel width when open */}
       <div style={{ marginLeft: showStandup ? 'var(--standup-panel-width, 280px)' : 0, transition: 'margin-left 200ms ease' }}>

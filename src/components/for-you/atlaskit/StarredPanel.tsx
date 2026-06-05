@@ -18,6 +18,7 @@ import { token } from '@atlaskit/tokens';
 import ForYouRow from './ForYouRow';
 import { ForYouEmptyState, GroupHeading, groupByRecency, StarSparkleArt } from './helpers';
 import type { WorkItem, TabType } from '@/hooks/useForYouData';
+import { CatyStarredDigest } from './CatyStarredDigest';
 
 interface StarredPanelProps {
   items: WorkItem[];
@@ -108,6 +109,7 @@ export default function StarredPanel({ items, isLoading, onSelect, onToggleStar,
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', paddingBlockStart: 8 }}>
+      <CatyStarredDigest starredKeys={items.map(i => i.jiraKey || i.id)} />
       {groups.map(({ bucket, items: groupItems }) => (
         <div key={bucket}>
           <GroupHeading bucket={bucket} />
