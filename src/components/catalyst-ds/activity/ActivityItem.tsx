@@ -5,6 +5,10 @@ import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import type { CdsActivityItem, CdsAppearance } from '../types';
 import { Lozenge } from '../status/Lozenge';
 import { renderJiraContent, normalizeJiraText, type JiraUserMap } from '../utils/jiraContent';
+import { TicketLinkCard } from '@/components/shared/TicketLinkCard';
+import { HistoryPill } from './JiraActivityRow';
+import { PriorityIcon } from '@/components/icons/PriorityIcon';
+import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 
 function formatAbsoluteDate(dateStr: string): string {
   const d = new Date(dateStr);
@@ -43,7 +47,33 @@ function statusAppearance(value: string | null): CdsAppearance | undefined {
 }
 
 const RICH_TEXT_FIELDS = new Set(['description', 'summary', 'comment', 'title']);
-const STATUS_FIELDS = new Set(['process_step', 'status', 'health']);
+const STATUS_FIELDS = new Set(['process_step', 'status', 'health', 'severity', 'resolution']);
+const USER_FIELDS = new Set(['assignee', 'reporter']);
+const PRIORITY_FIELDS = new Set(['priority']);
+const TICKET_LINK_FIELDS = new Set(['parent', 'parent_link', 'epic_link', 'epic_child', 'link']);
+
+const TICKET_KEY_RE = /\b([A-Z][A-Z0-9]{0,9}-\d+)\b/;
+
+function PriorityChip({ value }: { value: string }) {
+  // Use the canonical PriorityIcon (same SVG family as the priority
+  // dropdown picker in the right rail) so the diff payload matches
+  // the field's regular display.
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <PriorityIcon level={value} size={14} />
+      <span>{value}</span>
+    </span>
+  );
+}
+
+function TicketLinkSide({ value }: { value: string | null }) {
+  if (!value) {
+    return <span className="italic text-[var(--ds-text-subtlest,#6B778C)]">None</span>;
+  }
+  const m = TICKET_KEY_RE.exec(value);
+  if (m) return <TicketLinkCard issueKey={m[1]} />;
+  return <span>{value}</span>;
+}
 
 export interface ActivityItemProps {
   item: CdsActivityItem;
@@ -57,9 +87,13 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
 
   const fieldKey = fieldChange ? fieldChange.field.toLowerCase().replace(/\s/g, '_') : '';
   const isStatus = STATUS_FIELDS.has(fieldKey);
+  const isUser = USER_FIELDS.has(fieldKey);
+  const isPriority = PRIORITY_FIELDS.has(fieldKey);
+  const isTicketLink = TICKET_LINK_FIELDS.has(fieldKey);
   const isRich =
     RICH_TEXT_FIELDS.has(fieldKey) ||
     (fieldChange &&
+      !isUser && !isPriority && !isTicketLink &&
       ((fieldChange.oldValue?.length ?? 0) > 80 || (fieldChange.newValue?.length ?? 0) > 80));
 
   return (
@@ -103,12 +137,13 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
           {formatAbsoluteDate(timestamp)}
         </div>
 
-        {/* Type badge — shown in "All" tab to distinguish history from comments */}
+        {/* Type badge — shown in "All" tab to distinguish history from
+            comments. Uses our explicit-color HistoryPill so the background
+            is actually visible (the ADS `default` Lozenge's bg resolves
+            to the border-color token which is near-invisible on white). */}
         {showTypeBadge && (
           <div className="mt-2">
-            <Lozenge appearance="default" isBold={false}>
-              HISTORY
-            </Lozenge>
+            <HistoryPill />
           </div>
         )}
 
@@ -128,6 +163,50 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
                 >
                   {formatDisplayValue(fieldChange.newValue)}
                 </span>
+              </div>
+            ) : isUser ? (
+              // Assignee / Reporter — Avatar + name on each side.
+              <div className="flex items-center gap-3 flex-wrap text-[13px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]">
+                {fieldChange.oldValue ? (
+                  <span className="inline-flex items-center gap-2">
+                    <CatalystAvatar size="small" name={fieldChange.oldValue} />
+                    <span>{fieldChange.oldValue}</span>
+                  </span>
+                ) : (
+                  <span className="italic text-[var(--ds-text-subtlest,#6B778C)]">None</span>
+                )}
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] shrink-0" />
+                {fieldChange.newValue ? (
+                  <span className="inline-flex items-center gap-2">
+                    <CatalystAvatar size="small" name={fieldChange.newValue} />
+                    <span>{fieldChange.newValue}</span>
+                  </span>
+                ) : (
+                  <span className="italic text-[var(--ds-text-subtlest,#6B778C)]">None</span>
+                )}
+              </div>
+            ) : isPriority ? (
+              // Priority — colored arrow glyph + label.
+              <div className="flex items-center gap-3 flex-wrap text-[13px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]">
+                {fieldChange.oldValue ? (
+                  <PriorityChip value={fieldChange.oldValue} />
+                ) : (
+                  <span className="italic text-[var(--ds-text-subtlest,#6B778C)]">None</span>
+                )}
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] shrink-0" />
+                {fieldChange.newValue ? (
+                  <PriorityChip value={fieldChange.newValue} />
+                ) : (
+                  <span className="italic text-[var(--ds-text-subtlest,#6B778C)]">None</span>
+                )}
+              </div>
+            ) : isTicketLink ? (
+              // Parent / Epic / Link — smart card when value looks
+              // like a ticket key, plain text otherwise.
+              <div className="flex items-center gap-3 flex-wrap text-[13px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]">
+                <TicketLinkSide value={fieldChange.oldValue} />
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] shrink-0" />
+                <TicketLinkSide value={fieldChange.newValue} />
               </div>
             ) : isRich ? (
               <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-start">

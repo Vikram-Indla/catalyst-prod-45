@@ -486,7 +486,52 @@ function FeedSection({
             {label}
           </h4>
         </div>
-        {/* "Ask Caty" digest CTA removed 2026-06-03 per Vikram directive. */}
+        {/* "Ask Caty — summarize N" CTA — opens the SummarizeDigestModal
+            with interactive triage for every mention/comment in this
+            section. Static rainbow border per the AI affordance carve-out. */}
+        {onOpenDigest && (
+          <div
+            style={{
+              display: 'inline-flex',
+              padding: 2,
+              borderRadius: 20,
+              background: ASK_CATY_RAINBOW,
+            }}
+          >
+            <button
+              type="button"
+              onClick={onOpenDigest}
+              aria-label={`Ask Caty to summarize ${rows.length} ${rows.length === 1 ? 'item' : 'items'}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                height: 28,
+                padding: '0 12px',
+                border: 'none',
+                borderRadius: 18,
+                background: token('elevation.surface', '#FFFFFF'),
+                cursor: 'pointer',
+                color: token('color.text', '#172B4D'),
+                fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
+                fontSize: 12,
+                fontWeight: 600,
+                lineHeight: 1,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = token('elevation.surface.hovered', '#F1F2F4');
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = token('elevation.surface', '#FFFFFF');
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
+                <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" />
+              </svg>
+              Ask Caty — summarize {rows.length}
+            </button>
+          </div>
+        )}
       </div>
       <p
         style={{
@@ -1736,6 +1781,66 @@ function ForYouReplyTree({
   const mentionableUsers = useMentionableUsersFY();
   const queryClient = useQueryClient();
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
+  // Per-reply Ask Caty state. `suggestPhaseByReply` tracks which
+  // reply's tile is busy / errored; `suggestDefaultByReply` holds
+  // the AI text we want the inline composer to mount with so the
+  // user can edit before posting.
+  const [suggestPhaseByReply, setSuggestPhaseByReply] =
+    useState<Record<string, 'idle' | 'loading' | 'done' | 'error'>>({});
+  const [suggestDefaultByReply, setSuggestDefaultByReply] =
+    useState<Record<string, string>>({});
+  const [composerKeyByReply, setComposerKeyByReply] =
+    useState<Record<string, number>>({});
+
+  const handleSuggestReplyTo = async (replyId: string, parentBody: string) => {
+    setSuggestPhaseByReply((p) => ({ ...p, [replyId]: 'loading' }));
+    try {
+      const res = await fetchFunction('ai-improve-comment', {
+        method: 'POST',
+        body: JSON.stringify({
+          improve_type: 'suggest_reply',
+          parent_comment: parentBody,
+          issue_summary: '',
+          issue_type: '',
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!res.ok || !res.body) {
+        setSuggestPhaseByReply((p) => ({ ...p, [replyId]: 'error' }));
+        catalystToast.error('Could not generate a suggestion. Try again.');
+        return;
+      }
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let buffer = '';
+      let accum = '';
+      while (true) {
+        const { value: chunk, done } = await reader.read();
+        if (done) break;
+        buffer += dec.decode(chunk, { stream: true });
+        let nl;
+        while ((nl = buffer.indexOf('\n')) !== -1) {
+          const line = buffer.slice(0, nl).trim();
+          buffer = buffer.slice(nl + 1);
+          if (!line) continue;
+          try {
+            const ev = JSON.parse(line);
+            if (ev.type === 'text' && typeof ev.delta === 'string') accum += ev.delta;
+          } catch { /* skip */ }
+        }
+      }
+      if (accum.length > 0) {
+        setSuggestDefaultByReply((d) => ({ ...d, [replyId]: accum }));
+        setComposerKeyByReply((k) => ({ ...k, [replyId]: (k[replyId] ?? 0) + 1 }));
+        setReplyingToId(replyId);
+        setSuggestPhaseByReply((p) => ({ ...p, [replyId]: 'done' }));
+      } else {
+        setSuggestPhaseByReply((p) => ({ ...p, [replyId]: 'error' }));
+      }
+    } catch {
+      setSuggestPhaseByReply((p) => ({ ...p, [replyId]: 'error' }));
+    }
+  };
 
   // Fetch every reply on this work item — we filter to descendants of
   // parentResolvedId client-side. Keyed on issueUuid so a card shares
@@ -1881,6 +1986,9 @@ function ForYouReplyTree({
   // CommentNode so every nesting level renders consistently.
   const renderReply = (c: CdsComment) => {
     const canEdit = !!user && c.author.id === user.id;
+    const phase = suggestPhaseByReply[c.id] ?? 'idle';
+    const defaultText = suggestDefaultByReply[c.id] ?? '';
+    const composerKey = composerKeyByReply[c.id] ?? 0;
     return (
       <>
         <Comment
@@ -1896,6 +2004,25 @@ function ForYouReplyTree({
             />
           }
         />
+        {/* Per-reply Ask Caty tile — same rainbow border + hover bg
+            + inline error state used at the top-level For You card. */}
+        {phase !== 'loading' ? (
+          <SuggestReplyTile
+            phase={phase === 'error' ? 'error' : 'idle'}
+            onSuggest={() => handleSuggestReplyTo(c.id, c.content || '')}
+          />
+        ) : (
+          <div
+            style={{
+              marginBlockStart: 8,
+              marginInlineStart: 34,
+              font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+              color: token('color.text.subtle', '#505258'),
+            }}
+          >
+            Ask Caty…
+          </div>
+        )}
         {replyingToId === c.id && (
           <div style={{ paddingLeft: 44, paddingTop: 8 }}>
             <div style={{
@@ -1904,13 +2031,20 @@ function ForYouReplyTree({
               marginBottom: 6,
             }}>Replying to {c.author.name}</div>
             <CommentEditor
+              key={`fy-nested-reply-${c.id}-${composerKey}`}
               currentUser={currentUser}
               mentionableUsers={mentionableUsers}
+              defaultValue={defaultText}
               autoFocus
               placeholder={`Reply to ${c.author.name}…`}
               onSubmit={async (content) => {
                 await onSubmitReplyTo(c.id, content);
                 setReplyingToId(null);
+                setSuggestDefaultByReply((d) => {
+                  const next = { ...d };
+                  delete next[c.id];
+                  return next;
+                });
                 queryClient.invalidateQueries({ queryKey: ['fy-reply-tree', issueUuid] });
               }}
               onCancel={() => setReplyingToId(null)}
@@ -2216,24 +2350,28 @@ function ForYouCardFooter({
               issueSummary: row.issueSummary,
             }}
           />
-          {/* Ask Caty — suggest a reply (stream into the editor). */}
-          <button
-            type="button"
-            onClick={handleSuggestReply}
-            disabled={suggestPhase === 'loading'}
-            style={{
-              marginBlockStart: 6,
-              border: 'none',
-              background: 'transparent',
-              color: token('color.link', '#0C66E4'),
-              fontSize: 12,
-              fontWeight: 500,
-              cursor: suggestPhase === 'loading' ? 'wait' : 'pointer',
-              padding: '4px 6px',
-            }}
-          >
-            {suggestPhase === 'loading' ? 'Ask Caty…' : '✦ Ask Caty to suggest a reply'}
-          </button>
+        </div>
+      )}
+      {/* Ask Caty — suggest a reply. ALWAYS visible under the toolbar
+          (matching the legacy ReplyComposer behavior). Clicking it
+          triggers handleSuggestReply which opens the composer
+          pre-filled with the AI-generated suggestion. */}
+      {suggestPhase !== 'loading' && (
+        <SuggestReplyTile
+          phase={suggestPhase === 'error' ? 'error' : 'idle'}
+          onSuggest={handleSuggestReply}
+        />
+      )}
+      {suggestPhase === 'loading' && (
+        <div
+          style={{
+            marginBlockStart: 8,
+            marginInlineStart: 34,
+            font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+            color: token('color.text.subtle', '#505258'),
+          }}
+        >
+          Ask Caty…
         </div>
       )}
       {/* Nested reply tree — every descendant of this top-level

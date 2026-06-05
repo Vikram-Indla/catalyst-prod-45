@@ -113,7 +113,7 @@ function CommentRow({ comment }: { comment: any }) {
   );
 }
 
-function HistoryRow({ entry }: { entry: any }) {
+function HistoryRow({ entry, showTypePill = false }: { entry: any; showTypePill?: boolean }) {
   const name = entry._author_name ?? 'System';
   const field = entry.field_name ?? '';
   const oldVal = entry.old_display ?? entry.old_value ?? null;
@@ -135,6 +135,27 @@ function HistoryRow({ entry }: { entry: any }) {
           )}
         </div>
         <div className="ap-timeline-time">{fmtRel(entry.created_at)}</div>
+        {showTypePill && (
+          <div style={{ marginTop: 6 }}>
+            <span
+              style={{
+                display: 'inline-block',
+                padding: '2px 8px',
+                borderRadius: 3,
+                border: '1px solid #DFE1E6',
+                background: '#F4F5F7',
+                color: '#42526E',
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: 0.5,
+                lineHeight: '14px',
+                textTransform: 'uppercase',
+              }}
+            >
+              HISTORY
+            </span>
+          </div>
+        )}
         {!isCreated && (oldVal || newVal) && (
           <div className="ap-history-change">
             {isStatus ? (
@@ -372,7 +393,7 @@ export function ActivityPanelPilot({
           feed.map((entry, i) =>
             entry.type === 'comment'
               ? <CommentRow key={entry.data.id ?? `c-${i}`} comment={entry.data} />
-              : <HistoryRow key={entry.data.id ?? `h-${i}`} entry={entry.data} />
+              : <HistoryRow key={entry.data.id ?? `h-${i}`} entry={entry.data} showTypePill={tab === 'all'} />
           )
         ) : (
           <div className="ap-empty">No activity yet</div>
