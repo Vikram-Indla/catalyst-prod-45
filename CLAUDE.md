@@ -4,6 +4,30 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 🎨 CATALYST DESIGN SYSTEM — SINGLE SOURCE OF TRUTH (P0, Non-Negotiable)
+
+**The canonical Catalyst Design System lives in the published Storybook, exposed as an MCP server. It is the ONLY source of truth for Catalyst component design, ADS token usage, and visual contracts.**
+
+### The endpoint
+
+```
+catalyst-storybook MCP → https://main--6a22d4960f743958c893234b.chromatic.com/mcp
+```
+
+Registered in `.mcp.json` as `catalyst-storybook` (type: http). Use `ToolSearch` to load its tools, then query it for any Catalyst component, foundation token, pattern, or page layout BEFORE designing, building, or critiquing a UI surface.
+
+### The rule
+
+1. **Before building or restyling ANY component**, query the `catalyst-storybook` MCP for the canonical story of that component (or its nearest design-system equivalent). The Storybook story is the reference — match its tokens, spacing, typography, states, and structure.
+2. **The Storybook + Atlassian Design System (https://atlassian.design/) are the two — and only — design authorities.** Storybook is the Catalyst-specific instantiation; ADS is the upstream primitive/token catalogue. Nothing else (no ad-hoc hex, no Figma export, no screenshot inference) overrides them.
+3. **The design system tree** (query the MCP to browse): Foundations (Colors, Typography, Spacing, Elevation, Motion) · Components (Button, Badge, Avatar, Status, Tag, Dropdown, Modal, Drawer, Spinner, Tooltip) · Enterprise Components (Dynamic Table, Rich Text Editor canonical+custom, Kanban Board, Sprint Board, Release/Portfolio Selector, Work Item Hierarchy Tree, Activity Section, Child Issues, Linked Issues) · Patterns (CRUD, Bulk Edit, Approval, Workflow) · Pages (Business Request, Epic, Feature, Story, Subtask) · Catalyst AI & Feed (Caty Insight Card, Caty Rainbow CTA, AI Intelligence Button, Jira Issue Type Icon, For You Row).
+4. **When a story exists for a surface you're touching, ADOPT it** — do not reimplement (see "ADOPT CANONICAL COMPONENTS" rule below). When a story does NOT exist, the closest ADS primitive + token map is the fallback, never invented values.
+5. **design-critique and catalyst-agent MUST consult this MCP** as their design authority before scoring or routing any UI work.
+
+**Severity:** P0 — building or critiquing UI without first consulting the canonical Storybook MCP is a process violation. The Storybook is the contract; drift from it is a defect.
+
+---
+
 ## 📵 SCREENSHOT CHECKS BANNED FOR FUNCTIONALITY BUILDING (P0, Non-Negotiable)
 
 **When building or verifying any FUNCTIONAL behavior, use MCP / DOM / CSS / Atlassian REST / Supabase probes — NEVER screenshots.**

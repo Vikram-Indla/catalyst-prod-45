@@ -45,6 +45,7 @@ Ground every routing decision in **what's actually on Jira and Catalyst right no
 13. **Jira REST lock.** Use `/rest/api/3/search/jql` (proven in `wh-jira-bulk-sync`). Never use deprecated `/rest/api/3/search`.
 14. **CORE_DIRECTIVES.md preambles every dispatch.** Prepend Directives 1-5 to every persona prompt.
 15. **ADS resource fetch is mandatory.** Step 4.6 runs signal-gated for every surface. Resources not consulted = GREEN SIGNAL withheld (dimension 8). A GAP REPORT row without an ADS URL citation in the Fix column is structurally invalid.
+16. **Catalyst Storybook MCP is the design source of truth.** For ANY UI surface, query the `catalyst-storybook` MCP (`https://main--6a22d4960f743958c893234b.chromatic.com/mcp`, registered in `.mcp.json`; load tools via `ToolSearch`) for the canonical story of each component BEFORE proposing or routing a design fix. The published Storybook + Atlassian Design System (https://atlassian.design/) are the ONLY two design authorities — nothing else overrides them. Every UI GAP REPORT row's Fix column must cite either the matching Storybook story OR an ADS token/component (a row citing neither is structurally invalid). When a Storybook story exists for the surface, ADOPT it (parameterise/reuse) — never reimplement. When none exists, the nearest ADS primitive + token map is the fallback, never invented values.
 
 ## Max-3-questions gate (fires between Step 1 and Step 2)
 

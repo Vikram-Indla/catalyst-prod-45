@@ -27,6 +27,27 @@ declared done. Pairs with `jira-compare` (pixel parity) and `ads-validator`
 
 ---
 
+## 🎨 SOURCE OF TRUTH — CATALYST STORYBOOK MCP (mandatory — runs FIRST, before any scoring)
+
+**The canonical Catalyst Design System lives in the published Storybook, exposed as an MCP server. It and the Atlassian Design System (https://atlassian.design/) are the ONLY design authorities. Consult the Storybook MCP BEFORE scoring any heuristic.**
+
+```
+catalyst-storybook MCP → https://main--6a22d4960f743958c893234b.chromatic.com/mcp
+```
+
+(Registered in the repo's `.mcp.json` as `catalyst-storybook`, type http. Load its tools via `ToolSearch`.)
+
+### Step 0 (before the ADS Sensor and Council pre-scan)
+
+1. **Identify the component(s) on the surface under critique.**
+2. **Query the `catalyst-storybook` MCP for the canonical story** of each (e.g. Button, Status, Dynamic Table, Rich Text Editor, Linked Issues, the relevant Page layout, etc.). The story is the reference contract — its tokens, spacing, typography, states, and structure are authoritative.
+3. **Score every heuristic against the Storybook canonical**, not against intuition or a screenshot. A surface that diverges from its Storybook story is a finding (severity by impact). If no story exists for the surface, fall back to the nearest ADS primitive + token map — never invented values.
+4. **Cite the Storybook story (or ADS token/component) in every finding.** "Looks off" without a Storybook/ADS citation is rejected, same as a screenshot-only verdict.
+
+The Storybook MCP supersedes any other design reference. When it and a screenshot disagree, the Storybook wins.
+
+---
+
 ## Soft Announcement (mandatory — fires when skill activates)
 
 When this skill fires, emit this exact block in chat BEFORE scoring:
