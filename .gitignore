@@ -84,6 +84,3 @@ package-lock.json
 .obsidian
 
 *storybook.log
-
-# Storybook boilerplate — no Catalyst content
-src/stories/
