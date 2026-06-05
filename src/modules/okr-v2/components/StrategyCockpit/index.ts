@@ -3,6 +3,5 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export { StrategyCockpit } from './StrategyCockpit';
-export { ThemeFilterBar } from './ThemeFilterBar';
 export { StrategyTree } from './StrategyTree';
 export { AnalyticsDrawerContent } from './AnalyticsDrawerContent';

@@ -13,7 +13,6 @@ export { DrawerPanel, DrawerSection } from './DrawerPanel';
 export { SurfaceCard } from './SurfaceCard';
 
 // Empty State Components
-export { CatalystEmptyState } from './CatalystEmptyState';
 
 // UI Components
 export { StatusPill } from './StatusPill';

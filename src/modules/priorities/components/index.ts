@@ -11,4 +11,3 @@ export { PriWeekHeader } from './PriWeekHeader';
 export { PriSidePanel } from './PriSidePanel';
 export { PriCheckoutModal } from './PriCheckoutModal';
 export { PriToastContainer } from './PriToastContainer';
-export { PriEmptyState } from './PriEmptyState';

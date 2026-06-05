@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { T10ListCardMinimal } from './T10ListCardMinimal';
-import { T10EmptyState } from './T10EmptyState';
+import { EmptyState } from '@/components/ads';
 import type { T10ListSummary } from '../../types';
 
 interface T10ListsContainerNewProps {
@@ -36,7 +36,7 @@ export function T10ListsContainerNew({
 
   // Empty state
   if (!lists || lists.length === 0) {
-    return <T10EmptyState onCreateList={onCreateList} />;
+    return <EmptyState header="No lists yet" description="Create your first list to get started" />;
   }
 
   // List cards
