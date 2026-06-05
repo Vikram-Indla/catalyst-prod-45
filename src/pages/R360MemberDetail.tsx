@@ -604,7 +604,8 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
             </div>
             </>)}
 
-            {/* ── Period Navigation — V12 Redesign ── */}
+            {/* ── Period Navigation — V12 Redesign (hidden for board: pure kanban, no time scope) ── */}
+            {view !== 'board' && (
             <WeekStripCollapsible
               periodType={periodType}
               onPeriodTypeChange={handlePeriodTypeChange}
@@ -620,6 +621,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
               selectedDay={selectedDay}
               onDaySelect={setSelectedDay}
             />
+            )}
           </div>{/* end sticky wrapper */}
 
           {/* ── Views ── */}
@@ -690,7 +692,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                 </div>
               )}
               {view === 'chronology' && <ChronologyView items={filteredWeekItems} onSelect={embedded ? (item) => useGlobalSearchStore.getState().openDetail({ id: item.item_key }) : setSelectedItem} weekStart={period.start} weekEnd={period.end} />}
-              {view === 'board' && <BoardView items={filteredWeekItems} onSelect={embedded ? (item) => useGlobalSearchStore.getState().openDetail({ id: item.item_key }) : setSelectedItem} quarterLabel={embedded ? `Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}` : undefined} />}
+              {view === 'board' && <BoardView items={workItems} onSelect={embedded ? (item) => useGlobalSearchStore.getState().openDetail({ id: item.item_key }) : setSelectedItem} />}
             </>
           )}
 

@@ -53,7 +53,6 @@ import AiThemePanel from '@/components/for-you/atlaskit/AiThemePanel';
 import AgeingPanel from '@/components/for-you/atlaskit/AgeingPanel';
 import R360Panel from '@/components/for-you/atlaskit/R360Panel';
 import BoardPanel from '@/components/for-you/atlaskit/BoardPanel';
-import TimelinePanel from '@/components/for-you/atlaskit/TimelinePanel';
 
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
@@ -149,7 +148,7 @@ export default function ForYouPageAtlaskit() {
   );
 
   const VALID_TABS: Set<string> = useMemo(
-    () => new Set(['ai-theme', 'recommended', 'assigned', 'starred', 'r360', 'ageing', 'board', 'timeline']),
+    () => new Set(['ai-theme', 'recommended', 'assigned', 'starred', 'r360', 'ageing', 'board']),
     [],
   );
 
@@ -257,7 +256,6 @@ export default function ForYouPageAtlaskit() {
       case 'ageing':      return <AgeingPanel />;
       case 'r360':        return <R360Panel />;
       case 'board':       return <BoardPanel />;
-      case 'timeline':    return <TimelinePanel />;
       case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
       case 'assigned':    return <AssignedPanel    {...panelProps} onAskCatyThemify={() => handleTabChange('ai-theme')} />;
       case 'starred':     return <StarredPanel     {...panelProps} onSwitchTab={onSwitchTab} />;
@@ -268,8 +266,8 @@ export default function ForYouPageAtlaskit() {
   // AI Theme and Ageing render their own vertical lists/grids internally —
   // neither shares the client-side pagination window that the row-feed tabs
   // use. Suppress Load more + sentinel for those tabs to avoid dead chrome.
-  const showPagination = activeTab !== 'ai-theme' && activeTab !== 'ageing' && activeTab !== 'r360' && activeTab !== 'board' && activeTab !== 'timeline';
-  const isR360Active = activeTab === 'r360' || activeTab === 'board' || activeTab === 'timeline';
+  const showPagination = activeTab !== 'ai-theme' && activeTab !== 'ageing' && activeTab !== 'r360' && activeTab !== 'board';
+  const isR360Active = activeTab === 'r360' || activeTab === 'board';
 
   return (
     <div

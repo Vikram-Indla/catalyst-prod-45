@@ -30,17 +30,25 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { WorkItem, HubType, WorkMode, WorkGroup } from '@/hooks/useForYouData';
 
-type AgeBracket = 'archivingSoon' | 'ninetyPlus' | 'sixtyNinety' | 'thirtySixty';
-const BRACKET_ORDER: AgeBracket[] = ['archivingSoon', 'thirtySixty', 'sixtyNinety', 'ninetyPlus'];
+type AgeBracket = 'needsAttention' | 'coolingDown' | 'archivingSoon' | 'ninetyPlus' | 'sixtyNinety' | 'thirtySixty';
+const BRACKET_ORDER: AgeBracket[] = ['needsAttention', 'coolingDown', 'archivingSoon', 'thirtySixty', 'sixtyNinety', 'ninetyPlus'];
 const STALE_DAYS = 21;
 const ARCHIVE_THRESHOLD_DAYS = 60;
 
-function bracketFor(daysOpen: number, isArchived: boolean): AgeBracket | null {
+function daysSinceUpdate(updatedAt: string | null): number {
+  if (!updatedAt) return 999;
+  return Math.floor((Date.now() - new Date(updatedAt).getTime()) / 86_400_000);
+}
+
+function bracketFor(daysOpen: number, isArchived: boolean, jiraUpdatedAt?: string | null): AgeBracket | null {
   if (isArchived && daysOpen >= 90) return 'ninetyPlus';
   if (isArchived && daysOpen >= 60) return 'sixtyNinety';
   if (!isArchived && daysOpen >= 53 && daysOpen < 60) return 'archivingSoon';
   if (!isArchived && daysOpen >= 30 && daysOpen < 60) return 'thirtySixty';
   if (!isArchived && daysOpen >= 60) return 'ninetyPlus';
+  const updateAge = daysSinceUpdate(jiraUpdatedAt ?? null);
+  if (!isArchived && daysOpen < 30 && updateAge <= 7) return 'needsAttention';
+  if (!isArchived && daysOpen < 30 && updateAge <= 14) return 'coolingDown';
   return null;
 }
 
@@ -122,10 +130,12 @@ function ageingToWorkItem(a: AgeingItem, jiraBaseUrl: string | null): WorkItem {
 // Left border color uses ADS border-intent tokens to visually separate tiers.
 // fontWeight 653 matches Jira section headers (CLAUDE.md 2026-05-12 re-probe).
 const BRACKET_ACCENT: Record<AgeBracket, string> = {
-  archivingSoon: token('color.border.warning', '#FF991F'),
-  thirtySixty:   token('color.border.information', '#1D7AFC'),
-  sixtyNinety:   token('color.border.bold', '#758195'),
-  ninetyPlus:    token('color.border.danger', '#E5493A'),
+  needsAttention: token('color.border.success', '#22A06B'),
+  coolingDown:    token('color.border.warning', '#CF9F02'),
+  archivingSoon:  token('color.border.warning', '#FF991F'),
+  thirtySixty:    token('color.border.information', '#1D7AFC'),
+  sixtyNinety:    token('color.border.bold', '#758195'),
+  ninetyPlus:     token('color.border.danger', '#E5493A'),
 };
 
 function SectionHeading({ label, count, collapsed, onToggle, isArchived, bracket }: {
@@ -365,7 +375,7 @@ export default function AgeingPanel() {
     const buckets = new Map<AgeBracket, AgeingItem[]>();
     for (const a of filtered) {
       const isArchived = !!a.archived_at;
-      const b = bracketFor(a.days_open, isArchived);
+      const b = bracketFor(a.days_open, isArchived, a.jira_updated_at);
       if (!b) continue;
       if (!buckets.has(b)) buckets.set(b, []);
       buckets.get(b)!.push(a);
@@ -375,6 +385,8 @@ export default function AgeingPanel() {
     }
 
     const labels: Record<AgeBracket, string> = {
+      needsAttention: 'Needs attention — updated in last 7 days',
+      coolingDown: 'Cooling down — 7–14 days since last update',
       archivingSoon: 'Auto-archiving soon — in < 7 days',
       ninetyPlus: '90+ days — critical',
       sixtyNinety: '60–90 days',
