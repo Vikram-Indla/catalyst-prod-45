@@ -930,13 +930,6 @@ export function EditablePriority({
             fontFamily: "inherit",
             textAlign: "left",
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background =
-              "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "none";
-          }}
         >
           {hasValue ? (
             <PriorityChip value={currentPriority} />
