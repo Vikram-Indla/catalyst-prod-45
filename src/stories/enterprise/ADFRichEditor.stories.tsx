@@ -26,7 +26,7 @@ function EditorHarness({ initialAdf }: { initialAdf: AdfDoc | null }) {
 }
 
 const meta: Meta<typeof EditorHarness> = {
-  title: 'Enterprise Components/ADF Rich Editor',
+  title: 'Enterprise Components/Rich Text Editor (Canonical ADF)',
   component: EditorHarness,
   parameters: { layout: 'padded' },
 };
