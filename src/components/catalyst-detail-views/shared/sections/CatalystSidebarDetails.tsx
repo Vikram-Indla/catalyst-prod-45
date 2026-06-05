@@ -117,8 +117,6 @@ import {
   CatalystIRDemoDateDisplay,
   CatalystIRFigmaApprovedDisplay,
   CatalystIRDemoApprovedDisplay,
-  CatalystActualStartDisplay,
-  CatalystActualEndDisplay,
 } from './CatalystReadOnlyCustomFields';
 
 /**
@@ -731,11 +729,65 @@ export function CatalystSidebarDetails({
                   }}
                 />
               </FieldRow>
-              <FieldRow label="Actual start">
-                <CatalystActualStartDisplay issue={issue} />
+              <FieldRow label="Actual start" direction="row">
+                <CatalystDueDateField
+                  value={((issue as any)?.raw_json?.fields?.customfield_10109 ?? null) as string | null}
+                  onSave={async (date) => {
+                    const { data: row, error: readErr } = await (supabase as any)
+                      .from('ph_issues')
+                      .select('raw_json')
+                      .eq('issue_key', issue.issue_key)
+                      .single();
+                    if (readErr) {
+                      console.error('[CatalystSidebarDetails] actual start read failed:', readErr.message);
+                      throw readErr;
+                    }
+                    const current = (row?.raw_json as any) || {};
+                    const newRawJson = {
+                      ...current,
+                      fields: { ...(current.fields || {}), customfield_10109: date },
+                    };
+                    const { error: writeErr } = await (supabase as any)
+                      .from('ph_issues')
+                      .update({ raw_json: newRawJson })
+                      .eq('issue_key', issue.issue_key);
+                    if (writeErr) {
+                      console.error('[CatalystSidebarDetails] actual start save failed:', writeErr.message);
+                      throw writeErr;
+                    }
+                    invalidateIssue();
+                  }}
+                />
               </FieldRow>
-              <FieldRow label="Actual end">
-                <CatalystActualEndDisplay issue={issue} />
+              <FieldRow label="Actual end" direction="row">
+                <CatalystDueDateField
+                  value={((issue as any)?.raw_json?.fields?.customfield_10108 ?? null) as string | null}
+                  onSave={async (date) => {
+                    const { data: row, error: readErr } = await (supabase as any)
+                      .from('ph_issues')
+                      .select('raw_json')
+                      .eq('issue_key', issue.issue_key)
+                      .single();
+                    if (readErr) {
+                      console.error('[CatalystSidebarDetails] actual end read failed:', readErr.message);
+                      throw readErr;
+                    }
+                    const current = (row?.raw_json as any) || {};
+                    const newRawJson = {
+                      ...current,
+                      fields: { ...(current.fields || {}), customfield_10108: date },
+                    };
+                    const { error: writeErr } = await (supabase as any)
+                      .from('ph_issues')
+                      .update({ raw_json: newRawJson })
+                      .eq('issue_key', issue.issue_key);
+                    if (writeErr) {
+                      console.error('[CatalystSidebarDetails] actual end save failed:', writeErr.message);
+                      throw writeErr;
+                    }
+                    invalidateIssue();
+                  }}
+                />
               </FieldRow>
             </>
           )}
