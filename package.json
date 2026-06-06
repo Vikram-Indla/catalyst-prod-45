@@ -19,7 +19,9 @@
     "test:visual:update": "playwright test --config=playwright.ads.config.ts --project=visual --update-snapshots",
     "test:a11y": "playwright test --config=playwright.ads.config.ts --project=a11y",
     "scan:components": "tsx scripts/scan-components.ts",
-    "scan:ads-violations": "tsx scripts/scan-ads-violations.ts"
+    "scan:ads-violations": "tsx scripts/scan-ads-violations.ts",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@atlaskit/adf-schema": "52.11.4",
@@ -30,7 +32,6 @@
     "@atlaskit/breadcrumbs": "^16.1.0",
     "@atlaskit/button": "^20.5.3",
     "@atlaskit/checkbox": "^17.3.12",
-    "@atlaskit/css": "^0.9.0",
     "@atlaskit/css-reset": "^7.4.5",
     "@atlaskit/datetime-picker": "^17.7.0",
     "@atlaskit/drawer": "^12.0.7",
@@ -49,8 +50,6 @@
     "@atlaskit/layering": "^3.6.2",
     "@atlaskit/link": "^3.4.2",
     "@atlaskit/lozenge": "^11.14.0",
-    "@atlaskit/media-core": "^37.0.0",
-    "@atlaskit/media-state": "^2.0.0",
     "@atlaskit/menu": "^8.5.0",
     "@atlaskit/modal-dialog": "^14.15.1",
     "@atlaskit/navigation-system": "^8.0.0",
@@ -58,7 +57,6 @@
     "@atlaskit/popup": "^4.16.5",
     "@atlaskit/pragmatic-drag-and-drop": "^1.7.5",
     "@atlaskit/pragmatic-drag-and-drop-auto-scroll": "^2.1.2",
-    "@atlaskit/pragmatic-drag-and-drop-flourish": "^1.2.2",
     "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.1.0",
     "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator": "^3.1.2",
     "@atlaskit/primitives": "^13.6.0",
@@ -73,7 +71,6 @@
     "@atlaskit/tabs": "^19.1.0",
     "@atlaskit/textarea": "^7.1.0",
     "@atlaskit/textfield": "^6.7.0",
-    "@atlaskit/theme": "^23.2.0",
     "@atlaskit/toggle": "^15.6.0",
     "@atlaskit/tokens": "^13.0.1",
     "@atlaskit/tooltip": "^21.1.6",
@@ -211,6 +208,7 @@
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react-swc": "^3.11.0",
     "autoprefixer": "^10.4.21",
+    "chromatic": "^17.2.0",
     "esbuild": "^0.28.0",
     "eslint": "^9.32.0",
     "eslint-plugin-react-hooks": "^5.2.0",
@@ -223,7 +221,18 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0",
-    "vite": "^5.4.21"
+    "vite": "^5.4.21",
+    "storybook": "^10.4.2",
+    "@storybook/react-vite": "^10.4.2",
+    "@chromatic-com/storybook": "^5.2.1",
+    "@storybook/addon-vitest": "^10.4.2",
+    "@storybook/addon-a11y": "^10.4.2",
+    "@storybook/addon-docs": "^10.4.2",
+    "@storybook/addon-mcp": "^0.6.0",
+    "eslint-plugin-storybook": "^10.4.2",
+    "playwright": "^1.60.0",
+    "@vitest/browser-playwright": "^4.0.18",
+    "@vitest/coverage-v8": "^4.0.18"
   },
   "overrides": {
     "relay-runtime": "14.1.0",
@@ -231,6 +240,5 @@
     "@atlaskit/editor-plugins": "13.0.120",
     "@atlaskit/editor-plugin-paste": "9.1.18",
     "@atlaskit/editor-plugin-table": "19.0.0",
-    "@atlaskit/link-datasource": "5.3.0"
   }
 }
