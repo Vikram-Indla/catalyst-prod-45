@@ -23,22 +23,46 @@ export const StatusComponents: StoryObj = {
           source: 'src/components/catalyst-detail-views/shared/sections/CatalystStatusPill.tsx',
           consumers: 16,
           ads: '@atlaskit/lozenge',
+          adsCloseness: 'close',
         }}
         duplicates={[
-          { name: 'StatusLozenge', source: 'src/components/ui/StatusLozenge.tsx', consumers: 8, status: 'wrapper', breakageRisk: 'Thin wrapper around @atlaskit/lozenge — safe, different API surface' },
-          { name: 'JiraStatusLozenge', source: 'src/components/workflow/JiraStatusLozenge.tsx', consumers: 5, status: 'wrapper', breakageRisk: 'Adds Jira workflow color mapping — wrapper is valid' },
-          { name: 'WorkItemStatusLozenge', source: 'src/components/workflow/WorkItemStatusLozenge.tsx', consumers: 3, status: 'deprecated', breakageRisk: 'Legacy wrapper — consumers should migrate to CatalystStatusPill' },
-          { name: 'StatusPill (shared)', source: 'src/components/shared/StatusPill.tsx', consumers: 4, status: 'replace', breakageRisk: 'Older implementation — props differ, migration needs field mapping' },
-          { name: 'StatusPill (in-jira)', source: 'src/modules/in-jira/components/StatusPill.tsx', consumers: 2, status: 'replace', breakageRisk: 'Module-specific clone — replace with canonical' },
-          { name: 'StatusBadge (hierarchy)', source: 'src/components/hierarchy/StatusBadge.tsx', consumers: 2, status: 'replace', breakageRisk: 'Hand-rolled div with inline styles' },
-          { name: 'StatusBadge (defects)', source: 'src/components/defects/g25/StatusBadge.tsx', consumers: 1, status: 'replace', breakageRisk: 'Isolated to defects module' },
-          { name: 'T10StatusBadge', source: 'src/modules/task10/components/landing/T10StatusBadge.tsx', consumers: 2, status: 'replace', breakageRisk: 'Task10 module — different status set' },
-          { name: 'OkrStatusPill', source: 'src/modules/okr-v2/components/shared/OkrStatusPill.tsx', consumers: 3, status: 'keep', breakageRisk: 'OKR-specific statuses (on-track/at-risk/off-track) — different domain' },
-          { name: 'ConnectionStatusBadge', source: 'src/modules/workhub/admin/components/ConnectionStatusBadge.tsx', consumers: 1, status: 'keep', breakageRisk: 'Admin connection status — different domain' },
-          { name: 'ThemeStatusBadge', source: 'src/components/workhub/shared/ThemeStatusBadge.tsx', consumers: 1, status: 'keep', breakageRisk: 'Theme-specific — different domain' },
-          { name: 'TablePill', source: 'src/components/incidents/TablePill.tsx', consumers: 1, status: 'replace', breakageRisk: 'Incident table — simple replacement' },
-          { name: 'SourceBadge', source: 'src/components/producthub/shared/SourceBadge.tsx', consumers: 1, status: 'keep', breakageRisk: 'Source type badge — different purpose' },
+          { name: 'StatusLozenge', source: 'src/components/ui/StatusLozenge.tsx', consumers: 8, status: 'wrapper', adsCloseness: 'close', breakageRisk: 'Thin wrapper around @atlaskit/lozenge — safe, different API surface' },
+          { name: 'JiraStatusLozenge', source: 'src/components/workflow/JiraStatusLozenge.tsx', consumers: 5, status: 'wrapper', adsCloseness: 'close', breakageRisk: 'Adds Jira workflow color mapping — wrapper is valid' },
+          { name: 'WorkItemStatusLozenge', source: 'src/components/workflow/WorkItemStatusLozenge.tsx', consumers: 3, status: 'deprecated', adsCloseness: 'partial', breakageRisk: 'Legacy wrapper — consumers should migrate to CatalystStatusPill' },
+          { name: 'StatusPill (shared)', source: 'src/components/shared/StatusPill.tsx', consumers: 4, status: 'replace', adsCloseness: 'partial', breakageRisk: 'Older implementation — props differ, migration needs field mapping' },
+          { name: 'StatusPill (in-jira)', source: 'src/modules/in-jira/components/StatusPill.tsx', consumers: 2, status: 'replace', adsCloseness: 'divergent', breakageRisk: 'Module-specific clone — replace with canonical' },
+          { name: 'StatusBadge (hierarchy)', source: 'src/components/hierarchy/StatusBadge.tsx', consumers: 2, status: 'replace', adsCloseness: 'none', breakageRisk: 'Hand-rolled div with inline styles — zero ADS usage' },
+          { name: 'StatusBadge (defects)', source: 'src/components/defects/g25/StatusBadge.tsx', consumers: 1, status: 'replace', adsCloseness: 'none', breakageRisk: 'Isolated to defects module — hand-rolled' },
+          { name: 'T10StatusBadge', source: 'src/modules/task10/components/landing/T10StatusBadge.tsx', consumers: 2, status: 'replace', adsCloseness: 'divergent', breakageRisk: 'Task10 module — different status set' },
+          { name: 'OkrStatusPill', source: 'src/modules/okr-v2/components/shared/OkrStatusPill.tsx', consumers: 3, status: 'keep', adsCloseness: 'partial', breakageRisk: 'OKR-specific statuses (on-track/at-risk/off-track) — different domain' },
+          { name: 'ConnectionStatusBadge', source: 'src/modules/workhub/admin/components/ConnectionStatusBadge.tsx', consumers: 1, status: 'keep', adsCloseness: 'partial', breakageRisk: 'Admin connection status — different domain' },
+          { name: 'ThemeStatusBadge', source: 'src/components/workhub/shared/ThemeStatusBadge.tsx', consumers: 1, status: 'keep', adsCloseness: 'partial', breakageRisk: 'Theme-specific — different domain' },
+          { name: 'TablePill', source: 'src/components/incidents/TablePill.tsx', consumers: 1, status: 'replace', adsCloseness: 'none', breakageRisk: 'Incident table — simple replacement' },
+          { name: 'SourceBadge', source: 'src/components/producthub/shared/SourceBadge.tsx', consumers: 1, status: 'keep', adsCloseness: 'close', breakageRisk: 'Source type badge — different purpose' },
         ]}
+        adsRecommendation={{
+          package: '@atlaskit/lozenge',
+          docsUrl: 'https://atlassian.design/components/lozenge',
+          guidance: 'Use Lozenge for status indicators. appearance prop maps to status categories: "success" for Done, "inprogress" for In Progress, "moved" for On Hold, "removed" for Blocked, "new" for New, "default" for To Do. Never use Badge for status — Badge is for numeric counts only. Never use isBold — Jira uses the non-bold variant. Text should be sentence case, not uppercase (ADS enforces via the component, but custom implementations often add text-transform: uppercase which is wrong).',
+          tokens: [
+            'color.background.success (Done)',
+            'color.background.information (In Progress)',
+            'color.background.warning (On Hold)',
+            'color.background.danger (Blocked)',
+            'color.background.neutral (To Do)',
+          ],
+          requiredProps: [
+            'appearance — maps to status category',
+            'children — status text in sentence case',
+          ],
+          antiPatterns: [
+            'isBold={true} — Jira never uses bold lozenges for status',
+            'text-transform: uppercase — ADS Lozenge renders uppercase internally, custom ones should NOT add it',
+            'Raw hex background colors instead of appearance prop',
+            'Using Badge component for status (Badge = numeric count, Lozenge = status category)',
+            'Hand-rolled <span> with inline background color instead of Lozenge',
+          ],
+        }}
         sweepStatus="in-progress"
         restoreCommit="f63f2dd7b"
       />
@@ -57,20 +81,40 @@ export const AvatarComponents: StoryObj = {
           source: 'src/components/shared/CatalystAvatar.tsx',
           consumers: 22,
           ads: '@atlaskit/avatar',
+          adsCloseness: 'close',
         }}
         duplicates={[
-          { name: 'UserAvatar', source: 'src/components/shared/UserAvatar.tsx', consumers: 8, status: 'wrapper', breakageRisk: 'Wraps CatalystAvatar — adds online indicator. Keep.' },
-          { name: 'Avatar (ads)', source: 'src/components/ads/Avatar.tsx', consumers: 3, status: 'wrapper', breakageRisk: 'ADS wrapper — re-exports @atlaskit/avatar. Keep.' },
-          { name: 'KanbanAvatar', source: 'src/components/kanban/KanbanAvatar.tsx', consumers: 4, status: 'replaced', breakageRisk: 'Already delegates to CatalystAvatar (fixed this session)' },
-          { name: 'CatalystAvatar (ui)', source: 'src/components/ui/catalyst/CatalystAvatar.tsx', consumers: 2, status: 'replace', breakageRisk: 'Shadcn-era duplicate of the shared one — consumers should import from shared/' },
-          { name: 'CatalystOwnerAvatar', source: 'src/components/ui/catalyst/CatalystOwnerAvatar.tsx', consumers: 1, status: 'replace', breakageRisk: 'Adds "owner" badge — fold into CatalystAvatar as a prop' },
-          { name: 'CapacityAvatar', source: 'src/components/capacity/CapacityAvatar.tsx', consumers: 2, status: 'replace', breakageRisk: 'Capacity module — add capacity ring as CatalystAvatar variant' },
-          { name: 'CatyAIAvatar', source: 'src/components/caty-ai-chat/CatyAIAvatar.tsx', consumers: 1, status: 'keep', breakageRisk: 'AI persona avatar — different purpose (bot, not user)' },
-          { name: 'ProjectAvatar', source: 'src/components/icons/ProjectAvatar.tsx', consumers: 3, status: 'keep', breakageRisk: 'Project icon, not user avatar — different domain' },
-          { name: 'CurrentUserAvatar', source: 'src/components/project-hub/shell/CurrentUserAvatar.tsx', consumers: 1, status: 'replace', breakageRisk: 'Shell header — should use CatalystAvatar + useAuth' },
-          { name: 'AvatarChip', source: 'src/components/workhub/shared/AvatarChip.tsx', consumers: 2, status: 'deprecated', breakageRisk: 'Avatar + name chip — replace with CatalystAvatar + text span' },
-          { name: 'Avatar (planner)', source: 'src/components/planner/task-modal/atoms/Avatar.tsx', consumers: 1, status: 'replace', breakageRisk: 'Planner module duplicate' },
+          { name: 'UserAvatar', source: 'src/components/shared/UserAvatar.tsx', consumers: 8, status: 'wrapper', adsCloseness: 'close', breakageRisk: 'Wraps CatalystAvatar — adds online indicator. Keep.' },
+          { name: 'Avatar (ads)', source: 'src/components/ads/Avatar.tsx', consumers: 3, status: 'wrapper', adsCloseness: 'exact', breakageRisk: 'ADS wrapper — re-exports @atlaskit/avatar. Keep.' },
+          { name: 'KanbanAvatar', source: 'src/components/kanban/KanbanAvatar.tsx', consumers: 4, status: 'replaced', adsCloseness: 'close', breakageRisk: 'Already delegates to CatalystAvatar (fixed this session)' },
+          { name: 'CatalystAvatar (ui)', source: 'src/components/ui/catalyst/CatalystAvatar.tsx', consumers: 2, status: 'replace', adsCloseness: 'partial', breakageRisk: 'Shadcn-era duplicate — consumers should import from shared/' },
+          { name: 'CatalystOwnerAvatar', source: 'src/components/ui/catalyst/CatalystOwnerAvatar.tsx', consumers: 1, status: 'replace', adsCloseness: 'divergent', breakageRisk: 'Adds "owner" badge — fold into CatalystAvatar as a prop' },
+          { name: 'CapacityAvatar', source: 'src/components/capacity/CapacityAvatar.tsx', consumers: 2, status: 'replace', adsCloseness: 'divergent', breakageRisk: 'Capacity module — add capacity ring as CatalystAvatar variant' },
+          { name: 'CatyAIAvatar', source: 'src/components/caty-ai-chat/CatyAIAvatar.tsx', consumers: 1, status: 'keep', adsCloseness: 'none', breakageRisk: 'AI persona avatar — SVG bot icon, not @atlaskit/avatar' },
+          { name: 'ProjectAvatar', source: 'src/components/icons/ProjectAvatar.tsx', consumers: 3, status: 'keep', adsCloseness: 'partial', breakageRisk: 'Project icon, not user avatar — different domain' },
+          { name: 'CurrentUserAvatar', source: 'src/components/project-hub/shell/CurrentUserAvatar.tsx', consumers: 1, status: 'replace', adsCloseness: 'divergent', breakageRisk: 'Shell header — should use CatalystAvatar + useAuth' },
+          { name: 'AvatarChip', source: 'src/components/workhub/shared/AvatarChip.tsx', consumers: 2, status: 'deprecated', adsCloseness: 'none', breakageRisk: 'Hand-rolled div + img — zero ADS' },
+          { name: 'Avatar (planner)', source: 'src/components/planner/task-modal/atoms/Avatar.tsx', consumers: 1, status: 'replace', adsCloseness: 'none', breakageRisk: 'Planner module duplicate — hand-rolled' },
         ]}
+        adsRecommendation={{
+          package: '@atlaskit/avatar',
+          docsUrl: 'https://atlassian.design/components/avatar',
+          guidance: 'Use Avatar for user representation. Supports size (xsmall/small/medium/large/xlarge), src for image URL, name for tooltip + initials fallback, appearance (circle/square — circle for users, square for projects/spaces). Use AvatarGroup for stacked avatar lists (assignees, watchers). Never use raw <img> tags for user photos — Avatar handles loading states, error fallback to initials, and consistent sizing. CLAUDE.md bans external image URLs (Gravatar, Atlassian CDN) — use resolveAvatarUrl() which maps names to bundled local paths.',
+          tokens: [
+            'color.background.neutral (initials fallback bg)',
+            'color.text.inverse (initials text)',
+          ],
+          requiredProps: [
+            'name — always set for tooltip + initials fallback',
+            'size — use consistent sizes per context (xsmall in tables, small in rails, medium in headers)',
+          ],
+          antiPatterns: [
+            '<img src={profile.avatar_url}> — banned by CLAUDE.md, external URLs rejected',
+            'Hand-rolled div with border-radius: 50% and background-color initials — use Avatar',
+            'Different avatar sizes for the same context (e.g. 24px and 32px in the same table)',
+            'Missing name prop — breaks tooltip and initials fallback',
+          ],
+        }}
         sweepStatus="in-progress"
         restoreCommit="f63f2dd7b"
       />

@@ -35,6 +35,9 @@ export type DuplicateStatus =
   | 'keep'         // Different enough purpose, not a true duplicate
   | 'replaced';    // Already replaced — sweep complete
 
+/** ADS closeness score — how well a component follows Atlassian Design System */
+export type AdsCloseness = 'exact' | 'close' | 'partial' | 'divergent' | 'none';
+
 export interface DuplicateEntry {
   name: string;
   source: string;
@@ -42,6 +45,24 @@ export interface DuplicateEntry {
   status: DuplicateStatus;
   /** What breaks if you just delete this without replacing imports */
   breakageRisk?: string;
+  /** How close this implementation is to ADS */
+  adsCloseness?: AdsCloseness;
+}
+
+/** ADS recommendation block — what Atlassian Design says is the correct pattern */
+export interface AdsRecommendation {
+  /** The @atlaskit package that should be used */
+  package: string;
+  /** Direct URL to the ADS component docs */
+  docsUrl: string;
+  /** What ADS says about this pattern (e.g. "Use Lozenge for status, not Badge") */
+  guidance: string;
+  /** ADS tokens that should be used */
+  tokens?: string[];
+  /** Props that must be set for ADS compliance */
+  requiredProps?: string[];
+  /** Common anti-patterns ADS warns against */
+  antiPatterns?: string[];
 }
 
 export interface DuplicateCardProps {
@@ -53,9 +74,13 @@ export interface DuplicateCardProps {
     source: string;
     consumers: number;
     ads?: string;
+    /** How close the canonical is to ADS — should be 'exact' or 'close' */
+    adsCloseness?: AdsCloseness;
   };
   /** All the duplicates */
   duplicates: DuplicateEntry[];
+  /** ADS recommendation — what the design system says is correct */
+  adsRecommendation?: AdsRecommendation;
   /** Git commit hash where consolidation was done — enables restore */
   restoreCommit?: string;
   /** Summary of sweep status */
@@ -72,13 +97,21 @@ const STATUS_STYLES: Record<DuplicateStatus, { bg: string; text: string; label: 
   replaced:  { bg: '#DFFCF0', text: '#216E4E', label: 'REPLACED ✓' },
 };
 
+const ADS_CLOSENESS_STYLES: Record<AdsCloseness, { bg: string; text: string; label: string; icon: string }> = {
+  exact:    { bg: '#DFFCF0', text: '#216E4E', label: 'ADS EXACT',    icon: '●' },
+  close:    { bg: '#E9F2FF', text: '#0055CC', label: 'ADS CLOSE',    icon: '◐' },
+  partial:  { bg: '#FFF7D6', text: '#7F5F01', label: 'ADS PARTIAL',  icon: '◔' },
+  divergent:{ bg: '#FFEDEB', text: '#AE2A19', label: 'ADS DIVERGENT',icon: '○' },
+  none:     { bg: '#F1F2F4', text: '#44546F', label: 'NO ADS',       icon: '✕' },
+};
+
 const SWEEP_BADGE: Record<string, { bg: string; text: string; label: string }> = {
   'not-started': { bg: '#F1F2F4', text: '#44546F', label: 'SWEEP: NOT STARTED' },
   'in-progress': { bg: '#FFF7D6', text: '#7F5F01', label: 'SWEEP: IN PROGRESS' },
   'complete':    { bg: '#DFFCF0', text: '#216E4E', label: 'SWEEP: COMPLETE ✓' },
 };
 
-export function DuplicateCard({ purpose, canonical, duplicates, restoreCommit, sweepStatus = 'not-started' }: DuplicateCardProps) {
+export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendation, restoreCommit, sweepStatus = 'not-started' }: DuplicateCardProps) {
   const sweep = SWEEP_BADGE[sweepStatus];
   const totalDuplicateConsumers = duplicates.reduce((sum, d) => sum + d.consumers, 0);
   const needsReplace = duplicates.filter(d => d.status === 'replace' || d.status === 'deprecated');
@@ -123,13 +156,21 @@ export function DuplicateCard({ purpose, canonical, duplicates, restoreCommit, s
         </div>
         <div style={{ fontSize: 15, fontWeight: 653, color: '#172B4D' }}>{canonical.name}</div>
         <code style={{ fontSize: 12, color: '#44546F', fontFamily: 'monospace' }}>{canonical.source}</code>
-        {canonical.ads && (
-          <div style={{ marginTop: 4 }}>
+        <div style={{ marginTop: 4, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {canonical.ads && (
             <span style={{ padding: '2px 8px', borderRadius: 3, background: '#E9F2FF', color: '#0055CC', fontSize: 11, fontWeight: 600 }}>
               ADS: {canonical.ads}
             </span>
-          </div>
-        )}
+          )}
+          {canonical.adsCloseness && (() => {
+            const ac = ADS_CLOSENESS_STYLES[canonical.adsCloseness];
+            return (
+              <span style={{ padding: '2px 8px', borderRadius: 3, background: ac.bg, color: ac.text, fontSize: 11, fontWeight: 600 }}>
+                {ac.icon} {ac.label}
+              </span>
+            );
+          })()}
+        </div>
       </div>
 
       {/* Duplicates table */}
@@ -140,7 +181,7 @@ export function DuplicateCard({ purpose, canonical, duplicates, restoreCommit, s
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead>
             <tr>
-              {['Component', 'Source', 'Consumers', 'Status', 'Risk'].map(h => (
+              {['Component', 'Source', 'Consumers', 'ADS', 'Status', 'Risk'].map(h => (
                 <th key={h} style={{ textAlign: 'left', padding: '4px 8px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', fontSize: 11, fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)' }}>
                   {h}
                 </th>
@@ -160,6 +201,12 @@ export function DuplicateCard({ purpose, canonical, duplicates, restoreCommit, s
                   </td>
                   <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)' }}>
                     {d.consumers}
+                  </td>
+                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)' }}>
+                    {d.adsCloseness ? (() => {
+                      const ac = ADS_CLOSENESS_STYLES[d.adsCloseness!];
+                      return <span style={{ padding: '2px 6px', borderRadius: 3, background: ac.bg, color: ac.text, fontSize: 10, fontWeight: 700 }}>{ac.icon} {ac.label}</span>;
+                    })() : <span style={{ fontSize: 10, color: '#6B778C' }}>—</span>}
                   </td>
                   <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)' }}>
                     <span style={{ padding: '2px 8px', borderRadius: 3, background: s.bg, color: s.text, fontSize: 10, fontWeight: 700 }}>
@@ -190,6 +237,53 @@ export function DuplicateCard({ purpose, canonical, duplicates, restoreCommit, s
               </li>
             ))}
           </ol>
+        </div>
+      )}
+
+      {/* ADS Recommendation */}
+      {adsRecommendation && (
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-background-information-subtle, #E9F2FF)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <span style={{ padding: '2px 8px', borderRadius: 3, background: '#0055CC', color: '#fff', fontSize: 11, fontWeight: 700 }}>
+              ADS RECOMMENDATION
+            </span>
+            <a href={adsRecommendation.docsUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: '#0055CC', textDecoration: 'underline' }}>
+              {adsRecommendation.package} docs
+            </a>
+          </div>
+          <div style={{ fontSize: 13, color: '#172B4D', marginBottom: 8, lineHeight: 1.5 }}>
+            {adsRecommendation.guidance}
+          </div>
+          {adsRecommendation.tokens && adsRecommendation.tokens.length > 0 && (
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 653, color: '#6B778C', marginBottom: 4 }}>Required tokens</div>
+              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                {adsRecommendation.tokens.map((t, i) => (
+                  <code key={i} style={{ fontSize: 11, padding: '1px 6px', borderRadius: 3, background: '#F1F2F4', fontFamily: 'monospace' }}>{t}</code>
+                ))}
+              </div>
+            </div>
+          )}
+          {adsRecommendation.requiredProps && adsRecommendation.requiredProps.length > 0 && (
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 653, color: '#6B778C', marginBottom: 4 }}>Required props for ADS compliance</div>
+              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                {adsRecommendation.requiredProps.map((p, i) => (
+                  <code key={i} style={{ fontSize: 11, padding: '1px 6px', borderRadius: 3, background: '#DFFCF0', fontFamily: 'monospace' }}>{p}</code>
+                ))}
+              </div>
+            </div>
+          )}
+          {adsRecommendation.antiPatterns && adsRecommendation.antiPatterns.length > 0 && (
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 653, color: '#AE2A19', marginBottom: 4 }}>Anti-patterns (ADS warns against)</div>
+              <ul style={{ margin: 0, paddingLeft: 20, fontSize: 12, color: '#AE2A19' }}>
+                {adsRecommendation.antiPatterns.map((ap, i) => (
+                  <li key={i} style={{ marginBottom: 2 }}>{ap}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
 
