@@ -1451,3 +1451,53 @@ $$;
 The function owner is not subject to RLS (no FORCE ROW LEVEL SECURITY), so its internal read bypasses the policy and breaks the cycle. Keep the `author_id = auth.uid()` short-circuit on message SELECT (the PostgREST v12 INSERT+RETURNING trap, 2026-05-29). ALWAYS run a 2-user RLS isolation test before declaring any new RLS surface done — it is the only reliable way to catch both recursion and cross-user leaks. Seed a private row owned by user A, simulate user B (non-member) expecting 0 rows, simulate A expecting their rows, then clean up.
 **Fix:** Migration `20260603000100_chat_rls_recursion_fix.sql` — added `public.chat_is_member(uuid, uuid)` and rewrote the members/conversations/messages policies to call it. Verified live on prod (`lmqwtldpfacrrlvdnmld`): b_nonmember_sees=0, a_member_sees=1.
 **Severity:** P0 (self-referential membership RLS makes the entire feature unreadable — caught only because the 2-user test was mandatory).
+
+---
+
+## 📊 RTK TOKEN SAVINGS — MANDATORY END-OF-CONVERSATION REPORT (Non-Negotiable)
+
+**RTK (Rust Token Killer) is installed globally as a CLI proxy that compresses Bash command outputs before they enter the LLM context window, saving 60-90% tokens.**
+
+### How it works
+
+- A `PreToolUse` hook in `~/.claude/settings.json` intercepts every Bash tool call
+- The hook runs `rtk hook claude` which transparently rewrites commands through RTK's compression filters
+- No per-conversation setup needed — it activates automatically for every session, every agent, every skill
+
+### End-of-conversation report (MANDATORY)
+
+**Before ending ANY conversation — whether main session, subagent, catalyst-agent, design-critique, design-intelligence, preflight, jira-compare, or any other skill/agent — run `rtk gain` and include the output in the final response to the user.**
+
+Format:
+```
+📊 **RTK Token Savings This Session**
+[paste rtk gain output]
+```
+
+This applies to:
+- ✅ Every main conversation
+- ✅ Every catalyst-agent run
+- ✅ Every design-critique / design-intelligence run
+- ✅ Every preflight run
+- ✅ Every jira-compare run
+- ✅ Every deploy skill run
+- ✅ Every code-review run
+- ✅ Any skill or agent that uses Bash commands
+
+### Useful RTK commands
+
+```bash
+rtk gain              # Summary of token savings (run this at end of every conversation)
+rtk gain --graph      # ASCII chart of savings over last 30 days
+rtk gain --history    # Command usage history with per-command savings
+rtk discover          # Analyze Claude Code history for missed optimization opportunities
+```
+
+### Meta commands (bypass the proxy)
+
+```bash
+rtk proxy <cmd>       # Execute raw command without filtering (for debugging)
+rtk --version         # Check installed version
+```
+
+**Severity:** P1 — Vikram wants visibility into token savings across every session. Skipping the report is a process violation.
