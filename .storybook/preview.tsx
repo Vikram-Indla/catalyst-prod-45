@@ -3,6 +3,7 @@ import type { Preview } from '@storybook/react-vite';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from '@/lib/auth';
+import { WorkflowProvider } from '@/lib/workflows';
 
 // One QueryClient for all stories. Retries off so any component that
 // fires a query in Storybook (no network) fails fast instead of spinning.
@@ -17,9 +18,11 @@ const preview: Preview = {
     (Story) => (
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <MemoryRouter>
+          <WorkflowProvider>
+            <MemoryRouter>
             <Story />
-          </MemoryRouter>
+            </MemoryRouter>
+          </WorkflowProvider>
         </AuthProvider>
       </QueryClientProvider>
     ),
