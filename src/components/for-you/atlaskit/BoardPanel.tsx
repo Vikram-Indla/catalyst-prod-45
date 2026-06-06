@@ -14,17 +14,13 @@ import R360MemberDetail from '@/pages/R360MemberDetail';
 import Spinner from '@atlaskit/spinner';
 
 import { CatyBoardInsight } from './CatyBoardInsight';
-export default function BoardPanel() {
-  const { user } = useAuth();
-  const { isTeamLead } = useUserRole();
-  const { data: myResourceId, isLoading: idLoading } = useMyR360ResourceId();
-  const { data: teamResources = [], isLoading: teamLoading } = useTeamResourceIds(
-    isTeamLead ? (user?.id ?? null) : null,
-  );
+export interface BoardPanelViewProps {
+  resourceId: string | null;
+  isLoading: boolean;
+}
 
-  const activeResourceId = myResourceId ?? null;
-
-  if (idLoading) {
+export function BoardPanelView({ resourceId, isLoading }: BoardPanelViewProps) {
+  if (isLoading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}>
         <Spinner size="medium" />
@@ -32,7 +28,7 @@ export default function BoardPanel() {
     );
   }
 
-  if (!activeResourceId) {
+  if (!resourceId) {
     return (
       <div style={{
         padding: '48px 24px', textAlign: 'center',
@@ -45,8 +41,18 @@ export default function BoardPanel() {
 
   return (
     <div style={{ minHeight: 600 }}>
-      <CatyBoardInsight resourceId={activeResourceId} />
-      <R360MemberDetail resourceId={activeResourceId} embedded forceView="board" />
+      <CatyBoardInsight resourceId={resourceId} />
+      <R360MemberDetail resourceId={resourceId} embedded forceView="board" />
     </div>
   );
+}
+
+export default function BoardPanel() {
+  const { user } = useAuth();
+  const { isTeamLead } = useUserRole();
+  const { data: myResourceId, isLoading: idLoading } = useMyR360ResourceId();
+  const { data: teamResources = [], isLoading: teamLoading } = useTeamResourceIds(
+    isTeamLead ? (user?.id ?? null) : null,
+  );
+  return <BoardPanelView resourceId={myResourceId ?? null} isLoading={idLoading} />;
 }

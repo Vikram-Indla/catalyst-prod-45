@@ -326,13 +326,22 @@ function ActiveAgeingRow({ item, onSelect, isArchivingSoon }: {
 }
 
 // ─── Main component ─────────────────────────────────────────────────────────
-export default function AgeingPanel() {
-  const { data: ageingItems, isLoading, isError, refetch } = useAgeingItems();
-  const jiraBaseUrl = useJiraBaseUrl();
-  const { role } = useUserRole();
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const isAdmin = role === 'admin';
+export interface AgeingPanelViewProps {
+  ageingItems: AgeingItem[] | undefined;
+  isLoading: boolean;
+  isError: boolean;
+  jiraBaseUrl: string | null;
+  isAdmin: boolean;
+  onUnarchive: (issueKey: string) => void;
+  onNavigateArchives: () => void;
+  onOpenDetail: (item: WorkItem) => void;
+  onOpenDetailByKey?: (issueKey: string) => void;
+}
+
+export function AgeingPanelView({
+  ageingItems, isLoading, isError, jiraBaseUrl, isAdmin,
+  onUnarchive, onNavigateArchives, onOpenDetail, onOpenDetailByKey,
+}: AgeingPanelViewProps) {
   const [search, setSearch] = useState('');
   const [collapsedSections, setCollapsedSections] = useState<Set<AgeBracket>>(
     new Set(['ninetyPlus', 'sixtyNinety'])
@@ -345,23 +354,6 @@ export default function AgeingPanel() {
       return n;
     });
   }, []);
-
-  const handleUnarchive = useCallback(async (issueKey: string) => {
-    if (!user?.id || !isAdmin) {
-      alert('Only admins can unarchive items. Contact your administrator.');
-      return;
-    }
-    try {
-      const { error } = await supabase.rpc('unarchive_issue', {
-        p_issue_key: issueKey,
-        p_user_id: user.id,
-      });
-      if (error) throw error;
-      refetch();
-    } catch (e: any) {
-      alert(e.message || 'Failed to unarchive.');
-    }
-  }, [user?.id, isAdmin, refetch]);
 
   const grouped = useMemo(() => {
     if (!ageingItems) return [];
@@ -404,13 +396,7 @@ export default function AgeingPanel() {
       .filter(g => g.items.length > 0);
   }, [ageingItems, search]);
 
-  const handleSelect = useCallback((item: WorkItem) => {
-    useGlobalSearchStore.getState().openDetail({
-      id: item.id,
-      itemType: item.issueType,
-      projectKey: item.projectKey,
-    });
-  }, []);
+  const handleSelect = onOpenDetail;
 
   if (isLoading) {
     return (
@@ -457,13 +443,13 @@ export default function AgeingPanel() {
             onChange={(e: any) => setSearch(e.target.value)}
           />
         </div>
-        <Button appearance="default" onClick={() => navigate('/for-you/archives')}>
+        <Button appearance="default" onClick={onNavigateArchives}>
           Archive manager
         </Button>
       </div>
 
       {/* Sections */}
-      <CatyAgeingTriage items={ageingItems ?? []} onOpenDetail={(key) => useGlobalSearchStore.getState().openDetail({ id: key })} />
+      <CatyAgeingTriage items={ageingItems ?? []} onOpenDetail={onOpenDetailByKey} />
       {grouped.map(({ bracket, label, items, isArchived }) => {
         const collapsed = collapsedSections.has(bracket);
         return (
@@ -513,5 +499,53 @@ export default function AgeingPanel() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AgeingPanel() {
+  const { data: ageingItems, isLoading, isError, refetch } = useAgeingItems();
+  const jiraBaseUrl = useJiraBaseUrl();
+  const { role } = useUserRole();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const isAdmin = role === 'admin';
+
+  const handleUnarchive = useCallback(async (issueKey: string) => {
+    if (!user?.id || !isAdmin) {
+      alert('Only admins can unarchive items. Contact your administrator.');
+      return;
+    }
+    try {
+      const { error } = await supabase.rpc('unarchive_issue', {
+        p_issue_key: issueKey,
+        p_user_id: user.id,
+      });
+      if (error) throw error;
+      refetch();
+    } catch (e: any) {
+      alert(e.message || 'Failed to unarchive.');
+    }
+  }, [user?.id, isAdmin, refetch]);
+
+  const handleOpenDetail = useCallback((item: WorkItem) => {
+    useGlobalSearchStore.getState().openDetail({
+      id: item.id,
+      itemType: item.issueType,
+      projectKey: item.projectKey,
+    });
+  }, []);
+
+  return (
+    <AgeingPanelView
+      ageingItems={ageingItems}
+      isLoading={isLoading}
+      isError={isError}
+      jiraBaseUrl={jiraBaseUrl}
+      isAdmin={isAdmin}
+      onUnarchive={handleUnarchive}
+      onNavigateArchives={() => navigate('/for-you/archives')}
+      onOpenDetail={handleOpenDetail}
+      onOpenDetailByKey={(key) => useGlobalSearchStore.getState().openDetail({ id: key })}
+    />
   );
 }

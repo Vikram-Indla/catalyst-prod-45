@@ -333,6 +333,30 @@ function R360Skeleton() {
 const WIDE_THRESHOLD = 900;
 const MAX_PILLS_TEAM = 5;
 
+export interface R360PanelViewProps {
+  resourceId: string | null;
+  isLoading: boolean;
+}
+
+export function R360PanelView({ resourceId, isLoading }: R360PanelViewProps) {
+  if (isLoading) return <R360Skeleton />;
+  if (!resourceId) {
+    return (
+      <div style={{
+        padding: '48px 24px', textAlign: 'center',
+        color: token('color.text.subtle', '#6B778C'), fontSize: 14,
+      }}>
+        No resource profile found for your account.
+      </div>
+    );
+  }
+  return (
+    <div style={{ minHeight: 600 }}>
+      <R360MemberDetail resourceId={resourceId} embedded />
+    </div>
+  );
+}
+
 export default function R360Panel() {
   const { user } = useAuth();
   const { isTeamLead } = useUserRole();
