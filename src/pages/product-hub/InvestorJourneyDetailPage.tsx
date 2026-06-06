@@ -1,9 +1,16 @@
 /**
- * InvestorJourneyDetailPage — /product-hub/INV/backlog/:issueKey
+ * ProductBacklogDetailPage — /product-hub/:key/backlog/:issueKey
  *
- * Full-page detail view for INV backlog items. Mirrors BacklogDetailPage
- * exactly but scopes back/open navigation to /product-hub/INV/backlog
- * instead of /project-hub/:key/backlog.
+ * Full-page detail view for product-hub backlog items. Mirrors the project
+ * hub's BacklogDetailPage but resolves the row against BOTH `ph_issues`
+ * (for any project-style items a product may still carry) AND
+ * `business_requests` by `request_key` — the canonical store for product
+ * work. Back/open navigation is scoped to the current product code from
+ * the URL, not a hardcoded value.
+ *
+ * Note: file is still named InvestorJourneyDetailPage.tsx for git history;
+ * exported default has been generalised — the lazy import in
+ * FullAppRoutes (`ProductBacklogDetailPage`) is the public name.
  */
 import { lazy, Suspense, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -14,8 +21,6 @@ const CatalystDetailRouter = lazy(() =>
   import('@/components/catalyst-detail-views/CatalystDetailRouter'),
 );
 
-const BACKLOG_URL = '/product-hub/INV/backlog';
-
 interface ResolvedIssue {
   id: string;
   issue_type: string;
@@ -25,8 +30,10 @@ interface ResolvedIssue {
 }
 
 export default function InvestorJourneyDetailPage() {
-  const { issueKey } = useParams<{ issueKey: string }>();
+  const { key: productKey, issueKey } = useParams<{ key: string; issueKey: string }>();
   const navigate = useNavigate();
+
+  const backlogUrl = `/product-hub/${productKey ?? ''}/backlog`;
 
   const [issue, setIssue] = useState<ResolvedIssue | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,21 +52,54 @@ export default function InvestorJourneyDetailPage() {
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const { data } = await supabase
+      setIssue(null);
+      setDebugInfo('');
+
+      // 1) Try ph_issues (project-style items a product may carry).
+      const { data: phRow } = await supabase
         .from('ph_issues')
         .select('id, issue_key, issue_type, project_key, summary')
         .eq('issue_key', issueKey)
         .maybeSingle();
       if (cancelled) return;
-      setIssue((data as ResolvedIssue | null) ?? null);
-      if (!data) setDebugInfo(`issue_key "${issueKey}" not found in ph_issues`);
+      if (phRow) {
+        setIssue(phRow as ResolvedIssue);
+        setLoading(false);
+        return;
+      }
+
+      // 2) Fallback to business_requests (the canonical product-hub store).
+      //    `:issueKey` from the URL is the BR's request_key (e.g. "MIM-001").
+      //    `business_requests` has no `project_key` column — the product code
+      //    from the URL fills that slot for CatalystDetailRouter / v3.
+      const { data: brRow } = await (supabase as any)
+        .from('business_requests')
+        .select('id, request_key, title')
+        .eq('request_key', issueKey)
+        .maybeSingle();
+      if (cancelled) return;
+      if (brRow) {
+        setIssue({
+          id: brRow.id,
+          issue_key: brRow.request_key,
+          issue_type: 'Business Request',
+          project_key: productKey ?? '',
+          summary: brRow.title ?? null,
+        });
+        setLoading(false);
+        return;
+      }
+
+      setDebugInfo(
+        `"${issueKey}" not found in ph_issues or business_requests`,
+      );
       setLoading(false);
     })();
     return () => { cancelled = true; };
-  }, [issueKey]);
+  }, [issueKey, productKey]);
 
-  const handleOpenItem = (itemId: string) => navigate(`${BACKLOG_URL}/${itemId}`);
-  const handleClose = () => navigate(BACKLOG_URL);
+  const handleOpenItem = (itemId: string) => navigate(`${backlogUrl}/${itemId}`);
+  const handleClose = () => navigate(backlogUrl);
 
   if (loading) {
     return (

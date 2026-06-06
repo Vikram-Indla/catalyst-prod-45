@@ -55,11 +55,16 @@ interface ProfileOption {
 
 function useProfiles() {
   return useQuery<ProfileOption[]>({
-    queryKey: ['br-view-profiles'],
+    queryKey: ['br-view-profiles-approved'],
     queryFn: async () => {
+      // Filter to APPROVED profiles to keep orphan/test/imported rows
+      // (whose profiles.id is not in auth.users) out of the Delivery
+      // Manager / Product Owner pickers. Matches the same filter used
+      // by CatalystActivitySection for @mention suggestions.
       const { data } = await supabase
         .from('profiles')
         .select('id, full_name, email, avatar_url')
+        .eq('approval_status', 'APPROVED')
         .order('full_name');
       return (data ?? []).map((p) => ({
         value: p.id,
