@@ -40,6 +40,7 @@ import {
   CreateRequestDrawer,
   type ConversionSource,
 } from '@/components/producthub/shared/CreateRequestDrawer';
+import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 
 export default function IdeasBoardPage() {
   const avatarsByName = useProfileAvatarsByName();
@@ -78,12 +79,15 @@ export default function IdeasBoardPage() {
   }, [ideas]);
 
   const handleConvertIdea = useCallback((idea: IdeaRow) => {
+    // ph_ideas.description may be ADF JSON or plain text — flatten to plain
+    // text for the conversion seed which is then concatenated into prose.
+    const descPlain = adfToPlainText(idea.description ?? '');
     setConversionSource({
       type: 'single',
       primaryIdea: {
         key: idea.idea_key,
         title: idea.title,
-        description: idea.description || '',
+        description: descPlain,
         impact: idea.impact_total,
         votes: idea.vote_count,
         dept: idea.assigned_team || '',

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, ArrowRight } from '@/lib/atlaskit-icons';
 import { MILESTONE_CONFIGS } from '@/types/ideasRoadmap';
 import type { RoadmapIdea, RoadmapMilestones, RoadmapQuarter } from '@/types/ideasRoadmap';
+import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 
 interface RoadmapSidePanelProps {
   idea: RoadmapIdea;
@@ -270,18 +271,24 @@ export function RoadmapSidePanel({
             </div>
           </div>
 
-          {idea.description && (
-            <div>
-              <div style={{ ...labelStyle, marginBottom: 6 }}>DESCRIPTION</div>
-              <div style={{
-                fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.5,
-                background: 'var(--bg-1)', borderRadius: 6, padding: 12,
-                whiteSpace: 'pre-wrap',
-              }}>
-                {idea.description}
+          {(() => {
+            // ph_ideas.description may be JSON-encoded ADF (new rows) or
+            // plain text (legacy). adfToPlainText handles both shapes.
+            const descPlain = adfToPlainText(idea.description ?? '');
+            if (!descPlain) return null;
+            return (
+              <div>
+                <div style={{ ...labelStyle, marginBottom: 6 }}>DESCRIPTION</div>
+                <div style={{
+                  fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.5,
+                  background: 'var(--bg-1)', borderRadius: 6, padding: 12,
+                  whiteSpace: 'pre-wrap',
+                }}>
+                  {descPlain}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
 
         {/* Footer */}

@@ -17,6 +17,7 @@ import IdeaDrawer from '../../modules-dormant/ideation/IdeaDrawer';
 import IdeationTriagePanel from '../../modules-dormant/ideation/IdeationTriagePanel';
 import IdeationIntelligenceHub from '../../modules-dormant/ideation/IdeationIntelligenceHub';
 import { CreateRequestDrawer, type ConversionSource } from '@/components/producthub/shared/CreateRequestDrawer';
+import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from '../../modules-dormant/ideation/ideation-data';
 import type { Idea } from '../../modules-dormant/ideation/ideation-data';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -108,10 +109,13 @@ export default function IdeasBacklogPage() {
   }, []);
 
   const handleConvertIdea = (idea: IdeaRow) => {
+    // ph_ideas.description may be ADF JSON or plain text — flatten to plain
+    // text for the conversion seed which is then concatenated into prose.
+    const descPlain = adfToPlainText(idea.description ?? '');
     setConversionSource({
       type: 'single',
       primaryIdea: {
-        key: idea.idea_key, title: idea.title, description: idea.description || idea.title,
+        key: idea.idea_key, title: idea.title, description: descPlain || idea.title,
         impact: idea.impact_total || 0, votes: idea.vote_count || 0, dept: idea.assigned_team || '', priority: idea.priority || 'P3',
       },
     });
