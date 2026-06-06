@@ -27,14 +27,7 @@ export function MicButton({
     <>
       {/* Keyframe injected once */}
       <style>{`
-        @keyframes caty-mic-spin {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
-        }
-        @keyframes caty-mic-stop-pulse {
-          0%,100% { transform: scale(1); opacity: 1; }
-          50%      { transform: scale(0.8); opacity: 0.6; }
-        }
+
         .caty-mic-lang-picker {
           position: absolute;
           bottom: calc(100% + 6px);
@@ -134,7 +127,7 @@ export function MicButton({
                 #FFD700 300deg,
                 #FF3CAC 360deg
               )`,
-              animation: `caty-mic-spin ${active ? '1.5s' : '6s'} linear infinite`,
+              animation: 'none',
               opacity: active ? 1 : hovered ? 0.85 : 0.65,
               transition: 'opacity 200ms ease',
             }}
@@ -160,7 +153,7 @@ export function MicButton({
                 borderRadius: 2,
                 background:
                   'conic-gradient(#FF3CAC 0deg, #784BA0 90deg, #2B86C5 180deg, #00C9FF 270deg, #FF3CAC 360deg)',
-                animation: 'caty-mic-stop-pulse 0.8s ease-in-out infinite',
+                animation: 'none',
                 flexShrink: 0,
               }}
             />
