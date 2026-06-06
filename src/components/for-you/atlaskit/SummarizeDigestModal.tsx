@@ -152,15 +152,15 @@ export function SummarizeDigestModal({
             <div style={{
               display: 'inline-flex',
               padding: 2,
-              borderRadius: 8,
+              borderRadius: 20,
               background: ASK_CATY_RAINBOW,
             }}>
               <div style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
-                padding: '6px 12px',
-                borderRadius: 6,
+                padding: '0 12px',
+                borderRadius: 18,
                 background: token('elevation.surface', '#FFFFFF'),
               }}>
                 <span style={{ fontSize: 14, fontWeight: 700, color: token('color.text', '#172B4D') }}>

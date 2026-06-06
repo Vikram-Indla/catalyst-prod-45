@@ -1378,7 +1378,7 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
         style={{
           display: 'inline-flex',
           padding: 2,
-          borderRadius: 5,
+          borderRadius: 20,
           background: ASK_CATY_RAINBOW,
         }}
       >
@@ -1394,8 +1394,8 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            padding: '4px 8px',
-            borderRadius: 3,
+            padding: '0 10px',
+            borderRadius: 18,
             font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', '#172B4D'),
             background: phase === 'loading'
