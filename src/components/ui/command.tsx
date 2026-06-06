@@ -1,6 +1,5 @@
 import * as React from "react";
-// Dialog props inlined — no radix dependency
-interface DialogProps { open?: boolean; onOpenChange?: (open: boolean) => void; children?: React.ReactNode; }
+import { type DialogProps } from "@radix-ui/react-dialog";
 import { Command as CommandPrimitive } from "cmdk";
 import { Search } from "lucide-react";
 

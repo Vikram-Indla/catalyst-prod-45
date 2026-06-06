@@ -1,82 +1,175 @@
-/**
- * Dialog — ADS-canonical modal dialog.
- * Plain HTML + ADS tokens. Preserves shadcn compound API.
- */
 import * as React from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
+import { cva, type VariantProps } from "class-variance-authority";
+
 import { cn } from "@/lib/utils";
-import CrossIcon from "@atlaskit/icon/core/close";
 
-const DialogContext = React.createContext<{ onClose?: () => void }>({});
+const Dialog = DialogPrimitive.Root;
 
-const Dialog = ({ children, open, onOpenChange, modal = true }: {
-  children: React.ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void; modal?: boolean;
-}) => {
-  if (open === false) return null;
-  return (
-    <DialogContext.Provider value={{ onClose: () => onOpenChange?.(false) }}>
+const DialogTrigger = DialogPrimitive.Trigger;
+
+const DialogPortal = DialogPrimitive.Portal;
+
+const DialogClose = DialogPrimitive.Close;
+
+const DialogOverlay = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Overlay>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Overlay
+    ref={ref}
+    className={cn(
+      "fixed inset-0 z-[250]",
+      "bg-black/75 dark:bg-black/80",
+      "data-[state=open]:animate-in data-[state=closed]:animate-out",
+      "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      className,
+    )}
+    {...props}
+  />
+));
+DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
+
+// Semantic size variants for Atlassian-like dialog sizing
+// Dark mode: NO visible border, shadow provides depth
+const dialogContentVariants = cva(
+  cn(
+    "fixed left-[50%] top-[50%] z-[250] w-full translate-x-[-50%] translate-y-[-50%]",
+    "rounded-xl",
+    // Light mode: white bg, subtle border
+    "bg-background border border-border/60",
+    // Dark mode: surface elevation, NO visible border, shadow for depth
+    "dark:bg-[#212121] dark:border-0 dark:shadow-2xl dark:shadow-black/50",
+    "duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out",
+    "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+    "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+    "data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]",
+    "data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
+    "focus:outline-none"
+  ),
+  {
+    variants: {
+      size: {
+        sm: "max-w-[384px] p-5",      // Small dialogs
+        md: "max-w-lg p-6",            // Default
+        lg: "max-w-[640px] p-6",       // Large forms
+        xl: "max-w-[768px] p-6",       // Extra large
+        full: "max-w-[90vw] max-h-[90vh] p-6", // Fullscreen-ish
+      },
+    },
+    defaultVariants: {
+      size: "md",
+    },
+  }
+);
+
+interface DialogContentProps
+  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
+    VariantProps<typeof dialogContentVariants> {}
+
+const DialogContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  DialogContentProps
+>(({ className, children, size, ...props }, ref) => (
+  <DialogPortal>
+    <DialogOverlay />
+    <DialogPrimitive.Content
+      ref={ref}
+      className={cn(dialogContentVariants({ size }), className)}
+      // Ensure proper focus management for inputs
+      onOpenAutoFocus={(e) => {
+        // Don't auto-focus the close button, let inputs be focusable
+        e.preventDefault();
+      }}
+      {...props}
+    >
       {children}
-    </DialogContext.Provider>
-  );
-};
+      <DialogPrimitive.Close 
+        className={cn(
+          "absolute right-4 top-4 rounded-lg p-2",
+          "transition-colors text-muted-foreground",
+          "hover:bg-muted dark:hover:bg-white/[0.04]",
+          // Focus ring uses BLUE per design spec v2
+          "focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-0",
+          "disabled:pointer-events-none"
+        )}
+      >
+        <X className="h-5 w-5" />
+        <span className="sr-only">Close</span>
+      </DialogPrimitive.Close>
+    </DialogPrimitive.Content>
+  </DialogPortal>
+));
+DialogContent.displayName = DialogPrimitive.Content.displayName;
 
-const DialogTrigger = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean }>(
-  ({ children, ...props }, ref) => <>{children}</>
-);
-DialogTrigger.displayName = "DialogTrigger";
-const DialogPortal = ({ children }: { children: React.ReactNode }) => <>{children}</>;
-const DialogClose = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
-  ({ children, onClick, ...props }, ref) => {
-    const { onClose } = React.useContext(DialogContext);
-    return <button ref={ref} onClick={(e) => { onClick?.(e); onClose?.(); }} {...props}>{children}</button>;
-  }
-);
-DialogClose.displayName = "DialogClose";
-
-const DialogOverlay = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("fixed inset-0 z-[250] bg-black/75", className)} {...props} />
-  )
-);
-DialogOverlay.displayName = "DialogOverlay";
-
-const DialogContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { size?: string }>(
-  ({ className, children, size, ...props }, ref) => {
-    const { onClose } = React.useContext(DialogContext);
-    const sizeClass = { sm: "max-w-[384px]", md: "max-w-lg", lg: "max-w-[640px]", xl: "max-w-[768px]", full: "max-w-[90vw]" }[size || "md"] || "max-w-lg";
-    return (
-      <>
-        <DialogOverlay onClick={onClose} />
-        <div className="fixed inset-0 z-[251] flex items-center justify-center pointer-events-none">
-          <div ref={ref} className={cn("pointer-events-auto w-full rounded-xl bg-[var(--ds-surface-overlay,#fff)] p-6 shadow-xl border border-[var(--ds-border,#DFE1E6)]", sizeClass, className)} {...props}>
-            {children}
-            <button onClick={onClose} className="absolute right-4 top-4 rounded-lg p-2 text-[var(--ds-icon-subtle,#626F86)] hover:bg-[var(--ds-background-neutral-subtle-hovered,rgba(9,30,66,0.06))]">
-              <CrossIcon label="Close" />
-            </button>
-          </div>
-        </div>
-      </>
-    );
-  }
-);
-DialogContent.displayName = "DialogContent";
-
+/**
+ * DialogHeader — Ultra-subtle divider in dark mode
+ * Divider barely visible, content hierarchy through typography
+ */
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col space-y-1.5 text-left pb-4 border-b border-[var(--ds-border,#DFE1E6)]", className)} {...props} />
+  <div 
+    className={cn(
+      "flex flex-col space-y-1.5 text-center sm:text-left pb-4",
+      "border-b border-border/60 dark:border-white/[0.035]",
+      className
+    )} 
+    {...props} 
+  />
 );
-const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-row items-center justify-end gap-3 pt-4 border-t border-[var(--ds-border,#DFE1E6)]", className)} {...props} />
-);
-const DialogTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTMLHeadingElement>>(
-  ({ className, ...props }, ref) => (
-    <h2 ref={ref} className={cn("text-lg font-semibold text-[var(--ds-text,#172B4D)]", className)} {...props} />
-  )
-);
-DialogTitle.displayName = "DialogTitle";
-const DialogDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
-  ({ className, ...props }, ref) => (
-    <p ref={ref} className={cn("text-sm text-[var(--ds-text-subtle,#42526E)]", className)} {...props} />
-  )
-);
-DialogDescription.displayName = "DialogDescription";
+DialogHeader.displayName = "DialogHeader";
 
-export { Dialog, DialogPortal, DialogOverlay, DialogClose, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription };
+/**
+ * DialogFooter — Surface lift + ultra-subtle divider
+ * Background shift provides separation, not border
+ */
+const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+  <div 
+    className={cn(
+      "flex flex-row items-center justify-end gap-3 pt-4",
+      "border-t border-border/60 dark:border-white/[0.035]",
+      "bg-muted/30 dark:bg-white/[0.02] -mx-6 -mb-6 px-6 pb-6 rounded-b-xl",
+      "flex-shrink-0 overflow-visible",
+      className
+    )} 
+    {...props} 
+  />
+);
+DialogFooter.displayName = "DialogFooter";
+
+const DialogTitle = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Title
+    ref={ref}
+    className={cn("text-lg font-semibold leading-none tracking-tight text-foreground", className)}
+    {...props}
+  />
+));
+DialogTitle.displayName = DialogPrimitive.Title.displayName;
+
+const DialogDescription = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Description>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Description 
+    ref={ref} 
+    className={cn("text-sm text-muted-foreground", className)} 
+    {...props} 
+  />
+));
+DialogDescription.displayName = DialogPrimitive.Description.displayName;
+
+export {
+  Dialog,
+  DialogPortal,
+  DialogOverlay,
+  DialogClose,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+};

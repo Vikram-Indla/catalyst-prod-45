@@ -1,21 +1,30 @@
-/**
- * HoverCard — ADS-canonical hover card.
- * Delegates to @atlaskit/tooltip for hover-triggered content.
- */
 import * as React from "react";
-import Tooltip from "@atlaskit/tooltip";
+import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
 
-const HoverCard = ({ children, ...props }: { children: React.ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void }) => (
-  <>{children}</>
-);
-const HoverCardTrigger = ({ children }: { children: React.ReactNode }) => <>{children}</>;
-const HoverCardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ children, className, ...props }, ref) => (
-    <div ref={ref} className={className} style={{ padding: 12, background: 'var(--ds-surface-overlay, #fff)', borderRadius: 8, boxShadow: 'var(--ds-shadow-overlay, 0 4px 8px rgba(0,0,0,0.1))', border: '1px solid var(--ds-border, #DFE1E6)' }} {...props}>
-      {children}
-    </div>
-  )
-);
-HoverCardContent.displayName = "HoverCardContent";
+import { cn } from "@/lib/utils";
+
+const HoverCard = HoverCardPrimitive.Root;
+
+const HoverCardTrigger = HoverCardPrimitive.Trigger;
+
+const HoverCardContent = React.forwardRef<
+  React.ElementRef<typeof HoverCardPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Content>
+>(({ className, align = "center", sideOffset = 4, ...props }, ref) => (
+  <HoverCardPrimitive.Content
+    ref={ref}
+    align={align}
+    sideOffset={sideOffset}
+    className={cn(
+      "z-[500] w-64 rounded-md border border-border bg-popover p-4 text-popover-foreground shadow-lg outline-none",
+      "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+      "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      className,
+    )}
+    {...props}
+  />
+));
+HoverCardContent.displayName = HoverCardPrimitive.Content.displayName;
 
 export { HoverCard, HoverCardTrigger, HoverCardContent };
