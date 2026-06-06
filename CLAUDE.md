@@ -1454,50 +1454,76 @@ The function owner is not subject to RLS (no FORCE ROW LEVEL SECURITY), so its i
 
 ---
 
-## 📊 RTK TOKEN SAVINGS — MANDATORY END-OF-CONVERSATION REPORT (Non-Negotiable)
+## 🚀 TOKEN OPTIMIZATION STACK — MANDATORY START + END PROTOCOL (Non-Negotiable, P1)
 
-**RTK (Rust Token Killer) is installed globally as a CLI proxy that compresses Bash command outputs before they enter the LLM context window, saving 60-90% tokens.**
+**Catalyst runs a 4-tool token optimization stack that reduces total token spend by 50-70%. All tools are pre-installed and auto-activate — no per-conversation setup needed.**
 
-### How it works
+### The Stack
 
-- A `PreToolUse` hook in `~/.claude/settings.json` intercepts every Bash tool call
-- The hook runs `rtk hook claude` which transparently rewrites commands through RTK's compression filters
-- No per-conversation setup needed — it activates automatically for every session, every agent, every skill
+| Tool | What it cuts | Savings | Activation |
+|---|---|---|---|
+| **RTK** (Rust Token Killer) | **Input** — compresses Bash command outputs before context window | 60-98% on CLI output | `PreToolUse` hook auto-rewrites every Bash call |
+| **Caveman** | **Output** — strips filler/articles/hedging from Claude's prose | ~65% on responses | `SessionStart` hook auto-activates every session |
+| **ccusage** | **Visibility** — offline token consumption dashboard per session | Shows WHERE money goes | `ccusage` CLI, `brew install ccusage` |
+| **claude-code-router** | **Routing** — sends mechanical tasks to cheaper models | 70-80% on repetitive edits | `npx @musistudio/claude-code-router`, `ccr code` |
 
-### End-of-conversation report (MANDATORY)
+### 🟢 Session START — Optimization Notification (MANDATORY)
 
-**Before ending ANY conversation — whether main session, subagent, catalyst-agent, design-critique, design-intelligence, preflight, jira-compare, or any other skill/agent — run `rtk gain` and include the output in the final response to the user.**
+**First response of EVERY conversation MUST begin with this block:**
 
-Format:
 ```
-📊 **RTK Token Savings This Session**
+⚡ **Catalyst Optimization Stack Active**
+  RTK ......... ✅ input compression (Bash outputs)
+  Caveman ..... ✅ output compression (prose responses)
+  ccusage ..... ✅ token tracking available
+  Router ...... ✅ model routing available
+```
+
+This applies to: main sessions, subagents, catalyst-agent, design-critique, design-intelligence, preflight, jira-compare, deploy, code-review, and ANY other skill/agent.
+
+### 🔴 Session END — Optimization Summary (MANDATORY)
+
+**Before ending ANY conversation, run `rtk gain` and include this block in the final response:**
+
+```
+📊 **Optimization Summary**
 [paste rtk gain output]
+
+💡 Run `ccusage` for full cost breakdown | `rtk gain --graph` for 30-day trend
 ```
 
-This applies to:
-- ✅ Every main conversation
-- ✅ Every catalyst-agent run
-- ✅ Every design-critique / design-intelligence run
-- ✅ Every preflight run
-- ✅ Every jira-compare run
-- ✅ Every deploy skill run
-- ✅ Every code-review run
-- ✅ Any skill or agent that uses Bash commands
-
-### Useful RTK commands
+### Useful commands
 
 ```bash
-rtk gain              # Summary of token savings (run this at end of every conversation)
+# Token savings
+rtk gain              # RTK compression stats (run at end of every conversation)
 rtk gain --graph      # ASCII chart of savings over last 30 days
 rtk gain --history    # Command usage history with per-command savings
-rtk discover          # Analyze Claude Code history for missed optimization opportunities
+rtk discover          # Analyze Claude Code history for missed opportunities
+
+# Cost tracking
+ccusage               # Full token consumption dashboard
+ccusage --model       # Breakdown by model
+
+# Model routing
+ccr code              # Start Claude Code through router (routes to cheaper models)
+ccr model             # Interactive model selection
+ccr status            # Show router status
+
+# Meta
+rtk proxy <cmd>       # Execute raw command without RTK filtering (debugging)
+rtk --version         # Check RTK version
 ```
 
-### Meta commands (bypass the proxy)
+### Setup on a new machine
 
+All tools must be installed locally — CLAUDE.md provides the rules, not the binaries:
 ```bash
-rtk proxy <cmd>       # Execute raw command without filtering (for debugging)
-rtk --version         # Check installed version
+brew install rtk && rtk init -g          # RTK + Claude Code hook
+curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.sh | bash  # Caveman
+brew install ccusage                      # Token consumption dashboard
+npm i -g @musistudio/claude-code-router   # Model router (or use npx)
 ```
+Then restart Claude Code. All hooks auto-activate on every future session.
 
-**Severity:** P1 — Vikram wants visibility into token savings across every session. Skipping the report is a process violation.
+**Severity:** P1 — Vikram wants explicit optimization visibility at session start (confirmation all tools active) and session end (savings summary). Skipping either is a process violation.
