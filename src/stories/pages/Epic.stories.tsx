@@ -1,11 +1,12 @@
 /**
- * Epic detail view — renders the ACTUAL CatalystViewEpic production component.
+ * Epic detail view — renders the ACTUAL CatalystViewEpic.
+ * Cache seeded SYNCHRONOUSLY before component mounts.
  */
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
-import React, { useEffect } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import React from 'react';
 import CatalystViewEpic from '@/components/catalyst-detail-views/epic/CatalystViewEpic';
+import { seedForIssue } from '../fixtures/storyQueryClient';
 import { ISSUES } from '../fixtures/production-data';
 
 const issueData = {
@@ -20,18 +21,6 @@ const issueData = {
   due_date: '2026-09-30',
 };
 
-function Seed({ children }: { children: React.ReactNode }) {
-  const qc = useQueryClient();
-  useEffect(() => {
-    qc.setQueryData(['cv-issue-detail', issueData.issue_key], issueData);
-    qc.setQueryData(['cv-watchers', issueData.issue_key], []);
-    qc.setQueryData(['cv-activity', issueData.issue_key], []);
-    qc.setQueryData(['cv-comments', issueData.issue_key], []);
-    qc.setQueryData(['subtasks', issueData.issue_key], []);
-  }, [qc]);
-  return <>{children}</>;
-}
-
 const meta: Meta = {
   title: 'Pages/Epic',
   parameters: { layout: 'fullscreen' },
@@ -39,27 +28,29 @@ const meta: Meta = {
 export default meta;
 
 export const PanelMode: StoryObj = {
-  render: () => (
-    <Seed>
+  render: () => {
+    seedForIssue(issueData.issue_key, issueData);
+    return (
       <div style={{ height: 700, position: 'relative' }}>
         <CatalystViewEpic
           isOpen={true} onClose={fn()}
           itemId={issueData.issue_key} projectKey="BAU" panelMode
         />
       </div>
-    </Seed>
-  ),
+    );
+  },
 };
 
 export const FullPage: StoryObj = {
-  render: () => (
-    <Seed>
+  render: () => {
+    seedForIssue(issueData.issue_key, issueData);
+    return (
       <div style={{ height: 700, position: 'relative' }}>
         <CatalystViewEpic
           isOpen={true} onClose={fn()}
           itemId={issueData.issue_key} projectKey="BAU" fullPageMode
         />
       </div>
-    </Seed>
-  ),
+    );
+  },
 };
