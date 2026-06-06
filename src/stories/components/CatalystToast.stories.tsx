@@ -1,26 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { CatalystToast } from '@/components/ui/CatalystToast';
 
-const meta: Meta = {
-  title: 'Components/Catalyst Toast',
+const meta: Meta<typeof CatalystToast> = {
+  title: 'Components/CatalystToast',
+  component: CatalystToast,
   parameters: { layout: 'padded' },
 };
 export default meta;
-type Story = StoryObj;
 
-export const Variants: Story = {
-  render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      {[
-        { type: 'success', msg: 'Item saved successfully' },
-        { type: 'error', msg: 'Failed to delete item' },
-        { type: 'info', msg: 'Syncing with Jira...' },
-        { type: 'warning', msg: 'You have unsaved changes' },
-      ].map(({ type, msg }) => (
-        <div key={type} style={{ padding: '12px 16px', borderRadius: 4, border: '1px solid var(--ds-border, #DFE1E6)', fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>
-          <strong style={{ textTransform: 'uppercase' as const, fontSize: 11, marginRight: 8 }}>{type}</strong>
-          {msg}
-        </div>
-      ))}
-    </div>
-  ),
+export const Success: StoryObj<typeof CatalystToast> = {
+  args: { type: 'success', message: 'Issue created successfully' },
+};
+export const Error: StoryObj<typeof CatalystToast> = {
+  args: { type: 'error', message: 'Failed to save changes' },
+};
+export const Warning: StoryObj<typeof CatalystToast> = {
+  args: { type: 'warning', message: 'Jira sync is paused' },
 };

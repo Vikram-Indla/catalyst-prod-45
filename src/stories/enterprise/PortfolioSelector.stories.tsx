@@ -1,38 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { useState } from 'react';
-import Select from '@atlaskit/select';
-import { token } from '@atlaskit/tokens';
+import { fn } from '@storybook/test';
+import { ReleaseSelector } from '@/features/release-compare/components/ReleaseSelector';
 
-const PROJECTS = [
-  { label: 'BAU – Senaei BAU', value: 'BAU' },
-  { label: 'MWR – MIM Website Revamp', value: 'MWR' },
-  { label: 'INV – Investor Journey', value: 'INV' },
-  { label: 'MDT – Ministry Digital Transformation', value: 'MDT' },
-];
-
-function PortfolioHarness() {
-  const [selected, setSelected] = useState([PROJECTS[0], PROJECTS[1]]);
-  return (
-    <div style={{ maxWidth: 480, padding: 16 }}>
-      <div style={{ font: `600 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', '#6B778C'), marginBlockEnd: 6 }}>
-        Portfolio scope
-      </div>
-      <Select
-        inputId="portfolio-select"
-        isMulti
-        options={PROJECTS}
-        value={selected}
-        onChange={(v) => setSelected(v as typeof selected)}
-        placeholder="Select projects…"
-      />
-    </div>
-  );
-}
-
-const meta: Meta<typeof PortfolioHarness> = {
+const meta: Meta<typeof ReleaseSelector> = {
   title: 'Enterprise Components/Portfolio Selector',
-  component: PortfolioHarness,
+  component: ReleaseSelector,
   parameters: { layout: 'padded' },
 };
 export default meta;
-export const Default: StoryObj<typeof PortfolioHarness> = {};
+
+export const Default: StoryObj<typeof ReleaseSelector> = {
+  args: {
+    availableReleases: [
+      { id: 'r1', name: 'Sprint 2.1', startDate: '2026-05-01', endDate: '2026-05-15' },
+      { id: 'r2', name: 'Sprint 2.2', startDate: '2026-05-15', endDate: '2026-05-30' },
+      { id: 'r3', name: 'Sprint 2.3', startDate: '2026-06-01', endDate: '2026-06-15' },
+    ] as any,
+    selectedIds: ['r1'],
+    onSelectionChange: fn(),
+  },
+};

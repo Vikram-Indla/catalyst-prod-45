@@ -1,25 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { CatalystDescriptionSection } from '@/components/catalyst-detail-views/shared/sections/CatalystDescriptionSection';
+import { ISSUES } from '../fixtures/production-data';
 
-const meta: Meta = {
-  title: 'Enterprise Components/Description Section',
+const meta: Meta<typeof CatalystDescriptionSection> = {
+  title: 'Enterprise Components/Catalyst Description Section',
+  component: CatalystDescriptionSection,
   parameters: { layout: 'padded' },
 };
 export default meta;
-type Story = StoryObj;
 
-export const Placeholder: Story = {
-  render: () => (
-    <div style={{ maxWidth: 700 }}>
-      <h2 style={{ margin: 0, fontSize: 14, fontWeight: 500, color: 'var(--ds-text-subtle, #505258)' }}>Description</h2>
-      <div style={{ marginTop: 8, fontSize: 14, lineHeight: 1.6, color: 'var(--ds-text, #172B4D)' }}>
-        <p>As a user, I want to authenticate using my Jira credentials so that I can access Catalyst without a separate login.</p>
-        <h3>Acceptance Criteria</h3>
-        <ul>
-          <li>SSO flow completes in under 3 seconds</li>
-          <li>Failed auth shows a clear error message</li>
-          <li>Session persists for 7 days</li>
-        </ul>
-      </div>
-    </div>
-  ),
+export const WithText: StoryObj<typeof CatalystDescriptionSection> = {
+  args: { issue: { ...ISSUES.story, description_adf: null, id: 'ph-001' } as any },
+};
+export const Empty: StoryObj<typeof CatalystDescriptionSection> = {
+  args: { issue: { ...ISSUES.story, description_text: null, description_adf: null, id: 'ph-002' } as any },
+};
+export const CustomLabel: StoryObj<typeof CatalystDescriptionSection> = {
+  args: { issue: { ...ISSUES.story, description_adf: null, id: 'ph-003' } as any, label: 'Acceptance Criteria' },
 };

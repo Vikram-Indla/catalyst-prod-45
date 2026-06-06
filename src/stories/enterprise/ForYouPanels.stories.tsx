@@ -1,28 +1,25 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ISSUES, TEAM, STATUSES } from '../fixtures/production-data';
+import { fn } from '@storybook/test';
+import AssignedPanel from '@/components/for-you/atlaskit/AssignedPanel';
+import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
+import type { WorkItem } from '@/hooks/useForYouData';
 
-const meta: Meta = { title: 'Enterprise Components/For You Panels', parameters: { layout: 'padded' } };
+function makeItem(id: string, key: string, summary: string): WorkItem {
+  return { id, key, summary, mode: 'assigned', level: 'standard', project: 'Senaei BAU', projectKey: 'BAU', hub: 'project', hubLabel: 'Project Hub', updatedAt: new Date().toISOString(), createdAt: '2026-01-01T00:00:00Z', assignee: { name: 'Vikram Indla' }, issueType: 'Story', group: 'today', status: 'In Progress', statusCategory: 'indeterminate', priority: 'Medium', priorityLevel: 3 } as WorkItem;
+}
+
+const meta: Meta = {
+  title: 'Enterprise Components/For You Panels',
+  parameters: { layout: 'padded' },
+};
 export default meta;
-type Story = StoryObj;
 
-export const AssignedPanel: Story = {
-  render: () => <div style={{ padding: 16, border: '1px solid var(--ds-border,#DFE1E6)', borderRadius: 8 }}><h3 style={{ fontSize: 16, fontWeight: 653, margin: '0 0 12px' }}>Assigned to me</h3><p style={{ fontSize: 13, color: 'var(--ds-text-subtle,#42526E)' }}>Shows all ph_issues assigned to current user via assignee_account_id. Grouped by status category. Uses JiraTable cells.</p></div>,
+export const Assigned: StoryObj = {
+  render: () => <div style={{ maxWidth: 900 }}><AssignedPanel items={[makeItem('1', 'BAU-5972', 'Industrial Capabilities'), makeItem('2', 'BAU-5831', 'Deployment Pipeline')]} isLoading={false} onSelect={fn()} onToggleStar={fn()} /></div>,
 };
-export const StarredPanel: Story = {
-  render: () => <div style={{ padding: 16, border: '1px solid var(--ds-border,#DFE1E6)', borderRadius: 8 }}><h3 style={{ fontSize: 16, fontWeight: 653, margin: '0 0 12px' }}>Starred</h3><p style={{ fontSize: 13, color: 'var(--ds-text-subtle,#42526E)' }}>Issues bookmarked by user. Real-time via Supabase subscription on user_starred_items.</p></div>,
+export const AssignedEmpty: StoryObj = {
+  render: () => <div style={{ maxWidth: 900 }}><AssignedPanel items={[]} isLoading={false} onSelect={fn()} onToggleStar={fn()} /></div>,
 };
-export const AgeingPanel: Story = {
-  render: () => <div style={{ padding: 16, border: '1px solid var(--ds-border,#DFE1E6)', borderRadius: 8 }}><h3 style={{ fontSize: 16, fontWeight: 653, margin: '0 0 12px' }}>Ageing</h3><p style={{ fontSize: 13, color: 'var(--ds-text-subtle,#42526E)' }}>In-progress issues past SLA threshold. Sorted by days since status change.</p></div>,
-};
-export const RecommendedPanel: Story = {
-  render: () => <div style={{ padding: 16, border: '1px solid var(--ds-border,#DFE1E6)', borderRadius: 8 }}><h3 style={{ fontSize: 16, fontWeight: 653, margin: '0 0 12px' }}>Recommended</h3><p style={{ fontSize: 13, color: 'var(--ds-text-subtle,#42526E)' }}>Mentions, comments, reactions via ph_comments + ph_comment_reactions. Emoji reaction strip + reply composer.</p></div>,
-};
-export const BoardPanel: Story = {
-  render: () => <div style={{ padding: 16, border: '1px solid var(--ds-border,#DFE1E6)', borderRadius: 8 }}><h3 style={{ fontSize: 16, fontWeight: 653, margin: '0 0 12px' }}>Board</h3><p style={{ fontSize: 13, color: 'var(--ds-text-subtle,#42526E)' }}>Mini kanban view of user's sprint. Uses PragmaticBoard adapter.</p></div>,
-};
-export const R360Panel: Story = {
-  render: () => <div style={{ padding: 16, border: '1px solid var(--ds-border,#DFE1E6)', borderRadius: 8 }}><h3 style={{ fontSize: 16, fontWeight: 653, margin: '0 0 12px' }}>Resource 360</h3><p style={{ fontSize: 13, color: 'var(--ds-text-subtle,#42526E)' }}>Team resource panel showing capacity, workload risk, and velocity from resource_inventory.</p></div>,
-};
-export const AiThemePanel: Story = {
-  render: () => <div style={{ padding: 16, border: '1px solid var(--ds-border,#DFE1E6)', borderRadius: 8 }}><h3 style={{ fontSize: 16, fontWeight: 653, margin: '0 0 12px' }}>AI Focus (Themes)</h3><p style={{ fontSize: 13, color: 'var(--ds-text-subtle,#42526E)' }}>AI-generated theme clusters from ai-digest edge function. Uses Gemini to group issues into actionable themes.</p></div>,
+export const Starred: StoryObj = {
+  render: () => <div style={{ maxWidth: 900 }}><StarredPanel items={[{ ...makeItem('3', 'BAU-5737', 'QA Bug Triage'), starred: true } as WorkItem]} isLoading={false} onSelect={fn()} onToggleStar={fn()} /></div>,
 };

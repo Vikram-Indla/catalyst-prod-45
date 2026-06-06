@@ -1,26 +1,34 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
+import { WorkItemCard } from '@/components/kanban/WorkItemCard';
 
-const meta: Meta = {
+const tk = {
+  surface: 'var(--ds-surface, #fff)', surfaceHover: 'var(--ds-surface-hovered, #fafbfc)',
+  border: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #172B4D)',
+  textSubtle: 'var(--ds-text-subtle, #42526E)', textSubtlest: 'var(--ds-text-subtlest, #6B778C)',
+  flagBg: 'var(--ds-background-warning, #FFF7D6)', selected: 'var(--ds-background-selected, #E9F2FE)',
+};
+const d = { cardPadding: 12, avatarSize: 24, fontSize: 13, keyFontSize: 11, gap: 6, borderRadius: 8, minHeight: 80 };
+const issue = {
+  id: 'i1', issue_key: 'BAU-5972', summary: 'Industrial Capabilities: Add Item Interface',
+  status: 'In Development', status_category: 'indeterminate', priority: 'High',
+  issue_type: 'Story', assignee_display_name: 'Vikram Indla', assignee_account_id: 'u1',
+  project_key: 'BAU', flagged: false, labels: ['frontend'], comment_count: 3,
+};
+
+const meta: Meta<typeof WorkItemCard> = {
   title: 'Enterprise Components/Work Item Card',
+  component: WorkItemCard,
   parameters: { layout: 'padded' },
 };
 export default meta;
-type Story = StoryObj;
 
-export const Placeholder: Story = {
-  render: () => (
-    <div style={{ width: 280, padding: 12, borderRadius: 8, border: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface, #fff)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-        <span style={{ width: 16, height: 16, borderRadius: 2, background: '#36B37E' }} />
-        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'monospace' }}>BAU-5757</span>
-      </div>
-      <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', fontWeight: 400, lineHeight: 1.4 }}>
-        Implement user authentication flow
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
-        <span style={{ padding: '2px 6px', borderRadius: 3, background: '#669DF1', color: '#fff', fontSize: 10, fontWeight: 700 }}>IN PROGRESS</span>
-        <span style={{ width: 24, height: 24, borderRadius: '50%', background: '#0C66E4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 11, fontWeight: 600 }}>VI</span>
-      </div>
-    </div>
-  ),
+export const Default: StoryObj<typeof WorkItemCard> = {
+  render: () => <div style={{ maxWidth: 300 }}><WorkItemCard issue={issue as any} d={d as any} tk={tk as any} onOpenDetail={fn()} /></div>,
+};
+export const Flagged: StoryObj<typeof WorkItemCard> = {
+  render: () => <div style={{ maxWidth: 300 }}><WorkItemCard issue={{ ...issue, flagged: true } as any} d={d as any} tk={tk as any} onOpenDetail={fn()} /></div>,
+};
+export const Selected: StoryObj<typeof WorkItemCard> = {
+  render: () => <div style={{ maxWidth: 300 }}><WorkItemCard issue={issue as any} d={d as any} tk={tk as any} isSelected onOpenDetail={fn()} /></div>,
 };

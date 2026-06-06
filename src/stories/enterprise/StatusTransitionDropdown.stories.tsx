@@ -1,19 +1,30 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
+import { StatusTransitionDropdown } from '@/components/workflow/StatusTransitionDropdown';
 
-const meta: Meta = {
+const meta: Meta<typeof StatusTransitionDropdown> = {
   title: 'Enterprise Components/Status Transition Dropdown',
+  component: StatusTransitionDropdown,
   parameters: { layout: 'padded' },
 };
 export default meta;
-type Story = StoryObj;
 
-export const Placeholder: Story = {
-  render: () => (
-    <div style={{ padding: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-      <span style={{ padding: '4px 12px', borderRadius: 3, background: '#669DF1', color: '#fff', fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em' }}>
-        IN PROGRESS
-      </span>
-      <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>Click to transition (requires live workflow engine)</span>
-    </div>
-  ),
+export const StoryInProgress: StoryObj<typeof StatusTransitionDropdown> = {
+  args: { issueType: 'Story', currentStateId: 'in_development', onTransition: fn() },
+};
+
+export const EpicBacklog: StoryObj<typeof StatusTransitionDropdown> = {
+  args: { issueType: 'Epic', currentStateId: 'backlog', onTransition: fn() },
+};
+
+export const TaskDone: StoryObj<typeof StatusTransitionDropdown> = {
+  args: { issueType: 'Task', currentStateId: 'done', onTransition: fn() },
+};
+
+export const Compact: StoryObj<typeof StatusTransitionDropdown> = {
+  args: { issueType: 'Story', currentStateId: 'in_development', onTransition: fn(), size: 'compact' },
+};
+
+export const Disabled: StoryObj<typeof StatusTransitionDropdown> = {
+  args: { issueType: 'Story', currentStateId: 'done', onTransition: fn(), isDisabled: true },
 };
