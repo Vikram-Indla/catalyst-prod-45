@@ -8,6 +8,7 @@ import React, { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import CatalystViewStory from '@/components/catalyst-detail-views/story/CatalystViewStory';
 import { ISSUES } from '../fixtures/production-data';
+import { ConsumerCard } from '../fixtures/ConsumerCard';
 
 const issueData = {
   ...ISSUES.story,
@@ -37,6 +38,31 @@ const meta: Meta = {
   parameters: { layout: 'fullscreen' },
 };
 export default meta;
+
+export const Registry: StoryObj = {
+  name: 'Component Registry',
+  render: () => (
+    <div style={{ padding: 24, maxWidth: 800 }}>
+      <ConsumerCard
+        component="CatalystViewStory"
+        source="src/components/catalyst-detail-views/story/CatalystViewStory.tsx"
+        consumers={[
+          { file: 'CatalystDetailRouter.tsx', surface: 'Universal detail router — opens Story when issue_type=Story' },
+          { file: 'BacklogPage.atlaskit.tsx', surface: 'Backlog list → click row → Story panel' },
+          { file: 'UWVTable.tsx', surface: 'AllWork list → click row → Story panel' },
+          { file: 'KanbanBoardPage.tsx', surface: 'Kanban card click → Story modal' },
+          { file: 'ProjectAllWorkView.tsx', surface: 'Project AllWork → click row → Story panel' },
+          { file: 'GlobalSearchPanel.tsx', surface: 'Search result click → Story detail' },
+          { file: 'ForYouRow.tsx', surface: 'For You feed → click row → Story detail' },
+          { file: 'NotificationPanel.tsx', surface: 'Notification click → Story detail' },
+        ]}
+        ads={{ package: 'CatalystViewBase (internal)', token: 'Composes: CatalystKeyDetails + CatalystSidebarDetails + Description + SubtasksPanel + LinkedWorkItems + Attachments + Activity' }}
+        risk="critical"
+        notes="Core detail view component — mounted on every surface that opens a Story work item. Removing this breaks issue viewing across the entire app. Used by 8+ surfaces."
+      />
+    </div>
+  ),
+};
 
 export const PanelMode: StoryObj = {
   render: () => (
