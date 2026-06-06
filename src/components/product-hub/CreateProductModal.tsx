@@ -29,6 +29,10 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { token } from '@atlaskit/tokens';
+import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
+import { tiptapToAdf } from '@/components/catalyst-detail-views/shared/sections/Description/utils/tiptapToAdf';
+import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
+import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 
 interface CreateProductModalProps {
   open: boolean;
@@ -70,7 +74,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [codeManuallyEdited, setCodeManuallyEdited] = useState(false);
-  const [description, setDescription] = useState('');
+  const [descriptionAdf, setDescriptionAdf] = useState<AdfDoc | null>(null);
   const [color, setColor] = useState(PRESET_COLORS[0]);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -81,7 +85,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
       setName('');
       setCode('');
       setCodeManuallyEdited(false);
-      setDescription('');
+      setDescriptionAdf(null);
       setColor(PRESET_COLORS[0]);
       setSubmitting(false);
       setErrorMsg(null);
@@ -122,12 +126,17 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
     setErrorMsg(null);
 
     try {
+      const descriptionPayload =
+        descriptionAdf && !isAdfEmpty(descriptionAdf)
+          ? JSON.stringify(descriptionAdf)
+          : null;
+
       const { data, error } = await (supabase as any)
         .from('products')
         .insert({
           name: name.trim(),
           code: code.trim().toUpperCase(),
-          description: description.trim() || null,
+          description: descriptionPayload,
           color,
           is_active: true,
         })
@@ -153,7 +162,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
       setErrorMsg(e?.message || 'Failed to create product line');
       setSubmitting(false);
     }
-  }, [name, code, description, color, isValid, navigate, onClose, queryClient]);
+  }, [name, code, descriptionAdf, color, isValid, navigate, onClose, queryClient]);
 
   if (!open) return null;
 
@@ -247,20 +256,39 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
             </p>
           </div>
 
-          {/* Description */}
+          {/* Description — canonical RichTextEditor in headless mode
+              (modal footer owns Create / Cancel). Mirrors the BR create
+              modal pattern: onChange captures TiptapDoc → tiptapToAdf →
+              local state; on submit we JSON.stringify(adf) and write
+              that to products.description. */}
           <div style={{ marginBottom: 16 }}>
-            <label htmlFor="product-description" style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
               Description <span style={{ fontWeight: 400, color: token('color.text.subtle') }}>(optional)</span>
             </label>
-            <textarea
-              id="product-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="What this product line covers"
-              disabled={submitting}
-              rows={3}
-              style={{ ...inputStyle, fontFamily: 'var(--cp-font-body)', resize: 'vertical' }}
-            />
+            <div
+              style={{
+                border: `1px solid ${token('color.border.input')}`,
+                borderRadius: 4,
+                background: token('color.background.input'),
+                overflow: 'hidden',
+              }}
+            >
+              <RichTextEditor
+                initialAdf={descriptionAdf}
+                hideActionButtons
+                placeholder="What this product line covers"
+                minHeight={100}
+                onSave={() => {}}
+                onCancel={() => {}}
+                onChange={(tiptapJson) => {
+                  try {
+                    setDescriptionAdf(tiptapToAdf(tiptapJson));
+                  } catch {
+                    /* noop — keep last good ADF */
+                  }
+                }}
+              />
+            </div>
           </div>
 
           {/* Color */}

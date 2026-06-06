@@ -290,11 +290,23 @@ async function getActorInfo() {
   return _cachedActorInfo;
 }
 
-async function logBrAudit(id: string, data: Partial<BusinessRequest>) {
-  const { data: currentData } = await typedQuery('business_requests')
-    .select('*')
-    .eq('id', id)
-    .single();
+async function logBrAudit(
+  id: string,
+  data: Partial<BusinessRequest>,
+  beforeData?: Record<string, any> | null,
+) {
+  // `beforeData` is the row state captured BEFORE the UPDATE statement
+  // ran. Without it, a fresh SELECT here returns the row with the new
+  // values already applied (the UPDATE commits synchronously), making
+  // oldStr === newStr for every field and producing zero audit rows.
+  let currentData: Record<string, any> | null = beforeData ?? null;
+  if (!currentData) {
+    const { data: fetched } = await typedQuery('business_requests')
+      .select('*')
+      .eq('id', id)
+      .single();
+    currentData = (fetched as Record<string, any>) ?? null;
+  }
   if (!currentData) return;
 
   const { userId, actorName } = await getActorInfo();
@@ -392,6 +404,14 @@ export function useUpdateBusinessRequest() {
         }
       }
 
+      // Snapshot the row BEFORE the update so the audit logger can diff
+      // old → new. Fetching after the UPDATE would see the new values
+      // already in place and produce no audit rows.
+      const { data: beforeRow } = await typedQuery('business_requests')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
       const { data: result, error } = await typedQuery('business_requests')
         .update(updateData)
         .eq('id', id)
@@ -400,7 +420,7 @@ export function useUpdateBusinessRequest() {
       if (error) throw error;
 
       // Fire-and-forget audit logging — does not block the UI
-      logBrAudit(id, data).catch(() => {});
+      logBrAudit(id, data, beforeRow as Record<string, any> | null).catch(() => {});
 
       return result;
     },

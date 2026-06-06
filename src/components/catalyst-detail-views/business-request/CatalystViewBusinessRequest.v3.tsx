@@ -25,12 +25,11 @@ import {
   BrDescriptionSection,
   BrAttachmentsSection,
   BrLinkedItemsSection,
-  // BrSidebarDetails replaced by canonical CatalystSidebarDetails
+  BrSidebarDetails,
   BrStatusSection,
+  BrActivitySection,
 } from './sections';
-import { CatalystSidebarDetails } from "../shared/sections/CatalystSidebarDetails";
-import { mapBrToIssueLike } from "./sections/BrSidebarAdapter";
-import { CatalystQuickActions, CatalystActivitySection } from '../shared/sections';
+import { CatalystQuickActions } from '../shared/sections';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { ImproveIssueDropdown } from '../improve';
 import { WatchersChip } from '../shared/WatchersChip';
@@ -127,7 +126,7 @@ export default function CatalystViewBusinessRequestV3({
             parentSummary={request.title ?? ''}
           />
         )}
-        <CatalystActivitySection itemId={resolvedId ?? ''} isOpen={isOpen} />
+        <BrActivitySection requestId={resolvedId ?? ''} isOpen={isOpen} />
       </>
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -137,12 +136,9 @@ export default function CatalystViewBusinessRequestV3({
   // ── Right rail — status pill in header, matching Story's pattern ──────────
   const rightContent = useMemo(
     () => (
-      <CatalystSidebarDetails
-        issue={mapBrToIssueLike(request)}
-        itemId={request?.request_key ?? ''}
-        onStatusChange={(s) => updateField('status', s)}
-        onClose={onClose}
-        onDelete={() => {}}
+      <BrSidebarDetails
+        request={request}
+        onUpdate={updateField}
         statusPill={<BrStatusSection request={request} onUpdate={updateField} />}
         watchersChip={<WatchersChip issueKey={request?.request_key ?? null} />}
         improveDropdown={
