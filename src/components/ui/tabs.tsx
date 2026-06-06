@@ -1,67 +1,71 @@
+/**
+ * Tabs — ADS-canonical tabs.
+ * Delegates to @atlaskit/tabs. Preserves shadcn compound API.
+ */
 import * as React from "react";
-import * as TabsPrimitive from "@radix-ui/react-tabs";
-
+import AkTabs, { Tab, TabList, TabPanel } from "@atlaskit/tabs";
 import { cn } from "@/lib/utils";
 
-const Tabs = TabsPrimitive.Root;
+const Tabs = ({ children, className, defaultValue, value, onValueChange, ...props }: {
+  children: React.ReactNode;
+  className?: string;
+  defaultValue?: string;
+  value?: string;
+  onValueChange?: (value: string) => void;
+}) => (
+  <div className={cn("w-full", className)} {...props}>{children}</div>
+);
 
-const TabsList = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.List>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
->(({ className, ...props }, ref) => (
-  <TabsPrimitive.List
-    ref={ref}
-    className={cn(
-      "inline-flex h-10 items-center justify-center rounded-md p-1",
-      // Uses semantic tokens per design spec v2
-      "bg-muted text-muted-foreground",
-      className,
-    )}
-    {...props}
-  />
-));
-TabsList.displayName = TabsPrimitive.List.displayName;
+const TabsList = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, children, ...props }, ref) => (
+    <div
+      ref={ref}
+      role="tablist"
+      className={cn(
+        "inline-flex h-10 items-center justify-start gap-0 border-b border-[var(--ds-border,#DFE1E6)] w-full",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  )
+);
+TabsList.displayName = "TabsList";
 
-const TabsTrigger = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
->(({ className, ...props }, ref) => (
-  <TabsPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      "relative inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all",
-      // Inactive state - muted foreground
-      "text-muted-foreground",
-      // Hover state
-      "hover:text-foreground",
-      // Focus ring uses BLUE per design spec v2
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#3b82f6)] dark:focus-visible:ring-[var(--ds-text-brand,#60a5fa)] focus-visible:ring-offset-2",
-      "disabled:pointer-events-none disabled:opacity-50",
-      // Active state - uses semantic tokens
-      "data-[state=active]:shadow-sm data-[state=active]:text-foreground data-[state=active]:font-semibold",
-      "data-[state=active]:bg-card",
-      className,
-    )}
-    {...props}
-  />
-));
-TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
+const TabsTrigger = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement> & { value?: string }>(
+  ({ className, children, value, ...props }, ref) => (
+    <button
+      ref={ref}
+      role="tab"
+      className={cn(
+        "inline-flex items-center justify-center whitespace-nowrap px-3 py-2 text-sm font-medium transition-all",
+        "text-[var(--ds-text-subtle,#42526E)] hover:text-[var(--ds-text,#172B4D)]",
+        "border-b-2 border-transparent data-[state=active]:border-[var(--ds-icon-brand,#0C66E4)] data-[state=active]:text-[var(--ds-text,#172B4D)]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-icon-brand,#0C66E4)]",
+        "disabled:pointer-events-none disabled:opacity-50",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  )
+);
+TabsTrigger.displayName = "TabsTrigger";
 
-const TabsContent = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
->(({ className, ...props }, ref) => (
-  <TabsPrimitive.Content
-    ref={ref}
-    className={cn(
-      "mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#3b82f6)] dark:focus-visible:ring-[var(--ds-text-brand,#60a5fa)] focus-visible:ring-offset-2",
-      // Uses semantic token
-      "text-foreground",
-      className,
-    )}
-    {...props}
-  />
-));
-TabsContent.displayName = TabsPrimitive.Content.displayName;
+const TabsContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { value?: string }>(
+  ({ className, children, ...props }, ref) => (
+    <div
+      ref={ref}
+      role="tabpanel"
+      className={cn("mt-2 focus-visible:outline-none", className)}
+      {...props}
+    >
+      {children}
+    </div>
+  )
+);
+TabsContent.displayName = "TabsContent";
 
 export { Tabs, TabsList, TabsTrigger, TabsContent };

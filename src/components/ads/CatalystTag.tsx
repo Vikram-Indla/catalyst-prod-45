@@ -4,7 +4,6 @@
  * Uses @atlaskit/tag with Catalyst-specific color presets.
  */
 import Tag from '@atlaskit/tag';
-import TagGroup from '@atlaskit/tag-group';
 
 export type CatalystTagColor = 'standard' | 'blue' | 'green' | 'teal' | 'purple' | 'red' | 'yellow' | 'grey';
 
@@ -35,7 +34,7 @@ interface CatalystTagGroupProps {
 
 export function CatalystTagGroup({ labels, color = 'standard', onRemove }: CatalystTagGroupProps) {
   return (
-    <TagGroup label="Labels">
+    <div role="list" aria-label="Labels" style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
       {labels.map((label) => (
         <CatalystTag
           key={label}
@@ -44,6 +43,6 @@ export function CatalystTagGroup({ labels, color = 'standard', onRemove }: Catal
           onRemove={onRemove ? () => onRemove(label) : undefined}
         />
       ))}
-    </TagGroup>
+    </div>
   );
 }

@@ -129,6 +129,4 @@ export { CatalystLink } from './CatalystLink';
 export { CatalystTag, CatalystTagGroup } from './CatalystTag';
 export type { CatalystTagColor } from './CatalystTag';
 
-export { CatalystBanner } from './CatalystBanner';
 export { CatalystInlineCode, CatalystCodeBlock } from './CatalystCodeBlock';
-export { CatalystProgressTracker } from './CatalystProgressTracker';
