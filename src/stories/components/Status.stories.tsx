@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
+import { STATUSES } from '../fixtures/production-data';
 
 const meta: Meta<typeof CatalystStatusPill> = {
   title: 'Components/Status Pill',
@@ -9,21 +10,22 @@ const meta: Meta<typeof CatalystStatusPill> = {
 export default meta;
 type Story = StoryObj<typeof CatalystStatusPill>;
 
-export const ToDo: Story = { args: { status: 'To Do', statusCategory: 'new' } };
+export const ToDo: Story = { args: { status: 'ToDo', statusCategory: 'new' } };
 export const InProgress: Story = { args: { status: 'In Progress', statusCategory: 'indeterminate' } };
 export const Done: Story = { args: { status: 'Done', statusCategory: 'done' } };
-export const ReadyForQA: Story = { args: { status: 'Ready for QA', statusCategory: 'indeterminate' } };
-export const Blocked: Story = { args: { status: 'Blocked', statusCategory: 'new' } };
+export const OnHold: Story = { args: { status: 'On Hold', statusCategory: 'indeterminate' } };
+export const BetaReady: Story = { args: { status: 'BETA READY', statusCategory: 'done' } };
 
-export const AllStatuses: Story = {
+export const AllProductionStatuses: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-      <CatalystStatusPill status="To Do" statusCategory="new" />
-      <CatalystStatusPill status="In Progress" statusCategory="indeterminate" />
-      <CatalystStatusPill status="In Review" statusCategory="indeterminate" />
-      <CatalystStatusPill status="Ready for QA" statusCategory="indeterminate" />
-      <CatalystStatusPill status="Done" statusCategory="done" />
-      <CatalystStatusPill status="Blocked" statusCategory="new" />
+      {STATUSES.map((s) => (
+        <CatalystStatusPill
+          key={s.name}
+          status={s.name}
+          statusCategory={s.category === 'To Do' ? 'new' : s.category === 'In Progress' ? 'indeterminate' : 'done'}
+        />
+      ))}
     </div>
   ),
 };
