@@ -1,21 +1,13 @@
 /**
- * Subtask detail view — renders REAL production components.
+ * Subtask detail view — renders the ACTUAL CatalystViewSubtask production component.
  */
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 import React, { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { CatalystViewBase } from '@/components/catalyst-detail-views/shared/CatalystViewBase';
-import {
-  CatalystTitleEditor,
-  CatalystQuickActions,
-  CatalystKeyDetails,
-  CatalystSidebarDetails,
-  CatalystStatusPill,
-} from '@/components/catalyst-detail-views/shared/sections';
-import { Description } from '@/components/catalyst-detail-views/shared/sections/Description';
+import CatalystViewSubtask from '@/components/catalyst-detail-views/subtask/CatalystViewSubtask';
 
-const issue = {
+const issueData = {
   id: 'ph-sub-001',
   issue_key: 'BAU-5958', summary: 'Add client-side validation rule for price field',
   issue_type: 'Sub-task', status: 'In Progress', status_category: 'indeterminate',
@@ -31,52 +23,28 @@ const issue = {
 function Seed({ children }: { children: React.ReactNode }) {
   const qc = useQueryClient();
   useEffect(() => {
-    qc.setQueryData(['cv-issue-detail', issue.issue_key], issue);
-    qc.setQueryData(['cv-watchers', issue.issue_key], []);
-    qc.setQueryData(['cv-activity', issue.issue_key], []);
+    qc.setQueryData(['cv-issue-detail', issueData.issue_key], issueData);
+    qc.setQueryData(['cv-watchers', issueData.issue_key], []);
+    qc.setQueryData(['cv-activity', issueData.issue_key], []);
   }, [qc]);
   return <>{children}</>;
 }
 
-function RealSubtaskView({ panelMode = true }: { panelMode?: boolean }) {
-  const iss = issue as any;
-  return (
+const meta: Meta = {
+  title: 'Pages/Subtask',
+  parameters: { layout: 'fullscreen' },
+};
+export default meta;
+
+export const PanelMode: StoryObj = {
+  render: () => (
     <Seed>
       <div style={{ height: 700, position: 'relative' }}>
-        <CatalystViewBase
-          isOpen={true} onClose={fn()} panelMode={panelMode}
-          itemType="Sub-task" itemKey={iss.issue_key}
-          projectKey="BAU" projectName="Senaei BAU"
-          parentKey={iss.parent_key} parentSummary={iss.parent_summary} parentType="Story" onParentClick={fn()}
-          moreMenuItems={[
-            { label: 'Print', onClick: fn() },
-            { label: 'Clone', onClick: fn() },
-            { label: 'Delete', onClick: fn(), danger: true },
-          ]}
-          leftContent={
-            <>
-              <CatalystTitleEditor issue={iss} onSave={fn()} />
-              <CatalystQuickActions />
-              <CatalystKeyDetails issue={iss} itemType="subtask" />
-              <Description issue={iss} />
-            </>
-          }
-          rightContent={
-            <CatalystSidebarDetails
-              issue={iss} itemId={iss.issue_key}
-              onStatusChange={fn()} onClose={fn()} onDelete={fn()}
-              statusPill={<CatalystStatusPill status={iss.status} statusCategory={iss.status_category} onStatusChange={fn()} issueType="Sub-task" />}
-            />
-          }
-          isLoading={false}
+        <CatalystViewSubtask
+          isOpen={true} onClose={fn()}
+          itemId={issueData.issue_key} projectKey="BAU" panelMode
         />
       </div>
     </Seed>
-  );
-}
-
-const meta: Meta = { title: 'Pages/Subtask', parameters: { layout: 'fullscreen' } };
-export default meta;
-
-export const PanelMode: StoryObj = { render: () => <RealSubtaskView /> };
-export const FullPage: StoryObj = { render: () => <RealSubtaskView panelMode={false} /> };
+  ),
+};
