@@ -344,6 +344,7 @@ export function RichTextEditor({
             editor={editor}
             onImprove={onImproveClick ?? (() => {})}
             improveLabel={improveLabel}
+            isImproving={overlayActive}
             onImageUpload={
               onImageUpload ? handleImageUploadWrapped : undefined
             }

@@ -32,6 +32,7 @@ export interface ToolbarProps {
   onImprove?: () => void;
   /** Improve-button label. Defaults to "Improve description". */
   improveLabel?: string;
+  isImproving?: boolean;
   onImageUpload?: (file: File) => Promise<string>;
   historyAvailable?: boolean;
   onOpenSlashMenu?: (anchor: HTMLElement) => void;
@@ -48,6 +49,7 @@ export function Toolbar({
   editor,
   onImprove,
   improveLabel,
+  isImproving,
   onImageUpload,
   historyAvailable = false,
   onOpenSlashMenu,
@@ -88,6 +90,7 @@ export function Toolbar({
         editor={editor}
         onImprove={onImprove}
         label={improveLabel}
+        isImproving={isImproving}
       />
       <TextStylesDropdown editor={editor} />
       <BoldButton editor={editor} />

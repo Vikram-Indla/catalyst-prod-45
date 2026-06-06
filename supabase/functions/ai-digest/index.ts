@@ -117,6 +117,89 @@ serve(async (req) => {
         corsHeaders,
       });
     }
+    // ── NEW AI MODES — For You tab Caty features ────────────────────────
+    if (body.mode === 'ageing-triage' || body.mode === 'board-insight' || body.mode === 'workload-risk' || body.mode === 'morning-brief') {
+      const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+      if (!geminiApiKey) {
+        return new Response(
+          JSON.stringify({ error: "gemini_unavailable" }),
+          { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const context = typeof body.context === 'string' ? body.context : JSON.stringify(body.context ?? {});
+      let systemPrompt = '';
+      let responseKey = '';
+
+      if (body.mode === 'ageing-triage') {
+        systemPrompt = `You are Caty, an AI work management assistant. Analyze these stale work items and for each one explain WHY it is stuck and suggest a concrete unblock action. Return JSON: { "triageResults": [{ "issueKey": string, "summary": string, "daysOpen": number, "reason": string, "suggestion": string }] }. Be concise — one sentence each for reason and suggestion. Use the data provided (comment count, assignee activity, days open) to form your analysis. Do not invent data.`;
+        responseKey = 'triageResults';
+      } else if (body.mode === 'board-insight') {
+        systemPrompt = `You are Caty, an AI work management assistant for Catalyst (Saudi Arabia Ministry of Industry). Analyze the user's board columns. The data includes each column's name, item count, average days since last update, and the stalest item with its reporter and project. Return JSON: { "insight": { "summary": string, "columns": [{ "column": string, "count": number, "avgDays": number, "status": "healthy"|"warning"|"bottleneck", "action": string }] } }. Rules: (1) summary = 2 sentences, lead with the single most critical finding and name the specific column + item key. (2) Per-column action = one imperative sentence naming the specific blocker item key, reporter, and what to do (e.g. "Escalate BAU-4515 to QA lead — 122 days with no activity, reported by Ahmed"). (3) Only top 5 columns by risk (count x avgDays). (4) status: bottleneck if avg >30 days, warning if avg >14 days, healthy otherwise. Do not invent data — use only what is provided.`;
+        responseKey = 'insight';
+      } else if (body.mode === 'workload-risk') {
+        systemPrompt = `You are Caty, an AI work management assistant. Analyze team workload signals. Return JSON: { "workload": { "summary": string, "members": [{ "name": string, "openItems": number, "roleAvg": number, "closureTrend": "up"|"down"|"flat", "closureRate": number, "staleCount": number, "status": "overloaded"|"healthy"|"has-capacity", "detail": string }] } }. Base status on: overloaded = open items > 1.5x role avg OR stale > 30%, has-capacity = open items < 0.7x role avg, healthy = in between.`;
+        responseKey = 'workload';
+      } else if (body.mode === 'morning-brief') {
+        systemPrompt = `You are Caty, an AI work management assistant. Write a 3-sentence morning brief for this user based on their assigned items. Mention: items due this week, highest-priority unblocked item, and any items that may need attention (stale or blocked). Return JSON: { "brief": string }. Be direct and actionable — no pleasantries.`;
+        responseKey = 'brief';
+      }
+
+      try {
+        const geminiRes = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${geminiApiKey}`,
+            },
+            body: JSON.stringify({
+              model: 'gemini-2.5-flash',
+              response_format: { type: 'json_object' },
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: context },
+              ],
+              temperature: 0.3,
+              max_tokens: 2000,
+            }),
+          }
+        );
+
+        if (!geminiRes.ok) {
+          const errText = await geminiRes.text();
+          console.error(`Gemini ${body.mode} error:`, geminiRes.status, errText);
+          return new Response(
+            JSON.stringify({ error: `gemini_error_${geminiRes.status}` }),
+            { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const geminiData = await geminiRes.json();
+        const content = geminiData?.choices?.[0]?.message?.content;
+        if (!content) {
+          return new Response(
+            JSON.stringify({ error: "empty_response" }),
+            { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const parsed = JSON.parse(content);
+        return new Response(
+          JSON.stringify(parsed),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      } catch (e) {
+        console.error(`ai-digest ${body.mode} error:`, e);
+        return new Response(
+          JSON.stringify({ error: "internal_error" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
+
 
     // ── FETCH SOURCE DATA (always needed for fingerprint) ────────────
     const now = new Date();

@@ -42,6 +42,7 @@ import { canSuggestChildren, improveTriggerLabel } from './improve-config';
 import { useCatyImprove } from './catyImproveStore';
 import { useCatySummarize } from './catySummarizeStore';
 import { adfToMarkdown } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToMarkdown';
+import Spinner from '@atlaskit/spinner';
 import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
 
 type Mode = 'closed' | 'description' | 'children' | 'similar';
@@ -97,6 +98,7 @@ export function ImproveIssueDropdown({
   const emptyHintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startCatyImprove = useCatyImprove((s) => s.start);
   const startSummarize = useCatySummarize((s) => s.start);
+  const catyIsImproving = useCatyImprove((s) => s.payload) !== null;
 
   /**
    * "Summarize comments" entry point — opens the inline
@@ -272,34 +274,44 @@ export function ImproveIssueDropdown({
               icon: 16×16  fill=black  color=rgb(41,42,46)
             No purple anywhere — appearance="subtle" with dark text +
             dark icon. The earlier "subtle discovery" was fabricated. */}
-        <button
-          ref={triggerRef}
-          type="button"
-          onClick={() => setOpen((o) => !o)}
-          aria-haspopup="menu"
-          aria-expanded={open}
-          aria-label={triggerLabel}
-          data-testid="catalyst-improve-issue-dropdown--trigger"
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            height: 32, padding: '0 10px', borderRadius: 3,
-            border: 'none', outline: 'none', appearance: 'none',
-            background: 'transparent',
-            color: 'var(--ds-text, #292A2E)',
-            cursor: 'pointer', fontSize: 14, fontWeight: 500,
-            fontFamily: 'inherit',
-            whiteSpace: 'nowrap',
-            transition: 'background 0.15s',
-          }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7))'; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
-        >
-          {/* jira-compare 2026-05-05: Jira Improve button has NO chevron.
-              DOM probe on live Jira shows only sparkles icon + label text.
-              ChevronDownIcon removed to match Jira parity exactly. */}
-          <SparklesIcon size="small" primaryColor="var(--ds-text, #292A2E)" />
-          {triggerLabel}
-        </button>
+        <div style={{ display: 'inline-flex', padding: 2, borderRadius: 20, background: 'conic-gradient(from 0deg, #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg, #00C9FF 180deg, #92FE9D 240deg, #FFD700 300deg, #FF3CAC 360deg)' }}>
+          <button
+            ref={triggerRef}
+            type="button"
+            onClick={catyIsImproving ? undefined : () => setOpen((o) => !o)}
+            aria-haspopup="menu"
+            aria-expanded={open}
+            aria-label={catyIsImproving ? 'Caty is thinking...' : triggerLabel}
+            aria-busy={catyIsImproving || undefined}
+            disabled={catyIsImproving}
+            data-testid="catalyst-improve-issue-dropdown--trigger"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              height: 32, padding: '0 14px', borderRadius: 18,
+              border: 'none', outline: 'none', appearance: 'none',
+              background: catyIsImproving ? 'var(--ds-background-disabled, #F1F2F4)' : 'var(--ds-surface, #FFFFFF)',
+              color: 'var(--ds-text, #172B4D)',
+              cursor: catyIsImproving ? 'not-allowed' : 'pointer',
+              fontSize: 12, fontWeight: 600,
+              fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
+              whiteSpace: 'nowrap',
+              lineHeight: 1,
+              transition: 'background 0.15s',
+            }}
+            onMouseEnter={(e) => { if (!catyIsImproving) (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-hovered, #F1F2F4)'; }}
+            onMouseLeave={(e) => { if (!catyIsImproving) (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+          >
+            {catyIsImproving ? (
+              <Spinner size="small" />
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style={{ flexShrink: 0 }}>
+                <defs><linearGradient id="iid-rainbow" gradientUnits="userSpaceOnUse" x1="1" y1="7" x2="13" y2="7"><stop offset="0%" stopColor="#FF3CAC" /><stop offset="20%" stopColor="#784BA0" /><stop offset="40%" stopColor="#2B86C5" /><stop offset="60%" stopColor="#00C9FF" /><stop offset="80%" stopColor="#92FE9D" /><stop offset="100%" stopColor="#FFD700" /></linearGradient></defs>
+                <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" fill="url(#iid-rainbow)" />
+              </svg>
+            )}
+            {catyIsImproving ? 'Thinking...' : triggerLabel}
+          </button>
+        </div>
 
         {open && menuPos && createPortal(
           <div
