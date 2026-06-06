@@ -22,7 +22,6 @@ export const TypeScript: Story = {
     <CatalystCodeBlock
       language="typescript"
       text={`import { JiraTable } from '@/components/shared/JiraTable';
-import { makeKeyCell, makeStatusCell } from './cells';
 
 const columns = [
   { id: 'key', label: 'Key', width: 120 },
