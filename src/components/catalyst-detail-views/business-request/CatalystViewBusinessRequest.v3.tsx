@@ -138,7 +138,7 @@ export default function CatalystViewBusinessRequestV3({
   const rightContent = useMemo(
     () => (
       <CatalystSidebarDetails
-        issue={mapBrToIssueLike(request) as any}
+        issue={mapBrToIssueLike(request)}
         itemId={request?.request_key ?? ''}
         onStatusChange={(s) => updateField('status', s)}
         onClose={onClose}
