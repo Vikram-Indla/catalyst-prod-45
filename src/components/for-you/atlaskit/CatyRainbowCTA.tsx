@@ -28,7 +28,7 @@ export function CatyRainbowCTA({ label, onClick, isLoading, align = 'right' }: C
     }}>
       <div style={{
         display: 'inline-flex',
-        padding: 2,
+        padding: 3,
         borderRadius: 20,
         background: CATY_RAINBOW,
       }}>
@@ -46,7 +46,7 @@ export function CatyRainbowCTA({ label, onClick, isLoading, align = 'right' }: C
             height: 32,
             padding: '0 16px',
             border: 'none',
-            borderRadius: 18,
+            borderRadius: 17,
             background: hover
               ? token('elevation.surface.hovered', '#F1F2F4')
               : token('elevation.surface', '#FFFFFF'),

@@ -293,7 +293,7 @@ export function ImproveIssueDropdown({
               icon: 16×16  fill=black  color=rgb(41,42,46)
             No purple anywhere — appearance="subtle" with dark text +
             dark icon. The earlier "subtle discovery" was fabricated. */}
-        <div style={{ display: 'inline-flex', padding: 2, borderRadius: 20, background: 'conic-gradient(from 0deg, #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg, #00C9FF 180deg, #92FE9D 240deg, #FFD700 300deg, #FF3CAC 360deg)' }}>
+        <div style={{ display: 'inline-flex', padding: 3, borderRadius: 20, background: 'conic-gradient(from 0deg, #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg, #00C9FF 180deg, #92FE9D 240deg, #FFD700 300deg, #FF3CAC 360deg)' }}>
           <button
             ref={triggerRef}
             type="button"
@@ -306,7 +306,7 @@ export function ImproveIssueDropdown({
             data-testid="catalyst-improve-issue-dropdown--trigger"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              height: 32, padding: '0 14px', borderRadius: 18,
+              height: 32, padding: '0 14px', borderRadius: 17,
               border: 'none', outline: 'none', appearance: 'none',
               background: 'var(--ds-surface, #FFFFFF)',
               color: 'var(--ds-text, #172B4D)',

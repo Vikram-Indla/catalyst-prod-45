@@ -187,7 +187,7 @@ function AskCatyThemifyButton({ onClick, count }: { onClick: () => void; count: 
     }}>
       <div style={{
         display: 'inline-flex',
-        padding: 2,
+        padding: 3,
         borderRadius: 20,
         background: THEMIFY_RAINBOW,
       }}>

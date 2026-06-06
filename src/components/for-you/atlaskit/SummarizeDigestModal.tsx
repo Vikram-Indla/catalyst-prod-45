@@ -151,7 +151,7 @@ export function SummarizeDigestModal({
             {/* Rainbow border around the title row — keeps the AI affordance visible inside the modal. */}
             <div style={{
               display: 'inline-flex',
-              padding: 2,
+              padding: 3,
               borderRadius: 20,
               background: ASK_CATY_RAINBOW,
             }}>
@@ -160,7 +160,7 @@ export function SummarizeDigestModal({
                 alignItems: 'center',
                 gap: 8,
                 padding: '0 12px',
-                borderRadius: 18,
+                borderRadius: 17,
                 background: token('elevation.surface', '#FFFFFF'),
               }}>
                 <span style={{ fontSize: 14, fontWeight: 700, color: token('color.text', '#172B4D') }}>

@@ -258,7 +258,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                     <div style={{
                       background: `conic-gradient(from 0deg, #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg, #00C9FF 180deg, #92FE9D 240deg, #FFD700 300deg, #FF3CAC 360deg)`,
                       animation: 'none',
-                      padding: 2,
+                      padding: 3,
                       borderRadius: 20,
                     }}>
                       <button
@@ -273,7 +273,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                           gap: 8,
                           padding: 8,
                           border: 'none',
-                          borderRadius: 18,
+                          borderRadius: 17,
                           cursor: 'pointer',
                           background: 'var(--ds-surface, #ffffff)',
                           fontSize: 13,

@@ -24,7 +24,7 @@ export function ImproveButton({
   const [hover, setHover] = useState(false);
 
   return (
-    <div style={{ display: 'inline-flex', padding: 2, borderRadius: 20, background: RAINBOW }}>
+    <div style={{ display: 'inline-flex', padding: 3, borderRadius: 20, background: RAINBOW }}>
       <button
         type="button"
         title={disabled ? `${label} — add content first` : isImproving ? 'Click to stop Caty' : label}
@@ -43,7 +43,7 @@ export function ImproveButton({
           alignItems: 'center',
           gap: 6,
           border: 'none',
-          borderRadius: 18,
+          borderRadius: 17,
           background: disabled && !isImproving
             ? 'var(--ds-background-disabled, #F1F2F4)'
             : hover

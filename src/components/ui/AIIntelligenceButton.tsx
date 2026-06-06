@@ -86,7 +86,7 @@ export function AIIntelligenceButton({
             ? token('color.text.selected', '#0C66E4')
             : token('color.text', '#172B4D'),
         border: 'none',
-        borderRadius: 18,
+        borderRadius: 17,
         padding: '0 14px',
         height: 28,
         fontSize: 12,
@@ -133,7 +133,7 @@ export function AIIntelligenceButton({
     <div
       style={{
         display: 'inline-flex',
-        padding: 2,
+        padding: 3,
         borderRadius: 20,
         background: STATIC_RAINBOW,
       }}

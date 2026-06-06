@@ -493,7 +493,7 @@ function FeedSection({
           <div
             style={{
               display: 'inline-flex',
-              padding: 2,
+              padding: 3,
               borderRadius: 20,
               background: ASK_CATY_RAINBOW,
             }}
@@ -509,7 +509,7 @@ function FeedSection({
                 height: 28,
                 padding: '0 12px',
                 border: 'none',
-                borderRadius: 18,
+                borderRadius: 17,
                 background: token('elevation.surface', '#FFFFFF'),
                 cursor: 'pointer',
                 color: token('color.text', '#172B4D'),
@@ -1377,7 +1377,7 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
       <div
         style={{
           display: 'inline-flex',
-          padding: 2,
+          padding: 3,
           borderRadius: 20,
           background: ASK_CATY_RAINBOW,
         }}
@@ -1395,7 +1395,7 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
             alignItems: 'center',
             gap: 4,
             padding: '0 10px',
-            borderRadius: 18,
+            borderRadius: 17,
             font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', '#172B4D'),
             background: phase === 'loading'
