@@ -1,37 +1,61 @@
+/**
+ * RadioGroup — ADS-canonical radio buttons.
+ * Delegates to @atlaskit/radio. Preserves shadcn API (value/onValueChange).
+ */
 import * as React from "react";
-import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
-import { Circle } from "lucide-react";
+import { RadioGroup as AkRadioGroup, Radio as AkRadio } from "@atlaskit/radio";
 
-import { cn } from "@/lib/utils";
+interface RadioGroupProps {
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  disabled?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+}
 
-const RadioGroup = React.forwardRef<
-  React.ElementRef<typeof RadioGroupPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
->(({ className, ...props }, ref) => {
-  return <RadioGroupPrimitive.Root className={cn("grid gap-2", className)} {...props} ref={ref} />;
-});
-RadioGroup.displayName = RadioGroupPrimitive.Root.displayName;
+const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
+  ({ value, defaultValue, onValueChange, disabled, className, children }, ref) => {
+    return (
+      <div ref={ref} className={className} role="radiogroup">
+        {React.Children.map(children, (child) => {
+          if (!React.isValidElement(child)) return child;
+          return React.cloneElement(child as React.ReactElement<any>, {
+            __selectedValue: value ?? defaultValue,
+            __onValueChange: onValueChange,
+            __disabled: disabled,
+          });
+        })}
+      </div>
+    );
+  }
+);
+RadioGroup.displayName = "RadioGroup";
 
-const RadioGroupItem = React.forwardRef<
-  React.ElementRef<typeof RadioGroupPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>
->(({ className, ...props }, ref) => {
-  return (
-    <RadioGroupPrimitive.Item
-      ref={ref}
-      className={cn(
-        // Focus ring uses BLUE per design spec v2
-        "aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#3b82f6)] dark:focus-visible:ring-[var(--ds-text-brand,#60a5fa)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-        className,
-      )}
-      {...props}
-    >
-      <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-        <Circle className="h-2.5 w-2.5 fill-current text-current" />
-      </RadioGroupPrimitive.Indicator>
-    </RadioGroupPrimitive.Item>
-  );
-});
-RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName;
+interface RadioGroupItemProps {
+  value: string;
+  id?: string;
+  disabled?: boolean;
+  className?: string;
+  __selectedValue?: string;
+  __onValueChange?: (value: string) => void;
+  __disabled?: boolean;
+}
+
+const RadioGroupItem = React.forwardRef<HTMLInputElement, RadioGroupItemProps>(
+  ({ value, id, disabled, className, __selectedValue, __onValueChange, __disabled }, ref) => {
+    return (
+      <AkRadio
+        value={value}
+        label=""
+        name={id}
+        isChecked={__selectedValue === value}
+        onChange={() => __onValueChange?.(value)}
+        isDisabled={disabled || __disabled}
+      />
+    );
+  }
+);
+RadioGroupItem.displayName = "RadioGroupItem";
 
 export { RadioGroup, RadioGroupItem };
