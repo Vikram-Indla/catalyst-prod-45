@@ -87,7 +87,7 @@ serve(async (req) => {
     const systemPrompt =
       target === "ar"
         ? "You are a professional Arabic translator for enterprise software. Every output word must be written in Arabic script. For English words that have no direct Arabic equivalent (Staging, Production, Beta, API, Sprint, Backlog, etc.) you MUST transliterate them phonetically into Arabic letters (e.g. Beta -> بيتا, Staging -> ستيجينج, Production -> برودكشن, API -> إيه بي آي). Return ONLY the Arabic translation. No quotes, no preamble, no commentary."
-        : "You are a professional English translator for enterprise software. Return ONLY the English translation. No quotes, no preamble, no commentary.";
+        : "You are a professional English translator for enterprise software. Every output word must be written in Latin/English script. For Arabic words that have no direct English equivalent (cultural terms, regional concepts, proper nouns, Arabicised brand names, etc.) you MUST transliterate them phonetically into Latin letters (e.g. وزارة -> Wizara, مشروع -> Mashroo, تكامل -> Takamul). Return ONLY the English translation. No quotes, no preamble, no commentary, and absolutely no Arabic script in the output.";
 
     const userPrompt = target === "ar"
       ? `Translate the following work-item title to Arabic. Hard rules:
@@ -99,7 +99,13 @@ serve(async (req) => {
 
 Title:
 ${text}`
-      : `Translate the following work-item title to English. Preserve any code identifiers (e.g. BAU-1234), URLs, and email addresses exactly as written. Reply with ONLY the translated title.
+      : `Translate the following work-item title to English. Hard rules:
+1. Every word in the output must be written in Latin/English script.
+2. If a word has a direct English translation, translate it.
+3. If a word has no good English translation (cultural terms, regional concepts, proper nouns, Arabicised brand names, place names, person names), transliterate it phonetically into Latin letters — DO NOT leave it in Arabic script.
+4. The ONLY things that may stay in non-Latin script are: NONE. The output must be 100% Latin script.
+5. Preserve alphanumeric code identifiers (e.g. BAU-1234, JIRA-5678), URLs, and email addresses exactly as written.
+6. Reply with ONLY the translated title. No quotes, no labels.
 
 Title:
 ${text}`;

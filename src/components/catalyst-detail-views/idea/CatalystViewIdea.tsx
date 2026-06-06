@@ -24,7 +24,6 @@ import Modal, {
 } from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
-import TextArea from '@atlaskit/textarea';
 import Heading from '@atlaskit/heading';
 import Select from '@atlaskit/select';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
@@ -34,6 +33,11 @@ import { catalystToast } from '@/lib/catalystToast';
 import { useIdeaByKey, useUpdateIdea, useProfiles, type IdeaRow } from '@/hooks/useIdeasHub';
 import { QUARTER_BADGE } from '@/modules-dormant/ideation/ideation-data';
 import type { CatalystViewBaseProps } from '../shared/types';
+import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
+import { DisplayView } from '@/components/catalyst-detail-views/shared/sections/Description/_components/DisplayView/DisplayView';
+import { tiptapToAdf } from '@/components/catalyst-detail-views/shared/sections/Description/utils/tiptapToAdf';
+import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
+import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 
 const THEMES = [
   'Provide Services for SBC', 'Digital Maturity 2026', 'Marketplace', 'UX',
@@ -52,6 +56,28 @@ const QUARTERS   = ['Q1', 'Q2', 'Q3', 'Q4'];
 type Opt = { label: string; value: string };
 const toOpts = (arr: string[]): Opt[] => arr.map(v => ({ label: v, value: v }));
 const NONE: Opt = { label: '— None —', value: '__none__' };
+
+/**
+ * Normalise ph_ideas.description into an AdfDoc. New rows save serialised
+ * ADF JSON; legacy rows hold plain text. Mirrors BrDescriptionSection.
+ */
+function descriptionStringToAdf(value: string | null | undefined): AdfDoc | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (parsed && typeof parsed === 'object' && (parsed as { type?: string }).type === 'doc') {
+      return parsed as AdfDoc;
+    }
+  } catch {
+    /* not JSON — fall through to plain-text wrap */
+  }
+  return {
+    type: 'doc',
+    content: [{ type: 'paragraph', content: [{ type: 'text', text: value }] }],
+  } as AdfDoc;
+}
 
 type LozAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'new' | 'moved';
 function statusToAppearance(s: string): LozAppearance {
@@ -128,7 +154,10 @@ export default function CatalystViewIdea({
   const [localRelease, setLocalRelease]         = useState('');
   const [localQuarter, setLocalQuarter]         = useState('');
   const [localAssigneeId, setLocalAssigneeId]   = useState('');
-  const [localDescription, setLocalDescription] = useState('');
+  // Description is stored in ph_ideas.description as either a JSON-encoded ADF
+  // doc (new rows after the canonical migration) or plain text (legacy rows).
+  // descriptionStringToAdf normalises both shapes into AdfDoc | null.
+  const [localDescriptionAdf, setLocalDescriptionAdf] = useState<AdfDoc | null>(null);
   const [investorFit, setInvestorFit]           = useState(0);
   const [marketSize, setMarketSize]             = useState(0);
   const [problemSeverity, setProblemSeverity]   = useState(0);
@@ -154,7 +183,7 @@ export default function CatalystViewIdea({
       setLocalRelease(rawIdea.target_release_date || '');
       setLocalQuarter(rawIdea.roadmap_quarter || '');
       setLocalAssigneeId(rawIdea.assignee_id || '');
-      setLocalDescription(rawIdea.description || '');
+      setLocalDescriptionAdf(descriptionStringToAdf(rawIdea.description));
       setInvestorFit(rawIdea.impact_investor_fit || 0);
       setMarketSize(rawIdea.impact_market_size || 0);
       setProblemSeverity(rawIdea.impact_problem_severity || 0);
@@ -175,7 +204,7 @@ export default function CatalystViewIdea({
     setLocalRelease(rawIdea.target_release_date || '');
     setLocalQuarter(rawIdea.roadmap_quarter || '');
     setLocalAssigneeId(rawIdea.assignee_id || '');
-    setLocalDescription(rawIdea.description || '');
+    setLocalDescriptionAdf(descriptionStringToAdf(rawIdea.description));
     setInvestorFit(rawIdea.impact_investor_fit || 0);
     setMarketSize(rawIdea.impact_market_size || 0);
     setProblemSeverity(rawIdea.impact_problem_severity || 0);
@@ -200,7 +229,10 @@ export default function CatalystViewIdea({
           target_release_date: localRelease || null,
           roadmap_quarter: localQuarter || null,
           assigned_to: localAssigneeId || null,
-          description: localDescription || null,
+          description:
+            localDescriptionAdf && !isAdfEmpty(localDescriptionAdf)
+              ? JSON.stringify(localDescriptionAdf)
+              : null,
           impact_investor_fit: investorFit,
           impact_market_size: marketSize,
           impact_problem_severity: problemSeverity,
@@ -462,16 +494,35 @@ export default function CatalystViewIdea({
 
                 <FieldBlock label="DESCRIPTION">
                   {canEdit ? (
-                    <TextArea
-                      value={localDescription}
-                      onChange={(e) => setLocalDescription((e.target as HTMLTextAreaElement).value)}
-                      placeholder="Add a description…"
-                      minimumRows={4}
-                      resize="vertical"
-                    />
+                    <div
+                      style={{
+                        border: '1px solid var(--ds-border-input, #DFE1E6)',
+                        borderRadius: 4,
+                        background: 'var(--ds-background-input, #FFFFFF)',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <RichTextEditor
+                        initialAdf={localDescriptionAdf}
+                        hideActionButtons
+                        placeholder="Add a description…"
+                        minHeight={100}
+                        onSave={() => {}}
+                        onCancel={() => {}}
+                        onChange={(tiptapJson) => {
+                          try {
+                            setLocalDescriptionAdf(tiptapToAdf(tiptapJson));
+                          } catch {
+                            /* noop — keep last good ADF */
+                          }
+                        }}
+                      />
+                    </div>
+                  ) : localDescriptionAdf ? (
+                    <DisplayView adf={localDescriptionAdf} />
                   ) : (
-                    <p style={{ fontSize: 13, lineHeight: 1.6, margin: 0 }}>
-                      {rawIdea.description || 'No description provided'}
+                    <p style={{ fontSize: 13, lineHeight: 1.6, margin: 0, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                      No description provided
                     </p>
                   )}
                 </FieldBlock>

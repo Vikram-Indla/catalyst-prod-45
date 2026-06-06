@@ -9,6 +9,7 @@ import { TicketLinkCard } from '@/components/shared/TicketLinkCard';
 import { HistoryPill } from './JiraActivityRow';
 import { PriorityIcon } from '@/components/icons/PriorityIcon';
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 function formatAbsoluteDate(dateStr: string): string {
   const d = new Date(dateStr);
@@ -48,7 +49,16 @@ function statusAppearance(value: string | null): CdsAppearance | undefined {
 
 const RICH_TEXT_FIELDS = new Set(['description', 'summary', 'comment', 'title']);
 const STATUS_FIELDS = new Set(['process_step', 'status', 'health', 'severity', 'resolution']);
-const USER_FIELDS = new Set(['assignee', 'reporter']);
+// User-type field changes render as Avatar + name on each side of the
+// diff arrow. Includes BR-specific labels (Delivery Manager, Product
+// Owner) — both store profile UUIDs and are pre-resolved to display
+// names by the BR section's audit query before reaching this renderer.
+const USER_FIELDS = new Set([
+  'assignee',
+  'reporter',
+  'delivery_manager',
+  'product_owner',
+]);
 const PRIORITY_FIELDS = new Set(['priority']);
 const TICKET_LINK_FIELDS = new Set(['parent', 'parent_link', 'epic_link', 'epic_child', 'link']);
 
@@ -165,11 +175,19 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
                 </span>
               </div>
             ) : isUser ? (
-              // Assignee / Reporter — Avatar + name on each side.
+              // Assignee / Reporter / Delivery Manager / Product Owner —
+              // Avatar + name on each side. `resolveAvatarUrl(name)` looks
+              // up the deterministic-by-name photo URL when present so the
+              // diff matches the actor avatar above; falls through to
+              // initials otherwise.
               <div className="flex items-center gap-3 flex-wrap text-[13px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]">
                 {fieldChange.oldValue ? (
                   <span className="inline-flex items-center gap-2">
-                    <CatalystAvatar size="small" name={fieldChange.oldValue} />
+                    <CatalystAvatar
+                      size="small"
+                      name={fieldChange.oldValue}
+                      src={resolveAvatarUrl(fieldChange.oldValue) ?? null}
+                    />
                     <span>{fieldChange.oldValue}</span>
                   </span>
                 ) : (
@@ -178,7 +196,11 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
                 <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] shrink-0" />
                 {fieldChange.newValue ? (
                   <span className="inline-flex items-center gap-2">
-                    <CatalystAvatar size="small" name={fieldChange.newValue} />
+                    <CatalystAvatar
+                      size="small"
+                      name={fieldChange.newValue}
+                      src={resolveAvatarUrl(fieldChange.newValue) ?? null}
+                    />
                     <span>{fieldChange.newValue}</span>
                   </span>
                 ) : (

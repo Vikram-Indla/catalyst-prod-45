@@ -70,6 +70,11 @@ export interface ActivityPanelProps {
   quickReplies?: CdsQuickReply[];
   defaultTab?: ActivityTabKey;
   defaultSortOrder?: CdsSortOrder;
+  /** Optional list of tabs to hide from the tab strip — useful for
+   *  surfaces that don't back the underlying feature. e.g. BR detail
+   *  passes `['worklog']` because business_requests has no work-log
+   *  model. Empty/undefined renders all four tabs. */
+  hiddenTabs?: ActivityTabKey[];
 
   jiraUserMap?: JiraUserMap;
   workItemId?: string;
@@ -98,13 +103,21 @@ function ActivityPanel({
   quickReplies,
   defaultTab = 'all',
   defaultSortOrder = 'oldest',
+  hiddenTabs,
   jiraUserMap,
   workItemId,
   improveContext,
   issueKey,
   className,
 }: ActivityPanelProps) {
-  const [activeTab, setActiveTab] = useState<ActivityTabKey>(defaultTab);
+  const hiddenTabSet = useMemo(
+    () => new Set(hiddenTabs ?? []),
+    [hiddenTabs],
+  );
+  const initialTab: ActivityTabKey = hiddenTabSet.has(defaultTab)
+    ? 'all'
+    : defaultTab;
+  const [activeTab, setActiveTab] = useState<ActivityTabKey>(initialTab);
   const [sortOrder, setSortOrder] = useState<CdsSortOrder>(defaultSortOrder);
   const [sortOpen, setSortOpen] = useState(false);
   // ID of the comment currently being replied to. When set, an inline
@@ -115,12 +128,14 @@ function ActivityPanel({
   // toolbar / edit gating / reactions just like any other comment.
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
 
-  const tabs: { key: ActivityTabKey; label: string }[] = [
-    { key: 'all', label: 'All' },
-    { key: 'comments', label: 'Comments' },
-    { key: 'history', label: 'History' },
-    { key: 'worklog', label: 'Work log' },
-  ];
+  const tabs: { key: ActivityTabKey; label: string }[] = (
+    [
+      { key: 'all', label: 'All' },
+      { key: 'comments', label: 'Comments' },
+      { key: 'history', label: 'History' },
+      { key: 'worklog', label: 'Work log' },
+    ] as { key: ActivityTabKey; label: string }[]
+  ).filter((t) => !hiddenTabSet.has(t.key));
 
   // Build the reply tree client-side: parentId → immediate children,
   // sorted ascending by createdAt so a parent's replies render in the

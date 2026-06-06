@@ -27,6 +27,7 @@ import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import { Plus, Star, MoreHorizontal, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
+import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import Avatar from '@atlaskit/avatar';
 import Textfield from '@atlaskit/textfield';
 import DropdownMenu, {
@@ -470,7 +471,7 @@ export default function AllProductsPage() {
         (p) =>
           p.name.toLowerCase().includes(q) ||
           p.code.toLowerCase().includes(q) ||
-          (p.description?.toLowerCase().includes(q) ?? false),
+          adfToPlainText(p.description ?? '').toLowerCase().includes(q),
       );
     }
     if (filterLead === 'assigned') out = out.filter((p) => !!p.owner_id);

@@ -27,8 +27,9 @@ import {
   BrLinkedItemsSection,
   BrSidebarDetails,
   BrStatusSection,
+  BrActivitySection,
 } from './sections';
-import { CatalystQuickActions, CatalystActivitySection } from '../shared/sections';
+import { CatalystQuickActions } from '../shared/sections';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { ImproveIssueDropdown } from '../improve';
 import { WatchersChip } from '../shared/WatchersChip';
@@ -125,7 +126,7 @@ export default function CatalystViewBusinessRequestV3({
             parentSummary={request.title ?? ''}
           />
         )}
-        <CatalystActivitySection itemId={resolvedId ?? ''} isOpen={isOpen} />
+        <BrActivitySection requestId={resolvedId ?? ''} isOpen={isOpen} />
       </>
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
