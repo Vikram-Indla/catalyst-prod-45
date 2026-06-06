@@ -5,7 +5,8 @@
  */
 
 import * as React from 'react';
-import * as DialogPrimitive from '@radix-ui/react-dialog';
+// Migrated: radix dialog removed — using @atlaskit/modal-dialog pattern
+import Modal, { ModalTransition, ModalBody } from '@atlaskit/modal-dialog';
 import { X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
