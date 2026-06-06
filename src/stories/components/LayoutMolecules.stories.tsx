@@ -20,7 +20,7 @@ import { SettingsMenu } from '@/components/layout/SettingsMenu';
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</QueryClientProvider></MemoryRouter></div>);
+  return (<QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></QueryClientProvider></div>);
 }
 
 export default { title: 'Components/Layout/Molecules' };

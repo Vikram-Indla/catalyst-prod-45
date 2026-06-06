@@ -17,7 +17,7 @@ import { ResizableTableHeader } from '@/components/shared/ResizableTableHeader';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></div>);
+  return (<MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></MemoryRouter>);
 }
 
 export default { title: 'Components/Shared/Molecules' };

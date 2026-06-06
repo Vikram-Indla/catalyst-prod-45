@@ -18,7 +18,7 @@ import { TechnicalScoreBadge } from '@/components/shared/TechnicalScoreBadge';
 import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
 
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></div>);
+  return (<MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></MemoryRouter>);
 }
 
 export default { title: 'Components/Shared/Atoms' };

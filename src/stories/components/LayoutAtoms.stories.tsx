@@ -16,7 +16,7 @@ import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 import { ProjectHeaderChipIcons } from '@/components/layout/ProjectHeaderChipIcons';
 
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></div>);
+  return (<MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></MemoryRouter>);
 }
 
 export default { title: 'Components/Layout/Atoms' };

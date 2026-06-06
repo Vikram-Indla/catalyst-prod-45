@@ -45,14 +45,49 @@ export interface CatyImprovePayload {
   improveType?: 'improve_description_v2' | 'improve_comment_v1';
 }
 
-interface CatyImproveState {
-  payload: CatyImprovePayload | null;
-  start: (payload: CatyImprovePayload) => void;
-  stop: () => void;
+/** Minimum character count (after trim) to allow AI improvement. */
+export const MIN_CONTENT_LENGTH = 30;
+
+/**
+ * FNV-1a 32-bit — fast deterministic fingerprint for dedup.
+ */
+function fnv1aHash(str: string): string {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i);
+    hash = (hash * 0x01000193) >>> 0;
+  }
+  return hash.toString(16);
 }
 
-export const useCatyImprove = create<CatyImproveState>((set) => ({
+export function contentHash(text: string): string {
+  return fnv1aHash(text.replace(/\s+/g, ' ').trim().toLowerCase());
+}
+
+interface CatyImproveState {
+  payload: CatyImprovePayload | null;
+  improvedHashes: Record<string, Set<string>>;
+  start: (payload: CatyImprovePayload) => void;
+  stop: () => void;
+  markImproved: (issueKey: string, hash: string) => void;
+  isAlreadyImproved: (issueKey: string, text: string) => boolean;
+}
+
+export const useCatyImprove = create<CatyImproveState>((set, get) => ({
   payload: null,
+  improvedHashes: {},
   start: (payload) => set({ payload }),
   stop: () => set({ payload: null }),
+  markImproved: (issueKey, hash) =>
+    set((state) => {
+      const existing = state.improvedHashes[issueKey] ?? new Set<string>();
+      const next = new Set(existing);
+      next.add(hash);
+      return { improvedHashes: { ...state.improvedHashes, [issueKey]: next } };
+    }),
+  isAlreadyImproved: (issueKey, text) => {
+    const hashes = get().improvedHashes[issueKey];
+    if (!hashes) return false;
+    return hashes.has(contentHash(text));
+  },
 }));

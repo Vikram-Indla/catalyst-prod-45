@@ -21,7 +21,7 @@ import { FormField } from '@/components/business-requests/create-form/FormField'
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</QueryClientProvider></MemoryRouter></div>);
+  return (<QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></QueryClientProvider></div>);
 }
 
 export default { title: 'Enterprise/Business Request/Sections' };

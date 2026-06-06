@@ -30,6 +30,7 @@ import { MicButton } from './buttons/MicButton';
 export interface ToolbarProps {
   editor: Editor | null;
   onImprove?: () => void;
+  onStop?: () => void;
   /** Improve-button label. Defaults to "Improve description". */
   improveLabel?: string;
   isImproving?: boolean;
@@ -48,6 +49,7 @@ export interface ToolbarProps {
 export function Toolbar({
   editor,
   onImprove,
+  onStop,
   improveLabel,
   isImproving,
   onImageUpload,
@@ -89,6 +91,7 @@ export function Toolbar({
       <ImproveButton
         editor={editor}
         onImprove={onImprove}
+        onStop={onStop}
         label={improveLabel}
         isImproving={isImproving}
       />

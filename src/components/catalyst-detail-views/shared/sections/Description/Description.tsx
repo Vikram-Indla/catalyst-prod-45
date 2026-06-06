@@ -14,7 +14,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { useAuth } from '@/hooks/useAuth';
-import { useCatyImprove } from '@/components/catalyst-detail-views/improve/catyImproveStore';
+import { useCatyImprove, contentHash } from '@/components/catalyst-detail-views/improve/catyImproveStore';
 import { useCatyImproveStream } from '@/components/catalyst-detail-views/improve/useCatyImproveStream';
 import { CatyImproveStrap } from '@/components/catalyst-detail-views/improve/CatyImproveStrap';
 import { uploadDescriptionImage } from '@/components/shared/rich-text/atlaskit/supabaseImageUpload';
@@ -43,6 +43,7 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
   // above the editor for reference while the stream is in flight.
   const catyPayload = useCatyImprove((s) => s.payload);
   const stopCatyImprove = useCatyImprove((s) => s.stop);
+  const markImproved = useCatyImprove((s) => s.markImproved);
   const startCatyImprove = useCatyImprove((s) => s.start);
   const catyActiveForThisIssue =
     catyPayload != null &&
@@ -110,8 +111,12 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
       catyPhase === 'errored'
     ) {
       setSnapshotAdf(null);
+      // Hash-dedup: mark the AI output so the user can't re-improve it.
+      if (catyPhase === 'done' && catyText && issue?.issue_key) {
+        markImproved(issue.issue_key, contentHash(catyText));
+      }
     }
-  }, [catyPhase]);
+  }, [catyPhase, catyText, issue?.issue_key, markImproved]);
 
   // Sync editor.editable with stream state. setEditable doesn't trigger
   // a re-render of editor instance, so it's cheap.
@@ -400,6 +405,7 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
             isSaving={saveMutation.isPending}
             onImageUpload={handleImageUpload}
             onImproveClick={handleImproveFromToolbar}
+            onStopImprove={() => { stopCatyStream(); stopCatyImprove(); }}
             onEditorReady={setEditor}
             /* Snapshot of the content at the moment Improve was clicked
                + the bottom "Caty is editing" strap — both rendered

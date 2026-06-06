@@ -9,7 +9,7 @@ import { fn } from '@storybook/test';
 import { ModuleGate } from '@/components/common/ModuleGate';
 
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></div>);
+  return (<MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></MemoryRouter>);
 }
 
 export default { title: 'Components/Common' };

@@ -13,5 +13,4 @@ export { BrStatusSection } from './BrStatusSection';
 export { BrDescriptionSection } from './BrDescriptionSection';
 export { BrAttachmentsSection } from './BrAttachmentsSection';
 export { BrLinkedItemsSection } from './BrLinkedItemsSection';
-export { BrSidebarDetails } from './BrSidebarDetails';
 export { BrActivitySection } from './BrActivitySection';

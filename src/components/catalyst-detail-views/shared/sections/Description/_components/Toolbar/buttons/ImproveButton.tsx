@@ -7,6 +7,7 @@ const RAINBOW = `conic-gradient(from 0deg, #FF3CAC 0deg, #784BA0 60deg, #2B86C5 
 interface Props {
   editor: Editor | null;
   onImprove?: () => void;
+  onStop?: () => void;
   label?: string;
   isImproving?: boolean;
 }
@@ -14,24 +15,24 @@ interface Props {
 export function ImproveButton({
   editor,
   onImprove,
+  onStop,
   label = 'Improve description',
   isImproving = false,
 }: Props) {
   const isEmpty = editor?.isEmpty ?? true;
   const disabled = isEmpty && !isImproving;
-  const isInert = disabled || isImproving;
   const [hover, setHover] = useState(false);
 
   return (
     <div style={{ display: 'inline-flex', padding: 2, borderRadius: 16, background: RAINBOW }}>
       <button
         type="button"
-        title={disabled ? `${label} — add content first` : isImproving ? 'Caty is thinking...' : label}
-        aria-label={isImproving ? 'Caty is thinking...' : label}
+        title={disabled ? `${label} — add content first` : isImproving ? 'Click to stop Caty' : label}
+        aria-label={isImproving ? 'Stop Caty' : label}
         aria-busy={isImproving || undefined}
-        disabled={isInert}
+        disabled={disabled && !isImproving}
         onMouseDown={(e) => e.preventDefault()}
-        onClick={() => { if (!isInert) onImprove?.(); }}
+        onClick={() => { if (isImproving) { onStop?.(); } else if (!disabled) { onImprove?.(); } }}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         data-testid="catalyst-desc-toolbar-improve"
@@ -43,13 +44,13 @@ export function ImproveButton({
           gap: 6,
           border: 'none',
           borderRadius: 14,
-          background: isInert
+          background: disabled && !isImproving
             ? 'var(--ds-background-disabled, #F1F2F4)'
             : hover
               ? 'var(--ds-surface-hovered, #F1F2F4)'
               : 'var(--ds-surface, #FFFFFF)',
           color: 'var(--ds-text, #172B4D)',
-          cursor: isInert ? 'not-allowed' : 'pointer',
+          cursor: disabled && !isImproving ? 'not-allowed' : 'pointer',
           fontSize: 12,
           fontWeight: 600,
           fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
@@ -74,7 +75,7 @@ export function ImproveButton({
             <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" fill="url(#improve-btn-rainbow)" />
           </svg>
         )}
-        <span>{isImproving ? 'Thinking...' : label}</span>
+        <span>{isImproving ? 'Stop' : label}</span>
       </button>
     </div>
   );
