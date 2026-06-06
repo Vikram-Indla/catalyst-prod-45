@@ -1,6 +1,6 @@
 /**
  * ScrollArea — plain CSS overflow scroll container.
- * Replaces @radix-ui/react-scroll-area with native CSS overflow.
+ * Replaced radix scroll-area with native CSS overflow.
  * Styled scrollbar via CSS for consistency.
  */
 import * as React from "react";
