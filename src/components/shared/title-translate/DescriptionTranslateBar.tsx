@@ -58,6 +58,7 @@ export function DescriptionTranslateBar({
   );
 
   if (!plainText.trim()) return null;
+  if (!isArabic && !isTranslated) return null;
 
   return (
     <div className={cn('ttw-action-row', className)} style={{ marginTop: 8 }}>
