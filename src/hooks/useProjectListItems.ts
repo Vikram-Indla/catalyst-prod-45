@@ -247,6 +247,7 @@ export function useProjectListItems(projectKey: string | undefined) {
         .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
         .is('archived_at', null)
+        .is('deleted_at', null)
         .order('jira_updated_at', { ascending: false, nullsFirst: false }),
       );
       return rows.map(mapPhIssue);
@@ -343,7 +344,8 @@ export function useProjectAllWorkItems(
         .in('issue_type', ALLOWED_ISSUE_TYPES)
         .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
-        .is('archived_at', null);
+        .is('archived_at', null)
+        .is('deleted_at', null);
 
       // Server-side filter predicates BEFORE ordering + range, so the page
       // window operates on the filtered result set.
@@ -381,7 +383,8 @@ export function useProjectAllWorkItems(
         .in('issue_type', ALLOWED_ISSUE_TYPES)
         .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
-        .is('archived_at', null);
+        .is('archived_at', null)
+        .is('deleted_at', null);
       qb = applyServerFilter(qb, filter);
       const { count, error: err } = await qb;
       if (err) throw err;
@@ -444,6 +447,7 @@ export function useWorkItemChildren(parentKey: string | undefined, enabled: bool
         .eq('parent_key', parentKey)
         .is('jira_removed_at', null)
         .is('archived_at', null)
+        .is('deleted_at', null)
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(500);
       if (error) throw error;
@@ -469,6 +473,7 @@ export function useWorkItem(itemId: string | undefined) {
         .eq('issue_key', itemId)
         .is('jira_removed_at', null)
         .is('archived_at', null)
+        .is('deleted_at', null)
         .maybeSingle();
       if (error) throw error;
       if (!data) return null;
@@ -494,6 +499,7 @@ export function useSearchWorkItems(projectKey: string | undefined, query: string
         .eq('project_key', projectKey)
         .is('jira_removed_at', null)
         .is('archived_at', null)
+        .is('deleted_at', null)
         .or(`summary.ilike.%${query}%,issue_key.ilike.%${query}%`)
         .limit(20);
       if (error) throw error;
