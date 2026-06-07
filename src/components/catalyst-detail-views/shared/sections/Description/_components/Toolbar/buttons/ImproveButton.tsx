@@ -1,3 +1,4 @@
+import { token } from '@atlaskit/tokens';
 import React, { useState } from 'react';
 import type { Editor } from '@tiptap/react';
 import Spinner from '@atlaskit/spinner';
@@ -37,18 +38,18 @@ export function ImproveButton({
         onMouseLeave={() => setHover(false)}
         data-testid="catalyst-desc-toolbar-improve"
         style={{
-          height: 28,
-          padding: '0 10px',
+          height: 32,
+          padding: '0 14px',
           display: 'inline-flex',
           alignItems: 'center',
           gap: 6,
           border: 'none',
           borderRadius: 17,
           background: disabled && !isImproving
-            ? 'var(--ds-background-disabled, #F1F2F4)'
+            ? token('color.background.disabled', '#F1F2F4')
             : hover
-              ? 'var(--ds-surface-hovered, #F1F2F4)'
-              : 'var(--ds-surface, #FFFFFF)',
+              ? token('elevation.surface.hovered', '#F1F2F4')
+              : token('elevation.surface', '#FFFFFF'),
           color: 'var(--ds-text, #172B4D)',
           cursor: disabled && !isImproving ? 'not-allowed' : 'pointer',
           fontSize: 12,
