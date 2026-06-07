@@ -308,7 +308,7 @@ export function ImproveIssueDropdown({
               display: 'inline-flex', alignItems: 'center', gap: 6,
               height: 32, padding: '0 14px', borderRadius: 17,
               border: 'none', outline: 'none', appearance: 'none',
-              background: 'var(--ds-surface, #FFFFFF)',
+              background: '#FFFFFF',
               color: 'var(--ds-text, #172B4D)',
               cursor: 'pointer',
               fontSize: 12, fontWeight: 600,
@@ -317,8 +317,8 @@ export function ImproveIssueDropdown({
               lineHeight: 1,
               transition: 'background 0.15s',
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-hovered, #F1F2F4)'; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#F1F2F4'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#FFFFFF'; }}
           >
             {catyIsImproving ? (
               <Spinner size="small" />

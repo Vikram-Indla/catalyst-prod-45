@@ -76,10 +76,10 @@ export function AIIntelligenceButton({
         // isActive (e.g. toggle keeping a CATY panel open) uses the ADS
         // selected token so the open state reads without losing the ring.
         background: disabled
-          ? token('color.background.disabled', '#F1F2F4')
+          ? '#FFFFFF'
           : isActive
-            ? token('color.background.selected', '#E9F2FE')
-            : token('elevation.surface', '#FFFFFF'),
+            ? '#E9F2FE'
+            : '#FFFFFF',
         color: disabled
           ? token('color.text.disabled', '#8590A2')
           : isActive
@@ -103,15 +103,15 @@ export function AIIntelligenceButton({
       onMouseEnter={e => {
         if (!disabled) {
           e.currentTarget.style.background = isActive
-            ? token('color.background.selected.hovered', '#CCE0FF')
-            : token('elevation.surface.hovered', '#F1F2F4');
+            ? '#CCE0FF'
+            : '#F1F2F4';
         }
       }}
       onMouseLeave={e => {
         if (!disabled) {
           e.currentTarget.style.background = isActive
-            ? token('color.background.selected', '#E9F2FE')
-            : token('elevation.surface', '#FFFFFF');
+            ? '#E9F2FE'
+            : '#FFFFFF';
         }
       }}
     >

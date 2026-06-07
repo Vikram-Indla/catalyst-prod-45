@@ -161,7 +161,7 @@ export function SummarizeDigestModal({
                 gap: 8,
                 padding: '0 12px',
                 borderRadius: 17,
-                background: token('elevation.surface', '#FFFFFF'),
+                background: '#FFFFFF',
               }}>
                 <span style={{ fontSize: 14, fontWeight: 700, color: token('color.text', '#172B4D') }}>
                   ✦ Caty's digest

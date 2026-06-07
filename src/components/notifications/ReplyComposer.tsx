@@ -115,7 +115,7 @@ export default function ReplyComposer({
                 padding: '4px 12px',
                 border: 'none',
                 borderRadius: 4,
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: '#FFFFFF',
                 fontFamily: 'var(--cp-font-body, inherit)',
                 fontSize: 13,
                 fontWeight: 500,
@@ -124,10 +124,10 @@ export default function ReplyComposer({
                 transition: 'background 120ms ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--ds-surface-sunken, #F7F8F9)';
+                e.currentTarget.style.background = '#F1F2F4';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)';
+                e.currentTarget.style.background = '#FFFFFF';
               }}
             >
               {/* sparkle icon — mirrors @atlaskit/icon-lab/core/ai-sparkle */}

@@ -510,7 +510,7 @@ function FeedSection({
                 padding: '0 12px',
                 border: 'none',
                 borderRadius: 17,
-                background: token('elevation.surface', '#FFFFFF'),
+                background: '#FFFFFF',
                 cursor: 'pointer',
                 color: token('color.text', '#172B4D'),
                 fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
@@ -519,10 +519,10 @@ function FeedSection({
                 lineHeight: 1,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = token('elevation.surface.hovered', '#F1F2F4');
+                e.currentTarget.style.background = '#F1F2F4';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = token('elevation.surface', '#FFFFFF');
+                e.currentTarget.style.background = '#FFFFFF';
               }}
             >
               <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
@@ -1399,8 +1399,8 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
             font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', '#172B4D'),
             background: phase === 'loading'
-              ? token('color.background.disabled', '#F1F2F4')
-              : token('elevation.surface', '#FFFFFF'),
+              ? '#FFFFFF'
+              : '#FFFFFF',
           }}
         >
           {phase === 'loading' ? (

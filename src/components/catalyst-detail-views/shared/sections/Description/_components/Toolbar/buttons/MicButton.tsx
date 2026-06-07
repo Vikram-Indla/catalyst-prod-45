@@ -139,7 +139,7 @@ export function MicButton({
               position: 'absolute',
               inset: 3,
               borderRadius: '50%',
-              background: 'var(--ds-surface, #FFFFFF)',
+              background: '#FFFFFF',
             }}
           />
           {/* Icon or stop square */}

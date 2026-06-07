@@ -275,7 +275,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                           border: 'none',
                           borderRadius: 17,
                           cursor: 'pointer',
-                          background: 'var(--ds-surface, #ffffff)',
+                          background: '#FFFFFF',
                           fontSize: 13,
                           fontWeight: 500,
                           color: 'var(--ds-text, #172B4D)',
