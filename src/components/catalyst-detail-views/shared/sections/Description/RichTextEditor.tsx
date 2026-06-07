@@ -69,6 +69,8 @@ export interface RichTextEditorProps {
 
   /** Toolbar "Improve" magic wand handler. Hides the button if omitted. */
   onImproveClick?: () => void;
+  /** Stop an in-flight Caty improve session. */
+  onStopImprove?: () => void;
   /** Label on the Improve button. Defaults to "Improve description"; the
    *  comment editor passes "Improve writing". */
   improveLabel?: string;
@@ -124,6 +126,7 @@ export function RichTextEditor({
   onCancel,
   onChange,
   onImproveClick,
+  onStopImprove,
   improveLabel,
   bodyOverlay,
   onImageUpload,
@@ -343,6 +346,7 @@ export function RichTextEditor({
           <Toolbar
             editor={editor}
             onImprove={onImproveClick ?? (() => {})}
+            onStop={onStopImprove}
             improveLabel={improveLabel}
             isImproving={overlayActive}
             onImageUpload={

@@ -1,6 +1,6 @@
 import type { ReleaseV2 } from '@/hooks/releases/useReleasesV2';
 import { ReleaseHealthChip } from './ReleaseHealthChip';
-import { ReleaseStatusBadge } from './ReleaseStatusBadge';
+import { StatusLozenge as ReleaseStatusBadge } from '@/components/ui/StatusLozenge';
 import { ReleaseProgressBar } from './ReleaseProgressBar';
 import { formatShortDate } from './release-utils';
 import styles from '@/styles/release-hub.module.css';

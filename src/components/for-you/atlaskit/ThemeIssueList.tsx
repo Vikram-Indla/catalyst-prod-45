@@ -40,6 +40,7 @@ import Spinner from '@atlaskit/spinner';
 import { StatusLozenge, toStatusCategory } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 // ─── Row container — divider via tokens ─────────────────────────────────────
 // Each row sits on the raised card surface (NOT sunken — explicit user
@@ -101,6 +102,7 @@ interface IssueRow {
   issue_key: string;
   summary: string;
   status: string;
+  status_category: string;
   issue_type: string;
   project_key: string;
 }
@@ -124,8 +126,9 @@ export default function ThemeIssueList({ issueKeys }: ThemeIssueListProps) {
       setLoading(true);
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, status, issue_type, project_key')
-        .in('issue_key', issueKeys);
+        .select('id, issue_key, summary, status, status_category, issue_type, project_key')
+        .in('issue_key', issueKeys)
+        .neq('status_category', 'done');
       if (cancelled) return;
       if (error) {
         console.error('[ThemeIssueList] ph_issues fetch failed:', error.message);
@@ -174,18 +177,21 @@ export default function ThemeIssueList({ issueKeys }: ThemeIssueListProps) {
                 left — no fixed column that crunches "READY FOR
                 DEVELOPMENT" into illegibility. */}
             <Inline space="space.100" alignBlock="center" spread="space-between">
-              <Pressable
-                xcss={keyPressableStyles}
-                onClick={() => useGlobalSearchStore.getState().openDetail({
-                  // CatalystDetailRouter queries ph_issues by issue_key, not UUID.
-                  id: row.issue_key,
-                  itemType: row.issue_type,
-                  projectKey: row.project_key,
-                })}
-                aria-label={`Open issue ${row.issue_key}`}
-              >
-                {row.issue_key}
-              </Pressable>
+              <Inline space="space.050" alignBlock="center">
+                <JiraIssueTypeIcon type={row.issue_type} size={14} />
+                <Pressable
+                  xcss={keyPressableStyles}
+                  onClick={() => useGlobalSearchStore.getState().openDetail({
+                    // CatalystDetailRouter queries ph_issues by issue_key, not UUID.
+                    id: row.issue_key,
+                    itemType: row.issue_type,
+                    projectKey: row.project_key,
+                  })}
+                  aria-label={`Open issue ${row.issue_key}`}
+                >
+                  {row.issue_key}
+                </Pressable>
+              </Inline>
               <StatusLozenge status={toStatusCategory(row.status)}>
                 {row.status || 'To Do'}
               </StatusLozenge>

@@ -13,4 +13,3 @@ export { ForYouTableSkeleton } from './ForYouTableSkeleton';
 export { ForYouPagination } from './ForYouPagination';
 export { ForYouInlineFilters } from './ForYouInlineFilters';
 export { ForYouStatsBar } from './ForYouStatsBar';
-export { StatusBadge } from './StatusBadge';

@@ -90,7 +90,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CV_TITLE_STYLE_I
        a descendant of the read-view container, so hovering it normally
        puts the container in :hover state. :has() lets us scope-out that
        case so only the button's own hover effect (blue underline) shows. */
-    .cv-title-edit-hide-label [data-read-view-fit-container-width]:has(.ttw-translate-btn:hover) {
+    .cv-title-edit-hide-label [data-read-view-fit-container-width]:has(.ttw-translate-chip:hover) {
       background: transparent !important;
     }
   `;

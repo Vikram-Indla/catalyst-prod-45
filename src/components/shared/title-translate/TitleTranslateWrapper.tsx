@@ -1,4 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
+import Spinner from "@atlaskit/spinner";
+import EditorUndoIcon from "@atlaskit/icon/glyph/editor/undo";
 import { cn } from "@/lib/utils";
 import { catalystToast } from "@/lib/catalystToast";
 import { containsArabic } from "@/lib/detectArabic";
@@ -11,23 +13,8 @@ export interface TitleTranslateWrapperProps {
   children: (helpers: { dir: "rtl" | "ltr" }) => React.ReactNode;
   className?: string;
   buttonClassName?: string;
-  /**
-   * Jira issue key (e.g. "BAU-5510"). When provided, translations are
-   * cached in ph_issue_translations so repeat opens return instantly.
-   * Omit (or pass '') for create-form surfaces that have no issue key yet.
-   */
   issueKey?: string;
-  /**
-   * Which field is being translated — used as the cache key discriminator.
-   * Defaults to 'summary'. Use 'description' or 'comment:<id>' for other fields.
-   */
   field?: string;
-  /**
-   * Fires after a successful translation, before `onValueChange` is called
-   * with the translated text. Receives the original text (what was in the
-   * field before translate), the translated result, and the direction.
-   * Used by bilingual create forms that need to persist BOTH languages.
-   */
   onTranslated?: (info: {
     original: string;
     translated: string;
@@ -60,9 +47,6 @@ export function TitleTranslateWrapper({
     originalRef.current = text;
     const result = await translate(text, { issueKey, field, target });
     if (result) {
-      // Notify bilingual callers BEFORE swapping the displayed value so they
-      // can stash both languages. `direction` reflects the translation that
-      // just happened (source → target).
       onTranslated?.({
         original: text,
         translated: result,
@@ -87,10 +71,12 @@ export function TitleTranslateWrapper({
   );
 
   const hasText = value.trim().length > 0;
+  const langLabel = target === "ar" ? "EN → AR" : "AR → EN";
+  const translateLabel = target === "ar" ? "Translate to Arabic" : "Translate to English";
 
   return (
     <div
-      className={cn("ttw-root", isTranslating && "ttw-translating", className)}
+      className={cn("ttw-root", className)}
       data-dir={dir}
     >
       {children({ dir })}
@@ -98,58 +84,30 @@ export function TitleTranslateWrapper({
         <div className="ttw-action-row">
           {isTranslating ? (
             <span
-              className="ttw-caty-translating"
+              className="ttw-translating-chip"
               aria-live="polite"
-              aria-label="CATY is translating"
+              aria-label="Translating"
             >
-              <span className="ttw-sparkle" aria-hidden="true">
-                ✦
-              </span>
-              <span>CATY is translating</span>
-              <span className="ttw-waveform" aria-hidden="true">
-                <span />
-                <span />
-                <span />
-                <span />
-                <span />
-              </span>
+              <Spinner size="small" />
+              <span>Translating…</span>
             </span>
-          ) : showingTranslation ? (
-            <span className="ttw-translated-state">
-              <span className="ttw-sparkle" aria-hidden="true">
-                ✦
-              </span>
-              <span>CATY translated</span>
-              <span className="ttw-sep" aria-hidden="true">
-                ·
-              </span>
-              <button
-                type="button"
-                className={cn("ttw-revert-btn", buttonClassName)}
-                onMouseDown={(e) => e.stopPropagation()}
-                onClick={handleShowOriginal}
-                aria-label="Show original text"
-              >
-                ↩ Show original
-              </button>
-            </span>
-          ) : (
+          ) : isArabic && !showingTranslation ? (
             <button
               type="button"
-              className={cn("ttw-translate-btn", buttonClassName)}
+              className={cn("ttw-translate-chip", buttonClassName)}
               onMouseDown={(e) => e.stopPropagation()}
               onClick={(e) => {
                 e.stopPropagation();
                 handleTranslate();
               }}
               disabled={isTranslating}
-              aria-label={
-                target === "ar" ? "Translate to Arabic" : "Translate to English"
-              }
+              aria-label={translateLabel}
             >
-              {target === "ar" ? "Translate to Arabic" : "Translate to English"}
+              <span className="ttw-translate-chip__globe" aria-hidden="true" style={{display:"inline-flex"}}><svg width="14" height="14" viewBox="0 0 512 512" fill="none" style={{flexShrink:0}}><rect width="512" height="512" rx="129.62" fill="#1868DB"/><path d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z" fill="white"/></svg></span>
+              {translateLabel}
+              <span className="ttw-translate-chip__arrow" aria-hidden="true">→</span>
             </button>
-          )}
+          ) : null}
         </div>
       )}
     </div>

@@ -12,10 +12,13 @@ import { useMyR360ResourceId } from '@/hooks/useR360PanelData';
 import R360MemberDetail from '@/pages/R360MemberDetail';
 import Spinner from '@atlaskit/spinner';
 
-export default function TimelinePanel() {
-  const { data: myResourceId, isLoading: idLoading } = useMyR360ResourceId();
+export interface TimelinePanelViewProps {
+  resourceId: string | null;
+  isLoading: boolean;
+}
 
-  if (idLoading) {
+export function TimelinePanelView({ resourceId, isLoading }: TimelinePanelViewProps) {
+  if (isLoading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}>
         <Spinner size="medium" />
@@ -23,7 +26,7 @@ export default function TimelinePanel() {
     );
   }
 
-  if (!myResourceId) {
+  if (!resourceId) {
     return (
       <div style={{
         padding: '48px 24px', textAlign: 'center',
@@ -36,7 +39,12 @@ export default function TimelinePanel() {
 
   return (
     <div style={{ minHeight: 600 }}>
-      <R360MemberDetail resourceId={myResourceId} embedded forceView="chronology" />
+      <R360MemberDetail resourceId={resourceId} embedded forceView="chronology" />
     </div>
   );
+}
+
+export default function TimelinePanel() {
+  const { data: myResourceId, isLoading: idLoading } = useMyR360ResourceId();
+  return <TimelinePanelView resourceId={myResourceId ?? null} isLoading={idLoading} />;
 }

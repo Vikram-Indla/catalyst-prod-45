@@ -6,7 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import '@/styles/product-backlog.css';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { StatusBadge } from '@/components/ui/StatusBadge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { Defect } from '@/types/defects';
 import { cn } from '@/lib/utils';
@@ -443,7 +443,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
       case 'priority':
         return <td key={colKey} style={{ width: columnWidths.priority }}><PriorityCell priority={d.priority} /></td>;
       case 'status':
-        return <td key={colKey} style={{ width: columnWidths.status }}><StatusBadge status={d.status} /></td>;
+        return <td key={colKey} style={{ width: columnWidths.status }}><StatusLozenge status={d.status} /></td>;
       case 'assignee':
         return <td key={colKey} style={{ width: columnWidths.assignee }}><AssigneeCell defect={d} nameAvatarMap={nameAvatarMap} /></td>;
       case 'age':

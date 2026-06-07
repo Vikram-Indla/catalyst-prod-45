@@ -187,7 +187,7 @@ function AskCatyThemifyButton({ onClick, count }: { onClick: () => void; count: 
     }}>
       <div style={{
         display: 'inline-flex',
-        padding: 2,
+        padding: 3,
         borderRadius: 20,
         background: THEMIFY_RAINBOW,
       }}>
@@ -206,8 +206,8 @@ function AskCatyThemifyButton({ onClick, count }: { onClick: () => void; count: 
             border: 'none',
             borderRadius: 18,
             background: hover
-              ? token('elevation.surface.hovered', '#F1F2F4')
-              : token('elevation.surface', '#FFFFFF'),
+              ? '#F1F2F4'
+              : '#FFFFFF',
             color: token('color.text', '#172B4D'),
             cursor: 'pointer',
             fontFamily: 'var(--cp-font-body)',

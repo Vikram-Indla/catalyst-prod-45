@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { RefreshCw } from '@/lib/atlaskit-icons';
 import { EvidenceGalleryProps, Attachment } from './types';
 import { ThumbnailCard } from './gallery/ThumbnailCard';
-import { EmptyState } from './gallery/EmptyState';
+import { EmptyState } from '@/components/ads';
 import { ImageViewerModal } from './gallery/ImageViewerModal';
 import { DeleteConfirmDialog } from './gallery/DeleteConfirmDialog';
 import { useSignedUrls, downloadFile } from './gallery/useSignedUrls';

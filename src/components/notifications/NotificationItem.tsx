@@ -2,7 +2,8 @@ import { memo, useState } from "react";
 import type { Notification } from "@/types/notifications";
 import type { ActorProfile } from "@/hooks/useActorProfiles";
 import { COMMENT_PREVIEW_TYPES, DUE_DATE_TYPES } from "@/constants/notificationConstants";
-import StatusLozenge from "./StatusLozenge";
+import { StatusLozenge as AdsStatusLozenge } from '@/components/ads';
+const TYPE_TO_CATEGORY = { gray: 'todo' as const, blue: 'inProgress' as const, green: 'done' as const };
 import CommentPreview from "./CommentPreview";
 import ReactionBar from "./ReactionBar";
 import { Clock, UserCheck } from "lucide-react";
@@ -303,7 +304,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
             {statusProps && (
               <>
                 <span style={{ color: T.text3, fontSize: 10 }}>•</span>
-                <StatusLozenge label={statusProps.label} type={statusProps.type} />
+                <AdsStatusLozenge status={TYPE_TO_CATEGORY[statusProps.type]}>{statusProps.label}</AdsStatusLozenge>
               </>
             )}
           </div>

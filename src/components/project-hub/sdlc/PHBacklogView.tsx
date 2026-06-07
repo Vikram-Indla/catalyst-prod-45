@@ -8,7 +8,7 @@ import { getDisplayKey } from '@/services/project-hub.service';
 import type { IssueType } from '@/types/project-hub.types';
 import { PHIssueTypeIcon, TYPE_ACCENT } from './PHIssueTypeIcon';
 import { PHSourceTag } from './PHSourceTag';
-import { PHStatusLozenge } from './PHStatusLozenge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { SkeletonTable } from '@/components/project-hub/shared/SkeletonPulse';
 
 interface Props {
@@ -203,7 +203,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                           >
                             {issue.title}
                           </span>
-                          <PHStatusLozenge status={issue.status} compact />
+                          <StatusLozenge status={issue.status} compact />
                           <span
                             className={`rounded-full inline-flex items-center justify-center flex-shrink-0 ${issue.assignee_id ? 'bg-[var(--divider)]' : 'bg-transparent'}`}
                             style={{

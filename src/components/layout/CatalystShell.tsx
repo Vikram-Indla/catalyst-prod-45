@@ -1039,7 +1039,6 @@ export function CatalystShell() {
 
   return (
     <CatalystContextProvider>
-      <LastLoginFlag />
       <CatalystShellContent />
       {/* GlobalSearch is rendered inside CatalystHeader as the anchored search trigger */}
       {/* Global CatalystDetailRouter — opened from GlobalSearch, Notifications, ForYou, etc. */}

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useReleases } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
-import { ReleaseStatusBadge } from '@/components/releasehub/ReleaseStatusBadge';
+import { StatusLozenge as ReleaseStatusBadge } from '@/components/ui/StatusLozenge';
 import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
 import { EmptyState } from '@/components/releasehub/EmptyState';
 import { BarChart3 } from '@/lib/atlaskit-icons';

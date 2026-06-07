@@ -9,7 +9,6 @@ export { RoadmapTimelinePanel } from './RoadmapTimelinePanel';
 export { RoadmapTimelineHeader } from './RoadmapTimelineHeader';
 export { RoadmapTimelineBar } from './RoadmapTimelineBar';
 export { RoadmapTodayMarker } from './RoadmapTodayMarker';
-export { RoadmapEmptyState } from './RoadmapEmptyState';
 export { RoadmapLoadingSkeleton } from './RoadmapLoadingSkeleton';
 export { RoadmapFilterDialog } from './RoadmapFilterDialog';
 export { RoadmapExportDialog } from './RoadmapExportDialog';

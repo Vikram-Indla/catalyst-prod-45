@@ -84,3 +84,4 @@ package-lock.json
 .obsidian
 
 *storybook.log
+.aider*

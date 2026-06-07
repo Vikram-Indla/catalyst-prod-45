@@ -41,7 +41,8 @@
  *  - Enter/Space → same
  *  - Star click → stopPropagation + onToggleStar(item.id)
  */
-import React, { memo, useCallback, useState, type KeyboardEvent, type MouseEvent } from 'react';
+import React, { memo, useCallback, useState, useRef, useEffect, useLayoutEffect, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Lozenge from '@atlaskit/lozenge';
@@ -50,6 +51,14 @@ import { Star, StarOff } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type { WorkItem } from '@/hooks/useForYouData';
+
+export interface ForYouRowAction {
+  id: string;
+  label: string;
+  icon?: ReactNode;
+  danger?: boolean;
+  onClick: () => void;
+}
 
 interface ForYouRowProps {
   item: WorkItem;
@@ -74,6 +83,8 @@ interface ForYouRowProps {
    * default feed layout (avatar + star + relative time + inline lozenge).
    */
   variant?: 'default' | 'jira-assigned';
+  /** Row-level action menu (hover-reveal ⋯ button). Same pattern as JiraTable makeRowActionsCell. */
+  actions?: ForYouRowAction[];
 }
 
 // ─── Status → Atlaskit Lozenge mapping ───────────────────────────────────────
@@ -111,7 +122,7 @@ function statusToAppearance(status: string, category?: string): LozengeAppearanc
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, hideProject = false, suggestion, variant = 'default' }: ForYouRowProps) {
+function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, hideProject = false, suggestion, variant = 'default', actions }: ForYouRowProps) {
   const isJiraAssigned = variant === 'jira-assigned';
   const avatarUrl = resolveAvatarUrl(item.assignee.name) || undefined;
   const isStarred = !!item.starred;
@@ -325,6 +336,9 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
               <CatalystAvatar size="small" src={avatarUrl} name={item.assignee.name} />
             </span>
           </Tooltip>
+          {actions && actions.length > 0 && (
+            <RowActionsMenu actions={actions} isRowHovered={isActive} />
+          )}
           {onToggleStar && (
             <StarButton
               isStarred={isStarred}
@@ -337,6 +351,169 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
     </div>
   );
 }
+
+// ─── Row actions menu (⋯ hover-reveal) ──────────────────────────────────────
+// Mirrors EditorPopover + MenuItemBtn pattern from JiraTable/editors.tsx.
+// Portal-based so it escapes any overflow:hidden container.
+function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[]; isRowHovered: boolean }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [anchor, setAnchor] = useState<{ top: number; right: number } | null>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popRef = useRef<HTMLDivElement>(null);
+  const [focused, setFocused] = useState(false);
+
+  const isVisible = isRowHovered || isOpen || focused;
+
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+    const update = () => {
+      const t = triggerRef.current;
+      if (!t) return;
+      const r = t.getBoundingClientRect();
+      setAnchor({ top: r.bottom + 4, right: window.innerWidth - r.right });
+    };
+    update();
+    window.addEventListener('resize', update);
+    window.addEventListener('scroll', update, true);
+    return () => {
+      window.removeEventListener('resize', update);
+      window.removeEventListener('scroll', update, true);
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onDown = (e: globalThis.MouseEvent) => {
+      const target = e.target as Node;
+      if (triggerRef.current?.contains(target)) return;
+      if (popRef.current?.contains(target)) return;
+      setIsOpen(false);
+    };
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); setIsOpen(false); }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [isOpen]);
+
+  const normal = actions.filter(a => !a.danger);
+  const danger = actions.filter(a => a.danger);
+
+  return (
+    <>
+      <Tooltip content="More actions">
+        <button
+          ref={triggerRef}
+          type="button"
+          aria-label="More actions"
+          onClick={(e) => { e.stopPropagation(); setIsOpen(v => !v); }}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{
+            width: 28,
+            height: 28,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 4,
+            border: 'none',
+            background: 'transparent',
+            color: token('color.icon.subtle', '#6B778C'),
+            cursor: 'pointer',
+            opacity: isVisible ? 1 : 0,
+            transition: 'opacity 100ms, background 100ms',
+            padding: 0,
+            outline: 'none',
+            boxShadow: focused
+              ? `0 0 0 2px ${token('color.border.focused', '#388BFF')}`
+              : 'none',
+          }}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="5" cy="12" r="2" />
+            <circle cx="12" cy="12" r="2" />
+            <circle cx="19" cy="12" r="2" />
+          </svg>
+        </button>
+      </Tooltip>
+      {isOpen && anchor && createPortal(
+        <div
+          ref={popRef}
+          role="menu"
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            position: 'fixed',
+            top: anchor.top,
+            right: anchor.right,
+            zIndex: 1000,
+            minWidth: 180,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRadius: 4,
+            boxShadow: token('elevation.shadow.overlay', '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)'),
+            padding: 4,
+            fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
+            color: token('color.text', '#292A2E'),
+          }}
+        >
+          {normal.map(a => (
+            <button
+              key={a.id}
+              type="button"
+              role="menuitem"
+              onClick={() => { a.onClick(); setIsOpen(false); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                width: '100%', padding: '8px 8px', border: 'none',
+                background: 'transparent', color: token('color.text', '#292A2E'),
+                fontSize: 14, textAlign: 'left', cursor: 'pointer',
+                fontFamily: 'inherit', borderRadius: 3, outline: 'none',
+              }}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+            >
+              {a.icon}
+              <span style={{ flex: 1 }}>{a.label}</span>
+            </button>
+          ))}
+          {danger.length > 0 && (
+            <>
+              <div style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '4px 0' }} />
+              {danger.map(a => (
+                <button
+                  key={a.id}
+                  type="button"
+                  role="menuitem"
+                  onClick={() => { a.onClick(); setIsOpen(false); }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    width: '100%', padding: '8px 8px', border: 'none',
+                    background: 'transparent', color: token('color.text.danger', '#AE2A19'),
+                    fontSize: 14, textAlign: 'left', cursor: 'pointer',
+                    fontFamily: 'inherit', borderRadius: 3, outline: 'none',
+                  }}
+                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', '#FFEBE6'))}
+                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+                >
+                  {a.icon}
+                  <span style={{ flex: 1 }}>{a.label}</span>
+                </button>
+              ))}
+            </>
+          )}
+        </div>,
+        document.body,
+      )}
+    </>
+  );
+}
+
 
 export default memo(ForYouRowImpl);
 

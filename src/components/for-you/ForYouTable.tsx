@@ -9,7 +9,7 @@ import { Star, Paperclip, ChevronRight, ChevronDown } from '@/lib/atlaskit-icons
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
-import { StatusBadge } from '@/components/ui/StatusBadge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
 import { ResizableTableHeader, type SortDir } from '@/components/shared/ResizableTableHeader';
@@ -291,7 +291,7 @@ export function CatalystTable({
 
                     {/* Row 3: status + hub + priority */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                      <StatusBadge status={item.status} />
+                      <StatusLozenge status={item.status} />
                       <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
                         {item.hubLabel}
                       </span>
@@ -376,7 +376,7 @@ export function CatalystTable({
       case 'status':
         return (
           <td key={colKey} style={{ width: columnWidths.status, textAlign: 'center' }}>
-            <StatusBadge status={item.status} />
+            <StatusLozenge status={item.status} />
           </td>
         );
       case 'project':

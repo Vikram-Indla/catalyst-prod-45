@@ -29,7 +29,7 @@ function RainbowCTAPattern() {
   );
 }
 
-const meta: Meta = { title: 'Patterns/Rainbow CTA', parameters: { layout: 'padded' } };
+const meta: Meta = { title: 'Catalyst AI & Feed/Rainbow CTA Pattern', parameters: { layout: 'padded' } };
 export default meta;
 type Story = StoryObj;
 export const AllVariants: Story = { render: () => <RainbowCTAPattern /> };

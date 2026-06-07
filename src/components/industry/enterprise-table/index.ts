@@ -13,7 +13,6 @@ export { useColumnFeatures } from './hooks/useColumnFeatures';
 export { useRowGrouping } from './hooks/useRowGrouping';
 
 // Components
-export { TableEmptyState, NoDataEmptyState, NoResultsEmptyState, ErrorEmptyState } from './components/TableEmptyState';
 export { TableLoadingState, TableRowLoadingState } from './components/TableLoadingState';
 export { TablePagination } from './components/TablePagination';
 export { BulkActionsBar } from './components/BulkActionsBar';

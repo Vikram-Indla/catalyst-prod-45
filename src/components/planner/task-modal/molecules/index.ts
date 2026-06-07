@@ -28,4 +28,3 @@ export { CommentComposer } from './CommentComposer';
 
 // UI
 export { PermissionBanner } from './PermissionBanner';
-export { EmptyState } from './EmptyState';

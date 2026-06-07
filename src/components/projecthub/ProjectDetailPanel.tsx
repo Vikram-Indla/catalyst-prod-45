@@ -2,7 +2,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { ArrowLeft, Star, ExternalLink } from '@/lib/atlaskit-icons';
 import type { ProjectListItem } from '@/types/projecthub';
 import { useProjectTeam } from '@/hooks/useProjectHub';
-import { ProjectStatusBadge } from './ProjectStatusBadge';
+import { StatusLozenge as ProjectStatusBadge } from '@/components/ui/StatusLozenge';
 import { ProjectHealthBadge } from './ProjectHealthBadge';
 import { DistributionBar } from './DistributionBar';
 import { STATUS_CATEGORY_DISPLAY } from '@/types/projecthub';

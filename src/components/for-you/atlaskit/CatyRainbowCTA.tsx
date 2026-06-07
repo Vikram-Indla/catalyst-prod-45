@@ -28,7 +28,7 @@ export function CatyRainbowCTA({ label, onClick, isLoading, align = 'right' }: C
     }}>
       <div style={{
         display: 'inline-flex',
-        padding: 2,
+        padding: 3,
         borderRadius: 20,
         background: CATY_RAINBOW,
       }}>
@@ -37,7 +37,6 @@ export function CatyRainbowCTA({ label, onClick, isLoading, align = 'right' }: C
           onClick={isInert ? undefined : onClick}
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
-          disabled={isInert}
           aria-label={isLoading ? 'Caty is thinking...' : label}
           aria-busy={isLoading || undefined}
           style={{
@@ -47,14 +46,12 @@ export function CatyRainbowCTA({ label, onClick, isLoading, align = 'right' }: C
             height: 32,
             padding: '0 16px',
             border: 'none',
-            borderRadius: 18,
-            background: isInert
-              ? token('color.background.disabled', '#F1F2F4')
-              : hover
-                ? token('elevation.surface.hovered', '#F1F2F4')
-                : token('elevation.surface', '#FFFFFF'),
+            borderRadius: 17,
+            background: hover
+              ? '#F1F2F4'
+              : '#FFFFFF',
             color: token('color.text', '#172B4D'),
-            cursor: isInert ? 'not-allowed' : 'pointer',
+            cursor: 'pointer',
             fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
             fontSize: 12,
             fontWeight: 600,

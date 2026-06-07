@@ -286,7 +286,7 @@ export function Header() {
       npm: '@Catalyst/primitives',
       description:
         'Low-level React primitives (Button, Input, Card, Dialog, etc.) built on Radix UI and styled with ADS tokens. Atomic foundation for all Catalyst UI.',
-      installation: 'npm install @Catalyst/primitives @radix-ui/react-primitive',
+      installation: 'npm install @Catalyst/primitives @atlaskit/primitives',
       apiReference: [
         { prop: 'Button', type: 'ComponentType', default: '—', description: 'Semantic button primitive with aria-*, size, and variant props' },
         { prop: 'Input', type: 'ComponentType', default: '—', description: 'Text input primitive with validation state' },
@@ -320,7 +320,7 @@ export function Header() {
           'Compose primitives for complex UI layouts',
         ],
         donts: [
-          'Import primitives from @radix-ui/* directly',
+          'Import primitives from @atlaskit/* directly',
           'Override Radix UI primitive behavior',
           'Create custom button/input implementations',
           'Use @atlaskit/button instead of Card Button',

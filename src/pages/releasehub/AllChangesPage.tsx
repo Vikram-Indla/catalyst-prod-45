@@ -3,7 +3,7 @@ import { Search, Plus, List, Columns, RefreshCw } from '@/lib/atlaskit-icons';
 import { useChanges, useReleases } from '@/hooks/useReleaseHub';
 import { RH, CHG_STATUS_LABELS } from '@/constants/releasehub.design';
 import { useTheme } from '@/hooks/useTheme';
-import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { SourceBadge } from '@/components/releasehub/SourceBadge';
 import { RiskBadge } from '@/components/releasehub/RiskBadge';
 import { DeployResultBadge } from '@/components/releasehub/DeployResultBadge';

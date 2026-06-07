@@ -1082,7 +1082,7 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
 
 export function useForYouData(authLoading = false) {
   const [activeMode, setActiveMode] = useState<ModeFilter>('all');
-  const [activeTab, setActiveTab] = useState<TabType>('recommended');
+  const [activeTab, setActiveTab] = useState<TabType>('assigned');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState<{ field: string; order: 'asc' | 'desc' }>({ field: 'updated', order: 'desc' });
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);

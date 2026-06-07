@@ -65,9 +65,9 @@ export function AIIntelligenceButton({
 
   const innerButton = (
     <button
-      onClick={isInert ? undefined : onClick}
+      onClick={disabled ? undefined : onClick}
       className={className}
-      disabled={isInert}
+      disabled={disabled}
       aria-label={isLoading ? 'Caty is thinking…' : tooltip}
       aria-busy={isLoading || undefined}
       style={{
@@ -75,24 +75,24 @@ export function AIIntelligenceButton({
         // Single source of visual truth for AI affordances across the app.
         // isActive (e.g. toggle keeping a CATY panel open) uses the ADS
         // selected token so the open state reads without losing the ring.
-        background: isInert
-          ? token('color.background.disabled', '#F1F2F4')
+        background: disabled
+          ? '#FFFFFF'
           : isActive
-            ? token('color.background.selected', '#E9F2FE')
-            : token('elevation.surface', '#FFFFFF'),
-        color: isInert
+            ? '#E9F2FE'
+            : '#FFFFFF',
+        color: disabled
           ? token('color.text.disabled', '#8590A2')
           : isActive
             ? token('color.text.selected', '#0C66E4')
             : token('color.text', '#172B4D'),
         border: 'none',
-        borderRadius: 18,
+        borderRadius: 17,
         padding: '0 14px',
         height: 28,
         fontSize: 12,
         fontWeight: 600,
         letterSpacing: 'normal',
-        cursor: isInert ? 'not-allowed' : 'pointer',
+        cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.6 : 1,
         display: 'inline-flex',
         alignItems: 'center',
@@ -101,17 +101,17 @@ export function AIIntelligenceButton({
         fontFamily: 'var(--cp-font-body)',
       }}
       onMouseEnter={e => {
-        if (!isInert) {
+        if (!disabled) {
           e.currentTarget.style.background = isActive
-            ? token('color.background.selected.hovered', '#CCE0FF')
-            : token('elevation.surface.hovered', '#F1F2F4');
+            ? '#CCE0FF'
+            : '#F1F2F4';
         }
       }}
       onMouseLeave={e => {
-        if (!isInert) {
+        if (!disabled) {
           e.currentTarget.style.background = isActive
-            ? token('color.background.selected', '#E9F2FE')
-            : token('elevation.surface', '#FFFFFF');
+            ? '#E9F2FE'
+            : '#FFFFFF';
         }
       }}
     >
@@ -133,7 +133,7 @@ export function AIIntelligenceButton({
     <div
       style={{
         display: 'inline-flex',
-        padding: 2,
+        padding: 3,
         borderRadius: 20,
         background: STATIC_RAINBOW,
       }}

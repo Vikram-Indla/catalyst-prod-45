@@ -25,10 +25,11 @@ import {
   BrDescriptionSection,
   BrAttachmentsSection,
   BrLinkedItemsSection,
-  BrSidebarDetails,
   BrStatusSection,
   BrActivitySection,
 } from './sections';
+import { CatalystSidebarDetails } from '../shared/sections/CatalystSidebarDetails';
+import { mapBrToIssueLike } from './sections/BrSidebarAdapter';
 import { CatalystQuickActions } from '../shared/sections';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { ImproveIssueDropdown } from '../improve';
@@ -136,9 +137,12 @@ export default function CatalystViewBusinessRequestV3({
   // ── Right rail — status pill in header, matching Story's pattern ──────────
   const rightContent = useMemo(
     () => (
-      <BrSidebarDetails
-        request={request}
-        onUpdate={updateField}
+      <CatalystSidebarDetails
+        issue={mapBrToIssueLike(request) as any}
+        itemId={request?.request_key ?? ''}
+        onStatusChange={(s) => updateField('status', s)}
+        onClose={onClose}
+        onDelete={() => {}}
         statusPill={<BrStatusSection request={request} onUpdate={updateField} />}
         watchersChip={<WatchersChip issueKey={request?.request_key ?? null} />}
         improveDropdown={

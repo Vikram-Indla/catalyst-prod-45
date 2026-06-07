@@ -3,7 +3,7 @@
  * C2: Only on Jira-sourced items. Radix tooltip on hover.
  */
 import React from 'react';
-import * as Tooltip from '@radix-ui/react-tooltip';
+import Tooltip from '@atlaskit/tooltip';
 
 type SyncStatus = 'synced' | 'stale' | 'conflict' | 'syncing' | 'pending';
 

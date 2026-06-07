@@ -4,6 +4,30 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 🎨 CATALYST DESIGN SYSTEM — SINGLE SOURCE OF TRUTH (P0, Non-Negotiable)
+
+**The canonical Catalyst Design System lives in the published Storybook, exposed as an MCP server. It is the ONLY source of truth for Catalyst component design, ADS token usage, and visual contracts.**
+
+### The endpoint
+
+```
+catalyst-storybook MCP → https://main--6a22d4960f743958c893234b.chromatic.com/mcp
+```
+
+Registered in `.mcp.json` as `catalyst-storybook` (type: http). Use `ToolSearch` to load its tools, then query it for any Catalyst component, foundation token, pattern, or page layout BEFORE designing, building, or critiquing a UI surface.
+
+### The rule
+
+1. **Before building or restyling ANY component**, query the `catalyst-storybook` MCP for the canonical story of that component (or its nearest design-system equivalent). The Storybook story is the reference — match its tokens, spacing, typography, states, and structure.
+2. **The Storybook + Atlassian Design System (https://atlassian.design/) are the two — and only — design authorities.** Storybook is the Catalyst-specific instantiation; ADS is the upstream primitive/token catalogue. Nothing else (no ad-hoc hex, no Figma export, no screenshot inference) overrides them.
+3. **The design system tree** (query the MCP to browse): Foundations (Colors, Typography, Spacing, Elevation, Motion) · Components (Button, Badge, Avatar, Status, Tag, Dropdown, Modal, Drawer, Spinner, Tooltip) · Enterprise Components (Dynamic Table, Rich Text Editor canonical+custom, Kanban Board, Sprint Board, Release/Portfolio Selector, Work Item Hierarchy Tree, Activity Section, Child Issues, Linked Issues) · Patterns (CRUD, Bulk Edit, Approval, Workflow) · Pages (Business Request, Epic, Feature, Story, Subtask) · Catalyst AI & Feed (Caty Insight Card, Caty Rainbow CTA, AI Intelligence Button, Jira Issue Type Icon, For You Row).
+4. **When a story exists for a surface you're touching, ADOPT it** — do not reimplement (see "ADOPT CANONICAL COMPONENTS" rule below). When a story does NOT exist, the closest ADS primitive + token map is the fallback, never invented values.
+5. **design-critique and catalyst-agent MUST consult this MCP** as their design authority before scoring or routing any UI work.
+
+**Severity:** P0 — building or critiquing UI without first consulting the canonical Storybook MCP is a process violation. The Storybook is the contract; drift from it is a defect.
+
+---
+
 ## 📵 SCREENSHOT CHECKS BANNED FOR FUNCTIONALITY BUILDING (P0, Non-Negotiable)
 
 **When building or verifying any FUNCTIONAL behavior, use MCP / DOM / CSS / Atlassian REST / Supabase probes — NEVER screenshots.**
@@ -1427,3 +1451,161 @@ $$;
 The function owner is not subject to RLS (no FORCE ROW LEVEL SECURITY), so its internal read bypasses the policy and breaks the cycle. Keep the `author_id = auth.uid()` short-circuit on message SELECT (the PostgREST v12 INSERT+RETURNING trap, 2026-05-29). ALWAYS run a 2-user RLS isolation test before declaring any new RLS surface done — it is the only reliable way to catch both recursion and cross-user leaks. Seed a private row owned by user A, simulate user B (non-member) expecting 0 rows, simulate A expecting their rows, then clean up.
 **Fix:** Migration `20260603000100_chat_rls_recursion_fix.sql` — added `public.chat_is_member(uuid, uuid)` and rewrote the members/conversations/messages policies to call it. Verified live on prod (`lmqwtldpfacrrlvdnmld`): b_nonmember_sees=0, a_member_sees=1.
 **Severity:** P0 (self-referential membership RLS makes the entire feature unreadable — caught only because the 2-user test was mandatory).
+---
+
+## 📂 REPO PATH — APOSTROPHE IN PATH (Non-Negotiable)
+
+**The working directory / repo root is:**
+
+```
+/Users/vikramindla/Documents/Documents - vikram's MacBook Pro/GitHub/catalyst-prod-45
+```
+
+The path contains an apostrophe (`'`) in "vikram's". This breaks naive shell quoting. Rules:
+
+1. **Always use double quotes** around the path in shell commands: `"/Users/vikramindla/Documents/Documents - vikram's MacBook Pro/GitHub/catalyst-prod-45"`
+2. **Prefer `$(pwd)`** over typing the full path — the working directory is already set correctly at session start.
+3. **For git:** use `git -C "$(pwd)" ...` — never `cd '/path/with/apostrophe' && git ...`
+4. **Subagents:** pass the repo path via prompt context, never expect them to discover it.
+
+This applies to ALL agents, skills, and subagents. Every implementation conversation starts in this directory.
+
+---
+
+## 🔍 CHROME MCP TAB REUSE — CHECK EXISTING TABS FIRST (Non-Negotiable, P1)
+
+**All visual verification (design-critique, jira-compare, verify, DOM/screenshot probes) must reuse existing Chrome tabs before creating new ones.**
+
+### The Rule
+
+1. **First:** call `tabs_context_mcp(createIfEmpty: false)` to discover existing tabs
+2. **Check last 2 tabs** — if one already has the target URL (e.g. `localhost:8080` or the page being verified), reuse it via `navigate` on that tab
+3. **Only create a new tab** (`tabs_create_mcp`) if no existing tab is usable
+
+### Why
+
+Opening new tabs for every verification wastes time. The dev server or target page is almost always already open in a recent tab. Tab sprawl slows down probing and confuses tab management.
+
+### Applies to
+
+All agents and skills that touch Chrome MCP: main session, catalyst-agent, design-critique, design-intelligence, jira-compare, verify, code-review, preflight, any subagent doing screenshot or DOM probes.
+
+**Severity:** P1 — Vikram directive. Tab reuse saves significant verification time per session.
+
+
+---
+
+## 🚀 TOKEN OPTIMIZATION STACK — MANDATORY START + END PROTOCOL (Non-Negotiable, P1)
+
+**Catalyst runs a 4-tool token optimization stack that reduces total token spend by 50-70%. All tools are pre-installed and auto-activate — no per-conversation setup needed.**
+
+### The Stack
+
+| Tool | What it cuts | Savings | Activation |
+|---|---|---|---|
+| **RTK** (Rust Token Killer) | **Input** — compresses Bash command outputs before context window | 60-98% on CLI output | `PreToolUse` hook auto-rewrites every Bash call |
+| **Caveman** | **Output** — strips filler/articles/hedging from Claude's prose | ~65% on responses | `SessionStart` hook auto-activates every session |
+| **ccusage** | **Visibility** — offline token consumption dashboard per session | Shows WHERE money goes | `ccusage` CLI, `brew install ccusage` |
+| **claude-code-router** | **Routing** — sends mechanical tasks to cheaper models | 70-80% on repetitive edits | `npx @musistudio/claude-code-router`, `ccr code` |
+
+### 🟢 Session START — Optimization Notification (MANDATORY)
+
+**First response of EVERY conversation MUST begin with this block:**
+
+```
+⚡ **Catalyst Optimization Stack Active**
+  RTK ......... ✅ input compression (Bash outputs)
+  Caveman ..... ✅ output compression (prose responses)
+  ccusage ..... ✅ token tracking available
+  Router ...... ✅ model routing available
+```
+
+This applies to: main sessions, subagents, catalyst-agent, design-critique, design-intelligence, preflight, jira-compare, deploy, code-review, and ANY other skill/agent.
+
+### 🔴 Session END — Optimization Summary (MANDATORY)
+
+**Before ending ANY conversation, run `rtk gain` and include this block in the final response:**
+
+```
+📊 **Optimization Summary**
+[paste rtk gain output]
+
+💡 Run `ccusage` for full cost breakdown | `rtk gain --graph` for 30-day trend
+```
+
+### Useful commands
+
+```bash
+# Token savings
+rtk gain              # RTK compression stats (run at end of every conversation)
+rtk gain --graph      # ASCII chart of savings over last 30 days
+rtk gain --history    # Command usage history with per-command savings
+rtk discover          # Analyze Claude Code history for missed opportunities
+
+# Cost tracking
+ccusage               # Full token consumption dashboard
+ccusage --model       # Breakdown by model
+
+# Model routing
+ccr code              # Start Claude Code through router (routes to cheaper models)
+ccr model             # Interactive model selection
+ccr status            # Show router status
+
+# Meta
+rtk proxy <cmd>       # Execute raw command without RTK filtering (debugging)
+rtk --version         # Check RTK version
+```
+
+### Setup on a new machine
+
+All tools must be installed locally — CLAUDE.md provides the rules, not the binaries:
+```bash
+brew install rtk && rtk init -g          # RTK + Claude Code hook
+curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.sh | bash  # Caveman
+brew install ccusage                      # Token consumption dashboard
+npm i -g @musistudio/claude-code-router   # Model router (or use npx)
+```
+Then restart Claude Code. All hooks auto-activate on every future session.
+
+**Severity:** P1 — Vikram wants explicit optimization visibility at session start (confirmation all tools active) and session end (savings summary). Skipping either is a process violation.
+
+
+---
+
+## 2026-06-07 — Rainbow CTA inner pill: ADS surface tokens resolve to semi-transparent in nested contexts — ALWAYS hardcode #FFFFFF
+
+**Surface:** All AI CTA components with rainbow conic-gradient wrapper (ImproveButton, AIIntelligenceButton, CatyRainbowCTA, ImproveIssueDropdown, RecommendedPanel, SummarizeDigestModal, AssignedPanel, ReplyComposer, EditableAssignee, MicButton)
+
+**Pattern (6 iterations to fix — RCA below):**
+The "Improve writing" button in the comment editor toolbar rendered with rainbow gradient bleeding through the inner pill, while "Improve Story" in the sidebar rendered with clean white interior. Both used the same  wrapper. The root cause was NOT padding — it was the inner button's  value.
+
+**Root cause:** ADS surface tokens (, , ) resolve to  (semi-transparent grey) inside certain DOM contexts — specifically the Tiptap editor toolbar, nested surface containers, and any parent with ADS surface layering. The 3% opacity lets the rainbow  from the parent wrapper bleed through. The sidebar's "Improve Story" worked because its DOM context resolved the same tokens to  (opaque white).
+
+**Fix:** Hardcode  for ALL background states (idle, hover, disabled) on every inner button/pill inside a rainbow wrapper. Do NOT use any ADS token — they are context-dependent and unreliable inside rainbow wrappers. Disabled state communicated via  +  instead of grey background.
+
+**Why it took 6 iterations (RCA on process failure):**
+1. **Iteration 1:** Changed  →  (wrong diagnosis — assumed padding was the issue)
+2. **Iteration 2:** Reverted padding back to 2 (confused by Jira screenshot comparison)
+3. **Iteration 3:** Re-applied padding 3 (correct, but not the root cause)
+4. **Iteration 4:** Changed  →  (still resolved to grey — wrong fix)
+5. **Iteration 5:** Hardcoded  for idle state (correct, but missed disabled state)
+6. **Iteration 6:** Hardcoded  for disabled state too (final fix)
+
+**Process failures:**
+- **Never DOM-probed the actual computed  until iteration 4.** Should have been step 1.
+- **Assumed both buttons used the same background value** because the code looked similar. Never compared computed styles side-by-side.
+- **Didn't check which STATE the button was in** (disabled vs idle) — the disabled branch had a different token.
+- **Tried token substitutions instead of measuring.** Each token swap required a rebuild + refresh cycle. A single DOM probe would have shown that ALL ADS surface tokens resolve to the same grey in that context.
+
+**Rule (NEW — applies to ALL future visual fixes):**
+1. **Before ANY code change for a visual bug, DOM-probe  on the ACTUAL element** to get the real rendered values. Compare against the reference element side-by-side. This is step 0 — before hypothesizing.
+2. **When a visual fix doesn't work after 1 rebuild, DOM-probe again** to see what actually changed. Never try a second code fix without re-probing.
+3. **Inside rainbow wrappers, NEVER use ADS surface tokens for inner pill background.** Always hardcode . The wrapper IS the design element; the pill just needs to be opaque.
+4. **Check the element's current STATE (disabled/hover/active/idle)** before fixing — each state branch may use a different background value.
+
+**Meta-rule (NEW):** When any fix takes >3 iterations, STOP and write an RCA before the next attempt. The RCA must: (a) list what was tried, (b) identify what was NOT measured, (c) identify the correct diagnostic step that should have been step 1. Log as a CLAUDE.md lesson immediately.
+
+**Severity:** P0 (process — 6 iterations for a background color fix is unacceptable; the DOM probe should have been step 1)
+
+**Files fixed (9):** AIIntelligenceButton.tsx, CatyRainbowCTA.tsx, ImproveIssueDropdown.tsx, ImproveButton.tsx, RecommendedPanel.tsx, SummarizeDigestModal.tsx, AssignedPanel.tsx, ReplyComposer.tsx, EditableAssignee.tsx, MicButton.tsx
+**Commits:** eb233ccf1, 832f795a3, 28ec2bc09, 55dfb65a7, 3d74bfecd, bb307a987, 9b790fff3

@@ -1,7 +1,8 @@
 import { useState, useMemo, useCallback } from 'react';
 import { X, FileText, Search, Inbox, Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw } from '@/lib/atlaskit-icons';
 import { Sheet, SheetPortal, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import * as SheetPrimitive from "@radix-ui/react-dialog";
+// Migrated: radix dialog removed
+import Drawer from "@atlaskit/drawer";
 // Checkbox replaced with native <input type="checkbox"> to avoid Radix Dialog event interception
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';

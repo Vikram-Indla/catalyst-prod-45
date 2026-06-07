@@ -9,7 +9,14 @@ import { useTheme } from '@/hooks/useTheme';
 import { getJiraIcon } from '@/components/r360/R360JiraIcons';
 import type { R360WorkItem } from '@/types/r360';
 import { getFromTagClass, getFromTagPrefix } from './helpers';
-import { getChronologyStatusLozengeColors } from './StatusLozenge';
+import { toStatusCategory } from '@/components/ads';
+
+const STATUS_COLORS: Record<string, { background: string; color: string }> = {
+  todo: { background: token('color.background.neutral', 'rgba(9,30,66,0.06)'), color: token('color.text.subtle', '#44546F') },
+  inProgress: { background: token('color.background.information.bold', '#0055CC'), color: token('color.text.inverse', '#FFFFFF') },
+  done: { background: token('color.background.success.bold', '#1F845A'), color: token('color.text.inverse', '#FFFFFF') },
+};
+const getChronologyStatusLozengeColors = (status: string, statusCategory?: string) => STATUS_COLORS[toStatusCategory(statusCategory || status)];
 import { ProjTag, MiniAvatar, CompletedSummaryBar } from './SmallComponents';
 import { QuickSearchInput } from './QuickSearchInput';
 

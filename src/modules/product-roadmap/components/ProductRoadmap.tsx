@@ -10,7 +10,7 @@ import { RoadmapListPanel } from './RoadmapListPanel';
 import { RoadmapTimelinePanel } from './RoadmapTimelinePanel';
 import { RoadmapSwimlanePanel } from './RoadmapSwimlinePanel';
 import { RoadmapLoadingSkeleton } from './RoadmapLoadingSkeleton';
-import { RoadmapEmptyState } from './RoadmapEmptyState';
+import { EmptyState } from '@/components/ads';
 import { RoadmapFilterDialog } from './RoadmapFilterDialog';
 import { RoadmapExportDialog } from './RoadmapExportDialog';
 import { RoadmapDetailPanel } from './RoadmapDetailPanel';
@@ -228,7 +228,7 @@ export function ProductRoadmap({ isFullscreen = false, onToggleFullscreen }: Pro
 
           {/* Main content */}
           {items.length === 0 ? (
-            <RoadmapEmptyState onCreateClick={() => setIsCreateDialogOpen(true)} />
+            <EmptyState header="No roadmap items" description="Add items to build your roadmap" />
           ) : viewMode === 'swimlane' ? (
             <div className="flex flex-1 overflow-hidden">
               <RoadmapSwimlanePanel

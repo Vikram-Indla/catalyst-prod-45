@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { CatyInsightCard } from '@/components/for-you/atlaskit/CatyInsightCard';
 
 const meta: Meta<typeof CatyInsightCard> = {
-  title: 'Enterprise/Caty Insight Card',
+  title: 'Catalyst AI & Feed/Caty Insight Card',
   component: CatyInsightCard,
   parameters: { layout: 'padded' },
 };

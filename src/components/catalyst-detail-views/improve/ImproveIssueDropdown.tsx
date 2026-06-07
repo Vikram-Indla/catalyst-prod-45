@@ -39,7 +39,7 @@ import { ImproveDescriptionDialog } from './ImproveDescriptionDialog';
 import { SuggestChildIssuesDialog } from './SuggestChildIssuesDialog';
 import { LinkSimilarItemsDialog } from './LinkSimilarItemsDialog';
 import { canSuggestChildren, improveTriggerLabel } from './improve-config';
-import { useCatyImprove } from './catyImproveStore';
+import { useCatyImprove, MIN_CONTENT_LENGTH, contentHash } from './catyImproveStore';
 import { useCatySummarize } from './catySummarizeStore';
 import { adfToMarkdown } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToMarkdown';
 import Spinner from '@atlaskit/spinner';
@@ -47,9 +47,9 @@ import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/
 
 type Mode = 'closed' | 'description' | 'children' | 'similar';
 
-/** Truthy if the description has meaningful content (not blank / whitespace-only). */
+/** Truthy if the description has enough content for AI improvement. */
 function hasContent(text: string | null | undefined): boolean {
-  return typeof text === 'string' && text.trim().length > 0;
+  return typeof text === 'string' && text.trim().length >= MIN_CONTENT_LENGTH;
 }
 
 interface ImproveIssueDropdownProps {
@@ -97,6 +97,9 @@ export function ImproveIssueDropdown({
   const [emptyHintPos, setEmptyHintPos] = useState<{ top: number; left: number } | null>(null);
   const emptyHintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startCatyImprove = useCatyImprove((s) => s.start);
+  const stopCatyImprove = useCatyImprove((s) => s.stop);
+  const markImproved = useCatyImprove((s) => s.markImproved);
+  const isAlreadyImproved = useCatyImprove((s) => s.isAlreadyImproved);
   const startSummarize = useCatySummarize((s) => s.start);
   const catyIsImproving = useCatyImprove((s) => s.payload) !== null;
 
@@ -131,11 +134,27 @@ export function ImproveIssueDropdown({
     emptyHintTimerRef.current = setTimeout(() => setEmptyHintPos(null), 4000);
   }, []);
 
+  const [alreadyImprovedHint, setAlreadyImprovedHint] = useState(false);
+
   const handleStartImproveDescription = useCallback(async () => {
     setOpen(false);
     if (!issue?.issue_key) return;
     if (!hasContent(issue.description_text)) {
       showEmptyHint();
+      return;
+    }
+
+    // Hash dedup — refuse to re-improve content that Caty already improved.
+    const descText = issue.description_text ?? '';
+    if (isAlreadyImproved(issue.issue_key, descText)) {
+      const r = triggerRef.current?.getBoundingClientRect();
+      if (r) setEmptyHintPos({ top: r.bottom + 8, left: r.left });
+      setAlreadyImprovedHint(true);
+      if (emptyHintTimerRef.current) clearTimeout(emptyHintTimerRef.current);
+      emptyHintTimerRef.current = setTimeout(() => {
+        setEmptyHintPos(null);
+        setAlreadyImprovedHint(false);
+      }, 4000);
       return;
     }
 
@@ -274,32 +293,32 @@ export function ImproveIssueDropdown({
               icon: 16×16  fill=black  color=rgb(41,42,46)
             No purple anywhere — appearance="subtle" with dark text +
             dark icon. The earlier "subtle discovery" was fabricated. */}
-        <div style={{ display: 'inline-flex', padding: 2, borderRadius: 20, background: 'conic-gradient(from 0deg, #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg, #00C9FF 180deg, #92FE9D 240deg, #FFD700 300deg, #FF3CAC 360deg)' }}>
+        <div style={{ display: 'inline-flex', padding: 3, borderRadius: 20, background: 'conic-gradient(from 0deg, #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg, #00C9FF 180deg, #92FE9D 240deg, #FFD700 300deg, #FF3CAC 360deg)' }}>
           <button
             ref={triggerRef}
             type="button"
-            onClick={catyIsImproving ? undefined : () => setOpen((o) => !o)}
+            onClick={catyIsImproving ? () => stopCatyImprove() : () => setOpen((o) => !o)}
             aria-haspopup="menu"
             aria-expanded={open}
-            aria-label={catyIsImproving ? 'Caty is thinking...' : triggerLabel}
+            aria-label={catyIsImproving ? 'Stop Caty' : triggerLabel}
             aria-busy={catyIsImproving || undefined}
-            disabled={catyIsImproving}
+
             data-testid="catalyst-improve-issue-dropdown--trigger"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              height: 32, padding: '0 14px', borderRadius: 18,
+              height: 32, padding: '0 14px', borderRadius: 17,
               border: 'none', outline: 'none', appearance: 'none',
-              background: catyIsImproving ? 'var(--ds-background-disabled, #F1F2F4)' : 'var(--ds-surface, #FFFFFF)',
+              background: '#FFFFFF',
               color: 'var(--ds-text, #172B4D)',
-              cursor: catyIsImproving ? 'not-allowed' : 'pointer',
+              cursor: 'pointer',
               fontSize: 12, fontWeight: 600,
               fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
               whiteSpace: 'nowrap',
               lineHeight: 1,
               transition: 'background 0.15s',
             }}
-            onMouseEnter={(e) => { if (!catyIsImproving) (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-hovered, #F1F2F4)'; }}
-            onMouseLeave={(e) => { if (!catyIsImproving) (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#F1F2F4'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#FFFFFF'; }}
           >
             {catyIsImproving ? (
               <Spinner size="small" />
@@ -309,7 +328,7 @@ export function ImproveIssueDropdown({
                 <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" fill="url(#iid-rainbow)" />
               </svg>
             )}
-            {catyIsImproving ? 'Thinking...' : triggerLabel}
+            {catyIsImproving ? 'Stop' : triggerLabel}
           </button>
         </div>
 
@@ -435,7 +454,9 @@ export function ImproveIssueDropdown({
             pointerEvents: 'none',
           }}
         >
-          First enter a description to improve it with Caty AI
+          {alreadyImprovedHint
+            ? 'This description has already been improved by Caty'
+            : `Add at least ${MIN_CONTENT_LENGTH} characters before improving with Caty AI`}
         </div>,
         document.body,
       )}

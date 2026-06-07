@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCommitteeQueueView } from '@/hooks/useIncidentHub';
 import { SeverityChip } from './components/SeverityChip';
-import { StatusLozenge } from './components/StatusLozenge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 
 export default function CommitteeQueuePage() {
   const { isDark } = useTheme();

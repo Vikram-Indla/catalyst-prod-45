@@ -15,7 +15,7 @@ import { HeatmapSummaryDashboard } from './HeatmapSummaryDashboard';
 import { EnhancedHeatmapGrid } from './EnhancedHeatmapGrid';
 import { EnhancedHeatmapLegend } from './EnhancedHeatmapLegend';
 import { KeyboardShortcutsPanel } from './KeyboardShortcutsPanel';
-import { HeatmapEmptyState } from './HeatmapEmptyState';
+import { EmptyState } from '@/components/ads';
 import { HeatmapErrorState } from './HeatmapErrorState';
 import { CellDetailPanel } from './CellDetailPanel';
 import { HeatmapContextMenu } from './HeatmapContextMenu';
@@ -222,13 +222,9 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
   if (data.resources.length === 0) {
     return (
       <div className={cn("rounded-lg border border-border bg-card", className)}>
-        <HeatmapEmptyState
-          onAddResource={() => {
-            catalystToast.info('Add resource feature coming soon');
-          }}
-          onImportData={() => {
-            catalystToast.info('Import data feature coming soon');
-          }}
+        <EmptyState header="No capacity data" description="Add resources or import data to get started"
+          
+          
         />
       </div>
     );
@@ -261,13 +257,13 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
             onClose={() => setSelectedCell(null)}
             onResolveConflict={() => {
               catalystToast.info('Conflict resolution feature coming soon');
-            }}
+            
             onAddAllocation={(percentage, projectName) => {
               catalystToast.info(`Adding ${percentage}% allocation to ${projectName}`);
-            }}
+            
             onEditAllocation={(id) => {
               catalystToast.info(`Editing allocation ${id}`);
-            }}
+            
           />
         )}
       </AnimatePresence>

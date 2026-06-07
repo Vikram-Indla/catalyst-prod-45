@@ -29,7 +29,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useIncidentListView, useIncidentStats } from '@/hooks/useIncidentHub';
 import { useTheme } from '@/hooks/useTheme';
-import { StatusLozenge } from './components/StatusLozenge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { SeverityChip } from './components/SeverityChip';
 import { PriorityChip } from './components/PriorityChip';
 import { NewIncidentModal } from './components/NewIncidentModal';

@@ -1,7 +1,7 @@
 import { useState, useMemo, lazy, Suspense } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { Search, ChevronLeft, ChevronRight, Filter, Download, List, LayoutGrid, Maximize2, Minimize2, Loader2 } from '@/lib/atlaskit-icons';
-import { StatusBadge } from '@/components/release/StatusBadge';
+import { StatusLozenge as StatusBadge } from '@/components/ui/StatusLozenge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';

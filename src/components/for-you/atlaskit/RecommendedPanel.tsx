@@ -493,7 +493,7 @@ function FeedSection({
           <div
             style={{
               display: 'inline-flex',
-              padding: 2,
+              padding: 3,
               borderRadius: 20,
               background: ASK_CATY_RAINBOW,
             }}
@@ -509,8 +509,8 @@ function FeedSection({
                 height: 28,
                 padding: '0 12px',
                 border: 'none',
-                borderRadius: 18,
-                background: token('elevation.surface', '#FFFFFF'),
+                borderRadius: 17,
+                background: '#FFFFFF',
                 cursor: 'pointer',
                 color: token('color.text', '#172B4D'),
                 fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
@@ -519,10 +519,10 @@ function FeedSection({
                 lineHeight: 1,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = token('elevation.surface.hovered', '#F1F2F4');
+                e.currentTarget.style.background = '#F1F2F4';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = token('elevation.surface', '#FFFFFF');
+                e.currentTarget.style.background = '#FFFFFF';
               }}
             >
               <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
@@ -1377,8 +1377,8 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
       <div
         style={{
           display: 'inline-flex',
-          padding: 2,
-          borderRadius: 5,
+          padding: 3,
+          borderRadius: 20,
           background: ASK_CATY_RAINBOW,
         }}
       >
@@ -1394,13 +1394,13 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            padding: '4px 8px',
-            borderRadius: 3,
+            padding: '0 10px',
+            borderRadius: 17,
             font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', '#172B4D'),
             background: phase === 'loading'
-              ? token('color.background.disabled', '#F1F2F4')
-              : token('elevation.surface', '#FFFFFF'),
+              ? '#FFFFFF'
+              : '#FFFFFF',
           }}
         >
           {phase === 'loading' ? (

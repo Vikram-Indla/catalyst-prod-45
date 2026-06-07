@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { CatyRainbowCTA } from '@/components/for-you/atlaskit/CatyRainbowCTA';
 
 const meta: Meta<typeof CatyRainbowCTA> = {
-  title: 'Enterprise/Caty Rainbow CTA',
+  title: 'Catalyst AI & Feed/Caty Rainbow CTA',
   component: CatyRainbowCTA,
   parameters: { layout: 'padded' },
 };

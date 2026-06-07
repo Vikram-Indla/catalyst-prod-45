@@ -1,28 +1,30 @@
 /**
- * KanbanAvatar — Reusable avatar component for kanban board.
- * Resolution order: local hashed asset → external url prop → @atlaskit/avatar initials.
+ * KanbanAvatar — thin wrapper over CatalystAvatar for kanban board.
+ * Maps numeric px size to Atlaskit size tokens.
  */
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import type { CatalystAvatarSize } from '@/components/shared/CatalystAvatar';
 import { resolveAvatarUrl } from '@/lib/avatars';
-import type { KanbanThemeTokens } from './kanban-tokens';
+
+function pxToSize(px: number): CatalystAvatarSize {
+  if (px <= 16) return 'xsmall';
+  if (px <= 24) return 'small';
+  if (px <= 32) return 'medium';
+  return 'large';
+}
 
 export function KanbanAvatar({ name, url, size = 24 }: {
   name?: string | null;
   url?: string | null;
   size?: number;
-  tk?: KanbanThemeTokens;
+  tk?: any;
 }) {
   const src = resolveAvatarUrl(name ?? null) ?? url ?? undefined;
-  // Map numeric size to nearest Atlaskit Avatar size token.
-  const akSize = size <= 16 ? 'xsmall' : size <= 24 ? 'small' : size <= 32 ? 'medium' : 'large';
-
   return (
-    <span
-      className="flex-shrink-0"
-      style={{ width: size, height: size, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-      title={name || undefined}
-    >
-      <Avatar size={akSize as any} name={name ?? 'Unassigned'} src={src} appearance="circle" />
-    </span>
+    <CatalystAvatar
+      name={name}
+      src={src}
+      size={pxToSize(size)}
+    />
   );
 }

@@ -26,6 +26,11 @@ import { useUserRole } from '@/hooks/useUserRole';
 import { useAuth } from '@/hooks/useAuth';
 import { archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { Checkbox as AkCheckbox } from '@atlaskit/checkbox';
+import AkArchiveBoxIcon from '@atlaskit/icon/core/archive-box';
+import AkEditIcon from '@atlaskit/icon/core/edit';
+import AkCloseIcon from '@atlaskit/icon/utility/cross';
+import type { ForYouRowAction } from './ForYouRow';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { WorkItem, HubType, WorkMode, WorkGroup } from '@/hooks/useForYouData';
@@ -292,10 +297,11 @@ function ArchivedRow({ item }: {
 }
 
 // ─── Active row with countdown timer ────────────────────────────────────────
-function ActiveAgeingRow({ item, onSelect, isArchivingSoon }: {
+function ActiveAgeingRow({ item, onSelect, isArchivingSoon, actions }: {
   item: WorkItem & { daysOpen: number; jiraCreatedAt?: string };
   onSelect: (item: WorkItem) => void;
   isArchivingSoon?: boolean;
+  actions?: ForYouRowAction[];
 }) {
   return (
     <div style={{
@@ -303,7 +309,7 @@ function ActiveAgeingRow({ item, onSelect, isArchivingSoon }: {
         ? `3px solid ${token('color.border.warning', '#FF991F')}`
         : undefined,
     }}>
-      <ForYouRow item={item} onSelect={onSelect} />
+      <ForYouRow item={item} onSelect={onSelect} actions={actions} />
       <div style={{
         paddingLeft: token('space.600', '48px'),
         paddingBottom: token('space.100', '8px'),
@@ -326,17 +332,40 @@ function ActiveAgeingRow({ item, onSelect, isArchivingSoon }: {
 }
 
 // ─── Main component ─────────────────────────────────────────────────────────
-export default function AgeingPanel() {
-  const { data: ageingItems, isLoading, isError, refetch } = useAgeingItems();
-  const jiraBaseUrl = useJiraBaseUrl();
-  const { role } = useUserRole();
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const isAdmin = role === 'admin';
+export interface AgeingPanelViewProps {
+  ageingItems: AgeingItem[] | undefined;
+  isLoading: boolean;
+  isError: boolean;
+  jiraBaseUrl: string | null;
+  isAdmin: boolean;
+  onUnarchive: (issueKey: string) => void;
+  onArchive: (issueKey: string) => Promise<void>;
+  onArchiveBatch: (issueKeys: string[]) => Promise<void>;
+  onNavigateArchives: () => void;
+  onOpenDetail: (item: WorkItem) => void;
+  onOpenDetailByKey?: (issueKey: string) => void;
+}
+
+export function AgeingPanelView({
+  ageingItems, isLoading, isError, jiraBaseUrl, isAdmin,
+  onUnarchive, onArchive, onArchiveBatch, onNavigateArchives, onOpenDetail, onOpenDetailByKey,
+}: AgeingPanelViewProps) {
   const [search, setSearch] = useState('');
   const [collapsedSections, setCollapsedSections] = useState<Set<AgeBracket>>(
     new Set(['ninetyPlus', 'sixtyNinety'])
   );
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [archiving, setArchiving] = useState(false);
+
+  const toggleSelect = useCallback((issueKey: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(issueKey)) next.delete(issueKey); else next.add(issueKey);
+      return next;
+    });
+  }, []);
+
+  const clearSelection = useCallback(() => setSelectedIds(new Set()), []);
 
   const toggleSection = useCallback((bracket: AgeBracket) => {
     setCollapsedSections(prev => {
@@ -345,23 +374,6 @@ export default function AgeingPanel() {
       return n;
     });
   }, []);
-
-  const handleUnarchive = useCallback(async (issueKey: string) => {
-    if (!user?.id || !isAdmin) {
-      alert('Only admins can unarchive items. Contact your administrator.');
-      return;
-    }
-    try {
-      const { error } = await supabase.rpc('unarchive_issue', {
-        p_issue_key: issueKey,
-        p_user_id: user.id,
-      });
-      if (error) throw error;
-      refetch();
-    } catch (e: any) {
-      alert(e.message || 'Failed to unarchive.');
-    }
-  }, [user?.id, isAdmin, refetch]);
 
   const grouped = useMemo(() => {
     if (!ageingItems) return [];
@@ -404,13 +416,7 @@ export default function AgeingPanel() {
       .filter(g => g.items.length > 0);
   }, [ageingItems, search]);
 
-  const handleSelect = useCallback((item: WorkItem) => {
-    useGlobalSearchStore.getState().openDetail({
-      id: item.id,
-      itemType: item.issueType,
-      projectKey: item.projectKey,
-    });
-  }, []);
+  const handleSelect = onOpenDetail;
 
   if (isLoading) {
     return (
@@ -457,13 +463,13 @@ export default function AgeingPanel() {
             onChange={(e: any) => setSearch(e.target.value)}
           />
         </div>
-        <Button appearance="default" onClick={() => navigate('/for-you/archives')}>
+        <Button appearance="default" onClick={onNavigateArchives}>
           Archive manager
         </Button>
       </div>
 
       {/* Sections */}
-      <CatyAgeingTriage items={ageingItems ?? []} onOpenDetail={(key) => useGlobalSearchStore.getState().openDetail({ id: key })} />
+      <CatyAgeingTriage items={ageingItems ?? []} onOpenDetail={onOpenDetailByKey} />
       {grouped.map(({ bracket, label, items, isArchived }) => {
         const collapsed = collapsedSections.has(bracket);
         return (
@@ -489,14 +495,51 @@ export default function AgeingPanel() {
                         item={a}
                       />
                     ))
-                  : items.map(a => (
-                      <ActiveAgeingRow
-                        key={a.id}
-                        item={Object.assign(ageingToWorkItem(a, jiraBaseUrl), { daysOpen: a.days_open, jiraCreatedAt: a.jira_created_at })}
-                        onSelect={handleSelect}
-                        isArchivingSoon={bracket === 'archivingSoon'}
-                      />
-                    ))
+                  : items.map(a => {
+                      const workItem = Object.assign(ageingToWorkItem(a, jiraBaseUrl), { daysOpen: a.days_open, jiraCreatedAt: a.jira_created_at });
+                      const rowActions: ForYouRowAction[] = [
+                        {
+                          id: 'archive',
+                          label: 'Archive',
+                          icon: <AkArchiveBoxIcon label="" size="small" />,
+                          onClick: () => onArchive(a.issue_key),
+                        },
+                        {
+                          id: 'view',
+                          label: 'View details',
+                          icon: <AkEditIcon label="" size="small" />,
+                          onClick: () => handleSelect(workItem),
+                        },
+                      ];
+                      return (
+                        <div key={a.id} style={{ display: 'flex', alignItems: 'flex-start' }}>
+                          <div
+                            style={{
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              width: 32, minHeight: 56, flexShrink: 0,
+                              paddingLeft: token('space.100', '8px'),
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <AkCheckbox
+                              isChecked={selectedIds.has(a.issue_key)}
+                              onChange={() => toggleSelect(a.issue_key)}
+                              label=""
+                              aria-label={`Select ${a.issue_key}`}
+                              name={`select-${a.issue_key}`}
+                            />
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <ActiveAgeingRow
+                              item={workItem}
+                              onSelect={handleSelect}
+                              isArchivingSoon={bracket === 'archivingSoon'}
+                              actions={rowActions}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })
                 }
               </div>
             )}
@@ -512,6 +555,151 @@ export default function AgeingPanel() {
           No items match "{search}".
         </div>
       )}
+
+      {/* Bulk archive bar — appears when 1+ items selected */}
+      {selectedIds.size > 0 && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 9999,
+            animation: 'bau-bulk-slide-up 200ms cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
+        >
+          <div
+            role="toolbar"
+            aria-label="Bulk archive actions"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0,
+              height: 44,
+              background: token('color.background.neutral.bold', '#44546F'),
+              color: token('color.text.inverse', '#FFFFFF'),
+              borderRadius: 8,
+              boxShadow: token('elevation.shadow.overlay', '0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12)'),
+              overflow: 'hidden',
+              fontSize: 14,
+            }}
+          >
+            <button
+              type="button"
+              onClick={clearSelection}
+              aria-label="Clear selection"
+              style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: 44, height: 44, background: 'transparent', border: 'none',
+                color: token('color.text.inverse', '#FFFFFF'), cursor: 'pointer',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <AkCloseIcon label="" size="small" />
+            </button>
+            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+            <span style={{ padding: '0 16px', fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap', userSelect: 'none' }}>
+              {selectedIds.size} {selectedIds.size === 1 ? 'item' : 'items'} selected
+            </span>
+            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+            <button
+              type="button"
+              disabled={archiving}
+              onClick={async () => {
+                setArchiving(true);
+                try {
+                  await onArchiveBatch(Array.from(selectedIds));
+                  clearSelection();
+                } finally {
+                  setArchiving(false);
+                }
+              }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                height: 44, padding: '0 16px', background: 'transparent', border: 'none',
+                color: token('color.text.inverse', '#FFFFFF'), cursor: archiving ? 'wait' : 'pointer',
+                fontSize: 14, fontWeight: 500, fontFamily: 'inherit',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <AkArchiveBoxIcon label="" size="small" />
+              {archiving ? 'Archiving…' : 'Archive'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
+  );
+}
+
+export default function AgeingPanel() {
+  const { data: ageingItems, isLoading, isError, refetch } = useAgeingItems();
+  const jiraBaseUrl = useJiraBaseUrl();
+  const { role } = useUserRole();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const isAdmin = role === 'admin';
+
+  const handleUnarchive = useCallback(async (issueKey: string) => {
+    if (!user?.id || !isAdmin) {
+      alert('Only admins can unarchive items. Contact your administrator.');
+      return;
+    }
+    try {
+      const { error } = await supabase.rpc('unarchive_issue', {
+        p_issue_key: issueKey,
+        p_user_id: user.id,
+      });
+      if (error) throw error;
+      refetch();
+    } catch (e: any) {
+      alert(e.message || 'Failed to unarchive.');
+    }
+  }, [user?.id, isAdmin, refetch]);
+
+  const handleOpenDetail = useCallback((item: WorkItem) => {
+    useGlobalSearchStore.getState().openDetail({
+      id: item.id,
+      itemType: item.issueType,
+      projectKey: item.projectKey,
+    });
+  }, []);
+
+  return (
+    <AgeingPanelView
+      ageingItems={ageingItems}
+      isLoading={isLoading}
+      isError={isError}
+      jiraBaseUrl={jiraBaseUrl}
+      isAdmin={isAdmin}
+      onUnarchive={handleUnarchive}
+      onArchive={async (issueKey: string) => {
+        try {
+          await archiveIssue(issueKey, user?.id);
+          refetch();
+        } catch (e: any) {
+          alert(e.message || 'Failed to archive.');
+        }
+      }}
+      onArchiveBatch={async (issueKeys: string[]) => {
+        const errors: string[] = [];
+        for (const key of issueKeys) {
+          try {
+            await archiveIssue(key, user?.id);
+          } catch (e: any) {
+            errors.push(key);
+          }
+        }
+        refetch();
+        if (errors.length > 0) {
+          alert(`Failed to archive: ${errors.join(', ')}`);
+        }
+      }}
+      onNavigateArchives={() => navigate('/for-you/archives')}
+      onOpenDetail={handleOpenDetail}
+      onOpenDetailByKey={(key) => useGlobalSearchStore.getState().openDetail({ id: key })}
+    />
   );
 }
