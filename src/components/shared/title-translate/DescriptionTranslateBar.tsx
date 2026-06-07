@@ -71,23 +71,7 @@ export function DescriptionTranslateBar({
           <Spinner size="small" />
           <span>Translating…</span>
         </span>
-      ) : isTranslated ? (
-        <span className="ttw-translated-chip">
-          <span className="ttw-translated-chip__lang">{langLabel}</span>
-          <span>Translated</span>
-          <span className="ttw-translated-chip__sep" aria-hidden="true">·</span>
-          <button
-            type="button"
-            className="ttw-translated-chip__revert"
-            onMouseDown={(e) => e.stopPropagation()}
-            onClick={handleRevert}
-            aria-label="Show original description"
-          >
-            <EditorUndoIcon label="" size="small" />
-            Show original
-          </button>
-        </span>
-      ) : (
+      ) : !isTranslated ? (
         <button
           type="button"
           className="ttw-translate-chip"

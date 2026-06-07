@@ -91,23 +91,7 @@ export function TitleTranslateWrapper({
               <Spinner size="small" />
               <span>Translating…</span>
             </span>
-          ) : showingTranslation ? (
-            <span className="ttw-translated-chip">
-              <span className="ttw-translated-chip__lang">{langLabel}</span>
-              <span>Translated</span>
-              <span className="ttw-translated-chip__sep" aria-hidden="true">·</span>
-              <button
-                type="button"
-                className={cn("ttw-translated-chip__revert", buttonClassName)}
-                onMouseDown={(e) => e.stopPropagation()}
-                onClick={handleShowOriginal}
-                aria-label="Show original text"
-              >
-                <EditorUndoIcon label="" size="small" />
-                Show original
-              </button>
-            </span>
-          ) : isArabic ? (
+          ) : isArabic && !showingTranslation ? (
             <button
               type="button"
               className={cn("ttw-translate-chip", buttonClassName)}
