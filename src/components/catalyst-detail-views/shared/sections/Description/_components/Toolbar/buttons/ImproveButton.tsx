@@ -46,7 +46,7 @@ export function ImproveButton({
           border: 'none',
           borderRadius: 17,
           background: disabled && !isImproving
-            ? token('color.background.disabled', '#F1F2F4')
+            ? '#FFFFFF'
             : hover
               ? '#F1F2F4'
               : '#FFFFFF',
