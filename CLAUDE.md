@@ -1451,6 +1451,47 @@ $$;
 The function owner is not subject to RLS (no FORCE ROW LEVEL SECURITY), so its internal read bypasses the policy and breaks the cycle. Keep the `author_id = auth.uid()` short-circuit on message SELECT (the PostgREST v12 INSERT+RETURNING trap, 2026-05-29). ALWAYS run a 2-user RLS isolation test before declaring any new RLS surface done — it is the only reliable way to catch both recursion and cross-user leaks. Seed a private row owned by user A, simulate user B (non-member) expecting 0 rows, simulate A expecting their rows, then clean up.
 **Fix:** Migration `20260603000100_chat_rls_recursion_fix.sql` — added `public.chat_is_member(uuid, uuid)` and rewrote the members/conversations/messages policies to call it. Verified live on prod (`lmqwtldpfacrrlvdnmld`): b_nonmember_sees=0, a_member_sees=1.
 **Severity:** P0 (self-referential membership RLS makes the entire feature unreadable — caught only because the 2-user test was mandatory).
+---
+
+## 📂 REPO PATH — APOSTROPHE IN PATH (Non-Negotiable)
+
+**The working directory / repo root is:**
+
+```
+/Users/vikramindla/Documents/Documents - vikram's MacBook Pro/GitHub/catalyst-prod-45
+```
+
+The path contains an apostrophe (`'`) in "vikram's". This breaks naive shell quoting. Rules:
+
+1. **Always use double quotes** around the path in shell commands: `"/Users/vikramindla/Documents/Documents - vikram's MacBook Pro/GitHub/catalyst-prod-45"`
+2. **Prefer `$(pwd)`** over typing the full path — the working directory is already set correctly at session start.
+3. **For git:** use `git -C "$(pwd)" ...` — never `cd '/path/with/apostrophe' && git ...`
+4. **Subagents:** pass the repo path via prompt context, never expect them to discover it.
+
+This applies to ALL agents, skills, and subagents. Every implementation conversation starts in this directory.
+
+---
+
+## 🔍 CHROME MCP TAB REUSE — CHECK EXISTING TABS FIRST (Non-Negotiable, P1)
+
+**All visual verification (design-critique, jira-compare, verify, DOM/screenshot probes) must reuse existing Chrome tabs before creating new ones.**
+
+### The Rule
+
+1. **First:** call `tabs_context_mcp(createIfEmpty: false)` to discover existing tabs
+2. **Check last 2 tabs** — if one already has the target URL (e.g. `localhost:8080` or the page being verified), reuse it via `navigate` on that tab
+3. **Only create a new tab** (`tabs_create_mcp`) if no existing tab is usable
+
+### Why
+
+Opening new tabs for every verification wastes time. The dev server or target page is almost always already open in a recent tab. Tab sprawl slows down probing and confuses tab management.
+
+### Applies to
+
+All agents and skills that touch Chrome MCP: main session, catalyst-agent, design-critique, design-intelligence, jira-compare, verify, code-review, preflight, any subagent doing screenshot or DOM probes.
+
+**Severity:** P1 — Vikram directive. Tab reuse saves significant verification time per session.
+
 
 ---
 
