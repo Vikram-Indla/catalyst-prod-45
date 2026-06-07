@@ -204,7 +204,7 @@ export default function TimeInStatusFullscreenModal({
                 justifyContent: 'space-between',
                 gap: token('space.200', '16px'),
                 padding: '8px 0 16px 0',
-                borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
               }}
             >
               <div style={{ display: 'flex', gap: 4, overflowX: 'auto', minWidth: 0 }}>
@@ -221,10 +221,10 @@ export default function TimeInStatusFullscreenModal({
                         gap: 6,
                         height: 32,
                         padding: '0 14px',
-                        fontSize: 13,
+                        fontSize: 14,
                         fontWeight: active ? 600 : 500,
                         borderRadius: 'var(--ds-border-radius, 4px)',
-                        border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`,
+                        border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
                         background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
                         color: active ? 'var(--ds-text-selected, #0055CC)' : 'var(--ds-text-subtle, #505258)',
                         cursor: 'pointer',
@@ -251,7 +251,7 @@ export default function TimeInStatusFullscreenModal({
                         fontSize: 12,
                         fontWeight: active ? 600 : 500,
                         borderRadius: 'var(--ds-border-radius, 4px)',
-                        border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`,
+                        border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
                         background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
                         color: active ? 'var(--ds-text-selected, #0055CC)' : 'var(--ds-text-subtle, #505258)',
                         cursor: 'pointer',
@@ -300,7 +300,7 @@ export default function TimeInStatusFullscreenModal({
                     width: '100%',
                     borderCollapse: 'separate',
                     borderSpacing: 0,
-                    fontSize: 13,
+                    fontSize: 14,
                   }}
                 >
                   <thead>
@@ -312,8 +312,8 @@ export default function TimeInStatusFullscreenModal({
                           width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                           textAlign: 'left',
                           padding: '10px 12px',
-                          borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
-                          borderRight: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                          borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                           fontWeight: 600,
                           color: token('color.text', '#292A2E'),
                         }}
@@ -327,8 +327,8 @@ export default function TimeInStatusFullscreenModal({
                             minWidth: STATUS_COL_MIN,
                             textAlign: 'left',
                             padding: '10px 12px',
-                            borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
-                            borderRight: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                            borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                            borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                           }}
                         >
                           <StatusLozenge status={s.category === 'in_progress' ? 'inProgress' : s.category}>
@@ -341,7 +341,7 @@ export default function TimeInStatusFullscreenModal({
                           minWidth: 110,
                           padding: '10px 12px',
                           textAlign: 'right',
-                          borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
                           fontWeight: 600,
                           color: token('color.text', '#292A2E'),
                           background: token('elevation.surface', '#FFFFFF'),
@@ -364,10 +364,10 @@ export default function TimeInStatusFullscreenModal({
                           style={{
                             position: 'sticky', left: 0,
                             background: token('elevation.surface', '#FFFFFF'),
-                            boxShadow: '1px 0 0 0 ' + token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))'),
+                            boxShadow: '1px 0 0 0 ' + token('color.border', '#DFE1E6'),
                             padding: '8px 12px',
-                            borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
-                            borderRight: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                            borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                            borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                             width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                           }}
                         >
@@ -378,7 +378,7 @@ export default function TimeInStatusFullscreenModal({
                                 display: 'inline-flex', alignItems: 'center', gap: 6,
                                 color: token('color.link', '#0C66E4'),
                                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                                fontSize: 13, fontWeight: 500, whiteSpace: 'nowrap',
+                                fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap',
                                 flexShrink: 0,
                               }}
                             >
@@ -410,8 +410,8 @@ export default function TimeInStatusFullscreenModal({
                               style={{
                                 minWidth: STATUS_COL_MIN,
                                 padding: '8px 12px',
-                                borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
-                                borderRight: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                                borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                                borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                                 background: categoryBg(s.category, ms),
                                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                                 fontSize: 12,
@@ -459,9 +459,9 @@ export default function TimeInStatusFullscreenModal({
                           style={{
                             padding: '8px 12px',
                             textAlign: 'right',
-                            borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                            borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
                             fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                            fontSize: 13,
+                            fontSize: 14,
                             fontWeight: 600,
                             color: token('color.text', '#292A2E'),
                             background: totalBg(r.totalMs, totalMax),

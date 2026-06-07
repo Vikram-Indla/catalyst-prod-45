@@ -34,13 +34,17 @@ import WandIcon from '@atlaskit/icon/core/magic-wand';
 import CommentIcon from '@atlaskit/icon/core/comment';
 import ListBulletedIcon from '@atlaskit/icon/core/list-bulleted';
 import SearchIcon from '@atlaskit/icon/core/search';
+import PageIcon from '@atlaskit/icon/core/page';
 import { token } from '@atlaskit/tokens';
 import { ImproveDescriptionDialog } from './ImproveDescriptionDialog';
 import { SuggestChildIssuesDialog } from './SuggestChildIssuesDialog';
 import { LinkSimilarItemsDialog } from './LinkSimilarItemsDialog';
-import { canSuggestChildren, improveTriggerLabel } from './improve-config';
+import { canSuggestChildren, canGenerateStories, improveTriggerLabel } from './improve-config';
 import { useCatyImprove, MIN_CONTENT_LENGTH, contentHash } from './catyImproveStore';
 import { useCatySummarize } from './catySummarizeStore';
+import { useStoryGeneration } from '../epic/useStoryGeneration';
+import { ArtefactPickerModal } from '../epic/ArtefactPickerModal';
+import { StoryProposalModal } from '../epic/StoryProposalModal';
 import { adfToMarkdown } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToMarkdown';
 import Spinner from '@atlaskit/spinner';
 import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
@@ -299,6 +303,57 @@ export function ImproveIssueDropdown({
   const issueType = issue?.issue_type ?? null;
   const triggerLabel = improveTriggerLabel(issueType);
   const showSuggestChildren = canSuggestChildren(issueType);
+  const showGenerateStories = canGenerateStories(issueType);
+
+  // Story generation flow (Epic only)
+  const storyGen = useStoryGeneration();
+
+  useEffect(() => {
+    if (showGenerateStories && issue?.issue_key) {
+      storyGen.checkDisabled(issue.issue_key);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showGenerateStories, issue?.issue_key]);
+
+  const storyGenDescriptionText = React.useMemo(() => {
+    if (!showGenerateStories) return '';
+    if (issue?.description_adf) {
+      try { return adfToMarkdown(issue.description_adf as any); } catch { return issue?.description_text ?? ''; }
+    }
+    return issue?.description_text ?? '';
+  }, [showGenerateStories, issue?.description_adf, issue?.description_text]);
+
+  const handleGenerateStories = useCallback(() => {
+    setOpen(false);
+    if (!issue?.issue_key || !issue?.summary) return;
+    if (storyGen.maxGenerationsReached) {
+      import('@/lib/catalystToast').then(m => m.catalystToast.warning('Generation limit reached', 'Maximum 2 story generations per epic.'));
+      return;
+    }
+    storyGen.openPicker(issue.issue_key, issue.summary, storyGenDescriptionText);
+  }, [issue?.issue_key, issue?.summary, storyGenDescriptionText, storyGen]);
+
+  const handleStoryGenGenerate = useCallback(async (selectedSources: string[], attachmentIds: string[]) => {
+    if (!issue?.issue_key || !issue?.summary) return;
+    import('@/lib/catalystToast').then(m => m.catalystToast.info('Generating stories from your epic documentation…'));
+    await storyGen.generate({
+      epicKey: issue.issue_key,
+      epicSummary: issue.summary,
+      descriptionText: storyGenDescriptionText ?? '',
+      attachmentIds,
+      selectedSources,
+    });
+  }, [issue?.issue_key, issue?.summary, storyGenDescriptionText, storyGen]);
+
+  const handleStoryGenCreateSelected = useCallback(async () => {
+    if (!issue?.issue_key || !issue?.project_key) return;
+    await storyGen.createSelected({
+      parentIssueKey: issue.issue_key,
+      parentSource: (issue.source as 'jira' | 'catalyst') ?? 'catalyst',
+      projectKey: issue.project_key,
+      projectId: issue.project_id ?? undefined,
+    });
+  }, [issue, storyGen]);
 
   const openMode = (m: Mode) => {
     setOpen(false);
@@ -469,6 +524,31 @@ export function ImproveIssueDropdown({
               <SearchIcon size="small" primaryColor={token('color.icon.subtle', '#6B6E76')} />
               <span style={{ flex: 1 }}>Link similar work items</span>
             </button>
+
+            {showGenerateStories && (
+              <button
+                type="button"
+                role="menuitem"
+                data-testid="catalyst-improve-issue-dropdown.generate-stories"
+                onClick={handleGenerateStories}
+                disabled={storyGen.isDisabled || storyGen.maxGenerationsReached}
+                style={{
+                  ...itemStyle,
+                  opacity: (storyGen.isDisabled || storyGen.maxGenerationsReached) ? 0.5 : 1,
+                  cursor: (storyGen.isDisabled || storyGen.maxGenerationsReached) ? 'not-allowed' : 'pointer',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+              >
+                <PageIcon size="small" primaryColor={token('color.icon.subtle', '#6B6E76')} />
+                <span style={{ flex: 1 }}>Generate stories from docs</span>
+                {storyGen.generationCount > 0 && (
+                  <span style={{ fontSize: 11, color: token('color.text.subtlest', '#6B778C') }}>
+                    {storyGen.generationCount}/2
+                  </span>
+                )}
+              </button>
+            )}
           </div>,
           document.body,
         )}
@@ -541,6 +621,34 @@ export function ImproveIssueDropdown({
         existingLinkedKeys={existingLinkedKeys}
         onLinked={onLinked}
       />
+
+      {showGenerateStories && (
+        <>
+          <ArtefactPickerModal
+            isOpen={storyGen.state === 'selecting'}
+            onClose={storyGen.reset}
+            epicId={issue?.id}
+            epicKey={issue?.issue_key}
+            hasDescription={!!storyGenDescriptionText?.trim()}
+            onGenerate={handleStoryGenGenerate}
+            isGenerating={storyGen.state === 'generating'}
+          />
+          <StoryProposalModal
+            isOpen={storyGen.state === 'reviewing'}
+            onClose={storyGen.reset}
+            proposals={storyGen.proposals}
+            selectedIndices={storyGen.selectedIndices}
+            onToggle={storyGen.toggleSelection}
+            onSelectAll={storyGen.selectAll}
+            onDeselectAll={storyGen.deselectAll}
+            onCreateSelected={handleStoryGenCreateSelected}
+            isCreating={storyGen.state === 'creating'}
+            coveragePercent={storyGen.coveragePercent}
+            existingCount={storyGen.existingCount}
+            epicKey={issue?.issue_key ?? null}
+          />
+        </>
+      )}
     </>
   );
 }

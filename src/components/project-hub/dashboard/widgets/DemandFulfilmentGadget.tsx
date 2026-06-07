@@ -152,7 +152,7 @@ const ragColors: Record<RagState, { dot: string; bg: string; fg: string; border:
   overdue: { dot: '#FF5630', bg: 'var(--ds-background-danger, #FFECEB)', fg: '#AE2A19', border: '#FFB8AC', bar: '#FF5630' },
   risk:    { dot: '#FFAB00', bg: '#FFF7D6', fg: 'var(--ds-text-accent-yellow, #7F5F01)', border: '#F5CD47', bar: '#FFAB00' },
   ontrack: { dot: '#36B37E', bg: '#DCFFF1', fg: 'var(--ds-text-accent-green, #216E4E)', border: '#4BCE97', bar: '#36B37E' },
-  none:    { dot: '#97A0AF', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', fg: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', border: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', bar: '#97A0AF' },
+  none:    { dot: '#97A0AF', bg: 'var(--ds-surface-sunken, #F4F5F7)', fg: 'var(--ds-text-subtlest, #6B778C)', border: 'var(--ds-border, #DFE1E6)', bar: '#97A0AF' },
 };
 
 const computeRag = (targetDate: string | null, threshold: number): { state: RagState; daysLeft: number | null } => {
@@ -716,9 +716,9 @@ const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: num
     return (
       <span
         style={{
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: 500,
-          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+          color: token('color.text.subtle', '#44546F'),
         }}
       >
         No target date
@@ -828,7 +828,7 @@ function SettingsPopupBody({
     fontSize: 11,
     fontWeight: 700,
     letterSpacing: '0.04em',
-    textTransform: 'uppercase' as const,
+    textTransform: 'none' as const,
     color: token('color.text.subtlest', '#626F86'),
     marginBottom: 6,
   };
@@ -912,7 +912,7 @@ function SettingsPopupBody({
         </div>
       )}
 
-      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}` }} />
+      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#DFE1E6')}` }} />
 
       {/* Threshold */}
       <div style={sectionHeadingStyle}>
@@ -931,7 +931,7 @@ function SettingsPopupBody({
         <span>or fewer days remain</span>
       </div>
 
-      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}` }} />
+      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#DFE1E6')}` }} />
 
       {/* Item types */}
       <div style={sectionHeadingStyle}>
@@ -970,7 +970,7 @@ function SettingsPopupBody({
             style={{
               fontSize: 11,
               fontWeight: 700,
-              textTransform: 'uppercase',
+              textTransform: 'none',
               letterSpacing: '0.04em',
               color: token('color.text.subtlest', '#626F86'),
               fontFamily: ATLAS_SANS,
@@ -1059,7 +1059,7 @@ function KpiCell({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 12px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
         minWidth: 0,
       }}
     >
@@ -1067,7 +1067,7 @@ function KpiCell({
         style={{
           fontSize: 11,
           fontWeight: 500,
-          textTransform: 'uppercase',
+          textTransform: 'none',
           letterSpacing: '0.04em',
           color: token('color.text.subtlest', '#626F86'),
           whiteSpace: 'nowrap',
@@ -1124,7 +1124,7 @@ function DemandRowItem({
     });
 
   return (
-    <div style={{ borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}` }}>
+    <div style={{ borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>
       <div
         onClick={onToggle}
         style={{
@@ -1238,7 +1238,7 @@ function DemandRowItem({
           </div>
           <span
             style={{
-              fontSize: 13,
+              fontSize: 14,
               lineHeight: '20px',
               fontWeight: 500,
               fontFamily: ATLAS_SANS,
@@ -1246,7 +1246,7 @@ function DemandRowItem({
               color:
                 pct === 100
                   ? 'var(--ds-text-accent-green-bolder, #216E4E)'
-                  : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                  : token('color.text.subtle', '#44546F'),
               whiteSpace: 'nowrap',
             }}
           >
@@ -1286,7 +1286,7 @@ function DemandRowItem({
                 lineHeight: '16px',
                 fontWeight: 400,
                 fontFamily: ATLAS_SANS,
-                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                color: token('color.text.subtle', '#44546F'),
                 fontStyle: 'italic',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -1341,7 +1341,7 @@ function DemandRowItem({
                   <span
                     title={story.summary}
                     style={{
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: 400,
                       lineHeight: '20px',
                       fontFamily: ATLAS_SANS,
@@ -1364,7 +1364,7 @@ function DemandRowItem({
                       fontSize: 12,
                       lineHeight: '16px',
                       fontFamily: ATLAS_SANS,
-                      color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                      color: token('color.text.subtle', '#44546F'),
                       whiteSpace: 'nowrap',
                     }}
                   >
@@ -1452,7 +1452,7 @@ function DemandRowItem({
                       <span
                         title={epic.summary}
                         style={{
-                          fontSize: 13,
+                          fontSize: 14,
                           lineHeight: '20px',
                           fontWeight: 400,
                           fontFamily: ATLAS_SANS,
@@ -1529,7 +1529,7 @@ function DemandRowItem({
                           <span
                             title={story.summary}
                             style={{
-                              fontSize: 13,
+                              fontSize: 14,
                               fontWeight: 400,
                               lineHeight: '20px',
                               fontFamily: ATLAS_SANS,
@@ -1552,7 +1552,7 @@ function DemandRowItem({
                               fontSize: 12,
                               lineHeight: '16px',
                               fontFamily: ATLAS_SANS,
-                              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                              color: token('color.text.subtle', '#44546F'),
                               whiteSpace: 'nowrap',
                             }}
                           >
@@ -1886,7 +1886,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                 style={{
                   fontSize: 12,
                   fontWeight: 500,
-                  color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                  color: token('color.text.subtle', '#44546F'),
                   marginRight: 4,
                 }}
               >
@@ -1933,14 +1933,14 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           alignItems: 'center',
           gap: 12,
           padding: `10px ${token('space.300', '24px')}`,
-          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
           background: token('elevation.surface.sunken', '#F7F8F9'),
           fontFamily: ATLAS_SANS,
           fontSize: 12,
           fontWeight: 700,
-          textTransform: 'uppercase',
+          textTransform: 'none',
           letterSpacing: '0.04em',
-          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+          color: token('color.text.subtle', '#44546F'),
         }}
       >
         <span />
@@ -2021,7 +2021,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           </div>
 
           {visibleByTab.length > 10 && (
-            <div style={{ padding: '6px 16px', textAlign: 'center', borderTop: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}` }}>
+            <div style={{ padding: '6px 16px', textAlign: 'center', borderTop: `1px solid ${token('color.border', '#DFE1E6')}` }}>
               <button
                 type="button"
                 onClick={() => {
@@ -2066,7 +2066,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           )}
 
           {delivered.length > 0 && (
-            <div style={{ background: token('elevation.surface.sunken', '#F7F8F9'), borderTop: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}` }}>
+            <div style={{ background: token('elevation.surface.sunken', '#F7F8F9'), borderTop: `1px solid ${token('color.border', '#DFE1E6')}` }}>
               <button
                 onClick={() => setDeliveredOpen((v) => !v)}
                 style={{
@@ -2121,7 +2121,7 @@ function DeliveredRow({ row, projectKey }: { row: DemandRow; projectKey: string 
         alignItems: 'center',
         gap: 8,
         padding: '6px 16px',
-        borderTop: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+        borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
         font: token('font.body.small'),
       }}
     >

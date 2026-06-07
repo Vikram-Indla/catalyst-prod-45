@@ -340,11 +340,14 @@ function ProjectDashboardPageInner() {
       testId="project-dashboard-shell"
     >
       {isLoading ? (
-        <div style={{ padding: '12px 16px 16px' }}>
-          <div className="space-y-4 animate-pulse">
+        <div style={{ padding: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div
-              className="h-12 rounded-lg"
-              style={{ background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))') }}
+              style={{
+                height: 48,
+                borderRadius: token('border.radius', '8px'),
+                background: token('color.background.neutral.subtle', '#F1F2F4'),
+              }}
             />
             <div
               style={{
@@ -356,10 +359,11 @@ function ProjectDashboardPageInner() {
               {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-40 rounded-lg"
                   style={{
                     gridColumn: 'span 4',
-                    background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
+                    height: 160,
+                    borderRadius: token('border.radius', '8px'),
+                    background: token('color.background.neutral.subtle', '#F1F2F4'),
                   }}
                 />
               ))}
@@ -367,7 +371,7 @@ function ProjectDashboardPageInner() {
           </div>
         </div>
       ) : (
-        <div style={{ padding: '12px 16px 16px' }}>
+        <div style={{ padding: 16 }}>
           {/* Fiscal-scope disclaimer — sits above the widget grid so any
               count discrepancy ("why does this say 33 when Jira shows 257?")
               is answered before the user has to ask. Always-on; lives at the

@@ -206,9 +206,13 @@ export default function WidgetWrapper({
       aria-label={title}
       data-widget-id={widgetId}
       data-soloed={isSoloed ? 'true' : undefined}
-      className="overflow-hidden flex flex-col min-w-0 w-full max-w-full"
       style={{
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
         minWidth: 0,
+        width: '100%',
+        maxWidth: '100%',
         // Cap soloed width at 1440px so the gadget reads with a
         // measured horizontal rhythm on ultra-wide displays — auto
         // margins below center it. 100% on every other state.
@@ -222,7 +226,7 @@ export default function WidgetWrapper({
         // more deliberate, "card-as-page" feel.
         borderRadius: isSoloed
           ? token('border.radius.200', '8px')
-          : token('border.radius', '8px'),
+          : token('border.radius', '3px'),
         outline: isEditing ? `1px dashed ${token('color.border.brand', '#0C66E4')}` : 'none',
         outlineOffset: isEditing ? '-1px' : '0',
         cursor: isEditing ? 'grab' : 'default',
@@ -231,7 +235,6 @@ export default function WidgetWrapper({
     >
       {/* ─── Header ─────────────────────────────────────────────────── */}
       <div
-        className="flex items-center justify-between gap-2 min-w-0"
         onMouseEnter={() => setHeaderHovered(true)}
         onMouseLeave={() => setHeaderHovered(false)}
         onClick={(e) => {
@@ -245,20 +248,25 @@ export default function WidgetWrapper({
           collapseHandler();
         }}
         style={{
-          padding: '14px 18px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 8,
+          minWidth: 0,
+          padding: '16px',
           background: headerHovered && !isEditing
             ? token('color.background.neutral.subtle.hovered', '#F1F2F4')
             : token('elevation.surface', '#FFFFFF'),
           borderBottom: collapsed
             ? 'none'
-            : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-          minHeight: 60,
+            : `1px solid ${token('color.border', '#DFE1E6')}`,
+          minHeight: 64,
           cursor: isEditing ? 'inherit' : 'pointer',
           transition: 'background 120ms ease',
         }}
       >
         {/* LEFT — drag handle (edit mode) + headerIcon + title block */}
-        <div className="flex-1 min-w-0 flex items-center gap-3 text-left">
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left' }}>
           {isEditing && (
             <span
               aria-label="Drag widget"
@@ -269,7 +277,7 @@ export default function WidgetWrapper({
                 justifyContent: 'center',
                 width: 24,
                 height: 24,
-                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                color: token('color.text.subtle', '#44546F'),
                 cursor: 'grab',
                 flexShrink: 0,
               }}
@@ -278,19 +286,21 @@ export default function WidgetWrapper({
             </span>
           )}
           {headerIcon}
-          <div className="min-w-0 flex flex-col">
-            <Heading as="h2" size="medium" truncate>
+          <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+            <Heading as="h2" size="small" truncate>
               {title}
             </Heading>
             {subtitle && (
               <span
-                className="truncate"
                 style={{
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: 400,
-                  color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-                  lineHeight: '18px',
-                  marginTop: 2,
+                  color: token('color.text.subtle', '#44546F'),
+                  lineHeight: '16px',
+                  marginTop: 4,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {subtitle}
@@ -300,7 +310,7 @@ export default function WidgetWrapper({
         </div>
 
         {/* RIGHT — actions */}
-        <div className="flex items-center gap-1 shrink-0">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
           {isEditing && onResize && (
             <>
               <AkIconButton
@@ -404,8 +414,11 @@ export default function WidgetWrapper({
       {!collapsed && (
         <div
           ref={bodyRef}
-          className="dashboard-widget-body min-w-0 w-full max-w-full"
+          className="dashboard-widget-body"
           style={{
+            minWidth: 0,
+            width: '100%',
+            maxWidth: '100%',
             background: token('elevation.surface', '#FFFFFF'),
             // Bump padding when soloed so the focused gadget breathes —
             // 32px instead of the default 24px. Flush-body widgets keep
@@ -413,8 +426,8 @@ export default function WidgetWrapper({
             padding: flushBody
               ? 0
               : isSoloed
-                ? token('space.400', '32px')
-                : token('space.300', '24px'),
+                ? token('space.300', '24px')
+                : token('space.200', '16px'),
             // Standardised height — overflow-y inside the body so the
             // dashboard never exposes a 'half a widget' viewport.
             maxHeight: resolvedBodyHeight,
@@ -435,8 +448,8 @@ export default function WidgetWrapper({
         <div
           style={{
             background: token('elevation.surface', '#FFFFFF'),
-            borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-            padding: `10px ${token('space.300', '24px')}`,
+            borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+            padding: `8px ${token('space.200', '16px')}`,
           }}
         >
           {footer}

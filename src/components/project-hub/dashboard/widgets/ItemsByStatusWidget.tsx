@@ -43,7 +43,7 @@ const C = {
   todo: {
     fill: 'var(--ds-background-accent-gray-bolder, #626F86)',
     track: 'var(--ds-background-neutral, #F1F2F4)',
-    label: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
+    label: 'var(--ds-text-subtle, #44546F)',
   },
   inProgress: {
     fill: 'var(--ds-background-accent-blue-bolder, #0C66E4)',
@@ -162,7 +162,7 @@ export default function ItemsByStatusWidget({
               style={{
                 height: 24,
                 borderRadius: 4,
-                background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
+                background: token('color.background.neutral.subtle', '#F1F2F4'),
               }}
             />
           ))}
@@ -213,14 +213,14 @@ function KpiHeadline({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 12px',
-        borderRight: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
       }}
     >
       <span
         style={{
           fontSize: 11,
           fontWeight: 500,
-          textTransform: 'uppercase',
+          textTransform: 'none',
           letterSpacing: '0.04em',
           color: token('color.text.subtlest', '#626F86'),
         }}
@@ -246,7 +246,7 @@ function KpiHeadline({
         display: 'flex',
         background: token('elevation.surface.sunken', '#F7F8F9'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
         overflow: 'hidden',
       }}
     >
@@ -266,7 +266,7 @@ function KpiHeadline({
           style={{
             fontSize: 11,
             fontWeight: 500,
-            textTransform: 'uppercase',
+            textTransform: 'none',
             letterSpacing: '0.04em',
             color: token('color.text.subtlest', '#626F86'),
           }}
@@ -325,7 +325,7 @@ function BarRow({ bucket: b, total }: { bucket: Bucket; total: number }) {
       <span
         style={{
           width: 96,
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: 500,
           color: C[b.key].label,
           letterSpacing: '-0.005em',
@@ -421,7 +421,7 @@ function BlockedBreakdown({
           style={{
             fontSize: 11,
             fontWeight: 600,
-            textTransform: 'uppercase',
+            textTransform: 'none',
             letterSpacing: '0.04em',
             color: 'var(--ds-text-accent-red-bolder, #AE2A19)',
           }}
@@ -453,7 +453,7 @@ function BlockedBreakdown({
             <Lozenge appearance="removed">{r.label}</Lozenge>
             <span
               style={{
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: 600,
                 color: token('color.text', '#292A2E'),
                 fontVariantNumeric: 'tabular-nums',

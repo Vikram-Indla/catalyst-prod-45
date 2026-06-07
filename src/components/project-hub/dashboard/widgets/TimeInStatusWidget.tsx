@@ -224,7 +224,7 @@ export default function TimeInStatusWidget({
           justifyContent: 'space-between',
           gap: token('space.200', '16px'),
           padding: '12px 16px',
-          borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
           background: token('elevation.surface', '#FFFFFF'),
         }}
       >
@@ -246,7 +246,7 @@ export default function TimeInStatusWidget({
                   fontSize: 12,
                   fontWeight: active ? 600 : 500,
                   borderRadius: 'var(--ds-border-radius, 4px)',
-                  border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`,
+                  border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
                   background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
                   color: active ? 'var(--ds-text-selected, #0055CC)' : 'var(--ds-text-subtle, #505258)',
                   cursor: 'pointer',
@@ -275,7 +275,7 @@ export default function TimeInStatusWidget({
                   fontSize: 11,
                   fontWeight: active ? 600 : 500,
                   borderRadius: 'var(--ds-border-radius, 4px)',
-                  border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`,
+                  border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
                   background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
                   color: active ? 'var(--ds-text-selected, #0055CC)' : 'var(--ds-text-subtle, #505258)',
                   cursor: 'pointer',
@@ -347,16 +347,16 @@ export default function TimeInStatusWidget({
                     width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                     textAlign: 'left',
                     padding: '10px 12px',
-                    borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-                    borderRight: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+                    borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                     // Header style mirrors QA Defects / Production
                     // Incidents header: 12px uppercase 700 letter-spaced
                     // 0.04em color.text.subtle.
                     fontSize: 12,
                     fontWeight: 700,
-                    textTransform: 'uppercase',
+                    textTransform: 'none',
                     letterSpacing: '0.04em',
-                    color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                    color: token('color.text.subtle', '#44546F'),
                   }}
                 >
                   Ticket
@@ -368,8 +368,8 @@ export default function TimeInStatusWidget({
                       minWidth: STATUS_COL_MIN,
                       textAlign: 'left',
                       padding: '8px 12px',
-                      borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
-                      borderRight: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                      borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                     }}
                   >
                     <StatusLozenge status={s.category === 'in_progress' ? 'inProgress' : s.category}>
@@ -382,7 +382,7 @@ export default function TimeInStatusWidget({
                     minWidth: 96,
                     padding: '8px 12px',
                     textAlign: 'right',
-                    borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                    borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
                     fontWeight: 600,
                     color: token('color.text', '#292A2E'),
                     background: token('elevation.surface', '#FFFFFF'),
@@ -415,10 +415,10 @@ export default function TimeInStatusWidget({
                     style={{
                       position: 'sticky', left: 0,
                       background: token('elevation.surface', '#FFFFFF'),
-                    boxShadow: '1px 0 0 0 ' + token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))'),
+                    boxShadow: '1px 0 0 0 ' + token('color.border', '#DFE1E6'),
                       padding: '6px 12px',
-                      borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
-                      borderRight: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                      borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                       width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                     }}
                   >
@@ -473,8 +473,8 @@ export default function TimeInStatusWidget({
                         style={{
                           minWidth: STATUS_COL_MIN,
                           padding: '6px 12px',
-                          borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
-                          borderRight: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                          borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                           background: categoryBg(s.category, ms),
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                           fontSize: 11,
@@ -527,7 +527,7 @@ export default function TimeInStatusWidget({
                     style={{
                       padding: '6px 12px',
                       textAlign: 'right',
-                      borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                      borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
                       fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                       fontSize: 12,
                       fontWeight: 600,
@@ -550,7 +550,7 @@ export default function TimeInStatusWidget({
               justifyContent: 'space-between',
               alignItems: 'center',
               padding: '8px 16px',
-              borderTop: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
               background: token('elevation.surface', '#FFFFFF'),
               fontSize: 11,
               color: token('color.text.subtle', '#505258'),
@@ -567,7 +567,7 @@ export default function TimeInStatusWidget({
                   onClick={() => setOffset(Math.max(0, offset - pageSize))}
                   style={{
                     height: 24, padding: '0 8px', fontSize: 11, cursor: 'pointer',
-                    border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+                    border: '1px solid var(--ds-border, #DFE1E6)',
                     borderRadius: 'var(--ds-border-radius, 4px)',
                     background: 'transparent',
                     color: 'var(--ds-text-subtle, #505258)',
@@ -582,7 +582,7 @@ export default function TimeInStatusWidget({
                   onClick={() => setOffset(offset + pageSize)}
                   style={{
                     height: 24, padding: '0 8px', fontSize: 11, cursor: 'pointer',
-                    border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+                    border: '1px solid var(--ds-border, #DFE1E6)',
                     borderRadius: 'var(--ds-border-radius, 4px)',
                     background: 'transparent',
                     color: 'var(--ds-text-subtle, #505258)',

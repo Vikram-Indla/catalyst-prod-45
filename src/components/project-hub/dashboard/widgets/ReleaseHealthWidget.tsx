@@ -137,7 +137,7 @@ export default function ReleaseHealthWidget({
               style={{
                 height: 56,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
+                background: token('color.background.neutral.subtle', '#F1F2F4'),
               }}
             />
           ))}
@@ -182,7 +182,7 @@ function KpiHeadline({
         display: 'flex',
         background: token('elevation.surface.sunken', '#F7F8F9'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
         overflow: 'hidden',
       }}
     >
@@ -221,7 +221,7 @@ function KpiCell({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 10px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
         minWidth: 0,
       }}
     >
@@ -229,7 +229,7 @@ function KpiCell({
         style={{
           fontSize: 11,
           fontWeight: 500,
-          textTransform: 'uppercase',
+          textTransform: 'none',
           letterSpacing: '0.04em',
           color: token('color.text.subtlest', '#626F86'),
           whiteSpace: 'nowrap',
@@ -285,7 +285,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
       >
         <span
           style={{
-            fontSize: 13,
+            fontSize: 14,
             fontWeight: 600,
             color: token('color.text', '#292A2E'),
             overflow: 'hidden',
@@ -328,7 +328,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
         </div>
         <span
           style={{
-            fontSize: 13,
+            fontSize: 14,
             fontWeight: 600,
             minWidth: 44,
             textAlign: 'right',

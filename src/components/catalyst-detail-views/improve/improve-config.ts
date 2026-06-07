@@ -61,6 +61,14 @@ export function canSuggestChildren(issueType?: string | null): boolean {
 }
 
 /**
+ * Whether the "Generate stories from docs" menu item is visible.
+ * Only Epics have the artefact-aware story generation flow.
+ */
+export function canGenerateStories(issueType?: string | null): boolean {
+  return issueType === 'Epic';
+}
+
+/**
  * Human-readable child-work-item label that appears in suggestion
  * dialogs ("Suggest Stories", "Suggest Tasks", etc.). The backend
  * decides the actual child issue_type — this is for display only.

@@ -413,7 +413,7 @@ export default function DashboardWidgetGrid({
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(12, minmax(0, 1fr))',
-          gap: token('space.300', '24px'),
+          gap: token('space.200', '16px'),
           gridAutoFlow: 'row dense',
           width: '100%',
           minWidth: 0,

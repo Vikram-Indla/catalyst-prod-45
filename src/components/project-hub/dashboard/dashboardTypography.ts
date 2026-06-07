@@ -91,7 +91,7 @@ export const MONO: CSSProperties = {
 
 /** Subtle text colour — for secondary meta. Pair with BODY/LABEL. */
 export const SUBTLE: CSSProperties = {
-  color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+  color: token('color.text.subtle', '#44546F'),
 };
 
 /** Subtlest text colour — for tertiary meta + captions. */
