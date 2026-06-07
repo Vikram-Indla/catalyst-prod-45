@@ -546,9 +546,20 @@ function CatalystShellContent() {
   // Pages that already paint their own Jira canvas + white card. Wrapping these
   // in <HubSurface> would double-stack canvas layers. They still sit on the
   // canvas <main> bg so there's visual consistency.
-  //   /project-hub/:key/backlog   → BacklogPage.atlaskit.tsx:1083
+  //   /project-hub/:key/backlog                       → BacklogPage.atlaskit.tsx:1083
+  //   /project-hub/:key/allwork/:issueKey             → AllWorkDetailPage (fullPageMode)
+  // 2026-06-07: allwork detail route added because the CatalystShell wrapper
+  // at line 921 sets overflow-hidden for `isProjectHubAllWorkRoute`, expecting
+  // the detail view to own its own scroll container — but HubSurface uses
+  // minHeight (not height) and no flex chain, breaking the height cascade
+  // for fullPageMode CatalystViewBase. Result: cv-drawer-body never gets a
+  // constrained height, overflowY:auto never fires, content is clipped by
+  // the overflow-hidden wrapper with no way to scroll. Bypassing HubSurface
+  // on the detail route restores the height chain end-to-end. List view
+  // (/project-hub/:key/allwork without :issueKey) still keeps HubSurface.
   const isSelfFramedRoute =
     /^\/project-hub\/[^/]+\/backlog/.test(location.pathname) ||
+    /^\/project-hub\/[^/]+\/allwork\/[^/]+/.test(location.pathname) ||
     location.pathname.startsWith("/browse/"); // full-screen issue view
 
   // Hub routes that explicitly opt out of the Jira blue canvas — pure white

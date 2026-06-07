@@ -1,0 +1,34 @@
+/* WebLinkForm input overrides.
+ *
+ * Why this file exists: src/index.css:2731-2739 sets a global
+ *   input:focus-visible { border-color: ... !important; box-shadow: ... !important; }
+ * rule. Because it uses !important, React inline `style` props can't
+ * change the border colour or kill the shadow when the field is
+ * focused. We use a `data-error` attribute on each form input and
+ * override the global rule at the same specificity with our own
+ * !important so the focused-state colour follows our state (red on
+ * error, blue otherwise) and never lets a soft blue ring leak through.
+ */
+
+.web-link-input,
+.web-link-input:focus,
+.web-link-input:focus-visible,
+.web-link-input:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.web-link-input[data-error="true"],
+.web-link-input[data-error="true"]:focus,
+.web-link-input[data-error="true"]:focus-visible,
+.web-link-input[data-error="true"]:focus-within {
+  border-color: var(--ds-border-danger, #C9372C) !important;
+  box-shadow: none !important;
+}
+
+.web-link-input[data-error="false"]:focus,
+.web-link-input[data-error="false"]:focus-visible,
+.web-link-input[data-error="false"]:focus-within {
+  border-color: var(--ds-border-focused, #388BFF) !important;
+  box-shadow: none !important;
+}
