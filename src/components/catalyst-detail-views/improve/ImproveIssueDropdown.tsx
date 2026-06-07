@@ -191,6 +191,39 @@ export function ImproveIssueDropdown({
     const currentDescription = issue.description_adf
       ? adfToMarkdown(issue.description_adf as AdfDoc)
       : (issue.description_text ?? null);
+
+    // G1-G4: Fetch hierarchical context in parallel (best-effort, non-blocking)
+    let parentDescription: string | null = null;
+    let linkedIssuesSummary: string | null = null;
+    let subtasksSummary: string | null = null;
+    let projectDescription: string | null = null;
+    try {
+      const [parentRes, linksRes, subtasksRes, projectRes] = await Promise.all([
+        issue.parent_key
+          ? supabase.from('ph_issues').select('description_text').eq('issue_key', issue.parent_key).maybeSingle()
+          : Promise.resolve({ data: null }),
+        issue.issue_key
+          ? (supabase as any).from('ph_issue_links').select('target_key, link_type').eq('source_key', issue.issue_key).limit(10)
+          : Promise.resolve({ data: null }),
+        issue.issue_key
+          ? supabase.from('ph_issues').select('summary').eq('parent_key', issue.issue_key).is('deleted_at', null).limit(20)
+          : Promise.resolve({ data: null }),
+        issue.project_key
+          ? (supabase as any).from('ph_jira_projects').select('description').eq('key', issue.project_key).maybeSingle()
+          : Promise.resolve({ data: null }),
+      ]);
+      parentDescription = parentRes.data?.description_text ?? null;
+      if (Array.isArray(linksRes.data) && linksRes.data.length > 0) {
+        linkedIssuesSummary = linksRes.data.map((l: any) => `${l.link_type}: ${l.target_key}`).join(', ');
+      }
+      if (Array.isArray(subtasksRes.data) && subtasksRes.data.length > 0) {
+        subtasksSummary = subtasksRes.data.map((s: any) => s.summary).filter(Boolean).join(', ');
+      }
+      projectDescription = projectRes.data?.description ?? null;
+    } catch {
+      // Non-fatal — proceed without context
+    }
+
     startCatyImprove({
       issueKey: issue.issue_key,
       issueType: issue.issue_type ?? null,
@@ -200,8 +233,12 @@ export function ImproveIssueDropdown({
       attachmentUrls,
       improveSubType: 'improve_clarify',
       parentSummary: issue.parent_summary ?? null,
+      parentDescription,
+      linkedIssues: linkedIssuesSummary,
+      existingSubtasks: subtasksSummary,
       labels: issue.labels?.join(', ') ?? null,
       priority: issue.priority ?? null,
+      components: projectDescription ? `Project: ${projectDescription.slice(0, 500)}` : null,
     });
   }, [issue, startCatyImprove]);
 

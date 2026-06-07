@@ -111,12 +111,9 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
       catyPhase === 'errored'
     ) {
       setSnapshotAdf(null);
-      if (catyPhase === 'done' && catyText && issue?.issue_key) {
-        markImproved(issue.issue_key, contentHash(catyText));
-      }
       stopCatyImprove();
     }
-  }, [catyPhase, catyText, issue?.issue_key, markImproved, stopCatyImprove]);
+  }, [catyPhase, stopCatyImprove]);
 
   // Sync editor.editable with stream state. setEditable doesn't trigger
   // a re-render of editor instance, so it's cheap.
@@ -251,14 +248,14 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
         .update({ description_adf: adf as unknown as never })
         .eq('issue_key', issue.issue_key);
     },
-    onSuccess: () => {
+    onSuccess: (_data, adfJson) => {
       queryClient.invalidateQueries({
         queryKey: ['cv-issue-detail', issue?.issue_key],
       });
-      // Clearing the store payload on save ensures the next "Improve
-      // description" click on this same ticket starts a fresh session
-      // rather than re-running the previous prompt.
       stopCatyImprove();
+      if (issue?.issue_key && editor) {
+        markImproved(issue.issue_key, contentHash(editor.getText()));
+      }
       setEditing(false);
     },
     onError: (err) => {

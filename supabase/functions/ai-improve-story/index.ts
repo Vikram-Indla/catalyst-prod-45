@@ -128,6 +128,10 @@ function buildImproveDescriptionPrompt(
 
   const hintLine = focusHint ? `User hint: ${focusHint}` : '';
 
+  const arabicRatio = (currentDescription.match(/[؀-ۿ]/g) || []).length / Math.max(currentDescription.length, 1);
+  const detectedLang = arabicRatio > 0.3 ? 'Arabic' : arabicRatio > 0.05 ? 'Mixed (Arabic + English)' : 'English';
+  const langLine = `Detected language: ${detectedLang}. Your output MUST be in ${detectedLang === 'English' ? 'English' : detectedLang === 'Arabic' ? 'Arabic' : 'the same mixed pattern as the input'}.`;
+
   const attachmentLine =
     attachmentCount > 0
       ? `Attached images: ${attachmentCount} (review for visual context — UI mockups, screenshots, diagrams).`
@@ -144,6 +148,7 @@ function buildImproveDescriptionPrompt(
     '  - If the input has mixed-language blocks (e.g. one bullet English and the next Arabic), you keep EACH block in its original language. The Arabic bullet stays Arabic; the English bullet stays English.',
     '  - If a single sentence mixes Arabic and English words/terms, keep that exact mix.',
     'Translating a block to a different language is REJECTED output. Read every block of input, identify its language, and write your improved version of that block in the SAME language.',
+    langLine,
     '═══════════════════════════════════════════════════════════════════',
     '',
     'Your ONLY allowed operations are editorial:',
@@ -470,32 +475,109 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
 
     const PER_TYPE_FOCUS: Record<string, string> = {
       Story:
-        'User-narrative form ("As a [user], I want [action], so that [benefit]") with Given/When/Then acceptance criteria. Keep scope to ONE persona × ONE goal.',
-      Epic: "Outcome-focused. Lead with the measurable business outcome / KPI uplift. Bound scope (in / out). Name the success criteria a steering committee would sign off on.",
+        `User-narrative form. Structure the description as:
+**As a** [specific user role/persona], **I want** [clear action/capability], **So that** [measurable business value/outcome].
+**Background / Context** — explain WHY this story exists. Reference the parent epic, business process, or user pain point.
+**Acceptance Criteria** — use Given/When/Then (Gherkin) format. Cover: happy path, validation rules, edge cases (empty states, boundary values), error handling (API failures, timeouts), authorization/access control, UI/UX behavior (loading states, feedback). Generate 4-8 criteria.
+**Out of Scope** — list 2-3 items explicitly NOT included.
+Keep scope to ONE persona × ONE goal.`,
+      Epic:
+        `Outcome-focused strategic description. Structure as:
+**Business Objective** — the measurable business outcome or KPI uplift this epic delivers.
+**Success Metrics** — specific KPIs a steering committee would sign off on (quantified where possible).
+**Scope** — what capabilities/stories are included. List them as bullets.
+**Out of Scope** — what is explicitly excluded to prevent scope creep.
+**Dependencies** — other epics, teams, APIs, or services this depends on.
+**Risks and Assumptions** — key risks with likelihood/impact and assumptions that must hold.`,
       Feature:
-        "Functional-scope shape: capability statement, user impact, primary dependencies, target release. Avoid implementation detail.",
-      Task: "Concrete deliverable, single-owner action, crisp definition-of-done. Keep it tactical — no narrative.",
+        `Functional-scope capability statement. Structure as:
+**Capability** — one-sentence statement of what this feature enables.
+**User Impact** — who benefits and how their workflow changes.
+**Functional Requirements** — numbered list of specific behaviors the feature must exhibit.
+**Non-Functional Requirements** — performance, scalability, accessibility constraints.
+**Dependencies** — APIs, services, or other features required.
+**Target Release** — sprint or release this is planned for.
+Avoid implementation detail — focus on WHAT, not HOW.`,
+      Task:
+        `Concrete deliverable, single-owner action. Structure as:
+**Objective** — one sentence stating what this task delivers.
+**Steps** — numbered actionable steps to complete the task.
+**Definition of Done** — checkboxes for completion criteria.
+**Dependencies** — blockers or inputs needed before starting.
+Keep it tactical — no narrative.`,
       "QA Bug":
-        "Reproduction steps (numbered), expected vs actual behaviour, environment (browser / OS / build), severity rationale. Steps must be deterministic.",
-      // legacy synonym for QA Bug
-      Bug: "Reproduction steps (numbered), expected vs actual behaviour, environment (browser / OS / build), severity rationale. Steps must be deterministic.",
+        `Bug report format. Structure as:
+**Steps to Reproduce** — numbered, deterministic steps any developer can follow.
+**Expected Behavior** — what SHOULD happen after the steps.
+**Actual Behavior** — what ACTUALLY happens (include error messages, screenshots if referenced).
+**Environment** — browser, OS, build version, user role.
+**Severity / Impact** — who is affected, how many users, workaround availability.
+**Acceptance Criteria for Fix** — Given/When/Then criteria that prove the bug is fixed.`,
+      Bug:
+        `Bug report format. Structure as:
+**Steps to Reproduce** — numbered, deterministic steps any developer can follow.
+**Expected Behavior** — what SHOULD happen after the steps.
+**Actual Behavior** — what ACTUALLY happens (include error messages, screenshots if referenced).
+**Environment** — browser, OS, build version, user role.
+**Severity / Impact** — who is affected, how many users, workaround availability.
+**Acceptance Criteria for Fix** — Given/When/Then criteria that prove the bug is fixed.`,
       "Production Incident":
-        "Impact statement (who / how many / dollar magnitude), MTTR target, root-cause hypothesis, mitigation step list. Treat this as an active incident write-up.",
-      // legacy synonym
+        `Incident write-up format. Structure as:
+**Impact Statement** — who is affected, how many users/systems, estimated dollar magnitude or SLA breach.
+**MTTR Target** — target mean time to resolve.
+**Timeline** — chronological list of events (detection → triage → mitigation → resolution).
+**Root Cause Hypothesis** — current best understanding of why this happened.
+**Mitigation Steps** — numbered list of immediate actions taken or planned.
+**Post-Incident Actions** — follow-up items to prevent recurrence.`,
       Incident:
-        "Impact statement (who / how many / dollar magnitude), MTTR target, root-cause hypothesis, mitigation step list. Treat this as an active incident write-up.",
+        `Incident write-up format. Structure as:
+**Impact Statement** — who is affected, how many users/systems, estimated dollar magnitude or SLA breach.
+**MTTR Target** — target mean time to resolve.
+**Timeline** — chronological list of events (detection → triage → mitigation → resolution).
+**Root Cause Hypothesis** — current best understanding of why this happened.
+**Mitigation Steps** — numbered list of immediate actions taken or planned.
+**Post-Incident Actions** — follow-up items to prevent recurrence.`,
       Subtask:
-        "Single concrete action, time-boxed (≤ 1 day), aligned to the parent's intent. No sub-narrative.",
+        `Single concrete action, time-boxed (≤ 1 day). Structure as:
+**Action** — one sentence stating exactly what to do.
+**Acceptance Criteria** — 2-3 checkboxes that prove the subtask is done.
+**Parent Context** — how this subtask contributes to the parent story/task.
+Aligned to the parent's intent. No sub-narrative.`,
       "Business Request":
-        "Business value, requirements (functional + non-functional), stakeholders, success metric. Government-ministry tone.",
+        `Business request format for government ministry stakeholders. Structure as:
+**Business Value** — the strategic value or problem this request addresses.
+**Requirements** — split into Functional (what the system must do) and Non-Functional (performance, compliance, security).
+**Stakeholders** — who requested this, who approves, who is impacted.
+**Success Metric** — how we measure whether this request delivered value.
+**Priority Justification** — why this priority level was assigned.
+Government-ministry tone — formal, precise, stakeholder-aware.`,
       "Business Gap":
-        "Gap statement (current vs desired state), business impact, dependencies, recommended remediation. Government-ministry tone.",
+        `Gap analysis format. Structure as:
+**Current State** — what exists today and its limitations.
+**Desired State** — what the target looks like after the gap is closed.
+**Business Impact** — quantified impact of the gap (cost, risk, opportunity loss).
+**Dependencies** — what must be in place to close the gap.
+**Recommended Remediation** — proposed approach with effort estimate.
+Government-ministry tone.`,
       "API Requirement":
-        "API contract: endpoint(s), request / response shape, auth, rate limits, error contract, observability hooks.",
+        `API contract specification. Structure as:
+**Endpoint(s)** — HTTP method + path for each endpoint.
+**Request Shape** — parameters, headers, body schema with types.
+**Response Shape** — success response schema + status codes.
+**Authentication** — auth method (API key, OAuth, JWT) and required scopes.
+**Rate Limits** — requests per minute/hour, throttling behavior.
+**Error Contract** — error response shape, error codes, retry guidance.
+**Observability** — logging, metrics, and alerting hooks.`,
       "Change Request":
-        "Change description, business justification, blast-radius assessment, rollback plan, sign-off list.",
+        `Change request format. Structure as:
+**Change Description** — what is being changed and in which system/service.
+**Business Justification** — why this change is necessary (regulatory, operational, strategic).
+**Blast-Radius Assessment** — systems, teams, and users affected by this change.
+**Rollback Plan** — step-by-step procedure to revert if the change fails.
+**Sign-Off List** — who must approve before implementation (CAB members, stakeholders).
+**Implementation Window** — proposed date/time and expected duration.`,
       Default:
-        "Be precise, professional, and structured. Lead with intent, follow with detail.",
+        "Be precise, professional, and structured. Lead with intent, follow with detail. Use clear section headings.",
     };
 
     const focusFor = (t?: string) =>
@@ -599,7 +681,7 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
             (body.improve_sub_type ?? "improve_clarify") === "improve_clarify"
               ? 0.2
               : 0.4,
-          max_tokens: 2000,
+          max_tokens: 4000,
           stream: true,
         }),
         signal: upstreamAbort.signal,
@@ -821,7 +903,7 @@ Return JSON: {"description": "...", "acceptance_criteria": "..."}`;
             { role: "user", content: prompt },
           ],
           temperature: 0.4,
-          max_tokens: 1500,
+          max_tokens: 3000,
         }),
       });
 
