@@ -1,26 +1,12 @@
-/**
- * BizArabicTranslateLink — per-row inline "Translate to English" affordance
- * for Arabic-content BR rows in the product backlog table.
- *
- * 2026-06-01 (catalyst-clone F7): mirrors the BrTitleSection view affordance
- * but does NOT persist translations to the DB — translation is per-row,
- * per-session display only. Page reload reverts to the original Arabic.
- *
- * Why not just use TitleTranslateWrapper? The Work cell's summary is
- * already inline-editable via makeSummaryInlineEditCell — two interaction
- * models on the same text would conflict. This component renders the
- * translate link beneath the summary as a separate affordance.
- */
 import React, { useCallback, useState } from 'react';
+import Spinner from '@atlaskit/spinner';
+import EditorUndoIcon from '@atlaskit/icon/glyph/editor/undo';
 import { useTranslation } from '@/hooks/useTranslation';
 import { containsArabic } from '@/lib/detectArabic';
 
 interface Props {
-  /** BR request key (e.g. "MDT-221") — used as the translation cache key. */
   issueKey: string | null;
-  /** The original Arabic summary text. */
   original: string;
-  /** Optional callback fired when the user toggles translation state. */
   onChange?: (display: string) => void;
 }
 
@@ -34,7 +20,6 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
     e.preventDefault();
     if (isTranslating) return;
     if (translated) {
-      // Already translated, just swap display
       setShowing('translated');
       onChange?.(translated);
       return;
@@ -71,24 +56,48 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
       }}
     >
       {isTranslating ? (
-        <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>Translating…</span>
-      ) : showing === 'translated' ? (
-        <button
-          type="button"
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={handleRevert}
+        <span
           style={{
-            background: 'transparent',
-            border: 'none',
-            color: 'var(--ds-link, #0052CC)',
-            cursor: 'pointer',
-            padding: 0,
-            fontSize: 11,
-            fontFamily: 'inherit',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            color: 'var(--ds-text-information, #0747A6)',
           }}
         >
-          ↩ Show original
-        </button>
+          <Spinner size="xsmall" />
+          <span>Translating…</span>
+        </span>
+      ) : showing === 'translated' ? (
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            color: 'var(--ds-text-success, #006644)',
+          }}
+        >
+          <span style={{ fontSize: 9, fontWeight: 700, opacity: 0.7 }}>AR → EN</span>
+          <button
+            type="button"
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={handleRevert}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--ds-link, #0052CC)',
+              cursor: 'pointer',
+              padding: 0,
+              fontSize: 11,
+              fontFamily: 'inherit',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 2,
+            }}
+          >
+            <EditorUndoIcon label="" size="small" />
+            Show original
+          </button>
+        </span>
       ) : (
         <button
           type="button"
@@ -96,14 +105,19 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
           onClick={handleTranslate}
           style={{
             background: 'transparent',
-            border: 'none',
-            color: 'var(--ds-link, #0052CC)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 3,
+            color: 'var(--ds-text-subtle, #44546F)',
             cursor: 'pointer',
-            padding: 0,
+            padding: '2px 8px',
             fontSize: 11,
             fontFamily: 'inherit',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
           }}
         >
+          <span style={{ fontSize: 12, opacity: 0.7 }}>🌐</span>
           Translate to English
         </button>
       )}

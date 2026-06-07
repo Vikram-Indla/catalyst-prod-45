@@ -187,7 +187,10 @@ function progressAppearance(percentage: number): React.ComponentProps<typeof Pro
 }
 
 // ─── Clipboard action formatters ────────────────────────────────────────────
-function formatThemeMarkdown(theme: Theme): string {
+function formatThemeMarkdown(
+  theme: Theme,
+  enrichedIssues?: { issue_key: string; summary: string }[],
+): string {
   const lines: string[] = [];
   lines.push(`## ${theme.name}`);
   lines.push('');
@@ -196,7 +199,13 @@ function formatThemeMarkdown(theme: Theme): string {
   lines.push(`**${theme.count} issues (${theme.percentage}%) · intent: ${theme.intent}**`);
   lines.push('');
   lines.push('Issues:');
-  for (const key of theme.issueKeys ?? []) lines.push(`- ${key}`);
+  if (enrichedIssues && enrichedIssues.length > 0) {
+    for (const issue of enrichedIssues) {
+      lines.push(`- ${issue.issue_key} — ${issue.summary}`);
+    }
+  } else {
+    for (const key of theme.issueKeys ?? []) lines.push(`- ${key}`);
+  }
   return lines.join('\n');
 }
 
@@ -287,7 +296,23 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(formatThemeMarkdown(theme));
+      // Fetch issue summaries excluding done items for a richer clipboard output.
+      let enriched: { issue_key: string; summary: string }[] | undefined;
+      if (theme.issueKeys?.length) {
+        const { data } = await supabase
+          .from('ph_issues')
+          .select('issue_key, summary')
+          .in('issue_key', theme.issueKeys)
+          .neq('status_category', 'done');
+        if (data && data.length > 0) {
+          // Preserve theme order
+          const byKey = new Map(data.map((r: any) => [r.issue_key, r]));
+          enriched = theme.issueKeys
+            .map(k => byKey.get(k))
+            .filter((r): r is { issue_key: string; summary: string } => Boolean(r));
+        }
+      }
+      await navigator.clipboard.writeText(formatThemeMarkdown(theme, enriched));
       setCopyState('copied');
       // Revert the label after a beat so repeat copies still read as action.
       window.setTimeout(() => setCopyState('idle'), 1800);
