@@ -48,8 +48,8 @@ export function ImproveButton({
           background: disabled && !isImproving
             ? token('color.background.disabled', '#F1F2F4')
             : hover
-              ? token('elevation.surface.hovered', '#F1F2F4')
-              : token('elevation.surface', '#FFFFFF'),
+              ? '#F1F2F4'
+              : '#FFFFFF',
           color: 'var(--ds-text, #172B4D)',
           cursor: disabled && !isImproving ? 'not-allowed' : 'pointer',
           fontSize: 12,
