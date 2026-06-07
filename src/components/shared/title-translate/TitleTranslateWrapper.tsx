@@ -107,7 +107,7 @@ export function TitleTranslateWrapper({
                 Show original
               </button>
             </span>
-          ) : (
+          ) : isArabic ? (
             <button
               type="button"
               className={cn("ttw-translate-chip", buttonClassName)}
@@ -123,7 +123,7 @@ export function TitleTranslateWrapper({
               {translateLabel}
               <span className="ttw-translate-chip__arrow" aria-hidden="true">→</span>
             </button>
-          )}
+          ) : null}
         </div>
       )}
     </div>
