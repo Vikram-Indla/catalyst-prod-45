@@ -401,7 +401,23 @@ export function EditableAssignee({
         placeholder="Select Assignee"
         components={{
           ClearIndicator: (props) => (
-            <div {...props.innerProps} style={{ display: "flex", alignItems: "center", padding: "0 4px", cursor: "pointer" }}>
+            <div
+              {...props.innerProps}
+              style={{ display: "flex", alignItems: "center", padding: "0 4px", cursor: "pointer" }}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                // Clear the value (unassign)
+                updateMutation.mutate(null);
+                // Keep menu open + focus input for immediate re-search
+                setMenuIsOpen(true);
+                setInputValue("");
+                setTimeout(() => {
+                  const el = document.getElementById(inputId) as HTMLInputElement | null;
+                  el?.focus();
+                }, 0);
+              }}
+            >
               <CrossCircleIcon label="Clear" size="small" primaryColor="var(--ds-text-subtle, #5E6C84)" />
             </div>
           ),
@@ -639,7 +655,23 @@ export function EditableReporter({
         placeholder="Select Reporter"
         components={{
           ClearIndicator: (props) => (
-            <div {...props.innerProps} style={{ display: "flex", alignItems: "center", padding: "0 4px", cursor: "pointer" }}>
+            <div
+              {...props.innerProps}
+              style={{ display: "flex", alignItems: "center", padding: "0 4px", cursor: "pointer" }}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                // Clear the value (unassign)
+                updateMutation.mutate(null);
+                // Keep menu open + focus input for immediate re-search
+                setMenuIsOpen(true);
+                setInputValue("");
+                setTimeout(() => {
+                  const el = document.getElementById(inputId) as HTMLInputElement | null;
+                  el?.focus();
+                }, 0);
+              }}
+            >
               <CrossCircleIcon label="Clear" size="small" primaryColor="var(--ds-text-subtle, #5E6C84)" />
             </div>
           ),
