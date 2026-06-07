@@ -19,7 +19,7 @@
  *   - each Select has an explicit aria-label via the `inputId` + `aria-label`
  *   - the "Create linked work item" affordance is a proper <button>
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Select, { AsyncSelect } from '@atlaskit/select';
 import Button from '@atlaskit/button/new';
@@ -85,6 +85,22 @@ export function LinkToolbar({
     LINK_TYPES.find((lt) => lt.value === DEFAULT_LINK_TYPE) ?? LINK_TYPES[0],
   );
   const [selected, setSelected] = useState<PickerOption[]>([]);
+
+  // On mount, focus the AsyncSelect input WITHOUT scrolling (preventScroll),
+  // then schedule a smooth scroll one frame later so React's layout commits
+  // first — same recipe as InlineCreateWithAI. The native focus-scroll fights
+  // smooth-scroll if not suppressed; deferring lets the surrounding section's
+  // setExpanded/setShowToolbar commits settle so the scroll target doesn't
+  // move mid-animation. `block:'center'` lands the toolbar at viewport
+  // center instead of clinging to an edge.
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const input = document.getElementById('lwi-issue-picker') as HTMLInputElement | null;
+    input?.focus({ preventScroll: true });
+    requestAnimationFrame(() => {
+      toolbarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }, []);
 
   // Default options = 8 most-recent active issues (same contract as legacy)
   const { data: defaultOptions = [] } = useQuery<PickerOption[]>({
@@ -189,7 +205,7 @@ export function LinkToolbar({
   };
 
   return (
-    <div className="lwi-toolbar" role="group" aria-label="Link work items">
+    <div ref={toolbarRef} className="lwi-toolbar" role="group" aria-label="Link work items">
       <div className="lwi-toolbar__row">
         <div className="lwi-toolbar__type">
           <Select<LinkTypeOption>

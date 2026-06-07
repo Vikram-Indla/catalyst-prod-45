@@ -1,0 +1,124 @@
+/**
+ * DesignRow — single saved Figma URL rendered inside DesignsSection.
+ *
+ * Visual contract mirrors WebLinkRow:
+ *   - Bordered card with subtle shadow
+ *   - Link icon + URL label (shortened to host + Figma file name)
+ *   - Hover: gray bg + X icon to unlink
+ *   - Anchor sized to content so the hover/underline hit-area is the
+ *     text only, not the whole row
+ *   - Click opens the Figma URL in a new tab
+ */
+import React, { useState } from 'react';
+import LinkIcon from '@atlaskit/icon/core/link';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import type { DesignRow as DesignRowData } from './useDesigns';
+
+function shortLabel(url: string): string {
+  // Figma URL shape: https://www.figma.com/{file|design|proto}/<id>/<name>?...
+  // We surface the trailing path segment (the file name) when present,
+  // falling back to the full URL.
+  try {
+    const u = new URL(url);
+    const segs = u.pathname.split('/').filter(Boolean);
+    if (segs.length >= 3) {
+      // segs[0] = file/design/proto, segs[1] = id, segs[2] = name slug
+      return decodeURIComponent(segs[2]).replace(/-/g, ' ');
+    }
+    return u.hostname + u.pathname;
+  } catch {
+    return url;
+  }
+}
+
+export interface DesignRowProps {
+  design: DesignRowData;
+  onUnlink: (id: string) => Promise<void> | void;
+}
+
+export function DesignRow({ design, onUnlink }: DesignRowProps) {
+  const [rowHovered, setRowHovered] = useState(false);
+  const [linkHovered, setLinkHovered] = useState(false);
+
+  const label = shortLabel(design.url);
+
+  return (
+    <div
+      onMouseEnter={() => setRowHovered(true)}
+      onMouseLeave={() => setRowHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '8px 10px',
+        borderRadius: 4,
+        background: rowHovered
+          ? 'var(--ds-background-neutral-hovered, #F1F2F4)'
+          : 'var(--cp-bg-elevated, #FFFFFF)',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        boxShadow: '0 1px 2px rgba(9, 30, 66, 0.08)',
+        transition: 'background 0.12s, box-shadow 0.12s',
+        cursor: 'default',
+      }}
+    >
+      <LinkIcon label="" color="var(--ds-text-subtle, #505258)" />
+      <a
+        href={design.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        onMouseEnter={() => setLinkHovered(true)}
+        onMouseLeave={() => setLinkHovered(false)}
+        style={{
+          flex: '0 1 auto',
+          minWidth: 0,
+          maxWidth: '100%',
+          fontSize: 14,
+          color: linkHovered
+            ? 'var(--ds-text-subtle, #6B6E76)'
+            : 'var(--ds-text, #292A2E)',
+          textDecoration: linkHovered ? 'underline' : 'none',
+          textDecorationColor: linkHovered ? 'var(--ds-text, #000000)' : 'transparent',
+          textUnderlineOffset: 2,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          fontFamily: 'var(--cp-font-body)',
+        }}
+      >
+        {label}
+      </a>
+      <div style={{ flex: 1, minWidth: 0 }} />
+      {rowHovered && (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); void onUnlink(design.id); }}
+          title="Remove design"
+          aria-label="Remove design"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 22,
+            height: 22,
+            border: 'none',
+            background: 'transparent',
+            cursor: 'pointer',
+            borderRadius: 3,
+            color: 'var(--ds-text-subtle, #505258)',
+            padding: 0,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+          }}
+        >
+          <CrossIcon size="small" label="" primaryColor="var(--ds-text-subtle, #505258)" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+export default DesignRow;

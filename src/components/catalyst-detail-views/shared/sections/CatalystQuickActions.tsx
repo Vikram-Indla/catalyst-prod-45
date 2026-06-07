@@ -15,14 +15,15 @@
  */
 import React, { useState, useRef, useEffect } from 'react';
 import AddIcon from '@atlaskit/icon/core/add';
-import CheckIcon from '@atlaskit/icon/glyph/check';
-import ArrowRightIcon from '@atlaskit/icon/glyph/arrow-right';
+import ChildIssuesIcon from '@atlaskit/icon/core/child-issues';
+import TaskIcon from '@atlaskit/icon/glyph/task';
 import AttachmentIcon from '@atlaskit/icon/glyph/attachment';
-import WorldIcon from '@atlaskit/icon/glyph/world';
+import GlobeIcon from '@atlaskit/icon/core/globe';
 import EditIcon from '@atlaskit/icon/core/edit';
 import SearchIcon from '@atlaskit/icon/core/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { catalystToast } from '@/lib/catalystToast';
+import { emitCreateChild, emitLinkWorkItem, emitAddAttachment, emitAddWebLink, emitAddDesign } from './quickActionsBus';
 
 interface CatalystQuickActionsProps {
   onCreateChild?: () => void;
@@ -41,6 +42,8 @@ export function CatalystQuickActions({
 }: CatalystQuickActionsProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [search, setSearch] = useState('');
+  const [isHovered, setIsHovered] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -60,11 +63,47 @@ export function CatalystQuickActions({
   const borderColor = 'rgba(11, 18, 14, 0.14)';
 
   const menuItems = [
-    { id: 'child', icon: <CheckIcon size="small" primaryColor={textColor} />, label: 'Create child work item', section: 'primary', action: () => { setShowMenu(false); setSearch(''); onCreateChild ? onCreateChild() : toast('Create child — scroll to Child work items section'); } },
-    { id: 'link', icon: <ArrowRightIcon size="small" primaryColor={textColor} />, label: 'Link work item', section: 'primary', action: () => { setShowMenu(false); setSearch(''); onLinkItem ? onLinkItem() : catalystToast.info('Link work item — coming soon'); } },
-    { id: 'attachment', icon: <AttachmentIcon size="small" primaryColor={textColor} />, label: 'Add attachment', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddAttachment ? onAddAttachment() : catalystToast.info('Add attachment — coming soon'); } },
-    { id: 'weblink', icon: <WorldIcon size="small" primaryColor={textColor} />, label: 'Add web link', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddWebLink ? onAddWebLink() : catalystToast.info('Add web link — coming soon'); } },
-    { id: 'design', icon: <EditIcon size="small" primaryColor={textColor} />, label: 'Add design', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddDesign ? onAddDesign() : catalystToast.info('Add design — coming soon'); } },
+    { id: 'child', icon: <ChildIssuesIcon label="" color={textColor} />, label: 'Create child work item', section: 'primary', action: () => {
+      setShowMenu(false); setSearch('');
+      // Caller-supplied override wins; otherwise notify any mounted
+      // SubtasksPanel via the quickActionsBus. The panel handles
+      // expanding + entering inline-create mode; the focused input
+      // auto-scrolls itself into view natively.
+      if (onCreateChild) onCreateChild();
+      else emitCreateChild();
+    } },
+    { id: 'link', icon: <TaskIcon size="small" primaryColor={textColor} />, label: 'Link work item', section: 'primary', action: () => {
+      setShowMenu(false); setSearch('');
+      // Caller-supplied override wins; otherwise notify any mounted
+      // LinkedWorkItems section via the quickActionsBus. The section
+      // expands itself, shows the LinkToolbar, focuses the picker, and
+      // smooth-scrolls into view.
+      if (onLinkItem) onLinkItem();
+      else emitLinkWorkItem();
+    } },
+    { id: 'attachment', icon: <AttachmentIcon size="small" primaryColor={textColor} />, label: 'Add attachment', section: 'secondary', action: () => {
+      setShowMenu(false); setSearch('');
+      // Caller-supplied override wins; otherwise notify any mounted
+      // AttachmentsSection. Emit MUST be synchronous on this click so
+      // the browser keeps the user-activation gesture chain — the
+      // listener calls fileInput.click() which is gated on that.
+      if (onAddAttachment) onAddAttachment();
+      else emitAddAttachment();
+    } },
+    { id: 'weblink', icon: <GlobeIcon label="" color={textColor} />, label: 'Add web link', section: 'secondary', action: () => {
+      setShowMenu(false); setSearch('');
+      // Caller-supplied override wins; otherwise notify the mounted
+      // WebLinksSection — opens the form, focuses URL, scrolls in.
+      if (onAddWebLink) onAddWebLink();
+      else emitAddWebLink();
+    } },
+    { id: 'design', icon: <EditIcon label="" color={textColor} />, label: 'Add design', section: 'secondary', action: () => {
+      setShowMenu(false); setSearch('');
+      // Caller-supplied override wins; otherwise notify the mounted
+      // DesignsSection — opens the Figma URL form, focuses, scrolls.
+      if (onAddDesign) onAddDesign();
+      else emitAddDesign();
+    } },
   ];
 
   const q = search.toLowerCase();
@@ -72,15 +111,51 @@ export function CatalystQuickActions({
   const primary = filtered.filter(i => i.section === 'primary');
   const secondary = filtered.filter(i => i.section === 'secondary');
 
-  /* jira-compare 2026-05-16: Jira's Add button is a transparent/borderless
-     icon button. DOM probe: bg rgba(0,0,0,0), border none, borderRadius 3px,
-     padding 6px 0px, height 32px, color rgb(80,82,88). The previous bordered
-     chip style (bg #FAFBFC, border 1px var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)), radius 4px) was not Jira-parity. */
+  // Four-state styling for the + trigger:
+  //   idle             → 1px gray border, transparent bg, subtle dark stroke
+  //   hovered          → 1px gray border, light gray bg (menu closed)
+  //   active           → 2px blue border + light blue bg + blue stroke (menu open)
+  //   active+hovered   → 2px blue border + DARKER blue bg + DARKER blue stroke
+  //                       (so the user sees the trigger react while the menu
+  //                        is already open)
+  const isActiveHovered = showMenu && isHovered;
+  const btnBackground = isActiveHovered
+    ? 'var(--ds-background-selected-hovered, #CCE0FF)'
+    : showMenu
+      ? 'var(--ds-background-selected, #E9F2FE)'
+      : isHovered
+        ? 'var(--ds-background-neutral-hovered, #F1F2F4)'
+        : 'transparent';
+  const btnBorderColor = showMenu
+    ? 'var(--ds-border-selected, #0C66E4)'
+    : 'var(--ds-border, #DFE1E6)';
+  const btnBorderWidth = showMenu ? 2 : 1;
+  const addIconColor = isActiveHovered
+    ? 'var(--ds-link-pressed, #0747A6)'
+    : showMenu
+      ? 'var(--ds-text-selected, #0C66E4)'
+      : 'var(--ds-text, #292A2E)';
   const btnStyle: React.CSSProperties = {
-    width: 32, height: 32, border: 'none', background: 'transparent',
+    width: 32, height: 32,
+    border: `${btnBorderWidth}px solid ${btnBorderColor}`,
+    background: btnBackground,
     borderRadius: 3, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-    color: 'var(--ds-text-subtle, #505258)', transition: 'background 0.15s, color 0.15s',
+    boxSizing: 'border-box',
+    color: isActiveHovered
+      ? 'var(--ds-link-pressed, #0747A6)'
+      : showMenu
+        ? 'var(--ds-text-selected, #0C66E4)'
+        : 'var(--ds-text-subtle, #505258)',
+    transition: 'background 0.15s, color 0.15s, border-color 0.15s, border-width 0.15s',
   };
+
+  // Search wrapper border swaps to brand blue while the input is focused,
+  // matching the trigger's active-state language. 2px when focused to
+  // match the trigger's active-state border width.
+  const searchBorderColor = isSearchFocused
+    ? 'var(--ds-border-focused, #388BFF)'
+    : 'var(--ds-border, #DFE1E6)';
+  const searchBorderWidth = isSearchFocused ? 2 : 1;
 
   const itemStyle: React.CSSProperties = {
     display: 'flex', alignItems: 'center', height: 40, padding: '8px 16px',
@@ -96,14 +171,14 @@ export function CatalystQuickActions({
         <button
           onClick={() => setShowMenu(!showMenu)}
           style={btnStyle}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; e.currentTarget.style.color = 'var(--ds-text, #292A2E)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtle, #505258)'; }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           aria-haspopup="menu"
           aria-expanded={showMenu}
           aria-label="Add"
           title="Add"
         >
-          <AddIcon size="small" primaryColor={textColor} />
+          <AddIcon size="small" primaryColor={addIconColor} />
         </button>
 
         {showMenu && (
@@ -118,11 +193,23 @@ export function CatalystQuickActions({
           }}>
             {/* Search */}
             <div style={{ margin: '4px 8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', border: `0.5px solid ${borderColor}`, borderRadius: 3, padding: '1px 0' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  border: `${searchBorderWidth}px solid ${searchBorderColor}`,
+                  borderRadius: 3,
+                  padding: '1px 0',
+                  boxSizing: 'border-box',
+                  transition: 'border-color 0.15s, border-width 0.15s',
+                }}
+              >
                 <span style={{ marginLeft: 8, flexShrink: 0, display: 'flex', alignItems: 'center' }}><SearchIcon size="small" primaryColor={textColor} /></span>
                 <input
                   type="text" placeholder="Find menu item" value={search}
                   onChange={e => setSearch(e.target.value)} autoFocus
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
                   style={{ background: 'transparent', border: 'none', outline: 'none', padding: '4px 4px 4px 8px', fontSize: 14, color: textColor, width: '100%', height: 28, fontFamily: 'inherit' }}
                 />
                 {search && (

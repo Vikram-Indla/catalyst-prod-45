@@ -31,6 +31,8 @@ import React from 'react';
 import { AtlaskitBoundary } from '@/components/shared/rich-text/atlaskit/AtlaskitBoundary';
 import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
 import { LinkedWorkItems } from './LinkedWorkItems';
+import { WebLinksSection } from '@/components/catalyst-detail-views/shared/sections/web-links';
+import { DesignsSection } from '@/components/catalyst-detail-views/shared/sections/designs';
 
 export interface LinkedWorkItemsSectionProps {
   /** UUID of the current work item (legacy compat). */
@@ -62,19 +64,32 @@ export function LinkedWorkItemsSection({
   }
 
   return (
-    <div style={{ marginBottom: 24 }}>
-      <AtlaskitBoundary
-        diagnosticTag={`linked-work-items:${issueKey}`}
-        fallback={<LinkedIssuesSection issueId={issueId} issueKey={issueKey} />}
-      >
-        <LinkedWorkItems
-          issueId={issueId}
-          issueKey={issueKey}
-          projectKey={projectKey}
-          loadOptionsOverride={loadOptionsOverride}
-        />
-      </AtlaskitBoundary>
-    </div>
+    <>
+      {/* Designs — renders FIRST so it sits between Child Work Items
+          (mounted upstream by SubtasksPanel) and Linked Work Items.
+          Self-hides when there are no saved designs AND the form is
+          closed. The "+" menu's "Add design" action surfaces it via
+          quickActionsBus. */}
+      <DesignsSection workItemId={issueId} />
+      <div style={{ marginBottom: 24 }}>
+        <AtlaskitBoundary
+          diagnosticTag={`linked-work-items:${issueKey}`}
+          fallback={<LinkedIssuesSection issueId={issueId} issueKey={issueKey} />}
+        >
+          <LinkedWorkItems
+            issueId={issueId}
+            issueKey={issueKey}
+            projectKey={projectKey}
+            loadOptionsOverride={loadOptionsOverride}
+          />
+        </AtlaskitBoundary>
+      </div>
+      {/* Web Links — sits directly below Linked Work Items. Self-hides
+          when there are no saved links AND the form isn't open.
+          The "+" menu's "Add web link" action surfaces it via
+          quickActionsBus. */}
+      <WebLinksSection workItemId={issueId} />
+    </>
   );
 }
 

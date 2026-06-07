@@ -46,8 +46,11 @@ export interface UseFuzzyChildSearchResult {
 }
 
 const DEBOUNCE_MS = 200;
-const MIN_QUERY_LENGTH = 2;
 const RESULT_LIMIT = 20;
+// When the input is focused but the user hasn't typed yet, return the
+// top N most-recently-updated allowed-type issues so the dropdown is
+// useful out of the gate.
+const DEFAULT_LIMIT = 15;
 
 export function useFuzzyChildSearch({
   query,
@@ -63,7 +66,7 @@ export function useFuzzyChildSearch({
   const requestIdRef = useRef(0);
 
   useEffect(() => {
-    if (disabled || !projectKey || query.trim().length < MIN_QUERY_LENGTH) {
+    if (disabled || !projectKey) {
       setResults([]);
       setIsLoading(false);
       return;
@@ -74,7 +77,10 @@ export function useFuzzyChildSearch({
       const rid = ++requestIdRef.current;
       setIsLoading(true);
       try {
-        const needle = query.trim().replace(/%/g, '\\%');
+        const trimmed = query.trim();
+        const isEmptyQuery = trimmed.length === 0;
+        const needle = trimmed.replace(/%/g, '\\%');
+        const limit = isEmptyQuery ? DEFAULT_LIMIT : RESULT_LIMIT;
         const excludeList = excludedIds.length > 0
           ? `(${excludedIds.map((id) => `"${id}"`).join(',')})`
           : null;
@@ -85,9 +91,12 @@ export function useFuzzyChildSearch({
           .eq('project_key', projectKey)
           .is('deleted_at', null)
           .is('archived_at', null)
-          .or(`issue_key.ilike.%${needle}%,summary.ilike.%${needle}%`)
           .order('jira_updated_at', { ascending: false })
-          .limit(RESULT_LIMIT);
+          .limit(limit);
+
+        if (!isEmptyQuery) {
+          q = q.or(`issue_key.ilike.%${needle}%,summary.ilike.%${needle}%`);
+        }
 
         if (excludeList) {
           q = q.not('id', 'in', excludeList);
@@ -107,9 +116,12 @@ export function useFuzzyChildSearch({
           .from('catalyst_issues')
           .select('id,issue_key,title,issue_type,status,projects!inner(key)')
           .eq('projects.key', projectKey)
-          .or(`issue_key.ilike.%${needle}%,title.ilike.%${needle}%`)
           .order('updated_at', { ascending: false })
-          .limit(RESULT_LIMIT);
+          .limit(limit);
+
+        if (!isEmptyQuery) {
+          catQ = catQ.or(`issue_key.ilike.%${needle}%,title.ilike.%${needle}%`);
+        }
 
         if (allowedTypes && allowedTypes.length > 0) {
           catQ = catQ.in('issue_type', allowedTypes);
@@ -134,7 +146,7 @@ export function useFuzzyChildSearch({
             status: r.status,
             status_category: 'todo',
           }));
-        setResults([...ph, ...cat].slice(0, RESULT_LIMIT));
+        setResults([...ph, ...cat].slice(0, limit));
       } finally {
         if (rid === requestIdRef.current) setIsLoading(false);
       }

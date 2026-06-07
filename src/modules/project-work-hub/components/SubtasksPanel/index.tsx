@@ -17,7 +17,8 @@
  *   • Header ··· → Collapse / Clear completed
  *   • + → inline create row with type selector
  */
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useCreateChildListener } from '@/components/catalyst-detail-views/shared/sections/quickActionsBus';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -277,6 +278,20 @@ export function SubtasksPanel({
   // Ref forwarded to InlineCreateWithAI so the "+" in the heading can
   // refocus the input when the user is already in creating mode.
   const inlineCreateInputRef = useRef<HTMLInputElement>(null);
+
+  // Cross-component bridge: when CatalystQuickActions' "Create child
+  // work item" menu item is clicked, expand the panel and enter
+  // inline-create mode. InlineCreateWithAI auto-focuses its input on
+  // mount, and HTMLElement.focus() natively scrolls the input into
+  // view — no manual scrollIntoView needed (it would land on the
+  // section title and conflict with the focus scroll).
+  useCreateChildListener(
+    useCallback(() => {
+      if (!canCreate) return;
+      setExpanded(true);
+      setCreating(true);
+    }, [canCreate]),
+  );
 
   // Jira parity: 4 columns only (Work / Priority / Assignee / Status).
   const [columns, setColumns] = useState<Record<VisibleColumn, boolean>>({

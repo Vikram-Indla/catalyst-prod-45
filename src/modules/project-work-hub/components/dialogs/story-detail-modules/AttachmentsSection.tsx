@@ -10,6 +10,7 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
+import { useAddAttachmentListener } from '@/components/catalyst-detail-views/shared/sections/quickActionsBus';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 /* jira-compare 2026-05-03 — Patch D3 (lucide sweep) ·
    Trash2  → @atlaskit/icon/core/delete
@@ -134,6 +135,7 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
   const fileInputRef = useRef<HTMLInputElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
   const dragCounter = useRef(0);
+  const sectionRootRef = useRef<HTMLDivElement>(null);
 
   // Determine if current user is project admin/owner (used for canDelete)
   const { data: userRole } = useQuery({
@@ -153,6 +155,22 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
   });
 
   const isProjectAdmin = userRole === 'admin' || userRole === 'owner';
+
+  // Cross-component bridge: CatalystQuickActions' "Add attachment" menu
+  // item emits via quickActionsBus. Expand the panel if collapsed,
+  // smooth-scroll the section into view, then open the native file
+  // picker. The .click() runs synchronously inside the listener call
+  // chain that started with the user's click in CatalystQuickActions,
+  // so the browser preserves user-activation and allows the dialog.
+  useAddAttachmentListener(
+    useCallback(() => {
+      if (collapsed) setCollapsed(false);
+      requestAnimationFrame(() => {
+        sectionRootRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+      fileInputRef.current?.click();
+    }, [collapsed]),
+  );
 
   // Close more menu on outside click
   useEffect(() => {
@@ -335,12 +353,25 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
 
   return (
     <div
+      ref={sectionRootRef}
       className={`att-section ${isDragging ? 'att-section--dragging' : ''}`}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
+      {/* Hidden file input — kept OUTSIDE the {!collapsed} gate so it
+          stays in the DOM at all times. The PlusIcon header button calls
+          it via fileInputRef, and CatalystQuickActions' "Add attachment"
+          listener calls it the same way; both need the ref to be set
+          even while the panel is collapsed. */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
       {/* Section Header */}
       <div role="heading" className="att-heading-wrapper">
         <div className="att-heading-inner">
@@ -402,13 +433,6 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
               >
                 <PlusIcon />
               </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                style={{ display: 'none' }}
-                onChange={handleFileChange}
-              />
             </div>
           )}
         </div>

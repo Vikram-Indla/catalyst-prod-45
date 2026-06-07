@@ -27,7 +27,8 @@
  *
  * Props match `LinkedIssuesSection` so rollouts downstream are trivial.
  */
-import React, { Suspense, lazy, useMemo, useRef, useState } from 'react';
+import React, { Suspense, lazy, useCallback, useMemo, useRef, useState } from 'react';
+import { useLinkWorkItemListener } from '@/components/catalyst-detail-views/shared/sections/quickActionsBus';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -73,6 +74,18 @@ export function LinkedWorkItems({
   const [expanded, setExpanded] = useState<boolean>(false);
   const [showToolbar, setShowToolbar] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+
+  // Cross-component bridge: CatalystQuickActions' "Link work item" menu
+  // item emits via quickActionsBus → here we expand the section and
+  // mount the LinkToolbar. LinkToolbar auto-focuses its picker on mount,
+  // which natively scrolls itself into view (matches the Create-child
+  // flow in SubtasksPanel).
+  useLinkWorkItemListener(
+    useCallback(() => {
+      setExpanded(true);
+      setShowToolbar(true);
+    }, []),
+  );
   const [createLinkType, setCreateLinkType] = useState<string>('relates to');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [openedItem, setOpenedItem] = useState<{
