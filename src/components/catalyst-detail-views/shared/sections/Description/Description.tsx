@@ -111,12 +111,12 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
       catyPhase === 'errored'
     ) {
       setSnapshotAdf(null);
-      // Hash-dedup: mark the AI output so the user can't re-improve it.
       if (catyPhase === 'done' && catyText && issue?.issue_key) {
         markImproved(issue.issue_key, contentHash(catyText));
       }
+      stopCatyImprove();
     }
-  }, [catyPhase, catyText, issue?.issue_key, markImproved]);
+  }, [catyPhase, catyText, issue?.issue_key, markImproved, stopCatyImprove]);
 
   // Sync editor.editable with stream state. setEditable doesn't trigger
   // a re-render of editor instance, so it's cheap.

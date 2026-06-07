@@ -67,6 +67,10 @@ interface ImproveIssueDropdownProps {
     project_key?: string | null;
     project_id?: string | null;
     source?: 'jira' | 'catalyst' | string | null;
+    parent_key?: string | null;
+    parent_summary?: string | null;
+    priority?: string | null;
+    labels?: string[] | null;
   } | null;
   /** Apply an AI-improved description to the issue. */
   onApplyDescription?: (newDescription: string) => void | Promise<void>;
@@ -195,6 +199,9 @@ export function ImproveIssueDropdown({
       currentAcceptanceCriteria: issue.acceptance_criteria ?? null,
       attachmentUrls,
       improveSubType: 'improve_clarify',
+      parentSummary: issue.parent_summary ?? null,
+      labels: issue.labels?.join(', ') ?? null,
+      priority: issue.priority ?? null,
     });
   }, [issue, startCatyImprove]);
 

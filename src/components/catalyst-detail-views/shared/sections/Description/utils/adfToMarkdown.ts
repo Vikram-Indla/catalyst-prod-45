@@ -74,19 +74,30 @@ function serializeBlock(node: AdfNode): string {
   }
 }
 
-/** A listItem normally wraps one paragraph; flatten to inline text. */
-function serializeListItemContent(li: AdfNode): string {
+/** A listItem may wrap a paragraph + nested lists. Serialize all blocks,
+ *  indenting nested list lines so the AI sees the full hierarchy. */
+function serializeListItemContent(li: AdfNode, depth: number = 0): string {
   const blocks = li.content ?? [];
-  const first = blocks[0];
-  if (first?.type === 'paragraph') {
-    return serializeInline(first.content ?? []);
+  const parts: string[] = [];
+  for (const block of blocks) {
+    if (block.type === 'paragraph') {
+      parts.push(serializeInline(block.content ?? []));
+    } else if (block.type === 'bulletList') {
+      const nested = (block.content ?? [])
+        .map((child) => `${'  '.repeat(depth + 1)}- ${serializeListItemContent(child, depth + 1)}`)
+        .join('\n');
+      parts.push(nested);
+    } else if (block.type === 'orderedList') {
+      const nested = (block.content ?? [])
+        .map((child, i) => `${'  '.repeat(depth + 1)}${i + 1}. ${serializeListItemContent(child, depth + 1)}`)
+        .join('\n');
+      parts.push(nested);
+    } else {
+      const s = serializeBlock(block);
+      if (s) parts.push(s);
+    }
   }
-  // Fall back to whatever block content the item carries — joined with
-  // spaces since GFM list items are single-line.
-  return blocks
-    .map((b) => serializeBlock(b))
-    .filter((s) => s !== '')
-    .join(' ');
+  return parts.join('\n');
 }
 
 function serializeTable(table: AdfNode): string {

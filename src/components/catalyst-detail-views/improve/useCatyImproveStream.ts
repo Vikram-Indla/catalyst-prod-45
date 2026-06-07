@@ -174,6 +174,13 @@ export function useCatyImproveStream(
               current_description: payload.currentDescription ?? "",
               current_ac: payload.currentAcceptanceCriteria ?? "",
               attachment_urls: payload.attachmentUrls ?? [],
+              parent_summary: payload.parentSummary ?? "",
+              parent_description: payload.parentDescription ?? "",
+              linked_issues: payload.linkedIssues ?? "",
+              existing_subtasks: payload.existingSubtasks ?? "",
+              labels: payload.labels ?? "",
+              priority: payload.priority ?? "",
+              components: payload.components ?? "",
             };
 
         const res = await fetchFunction(endpointName, {

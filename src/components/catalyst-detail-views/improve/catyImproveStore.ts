@@ -43,6 +43,20 @@ export interface CatyImprovePayload {
    * the comment editor's "Improve writing" button.
    */
   improveType?: 'improve_description_v2' | 'improve_comment_v1';
+  /** Parent work item summary — hierarchical context for the AI. */
+  parentSummary?: string | null;
+  /** Parent work item description (truncated). */
+  parentDescription?: string | null;
+  /** Comma-separated linked issue summaries. */
+  linkedIssues?: string | null;
+  /** Comma-separated existing subtask summaries. */
+  existingSubtasks?: string | null;
+  /** Comma-separated labels. */
+  labels?: string | null;
+  /** Priority name. */
+  priority?: string | null;
+  /** Comma-separated component names. */
+  components?: string | null;
 }
 
 /** Minimum character count (after trim) to allow AI improvement. */
