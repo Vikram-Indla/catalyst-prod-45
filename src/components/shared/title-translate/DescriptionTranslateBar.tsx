@@ -84,7 +84,7 @@ export function DescriptionTranslateBar({
           {translateLabel}
           <span className="ttw-translate-chip__arrow" aria-hidden="true">→</span>
         </button>
-      )}
+      ) : null}
     </div>
   );
 }
