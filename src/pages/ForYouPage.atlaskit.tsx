@@ -125,14 +125,14 @@ export default function ForYouPageAtlaskit() {
         initialStoredTabRef.current = 'ai-theme';
         localStorage.setItem(FOR_YOU_TAB_KEY, 'ai-theme');
       } else if (stored === 'worked' || stored === 'viewed') {
-        initialStoredTabRef.current = 'recommended';
-        localStorage.setItem(FOR_YOU_TAB_KEY, 'recommended');
+        initialStoredTabRef.current = 'assigned';
+        localStorage.setItem(FOR_YOU_TAB_KEY, 'assigned');
       } else if (stored) {
         initialStoredTabRef.current = stored as TabType;
       } else {
-        // Sentinel value so we don't re-enter this branch — `recommended` is
+        // Sentinel value so we don't re-enter this branch — `assigned` is
         // already the hook default, no setActiveTab needed.
-        initialStoredTabRef.current = 'recommended';
+        initialStoredTabRef.current = 'assigned';
       }
     } catch {
       initialStoredTabRef.current = 'recommended';
