@@ -1,18 +1,21 @@
 /**
  * useMentionSuggestions — returns the canonical list of users to surface
- * in the comment-mention pill. Approximates Jira's union heuristic:
+ * in the comment-mention pill. 6-tier weighted scoring:
  *
  *   1. Issue assignee + reporter            (ph_issues  → profiles by jira_account_id)
  *   2. Issue watchers                       (ph_issue_watchers.user_id → profiles)
  *   3. Recent comment authors on the issue  (ph_comments.author_id → profiles, 30 most recent)
  *   4. Project members                      (ph_project_members.user_id → profiles)
- *   5. Fallback: globally recent commenters (when (1-4) yield < 5 results)
+ *   4.5 Collaborators                       (collaboration_scores — nightly pre-computed)
+ *   5. Fallback: globally recent commenters (when (1-4.5) yield < 5 results)
  *
  * Returns deduped profile rows in priority order — issue participants
- * appear before project members which appear before global-recent.
+ * appear before project members which appear before collaborators
+ * which appear before global-recent.
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface MentionUser {
   id: string;
@@ -42,8 +45,10 @@ async function fetchProfilesByJiraAccountIds(
 }
 
 export function useMentionSuggestions(workItemId: string | undefined) {
+  const { user } = useAuth();
+  const currentUserId = user?.id;
   return useQuery({
-    queryKey: ['mention-suggestions', workItemId],
+    queryKey: ['mention-suggestions', workItemId, currentUserId],
     enabled: !!workItemId && workItemId !== 'new-comment',
     staleTime: 60_000,
     queryFn: async (): Promise<MentionUser[]> => {
@@ -111,6 +116,20 @@ export function useMentionSuggestions(workItemId: string | undefined) {
             .filter((v): v is string => typeof v === 'string');
           (await fetchProfilesByIds(memberIds)).forEach(push);
         }
+      }
+
+      // ── 4.5 Collaborators (from nightly-computed collaboration_scores) ──
+      if (currentUserId) {
+        const { data: collabRows } = await supabase
+          .from('collaboration_scores')
+          .select('collaborator_id')
+          .eq('user_id', currentUserId)
+          .order('score', { ascending: false })
+          .limit(20);
+        const collabIds = (collabRows || [])
+          .map((r: { collaborator_id: string }) => r.collaborator_id)
+          .filter((v): v is string => typeof v === 'string');
+        (await fetchProfilesByIds(collabIds)).forEach(push);
       }
 
       // ── 5. Fallback — globally recent commenters ──

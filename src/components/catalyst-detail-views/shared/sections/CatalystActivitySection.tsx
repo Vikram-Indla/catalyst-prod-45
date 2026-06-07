@@ -16,6 +16,7 @@ import { CommentsSummaryCard } from '@/components/catalyst-detail-views/improve/
 import { useCommentsSummaryStream } from '@/components/catalyst-detail-views/improve/useCommentsSummaryStream';
 import { useCatySummarize } from '@/components/catalyst-detail-views/improve/catySummarizeStore';
 import { useAiSummaryFeedback } from '@/components/catalyst-detail-views/improve/useAiSummaryFeedback';
+import { useInteractionRecorder } from '@/hooks/useInteractionRecorder';
 
 interface CatalystActivitySectionProps {
   itemId: string;
@@ -79,6 +80,7 @@ function mapActivity(raw: any): CdsActivityItem {
 export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySectionProps) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { onCommentSaved } = useInteractionRecorder();
   const [currentUser, setCurrentUser] = useState<CdsUser | undefined>();
 
   // Apr 28 2026 (cycle 8 fix — silent comments-system bug):
@@ -385,6 +387,15 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['cv-comments', resolvedWorkItemId] });
       catalystToast.success(variables.parentId ? 'Reply added' : 'Comment added');
+
+      // Record interactions + create mention notifications (non-blocking)
+      if (resolvedWorkItemId) {
+        onCommentSaved({
+          body: variables.body,
+          workItemId: resolvedWorkItemId,
+          projectKey: resolvedRef?.issue_key?.split('-')[0] ?? undefined,
+        });
+      }
     },
     onError: () => catalystToast.error('Failed to add comment'),
   });
