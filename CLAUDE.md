@@ -1453,20 +1453,30 @@ The function owner is not subject to RLS (no FORCE ROW LEVEL SECURITY), so its i
 **Severity:** P0 (self-referential membership RLS makes the entire feature unreadable — caught only because the 2-user test was mandatory).
 ---
 
-## 📂 REPO PATH — APOSTROPHE IN PATH (Non-Negotiable)
+## 📂 REPO PATH — USE SYMLINK (Non-Negotiable)
 
-**The working directory / repo root is:**
+**The repo has a symlink at `~/catalyst` that avoids all path-quoting issues:**
 
 ```
-/Users/vikramindla/Documents/Documents - vikram's MacBook Pro/GitHub/catalyst-prod-45
+~/catalyst  →  /Users/vikramindla/Documents/Documents - vikram’s MacBook Pro/GitHub/catalyst-prod-45
 ```
 
-The path contains an apostrophe (`'`) in "vikram's". This breaks naive shell quoting. Rules:
+The real path contains a Unicode smart apostrophe (U+2019 `’`) in "vikram’s" which breaks shell quoting, `ls`, `find`, `Read`, and `Edit` tools. **The symlink is the permanent fix.**
 
-1. **Always use double quotes** around the path in shell commands: `"/Users/vikramindla/Documents/Documents - vikram's MacBook Pro/GitHub/catalyst-prod-45"`
-2. **Prefer `$(pwd)`** over typing the full path — the working directory is already set correctly at session start.
-3. **For git:** use `git -C "$(pwd)" ...` — never `cd '/path/with/apostrophe' && git ...`
-4. **Subagents:** pass the repo path via prompt context, never expect them to discover it.
+### Rules
+
+1. **For ALL shell commands:** use `~/catalyst` as the path, never the full real path
+2. **For git:** `git -C ~/catalyst ...` or just `git ...` (pwd is set correctly at session start)
+3. **For file reads/edits:** use `/Users/vikramindla/catalyst/src/...` (symlink-resolved absolute path)
+4. **`$(pwd)`** also works — Claude Code sets the working directory correctly at session start
+5. **Subagents:** pass `~/catalyst` as the repo path, never the real path with the smart apostrophe
+6. **NEVER type the full real path** in any shell command, agent prompt, or tool call
+
+### If the symlink is missing (new machine / re-clone)
+
+```bash
+ln -s "/Users/vikramindla/Documents/Documents - vikram’s MacBook Pro/GitHub/catalyst-prod-45" ~/catalyst
+```
 
 This applies to ALL agents, skills, and subagents. Every implementation conversation starts in this directory.
 
