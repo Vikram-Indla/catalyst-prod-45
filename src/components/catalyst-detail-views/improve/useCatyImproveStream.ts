@@ -54,8 +54,8 @@ export interface UseCatyImproveStreamResult {
  * (16ms tick) freezes the app. 80ms tick × 3 chars = 37 chars/sec is
  * close to a comfortable reading speed AND ~5× fewer renders.
  */
-const TYPEWRITER_TICK_MS = 80;
-const TYPEWRITER_CHARS_PER_TICK = 3;
+const TYPEWRITER_TICK_MS = 60;
+const TYPEWRITER_CHARS_PER_TICK = 12;
 
 export function useCatyImproveStream(
   payload: CatyImprovePayload | null,

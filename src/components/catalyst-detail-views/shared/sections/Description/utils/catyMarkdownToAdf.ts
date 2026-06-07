@@ -101,6 +101,97 @@ function looksLikeTableRow(line: string): boolean {
   return /\|/.test(line);
 }
 
+function indentLevel(line: string): number {
+  const match = line.match(/^(\s*)/);
+  return match ? match[1].length : 0;
+}
+
+function isBulletLine(line: string): boolean {
+  return /^\s*[-*]\s+/.test(line);
+}
+
+function isOrderedLine(line: string): boolean {
+  return /^\s*\d+\.\s+/.test(line);
+}
+
+function isListLine(line: string): boolean {
+  return isBulletLine(line) || isOrderedLine(line);
+}
+
+function parseBulletList(
+  lines: string[],
+  startIdx: number,
+  baseIndent: number,
+): { node: AdfDoc['content'][number]; nextIndex: number } {
+  const items: AdfDoc['content'] = [];
+  let i = startIdx;
+  while (i < lines.length) {
+    const ln = lines[i] ?? '';
+    if (!isBulletLine(ln)) break;
+    const indent = indentLevel(ln);
+    if (indent < baseIndent) break;
+    if (indent > baseIndent) break;
+    const text = ln.replace(/^\s*[-*]\s+/, '');
+    const itemContent: AdfDoc['content'] = [
+      { type: 'paragraph', content: parseInline(text) },
+    ];
+    i++;
+    if (i < lines.length && isListLine(lines[i] ?? '')) {
+      const childIndent = indentLevel(lines[i] ?? '');
+      if (childIndent > baseIndent) {
+        if (isBulletLine(lines[i] ?? '')) {
+          const child = parseBulletList(lines, i, childIndent);
+          itemContent.push(child.node);
+          i = child.nextIndex;
+        } else if (isOrderedLine(lines[i] ?? '')) {
+          const child = parseOrderedList(lines, i, childIndent);
+          itemContent.push(child.node);
+          i = child.nextIndex;
+        }
+      }
+    }
+    items.push({ type: 'listItem', content: itemContent });
+  }
+  return { node: { type: 'bulletList', content: items }, nextIndex: i };
+}
+
+function parseOrderedList(
+  lines: string[],
+  startIdx: number,
+  baseIndent: number,
+): { node: AdfDoc['content'][number]; nextIndex: number } {
+  const items: AdfDoc['content'] = [];
+  let i = startIdx;
+  while (i < lines.length) {
+    const ln = lines[i] ?? '';
+    if (!isOrderedLine(ln)) break;
+    const indent = indentLevel(ln);
+    if (indent < baseIndent) break;
+    if (indent > baseIndent) break;
+    const text = ln.replace(/^\s*\d+\.\s+/, '');
+    const itemContent: AdfDoc['content'] = [
+      { type: 'paragraph', content: parseInline(text) },
+    ];
+    i++;
+    if (i < lines.length && isListLine(lines[i] ?? '')) {
+      const childIndent = indentLevel(lines[i] ?? '');
+      if (childIndent > baseIndent) {
+        if (isBulletLine(lines[i] ?? '')) {
+          const child = parseBulletList(lines, i, childIndent);
+          itemContent.push(child.node);
+          i = child.nextIndex;
+        } else if (isOrderedLine(lines[i] ?? '')) {
+          const child = parseOrderedList(lines, i, childIndent);
+          itemContent.push(child.node);
+          i = child.nextIndex;
+        }
+      }
+    }
+    items.push({ type: 'listItem', content: itemContent });
+  }
+  return { node: { type: 'orderedList', content: items }, nextIndex: i };
+}
+
 export function catyMarkdownToAdf(md: string): AdfDoc {
   if (!md.trim()) {
     return { type: 'doc', version: 1, content: [{ type: 'paragraph' }] };
@@ -153,38 +244,16 @@ export function catyMarkdownToAdf(md: string): AdfDoc {
       blocks.push({ type: 'table', content: rows });
       continue;
     }
-    if (/^[-*]\s+/.test(line)) {
-      const items: AdfDoc['content'] = [];
-      while (i < lines.length && /^[-*]\s+/.test(lines[i] ?? '')) {
-        items.push({
-          type: 'listItem',
-          content: [
-            {
-              type: 'paragraph',
-              content: parseInline((lines[i] ?? '').replace(/^[-*]\s+/, '')),
-            },
-          ],
-        });
-        i++;
-      }
-      blocks.push({ type: 'bulletList', content: items });
+    if (isBulletLine(line)) {
+      const result = parseBulletList(lines, i, indentLevel(line));
+      i = result.nextIndex;
+      blocks.push(result.node);
       continue;
     }
-    if (/^\d+\.\s+/.test(line)) {
-      const items: AdfDoc['content'] = [];
-      while (i < lines.length && /^\d+\.\s+/.test(lines[i] ?? '')) {
-        items.push({
-          type: 'listItem',
-          content: [
-            {
-              type: 'paragraph',
-              content: parseInline((lines[i] ?? '').replace(/^\d+\.\s+/, '')),
-            },
-          ],
-        });
-        i++;
-      }
-      blocks.push({ type: 'orderedList', content: items });
+    if (isOrderedLine(line)) {
+      const result = parseOrderedList(lines, i, indentLevel(line));
+      i = result.nextIndex;
+      blocks.push(result.node);
       continue;
     }
     if (!line.trim()) {
@@ -196,6 +265,7 @@ export function catyMarkdownToAdf(md: string): AdfDoc {
       i < lines.length &&
       (lines[i] ?? '').trim() &&
       !/^(#{1,6}\s|[-*]\s|\d+\.\s)/.test(lines[i] ?? '') &&
+      !isListLine(lines[i] ?? '') &&
       !(
         looksLikeTableRow(lines[i] ?? '') &&
         SEPARATOR_RE.test(lines[i + 1] ?? '')
