@@ -1568,3 +1568,44 @@ npm i -g @musistudio/claude-code-router   # Model router (or use npx)
 Then restart Claude Code. All hooks auto-activate on every future session.
 
 **Severity:** P1 — Vikram wants explicit optimization visibility at session start (confirmation all tools active) and session end (savings summary). Skipping either is a process violation.
+
+
+---
+
+## 2026-06-07 — Rainbow CTA inner pill: ADS surface tokens resolve to semi-transparent in nested contexts — ALWAYS hardcode #FFFFFF
+
+**Surface:** All AI CTA components with rainbow conic-gradient wrapper (ImproveButton, AIIntelligenceButton, CatyRainbowCTA, ImproveIssueDropdown, RecommendedPanel, SummarizeDigestModal, AssignedPanel, ReplyComposer, EditableAssignee, MicButton)
+
+**Pattern (6 iterations to fix — RCA below):**
+The "Improve writing" button in the comment editor toolbar rendered with rainbow gradient bleeding through the inner pill, while "Improve Story" in the sidebar rendered with clean white interior. Both used the same  wrapper. The root cause was NOT padding — it was the inner button's  value.
+
+**Root cause:** ADS surface tokens (, , ) resolve to  (semi-transparent grey) inside certain DOM contexts — specifically the Tiptap editor toolbar, nested surface containers, and any parent with ADS surface layering. The 3% opacity lets the rainbow  from the parent wrapper bleed through. The sidebar's "Improve Story" worked because its DOM context resolved the same tokens to  (opaque white).
+
+**Fix:** Hardcode  for ALL background states (idle, hover, disabled) on every inner button/pill inside a rainbow wrapper. Do NOT use any ADS token — they are context-dependent and unreliable inside rainbow wrappers. Disabled state communicated via  +  instead of grey background.
+
+**Why it took 6 iterations (RCA on process failure):**
+1. **Iteration 1:** Changed  →  (wrong diagnosis — assumed padding was the issue)
+2. **Iteration 2:** Reverted padding back to 2 (confused by Jira screenshot comparison)
+3. **Iteration 3:** Re-applied padding 3 (correct, but not the root cause)
+4. **Iteration 4:** Changed  →  (still resolved to grey — wrong fix)
+5. **Iteration 5:** Hardcoded  for idle state (correct, but missed disabled state)
+6. **Iteration 6:** Hardcoded  for disabled state too (final fix)
+
+**Process failures:**
+- **Never DOM-probed the actual computed  until iteration 4.** Should have been step 1.
+- **Assumed both buttons used the same background value** because the code looked similar. Never compared computed styles side-by-side.
+- **Didn't check which STATE the button was in** (disabled vs idle) — the disabled branch had a different token.
+- **Tried token substitutions instead of measuring.** Each token swap required a rebuild + refresh cycle. A single DOM probe would have shown that ALL ADS surface tokens resolve to the same grey in that context.
+
+**Rule (NEW — applies to ALL future visual fixes):**
+1. **Before ANY code change for a visual bug, DOM-probe  on the ACTUAL element** to get the real rendered values. Compare against the reference element side-by-side. This is step 0 — before hypothesizing.
+2. **When a visual fix doesn't work after 1 rebuild, DOM-probe again** to see what actually changed. Never try a second code fix without re-probing.
+3. **Inside rainbow wrappers, NEVER use ADS surface tokens for inner pill background.** Always hardcode . The wrapper IS the design element; the pill just needs to be opaque.
+4. **Check the element's current STATE (disabled/hover/active/idle)** before fixing — each state branch may use a different background value.
+
+**Meta-rule (NEW):** When any fix takes >3 iterations, STOP and write an RCA before the next attempt. The RCA must: (a) list what was tried, (b) identify what was NOT measured, (c) identify the correct diagnostic step that should have been step 1. Log as a CLAUDE.md lesson immediately.
+
+**Severity:** P0 (process — 6 iterations for a background color fix is unacceptable; the DOM probe should have been step 1)
+
+**Files fixed (9):** AIIntelligenceButton.tsx, CatyRainbowCTA.tsx, ImproveIssueDropdown.tsx, ImproveButton.tsx, RecommendedPanel.tsx, SummarizeDigestModal.tsx, AssignedPanel.tsx, ReplyComposer.tsx, EditableAssignee.tsx, MicButton.tsx
+**Commits:** eb233ccf1, 832f795a3, 28ec2bc09, 55dfb65a7, 3d74bfecd, bb307a987, 9b790fff3
