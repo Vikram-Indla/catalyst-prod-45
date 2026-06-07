@@ -723,11 +723,10 @@
   align-items: center;
   gap: 4px;
   padding: 2px 4px;
-  /* jira-compare follow-up (2026-05-02): outer 2px focused border
-     removed — @atlaskit/textfield (Textfield appearance="subtle")
-     already paints its own focus ring, the outer border was creating
-     a visible double-border. */
-  border: 1px solid transparent;
+  /* 2026-06-07: gray idle border (was `transparent`) so the row reads as
+     a discrete input affordance even when not focused. focus-within
+     rule below swaps to brand blue. */
+  border: 1px solid var(--ds-border, #DFE1E6);
   border-radius: 3px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }

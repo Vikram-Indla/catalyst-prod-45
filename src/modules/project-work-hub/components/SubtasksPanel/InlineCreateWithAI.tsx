@@ -18,7 +18,8 @@
  *            otherwise                       → create from current draft
  *   Esc    — cancel
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Textfield from '@atlaskit/textfield';
 import { CornerDownLeft, Loader2, Search, Sparkles } from '@/lib/atlaskit-icons';
 import { useAIPredictTitles } from './hooks/useAIPredictTitles';
@@ -71,8 +72,31 @@ export function InlineCreateWithAI({
   const internalInputRef = useRef<HTMLInputElement>(null);
   const inputRef = externalInputRef ?? internalInputRef;
 
+  // The dropdown panel is rendered via React portal into document.body
+  // so it escapes any ancestor overflow:hidden / overflow:auto clipping
+  // (cv-drawer-body in fullPageMode, JiraTable's scroll container, etc.).
+  // We track the input-row wrapper's bounding rect and anchor the portal
+  // with position:fixed so it stays glued to the input as the user
+  // scrolls or resizes the window.
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [panelRect, setPanelRect] = useState<{ top: number; left: number; width: number } | null>(null);
+
   useEffect(() => {
-    inputRef.current?.focus();
+    const el = inputRef.current;
+    if (!el) return;
+    // `preventScroll: true` suppresses focus()'s native instant-scroll so it
+    // doesn't fight with the smooth scroll below.
+    el.focus({ preventScroll: true });
+    // Defer the smooth scroll one frame so React's layout commit (e.g.
+    // SubtasksPanel just expanded + creating row mounted) finishes BEFORE
+    // the scroll animation begins — otherwise the smooth scroll chases a
+    // moving target and the motion feels glitchy.
+    // `block:'center'` lands the input in the middle of the scroll
+    // container — much more comfortable than the edge that `block:'nearest'`
+    // produces.
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -96,15 +120,47 @@ export function InlineCreateWithAI({
     disabled: allowedTypes.length === 0,
   });
 
+  // Show the dropdown whenever there's something to show. We dropped the
+  // previous `draft.trim().length >= 2` gate so the "Choose existing"
+  // results render the moment the input is focused — `useFuzzyChildSearch`
+  // returns the top N recent issues for an empty query.
   const hasAnyPanelContent = aiLoading || searchLoading
-    || suggestions.length > 0 || existing.length > 0
-    || draft.trim().length >= 2;
+    || suggestions.length > 0 || existing.length > 0;
 
   useEffect(() => {
     // Reset highlight when the two result arrays change — keeps highlight in
     // bounds without forcing a specific selection.
     setHighlight(null);
   }, [suggestions.length, existing.length]);
+
+  // Compute + track the portal panel position relative to the input wrapper.
+  // useLayoutEffect so the first measurement runs before paint (no flash).
+  // Scroll listener uses capture phase so it catches ANY ancestor scroll
+  // container, not just window-level scroll.
+  const panelOpen = showPanel && hasAnyPanelContent;
+  useLayoutEffect(() => {
+    if (!panelOpen) {
+      setPanelRect(null);
+      return;
+    }
+    const updatePosition = () => {
+      const el = wrapRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      setPanelRect({
+        top: rect.bottom + 2,
+        left: rect.left,
+        width: rect.width,
+      });
+    };
+    updatePosition();
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [panelOpen]);
 
   const commitDraft = () => {
     const trimmed = draft.trim();
@@ -151,7 +207,7 @@ export function InlineCreateWithAI({
   const panelId = useMemo(() => `sp-create-panel-${Math.random().toString(36).slice(2, 8)}`, []);
 
   return (
-    <div className="sp-create-wrap" role="combobox" aria-expanded={showPanel && hasAnyPanelContent} aria-controls={panelId} aria-haspopup="listbox">
+    <div ref={wrapRef} className="sp-create-wrap" role="combobox" aria-expanded={showPanel && hasAnyPanelContent} aria-controls={panelId} aria-haspopup="listbox">
       <div className="sp-create-row">
         <div className="sp-create-input-wrap">
           <TitleTranslateWrapper value={draft} onValueChange={setDraft}>
@@ -192,8 +248,22 @@ export function InlineCreateWithAI({
         </div>
       </div>
 
-      {showPanel && hasAnyPanelContent && (
-        <div id={panelId} className="sp-create-panel" role="listbox" onMouseDown={(e) => e.preventDefault()}>
+      {showPanel && hasAnyPanelContent && panelRect && createPortal(
+        <div
+          id={panelId}
+          className="sp-create-panel"
+          role="listbox"
+          data-sp-create-portal="true"
+          onMouseDown={(e) => e.preventDefault()}
+          style={{
+            position: 'fixed',
+            top: panelRect.top,
+            left: panelRect.left,
+            width: panelRect.width,
+            right: 'auto',
+            zIndex: 9999,
+          }}
+        >
           {/* Suggestions section */}
           {(suggestions.length > 0 || aiLoading) && (
             <>
@@ -253,7 +323,8 @@ export function InlineCreateWithAI({
               })}
             </>
           )}
-        </div>
+        </div>,
+        document.body
       )}
 
       <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
