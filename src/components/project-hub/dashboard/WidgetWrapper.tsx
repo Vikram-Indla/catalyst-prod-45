@@ -47,6 +47,7 @@ import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indi
 import { SectionMessage } from '@/components/ads';
 import { useWidgetEditState } from './DashboardWidgetGrid';
 import { downloadWidgetAsPdf } from '@/lib/widget-pdf';
+import { downloadWidgetAsCsv } from '@/lib/widget-csv';
 
 /** Jira-parity highlight colors for the gadget top border bar. */
 const HIGHLIGHT_COLORS: Record<string, string> = {
@@ -451,6 +452,13 @@ export default function WidgetWrapper({
                     setIsExporting(false);
                   }
                 }}>Download as PDF</DropdownItem>
+                <DropdownItem onClick={() => {
+                  if (!bodyRef.current) return;
+                  const ok = downloadWidgetAsCsv(bodyRef.current, { title, subtitle });
+                  if (!ok) {
+                    console.warn('[WidgetWrapper] CSV export skipped — no <table> in widget body');
+                  }
+                }}>Download as CSV</DropdownItem>
               </DropdownItemGroup>
             </DropdownMenu>
           )}
