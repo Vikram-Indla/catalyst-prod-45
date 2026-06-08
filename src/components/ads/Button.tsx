@@ -25,7 +25,7 @@
  *   UI chrome, never an Atlaskit icon (see CLAUDE.md §11).
  * - `testId` forwards to the rendered <button>.
  */
-import { type MouseEvent, type ReactNode } from 'react';
+import { forwardRef, type MouseEvent, type ReactNode } from 'react';
 import AkButton, { IconButton as AkIconButton } from '@atlaskit/button/new';
 import { forwardTestId } from './internal/forwardTestId';
 
@@ -66,7 +66,7 @@ export interface ButtonProps {
   type?: 'button' | 'submit' | 'reset';
 }
 
-export function Button({
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({
   appearance = 'default',
   isDisabled,
   isLoading,
@@ -79,9 +79,10 @@ export function Button({
   type = 'button',
   testId,
   ...rest
-}: ButtonProps) {
+}: ButtonProps, ref) {
   return (
     <AkButton
+      ref={ref}
       appearance={appearance}
       isDisabled={isDisabled}
       isLoading={isLoading}
@@ -97,7 +98,7 @@ export function Button({
       {children}
     </AkButton>
   );
-}
+});
 
 export interface IconButtonProps {
   /** Icon node — always rendered. aria-label is required. */

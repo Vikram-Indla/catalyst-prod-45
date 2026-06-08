@@ -14,12 +14,12 @@
  *     defaultSpan.
  *   - Success Flag via @atlaskit/flag.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, LayoutGrid, RotateCcw, Tv, TvMinimal, Star, StarOff, RefreshCw, MoreHorizontal, Link2 } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
-import { IconButton as AkIconButton } from '@atlaskit/button/new';
+import AkButton, { IconButton as AkIconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 
@@ -33,6 +33,77 @@ import WidgetGalleryModal from '@/components/project-hub/dashboard/WidgetGallery
 import { nextSpan, type WidgetSpan } from '@/components/project-hub/dashboard/widget-registry';
 import { DashboardFilterProvider } from '@/contexts/DashboardFilterContext';
 import { useDashboardRealtime } from '@/hooks/useDashboardRealtime';
+
+const LAYOUT_OPTIONS: { key: '1col' | '2col-equal' | '2col-left-wide' | '3col-equal'; label: string }[] = [
+  { key: '1col', label: '1 column' },
+  { key: '2col-equal', label: '2 columns equal' },
+  { key: '2col-left-wide', label: '2 columns left-wide' },
+  { key: '3col-equal', label: '3 columns equal' },
+];
+
+function LayoutDropdown({ onSelect }: { onSelect: (preset: '1col' | '2col-equal' | '2col-left-wide' | '3col-equal') => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'inline-flex' }}>
+      <Button appearance="subtle" spacing="compact" onClick={() => setOpen((o) => !o)}>
+        Change layout
+      </Button>
+      {open && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            right: 0,
+            zIndex: 400,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRadius: 4,
+            boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
+            minWidth: 180,
+            padding: '4px 0',
+          }}
+        >
+          <div style={{ padding: '4px 12px', fontSize: 11, fontWeight: 653, color: token('color.text.subtlest', '#6B778C') }}>
+            Preset layouts
+          </div>
+          {LAYOUT_OPTIONS.map((opt) => (
+            <button
+              key={opt.key}
+              type="button"
+              onClick={() => { onSelect(opt.key); setOpen(false); }}
+              style={{
+                display: 'block',
+                width: '100%',
+                padding: '6px 12px',
+                border: 0,
+                background: 'transparent',
+                textAlign: 'left',
+                fontSize: 14,
+                color: token('color.text', '#292A2E'),
+                cursor: 'pointer',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'); }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function ProjectDashboardPage() {
   return (
@@ -327,26 +398,7 @@ function ProjectDashboardPageInner() {
       >
         Add gadget
       </Button>
-      <DropdownMenu
-        trigger={({ triggerRef, ...triggerProps }) => (
-          <Button
-            ref={triggerRef}
-            {...triggerProps}
-            appearance="subtle"
-            spacing="compact"
-            testId="dashboard-change-layout"
-          >
-            Change layout
-          </Button>
-        )}
-      >
-        <DropdownItemGroup title="Preset layouts">
-          <DropdownItem onClick={() => applyLayout('1col')}>1 column</DropdownItem>
-          <DropdownItem onClick={() => applyLayout('2col-equal')}>2 columns equal</DropdownItem>
-          <DropdownItem onClick={() => applyLayout('2col-left-wide')}>2 columns left-wide</DropdownItem>
-          <DropdownItem onClick={() => applyLayout('3col-equal')}>3 columns equal</DropdownItem>
-        </DropdownItemGroup>
-      </DropdownMenu>
+      <LayoutDropdown onSelect={applyLayout} />
       <Button
         appearance="primary"
         spacing="compact"
