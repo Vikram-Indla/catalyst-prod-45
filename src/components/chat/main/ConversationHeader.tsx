@@ -6,8 +6,7 @@
  * The Ask Caty button uses the approved STATIC rainbow border
  * (animation: none, 2px padding wrapper) per CLAUDE.md enterprise carve-out.
  */
-import React, { useState } from 'react';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import React, { useEffect, useRef, useState } from 'react';
 import type { ChatConversation, ChatPerson } from '@/types/chat';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Avatar, colorFor, initialsOf, type PresenceColor } from './avatar';
@@ -37,14 +36,81 @@ const PRESENCE_MAP: Record<string, PresenceColor> = {
 
 const MAX_VISIBLE_MEMBERS = 4;
 
+function ConversationMenuItem({
+  label,
+  danger,
+  onClick,
+}: {
+  label: string;
+  danger?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="menuitem"
+      onClick={onClick}
+      style={{
+        display: 'block',
+        width: '100%',
+        textAlign: 'left',
+        padding: '6px 10px',
+        background: 'transparent',
+        border: 'none',
+        borderRadius: 4,
+        cursor: 'pointer',
+        fontSize: 13,
+        color: danger ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text, #172B4D)',
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.background =
+          'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
 export function ConversationHeader({ conversation, members = [], onAskCaty }: ConversationHeaderProps) {
   const [addOpen, setAddOpen] = useState(false);
   const [rosterOpen, setRosterOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuWrapRef = useRef<HTMLDivElement | null>(null);
   const archive = useChatArchive();
   const unarchive = useChatUnarchive();
   const mute = useChatSetMute();
   const leave = useChatLeave();
   const markRead = useChatMarkRead();
+
+  // Self-rolled click-outside for the kebab menu. The previous
+  // @atlaskit/dropdown-menu lost positioning when mounted inside the
+  // dock's position:fixed container — popper computed (0,0) and the menu
+  // appeared at the top-left of the viewport. Self-rolling pins the menu
+  // to the trigger via the relative wrapper.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node | null;
+      if (!t || !menuWrapRef.current) return;
+      if (!menuWrapRef.current.contains(t)) setMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [menuOpen]);
 
   if (!conversation) {
     return (
@@ -84,7 +150,7 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
       }}
     >#</span>
   ) : (
-    <Avatar name={conversation.title} seed={conversation.id} />
+    <Avatar name={conversation.title} seed={conversation.id} size={28} />
   );
 
   const titleText = isChannel
@@ -160,61 +226,90 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
         </button>
       )}
 
-      <DropdownMenu
-        trigger={({ triggerRef, ...props }) => (
-          <button
-            type="button"
-            className="cc-iconbtn"
-            aria-label="Conversation actions"
-            ref={triggerRef as React.Ref<HTMLButtonElement>}
-            {...props}
-          >
-            <svg viewBox="0 0 24 24" width={18} height={18} fill="none" stroke="currentColor" strokeWidth={2.2}>
-              <circle cx="5" cy="12" r="1.4" />
-              <circle cx="12" cy="12" r="1.4" />
-              <circle cx="19" cy="12" r="1.4" />
-            </svg>
-          </button>
-        )}
-        placement="bottom-end"
+      <div
+        ref={menuWrapRef}
+        style={{ position: 'relative', display: 'inline-block' }}
       >
-        <DropdownItemGroup>
-          {isTicket && conversation.ticketKey && (
-            <DropdownItem onClick={() => {
-              window.dispatchEvent(new CustomEvent('catalyst:open-issue', {
-                detail: { issueKey: conversation.ticketKey },
-              }));
-            }}>View ticket</DropdownItem>
-          )}
-          {!isDm && (
-            <DropdownItem onClick={() => setAddOpen(true)}>Add people</DropdownItem>
-          )}
-          <DropdownItem onClick={() => markRead.mutate(conversation.id)}>
-            Mark as read
-          </DropdownItem>
-          <DropdownItem onClick={() =>
-            mute.mutate({ convId: conversation.id, muted: true })
-          }>
-            Mute conversation
-          </DropdownItem>
-          {!conversation.isArchived ? (
-            <DropdownItem onClick={() => archive.mutate(conversation.id)}>
-              Archive conversation
-            </DropdownItem>
-          ) : (
-            <DropdownItem onClick={() => unarchive.mutate(conversation.id)}>
-              Unarchive conversation
-            </DropdownItem>
-          )}
-        </DropdownItemGroup>
-        {!isDm && (
-          <DropdownItemGroup>
-            <DropdownItem onClick={() => leave.mutate(conversation.id)}>
-              <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>Leave conversation</span>
-            </DropdownItem>
-          </DropdownItemGroup>
+        <button
+          type="button"
+          className="cc-iconbtn"
+          aria-label="Conversation actions"
+          aria-haspopup="menu"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((v) => !v)}
+        >
+          <svg viewBox="0 0 24 24" width={18} height={18} fill="none" stroke="currentColor" strokeWidth={2.2}>
+            <circle cx="5" cy="12" r="1.4" />
+            <circle cx="12" cy="12" r="1.4" />
+            <circle cx="19" cy="12" r="1.4" />
+          </svg>
+        </button>
+        {menuOpen && (
+          <div
+            role="menu"
+            style={{
+              position: 'absolute',
+              top: '100%',
+              right: 0,
+              marginTop: 4,
+              minWidth: 200,
+              background: 'var(--ds-surface-overlay, #FFFFFF)',
+              border: '1px solid var(--ds-border, #DFE1E6)',
+              borderRadius: 6,
+              boxShadow: '0 4px 12px rgba(9,30,66,0.15)',
+              padding: 4,
+              zIndex: 10000,
+            }}
+          >
+            {isTicket && conversation.ticketKey && (
+              <ConversationMenuItem
+                label="View ticket"
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('catalyst:open-issue', {
+                    detail: { issueKey: conversation.ticketKey },
+                  }));
+                  setMenuOpen(false);
+                }}
+              />
+            )}
+            {!isDm && (
+              <ConversationMenuItem
+                label="Add people"
+                onClick={() => { setAddOpen(true); setMenuOpen(false); }}
+              />
+            )}
+            <ConversationMenuItem
+              label="Mark as read"
+              onClick={() => { markRead.mutate(conversation.id); setMenuOpen(false); }}
+            />
+            <ConversationMenuItem
+              label="Mute conversation"
+              onClick={() => { mute.mutate({ convId: conversation.id, muted: true }); setMenuOpen(false); }}
+            />
+            {!conversation.isArchived ? (
+              <ConversationMenuItem
+                label="Archive conversation"
+                onClick={() => { archive.mutate(conversation.id); setMenuOpen(false); }}
+              />
+            ) : (
+              <ConversationMenuItem
+                label="Unarchive conversation"
+                onClick={() => { unarchive.mutate(conversation.id); setMenuOpen(false); }}
+              />
+            )}
+            {!isDm && (
+              <>
+                <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
+                <ConversationMenuItem
+                  label="Leave conversation"
+                  danger
+                  onClick={() => { leave.mutate(conversation.id); setMenuOpen(false); }}
+                />
+              </>
+            )}
+          </div>
         )}
-      </DropdownMenu>
+      </div>
       {addOpen && (
         <AddPeopleModal
           conversationId={conversation.id}

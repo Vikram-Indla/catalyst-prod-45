@@ -5,6 +5,7 @@
  * person reads the same colour everywhere.
  */
 import React from 'react';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 export type AvatarColor = 'green' | 'red' | 'amber' | 'grey' | 'brand' | 'purple';
 export type PresenceColor = 'green' | 'red' | 'amber' | 'grey';
@@ -32,13 +33,36 @@ export interface AvatarProps {
   className?: string;
   color?: AvatarColor;
   presence?: PresenceColor | null;
+  /**
+   * Pixel size of the avatar circle. Defaults to 28px. Avatar has no
+   * intrinsic size from CSS — without this prop OR a sized className,
+   * a bundled photo file would expand the container to its natural
+   * resolution (causing the giant "AA" defect, 2026-06-08).
+   */
+  size?: number;
 }
 
-export function Avatar({ name, seed, className, color, presence }: AvatarProps) {
+export function Avatar({ name, seed, className, color, presence, size = 28 }: AvatarProps) {
   const resolved = color ?? colorFor(seed ?? name);
+  const photo = resolveAvatarUrl(name);
+  // Explicit size lock — width/height/font-size all derive from `size`.
+  const style: React.CSSProperties = {
+    width: size,
+    height: size,
+    minWidth: size,
+    minHeight: size,
+    fontSize: Math.max(10, Math.round(size * 0.42)),
+  };
   return (
-    <div className={`cc-av cc-av--${resolved}${className ? ` ${className}` : ''}`}>
-      {initialsOf(name)}
+    <div
+      className={`cc-av cc-av--${resolved}${photo ? ' cc-av--photo' : ''}${className ? ` ${className}` : ''}`}
+      style={style}
+    >
+      {photo ? (
+        <img src={photo} alt="" className="cc-av__img" />
+      ) : (
+        initialsOf(name)
+      )}
       {presence ? <span className={`cc-dot cc-dot--${presence}`} /> : null}
     </div>
   );

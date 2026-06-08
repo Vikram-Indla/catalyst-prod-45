@@ -183,32 +183,31 @@ export function MessageComposer({
             </svg>
           </button>
 
+          {/* Rich text toggle — single subtle icon button, sized like the
+              other tool buttons. The previous bold "Aa" text was twice as
+              large as siblings and read as a brand element. Use a script
+              "A" icon so it sits inline with attach/emoji/@/slash. */}
           <button
             type="button"
             className="cc-toolbtn"
             aria-label={richMode ? 'Switch to plain text' : 'Switch to rich text'}
-            title={richMode ? 'Plain text' : 'Rich text (Aa)'}
+            title={richMode ? 'Plain text' : 'Rich text'}
             onClick={() => setRichMode((m) => !m)}
             style={{
-              background: richMode ? 'var(--ds-background-selected, #E9F2FE)' : undefined,
-              color: richMode ? 'var(--ds-text-selected, #0C66E4)' : undefined,
-              fontWeight: 600,
-              fontSize: 12,
+              color: richMode ? 'var(--ds-icon-brand, #0C66E4)' : undefined,
             }}
           >
-            Aa
+            <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+              <path d="M5 19h14M7 15l5-10 5 10M9 11h6" />
+            </svg>
           </button>
 
           <div className="cc-composer-tools__spacer" />
 
-          <button type="button" className="cc-caty-btn is-sm" onClick={onAskCaty} aria-label="Ask Caty">
-            <span className="cc-caty-btn__inner">
-              <svg viewBox="0 0 24 24" fill="none" stroke="var(--ds-icon-discovery, #6E5DC6)" strokeWidth={2}>
-                <path d="M12 3l1.9 5.8L20 10l-5.1 1.9L12 18l-1.9-6.1L5 10l5.1-1.2z" />
-              </svg>
-              Ask Caty
-            </span>
-          </button>
+          {/* Ask Caty pill REMOVED from composer (2026-06-08 design directive).
+              Enterprise chat does not surface an AI affordance inside every
+              message draft. AI access remains via the dock's top "Ask Caty"
+              tab and the dedicated AI sidekick panel. */}
 
           <Button
             appearance="primary"
