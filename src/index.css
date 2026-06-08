@@ -453,10 +453,14 @@
 }
 .dashboard-widget-body td,
 .dashboard-widget-body th {
-  /* Nowrap keeps every row on a single line (preserves CLAUDE.md §4
-     36px density lock). Horizontal scroll — not ellipsis — is how
-     long titles become reachable. */
   white-space: nowrap;
+  padding: 4px;
+}
+.dashboard-widget-body th {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ds-text, #292A2E);
+  border-bottom: 0.5px solid rgba(11, 18, 14, 0.14);
 }
 /* Title column (2nd td) gets a 24px right gutter so the title text
    clears the Status lozenge with comfortable breathing room. 16px
