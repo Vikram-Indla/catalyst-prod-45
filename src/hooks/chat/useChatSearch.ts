@@ -28,13 +28,42 @@ interface RpcRow {
   rank: number;
 }
 
+/**
+ * Parse Slack-style modifiers out of a free-text query.
+ *   from:<profile-uuid>     restrict to messages authored by user
+ *   in:<conversation-uuid>  restrict to a single conversation
+ *   has:link|file|image     restrict to messages carrying that artifact
+ * Unknown tokens are left in the residual query.
+ */
+function parseModifiers(raw: string) {
+  const tokens = raw.split(/\s+/);
+  let q = '';
+  let fromUser: string | null = null;
+  let inConv: string | null = null;
+  let has: string | null = null;
+  for (const t of tokens) {
+    if (t.startsWith('from:')) fromUser = t.slice(5) || null;
+    else if (t.startsWith('in:')) inConv = t.slice(3) || null;
+    else if (t.startsWith('has:')) {
+      const v = t.slice(4);
+      if (v === 'link' || v === 'file' || v === 'image') has = v;
+    } else {
+      q = q ? q + ' ' + t : t;
+    }
+  }
+  return { q: q.trim(), fromUser, inConv, has };
+}
+
 async function runSearch(query: string, scope: ChatSearchScope, max: number): Promise<ChatSearchHit[]> {
-  const q = query.trim();
-  if (!q) return [];
+  const { q, fromUser, inConv, has } = parseModifiers(query.trim());
+  if (!q && !fromUser && !inConv && !has) return [];
   const { data, error } = await (supabase as any).rpc('chat_search', {
     p_query: q,
     p_scope: scope,
     p_max: max,
+    p_from_user: fromUser,
+    p_in_conv: inConv,
+    p_has: has,
   });
   if (error || !data) return [];
   return (data as RpcRow[]).map((r) => ({

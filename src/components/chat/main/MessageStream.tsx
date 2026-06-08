@@ -9,6 +9,7 @@ import type { ChatMessage } from '@/types/chat';
 import { Avatar, initialsOf, colorFor } from './avatar';
 import { useConversationAttachments, type ChatAttachment } from '@/hooks/chat/useChatAttachments';
 import { AttachmentPreview } from './AttachmentPreview';
+import { LinkUnfurl } from './LinkUnfurl';
 
 // Lazy renderer — Atlaskit @atlaskit/renderer chunk only loads when a
 // message actually has body_adf content.
@@ -38,20 +39,49 @@ export interface MessageStreamProps {
   currentUserId?: string | null;
 }
 
-// Highlight @mention tokens (e.g. "@Yazeed Daraz") inside body text.
+// Highlight @mention tokens (e.g. "@Yazeed Daraz") + broadcast tokens
+// (@here / @channel / @everyone) inside body text. Broadcast tokens use
+// a stronger background to signal scope.
+const BROADCAST_RE = /(@here|@channel|@everyone)\b/g;
 const MENTION_RE = /(@[A-Za-z][A-Za-z .'-]*)/g;
 
 function renderBody(text: string): React.ReactNode[] {
-  const parts = text.split(MENTION_RE);
-  return parts.map((part, i) =>
-    MENTION_RE.test(part) ? (
-      <span key={i} className="cc-mention">
-        {part}
-      </span>
-    ) : (
-      <React.Fragment key={i}>{part}</React.Fragment>
-    ),
-  );
+  // Split on broadcast tokens first so they aren't swallowed by MENTION_RE.
+  const broadcastParts = text.split(BROADCAST_RE);
+  const out: React.ReactNode[] = [];
+  broadcastParts.forEach((part, i) => {
+    if (BROADCAST_RE.test(part)) {
+      out.push(
+        <span
+          key={`b-${i}`}
+          className="cc-mention"
+          style={{
+            background: 'var(--ds-background-warning, #FFF7D6)',
+            color: 'var(--ds-text-warning-inverse, #533F04)',
+            fontWeight: 600,
+            padding: '0 4px',
+            borderRadius: 3,
+          }}
+        >
+          {part}
+        </span>,
+      );
+      return;
+    }
+    const subParts = part.split(MENTION_RE);
+    subParts.forEach((sub, j) => {
+      if (MENTION_RE.test(sub)) {
+        out.push(
+          <span key={`m-${i}-${j}`} className="cc-mention">
+            {sub}
+          </span>,
+        );
+      } else {
+        out.push(<React.Fragment key={`t-${i}-${j}`}>{sub}</React.Fragment>);
+      }
+    });
+  });
+  return out;
 }
 
 function dayKey(iso: string): string {
@@ -252,6 +282,9 @@ function MessageRow({
         {attachments && attachments.length > 0 && (
           <AttachmentPreview attachments={attachments} />
         )}
+
+        {/* Link unfurl cards — rendered for every URL detected in body_text. */}
+        {!editing && msg.bodyText && <LinkUnfurl bodyText={msg.bodyText} />}
 
         {/* Hover toolbar */}
         {!editing && (

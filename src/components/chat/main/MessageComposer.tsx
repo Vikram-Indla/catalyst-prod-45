@@ -10,6 +10,7 @@ import React, { useCallback, useRef, useState, lazy, Suspense } from 'react';
 import Button from '@atlaskit/button/new';
 import { MentionPicker } from './MentionPicker';
 import { useUploadAttachment } from '@/hooks/chat/useChatAttachments';
+import { useDraft } from '@/hooks/chat/useDraft';
 import { adfToPlainText } from '@/utils/adf';
 import { createEmptyADF } from '@/utils/adf';
 import type { ADFEntity } from '@atlaskit/adf-utils/types';
@@ -38,7 +39,10 @@ export function MessageComposer({
   onAskCaty,
   lastSentMessageId,
 }: MessageComposerProps) {
-  const [value, setValue] = useState('');
+  // Drafts persist per conversation in localStorage. Clear on send.
+  const draft = useDraft(conversationId ?? null);
+  const value = draft.value;
+  const setValue = draft.setValue;
   const [sending, setSending] = useState(false);
   const [richMode, setRichMode] = useState(false);
   const [richAdf, setRichAdf] = useState<ADFEntity>(createEmptyADF());
@@ -70,7 +74,7 @@ export function MessageComposer({
     setSending(true);
     try {
       await onSend(text, { adf });
-      setValue('');
+      draft.clear();
       if (richMode) setRichAdf(createEmptyADF());
       requestAnimationFrame(() => {
         if (taRef.current) taRef.current.style.height = 'auto';

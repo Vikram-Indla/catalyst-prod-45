@@ -83,6 +83,20 @@ export function useChatAddMember() {
   });
 }
 
+export function useChatSetNotificationPref() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ convId, pref }: { convId: string; pref: 'all' | 'mentions' | 'none' }) => {
+      const { error } = await (supabase as any).rpc('chat_set_notification_pref', {
+        p_conv: convId,
+        p_pref: pref,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => invalidateChat(qc),
+  });
+}
+
 export function useChatRemoveMember() {
   const qc = useQueryClient();
   return useMutation({
