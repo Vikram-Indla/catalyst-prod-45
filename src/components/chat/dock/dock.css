@@ -296,3 +296,16 @@
   background: var(--ds-icon-success, #22A06B);
   border: 2px solid var(--ds-surface, #FFFFFF);
 }
+
+/* ── Caty sidebar mode (Rovo parity) ─────────────────────────
+   Floating: 380×580 anchored bottom-right (default cc-dock).
+   Sidebar: full-height right edge, 420 wide, rounded left only. */
+.cc-dock--sidebar {
+  width: 420px;
+  height: calc(100vh - 16px);
+  right: 8px;
+  bottom: 8px;
+  top: 8px;
+  border-radius: 12px;
+  box-shadow: var(--ds-shadow-overlay, -8px 0 24px rgba(9, 30, 66, 0.18));
+}

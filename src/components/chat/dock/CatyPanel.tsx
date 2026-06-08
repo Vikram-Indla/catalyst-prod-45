@@ -24,8 +24,20 @@ import {
   type CatyAssistant,
 } from '@/lib/caty-assistants';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { renderCatyContent } from './caty-render';
+import { useCatyContext } from './useCatyContext';
 // ads-scanner:ignore-next-line — caty-panel.css uses ADS tokens only
 import './caty-panel.css';
+
+// ─── Caty view mode (Rovo parity: floating ↔ sidebar) ──────────────────
+export type CatyViewMode = 'floating' | 'sidebar';
+
+// ─── Step transcript for thinking phase ────────────────────────────────
+interface CatyStep {
+  type: 'analyze' | 'read' | 'compose' | 'search';
+  title: string;
+  sub?: string;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────
 
@@ -45,10 +57,16 @@ interface CatyMessage {
   stories?: GeneratedStory[];
   epicKey?: string;
   coveragePercent?: number;
+  // Rovo-parity: thinking transcript + completed-steps collapsible
+  steps?: CatyStep[];
+  thinkingActive?: boolean;
+  stepsCollapsed?: boolean;
 }
 
 interface CatyPanelProps {
   onNewConversation?: () => void;
+  viewMode?: CatyViewMode;
+  onViewModeChange?: (mode: CatyViewMode) => void;
 }
 
 // ─── Epic key detector ─────────────────────────────────────────────────
@@ -56,6 +74,13 @@ const EPIC_KEY_RE = /\b([A-Z]{2,10}-\d+)\b/;
 
 function extractEpicKey(text: string): string | null {
   return text.match(EPIC_KEY_RE)?.[1] ?? null;
+}
+
+// One-line interpretation for the thinking transcript sub-text
+function interpretQuestion(text: string): string {
+  const trimmed = text.trim().replace(/^@\S+\s*/, '');
+  if (trimmed.length <= 80) return `Understanding: "${trimmed}"`;
+  return `Understanding: "${trimmed.slice(0, 77)}…"`;
 }
 
 // ─── Suggestion icon (chat bubble square — matches Rovo's icon style) ─
@@ -110,6 +135,78 @@ function ChevronDownIcon() {
       <polyline points="6 9 12 15 18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
+}
+
+function ChevronRightIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <polyline points="9 6 15 12 9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function PinIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" strokeWidth="2" />
+      <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function ViewFloatingIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="2" />
+      <line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function ViewSidebarIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
+      <line x1="9" y1="3" x2="9" y2="21" stroke="currentColor" strokeWidth="2" />
+    </svg>
+  );
+}
+
+// Step icons — analyze (route/squiggle), read (doc-list), compose (sparkle)
+function StepIcon({ type }: { type: CatyStep['type'] }) {
+  switch (type) {
+    case 'read':
+      return (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" strokeWidth="1.6" />
+          <line x1="8" y1="8" x2="16" y2="8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+          <line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+          <line x1="8" y1="16" x2="13" y2="16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      );
+    case 'search':
+      return (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.6" />
+          <line x1="21" y1="21" x2="16.5" y2="16.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      );
+    case 'compose':
+      return (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'analyze':
+    default:
+      return (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <circle cx="5" cy="6" r="2" stroke="currentColor" strokeWidth="1.6" />
+          <circle cx="19" cy="18" r="2" stroke="currentColor" strokeWidth="1.6" />
+          <path d="M7 6h6a4 4 0 0 1 4 4v4a4 4 0 0 0 0 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      );
+  }
 }
 
 // ─── Assistant icon ───────────────────────────────────────────────────
@@ -186,7 +283,7 @@ function StoryCard({
 
 // ─── Main panel ───────────────────────────────────────────────────────
 
-export function CatyPanel({ onNewConversation }: CatyPanelProps) {
+export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewModeChange }: CatyPanelProps) {
   const { user } = useAuth();
   const { role, productRoles } = useUserRole();
 
@@ -228,6 +325,10 @@ export function CatyPanel({ onNewConversation }: CatyPanelProps) {
   const canUse = canUseAssistant(activeAssistant, role, productRoles);
   const dailyPrompt = getDailyPrompt(activeAssistant);
   const isWelcome = messages.length === 0;
+  const [showViewMenu, setShowViewMenu] = useState(false);
+  const [contextRemoved, setContextRemoved] = useState(false);
+  const pageContext = useCatyContext();
+  const activeContext = contextRemoved ? null : pageContext;
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -319,33 +420,60 @@ export function CatyPanel({ onNewConversation }: CatyPanelProps) {
   // ── General chat ─────────────────────────────────────────────────────
   const runGeneralChat = useCallback(async (text: string) => {
     addMessage({ role: 'user', content: text });
-    const loadingId = addMessage({ role: 'assistant', content: '', isLoading: true });
+    const loadingId = addMessage({
+      role: 'assistant',
+      content: '',
+      isLoading: true,
+      thinkingActive: true,
+      steps: [{ type: 'analyze', title: 'Analyzing…', sub: interpretQuestion(text) }],
+    });
     setLoading(true);
+
+    // Progressive step injection (Rovo-style transcript reveal)
+    const stepTimers: ReturnType<typeof setTimeout>[] = [];
+    stepTimers.push(setTimeout(() => {
+      setMessages((prev) => prev.map((m) => m.id === loadingId
+        ? { ...m, steps: [...(m.steps ?? []), { type: 'search', title: 'Searching Catalyst…', sub: activeContext ? `Scoped to ${activeContext.label} · ${activeContext.surface}` : 'Across your accessible projects' }] }
+        : m));
+    }, 600));
+    stepTimers.push(setTimeout(() => {
+      setMessages((prev) => prev.map((m) => m.id === loadingId
+        ? { ...m, steps: [...(m.steps ?? []), { type: 'compose', title: 'Composing response…' }] }
+        : m));
+    }, 1500));
 
     try {
       const history = messages
         .filter((m) => !m.isLoading && m.content)
         .map((m) => ({ role: m.role, content: m.content }));
 
+      const contextPrefix = activeContext
+        ? `[Context: viewing ${activeContext.label} · ${activeContext.surface}] `
+        : '';
+
       const { data, error } = await supabase.functions.invoke('caty-chat', {
         body: {
           assistant_id: activeId,
-          message: text,
+          message: contextPrefix + text,
           history,
           user_name: firstName,
         },
       });
 
+      stepTimers.forEach(clearTimeout);
       updateMessage(loadingId, {
         isLoading: false,
+        thinkingActive: false,
+        stepsCollapsed: true,
         content: error ? 'Caty is unavailable. Try again shortly.' : (data?.response ?? 'No response.'),
       });
     } catch {
-      updateMessage(loadingId, { isLoading: false, content: 'Something went wrong.' });
+      stepTimers.forEach(clearTimeout);
+      updateMessage(loadingId, { isLoading: false, thinkingActive: false, stepsCollapsed: true, content: 'Something went wrong.' });
     } finally {
       setLoading(false);
     }
-  }, [messages, activeId, firstName, addMessage, updateMessage]);
+  }, [messages, activeId, firstName, activeContext, addMessage, updateMessage]);
 
   // ── Send handler ─────────────────────────────────────────────────────
   const handleSend = useCallback(() => {
@@ -586,7 +714,45 @@ export function CatyPanel({ onNewConversation }: CatyPanelProps) {
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
+
+        {/* View mode trigger (Floating ↔ Sidebar) */}
+        {onViewModeChange && (
+          <button
+            type="button"
+            className={`cp-view-trigger${showViewMenu ? ' cp-view-trigger--active' : ''}`}
+            aria-label="Switch view"
+            title="Switch view"
+            onClick={() => setShowViewMenu((v) => !v)}
+          >
+            {viewMode === 'sidebar' ? <ViewSidebarIcon /> : <ViewFloatingIcon />}
+          </button>
+        )}
       </div>
+
+      {/* View mode dropdown */}
+      {showViewMenu && onViewModeChange && (
+        <div className="cp-view-menu" role="menu">
+          <div className="cp-view-menu__header">Switch to</div>
+          <button
+            type="button"
+            className={`cp-view-menu__item${viewMode === 'floating' ? ' cp-view-menu__item--active' : ''}`}
+            onClick={() => { onViewModeChange('floating'); setShowViewMenu(false); }}
+          >
+            <span className="cp-view-menu__icon"><ViewFloatingIcon /></span>
+            <span className="cp-view-menu__label">Floating</span>
+            {viewMode === 'floating' && <CheckIcon />}
+          </button>
+          <button
+            type="button"
+            className={`cp-view-menu__item${viewMode === 'sidebar' ? ' cp-view-menu__item--active' : ''}`}
+            onClick={() => { onViewModeChange('sidebar'); setShowViewMenu(false); }}
+          >
+            <span className="cp-view-menu__icon"><ViewSidebarIcon /></span>
+            <span className="cp-view-menu__label">Sidebar</span>
+            {viewMode === 'sidebar' && <CheckIcon />}
+          </button>
+        </div>
+      )}
 
       {/* Locked state */}
       {lockedPanel}
@@ -679,20 +845,71 @@ export function CatyPanel({ onNewConversation }: CatyPanelProps) {
             <div key={msg.id} className={`cp-msg cp-msg--${msg.role}`}>
               {msg.role === 'user' ? (
                 <div className="cp-msg__bubble--user">{msg.content}</div>
-              ) : msg.isLoading ? (
-                <div className="cp-typing">
-                  <img src={catalystChatIcon} alt="" className="cp-msg__ai-avatar" />
-                  <div className="cp-typing__dots">
-                    <div className="cp-typing__dot" />
-                    <div className="cp-typing__dot" />
-                    <div className="cp-typing__dot" />
-                  </div>
-                </div>
               ) : (
                 <div className="cp-msg__ai-row">
                   <img src={catalystChatIcon} alt="" className="cp-msg__ai-avatar" />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div className="cp-msg__bubble--ai">{msg.content}</div>
+                    {/* Active thinking transcript */}
+                    {msg.thinkingActive && msg.steps && msg.steps.length > 0 && (
+                      <div className="cp-thinking">
+                        <div className="cp-thinking__header">
+                          <span className="cp-thinking__dot" />
+                          <span className="cp-thinking__title">
+                            Caty is <span className="cp-thinking__title-strong">thinking…</span>
+                          </span>
+                        </div>
+                        <div className="cp-thinking__steps">
+                          {msg.steps.map((step, si) => (
+                            <div key={si} className="cp-step">
+                              <span className="cp-step__icon"><StepIcon type={step.type} /></span>
+                              <div className="cp-step__body">
+                                <div className="cp-step__title">{step.title}</div>
+                                {step.sub && <div className="cp-step__sub">{step.sub}</div>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Completed steps collapsible (after thinking done) */}
+                    {!msg.thinkingActive && msg.steps && msg.steps.length > 0 && (
+                      <button
+                        type="button"
+                        className={`cp-completed-toggle${msg.stepsCollapsed ? '' : ' cp-completed-toggle--open'}`}
+                        onClick={() => updateMessage(msg.id, { stepsCollapsed: !msg.stepsCollapsed })}
+                      >
+                        <ChevronRightIcon className="cp-completed-toggle__chev" />
+                        Completed {msg.steps.length} steps
+                      </button>
+                    )}
+                    {!msg.thinkingActive && !msg.stepsCollapsed && msg.steps && msg.steps.length > 0 && (
+                      <div className="cp-thinking" style={{ marginBottom: 8 }}>
+                        <div className="cp-thinking__steps">
+                          {msg.steps.map((step, si) => (
+                            <div key={si} className="cp-step">
+                              <span className="cp-step__icon"><StepIcon type={step.type} /></span>
+                              <div className="cp-step__body">
+                                <div className="cp-step__title">{step.title}</div>
+                                {step.sub && <div className="cp-step__sub">{step.sub}</div>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* AI loading bubble (only when no steps yet) */}
+                    {msg.isLoading && (!msg.steps || msg.steps.length === 0) && (
+                      <div className="cp-typing__dots" style={{ display: 'inline-flex' }}>
+                        <div className="cp-typing__dot" />
+                        <div className="cp-typing__dot" />
+                        <div className="cp-typing__dot" />
+                      </div>
+                    )}
+
+                    {/* Structured response renderer */}
+                    {!msg.isLoading && msg.content && renderCatyContent(msg.content)}
                     {/* Story cards */}
                     {msg.stories && msg.stories.length > 0 && (
                       <div className="cp-story-cards" style={{ marginTop: 8 }}>
@@ -732,6 +949,31 @@ export function CatyPanel({ onNewConversation }: CatyPanelProps) {
             </div>
           ))}
           <div ref={messagesEndRef} />
+        </div>
+      )}
+
+      {/* Context chip (Rovo parity) */}
+      {!lockedPanel && activeContext && (
+        <div className="cp-context-chip">
+          <span className="cp-context-chip__icon"><PinIcon /></span>
+          <span className="cp-context-chip__label">Context:</span>
+          <span className="cp-context-chip__pill" title={`${activeContext.label} · ${activeContext.surface}`}>
+            <span className="cp-context-chip__pill-text">
+              {activeContext.label} | {activeContext.surface}
+            </span>
+          </span>
+          <button
+            type="button"
+            className="cp-context-chip__remove"
+            aria-label="Remove context"
+            title="Remove context from this conversation"
+            onClick={() => setContextRemoved(true)}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
+              <line x1="6" y1="6" x2="18" y2="18" />
+              <line x1="6" y1="18" x2="18" y2="6" />
+            </svg>
+          </button>
         </div>
       )}
 

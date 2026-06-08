@@ -26,6 +26,7 @@ import { CatyPanel } from './CatyPanel';
 import './dock.css';
 
 type DockMode = 'messages' | 'caty';
+type CatyView = 'floating' | 'sidebar';
 
 interface ChatDockProps {
   openConversationIds: string[];
@@ -147,6 +148,7 @@ export function ChatDock({
   onPopOut,
 }: ChatDockProps) {
   const [dockMode, setDockMode] = useState<DockMode>('messages');
+  const [catyView, setCatyView] = useState<CatyView>('floating');
 
   // Collapsed: render only the FAB. No data hook subscription is created here; callers
   // gate realtime on !collapsed. We still need an unread total for the badge — read it
@@ -178,7 +180,11 @@ export function ChatDock({
   const listConversations = (conversations ?? []).filter((c) => !c.isArchived);
 
   return (
-    <div className="cc-dock" role="dialog" aria-label={dockMode === 'caty' ? 'Ask Caty AI' : 'Messages'}>
+    <div
+      className={`cc-dock${dockMode === 'caty' && catyView === 'sidebar' ? ' cc-dock--sidebar' : ''}`}
+      role="dialog"
+      aria-label={dockMode === 'caty' ? 'Ask Caty AI' : 'Messages'}
+    >
       {/* Shared header — mode tabs + shared icons */}
       <div className="cc-dock__header">
         {/* Dual-mode tab pills */}
@@ -296,7 +302,7 @@ export function ChatDock({
       {/* Caty AI mode — new panel, messages mode is paused but state preserved */}
       {dockMode === 'caty' && (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}>
-          <CatyPanel />
+          <CatyPanel viewMode={catyView} onViewModeChange={setCatyView} />
         </div>
       )}
     </div>
