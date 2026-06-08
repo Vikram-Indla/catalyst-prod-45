@@ -21,6 +21,7 @@ import Button from '@atlaskit/button/new';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useStartProjectChannel } from '@/hooks/chat/useStartProjectChannel';
+import ProjectIcon from '@/components/shared/ProjectIcon';
 
 export interface BrowseChannelsModalProps {
   isOpen: boolean;
@@ -141,22 +142,7 @@ export function BrowseChannelsModal({ isOpen, onClose, onOpenChannel }: BrowseCh
                     textAlign: 'left',
                   }}
                 >
-                  <span
-                    style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: 4,
-                      background: 'var(--ds-background-accent-purple-subtler, #DFD8FD)',
-                      color: 'var(--ds-text-accent-purple, #5E4DB2)',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 700,
-                      fontSize: 11,
-                    }}
-                  >
-                    {(r.project_key ?? r.title ?? '#').slice(0, 4)}
-                  </span>
+                  <ProjectIcon projectKey={r.project_key ?? ''} size="medium" />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
                       #{(r.title ?? r.project_key ?? '').replace(/^#\s*/, '')}

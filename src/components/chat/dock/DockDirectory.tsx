@@ -17,6 +17,7 @@ import { useStartProjectChannel } from '@/hooks/chat/useStartProjectChannel';
 import { useChatSearch, groupSearchHits } from '@/hooks/chat/useChatSearch';
 import { NewGroupDmModal } from './NewGroupDmModal';
 import { BrowseChannelsModal } from './BrowseChannelsModal';
+import ProjectIcon from '@/components/shared/ProjectIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
@@ -308,9 +309,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
                     className="cc-dir__row"
                     onClick={() => onSelectConversation(h.id)}
                   >
-                    <span className="cc-dir__channel-glyph" style={{ background: 'var(--ds-background-brand-bold, #0C66E4)', fontSize: 11 }}>
-                      {(h.subtitle ?? '#').slice(0, 3)}
-                    </span>
+                    <ProjectIcon projectKey={h.subtitle ?? ''} size="medium" />
                     <div className="cc-dir__body">
                       <div className="cc-dir__top">
                         <span className="cc-dir__name">{h.title}</span>
@@ -331,9 +330,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
                     className="cc-dir__row"
                     onClick={() => handleOpenChannel(h.subtitle ?? '')}
                   >
-                    <span className="cc-dir__channel-glyph" style={{ background: 'var(--ds-background-accent-purple-subtler, #8270DB)', fontSize: 11 }}>
-                      {(h.subtitle ?? 'PR').slice(0, 3)}
-                    </span>
+                    <ProjectIcon projectKey={h.subtitle ?? ''} size="medium" />
                     <div className="cc-dir__body">
                       <div className="cc-dir__top">
                         <span className="cc-dir__name">{h.title}</span>
@@ -562,7 +559,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
                 }}
                 title={c ? `Open #${p.key.toLowerCase()}` : `Join #${p.key.toLowerCase()}`}
               >
-                <span className="cc-dir__channel-glyph">#</span>
+                <ProjectIcon projectKey={p.key} size="medium" />
                 <div className="cc-dir__body">
                   <div className="cc-dir__top">
                     <span className="cc-dir__name">#{p.key.toLowerCase()}</span>

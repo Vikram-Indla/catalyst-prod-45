@@ -20,6 +20,7 @@ import {
 } from '@/hooks/chat/useChatActions';
 import { AddPeopleModal } from './AddPeopleModal';
 import { RosterPanel } from './RosterPanel';
+import ProjectIcon from '@/components/shared/ProjectIcon';
 
 export interface ConversationHeaderProps {
   conversation: ChatConversation | null;
@@ -136,21 +137,7 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
       <JiraIssueTypeIcon type="Story" size={12} />
     </span>
   ) : isChannel ? (
-    <span
-      className="cc-conv-head__typesq"
-      style={{
-        width: 28,
-        height: 28,
-        borderRadius: 6,
-        background: 'var(--ds-background-accent-purple-bolder, #6E5DC6)',
-        color: 'var(--ds-text-inverse, #FFFFFF)',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontWeight: 700,
-        fontSize: 14,
-      }}
-    >#</span>
+    <ProjectIcon projectKey={conversation.projectKey ?? ''} size="medium" />
   ) : (
     <Avatar name={conversation.title} seed={conversation.id} size={28} />
   );
