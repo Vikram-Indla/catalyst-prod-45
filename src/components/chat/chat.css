@@ -535,10 +535,16 @@
 .cc-msg__edited { font-size: 11px; color: var(--ds-text-subtlest, #6B778C); margin-left: 4px; }
 
 .cc-msg__toolbar {
+  /* Always laid out (so cursor can enter the toolbar from the row without
+     a hover-gap losing the parent :hover state). Visually hidden via
+     opacity + pointer-events until row or toolbar itself is hovered. */
   position: absolute;
   top: -14px;
   right: 8px;
-  display: none;
+  display: flex;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 60ms ease;
   background: var(--ds-surface-overlay, #FFFFFF);
   border: 1px solid var(--ds-border, #DFE1E6);
   border-radius: 6px;
@@ -548,7 +554,12 @@
   z-index: 2;
 }
 
-.cc-msg--row:hover .cc-msg__toolbar { display: flex; }
+.cc-msg--row:hover .cc-msg__toolbar,
+.cc-msg__toolbar:hover,
+.cc-msg__toolbar:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+}
 
 .cc-msg__tool {
   width: 26px;
