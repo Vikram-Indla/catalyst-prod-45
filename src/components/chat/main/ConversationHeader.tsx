@@ -16,6 +16,7 @@ import {
   useChatSetMute,
   useChatLeave,
   useChatMarkRead,
+  useChatSetNotificationPref,
 } from '@/hooks/chat/useChatActions';
 import { AddPeopleModal } from './AddPeopleModal';
 import { RosterPanel } from './RosterPanel';
@@ -85,6 +86,7 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
   const mute = useChatSetMute();
   const leave = useChatLeave();
   const markRead = useChatMarkRead();
+  const setNotifPref = useChatSetNotificationPref();
 
   // Self-rolled click-outside for the kebab menu. The previous
   // @atlaskit/dropdown-menu lost positioning when mounted inside the
@@ -287,6 +289,23 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
               label="Mute conversation"
               onClick={() => { mute.mutate({ convId: conversation.id, muted: true }); setMenuOpen(false); }}
             />
+            <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
+            <div style={{ padding: '4px 10px', fontSize: 11, color: 'var(--ds-text-subtle, #44546F)', textTransform: 'none' }}>
+              Notify me about
+            </div>
+            <ConversationMenuItem
+              label="All messages"
+              onClick={() => { setNotifPref.mutate({ convId: conversation.id, pref: 'all' }); setMenuOpen(false); }}
+            />
+            <ConversationMenuItem
+              label="Mentions only"
+              onClick={() => { setNotifPref.mutate({ convId: conversation.id, pref: 'mentions' }); setMenuOpen(false); }}
+            />
+            <ConversationMenuItem
+              label="Nothing"
+              onClick={() => { setNotifPref.mutate({ convId: conversation.id, pref: 'none' }); setMenuOpen(false); }}
+            />
+            <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
             {!conversation.isArchived ? (
               <ConversationMenuItem
                 label="Archive conversation"

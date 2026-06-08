@@ -20,6 +20,7 @@ import { MessageStream } from './main/MessageStream';
 import { MessageComposer } from './main/MessageComposer';
 import { ThreadPanel } from './main/ThreadPanel';
 import { ChatMentionsPanel } from './main/ChatMentionsPanel';
+import { ChatBookmarksPanel } from './main/ChatBookmarksPanel';
 // ads-scanner:ignore-next-line -- chat.css uses only ADS tokens (no hardcoded values); shared layout styles
 import './chat.css';
 
@@ -92,6 +93,8 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
             void messageId;
           }}
         />
+      ) : railKey === 'saved' ? (
+        <ChatBookmarksPanel onOpenConversation={handleSelect} />
       ) : (
         <ConversationList
           conversations={conversations}

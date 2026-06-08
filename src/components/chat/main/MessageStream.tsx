@@ -10,6 +10,12 @@ import { Avatar, initialsOf, colorFor } from './avatar';
 import { useConversationAttachments, type ChatAttachment } from '@/hooks/chat/useChatAttachments';
 import { AttachmentPreview } from './AttachmentPreview';
 import { LinkUnfurl } from './LinkUnfurl';
+import {
+  useConversationPins,
+  useTogglePin,
+  useMyBookmarks,
+  useToggleBookmark,
+} from '@/hooks/chat/usePinsBookmarks';
 
 // Lazy renderer — Atlaskit @atlaskit/renderer chunk only loads when a
 // message actually has body_adf content.
@@ -143,6 +149,20 @@ export function MessageStream({
     });
     return map;
   }, [attachmentRows]);
+
+  // Pins (channel-scoped) + bookmarks (per-user) batched per conv.
+  const { data: pins } = useConversationPins(conversationId ?? null);
+  const pinnedSet = useMemo(
+    () => new Set((pins ?? []).map((p) => p.message_id)),
+    [pins],
+  );
+  const { data: bookmarks } = useMyBookmarks();
+  const bookmarkedSet = useMemo(
+    () => new Set((bookmarks ?? []).map((b) => b.message_id)),
+    [bookmarks],
+  );
+  const togglePin = useTogglePin();
+  const toggleBookmark = useToggleBookmark();
   // Top-level messages only; group consecutive runs under a date divider.
   const rows = useMemo(() => {
     const top = messages.filter(m => !m.parentId && !m.deletedAt);
@@ -200,6 +220,24 @@ export function MessageStream({
             key={row.msg.id}
             msg={row.msg}
             attachments={attachmentsByMessage.get(row.msg.id) ?? []}
+            isPinned={pinnedSet.has(row.msg.id)}
+            isBookmarked={bookmarkedSet.has(row.msg.id)}
+            onTogglePin={() =>
+              conversationId &&
+              togglePin.mutate({
+                conversationId,
+                messageId: row.msg.id,
+                currentlyPinned: pinnedSet.has(row.msg.id),
+              })
+            }
+            onToggleBookmark={() =>
+              conversationId &&
+              toggleBookmark.mutate({
+                conversationId,
+                messageId: row.msg.id,
+                currentlyBookmarked: bookmarkedSet.has(row.msg.id),
+              })
+            }
             onOpenThread={onOpenThread}
             onToggleReaction={onToggleReaction}
             onEdit={onEdit}
@@ -215,6 +253,10 @@ export function MessageStream({
 function MessageRow({
   msg,
   attachments,
+  isPinned,
+  isBookmarked,
+  onTogglePin,
+  onToggleBookmark,
   onOpenThread,
   onToggleReaction,
   onEdit,
@@ -223,6 +265,10 @@ function MessageRow({
 }: {
   msg: ChatMessage;
   attachments?: ChatAttachment[];
+  isPinned?: boolean;
+  isBookmarked?: boolean;
+  onTogglePin?: () => void;
+  onToggleBookmark?: () => void;
   onOpenThread?: (id: string) => void;
   onToggleReaction?: (id: string, emoji: string) => void;
   onEdit?: (id: string, body: string) => void;
@@ -312,6 +358,30 @@ function MessageRow({
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
                 <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="cc-msg__tool"
+              aria-label={isPinned ? 'Unpin message' : 'Pin message'}
+              title={isPinned ? 'Unpin message' : 'Pin message'}
+              onClick={onTogglePin}
+              style={isPinned ? { color: 'var(--ds-icon-warning, #B38600)' } : undefined}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill={isPinned ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                <path d="M12 2v6m0 0l4 4-4 4-4-4 4-4zm0 10v10" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="cc-msg__tool"
+              aria-label={isBookmarked ? 'Remove bookmark' : 'Save for later'}
+              title={isBookmarked ? 'Remove bookmark' : 'Save for later'}
+              onClick={onToggleBookmark}
+              style={isBookmarked ? { color: 'var(--ds-icon-brand, #0C66E4)' } : undefined}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill={isBookmarked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
               </svg>
             </button>
             <button
