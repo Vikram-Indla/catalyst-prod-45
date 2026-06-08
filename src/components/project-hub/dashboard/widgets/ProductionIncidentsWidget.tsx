@@ -14,7 +14,8 @@
  * Lozenge pills in the status-summary bar above the table and via row drill-
  * through to IncidentHub.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAutoRefresh } from '@/hooks/useAutoRefresh';
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
@@ -41,7 +42,7 @@ import UserAvatar from '@/components/shared/UserAvatar';
 export default function ProductionIncidentsWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { settings } = useGadgetSettings('incidents', projectKey);
   const [page, setPage] = useState(0);
-  const { data: incidents, isLoading } = useDashboardIncidents(projectId, projectKey, {
+  const { data: incidents, isLoading, refetch } = useDashboardIncidents(projectId, projectKey, {
     dateFrom: settings.dateFrom,
     dateTo: settings.dateTo,
     statusFilter: settings.statusFilter,
@@ -272,6 +273,14 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
       ] as any[]).filter((c) => activeColumns.includes(c.key))),
     };
   });
+
+  useEffect(() => {
+    const pageSize = settings.numResults ?? 10;
+    const maxPage = Math.max(0, Math.ceil(rows.length / pageSize) - 1);
+    if (page > maxPage) setPage(maxPage);
+  }, [rows.length, settings.numResults, page]);
+
+  useAutoRefresh(settings.autoRefresh, settings.autoRefreshMinutes, refetch);
 
   return (
     <WidgetWrapper
