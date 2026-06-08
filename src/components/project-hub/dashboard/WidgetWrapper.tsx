@@ -32,14 +32,31 @@ import {
   Plus,
   Download,
   Focus,
+  RefreshCw,
+  Link2,
+  MoreHorizontal,
+  Maximize2,
 } from '@/lib/atlaskit-icons';
 import { IconButton as AkIconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
-import { Heading, SectionMessage } from '@/components/ads';
+import { SectionMessage } from '@/components/ads';
 import { useWidgetEditState } from './DashboardWidgetGrid';
 import { downloadWidgetAsPdf } from '@/lib/widget-pdf';
+
+/** Jira-parity highlight colors for the gadget top border bar. */
+const HIGHLIGHT_COLORS: Record<string, string> = {
+  blue: 'rgb(38, 132, 255)',
+  red: 'rgb(255, 86, 48)',
+  orange: 'rgb(255, 171, 0)',
+  green: 'rgb(54, 179, 126)',
+  teal: 'rgb(0, 184, 217)',
+  purple: 'rgb(101, 84, 192)',
+  grey: 'rgb(151, 160, 175)',
+  white: 'transparent',
+};
 
 interface WidgetWrapperProps {
   title: string;
@@ -50,33 +67,13 @@ interface WidgetWrapperProps {
   headerIcon?: ReactNode;
   footer?: ReactNode;
   children: ReactNode;
-  /** Backwards-compat — span is owned by the outer grid cell now. Ignored. */
   span?: 1 | 2 | 3;
-  /**
-   * If true, drop the body padding (table + tab bars own their own
-   * paddings). Standard widgets keep `space.200` (16px) padding.
-   */
   flushBody?: boolean;
-  /**
-   * @deprecated Apr 26, 2026 — the in-header Maximize2 button was removed.
-   * It used to open UWV, which was wrong: UWV is a flat-list viewer that
-   * strips each gadget's bespoke layout (KPI strip, progress bars, filter
-   * pills). The primary "go fullscreen" action is now the Focus/Solo
-   * button (renders the gadget itself at full viewport, design preserved).
-   *
-   * UWV access remains intact via each widget's footer "View all in X ↗"
-   * link — that's the canonical path when the user wants the cross-context
-   * flat-list view.
-   *
-   * Prop kept for backwards-compat with widget files that still pass it;
-   * it's a no-op now. Safe to drop from widget callsites in the next sweep.
-   */
   onExpand?: () => void;
-  /**
-   * Override the standard 620px body height. Used by the matrix
-   * widgets (Time in Status) which manage their own scrolling.
-   */
   bodyHeight?: number | 'auto';
+  highlightColor?: string;
+  onRefresh?: () => void;
+  lastRefreshed?: Date | null;
 }
 
 class WidgetErrorBoundary extends Component<
@@ -108,7 +105,7 @@ class WidgetErrorBoundary extends Component<
 /** Default standardised body max-height. Tuned for: 1440×900 viewport
  *  → 1 widget per row + page chrome leaves ≈ 720px usable, of which
  *  100px is gadget chrome (header 60 + padding 24 + footer ~16). */
-const DEFAULT_BODY_HEIGHT = 620;
+/** No default fixed height — widgets grow to fit content (Jira parity). */
 
 export default function WidgetWrapper({
   title,
@@ -122,6 +119,9 @@ export default function WidgetWrapper({
   flushBody = false,
   onExpand,
   bodyHeight,
+  highlightColor = 'blue',
+  onRefresh,
+  lastRefreshed,
 }: WidgetWrapperProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -195,9 +195,9 @@ export default function WidgetWrapper({
   // soloed widget header (~60), and a bit of bottom breathing room.
   const resolvedBodyHeight = isSoloed
     ? 'calc(100vh - 260px)'
-    : bodyHeight === 'auto'
-      ? 'auto'
-      : `${bodyHeight ?? DEFAULT_BODY_HEIGHT}px`;
+    : typeof bodyHeight === 'number'
+      ? `${bodyHeight}px`
+      : undefined;
 
   return (
     <div
@@ -222,8 +222,7 @@ export default function WidgetWrapper({
         boxShadow: isSoloed
           ? token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)')
           : token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
-        // Slightly larger radius when soloed gives the focused card a
-        // more deliberate, "card-as-page" feel.
+        borderTop: `4px solid ${HIGHLIGHT_COLORS[highlightColor] ?? HIGHLIGHT_COLORS.blue}`,
         borderRadius: isSoloed
           ? token('border.radius.200', '8px')
           : token('border.radius', '3px'),
@@ -253,14 +252,14 @@ export default function WidgetWrapper({
           justifyContent: 'space-between',
           gap: 8,
           minWidth: 0,
-          padding: '16px',
+          padding: '8px 16px',
           background: headerHovered && !isEditing
             ? token('color.background.neutral.subtle.hovered', '#F1F2F4')
             : token('elevation.surface', '#FFFFFF'),
           borderBottom: collapsed
             ? 'none'
             : `1px solid ${token('color.border', '#DFE1E6')}`,
-          minHeight: 64,
+          minHeight: 40,
           cursor: isEditing ? 'inherit' : 'pointer',
           transition: 'background 120ms ease',
         }}
@@ -287,9 +286,9 @@ export default function WidgetWrapper({
           )}
           {headerIcon}
           <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-            <Heading as="h2" size="small" truncate>
+            <div style={{ fontSize: 14, fontWeight: 600, color: token('color.text', '#292A2E'), lineHeight: '20px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {title}
-            </Heading>
+            </div>
             {subtitle && (
               <span
                 style={{
@@ -331,68 +330,16 @@ export default function WidgetWrapper({
               />
             </>
           )}
-          {onSolo && widgetId && (
-            <Tooltip
-              content={isSoloed ? 'Exit fullscreen (Esc)' : 'View this widget fullscreen'}
-              position="top"
-            >
-              {(tp) => (
-                <span {...tp} style={{ display: 'inline-flex' }}>
-                  <AkIconButton
-                    label={isSoloed ? 'Exit fullscreen' : 'View fullscreen'}
-                    icon={() => <Focus size={16} />}
-                    appearance={isSoloed ? 'primary' : 'subtle'}
-                    spacing="compact"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSolo(isSoloed ? null : widgetId);
-                    }}
-                  />
-                </span>
-              )}
-            </Tooltip>
-          )}
-          {/* In-header Maximize2 button removed Apr 26, 2026 — it routed
-              to UWV (flat-list viewer) which stripped each gadget's
-              bespoke design. Focus/Solo above is now the primary
-              fullscreen action; UWV remains accessible via each widget's
-              footer "View all ↗" link. */}
-          <Tooltip content="Download as PDF" position="top">
+          <Tooltip content={collapsed ? 'Maximize' : 'Minimize'} position="top">
             {(tp) => (
               <span {...tp} style={{ display: 'inline-flex' }}>
                 <AkIconButton
-                  label="Download as PDF"
-                  icon={() => <Download size={16} />}
-                  appearance="subtle"
-                  spacing="compact"
-                  isDisabled={isExporting || collapsed}
-                  onClick={async (e) => {
-                    e.stopPropagation();
-                    if (!bodyRef.current) return;
-                    setIsExporting(true);
-                    try {
-                      await downloadWidgetAsPdf(bodyRef.current, { title, subtitle });
-                    } catch (err) {
-                      console.error('[WidgetWrapper] PDF export failed', err);
-                    } finally {
-                      setIsExporting(false);
-                    }
-                  }}
-                />
-              </span>
-            )}
-          </Tooltip>
-          <Tooltip content={collapsed ? 'Expand widget' : 'Collapse widget'} position="top">
-            {(tp) => (
-              <span {...tp} style={{ display: 'inline-flex' }}>
-                <AkIconButton
-                  label={collapsed ? 'Expand widget' : 'Collapse widget'}
+                  label={collapsed ? 'Maximize' : 'Minimize'}
                   icon={() => (
                     <ChevronDown
-                      size={18}
+                      size={16}
                       style={{
                         transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-                        transition: 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1)',
                       }}
                     />
                   )}
@@ -406,6 +353,92 @@ export default function WidgetWrapper({
               </span>
             )}
           </Tooltip>
+          {onSolo && widgetId && (
+            <Tooltip content={isSoloed ? 'Exit fullscreen (Esc)' : 'Maximize'} position="top">
+              {(tp) => (
+                <span {...tp} style={{ display: 'inline-flex' }}>
+                  <AkIconButton
+                    label={isSoloed ? 'Exit fullscreen' : 'Maximize'}
+                    icon={() => <Maximize2 size={14} />}
+                    appearance={isSoloed ? 'primary' : 'subtle'}
+                    spacing="compact"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSolo(isSoloed ? null : widgetId);
+                    }}
+                  />
+                </span>
+              )}
+            </Tooltip>
+          )}
+          {onRefresh && (
+            <Tooltip content="Refresh" position="top">
+              {(tp) => (
+                <span {...tp} style={{ display: 'inline-flex' }}>
+                  <AkIconButton
+                    label="Refresh"
+                    icon={() => <RefreshCw size={14} />}
+                    appearance="subtle"
+                    spacing="compact"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRefresh();
+                    }}
+                  />
+                </span>
+              )}
+            </Tooltip>
+          )}
+          <Tooltip content="Copy link" position="top">
+            {(tp) => (
+              <span {...tp} style={{ display: 'inline-flex' }}>
+                <AkIconButton
+                  label="Copy link"
+                  icon={() => <Link2 size={14} />}
+                  appearance="subtle"
+                  spacing="compact"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(window.location.href);
+                  }}
+                />
+              </span>
+            )}
+          </Tooltip>
+          {isEditing && (
+            <DropdownMenu
+              trigger={({ triggerRef, ...triggerProps }) => (
+                <AkIconButton
+                  ref={triggerRef}
+                  {...triggerProps}
+                  label={`More actions for ${title} gadget`}
+                  icon={() => <MoreHorizontal size={16} />}
+                  appearance="subtle"
+                  spacing="compact"
+                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                />
+              )}
+            >
+              <DropdownItemGroup>
+                <DropdownItem onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                }}>Copy link</DropdownItem>
+              </DropdownItemGroup>
+              <DropdownItemGroup>
+                <DropdownItem onClick={async () => {
+                  if (!bodyRef.current) return;
+                  setIsExporting(true);
+                  try {
+                    await downloadWidgetAsPdf(bodyRef.current, { title, subtitle });
+                  } catch (err) {
+                    console.error('[WidgetWrapper] PDF export failed', err);
+                  } finally {
+                    setIsExporting(false);
+                  }
+                }}>Download as PDF</DropdownItem>
+              </DropdownItemGroup>
+            </DropdownMenu>
+          )}
           {headerBadges}
         </div>
       </div>
@@ -431,7 +464,7 @@ export default function WidgetWrapper({
             // Standardised height — overflow-y inside the body so the
             // dashboard never exposes a 'half a widget' viewport.
             maxHeight: resolvedBodyHeight,
-            overflowY: bodyHeight === 'auto' ? 'visible' : 'auto',
+            overflowY: typeof bodyHeight === 'number' ? 'auto' : 'visible',
             // Smooth fade-in when soloed
             animation: isSoloed
               ? 'dashboardFadeIn 220ms cubic-bezier(0.4, 0, 0.2, 1)'
@@ -455,6 +488,34 @@ export default function WidgetWrapper({
           {footer}
         </div>
       )}
+      {!collapsed && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            padding: `4px ${token('space.200', '16px')} 8px`,
+            fontSize: 12,
+            fontWeight: 400,
+            color: token('color.text.subtlest', '#6B778C'),
+          }}
+        >
+          <RefreshCw size={12} />
+          <span>Last refreshed {lastRefreshed ? formatTimeAgo(lastRefreshed) : 'just now'}</span>
+        </div>
+      )}
     </div>
   );
+}
+
+function formatTimeAgo(date: Date): string {
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (seconds < 10) return 'just now';
+  if (seconds < 60) return `${seconds} seconds ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes === 1) return '1 minute ago';
+  if (minutes < 60) return `${minutes} minutes ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours === 1) return '1 hour ago';
+  return `${hours} hours ago`;
 }

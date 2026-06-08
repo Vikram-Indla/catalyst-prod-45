@@ -112,7 +112,7 @@ function totalBg(ms: number, max: number): string {
   return 'var(--ds-background-neutral, #F1F2F4)';
 }
 
-const ROW_HEIGHT = 40;
+const ROW_HEIGHT = 35;
 const STATUS_COL_MIN = 140;
 const FROZEN_LEFT_WIDTH = 460;
 
@@ -310,10 +310,11 @@ export default function TimeInStatusFullscreenModal({
                           background: token('elevation.surface', '#FFFFFF'),
                           width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                           textAlign: 'left',
-                          padding: '10px 12px',
-                          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                          padding: '4px',
+                          borderBottom: '0.5px solid rgba(11,18,14,0.14)',
                           borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                           ...STRONG,
+                          fontWeight: 500,
                         }}
                       >
                         Ticket
@@ -324,8 +325,8 @@ export default function TimeInStatusFullscreenModal({
                           style={{
                             minWidth: STATUS_COL_MIN,
                             textAlign: 'left',
-                            padding: '10px 12px',
-                            borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                            padding: '4px',
+                            borderBottom: '0.5px solid rgba(11,18,14,0.14)',
                             borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                           }}
                         >
@@ -337,10 +338,11 @@ export default function TimeInStatusFullscreenModal({
                       <th
                         style={{
                           minWidth: 110,
-                          padding: '10px 12px',
+                          padding: '4px',
                           textAlign: 'right',
-                          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                          borderBottom: '0.5px solid rgba(11,18,14,0.14)',
                           ...STRONG,
+                          fontWeight: 500,
                           background: token('elevation.surface', '#FFFFFF'),
                           position: 'sticky', right: 0, zIndex: 2,
                         }}
@@ -362,7 +364,7 @@ export default function TimeInStatusFullscreenModal({
                             position: 'sticky', left: 0,
                             background: token('elevation.surface', '#FFFFFF'),
                             boxShadow: '1px 0 0 0 ' + token('color.border', '#DFE1E6'),
-                            padding: '8px 12px',
+                            padding: '4px',
                             borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
                             borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                             width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
@@ -406,7 +408,7 @@ export default function TimeInStatusFullscreenModal({
                               key={s.name}
                               style={{
                                 minWidth: STATUS_COL_MIN,
-                                padding: '8px 12px',
+                                padding: '4px',
                                 borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
                                 borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                                 background: categoryBg(s.category, ms),
@@ -451,7 +453,7 @@ export default function TimeInStatusFullscreenModal({
                         })}
                         <td
                           style={{
-                            padding: '8px 12px',
+                            padding: '4px',
                             textAlign: 'right',
                             borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
                             fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',

@@ -1888,14 +1888,15 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           gridTemplateColumns: '28px 20px 130px 1fr 180px 130px 32px',
           alignItems: 'center',
           gap: 12,
-          padding: `10px ${token('space.300', '24px')}`,
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          padding: `4px ${token('space.300', '24px')}`,
+          borderBottom: '0.5px solid rgba(11,18,14,0.14)',
           background: token('elevation.surface.sunken', '#F7F8F9'),
           ...SMALL_STRONG,
+          fontWeight: 500,
           fontFamily: ATLAS_SANS,
           textTransform: 'none',
           letterSpacing: '0.04em',
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text', '#292A2E'),
         }}
       >
         <span />

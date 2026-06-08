@@ -32,7 +32,7 @@ import { SMALL, SMALL_STRONG, BODY, STRONG } from '../dashboardTypography';
 import { ResizableDynamicTable } from '../ResizableDynamicTable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
-import RelativeTime from '@/components/shared/RelativeTime';
+
 import UserAvatar from '@/components/shared/UserAvatar';
 
 export default function QADefectsWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
@@ -100,9 +100,10 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
     <span
       style={{
         ...SMALL_STRONG,
+        fontWeight: 500,
         textTransform: 'none',
         letterSpacing: '0.04em',
-        color: token('color.text.subtle', '#44546F'),
+        color: token('color.text', '#292A2E'),
       }}
     >
       {label}
@@ -209,17 +210,33 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         },
         {
           key: 'age',
-          content: (
-            <RelativeTime
-              iso={d.created_at ?? d.jira_created_at ?? null}
-              style={{
-                ...STRONG,
-                color: token('color.text.subtle', '#44546F'),
-                fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                whiteSpace: 'nowrap',
-              }}
-            />
-          ),
+          content: (() => {
+            const raw = d.created_at ?? d.jira_created_at ?? null;
+            let display = '—';
+            if (raw) {
+              try {
+                const dt = new Date(raw);
+                if (!Number.isNaN(dt.getTime())) {
+                  const dd = String(dt.getDate()).padStart(2, '0');
+                  const mon = dt.toLocaleString('en-GB', { month: 'short' });
+                  const yy = String(dt.getFullYear()).slice(-2);
+                  display = `${dd}/${mon}/${yy}`;
+                }
+              } catch { /* fallback */ }
+            }
+            return (
+              <span
+                style={{
+                  ...STRONG,
+                  color: token('color.text.subtle', '#44546F'),
+                  fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {display}
+              </span>
+            );
+          })(),
         },
       ],
     };

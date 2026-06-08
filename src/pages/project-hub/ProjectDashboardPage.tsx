@@ -131,6 +131,7 @@ function ProjectDashboardPageInner() {
     // edits don't mutate the query cache.
     setDraft(persistedWidgets.map((w) => ({ ...w })));
     setIsEditing(true);
+    setGalleryOpen(true); // D16 — auto-open gallery when entering edit mode
   };
 
   const cancelEdit = () => {
@@ -237,6 +238,35 @@ function ProjectDashboardPageInner() {
     // Non-edit mode is handled inside DashboardWidgetGrid via persistedToggleCollapse.
   };
 
+  // Apply a preset layout — updates all visible widgets' spans in the draft.
+  const applyLayout = (preset: '1col' | '2col-equal' | '2col-left-wide' | '3col-equal') => {
+    setDraft((current) => {
+      if (!current) return current;
+      const visible = current.filter((w) => w.visible).sort((a, b) => a.position - b.position);
+      const spanMap = new Map<string, WidgetSpan>();
+      visible.forEach((w, i) => {
+        switch (preset) {
+          case '1col':
+            spanMap.set(w.id, 12);
+            break;
+          case '2col-equal':
+            spanMap.set(w.id, 6);
+            break;
+          case '2col-left-wide':
+            spanMap.set(w.id, i === 0 ? 8 : 4);
+            break;
+          case '3col-equal':
+            spanMap.set(w.id, 4);
+            break;
+        }
+      });
+      return current.map((w) => {
+        const newSpan = spanMap.get(w.id);
+        return newSpan != null ? { ...w, span: newSpan } : w;
+      });
+    });
+  };
+
   // Reset — confirmation expected, but for now follow the existing
   // resetToDefaults contract. In edit mode, reset the DRAFT only.
   const resetLayout = () => {
@@ -297,14 +327,26 @@ function ProjectDashboardPageInner() {
       >
         Add gadget
       </Button>
-      <Button
-        appearance="subtle"
-        spacing="compact"
-        onClick={resetLayout}
-        testId="dashboard-change-layout"
+      <DropdownMenu
+        trigger={({ triggerRef, ...triggerProps }) => (
+          <Button
+            ref={triggerRef}
+            {...triggerProps}
+            appearance="subtle"
+            spacing="compact"
+            testId="dashboard-change-layout"
+          >
+            Change layout
+          </Button>
+        )}
       >
-        Change layout
-      </Button>
+        <DropdownItemGroup title="Preset layouts">
+          <DropdownItem onClick={() => applyLayout('1col')}>1 column</DropdownItem>
+          <DropdownItem onClick={() => applyLayout('2col-equal')}>2 columns equal</DropdownItem>
+          <DropdownItem onClick={() => applyLayout('2col-left-wide')}>2 columns left-wide</DropdownItem>
+          <DropdownItem onClick={() => applyLayout('3col-equal')}>3 columns equal</DropdownItem>
+        </DropdownItemGroup>
+      </DropdownMenu>
       <Button
         appearance="primary"
         spacing="compact"
@@ -410,77 +452,83 @@ function ProjectDashboardPageInner() {
       actions={actions}
       testId="project-dashboard-shell"
     >
-      {isLoading ? (
-        <div style={{ padding: 16 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div
-              style={{
-                height: 48,
-                borderRadius: token('border.radius', '8px'),
-                background: token('color.background.neutral.subtle', '#F1F2F4'),
-              }}
-            />
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(12, minmax(0, 1fr))',
-                gap: 24,
-              }}
-            >
-              {Array.from({ length: 6 }).map((_, i) => (
+      <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+        {/* Main dashboard content */}
+        <div style={{ flex: 1, minWidth: 0, overflowY: 'auto' }}>
+          {isLoading ? (
+            <div style={{ padding: 16 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div
-                  key={i}
                   style={{
-                    gridColumn: 'span 4',
-                    height: 160,
+                    height: 48,
                     borderRadius: token('border.radius', '8px'),
                     background: token('color.background.neutral.subtle', '#F1F2F4'),
                   }}
                 />
-              ))}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(12, minmax(0, 1fr))',
+                    gap: 24,
+                  }}
+                >
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        gridColumn: 'span 4',
+                        height: 160,
+                        borderRadius: token('border.radius', '8px'),
+                        background: token('color.background.neutral.subtle', '#F1F2F4'),
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      ) : (
-        <div style={{ padding: 16 }}>
-          {isEditing && (
-            <div style={{ marginBottom: 16 }}>
-              <SectionMessage appearance="information">
-                You are currently editing your dashboard. Changes will be saved when you click Done.
-              </SectionMessage>
+          ) : (
+            <div style={{ padding: 16 }}>
+              {isEditing && (
+                <div style={{ marginBottom: 16 }}>
+                  <SectionMessage appearance="information">
+                    You are currently editing your dashboard. Changes will be saved when you click Done.
+                  </SectionMessage>
+                </div>
+              )}
+              <div style={{ marginBottom: 16 }}>
+                <SectionMessage
+                  appearance="information"
+                  title="Showing 2026 fiscal scope"
+                >
+                  All widgets on this dashboard count items <strong>created in 2026</strong>,
+                  <strong> updated in 2026</strong>, or assigned to a currently
+                  <strong> active release</strong>. Items outside this scope (e.g. archived
+                  or pre-2026 closed work) are intentionally excluded so totals
+                  reflect what the team is actively delivering this year.
+                </SectionMessage>
+              </div>
+              <DashboardWidgetGrid
+                projectId={projectId || pKey}
+                projectKey={pKey}
+                isEditing={isEditing}
+                draftWidgets={draft ?? undefined}
+                onReorder={reorder}
+                onResize={resize}
+                onToggleCollapse={toggleCollapse}
+              />
             </div>
           )}
-          <div style={{ marginBottom: 16 }}>
-            <SectionMessage
-              appearance="information"
-              title="Showing 2026 fiscal scope"
-            >
-              All widgets on this dashboard count items <strong>created in 2026</strong>,
-              <strong> updated in 2026</strong>, or assigned to a currently
-              <strong> active release</strong>. Items outside this scope (e.g. archived
-              or pre-2026 closed work) are intentionally excluded so totals
-              reflect what the team is actively delivering this year.
-            </SectionMessage>
-          </div>
-          <DashboardWidgetGrid
-            projectId={projectId || pKey}
-            projectKey={pKey}
-            isEditing={isEditing}
-            draftWidgets={draft ?? undefined}
-            onReorder={reorder}
-            onResize={resize}
-            onToggleCollapse={toggleCollapse}
-          />
         </div>
-      )}
 
-      <WidgetGalleryModal
-        open={galleryOpen}
-        onClose={() => setGalleryOpen(false)}
-        widgets={widgetsForModal}
-        onToggleVisibility={toggleVisibility}
-        onReset={resetLayout}
-      />
+        {/* Right-side gallery panel (Jira "Add a Gadget" parity) */}
+        <WidgetGalleryModal
+          open={galleryOpen}
+          onClose={() => setGalleryOpen(false)}
+          widgets={widgetsForModal}
+          onToggleVisibility={toggleVisibility}
+          onReset={resetLayout}
+        />
+      </div>
 
       <FlagGroup onDismissed={() => setSavedFlag(false)}>
         {savedFlag && (

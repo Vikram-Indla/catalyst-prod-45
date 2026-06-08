@@ -32,7 +32,7 @@ import { SMALL, SMALL_STRONG, BODY, STRONG } from '../dashboardTypography';
 import { ResizableDynamicTable } from '../ResizableDynamicTable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
-import RelativeTime from '@/components/shared/RelativeTime';
+
 import UserAvatar from '@/components/shared/UserAvatar';
 
 export default function ProductionIncidentsWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
@@ -98,9 +98,10 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
     <span
       style={{
         ...SMALL_STRONG,
+        fontWeight: 500,
         textTransform: 'none',
         letterSpacing: '0.04em',
-        color: token('color.text.subtle', '#44546F'),
+        color: token('color.text', '#292A2E'),
       }}
     >
       {label}
@@ -219,17 +220,33 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         },
         {
           key: 'started',
-          content: (
-            <RelativeTime
-              iso={inc.jira_created_at ?? inc.created_at ?? null}
-              style={{
-                ...STRONG,
-                color: token('color.text.subtle', '#44546F'),
-                fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                whiteSpace: 'nowrap',
-              }}
-            />
-          ),
+          content: (() => {
+            const raw = inc.jira_created_at ?? inc.created_at ?? null;
+            let display = '—';
+            if (raw) {
+              try {
+                const d = new Date(raw);
+                if (!Number.isNaN(d.getTime())) {
+                  const dd = String(d.getDate()).padStart(2, '0');
+                  const mon = d.toLocaleString('en-GB', { month: 'short' });
+                  const yy = String(d.getFullYear()).slice(-2);
+                  display = `${dd}/${mon}/${yy}`;
+                }
+              } catch { /* fallback */ }
+            }
+            return (
+              <span
+                style={{
+                  ...STRONG,
+                  color: token('color.text.subtle', '#44546F'),
+                  fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {display}
+              </span>
+            );
+          })(),
         },
       ],
     };

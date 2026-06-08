@@ -127,7 +127,7 @@ function totalBg(ms: number, max: number): string {
   return 'var(--ds-background-neutral, #F1F2F4)';
 }
 
-const ROW_HEIGHT = 40;
+const ROW_HEIGHT = 35;
 const STATUS_COL_MIN = 128;       // bumped from 96 — gives "3mo 12d ×2" room to breathe
 const FROZEN_LEFT_WIDTH = 420;    // bumped from 380; priority + key + title + assignee
 const TOTAL_COL_WIDTH = 110;
@@ -343,16 +343,14 @@ export default function TimeInStatusWidget({
                     background: token('elevation.surface', '#FFFFFF'),
                     width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                     textAlign: 'left',
-                    padding: '10px 12px',
-                    borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    padding: '4px',
+                    borderBottom: '0.5px solid rgba(11,18,14,0.14)',
                     borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
-                    // Header style mirrors QA Defects / Production
-                    // Incidents header: 12px uppercase 700 letter-spaced
-                    // 0.04em color.text.subtle.
                     ...SMALL_STRONG,
+                    fontWeight: 500,
                     textTransform: 'none',
                     letterSpacing: '0.04em',
-                    color: token('color.text.subtle', '#44546F'),
+                    color: token('color.text', '#292A2E'),
                   }}
                 >
                   Ticket
@@ -363,8 +361,8 @@ export default function TimeInStatusWidget({
                     style={{
                       minWidth: STATUS_COL_MIN,
                       textAlign: 'left',
-                      padding: '8px 12px',
-                      borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      padding: '4px',
+                      borderBottom: '0.5px solid rgba(11,18,14,0.14)',
                       borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                     }}
                   >
@@ -376,10 +374,11 @@ export default function TimeInStatusWidget({
                 <th
                   style={{
                     minWidth: 96,
-                    padding: '8px 12px',
+                    padding: '4px',
                     textAlign: 'right',
-                    borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    borderBottom: '0.5px solid rgba(11,18,14,0.14)',
                     ...STRONG,
+                    fontWeight: 500,
                     background: token('elevation.surface', '#FFFFFF'),
                     position: 'sticky', right: 0, zIndex: 2,
                   }}
@@ -411,7 +410,7 @@ export default function TimeInStatusWidget({
                       position: 'sticky', left: 0,
                       background: token('elevation.surface', '#FFFFFF'),
                     boxShadow: '1px 0 0 0 ' + token('color.border', '#DFE1E6'),
-                      padding: '6px 12px',
+                      padding: '4px',
                       borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
                       borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                       width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
@@ -465,7 +464,7 @@ export default function TimeInStatusWidget({
                         key={s.name}
                         style={{
                           minWidth: STATUS_COL_MIN,
-                          padding: '6px 12px',
+                          padding: '4px',
                           borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
                           borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                           background: categoryBg(s.category, ms),
@@ -516,7 +515,7 @@ export default function TimeInStatusWidget({
                   {/* Total */}
                   <td
                     style={{
-                      padding: '6px 12px',
+                      padding: '4px',
                       textAlign: 'right',
                       borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
                       fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
