@@ -580,6 +580,7 @@ export default function GadgetSettingsPanel({
         {/* ── COLUMNS TO DISPLAY ── */}
         <ColumnsSection
           gadgetType={gadgetType}
+          projectKey={projectKey}
           columns={draft.columns}
           onChange={(cols) => setField('columns', cols)}
         />
@@ -1317,10 +1318,12 @@ function GadgetSpecific({
 
 function ColumnsSection({
   gadgetType,
+  projectKey,
   columns,
   onChange,
 }: {
   gadgetType: GadgetType;
+  projectKey: string;
   columns: string[] | null;
   onChange: (cols: string[] | null) => void;
 }) {
@@ -1336,6 +1339,35 @@ function ColumnsSection({
   const [addQuery, setAddQuery] = useState('');
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+
+  // Saved column-set presets (P1-C). Stored at
+  //   catalyst_gadget_presets_${projectKey}_${gadget} → Record<name, string[]>
+  const presetKey = `catalyst_gadget_presets_${projectKey}_${gadgetType}`;
+  const [presets, setPresets] = useState<Record<string, string[]>>(() => {
+    try {
+      const raw = localStorage.getItem(presetKey);
+      return raw ? JSON.parse(raw) : {};
+    } catch { return {}; }
+  });
+  const persistPresets = (next: Record<string, string[]>) => {
+    setPresets(next);
+    try { localStorage.setItem(presetKey, JSON.stringify(next)); } catch { /* quota */ }
+  };
+  const savePresetPrompt = () => {
+    const name = (typeof window !== 'undefined' ? window.prompt('Preset name:', 'My defaults') : null)?.trim();
+    if (!name) return;
+    persistPresets({ ...presets, [name]: [...active] });
+  };
+  const loadPreset = (name: string) => {
+    const cols = presets[name];
+    if (!cols) return;
+    onChange(cols.every((c, i) => c === defaults[i]) && cols.length === defaults.length ? null : cols);
+  };
+  const deletePreset = (name: string) => {
+    const next = { ...presets };
+    delete next[name];
+    persistPresets(next);
+  };
 
   const remove = (id: string) => {
     const next = active.filter((c) => c !== id);
@@ -1356,19 +1388,55 @@ function ColumnsSection({
 
   const resetToDefault = () => onChange(null);
 
+  const presetNames = Object.keys(presets);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ fontSize: 10, fontWeight: 653, textTransform: 'none', color: 'var(--ds-text-subtlest, #7A869A)', letterSpacing: '0.04em' }}>
           Columns to display
         </span>
-        {columns != null && (
-          <button type="button" onClick={resetToDefault}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button type="button" onClick={savePresetPrompt}
             style={{ background: 'transparent', border: 0, color: 'var(--ds-link, #0052CC)', cursor: 'pointer', fontSize: 10, fontWeight: 600 }}>
-            Default columns
+            Save as preset
           </button>
-        )}
+          {columns != null && (
+            <button type="button" onClick={resetToDefault}
+              style={{ background: 'transparent', border: 0, color: 'var(--ds-link, #0052CC)', cursor: 'pointer', fontSize: 10, fontWeight: 600 }}>
+              Default columns
+            </button>
+          )}
+        </div>
       </div>
+
+      {presetNames.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+          {presetNames.map((name) => (
+            <span key={name}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '2px 6px',
+                background: 'var(--ds-background-neutral, #F1F2F4)',
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                borderRadius: 12,
+                fontSize: 11,
+                color: 'var(--ds-text, #172B4D)',
+              }}>
+              <button type="button" onClick={() => loadPreset(name)}
+                style={{ background: 'transparent', border: 0, padding: 0, color: 'inherit', cursor: 'pointer', fontSize: 11 }}>
+                {name}
+              </button>
+              <button type="button" onClick={() => deletePreset(name)} aria-label={`Delete preset ${name}`}
+                style={{ background: 'transparent', border: 0, padding: 0, color: 'var(--ds-text-subtlest, #7A869A)', cursor: 'pointer', fontSize: 11, lineHeight: 1 }}>
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
 
       <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, background: 'var(--ds-surface, #FFFFFF)', overflow: 'hidden' }}>
         {active.map((colId, idx) => {
