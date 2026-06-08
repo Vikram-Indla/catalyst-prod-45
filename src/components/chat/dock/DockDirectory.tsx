@@ -13,6 +13,7 @@
 import React, { useMemo, useState } from 'react';
 import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import { useStartDm } from '@/hooks/chat/useStartDm';
+import { useStartProjectChannel } from '@/hooks/chat/useStartProjectChannel';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -57,8 +58,38 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
   const { user } = useAuth();
   const { groups, isLoading } = useChatPeople();
   const startDm = useStartDm();
+  const startChannel = useStartProjectChannel();
   const [query, setQuery] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
+
+  // Caller's joined projects (for the Channels section)
+  const { data: myProjects } = useQuery({
+    queryKey: ['chat', 'my-projects', user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      if (!user) return [] as { id: string; key: string; name: string }[];
+      const { data: memberRows } = await supabase
+        .from('ph_project_members')
+        .select('project_id')
+        .eq('user_id', user.id);
+      const projectIds = (memberRows ?? []).map((r: any) => r.project_id).filter(Boolean);
+      if (projectIds.length === 0) {
+        // Fallback: show all projects so user can browse them
+        const { data: all } = await supabase
+          .from('ph_projects')
+          .select('id, key, name')
+          .order('key')
+          .limit(20);
+        return (all ?? []) as { id: string; key: string; name: string }[];
+      }
+      const { data: projs } = await supabase
+        .from('ph_projects')
+        .select('id, key, name')
+        .in('id', projectIds)
+        .order('key');
+      return (projs ?? []) as { id: string; key: string; name: string }[];
+    },
+  });
 
   // resource id → profile id map for the RPC
   const { data: idMap } = useQuery({
@@ -101,10 +132,12 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
+    const projects = myProjects ?? [];
     if (!q) {
       return {
         conversations: conversations.filter((c) => !c.isArchived),
         people: people.slice(0, 50),
+        projects,
       };
     }
     return {
@@ -114,8 +147,23 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
       people: people.filter((p) =>
         p.name.toLowerCase().includes(q) || (p.role ?? '').toLowerCase().includes(q),
       ),
+      projects: projects.filter((p) =>
+        p.key.toLowerCase().includes(q) || (p.name ?? '').toLowerCase().includes(q),
+      ),
     };
-  }, [query, conversations, people]);
+  }, [query, conversations, people, myProjects]);
+
+  const handleOpenChannel = async (projectKey: string) => {
+    setBusyId(`channel:${projectKey}`);
+    try {
+      const convId = await startChannel.mutateAsync(projectKey);
+      onSelectConversation(convId);
+    } catch (e) {
+      console.error('Open channel failed:', e);
+    } finally {
+      setBusyId(null);
+    }
+  };
 
   const handleStartDm = async (person: ChatPerson) => {
     const map = idMap?.get(person.id);
@@ -177,6 +225,39 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
                 {c.unreadCount > 0 && (
                   <span className="cc-dir__unread">{c.unreadCount > 99 ? '99+' : c.unreadCount}</span>
                 )}
+              </button>
+            ))}
+          </>
+        )}
+
+        {/* Channels (projects) */}
+        {filtered.projects.length > 0 && (
+          <>
+            <div className="cc-dir__section">
+              Channels
+              <span className="cc-dir__section-count">{filtered.projects.length}</span>
+            </div>
+            {filtered.projects.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className="cc-dir__row"
+                disabled={busyId === `channel:${p.key}`}
+                onClick={() => handleOpenChannel(p.key)}
+                title={`Open #${p.key.toLowerCase()} project channel`}
+              >
+                <span className="cc-dir__channel-glyph">#</span>
+                <div className="cc-dir__body">
+                  <div className="cc-dir__top">
+                    <span className="cc-dir__name">{p.key.toLowerCase()}</span>
+                  </div>
+                  <div className="cc-dir__preview">
+                    {p.name ?? p.key} · project channel
+                  </div>
+                </div>
+                <span className="cc-dir__msg-cta">
+                  {busyId === `channel:${p.key}` ? '…' : 'Open'}
+                </span>
               </button>
             ))}
           </>

@@ -511,3 +511,17 @@
   width: 480px;
   height: calc(100vh - 16px);
 }
+
+.cc-dir__channel-glyph {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: 6px;
+  background: var(--ds-background-accent-purple-bolder, #6E5DC6);
+  color: var(--ds-text-inverse, #FFFFFF);
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
