@@ -5,7 +5,7 @@
   right: 24px;
   bottom: 24px;
   width: 380px;
-  height: 560px;
+  height: 580px;
   background: var(--ds-surface, #FFFFFF);
   border: 1px solid var(--ds-border, #DFE1E6);
   border-radius: 8px;
@@ -24,8 +24,61 @@
   border-bottom: 1px solid var(--ds-border, #DFE1E6);
   display: flex;
   align-items: center;
-  padding: 0 12px;
-  gap: 8px;
+  padding: 0 8px;
+  gap: 4px;
+  background: var(--ds-surface, #FFFFFF);
+}
+
+/* Dual-mode tab pills */
+.cc-mode-tabs {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--ds-background-neutral, #F1F2F4);
+  border-radius: 6px;
+  padding: 2px;
+  min-width: 0;
+}
+
+.cc-mode-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 28px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ds-text-subtle, #44546F);
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 0 8px;
+  position: relative;
+  transition: background 0.1s, color 0.1s;
+}
+
+.cc-mode-tab--active {
+  background: var(--ds-surface, #FFFFFF);
+  color: var(--ds-text, #172B4D);
+  font-weight: 600;
+  box-shadow: var(--ds-shadow-raised, 0 1px 2px rgba(9, 30, 66, 0.18));
+}
+
+.cc-mode-tab__badge {
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--ds-background-danger-bold, #E34935);
+  color: var(--ds-text-inverse, #FFFFFF);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
 }
 
 .cc-dock__title {
@@ -192,23 +245,28 @@
   flex: 0 0 auto;
 }
 
-/* collapsed launcher FAB */
+/* collapsed launcher FAB — transparent, drop-shadow tracks icon alpha */
 .cc-fab {
   position: fixed;
   right: 24px;
   bottom: 24px;
   width: 56px;
   height: 56px;
-  border-radius: 16px;
-  background: var(--ds-background-brand-bold, #0C66E4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--ds-text-inverse, #FFFFFF);
+  background: transparent;
   border: none;
+  padding: 0;
   cursor: pointer;
   z-index: 600;
-  box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9, 30, 66, 0.28), 0 1px 3px rgba(9, 30, 66, 0.2));
+  filter: drop-shadow(0 4px 14px rgba(9, 30, 66, 0.32)) drop-shadow(0 1px 4px rgba(9, 30, 66, 0.18));
+  transition: transform 0.15s ease;
+}
+
+.cc-fab:hover {
+  transform: scale(1.06);
+}
+
+.cc-fab:active {
+  transform: scale(0.96);
 }
 
 .cc-fab__badge {

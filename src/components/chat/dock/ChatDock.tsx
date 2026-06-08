@@ -12,7 +12,7 @@
  * ADS: @atlaskit/dropdown-menu is available for any future menu; icon buttons are @atlaskit/button
  * IconButton. Colors via var(--ds-*) tokens. Avatars are colored-initials circles (never <img>).
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { IconButton } from '@atlaskit/button/new';
 import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
@@ -20,8 +20,12 @@ import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { useConversations } from '@/hooks/chat/useConversations';
 import type { ChatConversation, ChatPresence } from '@/types/chat';
+import catalystChatIcon from '@/assets/catalyst-chat-icon.svg';
+import { CatyPanel } from './CatyPanel';
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import './dock.css';
+
+type DockMode = 'messages' | 'caty';
 
 interface ChatDockProps {
   openConversationIds: string[];
@@ -142,6 +146,8 @@ export function ChatDock({
   onNewMessage,
   onPopOut,
 }: ChatDockProps) {
+  const [dockMode, setDockMode] = useState<DockMode>('messages');
+
   // Collapsed: render only the FAB. No data hook subscription is created here; callers
   // gate realtime on !collapsed. We still need an unread total for the badge — read it
   // from a lightweight (already-cached) hook only when expanded; when collapsed we keep
@@ -162,9 +168,7 @@ export function ChatDock({
   if (collapsed) {
     return (
       <button type="button" className="cc-fab" aria-label="Open messages" onClick={onToggleCollapsed}>
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-        </svg>
+        <img src={catalystChatIcon} alt="" width={56} height={56} />
         {totalUnread > 0 && <span className="cc-fab__badge">{totalUnread > 99 ? '99+' : totalUnread}</span>}
         <span className="cc-fab__presence" />
       </button>
@@ -174,88 +178,127 @@ export function ChatDock({
   const listConversations = (conversations ?? []).filter((c) => !c.isArchived);
 
   return (
-    <div className="cc-dock" role="dialog" aria-label="Messages">
+    <div className="cc-dock" role="dialog" aria-label={dockMode === 'caty' ? 'Ask Caty AI' : 'Messages'}>
+      {/* Shared header — mode tabs + shared icons */}
       <div className="cc-dock__header">
-        <div className="cc-dock__title">Messages</div>
-        <IconButton icon={EditorAddIcon} label="New message" appearance="subtle" spacing="compact" onClick={onNewMessage} />
+        {/* Dual-mode tab pills */}
+        <div className="cc-mode-tabs">
+          <button
+            type="button"
+            className={`cc-mode-tab${dockMode === 'messages' ? ' cc-mode-tab--active' : ''}`}
+            onClick={() => setDockMode('messages')}
+            aria-pressed={dockMode === 'messages'}
+          >
+            Messages
+            {totalUnread > 0 && dockMode !== 'messages' && (
+              <span className="cc-mode-tab__badge">{totalUnread > 9 ? '9+' : totalUnread}</span>
+            )}
+          </button>
+          <button
+            type="button"
+            className={`cc-mode-tab${dockMode === 'caty' ? ' cc-mode-tab--active' : ''}`}
+            onClick={() => setDockMode('caty')}
+            aria-pressed={dockMode === 'caty'}
+          >
+            <img src={catalystChatIcon} alt="" width={14} height={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+            Ask Caty
+          </button>
+        </div>
+
+        {/* Shared header icons — context-aware */}
+        {dockMode === 'messages' && (
+          <IconButton icon={EditorAddIcon} label="New message" appearance="subtle" spacing="compact" onClick={onNewMessage} />
+        )}
         <IconButton icon={ShortcutIcon} label="Pop out" appearance="subtle" spacing="compact" onClick={onPopOut} />
         <IconButton icon={ChevronDownIcon} label="Minimize" appearance="subtle" spacing="compact" onClick={onToggleCollapsed} />
         <IconButton icon={CrossIcon} label="Close" appearance="subtle" spacing="compact" onClick={onToggleCollapsed} />
       </div>
 
-      <div className="cc-dock__list">
-        {listConversations.length === 0 ? (
-          <div className="cc-dock__empty">No conversations yet. Start a new message.</div>
-        ) : (
-          listConversations.map((c) => (
-            <button key={c.id} type="button" className="cc-conv" onClick={() => onSelect(c.id)}>
-              <ConvGlyph conversation={c} />
-              <div className="cc-conv__body">
-                <div className="cc-conv__top">
-                  <span className="cc-conv__name">{c.kind === 'channel' ? `# ${c.title}` : c.title}</span>
-                  <span className="cc-conv__time">{relativeTime(c.lastMessageAt)}</span>
-                </div>
-                <div className="cc-conv__top">
-                  <span className="cc-conv__preview">{c.lastMessagePreview ?? 'No messages yet'}</span>
-                  {c.unreadCount > 0 && <span className="cc-badge">{c.unreadCount > 99 ? '99+' : c.unreadCount}</span>}
-                </div>
-              </div>
-            </button>
-          ))
-        )}
-      </div>
+      {/* Messages mode — existing functionality unchanged */}
+      {dockMode === 'messages' && (
+        <>
+          <div className="cc-dock__list">
+            {listConversations.length === 0 ? (
+              <div className="cc-dock__empty">No conversations yet. Start a new message.</div>
+            ) : (
+              listConversations.map((c) => (
+                <button key={c.id} type="button" className="cc-conv" onClick={() => onSelect(c.id)}>
+                  <ConvGlyph conversation={c} />
+                  <div className="cc-conv__body">
+                    <div className="cc-conv__top">
+                      <span className="cc-conv__name">{c.kind === 'channel' ? `# ${c.title}` : c.title}</span>
+                      <span className="cc-conv__time">{relativeTime(c.lastMessageAt)}</span>
+                    </div>
+                    <div className="cc-conv__top">
+                      <span className="cc-conv__preview">{c.lastMessagePreview ?? 'No messages yet'}</span>
+                      {c.unreadCount > 0 && <span className="cc-badge">{c.unreadCount > 99 ? '99+' : c.unreadCount}</span>}
+                    </div>
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
 
-      <div className="cc-tabs">
-        {openConversationIds.map((id) => {
-          const conv = byId.get(id);
-          const label = conv
-            ? conv.kind === 'channel'
-              ? `# ${conv.title}`
-              : conv.title
-            : id;
-          const isActive = id === activeId;
-          return (
-            <div
-              key={id}
-              className={isActive ? 'cc-tab cc-tab--active' : 'cc-tab'}
-              role="button"
-              tabIndex={0}
-              onClick={() => onSelect(id)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onSelect(id);
-                }
-              }}
-            >
-              {conv && conv.kind !== 'channel' && (
-                <span className="cc-tab__dot" style={{ background: tabDotColor(conv) }} />
-              )}
-              <span>{label.length > 12 ? `${label.slice(0, 11)}…` : label}</span>
-              <button
-                type="button"
-                className="cc-tab__x"
-                aria-label={`Close ${label}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClose(id);
-                }}
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                  <line x1="6" y1="18" x2="18" y2="6" />
-                </svg>
-              </button>
-            </div>
-          );
-        })}
-        <button type="button" className="cc-tab__add" aria-label="Open another chat" onClick={onNewMessage}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-        </button>
-      </div>
+          <div className="cc-tabs">
+            {openConversationIds.map((id) => {
+              const conv = byId.get(id);
+              const label = conv
+                ? conv.kind === 'channel'
+                  ? `# ${conv.title}`
+                  : conv.title
+                : id;
+              const isActive = id === activeId;
+              return (
+                <div
+                  key={id}
+                  className={isActive ? 'cc-tab cc-tab--active' : 'cc-tab'}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => onSelect(id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onSelect(id);
+                    }
+                  }}
+                >
+                  {conv && conv.kind !== 'channel' && (
+                    <span className="cc-tab__dot" style={{ background: tabDotColor(conv) }} />
+                  )}
+                  <span>{label.length > 12 ? `${label.slice(0, 11)}…` : label}</span>
+                  <button
+                    type="button"
+                    className="cc-tab__x"
+                    aria-label={`Close ${label}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onClose(id);
+                    }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                      <line x1="6" y1="18" x2="18" y2="6" />
+                    </svg>
+                  </button>
+                </div>
+              );
+            })}
+            <button type="button" className="cc-tab__add" aria-label="Open another chat" onClick={onNewMessage}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Caty AI mode — new panel, messages mode is paused but state preserved */}
+      {dockMode === 'caty' && (
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}>
+          <CatyPanel />
+        </div>
+      )}
     </div>
   );
 }
