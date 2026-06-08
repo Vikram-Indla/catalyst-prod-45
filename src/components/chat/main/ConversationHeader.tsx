@@ -316,7 +316,6 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
           conversationId={conversation.id}
           isOpen={addOpen}
           onClose={() => setAddOpen(false)}
-          excludeProfileIds={members.map((m) => m.id)}
         />
       )}
       {rosterOpen && (

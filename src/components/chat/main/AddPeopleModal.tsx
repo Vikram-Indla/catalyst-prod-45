@@ -1,8 +1,18 @@
 /**
  * AddPeopleModal — picker for adding profiles to a conversation
  * (ticket thread, channel, or group DM). Calls chat_add_member RPC
- * per selected profile. Uses chat_search (scope=people) to find
- * candidates; falls back to the chat-people roster if the query is empty.
+ * per selected profile.
+ *
+ * Candidate identity contract — ALL rows in this picker carry
+ * `profileId` (profiles.id uuid). The chat_add_member RPC expects
+ * a profiles.id. Resource_inventory ids are mapped → profile_id via
+ * the same idMap pattern used in DockDirectory. (2026-06-08 fix —
+ * previously the roster fallback used resource_inventory.id which
+ * triggered a silent FK violation when inserting into
+ * chat_conversation_members.)
+ *
+ * Already-added members are NOT hidden — they render with an "Added"
+ * badge and a disabled checkbox so the user can see who's already in.
  */
 import React, { useMemo, useState } from 'react';
 import Modal, {
@@ -16,51 +26,92 @@ import Button from '@atlaskit/button/new';
 import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import { useChatSearch } from '@/hooks/chat/useChatSearch';
 import { useChatAddMember } from '@/hooks/chat/useChatActions';
+import { useConversationMembers } from '@/hooks/chat/useConversationMembers';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Avatar } from './avatar';
 
 export interface AddPeopleModalProps {
   conversationId: string;
   isOpen: boolean;
   onClose: () => void;
-  /** Profile IDs already in the conversation — hidden from the picker. */
-  excludeProfileIds?: string[];
+}
+
+interface Candidate {
+  profileId: string;
+  name: string;
+  subtitle: string;
 }
 
 export function AddPeopleModal({
   conversationId,
   isOpen,
   onClose,
-  excludeProfileIds = [],
 }: AddPeopleModalProps) {
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const { groups } = useChatPeople();
   const { hits } = useChatSearch(query, 'people', 25);
+  const { data: members = [] } = useConversationMembers(isOpen ? conversationId : null);
   const addMember = useChatAddMember();
 
-  const exclude = useMemo(() => new Set(excludeProfileIds), [excludeProfileIds]);
+  // resource_inventory.id → profile_id mapping. The roster from useChatPeople
+  // returns resource_inventory rows; the chat_add_member RPC wants a profile id.
+  const { data: idMap } = useQuery({
+    queryKey: ['chat', 'resource-to-profile'],
+    enabled: isOpen,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('resource_inventory')
+        .select('id, profile_id')
+        .eq('is_active', true)
+        .not('profile_id', 'is', null);
+      const map = new Map<string, string>();
+      (data ?? []).forEach((r: any) => {
+        if (r.profile_id) map.set(r.id, r.profile_id);
+      });
+      return map;
+    },
+  });
 
-  const candidates = useMemo(() => {
+  // Set of profile ids already in the conversation — used to render the
+  // "Added" badge and disable the checkbox.
+  const addedProfileIds = useMemo(
+    () => new Set(members.map((m) => m.userId)),
+    [members],
+  );
+
+  const candidates: Candidate[] = useMemo(() => {
     if (query.trim().length >= 2) {
       return hits
-        .filter((h) => h.resultType === 'person' && !exclude.has(h.id))
-        .map((h) => ({ id: h.id, name: h.title, email: h.subtitle ?? '' }));
+        .filter((h) => h.resultType === 'person')
+        .map((h) => ({
+          profileId: h.id,
+          name: h.title,
+          subtitle: h.subtitle ?? '',
+        }));
     }
-    // No query: show roster.
     const all = groups.flatMap((g) => g.people);
+    if (!idMap) return [];
     return all
-      .filter((p) => !exclude.has(p.id))
-      .slice(0, 50)
-      .map((p) => ({ id: p.id, name: p.name, email: p.role ?? '' }));
-  }, [query, hits, groups, exclude]);
+      .flatMap((p) => {
+        const profileId = idMap.get(p.id);
+        if (!profileId) return [];
+        return [{ profileId, name: p.name, subtitle: p.role ?? '' } as Candidate];
+      })
+      .slice(0, 80);
+  }, [query, hits, groups, idMap]);
 
-  const toggle = (id: string) => {
+  const toggle = (profileId: string) => {
+    if (addedProfileIds.has(profileId)) return; // already added — no-op
+    setError(null);
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(profileId)) next.delete(profileId);
+      else next.add(profileId);
       return next;
     });
   };
@@ -68,9 +119,20 @@ export function AddPeopleModal({
   const submit = async () => {
     if (selected.size === 0) return;
     setSubmitting(true);
+    setError(null);
     try {
-      for (const userId of Array.from(selected)) {
-        await addMember.mutateAsync({ convId: conversationId, userId });
+      const errors: string[] = [];
+      for (const profileId of Array.from(selected)) {
+        try {
+          await addMember.mutateAsync({ convId: conversationId, userId: profileId });
+        } catch (e: any) {
+          const msg = e?.message ?? 'Unknown error';
+          errors.push(`${profileId.slice(0, 8)}: ${msg}`);
+        }
+      }
+      if (errors.length > 0) {
+        setError(`Could not add ${errors.length} of ${selected.size}: ${errors[0]}`);
+        return; // stay open so user sees the error
       }
       onClose();
       setSelected(new Set());
@@ -102,19 +164,36 @@ export function AddPeopleModal({
                 marginBottom: 12,
               }}
             />
-            <div style={{ maxHeight: 320, overflowY: 'auto' }}>
+            {error && (
+              <div
+                style={{
+                  fontSize: 12,
+                  color: 'var(--ds-text-danger, #AE2A19)',
+                  background: 'var(--ds-background-danger, #FFEDEB)',
+                  padding: '6px 10px',
+                  borderRadius: 4,
+                  marginBottom: 8,
+                }}
+                role="alert"
+              >
+                {error}
+              </div>
+            )}
+            <div style={{ maxHeight: 360, overflowY: 'auto' }}>
               {candidates.length === 0 && (
                 <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13 }}>
                   No matches.
                 </div>
               )}
               {candidates.map((c) => {
-                const checked = selected.has(c.id);
+                const isAdded = addedProfileIds.has(c.profileId);
+                const checked = selected.has(c.profileId);
                 return (
                   <button
-                    key={c.id}
+                    key={c.profileId}
                     type="button"
-                    onClick={() => toggle(c.id)}
+                    onClick={() => toggle(c.profileId)}
+                    disabled={isAdded}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -126,21 +205,41 @@ export function AddPeopleModal({
                         : 'transparent',
                       border: 'none',
                       borderRadius: 4,
-                      cursor: 'pointer',
+                      cursor: isAdded ? 'not-allowed' : 'pointer',
                       textAlign: 'left',
+                      opacity: isAdded ? 0.55 : 1,
                     }}
                   >
                     <input
                       type="checkbox"
-                      checked={checked}
+                      checked={checked || isAdded}
                       readOnly
+                      disabled={isAdded}
                       style={{ accentColor: 'var(--ds-icon-brand, #0C66E4)' }}
                     />
-                    <Avatar name={c.name} seed={c.id} />
+                    <Avatar name={c.name} seed={c.profileId} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>{c.name}</div>
-                      {c.email && (
-                        <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>{c.email}</div>
+                      <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {c.name}
+                        </span>
+                        {isAdded && (
+                          <span
+                            style={{
+                              fontSize: 10,
+                              fontWeight: 600,
+                              padding: '1px 6px',
+                              borderRadius: 3,
+                              background: 'var(--ds-background-success, #DCFFF1)',
+                              color: 'var(--ds-text-success, #216E4E)',
+                            }}
+                          >
+                            Added
+                          </span>
+                        )}
+                      </div>
+                      {c.subtitle && (
+                        <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>{c.subtitle}</div>
                       )}
                     </div>
                   </button>
