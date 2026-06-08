@@ -7,10 +7,13 @@
 import React, { useMemo, useState } from 'react';
 import type { ChatMessage } from '@/types/chat';
 import { Avatar, initialsOf, colorFor } from './avatar';
+import { useConversationAttachments, type ChatAttachment } from '@/hooks/chat/useChatAttachments';
+import { AttachmentPreview } from './AttachmentPreview';
 
 const QUICK_REACTIONS = ['👍', '❤️', '😄', '🎉', '👀', '🙏'];
 
 export interface MessageStreamProps {
+  conversationId?: string | null;
   messages: ChatMessage[];
   isLoading?: boolean;
   hasMore?: boolean;
@@ -73,6 +76,7 @@ function relativeLabel(iso: string): string {
 }
 
 export function MessageStream({
+  conversationId,
   messages,
   isLoading,
   hasMore,
@@ -83,6 +87,19 @@ export function MessageStream({
   onDelete,
   currentUserId,
 }: MessageStreamProps) {
+  // Pull attachments for the active conversation in a single batched query and
+  // index them by message_id so each MessageRow can render its own previews
+  // without N+1 round-trips.
+  const { data: attachmentRows } = useConversationAttachments(conversationId ?? null);
+  const attachmentsByMessage = useMemo(() => {
+    const map = new Map<string, ChatAttachment[]>();
+    (attachmentRows ?? []).forEach((a) => {
+      const list = map.get(a.messageId) ?? [];
+      list.push(a);
+      map.set(a.messageId, list);
+    });
+    return map;
+  }, [attachmentRows]);
   // Top-level messages only; group consecutive runs under a date divider.
   const rows = useMemo(() => {
     const top = messages.filter(m => !m.parentId && !m.deletedAt);
@@ -139,6 +156,7 @@ export function MessageStream({
           <MessageRow
             key={row.msg.id}
             msg={row.msg}
+            attachments={attachmentsByMessage.get(row.msg.id) ?? []}
             onOpenThread={onOpenThread}
             onToggleReaction={onToggleReaction}
             onEdit={onEdit}
@@ -153,6 +171,7 @@ export function MessageStream({
 
 function MessageRow({
   msg,
+  attachments,
   onOpenThread,
   onToggleReaction,
   onEdit,
@@ -160,6 +179,7 @@ function MessageRow({
   isOwn,
 }: {
   msg: ChatMessage;
+  attachments?: ChatAttachment[];
   onOpenThread?: (id: string) => void;
   onToggleReaction?: (id: string, emoji: string) => void;
   onEdit?: (id: string, body: string) => void;
@@ -208,6 +228,10 @@ function MessageRow({
           </div>
         ) : (
           <div className="cc-msg__text">{renderBody(msg.bodyText)}</div>
+        )}
+
+        {attachments && attachments.length > 0 && (
+          <AttachmentPreview attachments={attachments} />
         )}
 
         {/* Hover toolbar */}

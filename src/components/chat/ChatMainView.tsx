@@ -92,6 +92,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
           <ConversationHeader conversation={activeConversation} />
 
           <MessageStream
+            conversationId={resolvedActiveId}
             messages={messages}
             isLoading={messagesLoading}
             hasMore={hasMore}
