@@ -116,6 +116,18 @@ export interface RichTextEditorProps {
    *  content above, the snapshot is pushed down within the same scroll
    *  container. */
   bodyAfterEditor?: ReactNode;
+  issue?: {
+    id?: string;
+    issue_key?: string | null;
+    issue_type?: string | null;
+    summary?: string | null;
+    description_text?: string | null;
+    description_adf?: unknown | null;
+    project_key?: string | null;
+    project_id?: string | null;
+    source?: 'jira' | 'catalyst' | string | null;
+    assignee_account_id?: string | null;
+  } | null;
 }
 
 type VoiceMode = 'auto' | 'en' | 'ar';
@@ -138,6 +150,7 @@ export function RichTextEditor({
   belowEditor,
   onEditorReady,
   bodyAfterEditor,
+  issue,
 }: RichTextEditorProps) {
   const [emojiPanelAnchor, setEmojiPanelAnchor] = useState<HTMLElement | null>(
     null,
@@ -345,6 +358,7 @@ export function RichTextEditor({
         toolbar={
           <Toolbar
             editor={editor}
+            issue={issue}
             onImprove={onImproveClick ?? (() => {})}
             onStop={onStopImprove}
             improveLabel={improveLabel}

@@ -50,6 +50,7 @@ import { useImageToolbarController } from './imageToolbar/useImageToolbarControl
 import { ImageToolbar } from './imageToolbar/ImageToolbar';
 import type { MinimalEditorView } from './imageToolbar/imageNodeOps';
 import { useVoiceToText } from '@/lib/voiceToText/useVoiceToText';
+import { GenerateStoriesButton } from '@/components/catalyst-detail-views/epic/GenerateStoriesButton';
 
 // 2026-05-03 — CONVERTED TO STATIC IMPORT
 // TipTap was removed 2026-04-20 (USER DIRECTIVE). The lazy-load was to prevent
@@ -425,6 +426,19 @@ export interface EpicDescriptionEditorProps {
   onImprove?: () => void;
   improveLabel?: string;
   improveDisabled?: boolean;
+  /** Issue data for GenerateStoriesButton in toolbar. */
+  issue?: {
+    id?: string;
+    issue_key?: string | null;
+    issue_type?: string | null;
+    summary?: string | null;
+    description_text?: string | null;
+    description_adf?: unknown | null;
+    project_key?: string | null;
+    project_id?: string | null;
+    source?: 'jira' | 'catalyst' | string | null;
+    assignee_account_id?: string | null;
+  } | null;
   /**
    * Content that covers the ProseMirror body while the toolbar stays
    * visible. Used by the "Improve description" flow to render the
@@ -472,6 +486,7 @@ function EpicDescriptionEditorImpl({
   improveLabel = 'Improve description',
   improveDisabled = false,
   bodyOverlay,
+  issue,
 }: EpicDescriptionEditorProps) {
   const initialAdf = useMemo(() => parseStoredDescriptionToAdf(initialContent), [initialContent]);
   const defaultValueString = useMemo(() => JSON.stringify(initialAdf), [initialAdf]);
@@ -542,7 +557,7 @@ function EpicDescriptionEditorImpl({
       // Re-inject the Improve slot whenever Atlaskit rebuilds the toolbar
       // (it does this on every focus / selection change, which used to
       // make the "Improve description" pill vanish on first click).
-      if (onImprove && first.parentElement && (!currentImprove || !currentImprove.isConnected)) {
+      if (first.parentElement && (!currentImprove || !currentImprove.isConnected)) {
         currentImprove = make();
         first.parentElement.insertBefore(currentImprove, first);
         setImproveSlot(currentImprove);
@@ -570,7 +585,7 @@ function EpicDescriptionEditorImpl({
     });
     obs.observe(root, { childList: true, subtree: true });
     return () => obs.disconnect();
-  }, [onImprove]);
+  }, []);
 
   useEffect(() => {
     const root = wrapperRef.current;
@@ -830,18 +845,8 @@ function EpicDescriptionEditorImpl({
           contain: 'content',
         }}
       >
-        {onImprove && improveSlot && createPortal(
-          <Button
-            appearance="subtle"
-            spacing="compact"
-            onClick={onImprove}
-            isDisabled={improveDisabled}
-            iconBefore={(iconProps: React.ComponentProps<typeof WandIcon>) => (
-              <WandIcon {...iconProps} label="" />
-            )}
-          >
-            {improveLabel}
-          </Button>,
+        {improveSlot && createPortal(
+          <GenerateStoriesButton issue={issue ?? null} />,
           improveSlot,
         )}
         {formatSlot && createPortal(

@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { Routes, Route, Navigate, useLocation, useParams, useSearchParams } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 
 // Block A rule 1 (2026-05-01): legacy /producthub/requirement-assist/:id
 // redirect — react-router v6 can't substitute a path param into the
@@ -46,25 +46,15 @@ const MyResource360PageLazy = lazy(() => import("../pages/MyResource360Page"));
 const MyTeamPageLazy = lazy(() => import("../pages/MyTeamPage"));
 
 // ProjectHub V5
-const ProjectHubShellLazy = lazy(() => import("../components/project-hub/ProjectHubShell").then(m => ({ default: m.ProjectHubShell })));
 const ProjectListPageLazy = lazy(() => import("../pages/project-hub/ProjectListPage"));
 const ProjectDashboardPageLazy = lazy(() => import("../pages/project-hub/ProjectDashboardPage"));
 const PHProjectSettingsPageLazy = lazy(() => import("../pages/project-hub/ProjectSettingsPage"));
-const WorkItemsListPageLazy = lazy(() => import("../pages/project-hub/WorkItemsListPage"));
 const ProjectBoardPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardPage"));
 const ProjectBoardManagerPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardManagerPage"));
-const ProjectBoardCanvasPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardCanvasPage"));
 const ProjectBoardSettingsPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardSettingsPage"));
 const KanbanBoardPageLazy = lazy(() => import("../pages/project-hub/KanbanBoardPage"));
 const MapStatusesPageLazy = lazy(() => import("../pages/project-hub/MapStatusesPage"));
 const AllProjectsPageLazy = lazy(() => import("../pages/project-hub/AllProjectsPage"));
-// EpicBacklogPage chain retired 2026-04-26 — all per-type backlog routes
-// (epic / feature / story) now redirect to the unified /backlog (which mounts
-// BacklogPage.atlaskit on JiraTable canonical). The Native* lazy imports are
-// kept for FeatureBacklog and StoryBacklog only because their files are still
-// in tree and reachable via /program/* aliases — see lines 642-650 below.
-const NativeFeatureBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeFeatureBacklogPage"));
-const NativeStoryBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeStoryBacklogPage"));
 const UnifiedBacklogPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));
 const BacklogDetailPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogDetailPage"));
 const AllWorkDetailPageLazy = lazy(() => import("../modules/project-work-hub/pages/AllWorkDetailPage"));
@@ -72,20 +62,7 @@ const FiltersListPageLazy = lazy(() => import("../pages/project-hub/filters/Filt
 const CreateFilterPageLazy = lazy(() => import("../pages/project-hub/filters/CreateFilterPage"));
 const FilterDetailPageLazy = lazy(() => import("../pages/project-hub/filters/FilterDetailPage"));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
-const IssueDetailPageLazy = lazy(() => import("../pages/project-hub/IssueDetailPage"));
-const HierarchyPageLazy = lazy(() => import("../pages/project-hub/HierarchyPage"));
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
-// Deprecated 2026-04-25: /project-hub/:key/hierarchy/allwork now redirects to /project-hub/:key/allwork.
-// HierarchyAllWorkPage is no longer mounted; the page module is retained for reference until removal.
-function HierarchyAllWorkRedirect() {
-  const { key } = useParams();
-  const [params] = useSearchParams();
-  const next = new URLSearchParams(params);
-  const legacy = next.get('selectedIssue');
-  if (legacy) { next.delete('selectedIssue'); next.set('issue', legacy); }
-  const qs = next.toString();
-  return <Navigate to={`/project-hub/${key}/allwork${qs ? `?${qs}` : ''}`} replace />;
-}
 const PHPlaceholderBase = lazy(() => import("../pages/project-hub/PhasePlaceholderPage"));
 
 function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
@@ -180,12 +157,10 @@ const PlaceholderPage = lazy(() => import("../pages/jira-align/PlaceholderPage")
 const StrategyRoom = lazy(() => import("../modules-dormant/strategy/StrategyRoom"));
 const StrategyComingSoon = lazy(() => import("../modules-dormant/strategy/StrategyComingSoon"));
 const CapacityPlannerPage = lazy(() => import("../pages/enterprise/CapacityPlannerPage"));
-const BudgetGovernancePage = lazy(() => import("../pages/enterprise/BudgetGovernancePage"));
 const BudgetPlannerPage = lazy(() => import("../pages/enterprise/BudgetPlannerPage"));
 
 const Themes = lazy(() => import("../pages/Themes"));
 const Initiatives = lazy(() => import("@/pages/Initiatives"));
-const EpicsPage = lazy(() => import("../pages/items/EpicsPage"));
 const EpicsRecycleBinPage = lazy(() => import("../pages/items/EpicsRecycleBinPage"));
 const EpicsCanceledPage = lazy(() => import("../pages/items/EpicsCanceledPage"));
 const EpicStatusReport = lazy(() => import("../pages/items/reports/EpicStatusReport"));
@@ -194,7 +169,6 @@ const EpicRequirementHierarchy = lazy(() => import("../pages/items/reports/EpicR
 const EpicResponsibilityMatrix = lazy(() => import("../pages/items/reports/EpicResponsibilityMatrix"));
 const EpicPlanningPage = lazy(() => import("../pages/items/reports/EpicPlanningPage"));
 const EpicEstimationPage = lazy(() => import("../pages/items/EpicEstimationPage"));
-const EpicBacklogWithSidebar = lazy(() => import("../pages/EpicBacklogWithSidebar"));
 const Features = lazy(() => import("../pages/Features"));
 const FeaturesPage = lazy(() => import("../pages/items/FeaturesPage"));
 const FeaturesBacklog = lazy(() => import("../pages/FeaturesBacklog"));
@@ -206,7 +180,6 @@ const BoardView = lazy(() => import("../pages/project/BoardView"));
 const TimelineView = lazy(() => import("../pages/project/TimelineView"));
 const BoardManagerPage = lazy(() => import("../components/boards/BoardManagerPage"));
 const BoardCanvasPage = lazy(() => import("../components/boards/BoardCanvasPage"));
-const EpicBalancingPage = lazy(() => import("../modules/epic-balancing").then(m => ({ default: m.EpicBalancingPage })));
 const UserNotificationSettingsPage = lazy(() => import("../pages/UserNotificationSettingsPage"));
 const PlannerPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.PlannerPage })));
 const KanbanPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.KanbanPage })));
@@ -272,11 +245,9 @@ const PortfolioKanban = lazy(() => import("../pages/PortfolioKanban"));
 const PortfolioRoadmap = lazy(() => import("../pages/PortfolioRoadmap"));
 const Roadmaps = lazy(() => import("../pages/Roadmaps"));
 const DependenciesPage = lazy(() => import("../pages/work/Dependencies"));
-const ProgramRoom = lazy(() => import("../pages/ProgramRoom"));
 const ProgramBoardHistory = lazy(() => import("../pages/ProgramBoardHistory"));
 const PIObjectives = lazy(() => import("../pages/PIObjectives"));
 
-const Forecast = lazy(() => import("../pages/Forecast"));
 const WorkSpendGrid = lazy(() => import("../pages/WorkSpendGrid"));
 const RisksGridPage = lazy(() => import("../pages/risks/RisksGridPage"));
 const RiskRoamReportPage = lazy(() => import("../pages/risks/RiskRoamReportPage"));
@@ -286,14 +257,12 @@ const Backlog = lazy(() => import("../pages/Backlog"));
 const Sprints = lazy(() => import("../pages/Sprints"));
 const Stories = lazy(() => import("../pages/Stories"));
 const Subtasks = lazy(() => import("../pages/Subtasks"));
-const WorkloadDashboard = lazy(() => import("../pages/WorkloadDashboard"));
 const EnterpriseComingSoon = lazy(() => import("../pages/enterprise/ComingSoon"));
 const ReleaseDashboardV5Page = lazy(() => import("../pages/releases/ReleaseDashboardV5Page"));
 
 const AdminLayout = lazy(() => import('../pages/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
 // AdminGuard was used by /admin/v2 shell (deprecated 2026-05-09) — removed
 
-const StoriesPage = lazy(() => import('../pages/stories/StoriesPage').then(m => ({ default: m.StoriesPage })));
 const UsersManagement = lazy(() => import("../pages/admin/UsersManagement"));
 const RolesPermissions = lazy(() => import("../pages/admin/RolesPermissions"));
 const Departments = lazy(() => import("../pages/admin/Departments"));
@@ -332,7 +301,6 @@ const ValueStreamView = lazy(() => import("../pages/ValueStreamView"));
 const UserProfile = lazy(() => import("../pages/UserProfile"));
 const ArchiveManagerPage = lazy(() => import("../pages/ArchiveManagerPage"));
 const ProgramDirectory = lazy(() => import("../pages/ProgramDirectory"));
-const ProjectDirectory = lazy(() => import("../pages/ProjectDirectory"));
 const ProjectSettingsPage = lazy(() => import("../pages/ProjectSettingsPage"));
 const ProjectWorkHubPage = lazy(() => import("../modules/project-work-hub/ProjectWorkHubPage").then(m => ({ default: m.ProjectWorkHubPage })));
 
@@ -346,11 +314,9 @@ const InJiraReleasesPage = lazy(() => import("../modules/in-jira").then(m => ({ 
 const ReleaseManagementPage = lazy(() => import("../modules/in-jira").then(m => ({ default: m.ReleaseManagementPage })));
 const InJiraSettingsPage = lazy(() => import("../modules/in-jira").then(m => ({ default: m.InJiraSettingsPage })));
 
-const ProjectSummaryPage = lazy(() => import("../pages/projects/ProjectSummaryPage"));
 const ProjectComingSoonPage = lazy(() => import("../pages/projects/ProjectComingSoonPage"));
 const ProjectBacklogPage = lazy(() => import("../pages/projects/ProjectBacklogPage"));
 
-const OldWorkHubLayout = lazy(() => import("../modules/work-hub/WorkHubLayout").then(m => ({ default: m.WorkHubLayout })));
 const SummaryView = lazy(() => import("../modules/work-hub/views/SummaryView").then(m => ({ default: m.SummaryView })));
 const ListView = lazy(() => import("../modules/work-hub/views").then(m => ({ default: m.ListView })));
 const AllWorkView = lazy(() => import("../modules/work-hub/views").then(m => ({ default: m.AllWorkView })));
@@ -358,24 +324,9 @@ const ReleasesView = lazy(() => import("../modules/work-hub/views").then(m => ({
 const ReleaseDetailsView = lazy(() => import("../modules/work-hub/views").then(m => ({ default: m.ReleaseDetailsView })));
 
 const WorkHubLayout = lazy(() => import("../components/workhub/layout/WorkHubLayout").then(m => ({ default: m.WorkHubLayout })));
-const WorkHubDashboard = lazy(() => import("../components/workhub/dashboard/WorkHubDashboard").then(m => ({ default: m.WorkHubDashboard })));
-const WorkItemsPage = lazy(() => import("../components/workhub/workitems/WorkItemsPage").then(m => ({ default: m.WorkItemsPage })));
-const JiraProjectsPage = lazy(() => import("../components/workhub/jira/JiraProjectsPage").then(m => ({ default: m.JiraProjectsPage })));
-const WorkHubReleasesPage = lazy(() => import("../components/workhub/releases/ReleasesPage").then(m => ({ default: m.ReleasesPage })));
-const WorkHubReleaseDetail = lazy(() => import("../components/workhub/releases/ReleaseDetail").then(m => ({ default: m.ReleaseDetail })));
-const WorkHubThemesPage = lazy(() => import("../components/workhub/themes/ThemesPage").then(m => ({ default: m.ThemesPage })));
-const WorkHubThemeDetail = lazy(() => import("../components/workhub/themes/ThemeDetail").then(m => ({ default: m.ThemeDetail })));
-const WorkHubResource360Page = lazy(() => import("../components/workhub/resource360/Resource360Page").then(m => ({ default: m.Resource360Page })));
-const WorkHubResourceDetail = lazy(() => import("../components/workhub/resource360/ResourceDetail").then(m => ({ default: m.ResourceDetail })));
-const WorkHubCalendarPage = lazy(() => import("../components/workhub/calendar/CalendarPage").then(m => ({ default: m.CalendarPage })));
-const WorkHubCapacityPage = lazy(() => import("../components/workhub/capacity/CapacityPage").then(m => ({ default: m.CapacityPage })));
-const WorkHubAnalyticsPage = lazy(() => import("../components/workhub/analytics/AnalyticsPage").then(m => ({ default: m.AnalyticsPage })));
 const WorkHubCatyPage = ENABLE_AI ? lazy(() => import("../components/workhub/caty/CatyPage").then(m => ({ default: m.CatyPage }))) : () => <FeatureComingSoon title="WorkHub AI" />;
 
-const ProductRoadmapPage = lazy(() => import("../pages/ProductRoadmapPage"));
-const ProductRoadmapV2Page = lazy(() => import("../pages/ProductRoadmapV2Page"));
 const WorkTreePage = lazy(() => import("../pages/work-tree").then(m => ({ default: m.WorkTreePage })));
-const WorkManager = lazy(() => import("../pages/WorkManager"));
 const SkillsInventory = ENABLE_HEAVY_EXPORTS ? lazy(() => import("../pages/SkillsInventory")) : () => <FeatureComingSoon title="Skills Inventory" />;
 const StarredPage = lazy(() => import("../pages/StarredPage"));
 const WorkHubAllWork = lazy(() => import("../pages/workhub/AllWork"));
@@ -387,14 +338,10 @@ const ProductRoomPage = lazy(() => import("../pages/ProductRoomPage"));
 const CapacityPlanningPage = lazy(() => import("../pages/CapacityPlanningPage"));
 const TeamComingSoon = lazy(() => import("../pages/team/ComingSoon"));
 const UnauthorizedPage = lazy(() => import("../pages/UnauthorizedPage"));
-const KanbanBoardView = lazy(() => import("../pages/KanbanBoardView"));
-const KanbanBoardSetup = lazy(() => import("../pages/KanbanBoardSetup"));
-const KanbanBoardAnalytics = lazy(() => import("../pages/KanbanBoardAnalytics"));
 const KnowledgeHubDocumentPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubDocumentPage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
 const KnowledgeHubPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubPage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
 const KnowledgeHubSpacePage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubSpacePage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
 
-const IncidentsList = lazy(() => import("../pages/release").then(m => ({ default: m.IncidentsList })));
 const IncidentDetail = lazy(() => import("../pages/release").then(m => ({ default: m.IncidentDetail })));
 const IncidentsDashboard = lazy(() => import("../pages/release").then(m => ({ default: m.IncidentsDashboard })));
 const CreateIncident = lazy(() => import("../pages/release").then(m => ({ default: m.CreateIncident })));
@@ -407,8 +354,6 @@ const IncidentAnalyticsPage = lazy(() => import("../modules/incidents/analytics/
 const IncidentInsightsPage = lazy(() => import("../modules/incidents/analytics/pages/IncidentInsightsPage"));
 const IncidentKanbanPage = lazy(() => import("../modules/incidents/kanban/pages/IncidentKanbanPage"));
 
-const PriListsPage = lazy(() => import("../modules/priorities/pages/PriListsPage").then(m => ({ default: m.PriListsPage })));
-const PriWeekPage = lazy(() => import("../modules/priorities/pages/PriWeekPage").then(m => ({ default: m.PriWeekPage })));
 
 const S = ({ children }: { children: React.ReactNode }) => (
   <ErrorBoundary>
@@ -994,8 +939,6 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/boards/:boardId/settings" element={<S><ProjectBoardSettingsPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardId/settings/:section" element={<S><ProjectBoardSettingsPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardId" element={<S><KanbanBoardPageLazy /></S>} />
-        <Route path="/project-hub/:key/hierarchy/allwork" element={<HierarchyAllWorkRedirect />} />
-        <Route path="/project-hub/:key/hierarchy" element={<Navigate to="../allwork" replace />} />
         <Route path="/project-hub/:key/list" element={<S><ProjectJiraLayoutLazy /></S>} />
         <Route path="/project-hub/:key/allwork/:issueKey" element={<S><AllWorkDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />

@@ -903,6 +903,7 @@ export function CatalystDescriptionSection({
               onAttachmentUploaded={handleInlineAttachmentUploaded}
               appearance="comment"
               onImprove={handleImproveFromToolbar}
+              issue={issue}
               bodyOverlay={
                 catyActiveForThisIssue && catyPayload ? (
                   <CatyStreamingOverlay

@@ -402,6 +402,7 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
             isSaving={saveMutation.isPending}
             onImageUpload={handleImageUpload}
             onImproveClick={handleImproveFromToolbar}
+            issue={issue}
             onStopImprove={() => { stopCatyStream(); stopCatyImprove(); }}
             onEditorReady={setEditor}
             /* Snapshot of the content at the moment Improve was clicked

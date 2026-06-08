@@ -10,7 +10,7 @@
  * Background is transparent so the shell border owns the visual frame.
  */
 import type { Editor } from '@tiptap/react';
-import { ImproveButton } from './buttons/ImproveButton';
+import { GenerateStoriesButton } from '@/components/catalyst-detail-views/epic/GenerateStoriesButton';
 import { TextStylesDropdown } from './buttons/TextStylesDropdown';
 import { BoldButton } from './buttons/BoldButton';
 import { InlineFormattingDropdown } from './buttons/InlineFormattingDropdown';
@@ -29,6 +29,18 @@ import { MicButton } from './buttons/MicButton';
 
 export interface ToolbarProps {
   editor: Editor | null;
+  issue?: {
+    id?: string;
+    issue_key?: string | null;
+    issue_type?: string | null;
+    summary?: string | null;
+    description_text?: string | null;
+    description_adf?: unknown | null;
+    project_key?: string | null;
+    project_id?: string | null;
+    source?: 'jira' | 'catalyst' | string | null;
+    assignee_account_id?: string | null;
+  } | null;
   onImprove?: () => void;
   onStop?: () => void;
   /** Improve-button label. Defaults to "Improve description". */
@@ -48,6 +60,7 @@ export interface ToolbarProps {
 
 export function Toolbar({
   editor,
+  issue,
   onImprove,
   onStop,
   improveLabel,
@@ -88,13 +101,7 @@ export function Toolbar({
           onVoiceModeChange={onVoiceModeChange}
         />
       )}
-      <ImproveButton
-        editor={editor}
-        onImprove={onImprove}
-        onStop={onStop}
-        label={improveLabel}
-        isImproving={isImproving}
-      />
+      <GenerateStoriesButton issue={issue ?? null} />
       <TextStylesDropdown editor={editor} />
       <BoldButton editor={editor} />
       <InlineFormattingDropdown editor={editor} />
