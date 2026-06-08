@@ -162,18 +162,37 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
     const channelConvs = live.filter((c) => c.kind === 'channel');
     const tickets = live.filter((c) => c.kind === 'ticket');
 
-    // Merge project list with existing channel conversations
-    const channelByProjectKey = new Map<string, typeof conversations[number]>();
-    channelConvs.forEach((c) => {
-      if (c.projectKey) channelByProjectKey.set(c.projectKey, c);
+    // Channel rows — source of truth is chat_conversations (kind='channel')
+    // the user is a member of, NOT ph_projects. This catches Jira-synced
+    // projects whose backfill landed channels but whose users aren't in
+    // ph_project_members. (2026-06-08 fix — earlier path dropped 5 of 7
+    // projects because they only live in ph_jira_projects.)
+    const projectByKey = new Map<string, { id: string; key: string; name: string }>();
+    projects.forEach((p) => projectByKey.set(p.key, p));
+
+    const seenChannelKeys = new Set<string>();
+    const channelRowsFromConvs = channelConvs.map((c) => {
+      const key = c.projectKey ?? c.id;
+      seenChannelKeys.add(key);
+      return {
+        project: projectByKey.get(c.projectKey ?? '') ?? {
+          id: c.id,
+          key: c.projectKey ?? '',
+          name: c.title,
+        },
+        conversation: c,
+      };
     });
 
-    const channelRows = projects
+    // Also surface projects whose channel exists in DB but the user isn't
+    // a member of yet (admin browse case) — keeps the original behavior
+    // for joinable channels.
+    const channelRowsFromProjects = projects
+      .filter((p) => !seenChannelKeys.has(p.key))
       .filter((p) => !q || p.key.toLowerCase().includes(q) || (p.name ?? '').toLowerCase().includes(q))
-      .map((p) => ({
-        project: p,
-        conversation: channelByProjectKey.get(p.key) ?? null,
-      }));
+      .map((p) => ({ project: p, conversation: null as null | typeof conversations[number] }));
+
+    const channelRows = [...channelRowsFromConvs, ...channelRowsFromProjects];
 
     return {
       dms,
