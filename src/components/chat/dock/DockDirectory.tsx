@@ -15,6 +15,7 @@ import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import { useStartDm } from '@/hooks/chat/useStartDm';
 import { useStartProjectChannel } from '@/hooks/chat/useStartProjectChannel';
 import { useChatSearch, groupSearchHits } from '@/hooks/chat/useChatSearch';
+import { NewGroupDmModal } from './NewGroupDmModal';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
@@ -67,6 +68,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
   const [query, setQuery] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
   const [newChannelOpen, setNewChannelOpen] = useState(false);
+  const [newGroupDmOpen, setNewGroupDmOpen] = useState(false);
 
   // Global server-side search (RPC chat_search). RLS-filtered for messages +
   // channels; org-wide for people + projects.
@@ -154,7 +156,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
     const matchQ = (c: typeof conversations[number]) =>
       !q || c.title.toLowerCase().includes(q) || (c.lastMessagePreview ?? '').toLowerCase().includes(q);
     const live = conversations.filter((c) => !c.isArchived && matchQ(c));
-    const dms = live.filter((c) => c.kind === 'dm');
+    const dms = live.filter((c) => c.kind === 'dm' || c.kind === 'group_dm');
     const channelConvs = live.filter((c) => c.kind === 'channel');
     const tickets = live.filter((c) => c.kind === 'ticket');
 
@@ -218,6 +220,12 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
           onCreated={(id) => onSelectConversation(id)}
         />
       )}
+      {/* Group DM picker (available to everyone). */}
+      <NewGroupDmModal
+        isOpen={newGroupDmOpen}
+        onClose={() => setNewGroupDmOpen(false)}
+        onCreated={(id) => onSelectConversation(id)}
+      />
       {/* Search */}
       <div className="cc-dir__search">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -341,10 +349,39 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
           </>
         )}
 
-        {/* Direct messages — kind=dm only */}
-        {filtered.dms.length > 0 && (
+        {/* Direct messages — kind=dm + kind=group_dm. Header always visible
+            so the "+ Group" affordance is reachable even when the list is
+            empty. */}
+        {(filtered.dms.length > 0 || true) && (
           <>
-            <div className="cc-dir__section">Direct messages</div>
+            <div className="cc-dir__section">
+              Direct messages
+              <button
+                type="button"
+                className="cc-dir__section-add"
+                aria-label="New group message"
+                title="New group message"
+                onClick={() => setNewGroupDmOpen(true)}
+                style={{
+                  marginLeft: 'auto',
+                  width: 22,
+                  height: 22,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'transparent',
+                  border: 'none',
+                  borderRadius: 4,
+                  cursor: 'pointer',
+                  color: 'var(--ds-text-subtle, #44546F)',
+                }}
+              >
+                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+            </div>
             {filtered.dms.map((c) => (
               <button
                 key={c.id}
