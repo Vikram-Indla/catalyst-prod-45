@@ -214,4 +214,39 @@ To continue: `git switch Products-chat-dock-mount-01` (the code) and read this d
 
 ---
 
+---
+
+## 10. P0 UPDATE — 2026-06-08 (on branch `chatbot`)
+
+The Slack-vs-Catalyst audit P0 block is **built + applied + verified** (DB via SQL; UI via code + ADS audit, NOT browser-click-tested).
+
+**Project-assignment source of truth (investigated):** `public.ph_issues` (assignee_account_id + reporter_account_id → `profiles.jira_account_id`, grouped by `project_key`). `ph_project_members` (1 row) and `resource_assignments.project_id` (all NULL) are effectively empty — do NOT use them for project rosters.
+
+**New migrations (applied to prod):**
+- `20260608000000_chat_p0_rpcs.sql` — `chat_add_members(uuid, uuid[])` RPC; `chat_search(text)` RPC; project-channel hardening (dropped duplicate `trg_chat_create_channel_for_new_project`; `chat_add_members_on_create` channel branch now seeds ph_issues-assigned users only, not the org; new `trg_chat_add_issue_user_to_channel` on `ph_issues` to back-fill assignees).
+- `20260608010000_chat_search_text_cast_fix.sql` — `::text` casts in `chat_search` (ph_projects.name is varchar(200)).
+
+**New/edited front-end:**
+- `useAddMembers` + `AddPeopleModal` (reuses NewMessageModal picker) → wired into `ConversationHeader` "Add people". Works for DM/channel/ticket.
+- DM display name resolved from the other member (`useConversations`).
+- `useChatSearch` + `QuickSwitcher` (real grouped results) + a Search icon in the dock header (`ChatDock`/`ChatDockMount`). Pick → get-or-create DM/channel or open conversation.
+- Ticket-chat entry: "Open discussion" IconButton in shared `CatalystViewBase.tsx:~481` → `chat_get_or_create_ticket_thread(issue_key)` → `/chat`.
+
+**RPC contract (live):**
+- `chat_add_members(p_conversation_id uuid, p_user_ids uuid[]) → int` (member-gated)
+- `chat_search(p_query text) → TABLE(result_type, ref_id, title, subtitle, conversation_id)` (member-gated)
+- `chat_get_or_create_dm(target_user_id uuid) → uuid` · `chat_get_or_create_project_channel(p_project_key text) → uuid` · `chat_get_or_create_ticket_thread(p_issue_key text) → uuid`
+
+**Verified (SQL):** `chat_search('BAU')` → conversation+message+project; `chat_add_members` member-gated; project-channel sourced from ph_issues; triggers confirmed (dup dropped, ph_issues trigger added).
+
+**Remaining / next-session TODO:**
+1. **Browser click-through** of: add-people, DM-name, search results, ticket "Open discussion" (rich-editor/modal automation was unreliable in-session — type-test manually).
+2. The new `ph_issues` trigger fires on every assignment change — fine functionally; watch overhead during bulk Jira sync.
+3. Group DMs, manual archive UI, mute, pin/save, channel browse/join — P1/P2 (see §9 audit gap table).
+4. Existing channels created before this fix still hold org-wide membership (only future channels are project-scoped) — backfill/cleanup if desired.
+
+**Branch:** `chatbot` (carries all chat code + this handover + P0). Latest: `40127b915`.
+
+---
+
 _End of handover._
