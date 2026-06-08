@@ -32,6 +32,7 @@ import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardOverdueItems } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
+import { resolveColumns } from '../gadgetColumns';
 import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, Lozenge } from '@/components/ads';
@@ -59,6 +60,7 @@ function severityAppearance(days: number): LozengeAppearance {
 
 export default function OverdueWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { settings } = useGadgetSettings('overdue', projectKey);
+  const activeColumns = resolveColumns('overdue', settings.columns ?? null);
   const { data: items, isLoading } = useDashboardOverdueItems(projectId, {
     dateFrom: settings.dateFrom,
     dateTo: settings.dateTo,
@@ -176,6 +178,7 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
               <OverdueRow
                 key={item.id}
                 item={item}
+                activeColumns={activeColumns}
                 onClick={() => handleRowClick(item)}
               />
             ))}
@@ -270,11 +273,14 @@ function KpiCell({
 
 function OverdueRow({
   item,
+  activeColumns,
   onClick,
 }: {
   item: any;
+  activeColumns: string[];
   onClick: () => void;
 }) {
+  const has = (c: string) => activeColumns.includes(c);
   const days = item._days ?? daysOverdue(item.effective_due_date ?? item.due_date);
   const appearance = severityAppearance(days);
   return (
@@ -309,34 +315,45 @@ function OverdueRow({
         minHeight: 36,
       }}
     >
-      <span style={{ display: 'inline-flex', flexShrink: 0 }}>
-        <JiraIssueTypeIcon type={(item as any).issue_type ?? 'Task'} size={16} />
-      </span>
-      <span
-        style={{
-          ...SMALL,
-          color: token('color.link', '#0C66E4'),
-          fontWeight: 500,
-          fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-          flexShrink: 0,
-          fontVariantNumeric: 'tabular-nums',
-        }}
-      >
-        {item.issue_key}
-      </span>
-      <span
-        style={{
-          flex: 1,
-          minWidth: 0,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          ...STRONG,
-        }}
-      >
-        {item.summary}
-      </span>
-      {item.assignee_display_name && (
+      {has('type') && (
+        <span style={{ display: 'inline-flex', flexShrink: 0 }}>
+          <JiraIssueTypeIcon type={(item as any).issue_type ?? 'Task'} size={16} />
+        </span>
+      )}
+      {has('key') && (
+        <span
+          style={{
+            ...SMALL,
+            color: token('color.link', '#0C66E4'),
+            fontWeight: 500,
+            fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+            flexShrink: 0,
+            fontVariantNumeric: 'tabular-nums',
+          }}
+        >
+          {item.issue_key}
+        </span>
+      )}
+      {has('summary') && (
+        <span
+          style={{
+            flex: 1,
+            minWidth: 0,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            ...STRONG,
+          }}
+        >
+          {item.summary}
+        </span>
+      )}
+      {has('dueDate') && (item.effective_due_date ?? item.due_date) && (
+        <span style={{ ...SMALL, color: token('color.text.subtle', '#42526E'), flexShrink: 0, whiteSpace: 'nowrap' }}>
+          {new Date(item.effective_due_date ?? item.due_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+        </span>
+      )}
+      {has('assignee') && item.assignee_display_name && (
         <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
           <UserAvatar
             size="small"
@@ -348,11 +365,13 @@ function OverdueRow({
           </span>
         </span>
       )}
-      <span style={{ flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
-        <Lozenge appearance={appearance}>
-          {days}d overdue
-        </Lozenge>
-      </span>
+      {has('days') && (
+        <span style={{ flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
+          <Lozenge appearance={appearance}>
+            {days}d overdue
+          </Lozenge>
+        </span>
+      )}
     </div>
   );
 }

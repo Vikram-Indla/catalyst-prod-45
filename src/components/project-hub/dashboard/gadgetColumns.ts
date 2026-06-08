@@ -60,10 +60,35 @@ const DEMAND_COLUMNS: GadgetColumnDef[] = [
   { id: 'priority', label: 'Priority', defaultVisible: false, defaultWidth: 64,  minWidth: 48  },
 ];
 
+/**
+ * Overdue + OnHold widgets use bespoke row layouts (OverdueRow / OnHoldRow),
+ * not ResizableDynamicTable. defaultWidth/minWidth on these entries are
+ * informational only — the row component does not consume them. The picker
+ * still drives which optional fields render on each row.
+ */
+const OVERDUE_COLUMNS: GadgetColumnDef[] = [
+  { id: 'type',     label: 'Type',         defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
+  { id: 'key',      label: 'Key',          defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
+  { id: 'summary',  label: 'Summary',      defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
+  { id: 'assignee', label: 'Assignee',     defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
+  { id: 'days',     label: 'Days overdue', defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
+  { id: 'dueDate',  label: 'Due date',     defaultVisible: false, defaultWidth: 0, minWidth: 0 },
+];
+
+const ONHOLD_COLUMNS: GadgetColumnDef[] = [
+  { id: 'type',     label: 'Type',     defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
+  { id: 'key',      label: 'Key',      defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
+  { id: 'summary',  label: 'Summary',  defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
+  { id: 'assignee', label: 'Assignee', defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
+  { id: 'reason',   label: 'Reason',   defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
+];
+
 const COLUMN_REGISTRY: Partial<Record<GadgetType, GadgetColumnDef[]>> = {
   qa: QA_COLUMNS,
   incidents: INCIDENT_COLUMNS,
   demand: DEMAND_COLUMNS,
+  overdue: OVERDUE_COLUMNS,
+  onhold: ONHOLD_COLUMNS,
 };
 
 export function getColumnsForGadget(gadgetType: GadgetType): GadgetColumnDef[] | null {

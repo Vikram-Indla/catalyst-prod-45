@@ -30,6 +30,7 @@ import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardOnHoldItems } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
+import { resolveColumns } from '../gadgetColumns';
 import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, Lozenge, StatusLozenge } from '@/components/ads';
@@ -66,6 +67,7 @@ function reasonAppearance(r: Reason): LozengeAppearance {
 
 export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { settings } = useGadgetSettings('onhold', projectKey);
+  const activeColumns = resolveColumns('onhold', settings.columns ?? null);
   const { data: items, isLoading } = useDashboardOnHoldItems(projectId, {
     dateFrom: settings.dateFrom,
     dateTo: settings.dateTo,
@@ -181,6 +183,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
               <OnHoldRow
                 key={item.id}
                 item={item}
+                activeColumns={activeColumns}
                 onClick={() => handleRowClick(item)}
               />
             ))}
@@ -276,14 +279,17 @@ function KpiCell({
 
 function OnHoldRow({
   item,
+  activeColumns,
   onClick,
 }: {
   item: any;
+  activeColumns: string[];
   onClick: () => void;
 }) {
   const reason: Reason = item._reason ?? classifyReason(item.status);
   const appearance = reasonAppearance(reason);
   const reasonLabel = reason === 'Other' ? (item.status ?? 'On Hold') : reason;
+  const has = (c: string) => activeColumns.includes(c);
   return (
     <div
       role="button"
@@ -316,34 +322,40 @@ function OnHoldRow({
         minHeight: 36,
       }}
     >
-      <span style={{ display: 'inline-flex', flexShrink: 0 }}>
-        <JiraIssueTypeIcon type={(item as any).issue_type ?? 'Task'} size={16} />
-      </span>
-      <span
-        style={{
-          ...SMALL,
-          color: token('color.link', '#0C66E4'),
-          fontWeight: 500,
-          fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-          flexShrink: 0,
-          fontVariantNumeric: 'tabular-nums',
-        }}
-      >
-        {item.issue_key}
-      </span>
-      <span
-        style={{
-          flex: 1,
-          minWidth: 0,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          ...STRONG,
-        }}
-      >
-        {item.summary}
-      </span>
-      {item.assignee_display_name && (
+      {has('type') && (
+        <span style={{ display: 'inline-flex', flexShrink: 0 }}>
+          <JiraIssueTypeIcon type={(item as any).issue_type ?? 'Task'} size={16} />
+        </span>
+      )}
+      {has('key') && (
+        <span
+          style={{
+            ...SMALL,
+            color: token('color.link', '#0C66E4'),
+            fontWeight: 500,
+            fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+            flexShrink: 0,
+            fontVariantNumeric: 'tabular-nums',
+          }}
+        >
+          {item.issue_key}
+        </span>
+      )}
+      {has('summary') && (
+        <span
+          style={{
+            flex: 1,
+            minWidth: 0,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            ...STRONG,
+          }}
+        >
+          {item.summary}
+        </span>
+      )}
+      {has('assignee') && item.assignee_display_name && (
         <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
           <UserAvatar
             size="small"
@@ -355,9 +367,11 @@ function OnHoldRow({
           </span>
         </span>
       )}
-      <span style={{ flexShrink: 0 }}>
-        <Lozenge appearance={appearance}>{reasonLabel}</Lozenge>
-      </span>
+      {has('reason') && (
+        <span style={{ flexShrink: 0 }}>
+          <Lozenge appearance={appearance}>{reasonLabel}</Lozenge>
+        </span>
+      )}
     </div>
   );
 }
