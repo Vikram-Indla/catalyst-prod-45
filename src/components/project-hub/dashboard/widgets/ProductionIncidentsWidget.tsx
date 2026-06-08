@@ -68,6 +68,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
     itemTypeFilter: settings.itemTypeFilter,
     priorityFilter: settings.priorityFilter,
     releaseFilter: settings.releaseFilter,
+    columnIds: activeColumns,
   });
 
   const footer = (

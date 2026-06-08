@@ -103,6 +103,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
     itemTypeFilter: settings.itemTypeFilter,
     priorityFilter: settings.priorityFilter,
     releaseFilter: settings.releaseFilter,
+    columnIds: activeColumns,
   });
 
   const handleRowClick = (item: any) => openUWV({

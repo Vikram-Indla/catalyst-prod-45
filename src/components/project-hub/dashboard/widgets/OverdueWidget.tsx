@@ -98,6 +98,7 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
     itemTypeFilter: settings.itemTypeFilter,
     priorityFilter: settings.priorityFilter,
     releaseFilter: settings.releaseFilter,
+    columnIds: activeColumns,
   });
 
   const handleRowClick = (item: any) => openUWV({

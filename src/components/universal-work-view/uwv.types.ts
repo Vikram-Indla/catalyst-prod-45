@@ -34,6 +34,8 @@ export interface UWVParams {
   releaseFilter?: string[];
   /** Human-readable label for the active date preset (e.g. "Q2 2026"). */
   dateLabel?: string;
+  /** Optional list of gadget column ids to seed the UWV column visibility from (P1-D). */
+  columnIds?: string[];
 }
 
 export type ColumnType =

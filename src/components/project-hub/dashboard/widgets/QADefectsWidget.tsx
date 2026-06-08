@@ -67,6 +67,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
     itemTypeFilter: settings.itemTypeFilter,
     priorityFilter: settings.priorityFilter,
     releaseFilter: settings.releaseFilter,
+    columnIds: activeColumns,
   });
 
   const footer = (
