@@ -1333,6 +1333,7 @@ function ColumnsSection({
   const available = allDefs.filter((d) => !active.includes(d.id));
 
   const [addOpen, setAddOpen] = useState(false);
+  const [addQuery, setAddQuery] = useState('');
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
 
@@ -1426,7 +1427,7 @@ function ColumnsSection({
 
       {available.length > 0 && (
         <div style={{ position: 'relative' }}>
-          <button type="button" onClick={() => setAddOpen((o) => !o)}
+          <button type="button" onClick={() => { setAddOpen((o) => !o); setAddQuery(''); }}
             style={{
               width: '100%',
               height: 32,
@@ -1440,41 +1441,76 @@ function ColumnsSection({
             }}>
             + Add column
           </button>
-          {addOpen && (
-            <div style={{
-              position: 'absolute',
-              top: 'calc(100% + 4px)',
-              left: 0,
-              right: 0,
-              zIndex: 50,
-              background: 'var(--ds-surface, #FFFFFF)',
-              border: '1px solid var(--ds-border, #DFE1E6)',
-              borderRadius: 4,
-              boxShadow: '0 8px 24px rgba(9,30,66,.18)',
-              maxHeight: 180,
-              overflowY: 'auto',
-            }}>
-              {available.map((col) => (
-                <button key={col.id} type="button" onClick={() => add(col.id)}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    padding: '6px 10px',
-                    border: 0,
-                    background: 'transparent',
-                    textAlign: 'left',
-                    fontSize: 12,
-                    color: 'var(--ds-text, #172B4D)',
-                    cursor: 'pointer',
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                >
-                  {col.label}
-                </button>
-              ))}
-            </div>
-          )}
+          {addOpen && (() => {
+            const showSearch = available.length > 8;
+            const q = addQuery.trim().toLowerCase();
+            const filtered = q
+              ? available.filter((c) => c.label.toLowerCase().includes(q))
+              : available;
+            return (
+              <div style={{
+                position: 'absolute',
+                top: 'calc(100% + 4px)',
+                left: 0,
+                right: 0,
+                zIndex: 50,
+                background: 'var(--ds-surface, #FFFFFF)',
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                borderRadius: 4,
+                boxShadow: '0 8px 24px rgba(9,30,66,.18)',
+                maxHeight: 220,
+                display: 'flex',
+                flexDirection: 'column',
+              }}>
+                {showSearch && (
+                  <input
+                    type="text"
+                    autoFocus
+                    value={addQuery}
+                    onChange={(e) => setAddQuery(e.target.value)}
+                    placeholder="Search columns…"
+                    style={{
+                      margin: 6,
+                      padding: '4px 8px',
+                      height: 28,
+                      fontSize: 12,
+                      border: '1px solid var(--ds-border, #DFE1E6)',
+                      borderRadius: 3,
+                      background: 'var(--ds-surface, #FFFFFF)',
+                      color: 'var(--ds-text, #172B4D)',
+                      outline: 'none',
+                    }}
+                  />
+                )}
+                <div style={{ overflowY: 'auto', flex: 1 }}>
+                  {filtered.length === 0 ? (
+                    <div style={{ padding: '8px 10px', fontSize: 12, color: 'var(--ds-text-subtlest, #7A869A)' }}>
+                      No matches
+                    </div>
+                  ) : filtered.map((col) => (
+                    <button key={col.id} type="button"
+                      onClick={() => { add(col.id); setAddQuery(''); }}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        padding: '6px 10px',
+                        border: 0,
+                        background: 'transparent',
+                        textAlign: 'left',
+                        fontSize: 12,
+                        color: 'var(--ds-text, #172B4D)',
+                        cursor: 'pointer',
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                    >
+                      {col.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       )}
     </div>
