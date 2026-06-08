@@ -42,10 +42,8 @@ import Tooltip from '@atlaskit/tooltip';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
-import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
-import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box';
-import { SectionMessage } from '@/components/ads';
-import { useWidgetEditState } from './DashboardWidgetGrid';
+import { Heading, SectionMessage } from '@/components/ads';
+import { useWidgetEditState } from './widget-edit-context';
 import { downloadWidgetAsPdf } from '@/lib/widget-pdf';
 import { downloadWidgetAsCsv } from '@/lib/widget-csv';
 
