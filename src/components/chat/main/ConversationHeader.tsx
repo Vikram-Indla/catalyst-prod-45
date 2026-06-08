@@ -215,16 +215,11 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
         </button>
       )}
 
-      {!isDm && (
-        <button type="button" className="cc-caty-btn" onClick={onAskCaty} aria-label={summarizeLabel}>
-          <span className="cc-caty-btn__inner">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ds-icon-discovery, #6E5DC6)" strokeWidth={2}>
-              <path d="M12 3l1.9 5.8L20 10l-5.1 1.9L12 18l-1.9-6.1L5 10l5.1-1.2z" />
-            </svg>
-            {summarizeLabel}
-          </span>
-        </button>
-      )}
+      {/* Ask Caty REMOVED from header (2026-06-08 design-critique).
+          Slack/Jira/ServiceNow have no persistent AI CTA in channel headers.
+          On empty channels the button has nothing to summarize — dead
+          affordance. Now lives as a contextual menu item below, enabled
+          only when there are messages to act on. */}
 
       <div
         ref={menuWrapRef}
@@ -261,6 +256,12 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
               zIndex: 10000,
             }}
           >
+            {!isDm && onAskCaty && (
+              <ConversationMenuItem
+                label="Summarize with Caty"
+                onClick={() => { onAskCaty(); setMenuOpen(false); }}
+              />
+            )}
             {isTicket && conversation.ticketKey && (
               <ConversationMenuItem
                 label="View ticket"
