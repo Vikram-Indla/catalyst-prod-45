@@ -38,6 +38,7 @@ import { EmptyState } from '@/components/ads';
 import UserAvatar from '@/components/shared/UserAvatar';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import WidgetGearButton from '../WidgetGearButton';
+import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG, TITLE, H_NUM } from '../dashboardTypography';
 
 // Atlaskit canonical bolder palette — same blues / reds / teals used by
 // the StatusLozenge + WorkItemIcon families. Subtler variants washed out
@@ -218,7 +219,7 @@ function KpiHeadline({
           <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 8 }}>
             <span
               style={{
-                fontSize: 14,
+                ...STRONG,
                 fontWeight: 500,
                 color: token('color.text.subtle', '#44546F'),
                 whiteSpace: 'nowrap',
@@ -260,22 +261,17 @@ function KpiCell({
     >
       <span
         style={{
-          fontSize: 11,
-          fontWeight: 500,
+          ...LABEL,
           textTransform: 'none',
           letterSpacing: '0.04em',
-          color: token('color.text.subtlest', '#626F86'),
         }}
       >
         {label}
       </span>
       <span
         style={{
-          fontSize: 24,
-          fontWeight: 600,
+          ...H_NUM,
           lineHeight: 1.1,
-          color: token('color.text', '#292A2E'),
-          fontVariantNumeric: 'tabular-nums',
         }}
       >
         {value}
@@ -362,9 +358,7 @@ function WorkloadRow({
         >
           <span
             style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: token('color.text', '#292A2E'),
+              ...STRONG,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -376,9 +370,8 @@ function WorkloadRow({
           </span>
           <span
             style={{
-              fontSize: 16,
+              ...TITLE,
               fontWeight: 600,
-              color: token('color.text', '#292A2E'),
               fontVariantNumeric: 'tabular-nums',
               flexShrink: 0,
             }}
@@ -446,7 +439,7 @@ function WorkloadRow({
               display: 'flex',
               alignItems: 'center',
               gap: 12,
-              fontSize: 12,
+              ...SMALL,
               color: token('color.text.subtle', '#44546F'),
               fontVariantNumeric: 'tabular-nums',
               flexShrink: 0,

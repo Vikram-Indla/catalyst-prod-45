@@ -36,6 +36,7 @@ import { EmptyState, Lozenge, StatusLozenge } from '@/components/ads';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import UserAvatar from '@/components/shared/UserAvatar';
 import WidgetGearButton from '../WidgetGearButton';
+import { LABEL, SMALL, BODY, STRONG, H_NUM } from '../dashboardTypography';
 
 type Reason = 'Awaiting Info' | 'On Hold' | 'Blocked' | 'Impediment' | 'Other';
 
@@ -125,7 +126,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
         background: 'transparent',
         border: 0,
         cursor: 'pointer',
-        fontSize: 12,
+        ...SMALL,
         color: token('color.link', '#0C66E4'),
         padding: 0,
         display: 'flex',
@@ -251,22 +252,18 @@ function KpiCell({
     >
       <span
         style={{
-          fontSize: 11,
-          fontWeight: 500,
+          ...LABEL,
           textTransform: 'none',
           letterSpacing: '0.04em',
-          color: token('color.text.subtlest', '#626F86'),
         }}
       >
         {label}
       </span>
       <span
         style={{
-          fontSize: 24,
-          fontWeight: 600,
+          ...H_NUM,
           lineHeight: 1.1,
           color: accent ?? token('color.text', '#292A2E'),
-          fontVariantNumeric: 'tabular-nums',
         }}
       >
         {value}
@@ -324,10 +321,10 @@ function OnHoldRow({
       </span>
       <span
         style={{
+          ...SMALL,
           color: token('color.link', '#0C66E4'),
           fontWeight: 500,
           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-          fontSize: 12,
           flexShrink: 0,
           fontVariantNumeric: 'tabular-nums',
         }}
@@ -341,9 +338,7 @@ function OnHoldRow({
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
-          color: token('color.text', '#292A2E'),
-          fontSize: 14,
-          fontWeight: 500,
+          ...STRONG,
         }}
       >
         {item.summary}

@@ -16,9 +16,12 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { Plus, LayoutGrid, RotateCcw, Tv, TvMinimal } from '@/lib/atlaskit-icons';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus, LayoutGrid, RotateCcw, Tv, TvMinimal, Star, StarOff, RefreshCw, MoreHorizontal, Link2 } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
+import { IconButton as AkIconButton } from '@atlaskit/button/new';
+import Tooltip from '@atlaskit/tooltip';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 
 import { supabase } from '@/integrations/supabase/client';
 import { AtlaskitPageShell, Button, Flag, FlagGroup, SectionMessage } from '@/components/ads';
@@ -41,10 +44,12 @@ export default function ProjectDashboardPage() {
 
 function ProjectDashboardPageInner() {
   const { key } = useParams<{ key: string }>();
+  const queryClient = useQueryClient();
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState<ResolvedWidget[] | null>(null);
   const [savedFlag, setSavedFlag] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   // Presentation / TV mode — toggles a data attr on <html>.
   // CSS in index.css scales typography 1.45× when active so the dashboard
@@ -64,6 +69,15 @@ function ProjectDashboardPageInner() {
       window.localStorage.removeItem('catalyst-presentation');
     }
   }, [presentation]);
+
+  useEffect(() => {
+    if (!isEditing) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setDraft(null); setIsEditing(false); }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [isEditing]);
 
   const { data: project, isLoading } = useQuery({
     queryKey: ['ph-project-dashboard-v5', key],
@@ -251,33 +265,45 @@ function ProjectDashboardPageInner() {
     [isEditing, draft, persistedWidgets],
   );
 
+  const handleRefreshAll = () => {
+    queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+    queryClient.invalidateQueries({ queryKey: ['ph-project-dashboard-v5'] });
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+  };
+
   const actions = isEditing ? (
     <>
+      <Tooltip content={isFavorite ? 'Remove from favorites' : 'Add to favorites'} position="bottom">
+        {(tp) => (
+          <span {...tp} style={{ display: 'inline-flex' }}>
+            <AkIconButton
+              label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              icon={() => isFavorite ? <Star size={16} style={{ color: '#FFAB00' }} /> : <StarOff size={16} />}
+              appearance="subtle"
+              spacing="compact"
+              onClick={() => setIsFavorite((f) => !f)}
+            />
+          </span>
+        )}
+      </Tooltip>
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={<Plus size={13} />}
         onClick={() => setGalleryOpen(true)}
         testId="dashboard-add-widget"
       >
-        Add widget
+        Add gadget
       </Button>
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={<RotateCcw size={13} />}
         onClick={resetLayout}
-        testId="dashboard-reset-layout"
+        testId="dashboard-change-layout"
       >
-        Reset
-      </Button>
-      <Button
-        appearance="subtle"
-        spacing="compact"
-        onClick={cancelEdit}
-        testId="dashboard-edit-cancel"
-      >
-        Cancel
+        Change layout
       </Button>
       <Button
         appearance="primary"
@@ -287,26 +313,60 @@ function ProjectDashboardPageInner() {
       >
         Done
       </Button>
+      <DropdownMenu
+        trigger={({ triggerRef, ...triggerProps }) => (
+          <AkIconButton
+            ref={triggerRef}
+            {...triggerProps}
+            label="More actions"
+            icon={() => <MoreHorizontal size={16} />}
+            appearance="subtle"
+            spacing="compact"
+          />
+        )}
+      >
+        <DropdownItemGroup>
+          <DropdownItem onClick={cancelEdit}>Cancel editing</DropdownItem>
+          <DropdownItem onClick={resetLayout}>Reset to defaults</DropdownItem>
+        </DropdownItemGroup>
+      </DropdownMenu>
     </>
   ) : (
     <>
+      <Tooltip content={isFavorite ? 'Remove from favorites' : 'Add to favorites'} position="bottom">
+        {(tp) => (
+          <span {...tp} style={{ display: 'inline-flex' }}>
+            <AkIconButton
+              label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              icon={() => isFavorite ? <Star size={16} style={{ color: '#FFAB00' }} /> : <StarOff size={16} />}
+              appearance="subtle"
+              spacing="compact"
+              onClick={() => setIsFavorite((f) => !f)}
+            />
+          </span>
+        )}
+      </Tooltip>
+      <Tooltip content="Copy dashboard link" position="bottom">
+        {(tp) => (
+          <span {...tp} style={{ display: 'inline-flex' }}>
+            <AkIconButton
+              label="Copy dashboard link"
+              icon={() => <Link2 size={16} />}
+              appearance="subtle"
+              spacing="compact"
+              onClick={handleCopyLink}
+            />
+          </span>
+        )}
+      </Tooltip>
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={presentation ? <TvMinimal size={13} /> : <Tv size={13} />}
-        onClick={() => setPresentation((p) => !p)}
-        testId="dashboard-presentation-toggle"
+        iconBefore={<RefreshCw size={13} />}
+        onClick={handleRefreshAll}
+        testId="dashboard-refresh"
       >
-        {presentation ? 'Exit TV mode' : 'TV mode'}
-      </Button>
-      <Button
-        appearance="subtle"
-        spacing="compact"
-        iconBefore={<Plus size={13} />}
-        onClick={() => setGalleryOpen(true)}
-        testId="dashboard-add-widget"
-      >
-        Add Widget
+        Refresh
       </Button>
       <Button
         appearance="subtle"
@@ -315,27 +375,38 @@ function ProjectDashboardPageInner() {
         onClick={enterEditMode}
         testId="dashboard-edit-layout"
       >
-        Edit Layout
+        Edit
       </Button>
-      <Button
-        appearance="subtle"
-        spacing="compact"
-        iconBefore={<RotateCcw size={13} />}
-        onClick={resetLayout}
-        testId="dashboard-reset-layout"
+      <DropdownMenu
+        trigger={({ triggerRef, ...triggerProps }) => (
+          <AkIconButton
+            ref={triggerRef}
+            {...triggerProps}
+            label="More dashboard actions"
+            icon={() => <MoreHorizontal size={16} />}
+            appearance="subtle"
+            spacing="compact"
+          />
+        )}
       >
-        Reset
-      </Button>
+        <DropdownItemGroup>
+          <DropdownItem onClick={() => setPresentation((p) => !p)}>
+            {presentation ? 'Exit TV mode' : 'TV mode'}
+          </DropdownItem>
+          <DropdownItem onClick={() => setGalleryOpen(true)}>Add gadget</DropdownItem>
+          <DropdownItem onClick={resetLayout}>Reset to defaults</DropdownItem>
+        </DropdownItemGroup>
+      </DropdownMenu>
     </>
   );
 
   return (
     <AtlaskitPageShell
-      // Apr 27, 2026 (L50): canonical Project Hub page-title pattern is
-      // `{Project Name} {Hub Function}` — e.g. "Senaei BAU Dashboard".
-      // Falls back to the project key while name is loading; falls back
-      // to bare "Dashboard" if neither is available.
-      title={`${(project as any)?.name || pKey || ''} Dashboard`.trim()}
+      title={
+        <span style={{ fontSize: 24, fontWeight: 653, letterSpacing: '-0.003em', color: token('color.text', '#292A2E') }}>
+          {(project as any)?.name || pKey || 'Dashboard'}
+        </span>
+      }
       actions={actions}
       testId="project-dashboard-shell"
     >
@@ -372,10 +443,13 @@ function ProjectDashboardPageInner() {
         </div>
       ) : (
         <div style={{ padding: 16 }}>
-          {/* Fiscal-scope disclaimer — sits above the widget grid so any
-              count discrepancy ("why does this say 33 when Jira shows 257?")
-              is answered before the user has to ask. Always-on; lives at the
-              page level so every dashboard widget inherits the same banner. */}
+          {isEditing && (
+            <div style={{ marginBottom: 16 }}>
+              <SectionMessage appearance="information">
+                You are currently editing your dashboard. Changes will be saved when you click Done.
+              </SectionMessage>
+            </div>
+          )}
           <div style={{ marginBottom: 16 }}>
             <SectionMessage
               appearance="information"

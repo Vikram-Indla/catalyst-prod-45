@@ -40,6 +40,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
 import TimeInStatusFullscreenModal from './TimeInStatusFullscreenModal';
+import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG } from '../dashboardTypography';
 
 const ISSUE_TYPES = ['Story', 'Epic', 'Sub-task', 'Defect', 'Business Request', 'Task'];
 
@@ -243,8 +244,7 @@ export default function TimeInStatusWidget({
                   gap: 6,
                   height: 28,
                   padding: '0 12px',
-                  fontSize: 12,
-                  fontWeight: active ? 600 : 500,
+                  ...(active ? SMALL_STRONG : SMALL),
                   borderRadius: 'var(--ds-border-radius, 4px)',
                   border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
                   background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
@@ -272,8 +272,7 @@ export default function TimeInStatusWidget({
                 style={{
                   height: 26,
                   padding: '0 10px',
-                  fontSize: 11,
-                  fontWeight: active ? 600 : 500,
+                  ...LABEL,
                   borderRadius: 'var(--ds-border-radius, 4px)',
                   border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
                   background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
@@ -333,9 +332,7 @@ export default function TimeInStatusWidget({
               width: '100%',
               borderCollapse: 'separate',
               borderSpacing: 0,
-              // Apr 26, 2026 — base table font 12→14 to match the rest
-              // of the dashboard. Cells with explicit fontSize still win.
-              fontSize: 14,
+              ...BODY,
             }}
           >
             <thead>
@@ -352,8 +349,7 @@ export default function TimeInStatusWidget({
                     // Header style mirrors QA Defects / Production
                     // Incidents header: 12px uppercase 700 letter-spaced
                     // 0.04em color.text.subtle.
-                    fontSize: 12,
-                    fontWeight: 700,
+                    ...SMALL_STRONG,
                     textTransform: 'none',
                     letterSpacing: '0.04em',
                     color: token('color.text.subtle', '#44546F'),
@@ -383,8 +379,7 @@ export default function TimeInStatusWidget({
                     padding: '8px 12px',
                     textAlign: 'right',
                     borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-                    fontWeight: 600,
-                    color: token('color.text', '#292A2E'),
+                    ...STRONG,
                     background: token('elevation.surface', '#FFFFFF'),
                     position: 'sticky', right: 0, zIndex: 2,
                   }}
@@ -433,7 +428,7 @@ export default function TimeInStatusWidget({
                           // Demand Fulfilment + QA Defects + Production
                           // Incidents row typography. Same density across
                           // every dashboard table.
-                          fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap',
+                          ...STRONG, whiteSpace: 'nowrap',
                           flexShrink: 0,
                         }}
                       >
@@ -449,9 +444,7 @@ export default function TimeInStatusWidget({
                           // Apr 26, 2026 — title now at 14/500 to match
                           // the rest of the dashboard row titles. Was
                           // unstyled (inheriting 12px from parent table).
-                          fontSize: 14,
-                          fontWeight: 500,
-                          lineHeight: '20px',
+                          ...STRONG,
                           color: token('color.text', '#292A2E'),
                         }}
                       >
@@ -477,7 +470,7 @@ export default function TimeInStatusWidget({
                           borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                           background: categoryBg(s.category, ms),
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                          fontSize: 11,
+                          ...LABEL,
                           color: token('color.text', '#292A2E'),
                         }}
                       >
@@ -499,13 +492,11 @@ export default function TimeInStatusWidget({
                                 {visits > 1 && (
                                   <span
                                     style={{
-                                      fontSize: 10,
-                                      fontWeight: 700,
+                                      ...LABEL,
                                       color: 'var(--ds-text-accent-red, #AE2A19)',
                                       padding: '0 4px',
                                       borderRadius: 'var(--ds-border-radius, 4px)',
                                       background: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
-                                      lineHeight: 1.4,
                                     }}
                                     aria-label={`${visits} visits`}
                                   >
@@ -529,8 +520,7 @@ export default function TimeInStatusWidget({
                       textAlign: 'right',
                       borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
                       fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                      fontSize: 12,
-                      fontWeight: 600,
+                      ...SMALL_STRONG,
                       color: token('color.text', '#292A2E'),
                       background: totalBg(r.totalMs, totalMax),
                       position: 'sticky', right: 0,
@@ -552,7 +542,7 @@ export default function TimeInStatusWidget({
               padding: '8px 16px',
               borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
               background: token('elevation.surface', '#FFFFFF'),
-              fontSize: 11,
+              ...LABEL,
               color: token('color.text.subtle', '#505258'),
             }}
           >
@@ -566,7 +556,7 @@ export default function TimeInStatusWidget({
                   type="button"
                   onClick={() => setOffset(Math.max(0, offset - pageSize))}
                   style={{
-                    height: 24, padding: '0 8px', fontSize: 11, cursor: 'pointer',
+                    ...LABEL, height: 24, padding: '0 8px', cursor: 'pointer',
                     border: '1px solid var(--ds-border, #DFE1E6)',
                     borderRadius: 'var(--ds-border-radius, 4px)',
                     background: 'transparent',
@@ -581,7 +571,7 @@ export default function TimeInStatusWidget({
                   type="button"
                   onClick={() => setOffset(offset + pageSize)}
                   style={{
-                    height: 24, padding: '0 8px', fontSize: 11, cursor: 'pointer',
+                    ...LABEL, height: 24, padding: '0 8px', cursor: 'pointer',
                     border: '1px solid var(--ds-border, #DFE1E6)',
                     borderRadius: 'var(--ds-border-radius, 4px)',
                     background: 'transparent',

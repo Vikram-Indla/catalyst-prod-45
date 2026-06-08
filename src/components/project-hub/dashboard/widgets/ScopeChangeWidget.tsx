@@ -35,6 +35,7 @@ import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, Lozenge } from '@/components/ads';
 import WidgetGearButton from '../WidgetGearButton';
+import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG, H_NUM } from '../dashboardTypography';
 
 // Atlaskit canonical bolder palette — matches Team Workload + Items by Status.
 const SCOPE_ORIG = 'var(--ds-background-accent-blue-bolder, #0C66E4)';
@@ -238,22 +239,18 @@ function KpiCell({
     >
       <span
         style={{
-          fontSize: 11,
-          fontWeight: 500,
+          ...LABEL,
           textTransform: 'none',
           letterSpacing: '0.04em',
-          color: token('color.text.subtlest', '#626F86'),
         }}
       >
         {label}
       </span>
       <span
         style={{
-          fontSize: 24,
-          fontWeight: 600,
+          ...H_NUM,
           lineHeight: 1.1,
           color: accent ?? token('color.text', '#292A2E'),
-          fontVariantNumeric: 'tabular-nums',
         }}
       >
         {value}
@@ -337,13 +334,8 @@ function ReleaseRow({
       >
         <span
           style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: token('color.text', '#292A2E'),
+            ...STRONG,
             minWidth: 0,
-            // Allow wrapping for very long release names so the right
-            // cluster never gets pushed off the row. Two-line cap to keep
-            // row height predictable.
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
@@ -368,17 +360,17 @@ function ReleaseRow({
         >
           <span
             style={{
-              fontSize: 12,
+              ...SMALL,
               color: token('color.text.subtle', '#44546F'),
               fontVariantNumeric: 'tabular-nums',
               whiteSpace: 'nowrap',
             }}
           >
-            <span style={{ fontWeight: 600, color: token('color.text', '#292A2E') }}>
+            <span style={{ ...SMALL_STRONG }}>
               {s.originalCount}
             </span>{' '}
             original ·{' '}
-            <span style={{ fontWeight: 600, color: token('color.text', '#292A2E') }}>
+            <span style={{ ...SMALL_STRONG }}>
               {s.addedCount}
             </span>{' '}
             added
@@ -422,8 +414,7 @@ function ReleaseRow({
         </div>
         <span
           style={{
-            fontSize: 12,
-            fontWeight: 600,
+            ...SMALL_STRONG,
             minWidth: 64,
             textAlign: 'right',
             color:

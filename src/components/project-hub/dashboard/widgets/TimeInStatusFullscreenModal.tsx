@@ -34,6 +34,7 @@ import {
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
+import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG } from '../dashboardTypography';
 
 const ISSUE_TYPES = ['Story', 'Epic', 'Sub-task', 'Defect', 'Business Request', 'Task'];
 
@@ -221,8 +222,7 @@ export default function TimeInStatusFullscreenModal({
                         gap: 6,
                         height: 32,
                         padding: '0 14px',
-                        fontSize: 14,
-                        fontWeight: active ? 600 : 500,
+                        ...STRONG,
                         borderRadius: 'var(--ds-border-radius, 4px)',
                         border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
                         background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
@@ -248,8 +248,7 @@ export default function TimeInStatusFullscreenModal({
                       style={{
                         height: 28,
                         padding: '0 12px',
-                        fontSize: 12,
-                        fontWeight: active ? 600 : 500,
+                        ...(active ? SMALL_STRONG : SMALL),
                         borderRadius: 'var(--ds-border-radius, 4px)',
                         border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
                         background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
@@ -300,7 +299,7 @@ export default function TimeInStatusFullscreenModal({
                     width: '100%',
                     borderCollapse: 'separate',
                     borderSpacing: 0,
-                    fontSize: 14,
+                    ...BODY,
                   }}
                 >
                   <thead>
@@ -314,8 +313,7 @@ export default function TimeInStatusFullscreenModal({
                           padding: '10px 12px',
                           borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
                           borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
-                          fontWeight: 600,
-                          color: token('color.text', '#292A2E'),
+                          ...STRONG,
                         }}
                       >
                         Ticket
@@ -342,8 +340,7 @@ export default function TimeInStatusFullscreenModal({
                           padding: '10px 12px',
                           textAlign: 'right',
                           borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-                          fontWeight: 600,
-                          color: token('color.text', '#292A2E'),
+                          ...STRONG,
                           background: token('elevation.surface', '#FFFFFF'),
                           position: 'sticky', right: 0, zIndex: 2,
                         }}
@@ -378,7 +375,7 @@ export default function TimeInStatusFullscreenModal({
                                 display: 'inline-flex', alignItems: 'center', gap: 6,
                                 color: token('color.link', '#0C66E4'),
                                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                                fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap',
+                                ...STRONG, whiteSpace: 'nowrap',
                                 flexShrink: 0,
                               }}
                             >
@@ -414,8 +411,7 @@ export default function TimeInStatusFullscreenModal({
                                 borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                                 background: categoryBg(s.category, ms),
                                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                                fontSize: 12,
-                                color: token('color.text', '#292A2E'),
+                                ...SMALL,
                               }}
                             >
                               {ms > 0 ? (
@@ -433,13 +429,11 @@ export default function TimeInStatusFullscreenModal({
                                       {visits > 1 && (
                                         <span
                                           style={{
-                                            fontSize: 10,
-                                            fontWeight: 700,
+                                            ...LABEL,
                                             color: 'var(--ds-text-accent-red, #AE2A19)',
                                             padding: '0 4px',
                                             borderRadius: 'var(--ds-border-radius, 4px)',
                                             background: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
-                                            lineHeight: 1.4,
                                           }}
                                           aria-label={`${visits} visits`}
                                         >
@@ -461,9 +455,7 @@ export default function TimeInStatusFullscreenModal({
                             textAlign: 'right',
                             borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
                             fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                            fontSize: 14,
-                            fontWeight: 600,
-                            color: token('color.text', '#292A2E'),
+                            ...STRONG,
                             background: totalBg(r.totalMs, totalMax),
                             position: 'sticky', right: 0,
                           }}
@@ -480,7 +472,7 @@ export default function TimeInStatusFullscreenModal({
           <ModalFooter>
             <span
               style={{
-                fontSize: 12,
+                ...SMALL,
                 color: token('color.text.subtle', '#505258'),
                 marginRight: 'auto',
               }}

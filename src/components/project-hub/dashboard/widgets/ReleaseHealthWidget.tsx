@@ -33,6 +33,7 @@ import { EmptyState, StatusLozenge } from '@/components/ads';
 import { useDashboardFilter } from '@/contexts/DashboardFilterContext';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import WidgetGearButton from '../WidgetGearButton';
+import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG, H_NUM } from '../dashboardTypography';
 
 function statusCategoryFor(status?: string | null): 'default' | 'inProgress' | 'success' {
   const s = (status ?? '').toLowerCase();
@@ -102,10 +103,10 @@ export default function ReleaseHealthWidget({
       type="button"
       onClick={openAll}
       style={{
+        ...SMALL,
         background: 'transparent',
         border: 0,
         cursor: 'pointer',
-        fontSize: 12,
         color: token('color.link', '#0C66E4'),
         padding: 0,
         display: 'flex',
@@ -227,11 +228,9 @@ function KpiCell({
     >
       <span
         style={{
-          fontSize: 11,
-          fontWeight: 500,
+          ...LABEL,
           textTransform: 'none',
           letterSpacing: '0.04em',
-          color: token('color.text.subtlest', '#626F86'),
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -241,11 +240,9 @@ function KpiCell({
       </span>
       <span
         style={{
-          fontSize: 24,
-          fontWeight: 600,
+          ...H_NUM,
           lineHeight: 1.1,
           color: accent ?? token('color.text', '#292A2E'),
-          fontVariantNumeric: 'tabular-nums',
         }}
       >
         {value}
@@ -285,9 +282,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
       >
         <span
           style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: token('color.text', '#292A2E'),
+            ...STRONG,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -328,8 +323,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
         </div>
         <span
           style={{
-            fontSize: 14,
-            fontWeight: 600,
+            ...STRONG,
             minWidth: 44,
             textAlign: 'right',
             color: atRisk
@@ -345,10 +339,10 @@ function ReleaseRow({ release: rel }: { release: any }) {
       {/* Bottom line: "X of Y items · End Mar 26" */}
       <div
         style={{
+          ...LABEL,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          fontSize: 11,
           color: token('color.text.subtle', '#626F86'),
           fontVariantNumeric: 'tabular-nums',
         }}

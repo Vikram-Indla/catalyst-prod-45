@@ -43,6 +43,7 @@ import SectionMessage, { SectionMessageAction } from '@atlaskit/section-message'
 import Tooltip from '@atlaskit/tooltip';
 import Badge from '@atlaskit/badge';
 import Link from '@atlaskit/link';
+import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG, H_NUM } from '../dashboardTypography';
 import AkButton, { IconButton } from '@atlaskit/button/new';
 import SettingsIcon from '@atlaskit/icon/core/settings';
 import CalendarIcon from '@atlaskit/icon/core/calendar';
@@ -716,8 +717,7 @@ const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: num
     return (
       <span
         style={{
-          fontSize: 14,
-          fontWeight: 500,
+          ...STRONG,
           color: token('color.text.subtle', '#44546F'),
         }}
       >
@@ -733,6 +733,7 @@ const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: num
   return (
     <span
       style={{
+        ...SMALL_STRONG,
         display: 'inline-flex',
         alignItems: 'center',
         gap: 6,
@@ -742,8 +743,6 @@ const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: num
         color: c.fg,
         border: `1px solid ${c.border}`,
         borderRadius: 4,
-        fontSize: 12,
-        fontWeight: 700,
         letterSpacing: 0.02,
         whiteSpace: 'nowrap',
       }}
@@ -825,17 +824,13 @@ function SettingsPopupBody({
     .toISOString().split('T')[0];
 
   const sectionHeadingStyle = {
-    fontSize: 11,
-    fontWeight: 700,
+    ...LABEL,
     letterSpacing: '0.04em',
     textTransform: 'none' as const,
-    color: token('color.text.subtlest', '#626F86'),
     marginBottom: 6,
   };
   const subLabelStyle = {
-    fontSize: 11,
-    lineHeight: '16px',
-    fontWeight: 400,
+    ...LABEL,
     color: token('color.text.subtle', '#6B778C'),
     marginBottom: 2,
   };
@@ -918,7 +913,7 @@ function SettingsPopupBody({
       <div style={sectionHeadingStyle}>
         At-risk threshold
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: token('color.text', '#292A2E') }}>
+      <div style={{ ...SMALL, display: 'flex', alignItems: 'center', gap: 6 }}>
         <span>Mark as At Risk when</span>
         <div style={{ width: 100 }}>
           <Select
@@ -968,11 +963,9 @@ function SettingsPopupBody({
         formatGroupLabel={(group: any) => (
           <span
             style={{
-              fontSize: 11,
-              fontWeight: 700,
+              ...LABEL,
               textTransform: 'none',
               letterSpacing: '0.04em',
-              color: token('color.text.subtlest', '#626F86'),
               fontFamily: ATLAS_SANS,
             }}
           >
@@ -982,8 +975,7 @@ function SettingsPopupBody({
       />
       <div
         style={{
-          fontSize: 11,
-          color: token('color.text.subtlest', '#626F86'),
+          ...LABEL,
           marginTop: 4,
           fontFamily: ATLAS_SANS,
         }}
@@ -1065,11 +1057,9 @@ function KpiCell({
     >
       <span
         style={{
-          fontSize: 11,
-          fontWeight: 500,
+          ...LABEL,
           textTransform: 'none',
           letterSpacing: '0.04em',
-          color: token('color.text.subtlest', '#626F86'),
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -1079,11 +1069,8 @@ function KpiCell({
       </span>
       <span
         style={{
-          fontSize: 28,
-          fontWeight: 600,
-          lineHeight: 1.1,
+          ...H_NUM,
           color: accent ?? token('color.text', '#292A2E'),
-          fontVariantNumeric: 'tabular-nums',
         }}
       >
         {value}
@@ -1172,9 +1159,7 @@ function DemandRowItem({
             href={detailUrl}
             onClick={(e) => e.stopPropagation()}
             style={{
-              fontSize: 14,
-              fontWeight: 600,
-              lineHeight: '20px',
+              ...STRONG,
               fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
               color: token('color.link', '#0C66E4'),
               textDecoration: 'none',
@@ -1193,11 +1178,8 @@ function DemandRowItem({
         <span
           title={row.title}
           style={{
-            fontSize: 14,
-            lineHeight: '20px',
-            fontWeight: 500,
+            ...STRONG,
             fontFamily: ATLAS_SANS,
-            color: token('color.text', '#292A2E'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -1238,9 +1220,7 @@ function DemandRowItem({
           </div>
           <span
             style={{
-              fontSize: 14,
-              lineHeight: '20px',
-              fontWeight: 500,
+              ...STRONG,
               fontFamily: ATLAS_SANS,
               fontVariantNumeric: 'tabular-nums',
               color:
@@ -1282,9 +1262,7 @@ function DemandRowItem({
           {row.total === 0 ? (
             <div
               style={{
-                fontSize: 12,
-                lineHeight: '16px',
-                fontWeight: 400,
+                ...SMALL,
                 fontFamily: ATLAS_SANS,
                 color: token('color.text.subtle', '#44546F'),
                 fontStyle: 'italic',
@@ -1327,9 +1305,7 @@ function DemandRowItem({
                     href={storyUrl}
                     onClick={(e) => e.stopPropagation()}
                     style={{
-                      fontSize: 12,
-                      fontWeight: 500,
-                      lineHeight: '16px',
+                      ...SMALL_STRONG,
                       fontFamily: ATLAS_SANS,
                       color: token('color.link', '#0C66E4'),
                       textDecoration: 'none',
@@ -1341,11 +1317,8 @@ function DemandRowItem({
                   <span
                     title={story.summary}
                     style={{
-                      fontSize: 14,
-                      fontWeight: 400,
-                      lineHeight: '20px',
+                      ...BODY,
                       fontFamily: ATLAS_SANS,
-                      color: token('color.text', '#292A2E'),
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
@@ -1358,11 +1331,10 @@ function DemandRowItem({
                   </Lozenge>
                   <span
                     style={{
+                      ...SMALL,
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: 6,
-                      fontSize: 12,
-                      lineHeight: '16px',
                       fontFamily: ATLAS_SANS,
                       color: token('color.text.subtle', '#44546F'),
                       whiteSpace: 'nowrap',
@@ -1438,9 +1410,7 @@ function DemandRowItem({
                         href={epicUrl}
                         onClick={(e) => e.stopPropagation()}
                         style={{
-                          fontSize: 12,
-                          fontWeight: 500,
-                          lineHeight: '16px',
+                          ...SMALL_STRONG,
                           fontFamily: ATLAS_SANS,
                           color: token('color.link', '#0C66E4'),
                           textDecoration: 'none',
@@ -1452,11 +1422,8 @@ function DemandRowItem({
                       <span
                         title={epic.summary}
                         style={{
-                          fontSize: 14,
-                          lineHeight: '20px',
-                          fontWeight: 400,
+                          ...BODY,
                           fontFamily: ATLAS_SANS,
-                          color: token('color.text', '#292A2E'),
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
@@ -1515,9 +1482,7 @@ function DemandRowItem({
                             href={storyUrl}
                             onClick={(e) => e.stopPropagation()}
                             style={{
-                              fontSize: 12,
-                              fontWeight: 500,
-                              lineHeight: '16px',
+                              ...SMALL_STRONG,
                               fontFamily: ATLAS_SANS,
                               color: token('color.link', '#0C66E4'),
                               textDecoration: 'none',
@@ -1529,11 +1494,8 @@ function DemandRowItem({
                           <span
                             title={story.summary}
                             style={{
-                              fontSize: 14,
-                              fontWeight: 400,
-                              lineHeight: '20px',
+                              ...BODY,
                               fontFamily: ATLAS_SANS,
-                              color: token('color.text', '#292A2E'),
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap',
@@ -1546,11 +1508,10 @@ function DemandRowItem({
                           </Lozenge>
                           <span
                             style={{
+                              ...SMALL,
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: 6,
-                              fontSize: 12,
-                              lineHeight: '16px',
                               fontFamily: ATLAS_SANS,
                               color: token('color.text.subtle', '#44546F'),
                               whiteSpace: 'nowrap',
@@ -1578,12 +1539,9 @@ function DemandRowItem({
               {!row.target_complete && (
                 <div
                   style={{
+                    ...LABEL,
                     margin: '8px 16px 0 28px',
-                    fontSize: 11,
-                    lineHeight: '16px',
-                    fontWeight: 400,
                     fontFamily: ATLAS_SANS,
-                    color: token('color.text.subtlest', '#626F86'),
                     fontStyle: 'italic',
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -1884,8 +1842,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
             >
               <span
                 style={{
-                  fontSize: 12,
-                  fontWeight: 500,
+                  ...SMALL_STRONG,
                   color: token('color.text.subtle', '#44546F'),
                   marginRight: 4,
                 }}
@@ -1907,8 +1864,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                     }
                   }}
                   style={{
-                    fontSize: 12,
-                    fontWeight: 500,
+                    ...SMALL_STRONG,
                     color: token('color.link', '#0C66E4'),
                     cursor: 'pointer',
                     marginLeft: 'auto',
@@ -1935,9 +1891,8 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           padding: `10px ${token('space.300', '24px')}`,
           borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
           background: token('elevation.surface.sunken', '#F7F8F9'),
+          ...SMALL_STRONG,
           fontFamily: ATLAS_SANS,
-          fontSize: 12,
-          fontWeight: 700,
           textTransform: 'none',
           letterSpacing: '0.04em',
           color: token('color.text.subtle', '#44546F'),
@@ -2002,7 +1957,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
               double-scrollbar that resulted from a 300px inner + outer body. */}
           <div>
             {visibleRows.length === 0 ? (
-              <div style={{ padding: 20, fontSize: 12, color: token('color.text.subtle', '#6B778C'), textAlign: 'center' }}>
+              <div style={{ ...SMALL, padding: 20, color: token('color.text.subtle', '#6B778C'), textAlign: 'center' }}>
                 Nothing in this filter.
               </div>
             ) : (
@@ -2048,9 +2003,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                   });
                 }}
                 style={{
-                  fontSize: 12,
-                  fontWeight: 500,
-                  lineHeight: '18px',
+                  ...SMALL_STRONG,
                   fontFamily: ATLAS_SANS,
                   color: token('color.link', '#0C66E4'),
                   background: 'transparent',
@@ -2078,9 +2031,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                   background: 'transparent',
                   border: 0,
                   cursor: 'pointer',
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: token('color.text', '#292A2E'),
+                  ...SMALL_STRONG,
                   textAlign: 'left',
                 }}
               >
@@ -2131,8 +2082,7 @@ function DeliveredRow({ row, projectKey }: { row: DemandRow; projectKey: string 
           ? `/project-hub/${projectKey}/allwork?issue=${row.initiative_key}`
           : `/producthub/backlog?selectedIssue=${row.initiative_key}`}
         style={{
-          fontSize: 11,
-          fontWeight: 700,
+          ...LABEL,
           color: token('color.link', '#0C66E4'),
           textDecoration: 'none',
           whiteSpace: 'nowrap',
@@ -2143,10 +2093,10 @@ function DeliveredRow({ row, projectKey }: { row: DemandRow; projectKey: string 
       <span title={row.title} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', '#292A2E') }}>
         {row.title}
       </span>
-      <span style={{ fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C') }}>
+      <span style={{ ...LABEL, color: token('color.text.subtle', '#6B778C') }}>
         {row.deliveredAt ? format(new Date(row.deliveredAt), 'dd MMM yyyy') : '—'}
       </span>
-      <span style={{ fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C') }}>
+      <span style={{ ...LABEL, color: token('color.text.subtle', '#6B778C') }}>
         {row.total} {row.total === 1 ? 'story' : 'stories'}
       </span>
       {onTime ? (

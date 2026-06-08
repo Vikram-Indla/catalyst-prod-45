@@ -28,6 +28,7 @@ import {
   EmptyState,
   toStatusCategory,
 } from '@/components/ads';
+import { SMALL, SMALL_STRONG, BODY, STRONG } from '../dashboardTypography';
 import { ResizableDynamicTable } from '../ResizableDynamicTable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
@@ -71,7 +72,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         background: 'transparent',
         border: 0,
         cursor: 'pointer',
-        fontSize: 12,
+        ...SMALL,
         color: token('color.link', '#0C66E4'),
         padding: 0,
         display: 'flex',
@@ -98,8 +99,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
   const headLabel = (label: string) => (
     <span
       style={{
-        fontSize: 12,
-        fontWeight: 700,
+        ...SMALL_STRONG,
         textTransform: 'none',
         letterSpacing: '0.04em',
         color: token('color.text.subtle', '#44546F'),
@@ -146,10 +146,9 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
+                ...STRONG,
                 color: token('color.link', '#0C66E4'),
-                fontWeight: 600,
                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                fontSize: 14,
                 whiteSpace: 'nowrap',
               }}
             >
@@ -174,10 +173,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    fontSize: 14,
-                    fontWeight: 500,
-                    color: token('color.text', '#292A2E'),
-                    lineHeight: '20px',
+                    ...STRONG,
                   }}
                 >
                   {d.title ?? ''}
@@ -199,9 +195,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               <UserAvatar size="small" name={assigneeName} src={d.assignee_avatar_url} />
               <span
                 style={{
-                  fontSize: 14,
-                  fontWeight: 500,
-                  color: token('color.text', '#292A2E'),
+                  ...STRONG,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
@@ -210,7 +204,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               </span>
             </div>
           ) : (
-            <span style={{ color: token('color.text.subtlest', '#6B6E76'), fontSize: 14 }}>—</span>
+            <span style={{ ...BODY, color: token('color.text.subtlest', '#6B6E76') }}>—</span>
           ),
         },
         {
@@ -219,8 +213,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
             <RelativeTime
               iso={d.created_at ?? d.jira_created_at ?? null}
               style={{
-                fontSize: 14,
-                fontWeight: 500,
+                ...STRONG,
                 color: token('color.text.subtle', '#44546F'),
                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                 whiteSpace: 'nowrap',
@@ -266,9 +259,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
           >
             <span
               style={{
-                fontSize: 14,
-                fontWeight: 600,
-                color: token('color.text', '#292A2E'),
+                ...STRONG,
               }}
             >
               {defects.length} defects
@@ -279,9 +270,9 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               const closed = defects.filter((d: any) => d.status === 'closed').length;
               return (
                 <>
-                  {open > 0 && <Lozenge appearance="inprogress">{open} OPEN</Lozenge>}
-                  {resolved > 0 && <Lozenge appearance="success">{resolved} RESOLVED</Lozenge>}
-                  {closed > 0 && <Lozenge appearance="default">{closed} CLOSED</Lozenge>}
+                  {open > 0 && <Lozenge appearance="inprogress">{open} Open</Lozenge>}
+                  {resolved > 0 && <Lozenge appearance="success">{resolved} Resolved</Lozenge>}
+                  {closed > 0 && <Lozenge appearance="default">{closed} Closed</Lozenge>}
                 </>
               );
             })()}

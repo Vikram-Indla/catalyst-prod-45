@@ -33,6 +33,7 @@ import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
 import { Lozenge, EmptyState } from '@/components/ads';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
+import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG, TITLE, H_NUM } from '../dashboardTypography';
 
 /**
  * Status palette — Atlaskit BOLDER category tokens. Bolder reads with
@@ -146,7 +147,7 @@ export default function ItemsByStatusWidget({
           }
           style={{
             background: 'transparent', border: 0, cursor: 'pointer',
-            fontSize: 12, color: token('color.link', '#0C66E4'),
+            ...SMALL, color: token('color.link', '#0C66E4'),
             padding: 0, display: 'flex', alignItems: 'center', gap: 4,
           }}
         >
@@ -218,22 +219,18 @@ function KpiHeadline({
     >
       <span
         style={{
-          fontSize: 11,
-          fontWeight: 500,
+          ...LABEL,
           textTransform: 'none',
           letterSpacing: '0.04em',
-          color: token('color.text.subtlest', '#626F86'),
         }}
       >
         {label}
       </span>
       <span
         style={{
-          fontSize: 24,
-          fontWeight: 600,
+          ...H_NUM,
           lineHeight: 1.1,
           color: accent ?? token('color.text', '#292A2E'),
-          fontVariantNumeric: 'tabular-nums',
         }}
       >
         {value}
@@ -264,25 +261,21 @@ function KpiHeadline({
       >
         <span
           style={{
-            fontSize: 11,
-            fontWeight: 500,
+            ...LABEL,
             textTransform: 'none',
             letterSpacing: '0.04em',
-            color: token('color.text.subtlest', '#626F86'),
           }}
         >
           Blocked
         </span>
         <span
           style={{
-            fontSize: 24,
-            fontWeight: 600,
+            ...H_NUM,
             lineHeight: 1.1,
             color:
               blocked > 0
                 ? 'var(--ds-text-accent-red-bolder, #AE2A19)'
                 : token('color.text', '#292A2E'),
-            fontVariantNumeric: 'tabular-nums',
           }}
         >
           {blocked}
@@ -325,7 +318,7 @@ function BarRow({ bucket: b, total }: { bucket: Bucket; total: number }) {
       <span
         style={{
           width: 96,
-          fontSize: 14,
+          ...STRONG,
           fontWeight: 500,
           color: C[b.key].label,
           letterSpacing: '-0.005em',
@@ -358,9 +351,7 @@ function BarRow({ bucket: b, total }: { bucket: Bucket; total: number }) {
         style={{
           minWidth: 48,
           textAlign: 'right',
-          fontSize: 14,
-          fontWeight: 600,
-          color: token('color.text', '#292A2E'),
+          ...STRONG,
           fontVariantNumeric: 'tabular-nums',
         }}
       >
@@ -370,7 +361,7 @@ function BarRow({ bucket: b, total }: { bucket: Bucket; total: number }) {
         style={{
           minWidth: 40,
           textAlign: 'right',
-          fontSize: 12,
+          ...SMALL_STRONG,
           fontWeight: 500,
           color: token('color.text.subtle', '#626F86'),
           fontVariantNumeric: 'tabular-nums',
@@ -419,7 +410,7 @@ function BlockedBreakdown({
       >
         <span
           style={{
-            fontSize: 11,
+            ...LABEL,
             fontWeight: 600,
             textTransform: 'none',
             letterSpacing: '0.04em',
@@ -430,9 +421,7 @@ function BlockedBreakdown({
         </span>
         <span
           style={{
-            fontSize: 12,
-            fontWeight: 600,
-            color: token('color.text', '#292A2E'),
+            ...SMALL_STRONG,
             fontVariantNumeric: 'tabular-nums',
           }}
         >
@@ -453,9 +442,7 @@ function BlockedBreakdown({
             <Lozenge appearance="removed">{r.label}</Lozenge>
             <span
               style={{
-                fontSize: 14,
-                fontWeight: 600,
-                color: token('color.text', '#292A2E'),
+                ...STRONG,
                 fontVariantNumeric: 'tabular-nums',
               }}
             >

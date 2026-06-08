@@ -28,6 +28,7 @@ import {
   EmptyState,
   toStatusCategory,
 } from '@/components/ads';
+import { SMALL, SMALL_STRONG, BODY, STRONG } from '../dashboardTypography';
 import { ResizableDynamicTable } from '../ResizableDynamicTable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
@@ -72,7 +73,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         background: 'transparent',
         border: 0,
         cursor: 'pointer',
-        fontSize: 12,
+        ...SMALL,
         color: token('color.link', '#0C66E4'),
         padding: 0,
         display: 'flex',
@@ -96,8 +97,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
   const headLabel = (label: string) => (
     <span
       style={{
-        fontSize: 12,
-        fontWeight: 700,
+        ...SMALL_STRONG,
         textTransform: 'none',
         letterSpacing: '0.04em',
         color: token('color.text.subtle', '#44546F'),
@@ -147,10 +147,9 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
+                ...STRONG,
                 color: token('color.link', '#0C66E4'),
-                fontWeight: 600,
                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                fontSize: 14,
                 whiteSpace: 'nowrap',
               }}
             >
@@ -178,10 +177,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    fontSize: 14,
-                    fontWeight: 500,
-                    color: token('color.text', '#292A2E'),
-                    lineHeight: '20px',
+                    ...STRONG,
                   }}
                 >
                   {inc.summary ?? ''}
@@ -209,9 +205,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               />
               <span
                 style={{
-                  fontSize: 14,
-                  fontWeight: 500,
-                  color: token('color.text', '#292A2E'),
+                  ...STRONG,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
@@ -220,7 +214,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               </span>
             </div>
           ) : (
-            <span style={{ color: token('color.text.subtlest', '#6B6E76'), fontSize: 14 }}>—</span>
+            <span style={{ ...BODY, color: token('color.text.subtlest', '#6B6E76') }}>—</span>
           ),
         },
         {
@@ -229,8 +223,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
             <RelativeTime
               iso={inc.jira_created_at ?? inc.created_at ?? null}
               style={{
-                fontSize: 14,
-                fontWeight: 500,
+                ...STRONG,
                 color: token('color.text.subtle', '#44546F'),
                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                 whiteSpace: 'nowrap',
@@ -281,9 +274,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
           >
             <span
               style={{
-                fontSize: 14,
-                fontWeight: 600,
-                color: token('color.text', '#292A2E'),
+                ...STRONG,
               }}
             >
               {incidents.length} incidents
@@ -293,8 +284,8 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               const closed = incidents.filter((d: any) => isClosed(d.status)).length;
               return (
                 <>
-                  {open > 0 && <Lozenge appearance="inprogress">{open} OPEN</Lozenge>}
-                  {closed > 0 && <Lozenge appearance="success">{closed} CLOSED</Lozenge>}
+                  {open > 0 && <Lozenge appearance="inprogress">{open} Open</Lozenge>}
+                  {closed > 0 && <Lozenge appearance="success">{closed} Closed</Lozenge>}
                 </>
               );
             })()}
