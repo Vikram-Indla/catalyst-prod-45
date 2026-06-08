@@ -14,6 +14,7 @@ import { useConversations } from '@/hooks/chat/useConversations';
 import { useMessages } from '@/hooks/chat/useMessages';
 import { IconRail, type RailKey } from './main/IconRail';
 import { ConversationList } from './main/ConversationList';
+import { PeopleList } from './main/PeopleList';
 import { ConversationHeader } from './main/ConversationHeader';
 import { MessageStream } from './main/MessageStream';
 import { MessageComposer } from './main/MessageComposer';
@@ -52,16 +53,26 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
     else setLocalActiveId(id);
   };
 
+  const handleDmCreated = (id: string) => {
+    if (onSelectConversation) onSelectConversation(id);
+    else setLocalActiveId(id);
+    setRailKey('dms');
+  };
+
   return (
     <div className="cc-main">
       <IconRail activeKey={railKey} onSelect={setRailKey} />
 
-      <ConversationList
-        conversations={conversations}
-        isLoading={conversationsLoading}
-        activeConversationId={resolvedActiveId}
-        onSelectConversation={handleSelect}
-      />
+      {railKey === 'people' ? (
+        <PeopleList onConversationCreated={handleDmCreated} />
+      ) : (
+        <ConversationList
+          conversations={conversations}
+          isLoading={conversationsLoading}
+          activeConversationId={resolvedActiveId}
+          onSelectConversation={handleSelect}
+        />
+      )}
 
       <div className="cc-conv">
         <ConversationHeader conversation={activeConversation} />
