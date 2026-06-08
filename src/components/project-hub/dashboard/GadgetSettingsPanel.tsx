@@ -31,6 +31,8 @@ import {
   type GadgetType,
 } from '@/hooks/useGadgetSettings';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { getColumnsForGadget, getDefaultColumns, type GadgetColumnDef } from './gadgetColumns';
+import { GripVertical, Trash2 } from '@/lib/atlaskit-icons';
 
 const GADGET_DATE_FIELD: Record<GadgetType, string> = {
   demand:    'ph_requests.target_complete + release cascade',
@@ -550,6 +552,77 @@ export default function GadgetSettingsPanel({
             </div>
           </div>
         )}
+
+        {/* ── NUMBER OF RESULTS ── */}
+        <Field label="Number of results">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input
+              type="number"
+              min={1}
+              max={50}
+              value={draft.numResults ?? 10}
+              onChange={(e) => setField('numResults', Math.max(1, Math.min(50, Number(e.currentTarget.value) || 10)))}
+              style={{
+                width: 64,
+                height: 32,
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                borderRadius: 3,
+                padding: '0 8px',
+                fontSize: 14,
+                background: 'var(--ds-surface-sunken, #FAFBFC)',
+                color: 'var(--ds-text, #172B4D)',
+              }}
+            />
+            <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #7A869A)' }}>max 50</span>
+          </div>
+        </Field>
+
+        {/* ── COLUMNS TO DISPLAY ── */}
+        <ColumnsSection
+          gadgetType={gadgetType}
+          columns={draft.columns}
+          onChange={(cols) => setField('columns', cols)}
+        />
+
+        <div style={{ height: '0.5px', background: 'var(--ds-border, #EBECF0)' }} />
+
+        {/* ── AUTO REFRESH ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={draft.autoRefresh ?? false}
+              onChange={(e) => setField('autoRefresh', e.currentTarget.checked)}
+              style={{ width: 14, height: 14, accentColor: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}
+            />
+            <span style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>
+              Auto refresh
+            </span>
+          </label>
+          {draft.autoRefresh && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 22 }}>
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #7A869A)' }}>Update every</span>
+              <select
+                value={draft.autoRefreshMinutes ?? 15}
+                onChange={(e) => setField('autoRefreshMinutes', Number(e.currentTarget.value))}
+                style={{
+                  height: 28,
+                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  borderRadius: 3,
+                  padding: '0 8px',
+                  fontSize: 12,
+                  background: 'var(--ds-surface, #FFFFFF)',
+                  color: 'var(--ds-text, #172B4D)',
+                }}
+              >
+                <option value={15}>15 minutes</option>
+                <option value={30}>30 minutes</option>
+                <option value={60}>1 hour</option>
+                <option value={120}>2 hours</option>
+              </select>
+            </div>
+          )}
+        </div>
 
         {/* Gadget-specific tail */}
         <GadgetSpecific
@@ -1238,4 +1311,158 @@ function GadgetSpecific({
   }
 
   return null;
+}
+
+// ─── Columns to display ───────────────────────────────────────────────────
+
+function ColumnsSection({
+  gadgetType,
+  columns,
+  onChange,
+}: {
+  gadgetType: GadgetType;
+  columns: string[] | null;
+  onChange: (cols: string[] | null) => void;
+}) {
+  const allDefs = getColumnsForGadget(gadgetType);
+  if (!allDefs) return null;
+
+  const defaults = getDefaultColumns(gadgetType);
+  const active = columns ?? defaults;
+  const defMap = new Map(allDefs.map((d) => [d.id, d]));
+  const available = allDefs.filter((d) => !active.includes(d.id));
+
+  const [addOpen, setAddOpen] = useState(false);
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+
+  const remove = (id: string) => {
+    const next = active.filter((c) => c !== id);
+    onChange(next.length === defaults.length && next.every((c, i) => c === defaults[i]) ? null : next);
+  };
+
+  const add = (id: string) => {
+    onChange([...active, id]);
+    setAddOpen(false);
+  };
+
+  const reorder = (from: number, to: number) => {
+    const next = [...active];
+    const [item] = next.splice(from, 1);
+    next.splice(to, 0, item);
+    onChange(next.every((c, i) => c === defaults[i]) ? null : next);
+  };
+
+  const resetToDefault = () => onChange(null);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: 10, fontWeight: 653, textTransform: 'none', color: 'var(--ds-text-subtlest, #7A869A)', letterSpacing: '0.04em' }}>
+          Columns to display
+        </span>
+        {columns != null && (
+          <button type="button" onClick={resetToDefault}
+            style={{ background: 'transparent', border: 0, color: 'var(--ds-link, #0052CC)', cursor: 'pointer', fontSize: 10, fontWeight: 600 }}>
+            Default columns
+          </button>
+        )}
+      </div>
+
+      <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, background: 'var(--ds-surface, #FFFFFF)', overflow: 'hidden' }}>
+        {active.map((colId, idx) => {
+          const def = defMap.get(colId);
+          if (!def) return null;
+          return (
+            <div
+              key={colId}
+              draggable
+              onDragStart={() => setDragIdx(idx)}
+              onDragOver={(e) => { e.preventDefault(); }}
+              onDrop={() => { if (dragIdx != null && dragIdx !== idx) reorder(dragIdx, idx); setDragIdx(null); }}
+              onDragEnd={() => setDragIdx(null)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '6px 8px',
+                borderBottom: idx < active.length - 1 ? '1px solid var(--ds-border, #EBECF0)' : 'none',
+                background: dragIdx === idx ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
+                cursor: 'grab',
+                fontSize: 13,
+                color: 'var(--ds-text, #172B4D)',
+              }}
+            >
+              <GripVertical size={12} style={{ color: 'var(--ds-text-subtlest, #7A869A)', flexShrink: 0 }} />
+              <span style={{ flex: 1 }}>{def.label}</span>
+              {active.length > 1 && (
+                <button type="button" onClick={() => remove(colId)}
+                  style={{ background: 'transparent', border: 0, cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #7A869A)', display: 'inline-flex' }}
+                  aria-label={`Remove ${def.label} column`}>
+                  <Trash2 size={12} />
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #7A869A)', fontStyle: 'italic' }}>
+        Drag-drop to reorder the fields.
+      </span>
+
+      {available.length > 0 && (
+        <div style={{ position: 'relative' }}>
+          <button type="button" onClick={() => setAddOpen((o) => !o)}
+            style={{
+              width: '100%',
+              height: 32,
+              border: '1px dashed var(--ds-border, #DFE1E6)',
+              borderRadius: 3,
+              background: 'var(--ds-surface-sunken, #FAFBFC)',
+              fontSize: 12,
+              color: 'var(--ds-link, #0052CC)',
+              cursor: 'pointer',
+              fontWeight: 500,
+            }}>
+            + Add column
+          </button>
+          {addOpen && (
+            <div style={{
+              position: 'absolute',
+              top: 'calc(100% + 4px)',
+              left: 0,
+              right: 0,
+              zIndex: 50,
+              background: 'var(--ds-surface, #FFFFFF)',
+              border: '1px solid var(--ds-border, #DFE1E6)',
+              borderRadius: 4,
+              boxShadow: '0 8px 24px rgba(9,30,66,.18)',
+              maxHeight: 180,
+              overflowY: 'auto',
+            }}>
+              {available.map((col) => (
+                <button key={col.id} type="button" onClick={() => add(col.id)}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    padding: '6px 10px',
+                    border: 0,
+                    background: 'transparent',
+                    textAlign: 'left',
+                    fontSize: 12,
+                    color: 'var(--ds-text, #172B4D)',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                >
+                  {col.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }

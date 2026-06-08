@@ -28,6 +28,12 @@ export interface GadgetSettings {
   dateFrom: string | null;  // ISO 'YYYY-MM-DD'
   dateTo: string | null;
   dateLabel: string;
+  // Column management (Jira configure panel parity)
+  columns: string[] | null; // null = use gadget default columns
+  numResults: number; // max rows to display (1-50, default 10)
+  // Auto-refresh
+  autoRefresh: boolean;
+  autoRefreshMinutes: number; // 15, 30, 60, 120
 }
 
 export function resolvePreset(
@@ -68,6 +74,10 @@ export const DEFAULT_GADGET_SETTINGS: GadgetSettings = {
   dateFrom: _initialQuarter.dateFrom,
   dateTo: _initialQuarter.dateTo,
   dateLabel: _initialQuarter.dateLabel,
+  columns: null,
+  numResults: 10,
+  autoRefresh: false,
+  autoRefreshMinutes: 15,
 };
 
 const ALL_GADGET_TYPES: GadgetType[] = [
@@ -121,7 +131,10 @@ export function isDefaultSettings(s: GadgetSettings): boolean {
     s.itemTypeFilter.length === 0 &&
     s.priorityFilter.length === 0 &&
     Object.keys(s.gadgetSpecific ?? {}).length === 0 &&
-    (s.datePreset ?? 'thisQuarter') === 'thisQuarter'
+    (s.datePreset ?? 'thisQuarter') === 'thisQuarter' &&
+    s.columns == null &&
+    (s.numResults ?? 10) === 10 &&
+    !s.autoRefresh
   );
 }
 
