@@ -42,6 +42,8 @@ import Tooltip from '@atlaskit/tooltip';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
+import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
+import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box';
 import { SectionMessage } from '@/components/ads';
 import { useWidgetEditState } from './DashboardWidgetGrid';
 import { downloadWidgetAsPdf } from '@/lib/widget-pdf';
@@ -143,7 +145,8 @@ export default function WidgetWrapper({
   const isSoloed = !!soloWidgetId && soloWidgetId === widgetId;
   const otherIsSoloed = !!soloWidgetId && soloWidgetId !== widgetId;
 
-  // pragmatic-drag-and-drop wiring (unchanged)
+  // pragmatic-drag-and-drop wiring with closest-edge drop indicator
+  const [closestEdge, setClosestEdge] = useState<Edge | null>(null);
   useEffect(() => {
     if (!isEditing || !widgetId || !cardRef.current) return;
     const el = cardRef.current;
@@ -156,12 +159,23 @@ export default function WidgetWrapper({
         element: el,
         canDrop: ({ source }) =>
           source.data.kind === 'dashboard-widget' && source.data.widgetId !== widgetId,
-        getData: () => ({ widgetId, kind: 'dashboard-widget' }),
+        getData: ({ input, element }) =>
+          attachClosestEdge(
+            { widgetId, kind: 'dashboard-widget' },
+            { input, element, allowedEdges: ['left', 'right'] },
+          ),
+        getIsSticky: () => true,
+        onDragEnter: (args) => setClosestEdge(extractClosestEdge(args.self.data)),
+        onDrag: (args) => setClosestEdge(extractClosestEdge(args.self.data)),
+        onDragLeave: () => setClosestEdge(null),
         onDrop: ({ source, self }) => {
           const sourceId = source.data.widgetId as string | undefined;
           const targetId = self.data.widgetId as string | undefined;
+          const edge = extractClosestEdge(self.data);
+          setClosestEdge(null);
           if (!sourceId || !targetId || sourceId === targetId) return;
-          reorderRaw?.(sourceId, targetId, 'before');
+          const side: 'before' | 'after' = edge === 'right' ? 'after' : 'before';
+          reorderRaw?.(sourceId, targetId, side);
         },
       }),
     );
@@ -210,6 +224,7 @@ export default function WidgetWrapper({
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
+        position: 'relative',
         minWidth: 0,
         width: '100%',
         maxWidth: '100%',
@@ -504,6 +519,7 @@ export default function WidgetWrapper({
           <span>Last refreshed {lastRefreshed ? formatTimeAgo(lastRefreshed) : 'just now'}</span>
         </div>
       )}
+      {isEditing && closestEdge && <DropIndicator edge={closestEdge} gap="8px" />}
     </div>
   );
 }
