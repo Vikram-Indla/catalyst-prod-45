@@ -22,6 +22,7 @@ import { useConversations } from '@/hooks/chat/useConversations';
 import type { ChatConversation, ChatPresence } from '@/types/chat';
 import catalystChatIcon from '@/assets/catalyst-chat-icon.svg';
 import { CatyPanel } from './CatyPanel';
+import { DockDirectory } from './DockDirectory';
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import './dock.css';
 
@@ -223,27 +224,11 @@ export function ChatDock({
       {/* Messages mode — existing functionality unchanged */}
       {dockMode === 'messages' && (
         <>
-          <div className="cc-dock__list">
-            {listConversations.length === 0 ? (
-              <div className="cc-dock__empty">No conversations yet. Start a new message.</div>
-            ) : (
-              listConversations.map((c) => (
-                <button key={c.id} type="button" className="cc-conv" onClick={() => onSelect(c.id)}>
-                  <ConvGlyph conversation={c} />
-                  <div className="cc-conv__body">
-                    <div className="cc-conv__top">
-                      <span className="cc-conv__name">{c.kind === 'channel' ? `# ${c.title}` : c.title}</span>
-                      <span className="cc-conv__time">{relativeTime(c.lastMessageAt)}</span>
-                    </div>
-                    <div className="cc-conv__top">
-                      <span className="cc-conv__preview">{c.lastMessagePreview ?? 'No messages yet'}</span>
-                      {c.unreadCount > 0 && <span className="cc-badge">{c.unreadCount > 99 ? '99+' : c.unreadCount}</span>}
-                    </div>
-                  </div>
-                </button>
-              ))
-            )}
-          </div>
+          <DockDirectory
+            conversations={listConversations}
+            activeId={activeId}
+            onSelectConversation={onSelect}
+          />
 
           <div className="cc-tabs">
             {openConversationIds.map((id) => {
