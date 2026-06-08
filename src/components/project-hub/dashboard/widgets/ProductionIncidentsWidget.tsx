@@ -19,6 +19,7 @@ import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
 import PaginationFooter from '../PaginationFooter';
+import { resolveColumns } from '../gadgetColumns';
 import { useDashboardIncidents } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
@@ -110,15 +111,25 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
       {label}
     </span>
   );
+  const activeColumns = resolveColumns('incidents', settings.columns ?? null);
+
+  const allHeadCells = [
+    { key: 'priority', content: headLabel('P'),          isSortable: true },
+    { key: 'key',      content: headLabel('Key'),        isSortable: true },
+    { key: 'title',    content: headLabel('Title'),      isSortable: false },
+    { key: 'status',   content: headLabel('Status'),     isSortable: true },
+    { key: 'assignee', content: headLabel('Assignee'),   isSortable: false },
+    { key: 'started',  content: headLabel('Started'),    isSortable: true },
+    { key: 'reporter', content: headLabel('Reporter'),   isSortable: false },
+    { key: 'severity', content: headLabel('Severity'),   isSortable: true },
+    { key: 'created',  content: headLabel('Created'),    isSortable: true },
+    { key: 'updated',  content: headLabel('Updated'),    isSortable: true },
+    { key: 'fixVersion', content: headLabel('Fix ver'),  isSortable: false },
+    { key: 'resolution', content: headLabel('Resolution'), isSortable: false },
+  ];
+
   const head = {
-    cells: [
-      { key: 'priority', content: headLabel('P'),         isSortable: true },
-      { key: 'key',      content: headLabel('Key'),       isSortable: true },
-      { key: 'title',    content: headLabel('Title'),     isSortable: false },
-      { key: 'status',   content: headLabel('Status'),    isSortable: true },
-      { key: 'assignee', content: headLabel('Assignee'),  isSortable: false },
-      { key: 'started',  content: headLabel('Started'),   isSortable: true },
-    ],
+    cells: allHeadCells.filter((c) => activeColumns.includes(c.key)),
   };
 
   const isClosed = (s?: string | null) => {
@@ -134,7 +145,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
     const statusLabel = (inc.status || 'open').replace(/_/g, ' ');
     return {
       key: inc.id,
-      cells: [
+      cells: (([
         {
           key: 'priority',
           content: (
@@ -251,7 +262,14 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
             );
           })(),
         },
-      ],
+        // Extra columns (hidden by default, shown when user adds via column picker)
+        { key: 'reporter', content: <span style={{ ...BODY }}>{inc.reporter_display_name ?? '—'}</span> },
+        { key: 'severity', content: <span style={{ ...BODY }}>{inc.severity ?? '—'}</span> },
+        { key: 'created',  content: <span style={{ ...BODY, fontFamily: 'monospace' }}>{inc.created_at ? new Date(inc.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '—'}</span> },
+        { key: 'updated',  content: <span style={{ ...BODY, fontFamily: 'monospace' }}>{inc.updated_at ? new Date(inc.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '—'}</span> },
+        { key: 'fixVersion', content: <span style={{ ...BODY }}>{inc.fix_versions?.[0] ?? '—'}</span> },
+        { key: 'resolution', content: <span style={{ ...BODY }}>{inc.resolution ?? '—'}</span> },
+      ] as any[]).filter((c) => activeColumns.includes(c.key))),
     };
   });
 

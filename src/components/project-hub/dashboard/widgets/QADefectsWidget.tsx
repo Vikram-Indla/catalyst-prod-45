@@ -19,6 +19,7 @@ import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
 import PaginationFooter from '../PaginationFooter';
+import { resolveColumns } from '../gadgetColumns';
 import { useDashboardDefects } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
@@ -112,15 +113,25 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
       {label}
     </span>
   );
+  const activeColumns = resolveColumns('qa', settings.columns ?? null);
+
+  const allHeadCells = [
+    { key: 'priority', content: headLabel('P'),        isSortable: true },
+    { key: 'key',      content: headLabel('Key'),      isSortable: true },
+    { key: 'title',    content: headLabel('Title'),    isSortable: false },
+    { key: 'status',   content: headLabel('Status'),   isSortable: true },
+    { key: 'assignee', content: headLabel('Assignee'), isSortable: false },
+    { key: 'age',      content: headLabel('Age'),      isSortable: true },
+    { key: 'reporter', content: headLabel('Reporter'), isSortable: false },
+    { key: 'created',  content: headLabel('Created'),  isSortable: true },
+    { key: 'updated',  content: headLabel('Updated'),  isSortable: true },
+    { key: 'fixVersion', content: headLabel('Fix ver'), isSortable: false },
+    { key: 'labels',   content: headLabel('Labels'),   isSortable: false },
+    { key: 'resolution', content: headLabel('Resolution'), isSortable: false },
+  ];
+
   const head = {
-    cells: [
-      { key: 'priority', content: headLabel('P'),        isSortable: true },
-      { key: 'key',      content: headLabel('Key'),      isSortable: true },
-      { key: 'title',    content: headLabel('Title'),    isSortable: false },
-      { key: 'status',   content: headLabel('Status'),   isSortable: true },
-      { key: 'assignee', content: headLabel('Assignee'), isSortable: false },
-      { key: 'age',      content: headLabel('Age'),      isSortable: true },
-    ],
+    cells: allHeadCells.filter((c) => activeColumns.includes(c.key)),
   };
 
   // No slice cap (Apr 26, 2026) — outer WidgetWrapper body provides a
@@ -133,7 +144,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
     const priorityValue = d.priority ?? d.severity ?? null;
     return {
       key: d.id,
-      cells: [
+      cells: (([
         {
           key: 'priority',
           content: (
@@ -241,7 +252,14 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
             );
           })(),
         },
-      ],
+        // Extra columns (hidden by default, shown when user adds via column picker)
+        { key: 'reporter', content: <span style={{ ...BODY }}>{d.reporter_display_name ?? '—'}</span> },
+        { key: 'created', content: <span style={{ ...BODY, fontFamily: 'monospace' }}>{d.created_at ? new Date(d.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '—'}</span> },
+        { key: 'updated', content: <span style={{ ...BODY, fontFamily: 'monospace' }}>{d.updated_at ? new Date(d.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '—'}</span> },
+        { key: 'fixVersion', content: <span style={{ ...BODY }}>{d.fix_versions?.[0] ?? '—'}</span> },
+        { key: 'labels', content: <span style={{ ...BODY }}>{d.labels?.join(', ') ?? '—'}</span> },
+        { key: 'resolution', content: <span style={{ ...BODY }}>{d.resolution ?? '—'}</span> },
+      ] as any[]).filter((c) => activeColumns.includes(c.key))),
     };
   });
 
