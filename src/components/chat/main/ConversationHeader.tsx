@@ -41,19 +41,48 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
 
   const visible = members.slice(0, MAX_VISIBLE_MEMBERS);
   const overflow = members.length - visible.length;
-  const summarizeLabel = conversation.kind === 'ticket' ? 'Ask Caty — summarize' : 'Ask Caty';
+  const isTicket = conversation.kind === 'ticket';
+  const isChannel = conversation.kind === 'channel';
+  const isDm = conversation.kind === 'dm';
+  const summarizeLabel = isTicket ? 'Ask Caty — summarize' : 'Ask Caty';
+
+  const glyph = isTicket ? (
+    <span className="cc-typesq cc-conv-head__typesq">
+      <JiraIssueTypeIcon type="Story" size={12} />
+    </span>
+  ) : isChannel ? (
+    <span
+      className="cc-conv-head__typesq"
+      style={{
+        width: 28,
+        height: 28,
+        borderRadius: 6,
+        background: 'var(--ds-background-accent-purple-bolder, #6E5DC6)',
+        color: 'var(--ds-text-inverse, #FFFFFF)',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 700,
+        fontSize: 14,
+      }}
+    >#</span>
+  ) : (
+    <Avatar name={conversation.title} seed={conversation.id} />
+  );
+
+  const titleText = isChannel
+    ? `#${conversation.title.replace(/^#\s*/, '')}`
+    : conversation.title;
 
   return (
     <div className="cc-conv-head">
-      <span className="cc-typesq cc-conv-head__typesq">
-        <JiraIssueTypeIcon type="Story" size={12} />
-      </span>
+      {glyph}
       <div className="cc-conv-title">
         {conversation.ticketKey ? (
           <span className="cc-conv-title__k">{conversation.ticketKey}</span>
         ) : null}
         <span className="cc-conv-title__s">
-          {conversation.ticketKey ? ` · ${conversation.title}` : conversation.title}
+          {conversation.ticketKey ? ` · ${conversation.title}` : titleText}
         </span>
       </div>
 
@@ -74,14 +103,16 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
         </div>
       ) : null}
 
-      <button type="button" className="cc-caty-btn" onClick={onAskCaty} aria-label={summarizeLabel}>
-        <span className="cc-caty-btn__inner">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--ds-icon-discovery, #6E5DC6)" strokeWidth={2}>
-            <path d="M12 3l1.9 5.8L20 10l-5.1 1.9L12 18l-1.9-6.1L5 10l5.1-1.2z" />
-          </svg>
-          {summarizeLabel}
-        </span>
-      </button>
+      {!isDm && (
+        <button type="button" className="cc-caty-btn" onClick={onAskCaty} aria-label={summarizeLabel}>
+          <span className="cc-caty-btn__inner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ds-icon-discovery, #6E5DC6)" strokeWidth={2}>
+              <path d="M12 3l1.9 5.8L20 10l-5.1 1.9L12 18l-1.9-6.1L5 10l5.1-1.2z" />
+            </svg>
+            {summarizeLabel}
+          </span>
+        </button>
+      )}
 
       <DropdownMenu
         trigger={({ triggerRef, ...props }) => (
