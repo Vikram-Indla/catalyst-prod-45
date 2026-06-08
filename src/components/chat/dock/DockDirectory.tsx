@@ -15,10 +15,12 @@ import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import { useStartDm } from '@/hooks/chat/useStartDm';
 import { useStartProjectChannel } from '@/hooks/chat/useStartProjectChannel';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import type { ChatConversation, ChatPerson, ChatPresence } from '@/types/chat';
 import { Avatar } from '@/components/chat/main/avatar';
+import { NewChannelModal } from './NewChannelModal';
 
 const PRESENCE_LABEL: Record<ChatPresence, string> = {
   available: 'Active now',
@@ -56,11 +58,14 @@ interface DockDirectoryProps {
 
 export function DockDirectory({ conversations, activeId, onSelectConversation }: DockDirectoryProps) {
   const { user } = useAuth();
+  const { role } = useUserRole();
+  const isAdmin = role === 'admin';
   const { groups, isLoading } = useChatPeople();
   const startDm = useStartDm();
   const startChannel = useStartProjectChannel();
   const [query, setQuery] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [newChannelOpen, setNewChannelOpen] = useState(false);
 
   // Caller's joined projects (for the Channels section)
   const { data: myProjects } = useQuery({
@@ -133,23 +138,33 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const projects = myProjects ?? [];
-    if (!q) {
-      return {
-        conversations: conversations.filter((c) => !c.isArchived),
-        people: people.slice(0, 50),
-        projects,
-      };
-    }
+    const matchQ = (c: typeof conversations[number]) =>
+      !q || c.title.toLowerCase().includes(q) || (c.lastMessagePreview ?? '').toLowerCase().includes(q);
+    const live = conversations.filter((c) => !c.isArchived && matchQ(c));
+    const dms = live.filter((c) => c.kind === 'dm');
+    const channelConvs = live.filter((c) => c.kind === 'channel');
+    const tickets = live.filter((c) => c.kind === 'ticket');
+
+    // Merge project list with existing channel conversations
+    const channelByProjectKey = new Map<string, typeof conversations[number]>();
+    channelConvs.forEach((c) => {
+      if (c.projectKey) channelByProjectKey.set(c.projectKey, c);
+    });
+
+    const channelRows = projects
+      .filter((p) => !q || p.key.toLowerCase().includes(q) || (p.name ?? '').toLowerCase().includes(q))
+      .map((p) => ({
+        project: p,
+        conversation: channelByProjectKey.get(p.key) ?? null,
+      }));
+
     return {
-      conversations: conversations.filter((c) =>
-        !c.isArchived && (c.title.toLowerCase().includes(q) || (c.lastMessagePreview ?? '').toLowerCase().includes(q)),
-      ),
-      people: people.filter((p) =>
-        p.name.toLowerCase().includes(q) || (p.role ?? '').toLowerCase().includes(q),
-      ),
-      projects: projects.filter((p) =>
-        p.key.toLowerCase().includes(q) || (p.name ?? '').toLowerCase().includes(q),
-      ),
+      dms,
+      tickets,
+      channelRows,
+      people: q
+        ? people.filter((pp) => pp.name.toLowerCase().includes(q) || (pp.role ?? '').toLowerCase().includes(q))
+        : people.slice(0, 50),
     };
   }, [query, conversations, people, myProjects]);
 
@@ -182,6 +197,14 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
 
   return (
     <div className="cc-dir">
+      {/* Admin-only ad-hoc channel creation modal */}
+      {isAdmin && (
+        <NewChannelModal
+          isOpen={newChannelOpen}
+          onClose={() => setNewChannelOpen(false)}
+          onCreated={(id) => onSelectConversation(id)}
+        />
+      )}
       {/* Search */}
       <div className="cc-dir__search">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -201,11 +224,11 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
       </div>
 
       <div className="cc-dir__scroll">
-        {/* Direct messages */}
-        {filtered.conversations.length > 0 && (
+        {/* Direct messages — kind=dm only */}
+        {filtered.dms.length > 0 && (
           <>
             <div className="cc-dir__section">Direct messages</div>
-            {filtered.conversations.map((c) => (
+            {filtered.dms.map((c) => (
               <button
                 key={c.id}
                 type="button"
@@ -215,7 +238,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
                 <Avatar name={c.title} seed={c.id} className="cc-dir__avatar" />
                 <div className="cc-dir__body">
                   <div className="cc-dir__top">
-                    <span className="cc-dir__name">{c.kind === 'channel' ? `# ${c.title}` : c.title}</span>
+                    <span className="cc-dir__name">{c.title}</span>
                     <span className="cc-dir__time">{relativeShort(c.lastMessageAt)}</span>
                   </div>
                   <div className="cc-dir__preview">
@@ -230,34 +253,103 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
           </>
         )}
 
-        {/* Channels (projects) */}
-        {filtered.projects.length > 0 && (
+        {/* Tickets — kind=ticket */}
+        {filtered.tickets.length > 0 && (
+          <>
+            <div className="cc-dir__section">Tickets<span className="cc-dir__section-count">{filtered.tickets.length}</span></div>
+            {filtered.tickets.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                className={`cc-dir__row${activeId === c.id ? ' cc-dir__row--active' : ''}`}
+                onClick={() => onSelectConversation(c.id)}
+              >
+                <span className="cc-dir__channel-glyph" style={{ background: 'var(--ds-background-brand-bold, #0C66E4)', fontSize: 11 }}>
+                  {(c.ticketKey ?? 'TK').slice(0, 5)}
+                </span>
+                <div className="cc-dir__body">
+                  <div className="cc-dir__top">
+                    <span className="cc-dir__name">{c.ticketKey ?? c.title}</span>
+                    <span className="cc-dir__time">{relativeShort(c.lastMessageAt)}</span>
+                  </div>
+                  <div className="cc-dir__preview">{c.lastMessagePreview ?? c.title}</div>
+                </div>
+                {c.unreadCount > 0 && (
+                  <span className="cc-dir__unread">{c.unreadCount > 99 ? '99+' : c.unreadCount}</span>
+                )}
+              </button>
+            ))}
+          </>
+        )}
+
+        {/* Channels (projects) — admin can create new ad-hoc channels via the
+            + button in the section header. Project channels are auto-created
+            by the ph_projects INSERT trigger and appear here automatically. */}
+        {(filtered.channelRows.length > 0 || isAdmin) && (
           <>
             <div className="cc-dir__section">
               Channels
-              <span className="cc-dir__section-count">{filtered.projects.length}</span>
+              {filtered.channelRows.length > 0 && (
+                <span className="cc-dir__section-count">{filtered.channelRows.length}</span>
+              )}
+              {isAdmin && (
+                <button
+                  type="button"
+                  className="cc-dir__section-add"
+                  aria-label="New channel"
+                  title="New channel (admin)"
+                  onClick={() => setNewChannelOpen(true)}
+                  style={{
+                    marginLeft: 'auto',
+                    width: 22,
+                    height: 22,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'transparent',
+                    border: 'none',
+                    borderRadius: 4,
+                    cursor: 'pointer',
+                    color: 'var(--ds-text-subtle, #44546F)',
+                    padding: 0,
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+              )}
             </div>
-            {filtered.projects.map((p) => (
+            {filtered.channelRows.map(({ project: p, conversation: c }) => (
               <button
                 key={p.id}
                 type="button"
-                className="cc-dir__row"
+                className={`cc-dir__row${c && activeId === c.id ? ' cc-dir__row--active' : ''}`}
                 disabled={busyId === `channel:${p.key}`}
-                onClick={() => handleOpenChannel(p.key)}
-                title={`Open #${p.key.toLowerCase()} project channel`}
+                onClick={() => {
+                  if (c) onSelectConversation(c.id);
+                  else handleOpenChannel(p.key);
+                }}
+                title={c ? `Open #${p.key.toLowerCase()}` : `Join #${p.key.toLowerCase()}`}
               >
                 <span className="cc-dir__channel-glyph">#</span>
                 <div className="cc-dir__body">
                   <div className="cc-dir__top">
-                    <span className="cc-dir__name">{p.key.toLowerCase()}</span>
+                    <span className="cc-dir__name">#{p.key.toLowerCase()}</span>
+                    {c && <span className="cc-dir__time">{relativeShort(c.lastMessageAt)}</span>}
                   </div>
                   <div className="cc-dir__preview">
-                    {p.name ?? p.key} · project channel
+                    {c?.lastMessagePreview ?? (p.name ? `${p.name} · project channel` : 'project channel')}
                   </div>
                 </div>
-                <span className="cc-dir__msg-cta">
-                  {busyId === `channel:${p.key}` ? '…' : 'Open'}
-                </span>
+                {c && c.unreadCount > 0 ? (
+                  <span className="cc-dir__unread">{c.unreadCount > 99 ? '99+' : c.unreadCount}</span>
+                ) : !c ? (
+                  <span className="cc-dir__msg-cta">
+                    {busyId === `channel:${p.key}` ? '…' : 'Join'}
+                  </span>
+                ) : null}
               </button>
             ))}
           </>
@@ -303,11 +395,11 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
           </>
         )}
 
-        {isLoading && filtered.conversations.length === 0 && filtered.people.length === 0 && (
+        {isLoading && filtered.dms.length === 0 && filtered.tickets.length === 0 && filtered.channelRows.length === 0 && filtered.people.length === 0 && (
           <div className="cc-dir__empty">Loading teammates…</div>
         )}
 
-        {!isLoading && filtered.conversations.length === 0 && filtered.people.length === 0 && (
+        {!isLoading && query && filtered.dms.length === 0 && filtered.tickets.length === 0 && filtered.channelRows.length === 0 && filtered.people.length === 0 && (
           <div className="cc-dir__empty">No matches for "{query}".</div>
         )}
       </div>

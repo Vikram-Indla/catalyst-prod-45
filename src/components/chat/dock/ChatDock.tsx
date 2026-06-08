@@ -23,6 +23,7 @@ import type { ChatConversation, ChatPresence } from '@/types/chat';
 import catalystChatIcon from '@/assets/catalyst-chat-icon.svg';
 import { CatyPanel } from './CatyPanel';
 import { DockDirectory } from './DockDirectory';
+import { DockConversationPane } from './DockConversationPane';
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import './dock.css';
 
@@ -36,7 +37,12 @@ interface ChatDockProps {
   onClose: (id: string) => void;
   collapsed?: boolean;
   onToggleCollapsed: () => void;
-  onNewMessage?: () => void;
+  /**
+   * Clears the active conversation so the inline DockDirectory becomes
+   * the visible surface. Replaces the legacy onNewMessage modal (removed
+   * 2026-06-08 — directory now covers both "browse" and "start new" inline).
+   */
+  onFocusDirectory?: () => void;
   onPopOut?: () => void;
 }
 
@@ -145,7 +151,7 @@ export function ChatDock({
   onClose,
   collapsed = false,
   onToggleCollapsed,
-  onNewMessage,
+  onFocusDirectory,
   onPopOut,
 }: ChatDockProps) {
   const [dockMode, setDockMode] = useState<DockMode>('messages');
@@ -214,21 +220,28 @@ export function ChatDock({
 
         {/* Shared header icons — context-aware */}
         {dockMode === 'messages' && (
-          <IconButton icon={EditorAddIcon} label="New message" appearance="subtle" spacing="compact" onClick={onNewMessage} />
+          <IconButton icon={EditorAddIcon} label="Browse directory" appearance="subtle" spacing="compact" onClick={onFocusDirectory} />
         )}
         <IconButton icon={ShortcutIcon} label="Pop out" appearance="subtle" spacing="compact" onClick={onPopOut} />
         <IconButton icon={ChevronDownIcon} label="Minimize" appearance="subtle" spacing="compact" onClick={onToggleCollapsed} />
         <IconButton icon={CrossIcon} label="Close" appearance="subtle" spacing="compact" onClick={onToggleCollapsed} />
       </div>
 
-      {/* Messages mode — existing functionality unchanged */}
+      {/* Messages mode — directory OR conversation pane */}
       {dockMode === 'messages' && (
         <>
-          <DockDirectory
-            conversations={listConversations}
-            activeId={activeId}
-            onSelectConversation={onSelect}
-          />
+          {activeId && byId.get(activeId) ? (
+            <DockConversationPane
+              conversation={byId.get(activeId)!}
+              onBack={() => onFocusDirectory?.()}
+            />
+          ) : (
+            <DockDirectory
+              conversations={listConversations}
+              activeId={activeId}
+              onSelectConversation={onSelect}
+            />
+          )}
 
           <div className="cc-tabs">
             {openConversationIds.map((id) => {
@@ -274,7 +287,7 @@ export function ChatDock({
                 </div>
               );
             })}
-            <button type="button" className="cc-tab__add" aria-label="Open another chat" onClick={onNewMessage}>
+            <button type="button" className="cc-tab__add" aria-label="Open another chat" onClick={onFocusDirectory}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
