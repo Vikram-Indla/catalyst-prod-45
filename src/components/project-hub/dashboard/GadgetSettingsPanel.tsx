@@ -1334,6 +1334,7 @@ function ColumnsSection({
 
   const [addOpen, setAddOpen] = useState(false);
   const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
 
   const remove = (id: string) => {
     const next = active.filter((c) => c !== id);
@@ -1377,16 +1378,29 @@ function ColumnsSection({
               key={colId}
               draggable
               onDragStart={() => setDragIdx(idx)}
-              onDragOver={(e) => { e.preventDefault(); }}
-              onDrop={() => { if (dragIdx != null && dragIdx !== idx) reorder(dragIdx, idx); setDragIdx(null); }}
-              onDragEnd={() => setDragIdx(null)}
+              onDragOver={(e) => {
+                e.preventDefault();
+                if (dragIdx != null && dragIdx !== idx && dragOverIdx !== idx) setDragOverIdx(idx);
+              }}
+              onDragLeave={() => { if (dragOverIdx === idx) setDragOverIdx(null); }}
+              onDrop={() => {
+                if (dragIdx != null && dragIdx !== idx) reorder(dragIdx, idx);
+                setDragIdx(null);
+                setDragOverIdx(null);
+              }}
+              onDragEnd={() => { setDragIdx(null); setDragOverIdx(null); }}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
                 padding: '6px 8px',
                 borderBottom: idx < active.length - 1 ? '1px solid var(--ds-border, #EBECF0)' : 'none',
-                background: dragIdx === idx ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
+                background: dragIdx === idx
+                  ? 'var(--ds-background-selected, #E9F2FF)'
+                  : 'transparent',
+                boxShadow: dragIdx != null && dragOverIdx === idx && dragIdx !== idx
+                  ? 'inset 0 2px 0 0 var(--ds-border-selected, #0C66E4)'
+                  : 'none',
                 cursor: 'grab',
                 fontSize: 13,
                 color: 'var(--ds-text, #172B4D)',
