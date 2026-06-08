@@ -40,7 +40,7 @@ import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
 
 export default function ProductionIncidentsWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
-  const { settings } = useGadgetSettings('incidents', projectKey);
+  const { settings, save } = useGadgetSettings('incidents', projectKey);
   const [page, setPage] = useState(0);
   const { data: incidents, isLoading, refetch } = useDashboardIncidents(projectId, projectKey, {
     dateFrom: settings.dateFrom,
@@ -362,6 +362,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
             pageSize={settings.numResults ?? 10}
             total={rows.length}
             onPageChange={setPage}
+            onPageSizeChange={(n) => save({ ...settings, numResults: n })}
           />
         </>
       )}

@@ -40,7 +40,7 @@ import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
 
 export default function QADefectsWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
-  const { settings } = useGadgetSettings('qa', projectKey);
+  const { settings, save } = useGadgetSettings('qa', projectKey);
   const [page, setPage] = useState(0);
   const { data: defects, isLoading, refetch } = useDashboardDefects(projectId, projectKey, {
     dateFrom: settings.dateFrom,
@@ -350,6 +350,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
             pageSize={settings.numResults ?? 10}
             total={rows.length}
             onPageChange={setPage}
+            onPageSizeChange={(n) => save({ ...settings, numResults: n })}
           />
         </>
       )}
