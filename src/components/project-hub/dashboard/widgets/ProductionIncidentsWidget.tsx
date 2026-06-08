@@ -20,7 +20,8 @@ import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
 import PaginationFooter from '../PaginationFooter';
-import { resolveColumns, getWidthsForGadget } from '../gadgetColumns';
+import { resolveColumns, getWidthsForGadget, getAllColumnIds } from '../gadgetColumns';
+import { useWidgetEditState } from '../DashboardWidgetGrid';
 import { useDashboardIncidents } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
@@ -113,7 +114,12 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
       {label}
     </span>
   );
-  const activeColumns = resolveColumns('incidents', settings.columns ?? null);
+  const editState = useWidgetEditState();
+  const isSolo = !!(editState as any).soloWidgetId
+    && (editState as any).soloWidgetId === (editState as any).widgetId;
+  const activeColumns = isSolo
+    ? getAllColumnIds('incidents')
+    : resolveColumns('incidents', settings.columns ?? null);
 
   const allHeadCells = [
     { key: 'priority', content: headLabel('P'),          isSortable: true },

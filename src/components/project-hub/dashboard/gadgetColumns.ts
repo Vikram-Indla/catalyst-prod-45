@@ -108,6 +108,13 @@ export function resolveColumns(gadgetType: GadgetType, savedColumns: string[] | 
   return savedColumns.filter((id) => defs.some((d) => d.id === id));
 }
 
+/** All column ids for a gadget — used by solo mode to show the full set. */
+export function getAllColumnIds(gadgetType: GadgetType): string[] {
+  const defs = COLUMN_REGISTRY[gadgetType];
+  if (!defs) return [];
+  return defs.map((d) => d.id);
+}
+
 /**
  * Build {defaultWidths, minWidths} maps for ResizableDynamicTable from the
  * gadget's registry. Includes every column (visible + hidden) so toggling a
