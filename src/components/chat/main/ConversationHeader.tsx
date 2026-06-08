@@ -6,10 +6,11 @@
  * The Ask Caty button uses the approved STATIC rainbow border
  * (animation: none, 2px padding wrapper) per CLAUDE.md enterprise carve-out.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import type { ChatConversation, ChatPerson } from '@/types/chat';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { AddPeopleModal } from '../AddPeopleModal';
 import { Avatar, colorFor, initialsOf, type PresenceColor } from './avatar';
 
 export interface ConversationHeaderProps {
@@ -29,6 +30,8 @@ const PRESENCE_MAP: Record<string, PresenceColor> = {
 const MAX_VISIBLE_MEMBERS = 4;
 
 export function ConversationHeader({ conversation, members = [], onAskCaty }: ConversationHeaderProps) {
+  const [addPeopleOpen, setAddPeopleOpen] = useState(false);
+
   if (!conversation) {
     return (
       <div className="cc-conv-head">
@@ -104,7 +107,7 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
       >
         <DropdownItemGroup>
           <DropdownItem>View ticket</DropdownItem>
-          <DropdownItem>Add people</DropdownItem>
+          <DropdownItem onClick={() => setAddPeopleOpen(true)}>Add people</DropdownItem>
           <DropdownItem>Mute conversation</DropdownItem>
         </DropdownItemGroup>
         <DropdownItemGroup>
@@ -113,6 +116,15 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
           </DropdownItem>
         </DropdownItemGroup>
       </DropdownMenu>
+
+      {addPeopleOpen ? (
+        <AddPeopleModal
+          isOpen={addPeopleOpen}
+          conversationId={conversation.id}
+          existingMemberIds={members.map(m => m.id)}
+          onClose={() => setAddPeopleOpen(false)}
+        />
+      ) : null}
     </div>
   );
 }
