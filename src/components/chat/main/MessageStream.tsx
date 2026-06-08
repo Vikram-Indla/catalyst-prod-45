@@ -16,6 +16,7 @@ import {
   useMyBookmarks,
   useToggleBookmark,
 } from '@/hooks/chat/usePinsBookmarks';
+import { MentionToken } from './MentionToken';
 
 // Lazy renderer — Atlaskit @atlaskit/renderer chunk only loads when a
 // message actually has body_adf content.
@@ -77,11 +78,7 @@ function renderBody(text: string): React.ReactNode[] {
     const subParts = part.split(MENTION_RE);
     subParts.forEach((sub, j) => {
       if (MENTION_RE.test(sub)) {
-        out.push(
-          <span key={`m-${i}-${j}`} className="cc-mention">
-            {sub}
-          </span>,
-        );
+        out.push(<MentionToken key={`m-${i}-${j}`} raw={sub} />);
       } else {
         out.push(<React.Fragment key={`t-${i}-${j}`}>{sub}</React.Fragment>);
       }
