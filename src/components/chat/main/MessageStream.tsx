@@ -4,11 +4,24 @@
  * initials avatars, reaction chips, highlighted @mention tokens, and the
  * "N replies" thread affordance. Reads real ChatMessage[] from useMessages.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, lazy, Suspense } from 'react';
 import type { ChatMessage } from '@/types/chat';
 import { Avatar, initialsOf, colorFor } from './avatar';
 import { useConversationAttachments, type ChatAttachment } from '@/hooks/chat/useChatAttachments';
 import { AttachmentPreview } from './AttachmentPreview';
+
+// Lazy renderer — Atlaskit @atlaskit/renderer chunk only loads when a
+// message actually has body_adf content.
+const EpicDescriptionRenderer = lazy(
+  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer'),
+);
+
+function isAdfPresent(adf: unknown): adf is { type: string; content?: unknown[] } {
+  if (!adf || typeof adf !== 'object') return false;
+  const o = adf as { type?: unknown; content?: unknown };
+  if (o.type !== 'doc') return false;
+  return Array.isArray(o.content) && (o.content as unknown[]).length > 0;
+}
 
 const QUICK_REACTIONS = ['👍', '❤️', '😄', '🎉', '👀', '🙏'];
 
@@ -225,6 +238,12 @@ function MessageRow({
               <button type="button" className="cc-msg__editor-cancel" onClick={() => setEditing(false)}>Cancel</button>
               <button type="button" className="cc-msg__editor-save" onClick={commitEdit}>Save</button>
             </div>
+          </div>
+        ) : isAdfPresent(msg.bodyAdf) ? (
+          <div className="cc-msg__text">
+            <Suspense fallback={<span>{renderBody(msg.bodyText)}</span>}>
+              <EpicDescriptionRenderer content={msg.bodyAdf as any} />
+            </Suspense>
           </div>
         ) : (
           <div className="cc-msg__text">{renderBody(msg.bodyText)}</div>

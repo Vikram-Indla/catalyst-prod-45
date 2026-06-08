@@ -6,16 +6,25 @@
  * Send is @atlaskit/button (primary). The textarea is intentionally NOT
  * @atlaskit/textfield (per spec — textfield is single-line).
  */
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, lazy, Suspense } from 'react';
 import Button from '@atlaskit/button/new';
 import { MentionPicker } from './MentionPicker';
 import { useUploadAttachment } from '@/hooks/chat/useChatAttachments';
+import { adfToPlainText } from '@/utils/adf';
+import { createEmptyADF } from '@/utils/adf';
+import type { ADFEntity } from '@atlaskit/adf-utils/types';
+
+// Lazy-loaded — avoids dragging @atlaskit/editor-core into the dock bundle.
+const AtlaskitEditor = lazy(() => import('@/components/shared/AtlaskitEditor'));
 
 export interface MessageComposerProps {
   conversationTitle?: string;
   conversationId?: string;
   disabled?: boolean;
-  onSend: (text: string) => void | Promise<void>;
+  onSend: (
+    text: string,
+    opts?: { adf?: unknown | null },
+  ) => void | Promise<void>;
   onAskCaty?: () => void;
   /** Last message id created by onSend (passed back so attachments can bind). */
   lastSentMessageId?: string | null;
@@ -31,6 +40,8 @@ export function MessageComposer({
 }: MessageComposerProps) {
   const [value, setValue] = useState('');
   const [sending, setSending] = useState(false);
+  const [richMode, setRichMode] = useState(false);
+  const [richAdf, setRichAdf] = useState<ADFEntity>(createEmptyADF());
   const taRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const uploadAttachment = useUploadAttachment();
@@ -45,19 +56,29 @@ export function MessageComposer({
   }, []);
 
   const submit = useCallback(async () => {
-    const text = value.trim();
-    if (!text || disabled || sending) return;
+    if (disabled || sending) return;
+    let text = value.trim();
+    let adf: ADFEntity | null = null;
+    if (richMode) {
+      const candidate = adfToPlainText(richAdf).trim();
+      if (!candidate) return;
+      text = candidate;
+      adf = richAdf;
+    } else if (!text) {
+      return;
+    }
     setSending(true);
     try {
-      await onSend(text);
+      await onSend(text, { adf });
       setValue('');
+      if (richMode) setRichAdf(createEmptyADF());
       requestAnimationFrame(() => {
         if (taRef.current) taRef.current.style.height = 'auto';
       });
     } finally {
       setSending(false);
     }
-  }, [value, disabled, sending, onSend]);
+  }, [value, disabled, sending, onSend, richMode, richAdf]);
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -96,21 +117,35 @@ export function MessageComposer({
   return (
     <div className="cc-composer" style={{ position: 'relative' }}>
       <div className="cc-composer-box">
-        <textarea
-          ref={taRef}
-          className="cc-composer-input"
-          placeholder={placeholder}
-          value={value}
-          rows={1}
-          disabled={disabled}
-          onChange={e => {
-            setValue(e.target.value);
-            autoGrow();
-          }}
-          onKeyDown={onKeyDown}
-          aria-label={placeholder}
-        />
-        <MentionPicker textareaRef={taRef} value={value} onChange={setValue} />
+        {richMode ? (
+          <Suspense fallback={<div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtle, #44546F)' }}>Loading editor…</div>}>
+            <div style={{ padding: 4 }}>
+              <AtlaskitEditor
+                appearance="comment"
+                placeholder={placeholder}
+                defaultValue={richAdf}
+                onChange={(adf) => setRichAdf(adf)}
+                minHeight={80}
+              />
+            </div>
+          </Suspense>
+        ) : (
+          <textarea
+            ref={taRef}
+            className="cc-composer-input"
+            placeholder={placeholder}
+            value={value}
+            rows={1}
+            disabled={disabled}
+            onChange={e => {
+              setValue(e.target.value);
+              autoGrow();
+            }}
+            onKeyDown={onKeyDown}
+            aria-label={placeholder}
+          />
+        )}
+        {!richMode && <MentionPicker textareaRef={taRef} value={value} onChange={setValue} />}
         <input
           ref={fileRef}
           type="file"
@@ -148,6 +183,22 @@ export function MessageComposer({
             </svg>
           </button>
 
+          <button
+            type="button"
+            className="cc-toolbtn"
+            aria-label={richMode ? 'Switch to plain text' : 'Switch to rich text'}
+            title={richMode ? 'Plain text' : 'Rich text (Aa)'}
+            onClick={() => setRichMode((m) => !m)}
+            style={{
+              background: richMode ? 'var(--ds-background-selected, #E9F2FE)' : undefined,
+              color: richMode ? 'var(--ds-text-selected, #0C66E4)' : undefined,
+              fontWeight: 600,
+              fontSize: 12,
+            }}
+          >
+            Aa
+          </button>
+
           <div className="cc-composer-tools__spacer" />
 
           <button type="button" className="cc-caty-btn is-sm" onClick={onAskCaty} aria-label="Ask Caty">
@@ -162,7 +213,12 @@ export function MessageComposer({
           <Button
             appearance="primary"
             onClick={() => void submit()}
-            isDisabled={disabled || !value.trim()}
+            isDisabled={
+              disabled ||
+              (richMode
+                ? adfToPlainText(richAdf).trim().length === 0
+                : !value.trim())
+            }
             isLoading={sending}
           >
             Send

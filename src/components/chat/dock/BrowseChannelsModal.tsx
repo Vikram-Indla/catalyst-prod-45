@@ -1,0 +1,185 @@
+/**
+ * BrowseChannelsModal — directory of every channel the caller can see.
+ *
+ * Source: chat_conversations WHERE kind='channel'. RLS gates visibility to
+ * member-only via chat_is_member, so the query returns the same set the
+ * caller is allowed to read. Search box is client-side ILIKE over title +
+ * project_key — DB hit is one query, no RPC needed.
+ *
+ * Clicking a row routes through chat_get_or_create_project_channel so the
+ * caller is added as a member if not already (idempotent).
+ */
+import React, { useMemo, useState } from 'react';
+import Modal, {
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTransition,
+} from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useStartProjectChannel } from '@/hooks/chat/useStartProjectChannel';
+
+export interface BrowseChannelsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onOpenChannel: (conversationId: string) => void;
+}
+
+interface ChannelRow {
+  id: string;
+  title: string;
+  project_key: string | null;
+  last_message_at: string | null;
+  is_archived: boolean;
+}
+
+const db = supabase as unknown as { from: (table: string) => any };
+
+export function BrowseChannelsModal({ isOpen, onClose, onOpenChannel }: BrowseChannelsModalProps) {
+  const [query, setQuery] = useState('');
+  const [busyKey, setBusyKey] = useState<string | null>(null);
+  const startChannel = useStartProjectChannel();
+
+  const { data: rows = [], isLoading } = useQuery({
+    queryKey: ['chat', 'browse-channels'],
+    enabled: isOpen,
+    queryFn: async () => {
+      const { data, error } = await db
+        .from('chat_conversations')
+        .select('id, title, project_key, last_message_at, is_archived')
+        .eq('kind', 'channel')
+        .order('last_message_at', { ascending: false, nullsFirst: false })
+        .limit(200);
+      if (error || !data) return [] as ChannelRow[];
+      return data as ChannelRow[];
+    },
+  });
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return rows.filter((r) => {
+      if (r.is_archived) return false;
+      if (!q) return true;
+      return (
+        (r.title ?? '').toLowerCase().includes(q) ||
+        (r.project_key ?? '').toLowerCase().includes(q)
+      );
+    });
+  }, [rows, query]);
+
+  const openRow = async (r: ChannelRow) => {
+    if (!r.project_key) {
+      // Ad-hoc channel (no project anchor) — just select it.
+      onOpenChannel(r.id);
+      onClose();
+      return;
+    }
+    setBusyKey(r.project_key);
+    try {
+      const convId = await startChannel.mutateAsync(r.project_key);
+      onOpenChannel(convId);
+      onClose();
+    } catch (e) {
+      console.error('Open channel failed:', e);
+    } finally {
+      setBusyKey(null);
+    }
+  };
+
+  return (
+    <ModalTransition>
+      {isOpen && (
+        <Modal onClose={onClose} width="medium">
+          <ModalHeader>
+            <ModalTitle>Browse channels</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by name or project key"
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                fontSize: 14,
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                borderRadius: 4,
+                marginBottom: 12,
+              }}
+            />
+            <div style={{ maxHeight: 360, overflowY: 'auto' }}>
+              {isLoading && (
+                <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13 }}>
+                  Loading…
+                </div>
+              )}
+              {!isLoading && filtered.length === 0 && (
+                <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13 }}>
+                  No channels match.
+                </div>
+              )}
+              {filtered.map((r) => (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => openRow(r)}
+                  disabled={busyKey === r.project_key}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    width: '100%',
+                    padding: '8px 8px',
+                    background: 'transparent',
+                    border: 'none',
+                    borderRadius: 4,
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: 4,
+                      background: 'var(--ds-background-accent-purple-subtler, #DFD8FD)',
+                      color: 'var(--ds-text-accent-purple, #5E4DB2)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 700,
+                      fontSize: 11,
+                    }}
+                  >
+                    {(r.project_key ?? r.title ?? '#').slice(0, 4)}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
+                      #{(r.title ?? r.project_key ?? '').replace(/^#\s*/, '')}
+                    </div>
+                    {r.project_key && (
+                      <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>
+                        {r.project_key}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
+      )}
+    </ModalTransition>
+  );
+}
+
+export default BrowseChannelsModal;

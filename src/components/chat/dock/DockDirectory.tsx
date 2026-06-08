@@ -16,6 +16,7 @@ import { useStartDm } from '@/hooks/chat/useStartDm';
 import { useStartProjectChannel } from '@/hooks/chat/useStartProjectChannel';
 import { useChatSearch, groupSearchHits } from '@/hooks/chat/useChatSearch';
 import { NewGroupDmModal } from './NewGroupDmModal';
+import { BrowseChannelsModal } from './BrowseChannelsModal';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
@@ -69,6 +70,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
   const [busyId, setBusyId] = useState<string | null>(null);
   const [newChannelOpen, setNewChannelOpen] = useState(false);
   const [newGroupDmOpen, setNewGroupDmOpen] = useState(false);
+  const [browseChannelsOpen, setBrowseChannelsOpen] = useState(false);
 
   // Global server-side search (RPC chat_search). RLS-filtered for messages +
   // channels; org-wide for people + projects.
@@ -226,6 +228,12 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
         onClose={() => setNewGroupDmOpen(false)}
         onCreated={(id) => onSelectConversation(id)}
       />
+      {/* Browse-all channels directory. */}
+      <BrowseChannelsModal
+        isOpen={browseChannelsOpen}
+        onClose={() => setBrowseChannelsOpen(false)}
+        onOpenChannel={(id) => onSelectConversation(id)}
+      />
       {/* Search */}
       <div className="cc-dir__search">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -312,6 +320,29 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
                         <span className="cc-dir__name">{h.title}</span>
                       </div>
                       <div className="cc-dir__preview">{h.subtitle ?? ''}</div>
+                    </div>
+                  </button>
+                ))}
+              </>
+            )}
+            {searchGroups.files.length > 0 && (
+              <>
+                <div className="cc-dir__section">Files<span className="cc-dir__section-count">{searchGroups.files.length}</span></div>
+                {searchGroups.files.map((h) => (
+                  <button
+                    key={`f:${h.id}`}
+                    type="button"
+                    className="cc-dir__row"
+                    onClick={() => h.conversationId && onSelectConversation(h.conversationId)}
+                  >
+                    <span className="cc-dir__channel-glyph" style={{ background: 'var(--ds-background-neutral-bold, #44546F)', fontSize: 11 }}>
+                      📎
+                    </span>
+                    <div className="cc-dir__body">
+                      <div className="cc-dir__top">
+                        <span className="cc-dir__name">{h.title}</span>
+                      </div>
+                      <div className="cc-dir__preview">{h.subtitle ?? 'attachment'}</div>
                     </div>
                   </button>
                 ))}
@@ -446,6 +477,31 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
               {filtered.channelRows.length > 0 && (
                 <span className="cc-dir__section-count">{filtered.channelRows.length}</span>
               )}
+              <button
+                type="button"
+                aria-label="Browse all channels"
+                title="Browse all channels"
+                onClick={() => setBrowseChannelsOpen(true)}
+                style={{
+                  marginLeft: isAdmin ? 0 : 'auto',
+                  width: 22,
+                  height: 22,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'transparent',
+                  border: 'none',
+                  borderRadius: 4,
+                  cursor: 'pointer',
+                  color: 'var(--ds-text-subtle, #44546F)',
+                  padding: 0,
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="21" y1="21" x2="16.5" y2="16.5" strokeLinecap="round" />
+                </svg>
+              </button>
               {isAdmin && (
                 <button
                   type="button"

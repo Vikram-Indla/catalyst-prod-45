@@ -8,10 +8,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export type ChatSearchScope = 'all' | 'messages' | 'channels' | 'people' | 'projects';
+export type ChatSearchScope = 'all' | 'messages' | 'channels' | 'people' | 'projects' | 'files';
 
 export interface ChatSearchHit {
-  resultType: 'message' | 'channel' | 'person' | 'project';
+  resultType: 'message' | 'channel' | 'person' | 'project' | 'file';
   id: string;
   title: string;
   subtitle: string | null;
@@ -67,11 +67,13 @@ export function groupSearchHits(hits: ChatSearchHit[]) {
   const channels: ChatSearchHit[] = [];
   const people: ChatSearchHit[] = [];
   const projects: ChatSearchHit[] = [];
+  const files: ChatSearchHit[] = [];
   for (const h of hits) {
     if (h.resultType === 'message') messages.push(h);
     else if (h.resultType === 'channel') channels.push(h);
     else if (h.resultType === 'person') people.push(h);
     else if (h.resultType === 'project') projects.push(h);
+    else if (h.resultType === 'file') files.push(h);
   }
-  return { messages, channels, people, projects };
+  return { messages, channels, people, projects, files };
 }

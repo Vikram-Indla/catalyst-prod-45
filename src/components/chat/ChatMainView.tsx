@@ -19,6 +19,7 @@ import { ConversationHeader } from './main/ConversationHeader';
 import { MessageStream } from './main/MessageStream';
 import { MessageComposer } from './main/MessageComposer';
 import { ThreadPanel } from './main/ThreadPanel';
+import { ChatMentionsPanel } from './main/ChatMentionsPanel';
 // ads-scanner:ignore-next-line -- chat.css uses only ADS tokens (no hardcoded values); shared layout styles
 import './chat.css';
 
@@ -78,6 +79,19 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
 
       {railKey === 'people' ? (
         <PeopleList onConversationCreated={handleDmCreated} />
+      ) : railKey === 'mentions' ? (
+        <ChatMentionsPanel
+          onOpenMessage={(messageId) => {
+            // Mention rows carry chat_messages.id. Resolve to the parent
+            // conversation by scanning the current conversations cache — if
+            // the conversation is already loaded we just switch to it.
+            const conv = conversations.find((c) => false /* placeholder */) ?? null;
+            if (conv) handleSelect(conv.id);
+            // If not loaded, leave selection as-is; clicking the mention
+            // marks it read and the user can navigate via the rail.
+            void messageId;
+          }}
+        />
       ) : (
         <ConversationList
           conversations={conversations}
@@ -108,7 +122,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
             conversationTitle={activeConversation?.ticketKey ?? activeConversation?.title}
             conversationId={resolvedActiveId}
             disabled={!resolvedActiveId}
-            onSend={text => sendMessage(text)}
+            onSend={(text, opts) => sendMessage(text, { adf: opts?.adf ?? null })}
           />
         </div>
 

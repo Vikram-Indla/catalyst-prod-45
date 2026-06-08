@@ -179,7 +179,10 @@ export function useMessages(conversationId: string | null): {
   isLoading: boolean;
   hasMore: boolean;
   loadMore: () => void;
-  sendMessage: (bodyText: string, parentId?: string) => Promise<void>;
+  sendMessage: (
+    bodyText: string,
+    opts?: { parentId?: string; adf?: unknown | null },
+  ) => Promise<void>;
   editMessage: (messageId: string, bodyText: string) => Promise<void>;
   deleteMessage: (messageId: string) => Promise<void>;
   toggleReaction: (messageId: string, emoji: string) => Promise<void>;
@@ -216,7 +219,12 @@ export function useMessages(conversationId: string | null): {
     .flatMap((p) => p.messages);
 
   const sendMessage = useCallback(
-    async (bodyText: string, parentId?: string) => {
+    async (
+      bodyText: string,
+      opts?: { parentId?: string; adf?: unknown | null },
+    ) => {
+      const parentId = opts?.parentId;
+      const adf = opts?.adf ?? null;
       if (!conversationId || !myId || !bodyText.trim()) return;
       try {
         const { error: insertErr } = await db.from('chat_messages').insert({
@@ -224,6 +232,7 @@ export function useMessages(conversationId: string | null): {
           parent_id: parentId ?? null,
           author_id: myId,
           body_text: bodyText,
+          body_adf: adf,
         });
         if (insertErr) {
           setError(insertErr);
