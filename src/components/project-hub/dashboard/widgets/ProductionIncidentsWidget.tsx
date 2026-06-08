@@ -14,9 +14,11 @@
  * Lozenge pills in the status-summary bar above the table and via row drill-
  * through to IncidentHub.
  */
+import { useState } from 'react';
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
+import PaginationFooter from '../PaginationFooter';
 import { useDashboardIncidents } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
@@ -37,6 +39,7 @@ import UserAvatar from '@/components/shared/UserAvatar';
 
 export default function ProductionIncidentsWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { settings } = useGadgetSettings('incidents', projectKey);
+  const [page, setPage] = useState(0);
   const { data: incidents, isLoading } = useDashboardIncidents(projectId, projectKey, {
     dateFrom: settings.dateFrom,
     dateTo: settings.dateTo,
@@ -316,7 +319,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
           <ResizableDynamicTable
             widgetKey={`prod-incidents-v3:${projectKey}`}
             head={head}
-            rows={rows}
+            rows={rows.slice(page * (settings.numResults ?? 10), (page + 1) * (settings.numResults ?? 10))}
             ariaLabel="Production incidents"
             // Apr 26, 2026 — widths re-tuned for 14-15px executive
             // typography (was 12-13px). Mirrors QA Defects so the two
@@ -341,6 +344,12 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
             }}
           />
           </div>
+          <PaginationFooter
+            page={page}
+            pageSize={settings.numResults ?? 10}
+            total={rows.length}
+            onPageChange={setPage}
+          />
         </>
       )}
     </WidgetWrapper>
