@@ -515,7 +515,13 @@ export default function WidgetWrapper({
             color: token('color.text.subtlest', '#6B778C'),
           }}
         >
-          <RefreshCw size={12} />
+          <span
+            key={lastRefreshed ? lastRefreshed.getTime() : 'init'}
+            className="dashboard-refresh-pulse"
+            style={{ display: 'inline-flex' }}
+          >
+            <RefreshCw size={12} />
+          </span>
           <span>Last refreshed {lastRefreshed ? formatTimeAgo(lastRefreshed) : 'just now'}</span>
         </div>
       )}

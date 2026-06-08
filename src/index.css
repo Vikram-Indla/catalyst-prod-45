@@ -505,6 +505,20 @@
   color: var(--ds-text-brand, #0C66E4) !important;
 }
 
+/* Auto-refresh pulse (Session 4 P2-A). The RefreshCw icon wrapper
+   remounts (key={lastRefreshed.getTime()}) every time the widget
+   auto-refreshes, retriggering this animation. Subtle 800ms scale +
+   opacity pulse so the user sees the refresh happened without being
+   distracted. */
+@keyframes dashboard-refresh-pulse {
+  0%   { opacity: 0.3; transform: scale(0.85); color: var(--ds-icon-brand, #0C66E4); }
+  60%  { opacity: 1;   transform: scale(1.15); color: var(--ds-icon-brand, #0C66E4); }
+  100% { opacity: 1;   transform: scale(1);    color: inherit; }
+}
+.dashboard-refresh-pulse {
+  animation: dashboard-refresh-pulse 800ms ease-out;
+}
+
 /* ════════════════════════════════════════════════════════════════════════════
    CATALYST V5 — BLUE + TEAL ENTERPRISE DESIGN SYSTEM
    CIO-Grade Polish with Blue Primary & Teal Success

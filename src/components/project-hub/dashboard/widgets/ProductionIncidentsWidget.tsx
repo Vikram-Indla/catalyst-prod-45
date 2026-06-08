@@ -287,7 +287,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
     if (page > maxPage) setPage(maxPage);
   }, [rows.length, settings.numResults, page]);
 
-  useAutoRefresh(settings.autoRefresh, settings.autoRefreshMinutes, refetch);
+  const lastRefreshed = useAutoRefresh(settings.autoRefresh, settings.autoRefreshMinutes, refetch);
 
   return (
     <WidgetWrapper
@@ -299,6 +299,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
       footer={footer}
       flushBody
       onExpand={handleExpand}
+      lastRefreshed={lastRefreshed}
       headerBadges={<WidgetGearButton gadgetType="incidents" projectKey={projectKey} projectId={projectId} />}
     >
       {isLoading ? (

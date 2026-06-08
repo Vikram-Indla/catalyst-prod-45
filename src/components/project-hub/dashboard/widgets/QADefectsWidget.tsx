@@ -277,7 +277,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
     if (page > maxPage) setPage(maxPage);
   }, [rows.length, settings.numResults, page]);
 
-  useAutoRefresh(settings.autoRefresh, settings.autoRefreshMinutes, refetch);
+  const lastRefreshed = useAutoRefresh(settings.autoRefresh, settings.autoRefreshMinutes, refetch);
 
   return (
     <WidgetWrapper
@@ -289,6 +289,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
       footer={footer}
       flushBody
       onExpand={handleExpand}
+      lastRefreshed={lastRefreshed}
       headerBadges={<WidgetGearButton gadgetType="qa" projectKey={projectKey} projectId={projectId} />}
     >
       {isLoading ? (
