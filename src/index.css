@@ -485,6 +485,26 @@
   padding-right: 16px;
 }
 
+/* Sort indicators (Session 4 P1-B) — Jira parity.
+   Atlaskit DynamicTable's default sort arrow is small and grey; Jira
+   shows a brand-blue arrow on the active sort column with a bolder
+   header label. aria-sort="ascending" / "descending" is the stable
+   selector — Atlaskit class names churn across versions. */
+.dashboard-widget-body thead th[aria-sort="ascending"],
+.dashboard-widget-body thead th[aria-sort="descending"] {
+  font-weight: 700;
+  color: var(--ds-text, #172B4D);
+}
+.dashboard-widget-body thead th[aria-sort="ascending"] svg,
+.dashboard-widget-body thead th[aria-sort="descending"] svg {
+  fill: var(--ds-icon-brand, #0C66E4) !important;
+  color: var(--ds-icon-brand, #0C66E4) !important;
+}
+.dashboard-widget-body thead th[aria-sort="ascending"] button,
+.dashboard-widget-body thead th[aria-sort="descending"] button {
+  color: var(--ds-text-brand, #0C66E4) !important;
+}
+
 /* ════════════════════════════════════════════════════════════════════════════
    CATALYST V5 — BLUE + TEAL ENTERPRISE DESIGN SYSTEM
    CIO-Grade Polish with Blue Primary & Teal Success
