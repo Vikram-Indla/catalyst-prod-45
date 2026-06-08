@@ -126,7 +126,14 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
     },
   });
 
-  const people = useMemo(() => groups.flatMap((g) => g.people), [groups]);
+  const people = useMemo(() => {
+    const all = groups.flatMap((g) => g.people);
+    if (!user || !idMap) return all;
+    return all.filter((p) => {
+      const m = idMap.get(p.id);
+      return !m || m.profileId !== user.id;
+    });
+  }, [groups, idMap, user]);
 
   // Build a set of profile IDs already in a DM with me so we hide duplicates
   const dmProfileIds = useMemo(() => {
