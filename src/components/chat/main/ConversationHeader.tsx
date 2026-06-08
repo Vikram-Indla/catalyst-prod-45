@@ -19,6 +19,7 @@ import {
   useChatMarkRead,
 } from '@/hooks/chat/useChatActions';
 import { AddPeopleModal } from './AddPeopleModal';
+import { RosterPanel } from './RosterPanel';
 
 export interface ConversationHeaderProps {
   conversation: ChatConversation | null;
@@ -38,6 +39,7 @@ const MAX_VISIBLE_MEMBERS = 4;
 
 export function ConversationHeader({ conversation, members = [], onAskCaty }: ConversationHeaderProps) {
   const [addOpen, setAddOpen] = useState(false);
+  const [rosterOpen, setRosterOpen] = useState(false);
   const archive = useChatArchive();
   const unarchive = useChatUnarchive();
   const mute = useChatSetMute();
@@ -104,7 +106,20 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
       <div className="cc-conv-head__spacer" />
 
       {visible.length ? (
-        <div className="cc-memberstack" aria-label={`${members.length} members`}>
+        <button
+          type="button"
+          className="cc-memberstack"
+          aria-label={`${members.length} members — open roster`}
+          onClick={() => setRosterOpen(true)}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+          }}
+        >
           {visible.map(m => (
             <Avatar
               key={m.id}
@@ -115,8 +130,24 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
             />
           ))}
           {overflow > 0 ? <div className="cc-memberstack__plus">+{overflow}</div> : null}
-        </div>
-      ) : null}
+        </button>
+      ) : (
+        <button
+          type="button"
+          aria-label="View members"
+          onClick={() => setRosterOpen(true)}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            color: 'var(--ds-text-subtle, #44546F)',
+            fontSize: 12,
+          }}
+        >
+          View members
+        </button>
+      )}
 
       {!isDm && (
         <button type="button" className="cc-caty-btn" onClick={onAskCaty} aria-label={summarizeLabel}>
@@ -190,6 +221,14 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
           isOpen={addOpen}
           onClose={() => setAddOpen(false)}
           excludeProfileIds={members.map((m) => m.id)}
+        />
+      )}
+      {rosterOpen && (
+        <RosterPanel
+          conversationId={conversation.id}
+          isOpen={rosterOpen}
+          onClose={() => setRosterOpen(false)}
+          onInvite={!isDm ? () => { setRosterOpen(false); setAddOpen(true); } : undefined}
         />
       )}
     </div>
