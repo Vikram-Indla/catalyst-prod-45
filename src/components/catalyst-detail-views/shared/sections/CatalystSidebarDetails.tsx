@@ -15,6 +15,7 @@
  * The `children` slot is where type-specific sidebar fields go.
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { DiscussTicketButton } from '@/components/catalyst-detail-views/shared/DiscussTicketButton';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import CheckIcon from '@atlaskit/icon/glyph/check';
@@ -349,6 +350,7 @@ export function CatalystSidebarDetails({
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'nowrap' }}>
           {statusPill}
           {improveDropdown}
+          {issue?.issue_key && <DiscussTicketButton issueKey={issue.issue_key} variant="full" />}
         </div>
       )}
       {SHOW_RAIL_STATUS && (workflow && currentWorkflowState ? (
