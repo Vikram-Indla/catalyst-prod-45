@@ -180,6 +180,10 @@ export function useMessages(conversationId: string | null): {
   hasMore: boolean;
   loadMore: () => void;
   sendMessage: (bodyText: string, parentId?: string) => Promise<void>;
+  editMessage: (messageId: string, bodyText: string) => Promise<void>;
+  deleteMessage: (messageId: string) => Promise<void>;
+  toggleReaction: (messageId: string, emoji: string) => Promise<void>;
+  currentUserId: string | null;
 } {
   const { user } = useAuth();
   const myId = user?.id ?? null;
@@ -234,6 +238,64 @@ export function useMessages(conversationId: string | null): {
     [conversationId, myId, queryClient],
   );
 
+  const editMessage = useCallback(
+    async (messageId: string, bodyText: string) => {
+      if (!myId || !bodyText.trim()) return;
+      try {
+        const { error: e } = await db
+          .from('chat_messages')
+          .update({ body_text: bodyText, edited_at: new Date().toISOString() })
+          .eq('id', messageId)
+          .eq('author_id', myId);
+        if (e) { setError(e); return; }
+        await queryClient.invalidateQueries({ queryKey: ['chat', 'messages', conversationId] });
+      } catch (e) { setError(e); }
+    },
+    [conversationId, myId, queryClient],
+  );
+
+  const deleteMessage = useCallback(
+    async (messageId: string) => {
+      if (!myId) return;
+      try {
+        const { error: e } = await db
+          .from('chat_messages')
+          .update({ deleted_at: new Date().toISOString() })
+          .eq('id', messageId)
+          .eq('author_id', myId);
+        if (e) { setError(e); return; }
+        await queryClient.invalidateQueries({ queryKey: ['chat', 'messages', conversationId] });
+        await queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] });
+      } catch (e) { setError(e); }
+    },
+    [conversationId, myId, queryClient],
+  );
+
+  const toggleReaction = useCallback(
+    async (messageId: string, emoji: string) => {
+      if (!myId) return;
+      try {
+        // Check if reaction already exists from me
+        const { data: existing } = await db
+          .from('chat_message_reactions')
+          .select('id')
+          .eq('message_id', messageId)
+          .eq('user_id', myId)
+          .eq('emoji', emoji)
+          .maybeSingle();
+        if (existing?.id) {
+          await db.from('chat_message_reactions').delete().eq('id', existing.id);
+        } else {
+          await db.from('chat_message_reactions').insert({
+            message_id: messageId, user_id: myId, emoji,
+          });
+        }
+        await queryClient.invalidateQueries({ queryKey: ['chat', 'messages', conversationId] });
+      } catch (e) { setError(e); }
+    },
+    [conversationId, myId, queryClient],
+  );
+
   // `error` is surfaced via state for callers that wish to inspect it; the feed
   // itself degrades to empty on failure.
   void error;
@@ -246,5 +308,9 @@ export function useMessages(conversationId: string | null): {
       if (query.hasNextPage && !query.isFetchingNextPage) void query.fetchNextPage();
     },
     sendMessage,
+    editMessage,
+    deleteMessage,
+    toggleReaction,
+    currentUserId: myId,
   };
 }

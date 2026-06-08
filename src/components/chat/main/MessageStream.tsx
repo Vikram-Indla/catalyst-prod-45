@@ -4,9 +4,11 @@
  * initials avatars, reaction chips, highlighted @mention tokens, and the
  * "N replies" thread affordance. Reads real ChatMessage[] from useMessages.
  */
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import type { ChatMessage } from '@/types/chat';
 import { Avatar, initialsOf, colorFor } from './avatar';
+
+const QUICK_REACTIONS = ['👍', '❤️', '😄', '🎉', '👀', '🙏'];
 
 export interface MessageStreamProps {
   messages: ChatMessage[];
@@ -15,6 +17,9 @@ export interface MessageStreamProps {
   onLoadMore?: () => void;
   onOpenThread?: (messageId: string) => void;
   onToggleReaction?: (messageId: string, emoji: string) => void;
+  onEdit?: (messageId: string, bodyText: string) => void;
+  onDelete?: (messageId: string) => void;
+  currentUserId?: string | null;
 }
 
 // Highlight @mention tokens (e.g. "@Yazeed Daraz") inside body text.
@@ -74,6 +79,9 @@ export function MessageStream({
   onLoadMore,
   onOpenThread,
   onToggleReaction,
+  onEdit,
+  onDelete,
+  currentUserId,
 }: MessageStreamProps) {
   // Top-level messages only; group consecutive runs under a date divider.
   const rows = useMemo(() => {
@@ -133,6 +141,9 @@ export function MessageStream({
             msg={row.msg}
             onOpenThread={onOpenThread}
             onToggleReaction={onToggleReaction}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            isOwn={!!currentUserId && row.msg.authorId === currentUserId}
           />
         ),
       )}
@@ -144,20 +155,137 @@ function MessageRow({
   msg,
   onOpenThread,
   onToggleReaction,
+  onEdit,
+  onDelete,
+  isOwn,
 }: {
   msg: ChatMessage;
   onOpenThread?: (id: string) => void;
   onToggleReaction?: (id: string, emoji: string) => void;
+  onEdit?: (id: string, body: string) => void;
+  onDelete?: (id: string) => void;
+  isOwn?: boolean;
 }) {
+  const [editing, setEditing] = useState(false);
+  const [editValue, setEditValue] = useState(msg.bodyText);
+  const [showReactPicker, setShowReactPicker] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+
+  const commitEdit = () => {
+    if (editValue.trim() && editValue !== msg.bodyText) {
+      onEdit?.(msg.id, editValue.trim());
+    }
+    setEditing(false);
+  };
+
   return (
-    <div className="cc-msg">
+    <div className="cc-msg cc-msg--row">
       <Avatar name={msg.authorName} seed={msg.authorId} color={colorFor(msg.authorId)} className="cc-msg__av" />
       <div className="cc-msg__body">
         <div className="cc-msg__head">
           <span className="cc-msg__name">{msg.authorName}</span>
           <span className="cc-msg__time">{timeLabel(msg.createdAt)}</span>
+          {msg.editedAt && <span className="cc-msg__edited">(edited)</span>}
         </div>
-        <div className="cc-msg__text">{renderBody(msg.bodyText)}</div>
+
+        {editing ? (
+          <div className="cc-msg__editor">
+            <textarea
+              autoFocus
+              className="cc-msg__editor-input"
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setEditing(false);
+                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) commitEdit();
+              }}
+            />
+            <div className="cc-msg__editor-row">
+              <span className="cc-msg__editor-hint">⌘+Enter save · Esc cancel</span>
+              <button type="button" className="cc-msg__editor-cancel" onClick={() => setEditing(false)}>Cancel</button>
+              <button type="button" className="cc-msg__editor-save" onClick={commitEdit}>Save</button>
+            </div>
+          </div>
+        ) : (
+          <div className="cc-msg__text">{renderBody(msg.bodyText)}</div>
+        )}
+
+        {/* Hover toolbar */}
+        {!editing && (
+          <div className="cc-msg__toolbar" role="toolbar">
+            <button
+              type="button"
+              className="cc-msg__tool"
+              aria-label="React"
+              title="React"
+              onClick={() => { setShowReactPicker((s) => !s); setShowMore(false); }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                <circle cx="12" cy="12" r="10" />
+                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                <line x1="9" y1="9" x2="9.01" y2="9" />
+                <line x1="15" y1="9" x2="15.01" y2="9" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="cc-msg__tool"
+              aria-label="Reply in thread"
+              title="Reply in thread"
+              onClick={() => onOpenThread?.(msg.id)}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="cc-msg__tool"
+              aria-label="More"
+              title="More"
+              onClick={() => { setShowMore((s) => !s); setShowReactPicker(false); }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
+                <circle cx="5" cy="12" r="1.4" />
+                <circle cx="12" cy="12" r="1.4" />
+                <circle cx="19" cy="12" r="1.4" />
+              </svg>
+            </button>
+
+            {showReactPicker && (
+              <div className="cc-msg__reactpicker">
+                {QUICK_REACTIONS.map((emo) => (
+                  <button
+                    key={emo}
+                    type="button"
+                    className="cc-msg__reactpicker-btn"
+                    onClick={() => { onToggleReaction?.(msg.id, emo); setShowReactPicker(false); }}
+                  >
+                    {emo}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {showMore && (
+              <div className="cc-msg__moremenu">
+                <button type="button" className="cc-msg__moremenu-item" onClick={() => { navigator.clipboard?.writeText(msg.bodyText); setShowMore(false); }}>
+                  Copy text
+                </button>
+                {isOwn && (
+                  <button type="button" className="cc-msg__moremenu-item" onClick={() => { setEditValue(msg.bodyText); setEditing(true); setShowMore(false); }}>
+                    Edit
+                  </button>
+                )}
+                {isOwn && (
+                  <button type="button" className="cc-msg__moremenu-item cc-msg__moremenu-item--danger" onClick={() => { onDelete?.(msg.id); setShowMore(false); }}>
+                    Delete
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {msg.reactions.length ? (
           <div className="cc-reacts">

@@ -44,7 +44,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
     [conversations, resolvedActiveId],
   );
 
-  const { messages, isLoading: messagesLoading, hasMore, loadMore, sendMessage } = useMessages(
+  const { messages, isLoading: messagesLoading, hasMore, loadMore, sendMessage, editMessage, deleteMessage, toggleReaction, currentUserId } = useMessages(
     resolvedActiveId ?? null,
   );
 
@@ -82,6 +82,10 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
           isLoading={messagesLoading}
           hasMore={hasMore}
           onLoadMore={loadMore}
+          onEdit={editMessage}
+          onDelete={deleteMessage}
+          onToggleReaction={toggleReaction}
+          currentUserId={currentUserId}
         />
 
         <MessageComposer

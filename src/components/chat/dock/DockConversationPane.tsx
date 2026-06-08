@@ -19,7 +19,7 @@ interface DockConversationPaneProps {
 }
 
 export function DockConversationPane({ conversation, onBack }: DockConversationPaneProps) {
-  const { messages, isLoading, hasMore, loadMore, sendMessage } = useMessages(conversation.id);
+  const { messages, isLoading, hasMore, loadMore, sendMessage, editMessage, deleteMessage, toggleReaction, currentUserId } = useMessages(conversation.id);
 
   return (
     <div className="cc-conv-pane">
@@ -38,6 +38,10 @@ export function DockConversationPane({ conversation, onBack }: DockConversationP
         isLoading={isLoading}
         hasMore={hasMore}
         onLoadMore={loadMore}
+        onEdit={editMessage}
+        onDelete={deleteMessage}
+        onToggleReaction={toggleReaction}
+        currentUserId={currentUserId}
       />
 
       <MessageComposer
