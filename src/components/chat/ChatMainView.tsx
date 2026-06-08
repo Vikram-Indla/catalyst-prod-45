@@ -18,6 +18,7 @@ import { PeopleList } from './main/PeopleList';
 import { ConversationHeader } from './main/ConversationHeader';
 import { MessageStream } from './main/MessageStream';
 import { MessageComposer } from './main/MessageComposer';
+import { ThreadPanel } from './main/ThreadPanel';
 // ads-scanner:ignore-next-line -- chat.css uses only ADS tokens (no hardcoded values); shared layout styles
 import './chat.css';
 
@@ -29,6 +30,10 @@ export interface ChatMainViewProps {
 export function ChatMainView({ activeConversationId, onSelectConversation }: ChatMainViewProps) {
   const [railKey, setRailKey] = useState<RailKey>('dms');
   const [localActiveId, setLocalActiveId] = useState<string | undefined>(undefined);
+  // Active thread parent id. When set, ThreadPanel renders on the right of the
+  // conversation pane. Cleared when user closes the panel or switches
+  // conversations (handled in handleSelect).
+  const [threadParentId, setThreadParentId] = useState<string | null>(null);
 
   const { conversations, isLoading: conversationsLoading } = useConversations();
 
@@ -51,7 +56,15 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
   const handleSelect = (id: string) => {
     if (onSelectConversation) onSelectConversation(id);
     else setLocalActiveId(id);
+    // Closing an open thread when the user navigates to a different
+    // conversation — the parent message no longer applies.
+    setThreadParentId(null);
   };
+
+  const threadParentMessage = useMemo(
+    () => (threadParentId ? messages.find(m => m.id === threadParentId) ?? null : null),
+    [threadParentId, messages],
+  );
 
   const handleDmCreated = (id: string) => {
     if (onSelectConversation) onSelectConversation(id);
@@ -74,25 +87,37 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
         />
       )}
 
-      <div className="cc-conv">
-        <ConversationHeader conversation={activeConversation} />
+      <div className="cc-conv" style={{ display: 'flex', flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
+          <ConversationHeader conversation={activeConversation} />
 
-        <MessageStream
-          messages={messages}
-          isLoading={messagesLoading}
-          hasMore={hasMore}
-          onLoadMore={loadMore}
-          onEdit={editMessage}
-          onDelete={deleteMessage}
-          onToggleReaction={toggleReaction}
-          currentUserId={currentUserId}
-        />
+          <MessageStream
+            messages={messages}
+            isLoading={messagesLoading}
+            hasMore={hasMore}
+            onLoadMore={loadMore}
+            onEdit={editMessage}
+            onDelete={deleteMessage}
+            onToggleReaction={toggleReaction}
+            onOpenThread={(messageId) => setThreadParentId(messageId)}
+            currentUserId={currentUserId}
+          />
 
-        <MessageComposer
-          conversationTitle={activeConversation?.ticketKey ?? activeConversation?.title}
-          disabled={!resolvedActiveId}
-          onSend={text => sendMessage(text)}
-        />
+          <MessageComposer
+            conversationTitle={activeConversation?.ticketKey ?? activeConversation?.title}
+            conversationId={resolvedActiveId}
+            disabled={!resolvedActiveId}
+            onSend={text => sendMessage(text)}
+          />
+        </div>
+
+        {threadParentMessage && resolvedActiveId && (
+          <ThreadPanel
+            conversationId={resolvedActiveId}
+            parentMessage={threadParentMessage}
+            onClose={() => setThreadParentId(null)}
+          />
+        )}
       </div>
     </div>
   );
