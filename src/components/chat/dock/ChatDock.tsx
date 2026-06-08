@@ -270,20 +270,10 @@ export function ChatDock({
                     <span className="cc-tab__dot" style={{ background: tabDotColor(conv) }} />
                   )}
                   <span>{label.length > 12 ? `${label.slice(0, 11)}…` : label}</span>
-                  <button
-                    type="button"
-                    className="cc-tab__x"
-                    aria-label={`Close ${label}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onClose(id);
-                    }}
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                      <line x1="6" y1="18" x2="18" y2="6" />
-                    </svg>
-                  </button>
+                  {/* × close button REMOVED (2026-06-08 design-critique).
+                      Ambiguous on channel pills — read as "leave channel"
+                      when it was just "close tab". Slack/Teams have no
+                      tab-bar close. Tabs auto-clear on dock close. */}
                 </div>
               );
             })}

@@ -150,7 +150,6 @@ export function PeopleList({ onConversationCreated }: PeopleListProps) {
                 className="cc-row cc-people-row"
                 disabled={busyId === person.id}
                 onClick={() => handleStartDm(person)}
-                title={`Message ${person.name}`}
               >
                 <Avatar
                   name={person.name}
@@ -166,18 +165,17 @@ export function PeopleList({ onConversationCreated }: PeopleListProps) {
                     {person.role ?? PRESENCE_LABEL[person.presence]}
                   </div>
                 </div>
-                <span className="cc-people-row__msg" aria-hidden>
-                  {busyId === person.id ? (
+                {/* Loading spinner only — Slack/Teams parity: the row IS the
+                    affordance. No hover-only "Message" button, no tooltip.
+                    (2026-06-08 design-critique.) */}
+                {busyId === person.id && (
+                  <span aria-hidden style={{ display: 'inline-flex' }}>
                     <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2}>
                       <circle cx="12" cy="12" r="9" opacity="0.25" />
                       <path d="M21 12a9 9 0 0 0-9-9" />
                     </svg>
-                  ) : (
-                    <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2}>
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                    </svg>
-                  )}
-                </span>
+                  </span>
+                )}
               </button>
             ))}
           </div>
