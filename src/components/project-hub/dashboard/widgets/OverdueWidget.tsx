@@ -337,12 +337,15 @@ function OverdueRow({
         {item.summary}
       </span>
       {item.assignee_display_name && (
-        <span style={{ flexShrink: 0 }}>
+        <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
           <UserAvatar
             size="small"
             name={item.assignee_display_name}
             src={(item as any).assignee_avatar_url}
           />
+          <span style={{ ...BODY, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 100 }}>
+            {item.assignee_display_name.split(' ')[0]}
+          </span>
         </span>
       )}
       <span style={{ flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>

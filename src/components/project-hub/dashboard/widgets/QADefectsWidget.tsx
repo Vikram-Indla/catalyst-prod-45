@@ -80,7 +80,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         gap: 4,
       }}
     >
-      View All in TestHub ↗
+      View all ↗
     </button>
   );
 
@@ -196,7 +196,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               <UserAvatar size="small" name={assigneeName} src={d.assignee_avatar_url} />
               <span
                 style={{
-                  ...STRONG,
+                  ...BODY,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
@@ -245,7 +245,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
   return (
     <WidgetWrapper
       title="QA Defects"
-      subtitle="Cross-hub from TestHub"
+      subtitle="Cross-hub defects"
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       span={1}

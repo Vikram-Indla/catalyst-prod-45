@@ -1119,7 +1119,7 @@ function DemandRowItem({
           // Apr 26, 2026 — column widths bumped to match the wider 14px
           // typography in cells (key 100→130, progress 160→180, target
           // 110→130). Header above uses identical grid so columns align.
-          gridTemplateColumns: '28px 20px 130px 1fr 180px 130px 32px',
+          gridTemplateColumns: '28px 20px 130px 2fr 1fr 130px 32px',
           alignItems: 'center',
           gap: 12,
           padding: `0 ${token('space.300', '24px')}`,
@@ -1178,7 +1178,7 @@ function DemandRowItem({
         <span
           title={row.title}
           style={{
-            ...STRONG,
+            ...BODY,
             fontFamily: ATLAS_SANS,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -1237,17 +1237,31 @@ function DemandRowItem({
         {/* Date / RAG pill */}
         <DatePill state={state} daysLeft={daysLeft} dateStr={row.target_complete} />
 
-        {/* Avatar — Atlaskit Avatar locked to xsmall (16px) */}
-        <Avatar
-          size="xsmall"
-          src={
-            row.assignee_avatar
-              || (row.assignee_name && row.assignee_name !== '—'
-                ? resolveAvatarUrl(row.assignee_name) ?? undefined
-                : undefined)
-          }
-          name={row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : 'Unassigned'}
-        />
+        {/* Avatar + name — consistent with child rows */}
+        <span
+          style={{
+            ...SMALL,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            fontFamily: ATLAS_SANS,
+            color: token('color.text.subtle', '#44546F'),
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+          }}
+        >
+          <Avatar
+            size="xsmall"
+            src={
+              row.assignee_avatar
+                || (row.assignee_name && row.assignee_name !== '—'
+                  ? resolveAvatarUrl(row.assignee_name) ?? undefined
+                  : undefined)
+            }
+            name={row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : 'Unassigned'}
+          />
+          {row.assignee_name && row.assignee_name !== '—' ? row.assignee_name.split(' ')[0] : ''}
+        </span>
       </div>
 
       {expanded && (
@@ -1447,7 +1461,7 @@ function DemandRowItem({
                             borderRadius: 3,
                             transition: 'width 200ms ease',
                             background:
-                              epicPct === 100 ? '#1F845A' : epicPct > 0 ? '#0C66E4' : 'transparent',
+                              epicPct === 100 ? 'var(--ds-background-accent-green-bolder, #1F845A)' : epicPct > 0 ? 'var(--ds-background-accent-blue-bolder, #0C66E4)' : 'transparent',
                           }}
                         />
                       </div>
@@ -1705,7 +1719,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
 
   return (
     <WidgetWrapper
-      title="Demand Fulfilment"
+      title="Epic Progress"
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       span={2}
@@ -1788,9 +1802,33 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                 transition: 'outline-color 80ms ease',
               }}
             >
-              <Lozenge appearance={appearance}>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  padding: '2px 6px',
+                  borderRadius: 3,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  lineHeight: '16px',
+                  textTransform: 'none',
+                  background:
+                    appearance === 'inprogress'
+                      ? 'var(--ds-background-information, #E9F2FF)'
+                      : appearance === 'moved'
+                        ? 'var(--ds-background-warning, #FFF7D6)'
+                        : 'var(--ds-background-success, #DFFCF0)',
+                  color:
+                    appearance === 'inprogress'
+                      ? 'var(--ds-text-information, #0055CC)'
+                      : appearance === 'moved'
+                        ? 'var(--ds-text-warning, #7F5F01)'
+                        : 'var(--ds-text-success, #216E4E)',
+                }}
+              >
                 {label} {count}
-              </Lozenge>
+              </span>
             </span>
           );
         };
@@ -1885,7 +1923,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '28px 20px 130px 1fr 180px 130px 32px',
+          gridTemplateColumns: '28px 20px 130px 2fr 1fr 130px 32px',
           alignItems: 'center',
           gap: 12,
           padding: `4px ${token('space.300', '24px')}`,
@@ -2014,7 +2052,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                   textDecoration: 'none',
                 }}
               >
-                View all {visibleByTab.length} in ProjectHub ↗
+                View all {visibleByTab.length} ↗
               </button>
             </div>
           )}

@@ -81,7 +81,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         gap: 4,
       }}
     >
-      View All in IncidentHub ↗
+      View all ↗
     </button>
   );
 
@@ -206,7 +206,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               />
               <span
                 style={{
-                  ...STRONG,
+                  ...BODY,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
@@ -255,7 +255,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
   return (
     <WidgetWrapper
       title="Production Incidents"
-      subtitle="Cross-hub from IncidentHub"
+      subtitle="Cross-hub incidents"
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       span={2}

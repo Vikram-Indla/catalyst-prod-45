@@ -495,18 +495,6 @@ function ProjectDashboardPageInner() {
                   </SectionMessage>
                 </div>
               )}
-              <div style={{ marginBottom: 16 }}>
-                <SectionMessage
-                  appearance="information"
-                  title="Showing 2026 fiscal scope"
-                >
-                  All widgets on this dashboard count items <strong>created in 2026</strong>,
-                  <strong> updated in 2026</strong>, or assigned to a currently
-                  <strong> active release</strong>. Items outside this scope (e.g. archived
-                  or pre-2026 closed work) are intentionally excluded so totals
-                  reflect what the team is actively delivering this year.
-                </SectionMessage>
-              </div>
               <DashboardWidgetGrid
                 projectId={projectId || pKey}
                 projectKey={pKey}

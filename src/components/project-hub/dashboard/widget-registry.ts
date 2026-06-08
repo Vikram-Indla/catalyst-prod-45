@@ -102,8 +102,8 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
   // Are we hitting commitments?
   {
     id: 'milestones',
-    title: 'Demand Fulfilment',
-    subtitle: 'MDT delivery rollup',
+    title: 'Epic Progress',
+    subtitle: 'Linked epic completion by initiative',
     group: 'delivery',
     defaultSpan: 12,
     minSpan: 6,
