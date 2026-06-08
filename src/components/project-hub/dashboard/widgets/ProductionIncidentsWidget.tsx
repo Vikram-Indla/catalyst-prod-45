@@ -20,7 +20,7 @@ import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
 import PaginationFooter from '../PaginationFooter';
-import { resolveColumns } from '../gadgetColumns';
+import { resolveColumns, getWidthsForGadget } from '../gadgetColumns';
 import { useDashboardIncidents } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
@@ -344,7 +344,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
             style={{ overflowX: 'auto' }}
           >
           <ResizableDynamicTable
-            widgetKey={`prod-incidents-v3:${projectKey}`}
+            widgetKey={`prod-incidents-v4:${projectKey}`}
             head={head}
             rows={rows.slice(page * (settings.numResults ?? 10), (page + 1) * (settings.numResults ?? 10))}
             ariaLabel="Production incidents"
@@ -353,22 +353,8 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
             // stacked widgets line up vertically with identical column
             // rhythm. Bumped widgetKey suffix to v3 to discard any
             // persisted user-customised widths from the previous pass.
-            defaultWidths={{
-              priority: 64,
-              key: 170,
-              title: 700,
-              status: 140,
-              assignee: 180,
-              started: 120,
-            }}
-            minWidths={{
-              priority: 48,
-              key: 120,
-              title: 240,
-              status: 100,
-              assignee: 110,
-              started: 80,
-            }}
+            defaultWidths={getWidthsForGadget('incidents').defaultWidths}
+            minWidths={getWidthsForGadget('incidents').minWidths}
           />
           </div>
           <PaginationFooter

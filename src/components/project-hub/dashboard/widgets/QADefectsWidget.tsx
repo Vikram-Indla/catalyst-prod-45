@@ -20,7 +20,7 @@ import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
 import PaginationFooter from '../PaginationFooter';
-import { resolveColumns } from '../gadgetColumns';
+import { resolveColumns, getWidthsForGadget } from '../gadgetColumns';
 import { useDashboardDefects } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
@@ -331,7 +331,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
             style={{ overflowX: 'auto' }}
           >
           <ResizableDynamicTable
-            widgetKey={`qa-defects-v3:${projectKey}`}
+            widgetKey={`qa-defects-v4:${projectKey}`}
             head={head}
             rows={rows.slice(page * (settings.numResults ?? 10), (page + 1) * (settings.numResults ?? 10))}
             ariaLabel="QA defects"
@@ -341,22 +341,8 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
             // avatars. Bumped widgetKey suffix to v3 so any persisted
             // user-customised widths from the previous typography pass
             // are discarded — fresh defaults paint correctly.
-            defaultWidths={{
-              priority: 64,
-              key: 170,
-              title: 700,
-              status: 140,
-              assignee: 180,
-              age: 120,
-            }}
-            minWidths={{
-              priority: 48,
-              key: 120,
-              title: 240,
-              status: 100,
-              assignee: 110,
-              age: 80,
-            }}
+            defaultWidths={getWidthsForGadget('qa').defaultWidths}
+            minWidths={getWidthsForGadget('qa').minWidths}
           />
           </div>
           <PaginationFooter
