@@ -6,11 +6,19 @@
  * The Ask Caty button uses the approved STATIC rainbow border
  * (animation: none, 2px padding wrapper) per CLAUDE.md enterprise carve-out.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import type { ChatConversation, ChatPerson } from '@/types/chat';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Avatar, colorFor, initialsOf, type PresenceColor } from './avatar';
+import {
+  useChatArchive,
+  useChatUnarchive,
+  useChatSetMute,
+  useChatLeave,
+  useChatMarkRead,
+} from '@/hooks/chat/useChatActions';
+import { AddPeopleModal } from './AddPeopleModal';
 
 export interface ConversationHeaderProps {
   conversation: ChatConversation | null;
@@ -29,6 +37,13 @@ const PRESENCE_MAP: Record<string, PresenceColor> = {
 const MAX_VISIBLE_MEMBERS = 4;
 
 export function ConversationHeader({ conversation, members = [], onAskCaty }: ConversationHeaderProps) {
+  const [addOpen, setAddOpen] = useState(false);
+  const archive = useChatArchive();
+  const unarchive = useChatUnarchive();
+  const mute = useChatSetMute();
+  const leave = useChatLeave();
+  const markRead = useChatMarkRead();
+
   if (!conversation) {
     return (
       <div className="cc-conv-head">
@@ -133,16 +148,50 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
         placement="bottom-end"
       >
         <DropdownItemGroup>
-          <DropdownItem>View ticket</DropdownItem>
-          <DropdownItem>Add people</DropdownItem>
-          <DropdownItem>Mute conversation</DropdownItem>
-        </DropdownItemGroup>
-        <DropdownItemGroup>
-          <DropdownItem>
-            <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>Leave conversation</span>
+          {isTicket && conversation.ticketKey && (
+            <DropdownItem onClick={() => {
+              window.dispatchEvent(new CustomEvent('catalyst:open-issue', {
+                detail: { issueKey: conversation.ticketKey },
+              }));
+            }}>View ticket</DropdownItem>
+          )}
+          {!isDm && (
+            <DropdownItem onClick={() => setAddOpen(true)}>Add people</DropdownItem>
+          )}
+          <DropdownItem onClick={() => markRead.mutate(conversation.id)}>
+            Mark as read
           </DropdownItem>
+          <DropdownItem onClick={() =>
+            mute.mutate({ convId: conversation.id, muted: true })
+          }>
+            Mute conversation
+          </DropdownItem>
+          {!conversation.isArchived ? (
+            <DropdownItem onClick={() => archive.mutate(conversation.id)}>
+              Archive conversation
+            </DropdownItem>
+          ) : (
+            <DropdownItem onClick={() => unarchive.mutate(conversation.id)}>
+              Unarchive conversation
+            </DropdownItem>
+          )}
         </DropdownItemGroup>
+        {!isDm && (
+          <DropdownItemGroup>
+            <DropdownItem onClick={() => leave.mutate(conversation.id)}>
+              <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>Leave conversation</span>
+            </DropdownItem>
+          </DropdownItemGroup>
+        )}
       </DropdownMenu>
+      {addOpen && (
+        <AddPeopleModal
+          conversationId={conversation.id}
+          isOpen={addOpen}
+          onClose={() => setAddOpen(false)}
+          excludeProfileIds={members.map((m) => m.id)}
+        />
+      )}
     </div>
   );
 }

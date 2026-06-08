@@ -14,6 +14,7 @@ import React, { useMemo, useState } from 'react';
 import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import { useStartDm } from '@/hooks/chat/useStartDm';
 import { useStartProjectChannel } from '@/hooks/chat/useStartProjectChannel';
+import { useChatSearch, groupSearchHits } from '@/hooks/chat/useChatSearch';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
@@ -66,6 +67,11 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
   const [query, setQuery] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
   const [newChannelOpen, setNewChannelOpen] = useState(false);
+
+  // Global server-side search (RPC chat_search). RLS-filtered for messages +
+  // channels; org-wide for people + projects.
+  const { hits: searchHits, isEnabled: searchActive } = useChatSearch(query, 'all', 25);
+  const searchGroups = useMemo(() => groupSearchHits(searchHits), [searchHits]);
 
   // Caller's joined projects (for the Channels section)
   const { data: myProjects } = useQuery({
@@ -231,6 +237,110 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
       </div>
 
       <div className="cc-dir__scroll">
+        {/* Global search results — visible while query active. Hits come from
+            the chat_search RPC: messages (FTS, RLS-filtered), channels
+            (member-only), people + projects (org-wide). */}
+        {searchActive && searchHits.length > 0 && (
+          <>
+            {searchGroups.messages.length > 0 && (
+              <>
+                <div className="cc-dir__section">Messages<span className="cc-dir__section-count">{searchGroups.messages.length}</span></div>
+                {searchGroups.messages.map((h) => (
+                  <button
+                    key={`m:${h.id}`}
+                    type="button"
+                    className="cc-dir__row"
+                    onClick={() => h.conversationId && onSelectConversation(h.conversationId)}
+                  >
+                    <Avatar name={h.subtitle ?? '?'} seed={h.conversationId ?? h.id} className="cc-dir__avatar" />
+                    <div className="cc-dir__body">
+                      <div className="cc-dir__top">
+                        <span className="cc-dir__name">{h.subtitle ?? 'Conversation'}</span>
+                      </div>
+                      <div className="cc-dir__preview">{h.title}</div>
+                    </div>
+                  </button>
+                ))}
+              </>
+            )}
+            {searchGroups.channels.length > 0 && (
+              <>
+                <div className="cc-dir__section">Channels<span className="cc-dir__section-count">{searchGroups.channels.length}</span></div>
+                {searchGroups.channels.map((h) => (
+                  <button
+                    key={`c:${h.id}`}
+                    type="button"
+                    className="cc-dir__row"
+                    onClick={() => onSelectConversation(h.id)}
+                  >
+                    <span className="cc-dir__channel-glyph" style={{ background: 'var(--ds-background-brand-bold, #0C66E4)', fontSize: 11 }}>
+                      {(h.subtitle ?? '#').slice(0, 3)}
+                    </span>
+                    <div className="cc-dir__body">
+                      <div className="cc-dir__top">
+                        <span className="cc-dir__name">{h.title}</span>
+                      </div>
+                      <div className="cc-dir__preview">{h.subtitle ?? ''}</div>
+                    </div>
+                  </button>
+                ))}
+              </>
+            )}
+            {searchGroups.projects.length > 0 && (
+              <>
+                <div className="cc-dir__section">Projects<span className="cc-dir__section-count">{searchGroups.projects.length}</span></div>
+                {searchGroups.projects.map((h) => (
+                  <button
+                    key={`p:${h.id}`}
+                    type="button"
+                    className="cc-dir__row"
+                    onClick={() => handleOpenChannel(h.subtitle ?? '')}
+                  >
+                    <span className="cc-dir__channel-glyph" style={{ background: 'var(--ds-background-accent-purple-subtler, #8270DB)', fontSize: 11 }}>
+                      {(h.subtitle ?? 'PR').slice(0, 3)}
+                    </span>
+                    <div className="cc-dir__body">
+                      <div className="cc-dir__top">
+                        <span className="cc-dir__name">{h.title}</span>
+                      </div>
+                      <div className="cc-dir__preview">{h.subtitle ?? ''}</div>
+                    </div>
+                  </button>
+                ))}
+              </>
+            )}
+            {searchGroups.people.length > 0 && (
+              <>
+                <div className="cc-dir__section">People<span className="cc-dir__section-count">{searchGroups.people.length}</span></div>
+                {searchGroups.people.map((h) => (
+                  <button
+                    key={`u:${h.id}`}
+                    type="button"
+                    className="cc-dir__row"
+                    onClick={() => {
+                      // h.id is the profile uuid — start a DM directly.
+                      setBusyId(h.id);
+                      startDm
+                        .mutateAsync(h.id)
+                        .then((convId) => onSelectConversation(convId))
+                        .catch((e) => console.error('Start DM (search) failed:', e))
+                        .finally(() => setBusyId(null));
+                    }}
+                  >
+                    <Avatar name={h.title} seed={h.id} className="cc-dir__avatar" />
+                    <div className="cc-dir__body">
+                      <div className="cc-dir__top">
+                        <span className="cc-dir__name">{h.title}</span>
+                      </div>
+                      <div className="cc-dir__preview">{h.subtitle ?? ''}</div>
+                    </div>
+                  </button>
+                ))}
+              </>
+            )}
+          </>
+        )}
+
         {/* Direct messages — kind=dm only */}
         {filtered.dms.length > 0 && (
           <>

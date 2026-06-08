@@ -8,23 +8,32 @@
  */
 import React, { useCallback, useRef, useState } from 'react';
 import Button from '@atlaskit/button/new';
+import { MentionPicker } from './MentionPicker';
+import { useUploadAttachment } from '@/hooks/chat/useChatAttachments';
 
 export interface MessageComposerProps {
   conversationTitle?: string;
+  conversationId?: string;
   disabled?: boolean;
   onSend: (text: string) => void | Promise<void>;
   onAskCaty?: () => void;
+  /** Last message id created by onSend (passed back so attachments can bind). */
+  lastSentMessageId?: string | null;
 }
 
 export function MessageComposer({
   conversationTitle,
+  conversationId,
   disabled,
   onSend,
   onAskCaty,
+  lastSentMessageId,
 }: MessageComposerProps) {
   const [value, setValue] = useState('');
   const [sending, setSending] = useState(false);
   const taRef = useRef<HTMLTextAreaElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const uploadAttachment = useUploadAttachment();
 
   const placeholder = conversationTitle ? `Message ${conversationTitle}` : 'Write a message…';
 
@@ -65,8 +74,27 @@ export function MessageComposer({
     });
   };
 
+  const onPickFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !conversationId || !lastSentMessageId) {
+      // No message anchor yet — fall back to sending an empty message first.
+      if (file && conversationId) {
+        await onSend(`📎 ${file.name}`);
+        // The caller updates lastSentMessageId on next render; user can re-pick.
+      }
+      if (fileRef.current) fileRef.current.value = '';
+      return;
+    }
+    await uploadAttachment({
+      conversationId,
+      messageId: lastSentMessageId,
+      file,
+    });
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
   return (
-    <div className="cc-composer">
+    <div className="cc-composer" style={{ position: 'relative' }}>
       <div className="cc-composer-box">
         <textarea
           ref={taRef}
@@ -82,8 +110,20 @@ export function MessageComposer({
           onKeyDown={onKeyDown}
           aria-label={placeholder}
         />
+        <MentionPicker textareaRef={taRef} value={value} onChange={setValue} />
+        <input
+          ref={fileRef}
+          type="file"
+          style={{ display: 'none' }}
+          onChange={onPickFile}
+        />
         <div className="cc-composer-tools">
-          <button type="button" className="cc-toolbtn" aria-label="Attach file">
+          <button
+            type="button"
+            className="cc-toolbtn"
+            aria-label="Attach file"
+            onClick={() => fileRef.current?.click()}
+          >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M21.4 11.05l-9.19 9.19a5 5 0 0 1-7.07-7.07l9.19-9.19a3.5 3.5 0 0 1 4.95 4.95l-9.2 9.19a1.5 1.5 0 0 1-2.12-2.12l8.49-8.48" />
             </svg>
