@@ -18,6 +18,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CrossIcon from '@atlaskit/icon/core/close';
 import LinkIcon from '@atlaskit/icon/core/link';
+import CommentIcon from '@atlaskit/icon/core/comment';
 import AkFlag, { FlagGroup } from '@atlaskit/flag';
 import SuccessIcon from '@atlaskit/icon/glyph/check-circle';
 import Modal from '@atlaskit/modal-dialog';
@@ -27,6 +28,13 @@ import { Skel } from '@/modules/project-work-hub/components/dialogs/story-detail
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
+import { supabase } from '@/integrations/supabase/client';
+
+// chat_* RPCs are not in the generated Database types yet — cast to bypass
+// typed inference (mirrors useCreateConversation).
+const chatDb = supabase as unknown as {
+  rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
+};
 
 /* ═══════════════════════════════════════════
    ANIMATIONS — injected once
@@ -469,6 +477,26 @@ export function CatalystViewBase({
               portal-based implementation to fix the @atlaskit/popup v4.16
               top-left positioning bug (same pattern as ProjectHeaderChip). */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {/* Open discussion — opens (or creates) this ticket's chat thread and
+                navigates to /chat. Additive entry point to Catalyst Chat. */}
+            {itemKey && (
+              <Tooltip content="Open discussion">
+                <IconButton
+                  appearance="subtle"
+                  icon={() => <CommentIcon size="small" label="" />}
+                  label="Open discussion"
+                  onClick={async () => {
+                    try {
+                      await chatDb.rpc('chat_get_or_create_ticket_thread', { p_issue_key: itemKey });
+                    } catch {
+                      // surface nothing — empty state is acceptable per chat defensive pattern
+                    }
+                    navigate('/chat');
+                  }}
+                />
+              </Tooltip>
+            )}
+
             {/* B10: Link issue button — copies canonical ticket permalink to clipboard. */}
             <Tooltip content="Copy link">
               <IconButton

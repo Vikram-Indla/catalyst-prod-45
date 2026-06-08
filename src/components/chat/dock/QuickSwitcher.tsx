@@ -1,14 +1,16 @@
 /**
- * QuickSwitcher — ⌘K command palette ("Jump to…").
+ * QuickSwitcher — command palette ("Jump to…").
  *
- * Reproduces the quick switcher in /tmp/catalyst-chat-mockups/chat-dock.html:
- *  - Search row with ⌘K chip + magnifier + caret
- *  - Grouped results: People / Channels / Tickets
+ *  - Search row with magnifier + textfield
+ *  - Real grouped results from chat_search RPC: People / Conversations /
+ *    Messages / Projects
  *  - One selected row at a time with a 3px brand left rail
  *  - Footer hint: ↑↓ navigate · ↵ open · esc close
  *
- * Filters people (useChatPeople) and conversations (useConversations) as the user types.
- * Keyboard: up/down move selection, enter picks, esc closes.
+ * On pick the parent resolves the conversation id:
+ *   person   → chat_get_or_create_dm(target_user_id)
+ *   project  → chat_get_or_create_project_channel(p_project_key)
+ *   conversation / message → conversation_id
  *
  * ADS: @atlaskit/modal-dialog shell, @atlaskit/textfield search. Colors via var(--ds-*).
  * Avatars are colored-initials circles (never <img>).
@@ -16,28 +18,18 @@
 import React from 'react';
 import ModalDialog from '@atlaskit/modal-dialog';
 import Textfield from '@atlaskit/textfield';
-import { useChatPeople } from '@/hooks/chat/useChatPeople';
-import { useConversations } from '@/hooks/chat/useConversations';
-import type { ChatConversation, ChatPerson, ChatPresence } from '@/types/chat';
+import { useChatSearch } from '@/hooks/chat/useChatSearch';
+import type { ChatSearchRow, ChatSearchType } from '@/hooks/chat/useChatSearch';
 
 interface QuickSwitcherProps {
   isOpen: boolean;
   onClose: () => void;
-  onPick: (kind: 'person' | 'channel' | 'ticket', id: string) => void;
+  /**
+   * Called when the user picks a result. The parent resolves person/project
+   * picks into a conversation id via the chat RPCs.
+   */
+  onPick: (row: ChatSearchRow) => void;
 }
-
-type Result =
-  | { kind: 'person'; id: string; primary: string; person: ChatPerson }
-  | { kind: 'channel'; id: string; primary: string; conv: ChatConversation }
-  | { kind: 'ticket'; id: string; primary: string; conv: ChatConversation };
-
-const PRESENCE_DOT: Record<ChatPresence, string> = {
-  available: 'var(--ds-icon-success, #22A06B)',
-  busy: 'var(--ds-icon-danger, #E34935)',
-  away: 'var(--ds-icon-warning, #E2B203)',
-  offline: 'var(--ds-icon-disabled, #8590A2)',
-  on_leave: 'var(--ds-icon-disabled, #8590A2)',
-};
 
 const AVATAR_PALETTE = [
   'var(--ds-background-accent-blue-bolder, #0C66E4)',
@@ -54,18 +46,34 @@ function hashIndex(id: string, mod: number): number {
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/);
-  if (parts.length === 0) return '?';
+  if (parts.length === 0 || !parts[0]) return '?';
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
 const subtlestText = 'var(--ds-text-subtlest, #6B778C)';
 
+// Render order for grouped sections.
+const SECTION_ORDER: ChatSearchType[] = ['person', 'conversation', 'message', 'project'];
+
+const headingLabel: Record<ChatSearchType, string> = {
+  person: 'People',
+  conversation: 'Conversations',
+  message: 'Messages',
+  project: 'Projects',
+};
+
+const metaLabel: Record<ChatSearchType, string> = {
+  person: 'Person',
+  conversation: 'Conversation',
+  message: 'Message',
+  project: 'Project',
+};
+
 export function QuickSwitcher({ isOpen, onClose, onPick }: QuickSwitcherProps) {
-  const { groups } = useChatPeople();
-  const { conversations } = useConversations();
   const [query, setQuery] = React.useState('');
   const [activeIndex, setActiveIndex] = React.useState(0);
+  const { results, isLoading } = useChatSearch(query);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -74,86 +82,40 @@ export function QuickSwitcher({ isOpen, onClose, onPick }: QuickSwitcherProps) {
     }
   }, [isOpen]);
 
-  const people = React.useMemo<ChatPerson[]>(
-    () => (groups ?? []).flatMap((g) => g.people),
-    [groups],
+  // Flatten grouped results into the keyboard-navigable order.
+  const flat = React.useMemo<ChatSearchRow[]>(
+    () => SECTION_ORDER.flatMap((t) => results[t]),
+    [results],
   );
 
-  const q = query.trim().toLowerCase();
-
-  const results = React.useMemo<Result[]>(() => {
-    const needle = q.replace(/^#/, '');
-    const peopleResults: Result[] = people
-      .filter((p) => !q || p.name.toLowerCase().includes(needle) || (p.role ?? '').toLowerCase().includes(needle))
-      .map((p) => ({
-        kind: 'person' as const,
-        id: p.id,
-        primary: p.role ? `${p.name} · ${p.role}` : p.name,
-        person: p,
-      }));
-
-    const channelResults: Result[] = (conversations ?? [])
-      .filter((c) => c.kind === 'channel')
-      .filter((c) => !q || c.title.toLowerCase().includes(needle))
-      .map((c) => ({ kind: 'channel' as const, id: c.id, primary: `# ${c.title}`, conv: c }));
-
-    const ticketResults: Result[] = (conversations ?? [])
-      .filter((c) => c.kind === 'ticket')
-      .filter(
-        (c) =>
-          !q ||
-          c.title.toLowerCase().includes(needle) ||
-          (c.ticketKey ?? '').toLowerCase().includes(needle),
-      )
-      .map((c) => ({
-        kind: 'ticket' as const,
-        id: c.id,
-        primary: c.ticketKey ? `${c.ticketKey} · ${c.title}` : c.title,
-        conv: c,
-      }));
-
-    return [...peopleResults, ...channelResults, ...ticketResults];
-  }, [people, conversations, q]);
-
   React.useEffect(() => {
-    setActiveIndex((i) => (results.length === 0 ? 0 : Math.min(i, results.length - 1)));
-  }, [results.length]);
+    setActiveIndex((i) => (flat.length === 0 ? 0 : Math.min(i, flat.length - 1)));
+  }, [flat.length]);
 
   if (!isOpen) return null;
 
-  const pick = (r: Result) => {
-    onPick(r.kind, r.id);
+  const q = query.trim();
+
+  const pick = (r: ChatSearchRow) => {
+    onPick(r);
     onClose();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setActiveIndex((i) => (results.length === 0 ? 0 : (i + 1) % results.length));
+      setActiveIndex((i) => (flat.length === 0 ? 0 : (i + 1) % flat.length));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setActiveIndex((i) => (results.length === 0 ? 0 : (i - 1 + results.length) % results.length));
+      setActiveIndex((i) => (flat.length === 0 ? 0 : (i - 1 + flat.length) % flat.length));
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      const r = results[activeIndex];
+      const r = flat[activeIndex];
       if (r) pick(r);
     } else if (e.key === 'Escape') {
       e.preventDefault();
       onClose();
     }
-  };
-
-  // Render results with section headings injected at group boundaries.
-  let renderedKind: Result['kind'] | null = null;
-  const headingLabel: Record<Result['kind'], string> = {
-    person: 'People',
-    channel: 'Channels',
-    ticket: 'Tickets',
-  };
-  const metaLabel: Record<Result['kind'], string> = {
-    person: 'Person',
-    channel: 'Channel',
-    ticket: 'Ticket',
   };
 
   return (
@@ -169,29 +131,13 @@ export function QuickSwitcher({ isOpen, onClose, onPick }: QuickSwitcherProps) {
             borderBottom: '1px solid var(--ds-border, #DFE1E6)',
           }}
         >
-          <span
-            style={{
-              height: 24,
-              padding: '0 8px',
-              borderRadius: 3,
-              background: 'var(--ds-background-neutral, #F1F2F4)',
-              border: '1px solid var(--ds-border, #DFE1E6)',
-              fontSize: 12,
-              fontWeight: 600,
-              color: 'var(--ds-text-subtle, #44546F)',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            ⌘K
-          </span>
           <div style={{ flex: 1 }}>
             <Textfield
               autoFocus
               value={query}
               onChange={(e) => setQuery((e.target as HTMLInputElement).value)}
               placeholder="Jump to…"
-              aria-label="Jump to a person, channel, or ticket"
+              aria-label="Jump to a person, conversation, message, or project"
               elemBeforeInput={
                 <span style={{ display: 'inline-flex', paddingLeft: 8 }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={subtlestText} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -206,124 +152,136 @@ export function QuickSwitcher({ isOpen, onClose, onPick }: QuickSwitcherProps) {
 
         {/* Results */}
         <div style={{ maxHeight: 360, overflowY: 'auto', padding: '4px 0' }} role="listbox" aria-label="Quick switcher results">
-          {results.length === 0 ? (
+          {flat.length === 0 ? (
             <div style={{ padding: '24px 16px', fontSize: 14, color: subtlestText }}>
-              {q ? `No matches for “${query}”.` : 'Start typing to jump to a person, channel, or ticket.'}
+              {isLoading
+                ? 'Searching…'
+                : q
+                  ? `No matches for “${query}”.`
+                  : 'Start typing to jump to a person, conversation, message, or project.'}
             </div>
           ) : (
-            results.map((r, idx) => {
-              const showHeading = r.kind !== renderedKind;
-              renderedKind = r.kind;
-              const isActive = idx === activeIndex;
-              return (
-                <React.Fragment key={`${r.kind}-${r.id}`}>
-                  {showHeading && (
-                    <div style={{ padding: '8px 16px 4px' }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: subtlestText }}>{headingLabel[r.kind]}</span>
-                    </div>
-                  )}
-                  <div
-                    role="option"
-                    aria-selected={isActive}
-                    tabIndex={-1}
-                    onMouseEnter={() => setActiveIndex(idx)}
-                    onClick={() => pick(r)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '8px 16px',
-                      position: 'relative',
-                      cursor: 'pointer',
-                      background: isActive ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
-                    }}
-                  >
-                    {isActive && (
-                      <span
-                        style={{
-                          position: 'absolute',
-                          left: 0,
-                          top: 0,
-                          bottom: 0,
-                          width: 3,
-                          background: 'var(--ds-border-selected, #0C66E4)',
-                        }}
-                      />
+            (() => {
+              let renderedType: ChatSearchType | null = null;
+              return flat.map((r, idx) => {
+                const showHeading = r.result_type !== renderedType;
+                renderedType = r.result_type;
+                const isActive = idx === activeIndex;
+                const isPerson = r.result_type === 'person';
+                return (
+                  <React.Fragment key={`${r.result_type}-${r.ref_id}-${idx}`}>
+                    {showHeading && (
+                      <div style={{ padding: '8px 16px 4px' }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: subtlestText }}>
+                          {headingLabel[r.result_type]}
+                        </span>
+                      </div>
                     )}
-                    {r.kind === 'person' ? (
-                      <span style={{ position: 'relative', flex: '0 0 28px', width: 28, height: 28 }}>
+                    <div
+                      role="option"
+                      aria-selected={isActive}
+                      tabIndex={-1}
+                      onMouseEnter={() => setActiveIndex(idx)}
+                      onClick={() => pick(r)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 12,
+                        padding: '8px 16px',
+                        position: 'relative',
+                        cursor: 'pointer',
+                        background: isActive ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+                      }}
+                    >
+                      {isActive && (
+                        <span
+                          style={{
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            width: 3,
+                            background: 'var(--ds-border-selected, #0C66E4)',
+                          }}
+                        />
+                      )}
+                      {isPerson ? (
                         <span
                           style={{
                             width: 28,
                             height: 28,
                             borderRadius: '50%',
+                            flex: '0 0 auto',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: 'var(--ds-text-inverse, #FFFFFF)',
                             fontSize: 11,
                             fontWeight: 600,
-                            background: AVATAR_PALETTE[hashIndex(r.id, AVATAR_PALETTE.length)],
+                            background: AVATAR_PALETTE[hashIndex(r.ref_id, AVATAR_PALETTE.length)],
                           }}
                         >
-                          {initials(r.person.name)}
+                          {initials(r.title)}
                         </span>
+                      ) : (
                         <span
                           style={{
-                            position: 'absolute',
-                            bottom: -1,
-                            right: -1,
-                            width: 10,
-                            height: 10,
-                            borderRadius: '50%',
-                            background: PRESENCE_DOT[r.person.presence],
-                            border: '2px solid var(--ds-surface, #FFFFFF)',
+                            width: 28,
+                            height: 28,
+                            borderRadius: 8,
+                            flex: '0 0 auto',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'var(--ds-text-inverse, #FFFFFF)',
+                            fontSize: r.result_type === 'message' ? 12 : 11,
+                            fontWeight: 700,
+                            background:
+                              r.result_type === 'project'
+                                ? 'var(--ds-background-accent-green-bolder, #22A06B)'
+                                : r.result_type === 'message'
+                                  ? 'var(--ds-background-brand-bold, #0C66E4)'
+                                  : 'var(--ds-background-accent-purple-bolder, #6E5DC6)',
                           }}
-                        />
-                      </span>
-                    ) : (
-                      <span
-                        style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: 8,
-                          flex: '0 0 auto',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'var(--ds-text-inverse, #FFFFFF)',
-                          fontSize: r.kind === 'ticket' ? 8 : 12,
-                          fontWeight: 700,
-                          background:
-                            r.kind === 'ticket'
-                              ? 'var(--ds-background-brand-bold, #0C66E4)'
-                              : 'var(--ds-background-accent-purple-bolder, #6E5DC6)',
-                        }}
-                      >
-                        {r.kind === 'ticket'
-                          ? ((r.conv.ticketKey ?? r.conv.title).split('-').pop() ?? '').slice(0, 4)
-                          : '#'}
-                      </span>
-                    )}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{
-                          fontSize: 14,
-                          fontWeight: 500,
-                          color: 'var(--ds-text, #172B4D)',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {r.primary}
+                        >
+                          {r.result_type === 'project' ? r.title.slice(0, 2).toUpperCase() : '#'}
+                        </span>
+                      )}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 500,
+                            color: 'var(--ds-text, #172B4D)',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {r.title}
+                        </div>
+                        {r.subtitle && (
+                          <div
+                            style={{
+                              fontSize: 12,
+                              color: subtlestText,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {r.subtitle}
+                          </div>
+                        )}
                       </div>
+                      <span style={{ fontSize: 12, color: subtlestText, flex: '0 0 auto' }}>
+                        {metaLabel[r.result_type]}
+                      </span>
                     </div>
-                    <span style={{ fontSize: 12, color: subtlestText, flex: '0 0 auto' }}>{metaLabel[r.kind]}</span>
-                  </div>
-                </React.Fragment>
-              );
-            })
+                  </React.Fragment>
+                );
+              });
+            })()
           )}
         </div>
 

@@ -15,6 +15,7 @@
 import React from 'react';
 import { IconButton } from '@atlaskit/button/new';
 import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
+import SearchIcon from '@atlaskit/icon/glyph/search';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
@@ -32,6 +33,7 @@ interface ChatDockProps {
   onToggleCollapsed: () => void;
   onNewMessage?: () => void;
   onPopOut?: () => void;
+  onOpenSearch?: () => void;
 }
 
 const PRESENCE_DOT: Record<ChatPresence, string> = {
@@ -141,6 +143,7 @@ export function ChatDock({
   onToggleCollapsed,
   onNewMessage,
   onPopOut,
+  onOpenSearch,
 }: ChatDockProps) {
   // Collapsed: render only the FAB. No data hook subscription is created here; callers
   // gate realtime on !collapsed. We still need an unread total for the badge — read it
@@ -177,6 +180,7 @@ export function ChatDock({
     <div className="cc-dock" role="dialog" aria-label="Messages">
       <div className="cc-dock__header">
         <div className="cc-dock__title">Messages</div>
+        <IconButton icon={SearchIcon} label="Search" appearance="subtle" spacing="compact" onClick={onOpenSearch} />
         <IconButton icon={EditorAddIcon} label="New message" appearance="subtle" spacing="compact" onClick={onNewMessage} />
         <IconButton icon={ShortcutIcon} label="Pop out" appearance="subtle" spacing="compact" onClick={onPopOut} />
         <IconButton icon={ChevronDownIcon} label="Minimize" appearance="subtle" spacing="compact" onClick={onToggleCollapsed} />
