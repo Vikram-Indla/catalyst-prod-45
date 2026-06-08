@@ -11,6 +11,7 @@ import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdow
 import type { ChatConversation, ChatPerson } from '@/types/chat';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { AddPeopleModal } from '../AddPeopleModal';
+import { useArchiveConversation } from '@/hooks/chat/useArchiveConversation';
 import { Avatar, colorFor, initialsOf, type PresenceColor } from './avatar';
 
 export interface ConversationHeaderProps {
@@ -31,6 +32,7 @@ const MAX_VISIBLE_MEMBERS = 4;
 
 export function ConversationHeader({ conversation, members = [], onAskCaty }: ConversationHeaderProps) {
   const [addPeopleOpen, setAddPeopleOpen] = useState(false);
+  const { setArchived } = useArchiveConversation();
 
   if (!conversation) {
     return (
@@ -108,6 +110,9 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
         <DropdownItemGroup>
           <DropdownItem>View ticket</DropdownItem>
           <DropdownItem onClick={() => setAddPeopleOpen(true)}>Add people</DropdownItem>
+          <DropdownItem onClick={() => void setArchived(conversation.id, !conversation.isArchived)}>
+            {conversation.isArchived ? 'Unarchive conversation' : 'Archive conversation'}
+          </DropdownItem>
           <DropdownItem>Mute conversation</DropdownItem>
         </DropdownItemGroup>
         <DropdownItemGroup>
