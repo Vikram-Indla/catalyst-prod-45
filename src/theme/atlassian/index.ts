@@ -1,7 +1,7 @@
 /**
  * ADS Theme — barrel export.
  *
- * Consumers import from '@/theme/ads'. Never reach into individual files
+ * Consumers import from '@/theme/atlassian'. Never reach into individual files
  * from outside this folder — the contract is this barrel plus the named
  * tokens in tokens.ts.
  */

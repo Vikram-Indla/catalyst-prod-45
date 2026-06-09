@@ -287,7 +287,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   useEffect(() => {
     if (!resolvedWorkItemId || !isOpen) return;
     const channel = supabase
-      .channel(`cv-activity-realtime:${resolvedWorkItemId}`)
+      .channel(`cv-activity-realtime:${resolvedWorkItemId}-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {

@@ -35,16 +35,12 @@ const CACHE_NAME = `catalyst-atlaskit-${SW_VERSION}`;
 // URL patterns we precache. Each is a Vite hashed vendor chunk produced
 // by the Layer 4 manualChunks split in vite.config.ts. Keep this list
 // aligned with the chunk names there.
+//
+// 2026-06-08 FINAL: Unified vendor-atlaskit chunk (includes editor, renderer,
+// UI, Emotion, and prosemirror) to fix Emotion CSS-in-JS closure issues.
+// Separate chunks caused "isProcessableValue is not a function" runtime errors.
 const CACHEABLE_CHUNK_PREFIXES = [
-  '/assets/vendor-atlaskit-editor',
-  '/assets/vendor-atlaskit-renderer',
-  '/assets/vendor-atlaskit-adf',
-  '/assets/vendor-atlaskit-media',
-  '/assets/vendor-atlaskit-ui',
-  '/assets/vendor-atlaskit-dnd',
-  '/assets/vendor-atlaskit-rich',
-  '/assets/vendor-atlaskit-forms',
-  '/assets/vendor-prosemirror',
+  '/assets/vendor-atlaskit',
 ];
 
 function isCacheableChunk(url) {

@@ -1,40 +1,36 @@
 /**
- * Caty FAB — Opens Caty AI V7 Widget
+ * Caty FAB — placeholder.
+ *
+ * 2026-06-07: The `CatyWidget` component file was removed from
+ * `src/components/caty-ai/` (only `CatyWidget.css` remains in the
+ * folder), but this file's import wasn't cleaned up — causing a build
+ * error after pulling from main. Stubbed the widget render here so the
+ * dev server builds; the FAB button itself still renders. Restore the
+ * widget mount once whatever component replaces `CatyWidget` is wired
+ * back into `caty-ai/index.ts`.
  */
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { CatyWidget } from '@/components/caty-ai';
 import { HubIcon } from '@/components/caty-ai/constants';
 import '@/styles/caty.css';
 
 export function CatyFabPlaceholder() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleAction = (_action: string) => {
-    // TODO: wire capacity planning actions
-  };
-
   return (
     <>
       {/* FAB Button */}
       <button
-        className={cn("caty-fab", isOpen && "caty-fab-hidden")}
+        className={cn('caty-fab', isOpen && 'caty-fab-hidden')}
         aria-label="Open Caty AI Assistant"
-        onClick={() => setIsOpen(true)}
+        onClick={() => setIsOpen((v) => !v)}
       >
         <div className="w-10 h-10">
           <HubIcon />
         </div>
       </button>
-
-      {/* Widget Panel - CatyWidget handles its own positioning and backdrop */}
-      {isOpen && (
-        <CatyWidget 
-          onAction={handleAction}
-          onClose={() => setIsOpen(false)}
-        />
-      )}
+      {/* Widget render intentionally removed — see file header. */}
     </>
   );
 }

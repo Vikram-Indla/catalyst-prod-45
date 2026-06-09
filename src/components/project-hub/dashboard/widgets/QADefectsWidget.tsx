@@ -16,7 +16,7 @@
  */
 import { useEffect, useState } from 'react';
 import { useAutoRefresh } from '@/hooks/useAutoRefresh';
-import type { WidgetProps } from '../widget-registry';
+import type { WidgetProps } from '../widget-types';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
 import PaginationFooter from '../PaginationFooter';

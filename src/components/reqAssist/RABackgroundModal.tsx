@@ -60,7 +60,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
   // FIX 1: Realtime listener on brd_processing_queue for background completion
   useEffect(() => {
     if (!resolvedBrdId) return;
-    const channel = supabase.channel(`epic-gen-${resolvedBrdId}`)
+    const channel = supabase.channel(`epic-gen-${resolvedBrdId}-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', {
         event: 'UPDATE',
         schema: 'public',

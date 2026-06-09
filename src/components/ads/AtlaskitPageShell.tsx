@@ -59,7 +59,7 @@
  */
 import { type ReactNode } from 'react';
 import { token } from '@atlaskit/tokens';
-import { adsTokens, cp } from '@/theme/ads/tokens';
+import { adsTokens, cp } from '@/theme/atlassian/tokens';
 import { forwardTestId } from './internal/forwardTestId';
 
 /**

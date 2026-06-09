@@ -23,7 +23,7 @@ import { useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import Spinner from '@atlaskit/spinner';
 import Tooltip from '@atlaskit/tooltip';
-import type { WidgetProps } from '../widget-registry';
+import type { WidgetProps } from '../widget-types';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
 import { useTimeInStatusMatrix, type TimeInStatusMatrixRow } from '@/hooks/useDashboardWidgets';

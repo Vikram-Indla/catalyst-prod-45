@@ -367,7 +367,7 @@ export function BrActivitySection({
   useEffect(() => {
     if (!enabled) return;
     const channel = supabase
-      .channel(`br-activity-realtime:${requestId}`)
+      .channel(`br-activity-realtime:${requestId}-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {
