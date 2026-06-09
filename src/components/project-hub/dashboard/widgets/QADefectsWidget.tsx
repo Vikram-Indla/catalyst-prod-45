@@ -209,8 +209,15 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         },
         {
           key: 'status',
+          /* 2026-06-09 Vikram parity — ADS canonical Lozenge with sentence-case
+             override (data-cp-lozenge-jira-parity) so font matches Atlaskit
+             spec (was StatusLozenge wrapper bespoke font). */
           content: (
-            <StatusLozenge status={toStatusCategory(d.status)}>{statusLabel}</StatusLozenge>
+            <span data-cp-lozenge-jira-parity style={{ display: 'inline-flex' }}>
+              <Lozenge appearance={({ done: 'success', inprogress: 'inprogress', new: 'default' } as Record<string, 'success' | 'inprogress' | 'default'>)[toStatusCategory(d.status) ?? 'new'] ?? 'default'}>
+                {statusLabel}
+              </Lozenge>
+            </span>
           ),
         },
         {

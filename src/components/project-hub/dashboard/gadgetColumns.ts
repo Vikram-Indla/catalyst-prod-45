@@ -41,7 +41,7 @@ const INCIDENT_COLUMNS: GadgetColumnDef[] = [
   { id: 'title',      label: 'Title',       defaultVisible: true,  defaultWidth: 700, minWidth: 240 },
   { id: 'status',     label: 'Status',      defaultVisible: true,  defaultWidth: 140, minWidth: 100 },
   { id: 'assignee',   label: 'Assignee',    defaultVisible: true,  defaultWidth: 180, minWidth: 110 },
-  { id: 'started',    label: 'Started',     defaultVisible: true,  defaultWidth: 120, minWidth: 80  },
+  { id: 'started',    label: 'Due date',    defaultVisible: true,  defaultWidth: 120, minWidth: 80  },
   { id: 'reporter',   label: 'Reporter',    defaultVisible: false, defaultWidth: 180, minWidth: 110 },
   { id: 'severity',   label: 'Severity',    defaultVisible: false, defaultWidth: 120, minWidth: 80  },
   { id: 'created',    label: 'Created',     defaultVisible: false, defaultWidth: 130, minWidth: 96  },
@@ -76,11 +76,13 @@ const OVERDUE_COLUMNS: GadgetColumnDef[] = [
   { id: 'dueDate',  label: 'Due date',     defaultVisible: false, defaultWidth: 0, minWidth: 0 },
 ];
 
+// 2026-06-09 Vikram parity — Status column removed; the existing Reason
+// lozenge already encodes the hold reason (Awaiting Info / Blocked / etc.)
+// derived from status. Two columns rendering identical labels.
 const ONHOLD_COLUMNS: GadgetColumnDef[] = [
   { id: 'type',     label: 'Type',     defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
   { id: 'key',      label: 'Key',      defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
   { id: 'summary',  label: 'Summary',  defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
-  { id: 'status',   label: 'Status',   defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
   { id: 'assignee', label: 'Assignee', defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
   { id: 'reason',   label: 'Reason',   defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
 ];

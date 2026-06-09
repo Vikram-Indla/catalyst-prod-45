@@ -27,8 +27,10 @@
  *     forwarded to the workload hook + the click-through.
  *   - Loading skeleton + EmptyState fallback.
  */
+import { useState } from 'react';
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
+import PaginationFooter from '../PaginationFooter';
 import { useDashboardTeamWorkload, YEAR_2026_START } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { useQuery } from '@tanstack/react-query';
@@ -51,6 +53,7 @@ const BUGS_FILL = 'var(--ds-background-accent-red-bolder, #C9372C)';
 
 export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { settings } = useGadgetSettings('workload', projectKey);
+  const [page, setPage] = useState(0);
   const { data: workload, isLoading } = useDashboardTeamWorkload(projectId, {
     dateFrom: settings.dateFrom,
     dateTo: settings.dateTo,
@@ -144,9 +147,9 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
             topCount={top?.total ?? 0}
           />
 
-          {/* ── Workload rows ─────────────────────────────────────────── */}
+          {/* ── Workload rows — capped at 10 + pagination per Vikram ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {sorted.map((w) => (
+            {sorted.slice(page * 10, page * 10 + 10).map((w) => (
               <WorkloadRow
                 key={w.assignee}
                 assignee={w.assignee}
@@ -178,6 +181,12 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
               />
             ))}
           </div>
+          <PaginationFooter
+            page={page}
+            pageSize={10}
+            total={sorted.length}
+            onPageChange={setPage}
+          />
         </div>
       )}
     </WidgetWrapper>

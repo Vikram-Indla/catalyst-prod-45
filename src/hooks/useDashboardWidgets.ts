@@ -328,6 +328,10 @@ export function useDashboardOverdueItems(
         .eq('project_key', pKey)
         .is('deleted_at', null)
         .neq('status_category', 'Done')
+        // 2026-06-09 Vikram parity — exclude subtasks (Backend / Frontend /
+        // Sub-task / Integration). Overdue widget should surface parent
+        // tickets only; subtasks roll up to their parent.
+        .not('issue_type', 'in', '("Sub-task","Subtask","Backend","Frontend","Integration","API Requirement","API Req")')
         .lt('effective_due_date', today)
         .not('effective_due_date', 'is', null);
 
@@ -365,9 +369,11 @@ export function useDashboardOnHoldItems(
 
       let q = supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, status, assignee_display_name, issue_type')
+        .select('id, issue_key, summary, status, status_category, assignee_display_name, issue_type')
         .eq('project_key', pKey)
         .is('deleted_at', null)
+        // 2026-06-09 Vikram parity — exclude subtasks.
+        .not('issue_type', 'in', '("Sub-task","Subtask","Backend","Frontend","Integration","API Requirement","API Req")')
         .or('status.ilike.%hold%,status.ilike.%block%,status.ilike.%awaiting%,status.ilike.%impediment%');
 
       if (dateFrom) q = q.gte('jira_updated_at', dateFrom);

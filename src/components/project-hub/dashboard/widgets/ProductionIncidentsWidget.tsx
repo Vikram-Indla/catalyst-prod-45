@@ -127,7 +127,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
     { key: 'title',    content: headLabel('Title'),      isSortable: false },
     { key: 'status',   content: headLabel('Status'),     isSortable: true },
     { key: 'assignee', content: headLabel('Assignee'),   isSortable: false },
-    { key: 'started',  content: headLabel('Started'),    isSortable: true },
+    { key: 'started',  content: headLabel('Due date'),   isSortable: true },
     { key: 'reporter', content: headLabel('Reporter'),   isSortable: false },
     { key: 'severity', content: headLabel('Severity'),   isSortable: true },
     { key: 'created',  content: headLabel('Created'),    isSortable: true },
@@ -244,8 +244,10 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         },
         {
           key: 'started',
+          /* 2026-06-09 Vikram parity — column repurposed Started → Due date.
+             Fallback to created if due_date null so the column never empty. */
           content: (() => {
-            const raw = inc.jira_created_at ?? inc.created_at ?? null;
+            const raw = inc.effective_due_date ?? inc.due_date ?? inc.jira_created_at ?? inc.created_at ?? null;
             let display = '—';
             if (raw) {
               try {
