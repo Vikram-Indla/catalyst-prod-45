@@ -21,6 +21,7 @@ import { ThreadPanel } from './main/ThreadPanel';
 import { ChatMentionsPanel } from './main/ChatMentionsPanel';
 import { ChatBookmarksPanel } from './main/ChatBookmarksPanel';
 import { PeopleList } from './main/PeopleList';
+import { ChatRightPane } from './ChatRightPane';
 // ads-scanner:ignore-next-line -- chat.css uses only ADS tokens
 import './chat.css';
 
@@ -33,6 +34,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
   const [params, setParams] = useSearchParams();
   const urlConv = params.get('conv') ?? undefined;
   const rail = params.get('rail') ?? undefined;
+  const urlThread = params.get('thread') ?? undefined;
   const [threadParentId, setThreadParentId] = useState<string | null>(null);
 
   const { conversations } = useConversations();
@@ -75,7 +77,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
 
   // Rail panel surfaces — when a `?rail=` param is set, the secondary
   // panel replaces the conversation pane (Mentions / Saved / People).
-  // Threads and Drafts rails fall through to conversation view for now
+  // Threads rail renders ChatRightPane; Drafts falls through to conversation view
   // (next-turn scope: dedicated aggregated views).
   if (rail === 'mentions') {
     return (
@@ -95,6 +97,27 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
     return (
       <div className="cc-main cc-main--rail">
         <PeopleList onConversationCreated={handleSelect} />
+      </div>
+    );
+  }
+  if (rail === 'threads' && resolvedActiveId) {
+    return (
+      <div className="cc-main cc-main--rail">
+        <ChatRightPane
+          conversationId={resolvedActiveId}
+          threadParentId={urlThread}
+          onSelectThread={(id) => {
+            const next = new URLSearchParams(params);
+            next.set('thread', id);
+            setParams(next);
+          }}
+          onClose={() => {
+            const next = new URLSearchParams(params);
+            next.delete('thread');
+            next.delete('rail');
+            setParams(next);
+          }}
+        />
       </div>
     );
   }
