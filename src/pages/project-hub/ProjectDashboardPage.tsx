@@ -17,7 +17,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, LayoutGrid, RotateCcw, Tv, TvMinimal, Star, StarOff, RefreshCw, MoreHorizontal, Link2 } from '@/lib/atlaskit-icons';
+import { toast } from 'sonner';
+import { Plus, LayoutGrid, RotateCcw, Tv, TvMinimal, Star, StarOff, RefreshCw, MoreHorizontal, Link2, Edit as EditIcon } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
 import AkButton, { IconButton as AkIconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
@@ -34,76 +35,6 @@ import { nextSpan, type WidgetSpan } from '@/components/project-hub/dashboard/wi
 import { DashboardFilterProvider } from '@/contexts/DashboardFilterContext';
 import { useDashboardRealtime } from '@/hooks/useDashboardRealtime';
 
-const LAYOUT_OPTIONS: { key: '1col' | '2col-equal' | '2col-left-wide' | '3col-equal'; label: string }[] = [
-  { key: '1col', label: '1 column' },
-  { key: '2col-equal', label: '2 columns equal' },
-  { key: '2col-left-wide', label: '2 columns left-wide' },
-  { key: '3col-equal', label: '3 columns equal' },
-];
-
-function LayoutDropdown({ onSelect }: { onSelect: (preset: '1col' | '2col-equal' | '2col-left-wide' | '3col-equal') => void }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
-
-  return (
-    <div ref={ref} style={{ position: 'relative', display: 'inline-flex' }}>
-      <Button appearance="subtle" spacing="compact" onClick={() => setOpen((o) => !o)}>
-        Change layout
-      </Button>
-      {open && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 'calc(100% + 4px)',
-            right: 0,
-            zIndex: 400,
-            background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
-            minWidth: 180,
-            padding: '4px 0',
-          }}
-        >
-          <div style={{ padding: '4px 12px', fontSize: 11, fontWeight: 653, color: token('color.text.subtlest', '#6B778C') }}>
-            Preset layouts
-          </div>
-          {LAYOUT_OPTIONS.map((opt) => (
-            <button
-              key={opt.key}
-              type="button"
-              onClick={() => { onSelect(opt.key); setOpen(false); }}
-              style={{
-                display: 'block',
-                width: '100%',
-                padding: '6px 12px',
-                border: 0,
-                background: 'transparent',
-                textAlign: 'left',
-                fontSize: 14,
-                color: token('color.text', '#292A2E'),
-                cursor: 'pointer',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'); }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function ProjectDashboardPage() {
   return (
@@ -309,36 +240,7 @@ function ProjectDashboardPageInner() {
     // Non-edit mode is handled inside DashboardWidgetGrid via persistedToggleCollapse.
   };
 
-  // Apply a preset layout — updates all visible widgets' spans in the draft.
-  const applyLayout = (preset: '1col' | '2col-equal' | '2col-left-wide' | '3col-equal') => {
-    setDraft((current) => {
-      if (!current) return current;
-      const visible = current.filter((w) => w.visible).sort((a, b) => a.position - b.position);
-      const spanMap = new Map<string, WidgetSpan>();
-      visible.forEach((w, i) => {
-        switch (preset) {
-          case '1col':
-            spanMap.set(w.id, 12);
-            break;
-          case '2col-equal':
-            spanMap.set(w.id, 6);
-            break;
-          case '2col-left-wide':
-            spanMap.set(w.id, i === 0 ? 8 : 4);
-            break;
-          case '3col-equal':
-            spanMap.set(w.id, 4);
-            break;
-        }
-      });
-      return current.map((w) => {
-        const newSpan = spanMap.get(w.id);
-        return newSpan != null ? { ...w, span: newSpan } : w;
-      });
-    });
-  };
-
-  // Reset — confirmation expected, but for now follow the existing
+// Reset — confirmation expected, but for now follow the existing
   // resetToDefaults contract. In edit mode, reset the DRAFT only.
   const resetLayout = () => {
     if (isEditing) {
@@ -465,7 +367,7 @@ function ProjectDashboardPageInner() {
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={<LayoutGrid size={13} />}
+        iconBefore={<EditIcon size={13} />}
         onClick={enterEditMode}
         testId="dashboard-edit-layout"
       >
@@ -488,6 +390,12 @@ function ProjectDashboardPageInner() {
             {presentation ? 'Exit TV mode' : 'TV mode'}
           </DropdownItem>
           <DropdownItem onClick={() => setGalleryOpen(true)}>Add gadget</DropdownItem>
+          <DropdownItem onClick={() => {
+            // 2026-06-09 Vikram parity: opens per-widget gear cluster so user
+            // can flip autoRefresh + autoRefreshMinutes for each gadget.
+            // Per-widget gear lives in WidgetWrapper → see GadgetSettingsPanel.
+            toast.info('Open any widget’s gear (⚙) to configure automatic refresh per gadget.');
+          }}>Configure automatic refresh</DropdownItem>
           <DropdownItem onClick={resetLayout}>Reset to defaults</DropdownItem>
         </DropdownItemGroup>
       </DropdownMenu>

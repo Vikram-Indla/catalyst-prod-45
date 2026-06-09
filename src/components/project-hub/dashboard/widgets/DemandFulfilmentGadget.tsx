@@ -1765,6 +1765,9 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           : 0;
 
         type FilterKey = 'active' | 'overdue' | 'done';
+        // 2026-06-09 — Vikram parity directive: use Atlaskit Lozenge directly
+        // (no hand-rolled pill chrome) so colors resolve from the canonical ADS
+        // token map. Selected state = 1px outline ring in the matching token.
         const renderPill = (
           key: FilterKey,
           label: string,
@@ -1802,33 +1805,9 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                 transition: 'outline-color 80ms ease',
               }}
             >
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  padding: '2px 6px',
-                  borderRadius: 3,
-                  fontSize: 11,
-                  fontWeight: 600,
-                  lineHeight: '16px',
-                  textTransform: 'none',
-                  background:
-                    appearance === 'inprogress'
-                      ? 'var(--ds-background-information, #E9F2FF)'
-                      : appearance === 'moved'
-                        ? 'var(--ds-background-warning, #FFF7D6)'
-                        : 'var(--ds-background-success, #DFFCF0)',
-                  color:
-                    appearance === 'inprogress'
-                      ? 'var(--ds-text-information, #0055CC)'
-                      : appearance === 'moved'
-                        ? 'var(--ds-text-warning, #7F5F01)'
-                        : 'var(--ds-text-success, #216E4E)',
-                }}
-              >
+              <Lozenge appearance={appearance}>
                 {label} {count}
-              </span>
+              </Lozenge>
             </span>
           );
         };
@@ -1844,7 +1823,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                 fontFamily: ATLAS_SANS,
               }}
             >
-              <KpiCell label="Total demands" value={totalCount} />
+              <KpiCell label="Total Epics" value={totalCount} />
               <KpiCell
                 label="Fulfilled"
                 value={`${fulfilledPct}%`}

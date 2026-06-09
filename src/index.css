@@ -519,6 +519,16 @@
   animation: dashboard-refresh-pulse 800ms ease-out;
 }
 
+/* Empty widget auto-sort (Session 4 / 2026-06-09 — Vikram parity directive).
+   Widgets that render an empty state set data-empty="true" via WidgetWrapper.
+   CSS `order` pushes them to the bottom of the grid so the user sees
+   populated widgets first. Drag-reorder in edit mode still works because
+   onDrop writes a new `position` to the underlying config; this rule is
+   purely a visual sort that happens AFTER the grid's `gridAutoFlow: row dense`. */
+[data-testid="project-dashboard-shell"] [data-widget-id][data-empty="true"] {
+  order: 100;
+}
+
 /* ════════════════════════════════════════════════════════════════════════════
    CATALYST V5 — BLUE + TEAL ENTERPRISE DESIGN SYSTEM
    CIO-Grade Polish with Blue Primary & Teal Success
