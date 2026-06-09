@@ -70,7 +70,8 @@ export function resolveWidgets(configs: DashboardWidgetConfig[]): ResolvedWidget
       ...def,
       visible: cfg?.visible ?? true,
       position: cfg?.position ?? def.defaultPosition,
-      collapsed: cfg?.collapsed ?? false,
+      /* 2026-06-09 Vikram parity — default collapsed when no persisted cfg. */
+      collapsed: cfg?.collapsed ?? true,
       span: cfg?.span ?? null,
     } as ResolvedWidget;
   }).sort((a, b) => a.position - b.position);
@@ -164,7 +165,9 @@ export function useDashboardWidgetConfig(projectId: string) {
         widget_id: def.id,
         visible: true,
         position: def.defaultPosition,
-        collapsed: false,
+        /* 2026-06-09 Vikram parity — gadgets default to collapsed so
+           dashboard reads as widget index; user expands per-widget. */
+        collapsed: true,
         span: def.defaultSpan,
       }));
       const { error } = await typedQuery('dashboard_widget_config' as any).upsert(rows, {
