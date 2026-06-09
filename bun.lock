@@ -222,7 +222,7 @@
     "@atlaskit/editor-plugin-table": "19.0.0",
     "@atlaskit/editor-plugins": "13.0.120",
     "@atlaskit/visually-hidden": "3.0.5",
-    "relay-runtime": "14.1.0",
+    "relay-runtime": "20.1.1",
   },
   "packages": {
     "@adobe/css-tools": ["@adobe/css-tools@4.4.4", "", {}, "sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg=="],
@@ -3303,7 +3303,7 @@
 
     "regexp.prototype.flags": ["regexp.prototype.flags@1.5.4", "", { "dependencies": { "call-bind": "^1.0.8", "define-properties": "^1.2.1", "es-errors": "^1.3.0", "get-proto": "^1.0.1", "gopd": "^1.2.0", "set-function-name": "^2.0.2" } }, "sha512-dYqgNSZbDwkaJ2ceRd9ojCGjBq+mOm9LmtXnAnEGyHhN/5R7iDW2TRw3h+o/jCFxus3P2LfWIIiwowAjANm7IA=="],
 
-    "relay-runtime": ["relay-runtime@14.1.0", "", { "dependencies": { "@babel/runtime": "^7.0.0", "fbjs": "^3.0.2", "invariant": "^2.2.4" } }, "sha512-t2DR2hZviHrdEQrOvFqwmvRWvZ0SjI/r4bS5f3qvMyXt4g1kw3RTb2RNVmbKGg6zEQhf7Na/brdqE4roApmclQ=="],
+    "relay-runtime": ["relay-runtime@20.1.1", "", { "dependencies": { "@babel/runtime": "^7.25.0", "fbjs": "^3.0.2", "invariant": "^2.2.4" } }, "sha512-N98ZkkyuIHdXmHaPuljihM1QbFYXATF0gxA0CESFphszsQzXs9A/zZloVfzdOI/xg3B3CfM/5nozvIoeTDIcfw=="],
 
     "remark-parse": ["remark-parse@11.0.0", "", { "dependencies": { "@types/mdast": "^4.0.0", "mdast-util-from-markdown": "^2.0.0", "micromark-util-types": "^2.0.0", "unified": "^11.0.0" } }, "sha512-FCxlKLNGknS5ba/1lmpYijMUzX2esxW5xQqjWxw2eHFfS2MSdaHVINFmhjo+qN1WhZhNimq0dZATN9pH0IDrpA=="],
 
@@ -4591,17 +4591,11 @@
 
     "@atlaskit/media-picker/uuid": ["uuid@3.4.0", "", { "bin": { "uuid": "./bin/uuid" } }, "sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A=="],
 
-    "@atlaskit/media-state/immer": ["immer@11.1.4", "", {}, "sha512-XREFCPo6ksxVzP4E0ekD5aMdf8WMwmdNaz6vuvxgI40UaEiu6q3p8X52aU6GdyvLY3XXX/8R7JOTXStz/nBbRw=="],
-
-    "@atlaskit/media-state/zustand": ["zustand@4.5.7", "", { "dependencies": { "use-sync-external-store": "^1.2.2" }, "peerDependencies": { "@types/react": ">=16.8", "immer": ">=9.0.6", "react": ">=16.8" }, "optionalPeers": ["@types/react", "immer", "react"] }, "sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw=="],
-
     "@atlaskit/media-ui/@atlaskit/button": ["@atlaskit/button@23.11.6", "", { "dependencies": { "@atlaskit/analytics-next": "^11.2.0", "@atlaskit/css": "^0.19.0", "@atlaskit/ds-lib": "^7.0.0", "@atlaskit/focus-ring": "^3.1.0", "@atlaskit/icon": "^35.0.0", "@atlaskit/interaction-context": "^3.1.0", "@atlaskit/platform-feature-flags": "^1.1.0", "@atlaskit/primitives": "^19.0.0", "@atlaskit/spinner": "^19.1.0", "@atlaskit/theme": "^23.2.0", "@atlaskit/tokens": "^13.0.0", "@atlaskit/tooltip": "^22.2.0", "@atlaskit/visually-hidden": "^3.1.0", "@babel/runtime": "^7.0.0", "@compiled/react": "^0.20.0", "@emotion/react": "^11.7.1" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-qtTZHHIS7LeJBC0A8m0n8eZz03s3cNHIA5INK4wTFBFksqa+ScoyFPj+y4H6hEFqyI6CUhFq893Kj2vkfwU3Gg=="],
 
     "@atlaskit/media-ui/@atlaskit/form": ["@atlaskit/form@15.5.6", "", { "dependencies": { "@atlaskit/css": "^0.19.0", "@atlaskit/ds-lib": "^7.0.0", "@atlaskit/heading": "^5.4.0", "@atlaskit/icon": "^35.0.0", "@atlaskit/platform-feature-flags": "^1.1.0", "@atlaskit/primitives": "^19.0.0", "@atlaskit/tokens": "^13.0.0", "@atlaskit/visually-hidden": "^3.1.0", "@babel/runtime": "^7.0.0", "@compiled/react": "^0.20.0", "final-form": "^4.20.3", "final-form-focus": "^1.1.2", "lodash": "^4.17.21" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-ocjHXkvNGUzjlGcwIabxX3SL27zsHD1R3idpATokQXbdELsyYQJuRu70NISEPQUQIIknPKQRm3eqMxlTGWhAtQ=="],
 
     "@atlaskit/media-ui/@atlaskit/icon": ["@atlaskit/icon@35.4.0", "", { "dependencies": { "@atlaskit/platform-feature-flags": "^1.1.0", "@atlaskit/tile": "^1.1.0", "@atlaskit/tokens": "^13.1.0", "@babel/runtime": "^7.0.0", "@compiled/react": "^0.20.0" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-zE8DtQVaPTL3H6OSOwtgDihal0d5As/J3f4W2gzVLn9gOv24sFMlFC/GEEuotyYOFFwS7+NeT2pVqOi2IRv17g=="],
-
-    "@atlaskit/media-ui/@atlaskit/media-state": ["@atlaskit/media-state@2.1.0", "", { "dependencies": { "@atlaskit/media-common": "^13.1.0", "@babel/runtime": "^7.0.0", "immer": "11.1.4", "zustand": "^4.3.9" } }, "sha512-STNcqioONV3TsZ307eoeKLLZ1WPCHit0Ntpke2m4530P2Yb3ukWxaKRZOKgCrNstlPv4UFkRA2vZq+BIEdSDjg=="],
 
     "@atlaskit/media-ui/@atlaskit/modal-dialog": ["@atlaskit/modal-dialog@15.2.5", "", { "dependencies": { "@atlaskit/analytics-next": "^11.2.0", "@atlaskit/blanket": "^15.0.0", "@atlaskit/button": "^23.11.0", "@atlaskit/css": "^0.19.0", "@atlaskit/ds-lib": "^7.0.0", "@atlaskit/icon": "^35.4.0", "@atlaskit/layering": "^3.7.0", "@atlaskit/motion": "^6.2.0", "@atlaskit/platform-feature-flags": "^1.1.0", "@atlaskit/portal": "^5.5.0", "@atlaskit/pragmatic-drag-and-drop": "^1.8.0", "@atlaskit/primitives": "^19.0.0", "@atlaskit/theme": "^25.0.0", "@atlaskit/tokens": "^13.1.0", "@atlaskit/top-layer": "^0.13.0", "@babel/runtime": "^7.0.0", "@compiled/react": "^0.20.0", "bind-event-listener": "^3.0.0", "raf-schd": "^4.0.3", "react-focus-lock": "^2.9.5", "react-scrolllock": "^5.0.1" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-5+7S5cjDNbQR/tCuWHApZQxBe91r0WlBjs7+J7r/DQCeKV5TrX1SAGfnm9VMzAthU/DleslabyHJwCbPL19xpw=="],
 
@@ -6103,18 +6097,6 @@
 
     "@atlaskit/media-filmstrip/@atlaskit/media-viewer/@atlaskit/tooltip": ["@atlaskit/tooltip@22.2.2", "", { "dependencies": { "@atlaskit/analytics-next": "^11.2.0", "@atlaskit/ds-lib": "^7.0.0", "@atlaskit/layering": "^3.7.0", "@atlaskit/motion": "^6.2.0", "@atlaskit/platform-feature-flags": "^1.1.0", "@atlaskit/popper": "^7.2.0", "@atlaskit/portal": "^5.5.0", "@atlaskit/theme": "^23.2.0", "@atlaskit/tokens": "^13.0.0", "@atlaskit/top-layer": "^0.8.0", "@babel/runtime": "^7.0.0", "@compiled/react": "^0.20.0", "bind-event-listener": "^3.0.0" }, "peerDependencies": { "react": "^18.2.0", "react-dom": "^18.2.0" } }, "sha512-SSBXAlUe9OMsG9itRDjSZphuKhV2ktXMkh7hW+s45SPhO+Nq/bV9N8rW8RQDa12jOr2xJbPXpeiUUOPPcicEdw=="],
 
-    "@atlaskit/media-picker/@atlaskit/media-ui/@atlaskit/button": ["@atlaskit/button@23.11.6", "", { "dependencies": { "@atlaskit/analytics-next": "^11.2.0", "@atlaskit/css": "^0.19.0", "@atlaskit/ds-lib": "^7.0.0", "@atlaskit/focus-ring": "^3.1.0", "@atlaskit/icon": "^35.0.0", "@atlaskit/interaction-context": "^3.1.0", "@atlaskit/platform-feature-flags": "^1.1.0", "@atlaskit/primitives": "^19.0.0", "@atlaskit/spinner": "^19.1.0", "@atlaskit/theme": "^23.2.0", "@atlaskit/tokens": "^13.0.0", "@atlaskit/tooltip": "^22.2.0", "@atlaskit/visually-hidden": "^3.1.0", "@babel/runtime": "^7.0.0", "@compiled/react": "^0.20.0", "@emotion/react": "^11.7.1" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-qtTZHHIS7LeJBC0A8m0n8eZz03s3cNHIA5INK4wTFBFksqa+ScoyFPj+y4H6hEFqyI6CUhFq893Kj2vkfwU3Gg=="],
-
-    "@atlaskit/media-picker/@atlaskit/media-ui/@atlaskit/form": ["@atlaskit/form@15.5.6", "", { "dependencies": { "@atlaskit/css": "^0.19.0", "@atlaskit/ds-lib": "^7.0.0", "@atlaskit/heading": "^5.4.0", "@atlaskit/icon": "^35.0.0", "@atlaskit/platform-feature-flags": "^1.1.0", "@atlaskit/primitives": "^19.0.0", "@atlaskit/tokens": "^13.0.0", "@atlaskit/visually-hidden": "^3.1.0", "@babel/runtime": "^7.0.0", "@compiled/react": "^0.20.0", "final-form": "^4.20.3", "final-form-focus": "^1.1.2", "lodash": "^4.17.21" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-ocjHXkvNGUzjlGcwIabxX3SL27zsHD1R3idpATokQXbdELsyYQJuRu70NISEPQUQIIknPKQRm3eqMxlTGWhAtQ=="],
-
-    "@atlaskit/media-picker/@atlaskit/media-ui/@atlaskit/media-state": ["@atlaskit/media-state@2.1.0", "", { "dependencies": { "@atlaskit/media-common": "^13.1.0", "@babel/runtime": "^7.0.0", "immer": "11.1.4", "zustand": "^4.3.9" } }, "sha512-STNcqioONV3TsZ307eoeKLLZ1WPCHit0Ntpke2m4530P2Yb3ukWxaKRZOKgCrNstlPv4UFkRA2vZq+BIEdSDjg=="],
-
-    "@atlaskit/media-picker/@atlaskit/media-ui/@atlaskit/primitives": ["@atlaskit/primitives@19.0.1", "", { "dependencies": { "@atlaskit/analytics-next": "^11.2.0", "@atlaskit/app-provider": "^4.3.0", "@atlaskit/css": "^0.19.0", "@atlaskit/ds-lib": "^7.0.0", "@atlaskit/interaction-context": "^3.1.0", "@atlaskit/tokens": "^13.0.0", "@atlaskit/visually-hidden": "^3.1.0", "@babel/runtime": "^7.0.0", "@compiled/react": "^0.20.0", "@emotion/react": "^11.7.1", "@emotion/serialize": "^1.1.0", "bind-event-listener": "^3.0.0", "tiny-invariant": "^1.2.0" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-8sw++3BDKzm3N39hDhP4qdzKtq1wlHpO9d5bzRkTyRVWjy4DcuRdBk2sIUTQVIbNM7k5z9ywfPvy7xf/JeYoPQ=="],
-
-    "@atlaskit/media-picker/@atlaskit/media-ui/@atlaskit/select": ["@atlaskit/select@21.12.3", "", { "dependencies": { "@atlaskit/analytics-next": "^11.2.0", "@atlaskit/ds-lib": "^7.0.0", "@atlaskit/icon": "^35.0.0", "@atlaskit/layering": "^3.7.0", "@atlaskit/platform-feature-flags": "^1.1.0", "@atlaskit/primitives": "^19.0.0", "@atlaskit/react-select": "^3.16.0", "@atlaskit/theme": "^23.2.0", "@atlaskit/tokens": "^13.0.0", "@atlaskit/top-layer": "^0.8.0", "@atlaskit/visually-hidden": "^3.1.0", "@babel/runtime": "^7.0.0", "@compiled/react": "^0.20.0", "@popperjs/core": "^2.11.8", "bind-event-listener": "^3.0.0", "react-focus-lock": "^2.9.5", "react-popper": "^2.3.0", "shallow-equal": "^3.1.0" }, "peerDependencies": { "react": "^18.2.0", "react-dom": "^18.2.0" } }, "sha512-1UTgFIJLddZoXKREORqaY3ZSzPE7qEivnybc5CTsoYSA9DijrKAG1rb5AT5Oi1O9gMys/ZQ2dsZuh4CpO3ilgg=="],
-
-    "@atlaskit/media-picker/@atlaskit/media-ui/@atlaskit/theme": ["@atlaskit/theme@23.2.0", "", { "dependencies": { "@atlaskit/ds-lib": "^7.0.0", "@atlaskit/tokens": "^13.0.0", "@babel/runtime": "^7.0.0" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-XRi0xXi9+4Oqmra/BMvm39LqZzG0du/6Is894pX3Rb+gW7F4q9e2Dxdy4DycyOGx55AVaNRVOidkTBfqNXP4Ug=="],
-
     "@atlaskit/media-ui/@atlaskit/button/@atlaskit/focus-ring": ["@atlaskit/focus-ring@3.1.0", "", { "dependencies": { "@atlaskit/tokens": "^13.0.0", "@babel/runtime": "^7.0.0", "@emotion/react": "^11.7.1" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-mrXeeqrV0wVnru59ZfRBG9VitjQA13roEiwU4efOHM/mHGrkWsFiCTdmwJAJklyBddiemUTM08I/+Av+QHHBag=="],
 
     "@atlaskit/media-ui/@atlaskit/button/@atlaskit/icon": ["@atlaskit/icon@35.0.0", "", { "dependencies": { "@atlaskit/platform-feature-flags": "^1.1.0", "@atlaskit/tile": "^1.1.0", "@atlaskit/tokens": "^13.0.0", "@babel/runtime": "^7.0.0", "@compiled/react": "^0.20.0" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-ZAojcCpI1FOpIwShMGi0GFNthCtqJ/b9yrpLiRTHAMEoSH9xi3ACNkeSUbAV33Zgp71M59EYNR/rhvCt+nSDEQ=="],
@@ -6129,10 +6111,6 @@
 
     "@atlaskit/media-ui/@atlaskit/icon/@atlaskit/tokens": ["@atlaskit/tokens@13.2.0", "", { "dependencies": { "@atlaskit/ds-lib": "^7.0.0", "@atlaskit/platform-feature-flags": "^1.1.0", "@babel/runtime": "^7.0.0", "@babel/traverse": "^7.23.2", "@babel/types": "^7.20.0", "bind-event-listener": "^3.0.0" }, "peerDependencies": { "react": "^18.2.0 || ^19.0.0" } }, "sha512-yvLe1Pl7zDMuchE9/taZ7mKnACoktDeKMkwItvQUK1bQOlsKWVj3nMTFM3bZX4Aihmolq2Te1pdEiMuW0/pO7w=="],
 
-    "@atlaskit/media-ui/@atlaskit/media-state/immer": ["immer@11.1.4", "", {}, "sha512-XREFCPo6ksxVzP4E0ekD5aMdf8WMwmdNaz6vuvxgI40UaEiu6q3p8X52aU6GdyvLY3XXX/8R7JOTXStz/nBbRw=="],
-
-    "@atlaskit/media-ui/@atlaskit/media-state/zustand": ["zustand@4.5.7", "", { "dependencies": { "use-sync-external-store": "^1.2.2" }, "peerDependencies": { "@types/react": ">=16.8", "immer": ">=9.0.6", "react": ">=16.8" }, "optionalPeers": ["@types/react", "immer", "react"] }, "sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw=="],
-
     "@atlaskit/media-ui/@atlaskit/modal-dialog/@atlaskit/analytics-next": ["@atlaskit/analytics-next@11.3.0", "", { "dependencies": { "@atlaskit/analytics-next-stable-react-context": "1.0.1", "@atlaskit/platform-feature-flags": "^1.1.0", "@babel/runtime": "^7.0.0", "prop-types": "^15.5.10", "use-memo-one": "^1.1.1" }, "peerDependencies": { "react": "^18.2.0", "react-dom": "^18.2.0" } }, "sha512-UDTl1YSRz7QCFXxTXctgsbVjXMVIIaoyqpH7SAZw2CRjKeTuihljtxBuv0C2EX5hocPS6b2KZKCwA4yEXHWozQ=="],
 
     "@atlaskit/media-ui/@atlaskit/modal-dialog/@atlaskit/tokens": ["@atlaskit/tokens@13.2.0", "", { "dependencies": { "@atlaskit/ds-lib": "^7.0.0", "@atlaskit/platform-feature-flags": "^1.1.0", "@babel/runtime": "^7.0.0", "@babel/traverse": "^7.23.2", "@babel/types": "^7.20.0", "bind-event-listener": "^3.0.0" }, "peerDependencies": { "react": "^18.2.0 || ^19.0.0" } }, "sha512-yvLe1Pl7zDMuchE9/taZ7mKnACoktDeKMkwItvQUK1bQOlsKWVj3nMTFM3bZX4Aihmolq2Te1pdEiMuW0/pO7w=="],
@@ -6140,14 +6118,6 @@
     "@atlaskit/media-ui/@atlaskit/modal-dialog/@atlaskit/top-layer": ["@atlaskit/top-layer@0.13.0", "", { "dependencies": { "@atlaskit/browser-apis": "^0.0.2", "@atlaskit/css": "^0.19.0", "@atlaskit/ds-lib": "^7.0.0", "@atlaskit/layering": "^3.7.0", "@atlaskit/tokens": "^13.1.0", "@babel/runtime": "^7.0.0", "@compiled/react": "^0.20.0", "bind-event-listener": "^3.0.0", "raf-schd": "^4.0.3" }, "peerDependencies": { "react": "^18.2.0 || ^19.0.0", "react-dom": "^18.2.0 || ^19.0.0" } }, "sha512-fza/XD2ndYUlpmxS7t3i+qrh/TgsCpEGDyeD+tTlMtHySuZYmja91xjnzSUY+sNkYjTgKXf5YB8+rz8bkxsHrA=="],
 
     "@atlaskit/media-ui/@atlaskit/primitives/@atlaskit/interaction-context": ["@atlaskit/interaction-context@3.1.0", "", { "dependencies": { "@babel/runtime": "^7.0.0" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-LB3T0ATpJ5y7/IVBndNbcjtaNmPcz/8k7+smMibzphmV7xB3HaIyJFEu2JoSmgps66qLXo0ia8Hj7v4dF9zJZw=="],
-
-    "@atlaskit/media-ui/@atlaskit/react-ufo/@atlaskit/atlassian-context": ["@atlaskit/atlassian-context@0.10.0", "", { "dependencies": { "@babel/runtime": "^7.0.0" }, "peerDependencies": { "react": "^18.2.0 || ^19.0.0" } }, "sha512-4/cWFp+mxIYqPmcn3NSHf/JNL/8bRx0/+lpFTsc1C5nfjyyeuFG18pDQBtNn6kMDjGLAt06TSXEgwZV+P4zmGg=="],
-
-    "@atlaskit/media-ui/@atlaskit/react-ufo/@atlaskit/browser-apis": ["@atlaskit/browser-apis@0.0.2", "", { "dependencies": { "@babel/runtime": "^7.0.0" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-3mfBAVBx8ReUlILUGdsc+G1JlrA0DvFAbOMorJfsIvsOqJViABxjQyW05psbnLoLZD/CT3+9jCHSHOIY8Gwtyw=="],
-
-    "@atlaskit/media-ui/@atlaskit/react-ufo/@atlaskit/interaction-context": ["@atlaskit/interaction-context@3.1.0", "", { "dependencies": { "@babel/runtime": "^7.0.0" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-LB3T0ATpJ5y7/IVBndNbcjtaNmPcz/8k7+smMibzphmV7xB3HaIyJFEu2JoSmgps66qLXo0ia8Hj7v4dF9zJZw=="],
-
-    "@atlaskit/media-ui/@atlaskit/react-ufo/uuid": ["uuid@3.4.0", "", { "bin": { "uuid": "./bin/uuid" } }, "sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A=="],
 
     "@atlaskit/media-ui/@atlaskit/select/@atlaskit/icon": ["@atlaskit/icon@35.0.0", "", { "dependencies": { "@atlaskit/platform-feature-flags": "^1.1.0", "@atlaskit/tile": "^1.1.0", "@atlaskit/tokens": "^13.0.0", "@babel/runtime": "^7.0.0", "@compiled/react": "^0.20.0" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-ZAojcCpI1FOpIwShMGi0GFNthCtqJ/b9yrpLiRTHAMEoSH9xi3ACNkeSUbAV33Zgp71M59EYNR/rhvCt+nSDEQ=="],
 
@@ -7160,8 +7130,6 @@
     "@atlaskit/media-filmstrip/@atlaskit/media-viewer/@atlaskit/media-ui/@atlaskit/select": ["@atlaskit/select@21.12.3", "", { "dependencies": { "@atlaskit/analytics-next": "^11.2.0", "@atlaskit/ds-lib": "^7.0.0", "@atlaskit/icon": "^35.0.0", "@atlaskit/layering": "^3.7.0", "@atlaskit/platform-feature-flags": "^1.1.0", "@atlaskit/primitives": "^19.0.0", "@atlaskit/react-select": "^3.16.0", "@atlaskit/theme": "^23.2.0", "@atlaskit/tokens": "^13.0.0", "@atlaskit/top-layer": "^0.8.0", "@atlaskit/visually-hidden": "^3.1.0", "@babel/runtime": "^7.0.0", "@compiled/react": "^0.20.0", "@popperjs/core": "^2.11.8", "bind-event-listener": "^3.0.0", "react-focus-lock": "^2.9.5", "react-popper": "^2.3.0", "shallow-equal": "^3.1.0" }, "peerDependencies": { "react": "^18.2.0", "react-dom": "^18.2.0" } }, "sha512-1UTgFIJLddZoXKREORqaY3ZSzPE7qEivnybc5CTsoYSA9DijrKAG1rb5AT5Oi1O9gMys/ZQ2dsZuh4CpO3ilgg=="],
 
     "@atlaskit/media-filmstrip/@atlaskit/media-viewer/@atlaskit/primitives/@atlaskit/interaction-context": ["@atlaskit/interaction-context@3.1.0", "", { "dependencies": { "@babel/runtime": "^7.0.0" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-LB3T0ATpJ5y7/IVBndNbcjtaNmPcz/8k7+smMibzphmV7xB3HaIyJFEu2JoSmgps66qLXo0ia8Hj7v4dF9zJZw=="],
-
-    "@atlaskit/media-filmstrip/@atlaskit/media-viewer/@atlaskit/ufo/uuid": ["uuid@3.4.0", "", { "bin": { "uuid": "./bin/uuid" } }, "sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A=="],
 
     "@atlaskit/prosemirror-collab/@atlaskit/tmp-editor-statsig/@atlaskit/react-ufo/@atlaskit/atlassian-context": ["@atlaskit/atlassian-context@0.9.0", "", { "dependencies": { "@babel/runtime": "^7.0.0" }, "peerDependencies": { "react": "^18.2.0 || ^19.0.0" } }, "sha512-5oY2wMYEfXE3oVIdlqQB9HTZHAfp6+xgWuwyVU1dHOTb+VC2DW6nFaFxj6HKsusuZl8auMHlZOl8tiNO1/fYhA=="],
 

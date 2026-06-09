@@ -145,7 +145,7 @@ export function useBusinessRequest(id: string | null) {
     if (!id) return;
     
     const channel = supabase
-      .channel(`business-request-${id}`)
+      .channel(`business-request-${id}-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {

@@ -14,6 +14,8 @@
  * Lozenge pills in the status-summary bar above the table and via row drill-
  * through to TestHub.
  */
+import { useEffect, useState } from 'react';
+import { useAutoRefresh } from '@/hooks/useAutoRefresh';
 import type { WidgetProps } from '../widget-types';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';

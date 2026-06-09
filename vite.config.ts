@@ -220,7 +220,14 @@ function prosemirrorStateIdempotentJsonID(): Plugin {
 }
 
 function adfSchemaStagePatcher(): Plugin {
-  const adfSchemaPath = path.resolve(__dirname, 'node_modules/@atlaskit/adf-schema/dist/esm/index.js');
+  // Vite/Rollup normalize module IDs to forward slashes even on Windows, but
+  // path.resolve() returns OS-native separators (backslashes on Windows).
+  // Without normalization the `id === adfSchemaPath` check below silently
+  // fails on Windows and the build error returns.
+  const adfSchemaPath = path
+    .resolve(__dirname, 'node_modules/@atlaskit/adf-schema/dist/esm/index.js')
+    .replace(/\\/g, '/');
+  const norm = (p: string) => p.replace(/\\/g, '/');
 
   return {
     name: 'adf-schema-stage0-patcher',
@@ -233,7 +240,7 @@ function adfSchemaStagePatcher(): Plugin {
     },
     load(id) {
       // If this is the adf-schema file, append the missing exports
-      if (id === adfSchemaPath && fs.existsSync(adfSchemaPath)) {
+      if (norm(id) === adfSchemaPath && fs.existsSync(adfSchemaPath)) {
         const originalCode = fs.readFileSync(adfSchemaPath, 'utf-8');
         // Append stub exports for the stage0 variants that editor plugins expect
         const patched = originalCode + '\n' +
