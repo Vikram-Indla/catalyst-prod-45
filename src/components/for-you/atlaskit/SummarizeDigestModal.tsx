@@ -256,7 +256,7 @@ function DigestRow({
               cursor: 'pointer',
               color: token('color.text.brand', '#0052CC'),
               fontWeight: 600,
-              fontFamily: 'var(--cp-font-mono, "JetBrains Mono", monospace)',
+              fontFamily: 'var(--cp-font-mono, ui-monospace, "SF Mono", Menlo, Consolas, monospace)',
               fontSize: 12,
             }}
           >

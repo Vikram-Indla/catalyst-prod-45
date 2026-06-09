@@ -987,7 +987,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
                   }}
                 />
                 <p style={{ fontSize: 12, color: token('color.text.subtlest'), marginTop: 6, margin: 0 }}>
-                  Key (<code style={{ fontFamily: 'JetBrains Mono, monospace' }}>{project.project_key}</code>) and member assignments are unchanged.
+                  Key (<code style={{ fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace' }}>{project.project_key}</code>) and member assignments are unchanged.
                 </p>
               </div>
             </ModalBody>
@@ -1018,7 +1018,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
               <p style={{ margin: 0 }}>
                 You're about to permanently delete{' '}
                 <strong>{project.name}</strong> (
-                <code style={{ fontFamily: 'JetBrains Mono, monospace' }}>{project.project_key}</code>
+                <code style={{ fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace' }}>{project.project_key}</code>
                 ). This cannot be undone — all issues, comments, and member
                 assignments tied to this project will be removed.
               </p>

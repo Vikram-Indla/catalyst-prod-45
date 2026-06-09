@@ -361,7 +361,7 @@ export default function ProjectBoardPage() {
           style={{ padding: '80px 40px', background: 'var(--cp-bg-elevated)', borderColor: 'var(--cp-border-default)' }}
         >
           <GanttChart size={36} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth={1.5} />
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary)', marginTop: 12, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary)', marginTop: 12, fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>
             Timeline View
           </span>
           <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary)', marginTop: 4 }}>

@@ -145,10 +145,12 @@ export const radius = {
 // ============================================
 export const typography = {
   fontFamily: {
-    heading: 'var(--ds-font-family-heading, "Sora", sans-serif)',
-    sans:    'var(--ds-font-family-body, "Inter", sans-serif)',
-    body:    'var(--ds-font-family-body, "Inter", sans-serif)',
-    mono:    'var(--ds-font-family-monospaced, "JetBrains Mono", monospace)',
+    // 2026-06-09 ADS compliance sweep — replaced Sora/Inter/JetBrains Mono
+    // fallbacks with canonical Atlassian Design System stacks.
+    heading: 'var(--ds-font-family-heading, "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif)',
+    sans:    'var(--ds-font-family-body, "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif)',
+    body:    'var(--ds-font-family-body, "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif)',
+    mono:    'var(--ds-font-family-monospaced, ui-monospace, "SF Mono", Menlo, Consolas, monospace)',
   },
   fontSize: {
     xs: '11px',
@@ -409,9 +411,11 @@ export const statusLozenge = {
 // CATALYST FONT STACK (LOCKED)
 // ============================================
 export const fonts = {
-  heading: 'var(--ds-font-family-heading, "Sora", sans-serif)',
-  body:    'var(--ds-font-family-body, "Inter", sans-serif)',
-  mono:    'var(--ds-font-family-monospaced, "JetBrains Mono", monospace)',
+  // 2026-06-09 ADS compliance sweep — Sora/Inter/JetBrains Mono replaced
+  // with canonical Atlassian Design System stacks.
+  heading: 'var(--ds-font-family-heading, "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif)',
+  body:    'var(--ds-font-family-body, "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif)',
+  mono:    'var(--ds-font-family-monospaced, ui-monospace, "SF Mono", Menlo, Consolas, monospace)',
 } as const;
 
 // ============================================

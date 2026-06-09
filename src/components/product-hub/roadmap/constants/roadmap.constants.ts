@@ -65,11 +65,13 @@ export const SURFACE_DARK = {
   borderLight: 'var(--ds-border, var(--cp-ink-1, #292929))',
 };
 
-// ── Typography — Catalyst spec: Sora (headings) + Inter (body) + JetBrains Mono (data) ──
+// 2026-06-09 ADS compliance sweep — roadmap module was using
+// Sora/Inter/JetBrains Mono. Banned. Replaced with the canonical
+// Atlassian Design System font stacks (atlassian.design/foundations/typography).
 export const FONT = {
-  heading: "'Sora', 'Plus Jakarta Sans', sans-serif",
-  body: "Inter, 'Plus Jakarta Sans', sans-serif",
-  mono: "'JetBrains Mono', 'SF Mono', monospace",
+  heading: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+  body: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+  mono: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
 };
 
 // ── Layout (AUDIT #23: 36px rows) ──
