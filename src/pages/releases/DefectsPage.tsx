@@ -33,7 +33,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
+import { flag } from "@/components/shared/JiraTable/flags";
 import { exportDefects, exportDefectsByStatus } from "@/utils/exportDefects";
 
 import { DefectTableView } from "@/components/releases/defects/DefectTableView";
@@ -198,7 +198,7 @@ export default function ReleasesDefectsPage() {
     
     if (missingFields.length > 0) {
       const missingLabels = missingFields.map(f => fieldLabels[f]).join(', ');
-      toast.error(`Please fill required fields: ${missingLabels}`);
+      flag.error(`Please fill required fields: ${missingLabels}`);
       return;
     }
     
@@ -253,7 +253,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
     setDefects([defect, ...defects]);
     setIsReportModalOpen(false);
     setFormData(initialFormState);
-    toast.success(`${defect.id} reported successfully`);
+    flag.success(`${defect.id} reported successfully`);
   };
   
   // Update status
@@ -261,13 +261,13 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
     setDefects(defects.map(d => 
       d.id === defectId ? { ...d, status: newStatus, updatedAt: 'Just now' } : d
     ));
-    toast.success(`Status updated to ${newStatus.replace(/_/g, ' ').toUpperCase()}`);
+    flag.success(`Status updated to ${newStatus.replace(/_/g, ' ').toUpperCase()}`);
   };
   
   // Delete defect
   const handleDelete = (defectId: string) => {
     setDefects(defects.filter(d => d.id !== defectId));
-    toast.success('Defect deleted');
+    flag.success('Defect deleted');
   };
 
   // Handle Edit
@@ -303,7 +303,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
       prev ? { ...prev, assignee: newAssignee, updatedAt: 'Just now' } : prev
     );
 
-    toast.success(`Reassigned to ${newAssignee.name}`);
+    flag.success(`Reassigned to ${newAssignee.name}`);
   };
 
   return (
@@ -338,7 +338,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
                   setIsExporting(true);
                   try {
                     await exportDefects(defects, 'xlsx');
-                    toast.success(`Exported ${defects.length} defects`);
+                    flag.success(`Exported ${defects.length} defects`);
                   } finally {
                     setIsExporting(false);
                   }
@@ -349,7 +349,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
                   setIsExporting(true);
                   try {
                     await exportDefects(filteredDefects, 'xlsx');
-                    toast.success(`Exported ${filteredDefects.length} filtered defects`);
+                    flag.success(`Exported ${filteredDefects.length} filtered defects`);
                   } finally {
                     setIsExporting(false);
                   }
@@ -361,7 +361,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
                   setIsExporting(true);
                   try {
                     await exportDefects(defects, 'csv');
-                    toast.success(`Exported ${defects.length} defects`);
+                    flag.success(`Exported ${defects.length} defects`);
                   } finally {
                     setIsExporting(false);
                   }
@@ -372,7 +372,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
                   setIsExporting(true);
                   try {
                     await exportDefectsByStatus(defects, 'xlsx');
-                    toast.success('Exported defects by status');
+                    flag.success('Exported defects by status');
                   } finally {
                     setIsExporting(false);
                   }

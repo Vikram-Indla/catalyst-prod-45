@@ -14,7 +14,7 @@ import { AuditLogTab } from "./AuditLogTab";
 import { useObjective, useUpdateObjective, useDeleteObjective } from "@/hooks/useObjectives";
 import { Star, Share2, Copy, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { flag } from "@/components/shared/JiraTable/flags";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -58,7 +58,7 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
         { id: objective.id, confidence_score: score },
         {
           onSuccess: () => {
-            toast.success("Confidence score updated");
+            flag.success("Confidence score updated");
           },
         }
       );
@@ -82,21 +82,21 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
   const handleShare = () => {
     const url = `${window.location.origin}/enterprise/okr-hub?objectiveId=${objectiveId}`;
     navigator.clipboard.writeText(url);
-    toast.success("Link copied to clipboard");
+    flag.success("Link copied to clipboard");
   };
 
   const handleDuplicate = () => {
-    toast.info("Duplicate feature coming soon");
+    flag.info("Duplicate feature coming soon");
   };
 
   const handleDelete = () => {
     deleteMutation.mutate(objectiveId, {
       onSuccess: () => {
-        toast.success("Objective deleted");
+        flag.success("Objective deleted");
         onClose();
       },
       onError: () => {
-        toast.error("Failed to delete objective");
+        flag.error("Failed to delete objective");
       },
     });
   };

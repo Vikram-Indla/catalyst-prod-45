@@ -53,7 +53,7 @@ import { CheckCircle } from "lucide-react";
 import { releaseOptions, testCaseOptions, defectsData } from "@/data/defectsData";
 import { UserPicker } from "@/components/ui/user-picker";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+import { flag } from "@/components/shared/JiraTable/flags";
 
 export interface DefectFormData {
   title: string;
@@ -517,7 +517,7 @@ export function ReportDefectModal({
     });
     
     setIsGenerating(false);
-    toast.success('AI generated content. Review and adjust as needed.');
+    flag.success('AI generated content. Review and adjust as needed.');
   };
 
   return (

@@ -1,5 +1,18 @@
-import { CheckCircle, XCircle, AlertTriangle, Info, X } from '@/lib/atlaskit-icons';
-import { toast as sonnerToast } from 'sonner'; // TODO(sonner-sweep): complex import — migrate manually
+/**
+ * CatalystToast — public API wrapper that fan-outs to the canonical
+ * @atlaskit/flag host (src/components/shared/JiraTable/flags.tsx).
+ *
+ * 671+ call sites use `catalystToast.success(...)`. Migrating each one
+ * is high-blast-radius — instead, this wrapper internally forwards to
+ * `flag.success(...)` so sonner is removed from the import graph here
+ * while the public API stays drop-in.
+ *
+ * Original custom-render (sonner.toast.custom) is dropped: @atlaskit/flag
+ * owns its presentation per ADS, which is the design-system contract.
+ * Optional `action` becomes a FlagAction; `title` and `description` map
+ * straight through.
+ */
+import { flag, type FlagAction } from '@/components/shared/JiraTable/flags';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -13,127 +26,20 @@ interface CatalystToastOptions {
   };
 }
 
-const toastConfig = {
-  success: {
-    icon: CheckCircle,
-    iconColor: 'var(--quality-high, #059669)',
-    bgColor: '#ECFDF5',
-    borderColor: '#A7F3D0',
-    titleColor: '#065F46',
-    descColor: '#047857',
-  },
-  error: {
-    icon: XCircle,
-    iconColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-    bgColor: 'var(--ds-background-danger, #FEF2F2)',
-    borderColor: '#FECACA',
-    titleColor: 'var(--ds-text-danger, #991B1B)',
-    descColor: '#B91C1C',
-  },
-  warning: {
-    icon: AlertTriangle,
-    iconColor: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
-    bgColor: '#FFFBEB',
-    borderColor: '#FDE68A',
-    titleColor: '#92400E',
-    descColor: '#B45309',
-  },
-  info: {
-    icon: Info,
-    iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-    bgColor: 'var(--ds-background-selected, #EFF6FF)',
-    borderColor: '#BFDBFE',
-    titleColor: '#1E40AF',
-    descColor: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
-  },
-};
-
 export const showCatalystToast = (
   type: ToastType,
   message: string,
-  options?: CatalystToastOptions
+  options?: CatalystToastOptions,
 ) => {
-  const config = toastConfig[type];
-  const Icon = config.icon;
-
-  sonnerToast.custom(
-    (id) => (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: 12,
-          padding: '14px 16px',
-          backgroundColor: config.bgColor,
-          border: `1px solid ${config.borderColor}`,
-          borderRadius: 12,
-          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-          minWidth: 320,
-          maxWidth: 420,
-          fontFamily: 'var(--cp-font-body)',
-        }}
-      >
-        <Icon size={20} style={{ color: config.iconColor, flexShrink: 0, marginTop: 1 }} />
-
-        <div style={{ flex: 1, minWidth: 0 }}>
-          {options?.title && (
-            <div style={{ fontSize: 14, fontWeight: 600, color: config.titleColor, marginBottom: 2 }}>
-              {options.title}
-            </div>
-          )}
-          <div style={{ fontSize: 13, color: config.descColor, lineHeight: 1.5 }}>
-            {message}
-          </div>
-
-          {options?.action && (
-            <button
-              onClick={() => {
-                options.action?.onClick();
-                sonnerToast.dismiss(id);
-              }}
-              style={{
-                marginTop: 10,
-                padding: '6px 12px',
-                fontSize: 12,
-                fontWeight: 600,
-                color: config.iconColor,
-                backgroundColor: 'transparent',
-                border: `1.5px solid ${config.iconColor}`,
-                borderRadius: 6,
-                cursor: 'pointer',
-              }}
-            >
-              {options.action.label}
-            </button>
-          )}
-        </div>
-
-        <button
-          onClick={() => sonnerToast.dismiss(id)}
-          style={{
-            width: 24,
-            height: 24,
-            padding: 0,
-            border: 'none',
-            backgroundColor: 'transparent',
-            color: config.descColor,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            opacity: 0.6,
-            flexShrink: 0,
-          }}
-        >
-          <X size={14} />
-        </button>
-      </div>
-    ),
-    {
-      duration: options?.duration || 4000,
-      position: 'top-right',
-    }
-  );
+  const actions: FlagAction[] | undefined = options?.action
+    ? [{ content: options.action.label, onClick: options.action.onClick }]
+    : undefined;
+  // ADS-canonical flag.* signature is (title, description, actions).
+  // CatalystToast historically treated `message` as the body and an
+  // optional `options.title` as the header. Preserve that semantics.
+  const title = options?.title ?? message;
+  const description = options?.title ? message : options?.description;
+  flag[type](title, description, actions);
 };
 
 export const catalystToast = {

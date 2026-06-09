@@ -14,7 +14,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { flag } from "@/components/shared/JiraTable/flags";
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
 import SearchIcon from "@atlaskit/icon/core/search";
 import CrossIcon from "@atlaskit/icon/glyph/cross";
@@ -1092,7 +1092,7 @@ function MultiLinkPicker({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cv-parent-links", itemId] });
-      toast.success("Link added");
+      flag.success("Link added");
     },
   });
 
@@ -1102,7 +1102,7 @@ function MultiLinkPicker({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cv-parent-links", itemId] });
-      toast.success("Link removed");
+      flag.success("Link removed");
     },
   });
 
