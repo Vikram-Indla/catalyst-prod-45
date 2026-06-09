@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 import Select from '@atlaskit/select';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
@@ -265,6 +266,7 @@ export default function DesignSystemAdmin() {
       : null;
 
   return (
+    <AdminGuard>
     <div
       style={{
         padding: '24px 32px 48px',
@@ -902,5 +904,6 @@ export default function DesignSystemAdmin() {
         </div>
       )}
     </div>
+    </AdminGuard>
   );
 }

@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "sonner";
+import { flag } from "@/components/shared/JiraTable/flags";
 import { Loader2, Save, Trash2, FileText } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Lozenge } from "@/components/ads";
@@ -79,13 +79,13 @@ export function ReportTemplatesDialog({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["epic-report-templates"] });
-      toast.success("Template saved successfully");
+      flag.success("Template saved successfully");
       setTemplateName("");
       setIsScheduled(false);
     },
     onError: (error) => {
       console.error("Save template error:", error);
-      toast.error("Failed to save template");
+      flag.error("Failed to save template");
     },
   });
 
@@ -100,9 +100,9 @@ export function ReportTemplatesDialog({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["epic-report-templates"] });
-      toast.success("Template deleted");
+      flag.success("Template deleted");
     },
-    onError: () => toast.error("Failed to delete template"),
+    onError: () => flag.error("Failed to delete template"),
   });
 
   const getScheduleLabel = (cron: string) => {

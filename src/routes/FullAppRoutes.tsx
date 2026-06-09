@@ -1,14 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 
-// Block A rule 1 (2026-05-01): legacy /producthub/requirement-assist/:id
-// redirect — react-router v6 can't substitute a path param into the
-// destination URL, so we build it imperatively from useParams.
-function NavigateProducthubReqAssistId() {
-  const { id } = useParams();
-  return <Navigate to={`/product-hub/requirement-assist/${id ?? ''}`} replace />;
-}
-
 function IssueRedirectToBrowse() {
   const { issueKey } = useParams();
   return <Navigate to={`/browse/${issueKey ?? ''}`} replace />;
@@ -371,6 +363,11 @@ function Resource360Redirect() {
   return <Navigate to={`/project-hub/resource-360/${id || '009'}`} replace />;
 }
 
+function ResourceLegacyToCanonical() {
+  const { resourceId } = useParams();
+  return <Navigate to={`/project-hub/resource-360/${resourceId || '009'}`} replace />;
+}
+
 function NavigateAdminResourceId() {
   const { resourceId } = useParams();
   return <Navigate to={`/admin/resources/${resourceId ?? ''}`} replace />;
@@ -500,24 +497,9 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/requirement-assist/categories" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCategories /></S></MG>} />
         <Route path="/product-hub/requirement-assist/:id" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistOutput /></S></MG>} />
 
-        {/* Legacy /producthub/* — redirect each to canonical /product-hub/X.
-            /producthub root now lands on /products (workstream list) per
-            Block C/D Phase-2 architecture. */}
-        <Route path="/producthub" element={<Navigate to="/product-hub/products" replace />} />
-        <Route path="/producthub/backlog" element={<Navigate to="/product-hub/backlog" replace />} />
-        <Route path="/producthub/table" element={<Navigate to="/product-hub/table" replace />} />
-        <Route path="/producthub/kanban" element={<Navigate to="/product-hub/kanban" replace />} />
-        <Route path="/producthub/dashboard" element={<Navigate to="/product-hub/products" replace />} />
-        <Route path="/producthub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
-        <Route path="/producthub/roadmaps-v1" element={<Navigate to="/product-hub/roadmaps-v1" replace />} />
-        <Route path="/producthub/reports" element={<Navigate to="/product-hub/reports" replace />} />
-        <Route path="/producthub/roadmap" element={<Navigate to="/product-hub/roadmap" replace />} />
-        <Route path="/producthub/cards" element={<Navigate to="/product-hub/cards" replace />} />
-        <Route path="/producthub/ideation" element={<Navigate to="/ideation/intelligence" replace />} />
-        <Route path="/producthub/requirement-assist" element={<Navigate to="/product-hub/requirement-assist" replace />} />
-        <Route path="/producthub/requirement-assist/compose" element={<Navigate to="/product-hub/requirement-assist/compose" replace />} />
-        <Route path="/producthub/requirement-assist/categories" element={<Navigate to="/product-hub/requirement-assist/categories" replace />} />
-        <Route path="/producthub/requirement-assist/:id" element={<NavigateProducthubReqAssistId />} />
+        {/* Legacy /producthub/* — handled by ProducthubLegacyRedirect mounted
+            in App.tsx at /producthub + /producthub/*. The block previously
+            here was dead code (App.tsx wildcard catches first). */}
 
         {/* Phase 6 (2026-05-02) — Ideation peer hub at /ideation/*.
             Pages stay where they are (pages/producthub/Ideas*.tsx); only
@@ -759,9 +741,9 @@ export default function FullAppRoutes() {
         <Route path="/workhub/all-work" element={<S><WorkHubAllWork /></S>} />
         <Route path="/workhub" element={<Navigate to="/project-hub" replace />} />
         <Route path="/projecthub" element={<Navigate to="/project-hub" replace />} />
-        <Route path="/projecthub/resource360" element={<Navigate to="/project-hub/resource-360/009" replace />} />
+        <Route path="/projecthub/resource360" element={<Navigate to="/me" replace />} />
         <Route path="/projecthub/resource360/:id" element={<Resource360Redirect />} />
-        <Route path="/resource-360/:resourceId" element={<Navigate to="/project-hub/resource-360/009" replace />} />
+        <Route path="/resource-360/:resourceId" element={<ResourceLegacyToCanonical />} />
 
         <Route path="/projects/:projectKey/settings" element={<S><ProjectSettingsPage /></S>} />
         <Route path="/projects/:projectId/features" element={<S><FeaturesPage /></S>} />
@@ -896,12 +878,12 @@ export default function FullAppRoutes() {
 
         <Route path="/value-stream" element={<S><ValueStreamView /></S>} />
         <Route path="/profile" element={<S><UserProfile /></S>} />
-        <Route path="/for-you/archives" element={<S><ArchiveManagerPage /></S>} />
-        {/* Legacy redirect */}
+        {/* /for-you/archives mounted in App.tsx inside the ForYouShell parent.
+            Keeping only the legacy redirect here. */}
         <Route path="/profile/archives" element={<Navigate to="/for-you/archives" replace />} />
         <Route path="/items/:type" element={<S><PlaceholderPage /></S>} />
 
-        <Route path="/project-hub" element={<Navigate to="/project-hub/projects" replace />} />
+        {/* /project-hub root redirect mounted in App.tsx — removing local dup */}
         <Route path="/project-hub/projects" element={<S><AllProjectsPageLazy /></S>} />
         <Route path="/project/all-projects" element={<S><AllProjectsPageLazy /></S>} />
         <Route path="/project-hub/projects-legacy" element={<S><ProjectListPageLazy /></S>} />
@@ -913,8 +895,10 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/resources/:resourceId" element={<NavigateAdminResourceId />} />
         <Route path="/project-hub/resources-v2" element={<Navigate to="/admin/resources" replace />} />
         <Route path="/project-hub/resources-v2/:resourceId" element={<NavigateAdminResourceId />} />
-        <Route path="/project-hub/resource360" element={<Navigate to="/project-hub/resource-360/009" replace />} />
-        <Route path="/project-hub/resource360/:id" element={<Navigate to="/project-hub/resource-360/009" replace />} />
+        {/* /project-hub/resource360 (no id) → user's own R360 ("/me").
+            /project-hub/resource360/:id → preserve :id (Resource360Redirect). */}
+        <Route path="/project-hub/resource360" element={<Navigate to="/me" replace />} />
+        <Route path="/project-hub/resource360/:id" element={<Resource360Redirect />} />
         <Route path="/project-hub/resource-360/:resourceId" element={<S><Resource360PageNew /></S>} />
         <Route path="/resource360/members/:memberId" element={<S><Resource360MemberDetail /></S>} />
         <Route path="/resources" element={<S><R360ProfilePageLazy /></S>} />

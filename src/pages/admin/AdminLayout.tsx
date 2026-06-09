@@ -1,5 +1,4 @@
 import { Outlet } from 'react-router-dom';
-import { AdminSidebar } from './AdminSidebar';
 
 const T = {
   border: 'var(--ds-border, #DCDFE4)',

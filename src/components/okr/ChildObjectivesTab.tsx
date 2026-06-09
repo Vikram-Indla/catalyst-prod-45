@@ -4,7 +4,7 @@ import { Lozenge, type LozengeAppearance } from "@/components/ads";
 import { Plus, Trash2, ExternalLink } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { flag } from "@/components/shared/JiraTable/flags";
 import { useState } from "react";
 import { AddChildObjectiveDialog } from "./AddChildObjectiveDialog";
 
@@ -40,10 +40,10 @@ export function ChildObjectivesTab({ objectiveId }: ChildObjectivesTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["child-objectives", objectiveId] });
-      toast.success("Child objective removed");
+      flag.success("Child objective removed");
     },
     onError: () => {
-      toast.error("Failed to remove child objective");
+      flag.error("Failed to remove child objective");
     },
   });
 

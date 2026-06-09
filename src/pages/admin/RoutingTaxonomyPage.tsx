@@ -15,6 +15,7 @@
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 import Heading from '@atlaskit/heading';
 import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
@@ -73,6 +74,7 @@ export default function RoutingTaxonomyPage() {
     : 'Never';
 
   return (
+    <AdminGuard>
     <div style={{ padding: 32, maxWidth: 1200 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <Heading size="large">Routing taxonomy</Heading>
@@ -164,5 +166,6 @@ export default function RoutingTaxonomyPage() {
         </ul>
       </div>
     </div>
+    </AdminGuard>
   );
 }

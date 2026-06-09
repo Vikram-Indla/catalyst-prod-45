@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { flag } from "@/components/shared/JiraTable/flags";
 import { Search, Briefcase, Target } from "lucide-react";
 import { Lozenge, type LozengeAppearance } from "@/components/ads";
 
@@ -114,11 +114,11 @@ export function AddChildObjectiveDialog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["child-objectives", parentObjectiveId] });
       queryClient.invalidateQueries({ queryKey: ["objectives"] });
-      toast.success("Child objective added");
+      flag.success("Child objective added");
       onClose();
     },
     onError: () => {
-      toast.error("Failed to add child objective");
+      flag.error("Failed to add child objective");
     },
   });
 

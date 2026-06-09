@@ -17,7 +17,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { flag } from '@/components/shared/JiraTable/flags';
 import { Plus, LayoutGrid, RotateCcw, Tv, TvMinimal, Star, StarOff, RefreshCw, MoreHorizontal, Link2, Edit as EditIcon } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
 import AkButton, { IconButton as AkIconButton } from '@atlaskit/button/new';
@@ -393,7 +393,7 @@ function ProjectDashboardPageInner() {
             // 2026-06-09 Vikram parity: opens per-widget gear cluster so user
             // can flip autoRefresh + autoRefreshMinutes for each gadget.
             // Per-widget gear lives in WidgetWrapper → see GadgetSettingsPanel.
-            toast.info('Open any widget’s gear (⚙) to configure automatic refresh per gadget.');
+            flag.info('Open any widget’s gear (⚙) to configure automatic refresh per gadget.');
           }}>Configure automatic refresh</DropdownItem>
           <DropdownItem onClick={resetLayout}>Reset to defaults</DropdownItem>
         </DropdownItemGroup>

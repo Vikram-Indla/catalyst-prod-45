@@ -31,6 +31,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { catalystToast } from '@/lib/catalystToast';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 
 import Heading from '@atlaskit/heading';
 import Button from '@atlaskit/button/new';
@@ -644,6 +645,7 @@ export default function AdminIconsPage() {
     c.overridden > 0 ? `${name} (${c.overridden}/${c.total})` : `${name} (${c.total})`;
 
   return (
+    <AdminGuard>
     <div style={pageContainerStyle}>
       <div style={{ marginBottom: 24 }}>
         <Heading size="xlarge">Icon library</Heading>
@@ -824,6 +826,7 @@ export default function AdminIconsPage() {
         onClose={() => setConfirmDeleteCategory(null)}
       />
     </div>
+    </AdminGuard>
   );
 }
 
