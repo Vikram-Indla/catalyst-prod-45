@@ -1119,7 +1119,7 @@ function DemandRowItem({
           // Apr 26, 2026 — column widths bumped to match the wider 14px
           // typography in cells (key 100→130, progress 160→180, target
           // 110→130). Header above uses identical grid so columns align.
-          gridTemplateColumns: '28px 20px 130px 2fr 1fr 110px 160px',
+          gridTemplateColumns: '28px 20px 130px 2fr 1fr 110px 180px',
           alignItems: 'center',
           gap: 12,
           padding: `0 ${token('space.300', '24px')}`,
@@ -1237,21 +1237,30 @@ function DemandRowItem({
         {/* Date / RAG pill */}
         <DatePill state={state} daysLeft={daysLeft} dateStr={row.target_complete} />
 
-        {/* Avatar + name — consistent with child rows */}
+        {/* Avatar + FULL name — 2026-06-09 Vikram parity directive.
+            Spec: 24px avatar (small) + 8px gap + full name (14/400/primary)
+            with ellipsis truncation. Column 180px wide. Unassigned state:
+            grey initials avatar + "Unassigned" subtle text. */}
         <span
           style={{
-            ...SMALL,
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 8,
             fontFamily: ATLAS_SANS,
-            color: token('color.text.subtle', '#44546F'),
+            color: row.assignee_name && row.assignee_name !== '—'
+              ? token('color.text', '#172B4D')
+              : token('color.text.subtle', '#44546F'),
+            fontSize: 14,
+            fontWeight: 400,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            minWidth: 0,
           }}
+          title={row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : 'Unassigned'}
         >
           <Avatar
-            size="xsmall"
+            size="small"
             src={
               row.assignee_avatar
                 || (row.assignee_name && row.assignee_name !== '—'
@@ -1260,7 +1269,9 @@ function DemandRowItem({
             }
             name={row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : 'Unassigned'}
           />
-          {row.assignee_name && row.assignee_name !== '—' ? row.assignee_name.split(' ')[0] : ''}
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : 'Unassigned'}
+          </span>
         </span>
       </div>
 
@@ -1908,7 +1919,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '28px 20px 130px 2fr 1fr 110px 160px',
+          gridTemplateColumns: '28px 20px 130px 2fr 1fr 110px 180px',
           alignItems: 'center',
           gap: 12,
           padding: `4px ${token('space.300', '24px')}`,
