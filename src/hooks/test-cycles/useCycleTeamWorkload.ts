@@ -59,7 +59,7 @@ export function useCycleTeamWorkload(cycleId: string | null) {
     if (!cycleId) return;
 
     const channel = supabase
-      .channel(`cycle-workload-${cycleId}`)
+      .channel(`cycle-workload-${cycleId}-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {

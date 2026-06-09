@@ -53,7 +53,7 @@ export function useCycleDetails(cycleId: string | undefined) {
     if (!cycleId) return;
 
     const channel = supabase
-      .channel(`cycle-details-${cycleId}`)
+      .channel(`cycle-details-${cycleId}-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {

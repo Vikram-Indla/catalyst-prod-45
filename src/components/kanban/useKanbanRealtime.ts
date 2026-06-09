@@ -21,7 +21,7 @@ export function useKanbanRealtime(projectKey: string | undefined, currentUserId:
     }
 
     const ch = supabase
-      .channel(`kanban-rt-${projectKey}`)
+      .channel(`kanban-rt-${projectKey}-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'ph_issues' },

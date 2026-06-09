@@ -21,7 +21,7 @@ export function usePlannerTaskRealtime({ taskId, onUpdate, onDelete }: UsePlanne
     if (!taskId) return;
 
     const channel = supabase
-      .channel(`task-detail-${taskId}`)
+      .channel(`task-detail-${taskId}-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {
