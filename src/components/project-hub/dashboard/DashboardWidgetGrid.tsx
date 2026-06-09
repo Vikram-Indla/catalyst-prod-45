@@ -55,9 +55,11 @@ export interface ResolvedWidget {
 type WidgetDef = (typeof WIDGET_REGISTRY)[number];
 
 export function effectiveSpan(w: ResolvedWidget): number {
-  const base = w.span ?? w.defaultSpan;
-  const min = w.minSpan ?? 1;
-  return Math.max(min, Math.min(12, base));
+  // 2026-06-09 Vikram parity directive — one gadget per row. Force every
+  // widget to full-width 12-column span regardless of registry default
+  // or persisted user override. Resize ladder remains for future use if
+  // multi-up layout is ever re-enabled.
+  return 12;
 }
 
 export function resolveWidgets(configs: DashboardWidgetConfig[]): ResolvedWidget[] {

@@ -1179,7 +1179,7 @@ function DemandRowItem({
         <span
           title={row.title}
           style={{
-            ...BODY,
+            ...STRONG,
             fontFamily: ATLAS_SANS,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -1348,7 +1348,7 @@ function DemandRowItem({
                   <span
                     title={story.summary}
                     style={{
-                      ...BODY,
+                      ...STRONG,
                       fontFamily: ATLAS_SANS,
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -1465,7 +1465,7 @@ function DemandRowItem({
                       <span
                         title={epic.summary}
                         style={{
-                          ...BODY,
+                          ...STRONG,
                           fontFamily: ATLAS_SANS,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -1541,7 +1541,7 @@ function DemandRowItem({
                           <span
                             title={story.summary}
                             style={{
-                              ...BODY,
+                              ...STRONG,
                               fontFamily: ATLAS_SANS,
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
@@ -1730,7 +1730,8 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
   // No slice cap (Apr 26, 2026) — WidgetWrapper now enforces a 620px
   // standardised body height with internal scroll, so the dashboard
   // never exposes a half-truncated list. Render the full visible set.
-  const visibleRows = visibleByTab;
+  // 2026-06-09 Vikram directive — max 10 rows per gadget.
+  const visibleRows = visibleByTab.slice(0, 10);
 
 
 

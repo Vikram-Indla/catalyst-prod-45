@@ -176,7 +176,7 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {/* No slice cap — body has standardised height with internal
                 scroll, so the entire list is visible without truncation. */}
-            {enriched.map((item) => (
+            {enriched.slice(0, 10).map((item) => (
               <OverdueRow
                 key={item.id}
                 item={item}

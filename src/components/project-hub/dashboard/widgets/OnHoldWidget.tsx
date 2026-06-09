@@ -181,7 +181,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {/* No slice cap — body has standardised height with internal
                 scroll, so the entire list is visible without truncation. */}
-            {enriched.map((item) => (
+            {enriched.slice(0, 10).map((item) => (
               <OnHoldRow
                 key={item.id}
                 item={item}
