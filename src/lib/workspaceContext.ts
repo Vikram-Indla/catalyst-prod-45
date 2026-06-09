@@ -3,7 +3,7 @@
  * Single source of truth for context-aware navigation
  */
 
-export type WorkspaceType = 'home' | 'admin' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'taskhub' | 'testhub' | 'workhub' | 'releasehub' | 'planhub' | 'wiki' | 'incidenthub';
+export type WorkspaceType = 'home' | 'admin' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'taskhub' | 'testhub' | 'workhub' | 'releasehub' | 'planhub' | 'wiki' | 'incidenthub' | 'chat';
 
 export interface WorkspaceContext {
   type: WorkspaceType;
@@ -20,7 +20,12 @@ export interface WorkspaceContext {
  * This is the SINGLE SOURCE OF TRUTH for workspace type
  */
 export function deriveWorkspaceType(pathname: string): WorkspaceType {
-  
+
+  // Chat owns full viewport — no workspace sidebar (Slack-parity, 2026-06-09).
+  if (pathname.startsWith('/chat')) {
+    return 'chat';
+  }
+
   // WorkHub/ProjectHub module - Jira integration & portfolio management
   if (pathname.startsWith('/workhub') || pathname.startsWith('/projecthub') || pathname.startsWith('/project-hub')) {
     return 'workhub';
