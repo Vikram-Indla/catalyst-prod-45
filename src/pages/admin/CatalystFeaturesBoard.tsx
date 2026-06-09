@@ -15,6 +15,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { typedQuery, supabase } from '@/integrations/supabase/client';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 import Spinner from '@atlaskit/spinner';
 import BoardIcon from '@atlaskit/icon/glyph/board';
 import BranchIcon from '@atlaskit/icon/glyph/bitbucket/branches';
@@ -202,6 +203,7 @@ export default function CatalystFeaturesBoard() {
   }
 
   return (
+    <AdminGuard>
     <div style={{ padding: '24px', background: T.surface, minHeight: '100vh' }}>
       {/* ── Page header ── */}
       <div style={{
@@ -302,6 +304,7 @@ export default function CatalystFeaturesBoard() {
         </div>
       )}
     </div>
+    </AdminGuard>
   );
 }
 

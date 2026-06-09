@@ -371,6 +371,11 @@ function Resource360Redirect() {
   return <Navigate to={`/project-hub/resource-360/${id || '009'}`} replace />;
 }
 
+function ResourceLegacyToCanonical() {
+  const { resourceId } = useParams();
+  return <Navigate to={`/project-hub/resource-360/${resourceId || '009'}`} replace />;
+}
+
 function NavigateAdminResourceId() {
   const { resourceId } = useParams();
   return <Navigate to={`/admin/resources/${resourceId ?? ''}`} replace />;
@@ -759,9 +764,9 @@ export default function FullAppRoutes() {
         <Route path="/workhub/all-work" element={<S><WorkHubAllWork /></S>} />
         <Route path="/workhub" element={<Navigate to="/project-hub" replace />} />
         <Route path="/projecthub" element={<Navigate to="/project-hub" replace />} />
-        <Route path="/projecthub/resource360" element={<Navigate to="/project-hub/resource-360/009" replace />} />
+        <Route path="/projecthub/resource360" element={<Navigate to="/me" replace />} />
         <Route path="/projecthub/resource360/:id" element={<Resource360Redirect />} />
-        <Route path="/resource-360/:resourceId" element={<Navigate to="/project-hub/resource-360/009" replace />} />
+        <Route path="/resource-360/:resourceId" element={<ResourceLegacyToCanonical />} />
 
         <Route path="/projects/:projectKey/settings" element={<S><ProjectSettingsPage /></S>} />
         <Route path="/projects/:projectId/features" element={<S><FeaturesPage /></S>} />
@@ -913,8 +918,10 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/resources/:resourceId" element={<NavigateAdminResourceId />} />
         <Route path="/project-hub/resources-v2" element={<Navigate to="/admin/resources" replace />} />
         <Route path="/project-hub/resources-v2/:resourceId" element={<NavigateAdminResourceId />} />
-        <Route path="/project-hub/resource360" element={<Navigate to="/project-hub/resource-360/009" replace />} />
-        <Route path="/project-hub/resource360/:id" element={<Navigate to="/project-hub/resource-360/009" replace />} />
+        {/* /project-hub/resource360 (no id) → user's own R360 ("/me").
+            /project-hub/resource360/:id → preserve :id (Resource360Redirect). */}
+        <Route path="/project-hub/resource360" element={<Navigate to="/me" replace />} />
+        <Route path="/project-hub/resource360/:id" element={<Resource360Redirect />} />
         <Route path="/project-hub/resource-360/:resourceId" element={<S><Resource360PageNew /></S>} />
         <Route path="/resource360/members/:memberId" element={<S><Resource360MemberDetail /></S>} />
         <Route path="/resources" element={<S><R360ProfilePageLazy /></S>} />

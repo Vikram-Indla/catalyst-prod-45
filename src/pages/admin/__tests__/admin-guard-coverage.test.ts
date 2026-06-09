@@ -26,6 +26,13 @@ const TARGET_FILES = [
   'workflows/WorkflowAdminPage.tsx',
   'FeatureFlagsPage.tsx',
   'NotificationTriggers.tsx',
+  // Added 2026-06-09 (audit #60).
+  'AdminStorybookPage.tsx',
+  'CatalystFeaturesBoard.tsx',
+  'RoutingTaxonomyPage.tsx',
+  'design-system/DesignSystemAdmin.tsx',
+  'icons/AdminIconsPage.tsx',
+  'avatars/AdminAvatarsPage.tsx',
 ].map(f => resolve(ADMIN_DIR, f));
 
 describe('Admin pages — AdminGuard coverage', () => {
