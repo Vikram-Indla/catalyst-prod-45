@@ -1,0 +1,274 @@
+/**
+ * SlashCommandPalette — inline /-trigger popover for composer. When the user
+ * types `/` at the start of the input (or after whitespace), shows a list of
+ * available slash commands (/remind, /poll, /code, /table, /quote, /hr).
+ *
+ * Navigation: arrow keys (up/down) to select, Enter to apply, Escape to close.
+ * Portal: position:absolute, anchored to textarea, z-index 1000.
+ * Styling: ADS tokens (bg, border, hover), 12px/400 font, 4px radius.
+ */
+import React, { useEffect, useMemo, useState } from 'react';
+
+export interface SlashCommand {
+  name: string;          // Command name without /
+  label: string;         // Display label
+  description: string;   // Short help text
+  insert: string;        // Text to insert when selected
+}
+
+const SLASH_COMMANDS: SlashCommand[] = [
+  {
+    name: 'remind',
+    label: 'Remind',
+    description: 'Set a reminder for this conversation',
+    insert: '/remind ',
+  },
+  {
+    name: 'poll',
+    label: 'Poll',
+    description: 'Create a poll for team feedback',
+    insert: '/poll ',
+  },
+  {
+    name: 'code',
+    label: 'Code block',
+    description: 'Insert a code snippet',
+    insert: '/code\n\n',
+  },
+  {
+    name: 'table',
+    label: 'Table',
+    description: 'Insert a formatted table',
+    insert: '/table\n\n',
+  },
+  {
+    name: 'quote',
+    label: 'Quote',
+    description: 'Quote a previous message',
+    insert: '/quote ',
+  },
+  {
+    name: 'hr',
+    label: 'Divider',
+    description: 'Add a horizontal divider',
+    insert: '/hr\n',
+  },
+];
+
+export interface SlashCommandPaletteProps {
+  textareaRef: React.RefObject<HTMLTextAreaElement>;
+  value: string;
+  onChange: (next: string) => void;
+  onClose: () => void;
+}
+
+interface CommandState {
+  open: boolean;
+  query: string;
+  triggerIndex: number;
+  selectedIndex: number;
+}
+
+const INITIAL: CommandState = { open: false, query: '', triggerIndex: -1, selectedIndex: 0 };
+
+export function SlashCommandPalette({
+  textareaRef,
+  value,
+  onChange,
+  onClose,
+}: SlashCommandPaletteProps) {
+  const [state, setState] = useState<CommandState>(INITIAL);
+
+  // Recompute open-state whenever the value or caret changes.
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+
+    const onSelChange = () => {
+      const caret = el.selectionStart ?? value.length;
+      const upto = value.slice(0, caret);
+      const lastSlash = upto.lastIndexOf('/');
+
+      if (lastSlash < 0) {
+        setState(INITIAL);
+        return;
+      }
+
+      const sliceAfter = upto.slice(lastSlash + 1);
+      // Close if the /-token has whitespace or is too long
+      if (/\s/.test(sliceAfter) || sliceAfter.length > 32) {
+        setState(INITIAL);
+        return;
+      }
+
+      // Trigger char must be at start or follow whitespace (or newline)
+      if (lastSlash > 0 && !/[\s\n]/.test(upto[lastSlash - 1])) {
+        setState(INITIAL);
+        return;
+      }
+
+      setState(prev => ({
+        open: true,
+        query: sliceAfter,
+        triggerIndex: lastSlash,
+        selectedIndex: 0, // Reset selection when query changes
+      }));
+    };
+
+    el.addEventListener('input', onSelChange);
+    el.addEventListener('keyup', onSelChange);
+    el.addEventListener('click', onSelChange);
+
+    return () => {
+      el.removeEventListener('input', onSelChange);
+      el.removeEventListener('keyup', onSelChange);
+      el.removeEventListener('click', onSelChange);
+    };
+  }, [textareaRef, value]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (!state.open) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setState(INITIAL);
+        onClose();
+        return;
+      }
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setState(prev => ({
+          ...prev,
+          selectedIndex: (prev.selectedIndex + 1) % candidates.length,
+        }));
+        return;
+      }
+
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setState(prev => ({
+          ...prev,
+          selectedIndex: (prev.selectedIndex - 1 + candidates.length) % candidates.length,
+        }));
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (candidates.length > 0) {
+          insertCommand(candidates[state.selectedIndex]);
+        }
+        return;
+      }
+    };
+
+    const el = textareaRef.current;
+    if (el) {
+      el.addEventListener('keydown', onKeyDown);
+    }
+
+    return () => {
+      if (el) {
+        el.removeEventListener('keydown', onKeyDown);
+      }
+    };
+  }, [state.open, state.selectedIndex]);
+
+  const candidates = useMemo(() => {
+    if (!state.open) return [];
+    const q = state.query.trim().toLowerCase();
+    const filtered = q
+      ? SLASH_COMMANDS.filter(cmd => cmd.name.toLowerCase().includes(q))
+      : SLASH_COMMANDS;
+    return filtered;
+  }, [state]);
+
+  const insertCommand = (cmd: SlashCommand) => {
+    const before = value.slice(0, state.triggerIndex);
+    const caret = textareaRef.current?.selectionStart ?? value.length;
+    const after = value.slice(caret);
+    const next = `${before}${cmd.insert}${after}`;
+    onChange(next);
+    setState(INITIAL);
+    onClose();
+
+    requestAnimationFrame(() => {
+      const el = textareaRef.current;
+      if (el) {
+        // Position cursor after the inserted text
+        const pos = before.length + cmd.insert.length;
+        el.setSelectionRange(pos, pos);
+        el.focus();
+      }
+    });
+  };
+
+  if (!state.open || candidates.length === 0) return null;
+
+  return (
+    <div
+      role="listbox"
+      aria-label="Slash command palette"
+      style={{
+        position: 'absolute',
+        bottom: '100%',
+        left: 8,
+        marginBottom: 6,
+        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        borderRadius: 4,
+        boxShadow: '0 4px 8px rgba(9,30,66,0.15)',
+        width: 280,
+        maxHeight: 320,
+        overflowY: 'auto',
+        zIndex: 1000,
+      }}
+    >
+      {candidates.map((cmd, idx) => (
+        <button
+          key={cmd.name}
+          type="button"
+          role="option"
+          aria-selected={idx === state.selectedIndex}
+          onClick={() => insertCommand(cmd)}
+          onMouseEnter={() => setState(prev => ({ ...prev, selectedIndex: idx }))}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            width: '100%',
+            padding: '8px 12px',
+            background: idx === state.selectedIndex
+              ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
+              : 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            textAlign: 'left',
+          }}
+        >
+          <span style={{
+            fontSize: 12,
+            fontWeight: 400,
+            color: 'var(--ds-text, #172B4D)',
+            lineHeight: 1.3,
+          }}>
+            {cmd.label}
+          </span>
+          <span style={{
+            fontSize: 11,
+            fontWeight: 400,
+            color: 'var(--ds-text-subtle, #44546F)',
+            lineHeight: 1.2,
+          }}>
+            {cmd.description}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export default SlashCommandPalette;

@@ -9,6 +9,7 @@
 import React, { useCallback, useRef, useState, lazy, Suspense } from 'react';
 import Button from '@atlaskit/button/new';
 import { MentionPicker } from './MentionPicker';
+import { SlashCommandPalette } from './SlashCommandPalette';
 import { useUploadAttachment } from '@/hooks/chat/useChatAttachments';
 import { useDraft } from '@/hooks/chat/useDraft';
 import { adfToPlainText } from '@/utils/adf';
@@ -49,6 +50,7 @@ export function MessageComposer({
   const taRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const uploadAttachment = useUploadAttachment();
+  const [showSlashPalette, setShowSlashPalette] = useState(false);
 
   const placeholder = conversationTitle ? `Message ${conversationTitle}` : 'Write a message…';
 
@@ -149,7 +151,17 @@ export function MessageComposer({
             aria-label={placeholder}
           />
         )}
-        {!richMode && <MentionPicker textareaRef={taRef} value={value} onChange={setValue} />}
+        {!richMode && (
+          <>
+            <MentionPicker textareaRef={taRef} value={value} onChange={setValue} />
+            <SlashCommandPalette
+              textareaRef={taRef}
+              value={value}
+              onChange={setValue}
+              onClose={() => setShowSlashPalette(false)}
+            />
+          </>
+        )}
         <input
           ref={fileRef}
           type="file"
