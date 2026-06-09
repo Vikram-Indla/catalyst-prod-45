@@ -134,6 +134,15 @@ function ProjectDashboardPageInner() {
   const [savedFlag, setSavedFlag] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
+  // 2026-06-09 Vikram RCA — @atlaskit/flag has NO autoDismiss prop.
+  // Without an explicit timer, "Layout saved" persists forever until
+  // the user clicks ×. Auto-clear after 4s.
+  useEffect(() => {
+    if (!savedFlag) return;
+    const t = window.setTimeout(() => setSavedFlag(false), 4000);
+    return () => window.clearTimeout(t);
+  }, [savedFlag]);
+
   // Presentation / TV mode — toggles a data attr on <html>.
   // CSS in index.css scales typography 1.45× when active so the dashboard
   // reads cleanly on big screens (wall-mounted TVs, projectors).
