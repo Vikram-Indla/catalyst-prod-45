@@ -1,14 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 
-// Block A rule 1 (2026-05-01): legacy /producthub/requirement-assist/:id
-// redirect — react-router v6 can't substitute a path param into the
-// destination URL, so we build it imperatively from useParams.
-function NavigateProducthubReqAssistId() {
-  const { id } = useParams();
-  return <Navigate to={`/product-hub/requirement-assist/${id ?? ''}`} replace />;
-}
-
 function IssueRedirectToBrowse() {
   const { issueKey } = useParams();
   return <Navigate to={`/browse/${issueKey ?? ''}`} replace />;
@@ -500,24 +492,9 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/requirement-assist/categories" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCategories /></S></MG>} />
         <Route path="/product-hub/requirement-assist/:id" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistOutput /></S></MG>} />
 
-        {/* Legacy /producthub/* — redirect each to canonical /product-hub/X.
-            /producthub root now lands on /products (workstream list) per
-            Block C/D Phase-2 architecture. */}
-        <Route path="/producthub" element={<Navigate to="/product-hub/products" replace />} />
-        <Route path="/producthub/backlog" element={<Navigate to="/product-hub/backlog" replace />} />
-        <Route path="/producthub/table" element={<Navigate to="/product-hub/table" replace />} />
-        <Route path="/producthub/kanban" element={<Navigate to="/product-hub/kanban" replace />} />
-        <Route path="/producthub/dashboard" element={<Navigate to="/product-hub/products" replace />} />
-        <Route path="/producthub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
-        <Route path="/producthub/roadmaps-v1" element={<Navigate to="/product-hub/roadmaps-v1" replace />} />
-        <Route path="/producthub/reports" element={<Navigate to="/product-hub/reports" replace />} />
-        <Route path="/producthub/roadmap" element={<Navigate to="/product-hub/roadmap" replace />} />
-        <Route path="/producthub/cards" element={<Navigate to="/product-hub/cards" replace />} />
-        <Route path="/producthub/ideation" element={<Navigate to="/ideation/intelligence" replace />} />
-        <Route path="/producthub/requirement-assist" element={<Navigate to="/product-hub/requirement-assist" replace />} />
-        <Route path="/producthub/requirement-assist/compose" element={<Navigate to="/product-hub/requirement-assist/compose" replace />} />
-        <Route path="/producthub/requirement-assist/categories" element={<Navigate to="/product-hub/requirement-assist/categories" replace />} />
-        <Route path="/producthub/requirement-assist/:id" element={<NavigateProducthubReqAssistId />} />
+        {/* Legacy /producthub/* — handled by ProducthubLegacyRedirect mounted
+            in App.tsx at /producthub + /producthub/*. The block previously
+            here was dead code (App.tsx wildcard catches first). */}
 
         {/* Phase 6 (2026-05-02) — Ideation peer hub at /ideation/*.
             Pages stay where they are (pages/producthub/Ideas*.tsx); only
@@ -896,12 +873,12 @@ export default function FullAppRoutes() {
 
         <Route path="/value-stream" element={<S><ValueStreamView /></S>} />
         <Route path="/profile" element={<S><UserProfile /></S>} />
-        <Route path="/for-you/archives" element={<S><ArchiveManagerPage /></S>} />
-        {/* Legacy redirect */}
+        {/* /for-you/archives mounted in App.tsx inside the ForYouShell parent.
+            Keeping only the legacy redirect here. */}
         <Route path="/profile/archives" element={<Navigate to="/for-you/archives" replace />} />
         <Route path="/items/:type" element={<S><PlaceholderPage /></S>} />
 
-        <Route path="/project-hub" element={<Navigate to="/project-hub/projects" replace />} />
+        {/* /project-hub root redirect mounted in App.tsx — removing local dup */}
         <Route path="/project-hub/projects" element={<S><AllProjectsPageLazy /></S>} />
         <Route path="/project/all-projects" element={<S><AllProjectsPageLazy /></S>} />
         <Route path="/project-hub/projects-legacy" element={<S><ProjectListPageLazy /></S>} />

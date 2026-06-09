@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRecentItems, useInfiniteSearchResults } from '@/hooks/useGlobalSearch';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
 import ProjectIcon from '@/components/shared/ProjectIcon';
+import { IssueHoverCard } from '@/components/shared/IssueHoverCard';
 import { FilterDropdown, FilterOption } from './FilterDropdown';
 import type { SearchResult } from '@/types/global-search';
 
