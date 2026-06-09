@@ -300,7 +300,6 @@ function ProjectDashboardPageInner() {
       >
         Add gadget
       </Button>
-      <LayoutDropdown onSelect={applyLayout} />
       <Button
         appearance="primary"
         spacing="compact"
