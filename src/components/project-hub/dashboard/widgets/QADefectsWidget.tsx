@@ -209,15 +209,10 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         },
         {
           key: 'status',
-          /* 2026-06-09 Vikram parity — ADS canonical Lozenge with sentence-case
-             override (data-cp-lozenge-jira-parity) so font matches Atlaskit
-             spec (was StatusLozenge wrapper bespoke font). */
+          /* 2026-06-09 Vikram parity — match Production Incidents font:
+             StatusLozenge with toStatusCategory mapping. */
           content: (
-            <span data-cp-lozenge-jira-parity style={{ display: 'inline-flex' }}>
-              <Lozenge appearance={({ done: 'success', inprogress: 'inprogress', new: 'default' } as Record<string, 'success' | 'inprogress' | 'default'>)[toStatusCategory(d.status) ?? 'new'] ?? 'default'}>
-                {statusLabel}
-              </Lozenge>
-            </span>
+            <StatusLozenge status={toStatusCategory(d.status)}>{statusLabel}</StatusLozenge>
           ),
         },
         {
@@ -241,30 +236,29 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         },
         {
           key: 'age',
+          /* 2026-06-09 Vikram parity — Age now = days since created (NOT a
+             date). Closed defects have no age (blank). Style matches Epic
+             Progress Target column (BODY 14/400). */
           content: (() => {
+            const isDone = ['closed', 'resolved', 'done', 'fixed', 'verified'].includes((d.status || '').toLowerCase());
+            if (isDone) return <span />;
             const raw = d.created_at ?? d.jira_created_at ?? null;
-            let display = '—';
-            if (raw) {
-              try {
-                const dt = new Date(raw);
-                if (!Number.isNaN(dt.getTime())) {
-                  const dd = String(dt.getDate()).padStart(2, '0');
-                  const mon = dt.toLocaleString('en-GB', { month: 'short' });
-                  const yy = String(dt.getFullYear()).slice(-2);
-                  display = `${dd}/${mon}/${yy}`;
-                }
-              } catch { /* fallback */ }
-            }
+            if (!raw) return <span style={{ ...BODY, color: token('color.text.subtle', '#44546F') }}>—</span>;
+            const dt = new Date(raw);
+            if (Number.isNaN(dt.getTime())) return <span style={{ ...BODY, color: token('color.text.subtle', '#44546F') }}>—</span>;
+            const days = Math.max(0, Math.floor((Date.now() - dt.getTime()) / (1000 * 60 * 60 * 24)));
+            const label = days === 0 ? 'today' : `${days}d`;
             return (
               <span
                 style={{
-                  ...STRONG,
-                  color: token('color.text.subtle', '#44546F'),
-                  /* 2026-06-09 Vikram parity — Jira Key uses Atlassian Sans 14/400, NOT mono */
+                  ...BODY,
+                  color: token('color.text', '#172B4D'),
                   whiteSpace: 'nowrap',
+                  fontVariantNumeric: 'tabular-nums',
                 }}
+                title={`Open for ${days} day${days === 1 ? '' : 's'}`}
               >
-                {display}
+                {label}
               </span>
             );
           })(),
