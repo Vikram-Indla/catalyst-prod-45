@@ -7,7 +7,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fn } from '@storybook/test';
 
-import { AskCatalystPill } from '@/components/layout/AskCatalystPill';
 import { AvailabilityPanel } from '@/components/layout/AvailabilityPanel';
 import { HubSwitcher } from '@/components/layout/HubSwitcher';
 import { ItemsDropdown } from '@/components/layout/ItemsDropdown';
@@ -24,11 +23,6 @@ function Wrap({ children }: { children: React.ReactNode }) {
 }
 
 export default { title: 'Components/Layout/Molecules' };
-
-export const AskCatalystPillDefault: StoryObj = {
-  name: 'AskCatalystPill / Default',
-  render: () => <Wrap><AskCatalystPill  /></Wrap>,
-}
 
 export const AvailabilityPanelDefault: StoryObj = {
   name: 'AvailabilityPanel / Default',
