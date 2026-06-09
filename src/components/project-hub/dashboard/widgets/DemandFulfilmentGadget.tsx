@@ -1119,7 +1119,7 @@ function DemandRowItem({
           // Apr 26, 2026 — column widths bumped to match the wider 14px
           // typography in cells (key 100→130, progress 160→180, target
           // 110→130). Header above uses identical grid so columns align.
-          gridTemplateColumns: '28px 20px 130px 2fr 1fr 130px 32px',
+          gridTemplateColumns: '28px 20px 130px 2fr 1fr 110px 160px',
           alignItems: 'center',
           gap: 12,
           padding: `0 ${token('space.300', '24px')}`,
@@ -1805,9 +1805,15 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                 transition: 'outline-color 80ms ease',
               }}
             >
-              <Lozenge appearance={appearance}>
-                {label} {count}
-              </Lozenge>
+              {/* 2026-06-09 Vikram parity — Jira format "Active · 18".
+                  data-cp-lozenge-jira-parity wrapper + global CSS in
+                  index.css overrides Atlaskit's default text-transform:
+                  uppercase + letter-spacing on the inner span. */}
+              <span data-cp-lozenge-jira-parity>
+                <Lozenge appearance={appearance}>
+                  {label} · {count}
+                </Lozenge>
+              </span>
             </span>
           );
         };
@@ -1902,7 +1908,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '28px 20px 130px 2fr 1fr 130px 32px',
+          gridTemplateColumns: '28px 20px 130px 2fr 1fr 110px 160px',
           alignItems: 'center',
           gap: 12,
           padding: `4px ${token('space.300', '24px')}`,
@@ -1922,7 +1928,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
         <span>Summary</span>
         <span>Progress</span>
         <span>Target</span>
-        <span />
+        <span>Assignee</span>
       </div>
 
 

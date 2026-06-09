@@ -247,10 +247,16 @@ export default function WidgetWrapper({
         boxShadow: isSoloed
           ? token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)')
           : token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
+        // 2026-06-09 Vikram parity directive — widgets now carry a full
+        // 1px border + 4px top accent (Jira convention). Catalyst was only
+        // showing the 4px top accent + shadow; right/bottom/left edges
+        // dissolved into the page background making widgets read as
+        // floating blobs rather than discrete cards.
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
         borderTop: `4px solid ${HIGHLIGHT_COLORS[highlightColor] ?? HIGHLIGHT_COLORS.blue}`,
         borderRadius: isSoloed
           ? token('border.radius.200', '8px')
-          : token('border.radius', '3px'),
+          : token('border.radius.100', '4px'),
         outline: isEditing ? `1px dashed ${token('color.border.brand', '#0C66E4')}` : 'none',
         outlineOffset: isEditing ? '-1px' : '0',
         cursor: isEditing ? 'grab' : 'default',
