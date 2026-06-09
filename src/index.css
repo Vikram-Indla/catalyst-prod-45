@@ -451,16 +451,36 @@
   width: 100%;
   min-width: max-content;
 }
+/* 2026-06-09 Spec parity (Filter Results gadget v1) — TD/TH layout.
+   Was: padding 4px, TH weight 500 / primary color / 0.56px border.
+   Now: TD 14/400/N800 + 12px padding + 1px N20 row separator (spec §5);
+        TH 12/600/N200 subtle + 8/12 padding + 2px N30 bottom (spec §4). */
 .dashboard-widget-body td,
 .dashboard-widget-body th {
   white-space: nowrap;
-  padding: 4px;
+}
+.dashboard-widget-body td {
+  padding: 12px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--ds-text, #172B4D);
+  border-bottom: 1px solid var(--ds-border, #EBECF0);
+  vertical-align: top;
+}
+.dashboard-widget-body tbody tr:hover td {
+  background-color: var(--ds-background-neutral-subtle-hovered, #F4F5F7);
 }
 .dashboard-widget-body th {
+  padding: 8px 12px;
   font-size: 12px;
-  font-weight: 500;
-  color: var(--ds-text, #292A2E);
-  border-bottom: 0.5px solid rgba(11, 18, 14, 0.14);
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--ds-text-subtle, #6B778C);
+  border-bottom: 2px solid var(--ds-border, #DFE1E6);
+  text-transform: none;
+  letter-spacing: 0;
+  vertical-align: middle;
 }
 /* Title column (2nd td) gets a 24px right gutter so the title text
    clears the Status lozenge with comfortable breathing room. 16px
