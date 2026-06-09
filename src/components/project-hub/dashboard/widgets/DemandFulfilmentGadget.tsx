@@ -1175,19 +1175,26 @@ function DemandRowItem({
 
         {/* Summary — Apr 26, 2026: 13→14px, weight 400→500 to match
             primary-text density in Overdue / On Hold / Production
-            Incidents row titles. Same color.text token, just bolder. */}
-        <span
+            2026-06-09 Vikram parity RCA — Jira summary cell is a blue
+            link 14/400 (`<a>`), Catalyst was rendering as 14/600 black
+            span. Live DOM probe both sides confirmed weight + color +
+            element mismatch. Match Jira spec §7 .summary-link. */}
+        <a
+          href={`/project-hub/${projectKey}/allwork?issue=${row.issue_key ?? ''}`}
           title={row.title}
+          onClick={(e) => e.stopPropagation()}
           style={{
-            ...STRONG,
+            ...BODY,
             fontFamily: ATLAS_SANS,
+            color: token('color.link', '#0C66E4'),
+            textDecoration: 'none',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
           }}
         >
           {row.title}
-        </span>
+        </a>
 
         {/* Progress + stat — inline (bar left, text right). Apr 26, 2026:
             bar 6→10px height, fill colours via Atlaskit canonical bolder
@@ -1345,18 +1352,22 @@ function DemandRowItem({
                   >
                     {story.issue_key}
                   </a>
-                  <span
+                  <a
+                    href={storyUrl}
                     title={story.summary}
+                    onClick={(e) => e.stopPropagation()}
                     style={{
-                      ...STRONG,
+                      ...BODY,
                       fontFamily: ATLAS_SANS,
+                      color: token('color.link', '#0C66E4'),
+                      textDecoration: 'none',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
                     }}
                   >
                     {story.summary}
-                  </span>
+                  </a>
                   {/* Sentence-case status via data-cp-lozenge-jira-parity */}
                   <span data-cp-lozenge-jira-parity>
                     <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
@@ -1538,18 +1549,22 @@ function DemandRowItem({
                           >
                             {story.issue_key}
                           </a>
-                          <span
+                          <a
+                            href={storyUrl}
                             title={story.summary}
+                            onClick={(e) => e.stopPropagation()}
                             style={{
-                              ...STRONG,
+                              ...BODY,
                               fontFamily: ATLAS_SANS,
+                              color: token('color.link', '#0C66E4'),
+                              textDecoration: 'none',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap',
                             }}
                           >
                             {story.summary}
-                          </span>
+                          </a>
                           <span data-cp-lozenge-jira-parity>
                             <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
                               {story.status}
