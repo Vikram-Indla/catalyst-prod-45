@@ -145,6 +145,7 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
       headerBadges={badge}
       footer={footer}
       onExpand={handleExpand}
+      empty={!isLoading && total === 0}
     >
       {isLoading ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

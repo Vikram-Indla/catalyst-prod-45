@@ -3,6 +3,7 @@ import Button from '@atlaskit/button';
 import Tabs from '@atlaskit/tabs';
 import { TabPanel } from '@atlaskit/tabs';
 import Section from '@atlaskit/section-message';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 
 const T = {
   text: 'var(--ds-text)',
@@ -467,6 +468,7 @@ const columns = [
   ];
 
   return (
+    <AdminGuard>
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: T.bgPage }}>
       <div style={{ padding: '24px', borderBottom: `1px solid ${T.border}` }}>
         <h1 style={{ fontSize: '28px', fontWeight: 700, margin: '0 0 8px 0', color: T.text }}>
@@ -499,5 +501,6 @@ const columns = [
         </div>
       </div>
     </div>
+    </AdminGuard>
   );
 }

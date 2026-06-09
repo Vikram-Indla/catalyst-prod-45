@@ -77,6 +77,13 @@ interface WidgetWrapperProps {
   highlightColor?: string;
   onRefresh?: () => void;
   lastRefreshed?: Date | null;
+  /**
+   * When true, the widget is rendering an empty state. CSS uses
+   * data-empty="true" to push empty widgets to the bottom of the grid
+   * via `order: 100` so the user sees populated widgets first.
+   * (2026-06-09 — Vikram dashboard parity directive.)
+   */
+  empty?: boolean;
 }
 
 class WidgetErrorBoundary extends Component<
@@ -125,6 +132,7 @@ export default function WidgetWrapper({
   highlightColor = 'blue',
   onRefresh,
   lastRefreshed,
+  empty,
 }: WidgetWrapperProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -221,6 +229,7 @@ export default function WidgetWrapper({
       aria-label={title}
       data-widget-id={widgetId}
       data-soloed={isSoloed ? 'true' : undefined}
+      data-empty={empty ? 'true' : undefined}
       style={{
         display: 'flex',
         flexDirection: 'column',

@@ -290,6 +290,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
       flushBody
       onExpand={handleExpand}
       lastRefreshed={lastRefreshed}
+      empty={!isLoading && rows.length === 0}
       headerBadges={<WidgetGearButton gadgetType="qa" projectKey={projectKey} projectId={projectId} />}
     >
       {isLoading ? (

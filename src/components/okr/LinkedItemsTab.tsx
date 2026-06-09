@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Plus, Trash2, ExternalLink } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { flag } from "@/components/shared/JiraTable/flags";
 import { useState } from "react";
 
 interface LinkedItemsTabProps {
@@ -44,13 +44,13 @@ export function LinkedItemsTab({ objectiveId }: LinkedItemsTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["objective-linked-items", objectiveId] });
-      toast.success("Link added");
+      flag.success("Link added");
       setIsAdding(false);
       setNewTitle("");
       setNewUrl("");
     },
     onError: () => {
-      toast.error("Failed to add link");
+      flag.error("Failed to add link");
     },
   });
 
@@ -65,16 +65,16 @@ export function LinkedItemsTab({ objectiveId }: LinkedItemsTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["objective-linked-items", objectiveId] });
-      toast.success("Link removed");
+      flag.success("Link removed");
     },
     onError: () => {
-      toast.error("Failed to remove link");
+      flag.error("Failed to remove link");
     },
   });
 
   const handleAdd = () => {
     if (!newTitle.trim() || !newUrl.trim()) {
-      toast.error("Title and URL are required");
+      flag.error("Title and URL are required");
       return;
     }
     createLinkMutation.mutate();

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { flag } from "@/components/shared/JiraTable/flags";
 import { Search } from "lucide-react";
 
 interface AddAlignedWorkDialogProps {
@@ -69,11 +69,11 @@ export function AddAlignedWorkDialog({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`objective-${workType}s`, objectiveId] });
-      toast.success("Work item added");
+      flag.success("Work item added");
       onClose();
     },
     onError: () => {
-      toast.error("Failed to add work item");
+      flag.error("Failed to add work item");
     },
   });
 

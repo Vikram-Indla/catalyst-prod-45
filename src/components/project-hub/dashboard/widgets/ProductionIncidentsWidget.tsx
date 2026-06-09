@@ -300,6 +300,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
       flushBody
       onExpand={handleExpand}
       lastRefreshed={lastRefreshed}
+      empty={!isLoading && rows.length === 0}
       headerBadges={<WidgetGearButton gadgetType="incidents" projectKey={projectKey} projectId={projectId} />}
     >
       {isLoading ? (

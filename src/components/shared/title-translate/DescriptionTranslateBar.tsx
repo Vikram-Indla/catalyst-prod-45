@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import Spinner from '@atlaskit/spinner';
 import EditorUndoIcon from '@atlaskit/icon/glyph/editor/undo';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { flag } from '@/components/shared/JiraTable/flags';
 import { containsArabic } from '@/lib/detectArabic';
 import { useTranslation } from '@/hooks/useTranslation';
 import './title-translate.css';
@@ -43,7 +43,7 @@ export function DescriptionTranslateBar({
       if (result) {
         onTranslated(result);
       } else {
-        toast.error('Translation failed');
+        flag.error('Translation failed');
       }
     },
     [plainText, isTranslating, translate, issueKey, target, onTranslated],

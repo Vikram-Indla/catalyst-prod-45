@@ -32,6 +32,7 @@ import Tooltip from '@atlaskit/tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 import { UserAvatar } from '@/components/shared/UserAvatar';
 import {
   useResourceAvatarOverrides,
@@ -271,6 +272,7 @@ export default function AdminAvatarsPage() {
   const isLoading = profilesLoading || overridesLoading;
 
   return (
+    <AdminGuard>
     <div style={pageContainerStyle}>
       <div style={{ marginBottom: 16 }}>
         <Heading size="xlarge">Resource avatars</Heading>
@@ -379,5 +381,6 @@ export default function AdminAvatarsPage() {
         </div>
       )}
     </div>
+    </AdminGuard>
   );
 }
