@@ -717,7 +717,8 @@ const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: num
     return (
       <span
         style={{
-          ...STRONG,
+          /* 2026-06-09 Vikram parity — match Summary cell styling: 14/400. */
+          ...BODY,
           color: token('color.text.subtle', '#44546F'),
         }}
         title="No target date set"
@@ -1831,7 +1832,15 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
         const totalCount = mergedActive.length + delivered.length;
         const activeCount = mergedActive.filter((r) => !overdueRows.includes(r)).length;
         const overdueCount = overdueRows.length;
-        const doneCount = delivered.length;
+        // 2026-06-09 Vikram parity — "Fulfilled" should mean rows where all
+        // child stories are done (progress 100%), not rows where the epic
+        // status is 'closed'. Previous calc used delivered.length which only
+        // counted closed-status rows; epics with 34/34 done but status 'In
+        // Progress' were silently excluded → 0% even when half the visible
+        // rows showed 100%.
+        const allRows = [...mergedActive, ...delivered];
+        const fulfilledRows = allRows.filter((r) => r.total > 0 && r.done >= r.total);
+        const doneCount = fulfilledRows.length;
         const fulfilledPct = totalCount > 0
           ? Math.round((doneCount / totalCount) * 100)
           : 0;
