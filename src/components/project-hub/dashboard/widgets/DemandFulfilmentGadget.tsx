@@ -720,8 +720,9 @@ const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: num
           ...STRONG,
           color: token('color.text.subtle', '#44546F'),
         }}
+        title="No target date set"
       >
-        No target date
+        None
       </span>
     );
   }
