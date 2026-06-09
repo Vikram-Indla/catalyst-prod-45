@@ -44,6 +44,7 @@ const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
 const CleanupPage = lazy(() => import("./pages/CleanupPage"));
 const AuditTrailPage = lazy(() => import("./pages/AuditTrailPage"));
 const IssueFullPage = lazy(() => import("./pages/IssueFullPage"));
+const ChatDockMountLazy = lazy(() => import("./components/chat/ChatDockMount"));
 
 // Full app routes — only imported when ENABLE_FULL_APP=true
 const FullAppRoutes = ENABLE_FULL_APP
@@ -96,6 +97,12 @@ function IssueRedirectToBrowse() {
   const location = useLocation();
   const newPath = location.pathname.replace(/^\/issue\//, '/browse/');
   return <Navigate to={newPath + location.search + location.hash} replace />;
+}
+
+function ChatDockGuard() {
+  const location = useLocation();
+  if (location.pathname.startsWith('/chat') || location.pathname.startsWith('/auth')) return null;
+  return <Suspense fallback={null}><ChatDockMountLazy /></Suspense>;
 }
 
 
@@ -225,6 +232,7 @@ function App() {
 
                 <Route path="*" element={<S><NotFound /></S>} />
               </Routes>
+              <ChatDockGuard />
               </BrowserRouter>
           </ProcessStepsProvider>
         </NavigationProvider>

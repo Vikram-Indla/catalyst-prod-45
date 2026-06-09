@@ -1,6 +1,48 @@
 # WAYS OF WORKING — MANDATORY FOR ALL IMPLEMENTATION
 
-These rules apply to every implementation task. No exceptions.
+These rules apply to every implementation task. No exceptions. **Applies to ALL agents, skills, and subagents** — main session, catalyst-agent, design-critique, jira-compare, preflight, code-review, every subagent. No exceptions.
+
+---
+
+## ♻️ REUSE FIRST — NEVER REBUILD WHAT CATALYST ALREADY HAS (P0, Non-Negotiable)
+
+**Before writing ANY component, primitive, hook, util, or wrapper — search the Catalyst codebase AND `@atlaskit/*` for an existing implementation. Reuse it. Do not rebuild.**
+
+### The Rule
+
+1. **Step 0 of every build task** — BEFORE writing code, run:
+   - `grep -r "<concept>" src/components src/lib src/hooks` (Catalyst-internal)
+   - Check `node_modules/@atlaskit/` and the catalyst-storybook MCP for an ADS primitive
+   - Search canonical components: `JiraTable`, `CatalystSidebarDetails`, `CatalystKeyDetails`, `CatalystViewBase`, `JiraIssueTypeIcon`, `CatalystStatusPill`, `EditableAssignee/Priority/Reporter`, `CatalystParentLinker`, `CatalystDueDateField`, `WatchersChip`, `ImproveIssueDropdown`, `AIIntelligenceButton`, `CatyRainbowCTA`, `InlineCreateWithAI`, `FilterDropdown`, `GroupByControl`, `ColumnManager`, `CatalystDescriptionSection`, `LinkedWorkItemsSection`, `SubtasksPanel`, `ActivityPanel`, `RecommendedPanel`, `AskCaty` surfaces, `ReactionStrip`, `ph_comments` helpers.
+   - Atlaskit equivalents always preferred over hand-rolled: `@atlaskit/button`, `@atlaskit/dropdown-menu`, `@atlaskit/select`, `@atlaskit/modal-dialog`, `@atlaskit/textfield`, `@atlaskit/tabs`, `@atlaskit/avatar`, `@atlaskit/lozenge`, `@atlaskit/spinner`, `@atlaskit/tooltip`, `@atlaskit/popup`, `@atlaskit/editor-core` (rich text), `@atlaskit/renderer`, `@atlaskit/dynamic-table` (only outside work-item lists), `@atlaskit/inline-edit`, `@atlaskit/datetime-picker`, `@atlaskit/side-navigation`, `@atlaskit/breadcrumbs`, `@atlaskit/checkbox`, `@atlaskit/radio`, `@atlaskit/toggle`, `@atlaskit/flag`.
+
+2. **Common reuse traps (never reimplement these):**
+   - Rich text editor → `@atlaskit/editor-core` + `AtlaskitRenderer` (NOT TipTap from scratch, NOT contenteditable)
+   - Avatar → `@atlaskit/avatar` (NOT `<img>` with border-radius)
+   - Work item type icon → `JiraIssueTypeIcon` from `src/lib/jira-issue-type-icons` (NOT colored dots, NOT custom SVG)
+   - Status pill → `CatalystStatusPill` / `StatusPill` (NOT `<span>` with bg color)
+   - Work item table → `JiraTable` (NOT new `<table>`, NOT raw `@atlaskit/dynamic-table` for work items — see canonical-table rule)
+   - Detail view shell → `CatalystViewBase` (NOT bespoke modal layout)
+   - Sidebar field rows → `CatalystSidebarDetails` (NOT raw form fields)
+   - Inline editable field → `EditableAssignee/Priority/Reporter` / `makeXEditCell` factories (NOT always-open select)
+   - Menu/dropdown → `@atlaskit/dropdown-menu` (NOT hand-rolled — WCAG violation; see 2026-05-10 lesson)
+   - Watcher chip → `WatchersChip` (NOT new popover)
+   - AI CTA → `AIIntelligenceButton` / `CatyRainbowCTA` (NOT new rainbow border — see 2026-06-07 lesson)
+   - Date field → `CatalystDueDateField` / `makeDateEditCell` (NOT raw `<input type="date">`)
+   - Toasts → `@atlaskit/flag` (NOT `sonner`, NOT custom)
+
+3. **If you think you need to build something new** — STOP and ask Vikram: *"I searched [X, Y, Z] and didn't find an existing component for [need]. Should I extend [closest existing] or build new?"* Never silently build a parallel implementation.
+
+4. **Forking a canonical component to fit a new data source is BANNED.** Parameterise via prop/adapter instead (see 2026-06-01 adopt-canonical-components lesson — product All Work reimplementation cost 18 parity defects).
+
+### Why this rule exists
+
+- 2026-05-19 — `CatalystJiraListView` (~1,300 LOC) built from scratch, then `JiraTable` discovered to already have every feature. Whole session wasted, component deleted same day.
+- 2026-06-01 — `BrSidebarDetails` / `BrListPanel` reimplemented project-hub surfaces from raw `@atlaskit/select` instead of mounting `CatalystSidebarDetails` + `StatusTransitionDropdown`. 18 parity defects.
+- 2026-05-10 — Hand-rolled dropdown in `CatalystViewBase` ⋯ menu = WCAG 2.1 AA failure. Should have used `@atlaskit/dropdown-menu`.
+- Every reimplementation drifts. The canonical component has icons, affordances, colours, keyboard nav, ARIA, a11y, and edge-case handling the new code will miss.
+
+**Severity:** P0 — building parallel implementations of existing components is the documented #1 cause of session-wasting defects and parity drift. Reuse first. Extend second. Build new only with explicit Vikram approval.
 
 ---
 
@@ -1619,3 +1661,39 @@ The "Improve writing" button in the comment editor toolbar rendered with rainbow
 
 **Files fixed (9):** AIIntelligenceButton.tsx, CatyRainbowCTA.tsx, ImproveIssueDropdown.tsx, ImproveButton.tsx, RecommendedPanel.tsx, SummarizeDigestModal.tsx, AssignedPanel.tsx, ReplyComposer.tsx, EditableAssignee.tsx, MicButton.tsx
 **Commits:** eb233ccf1, 832f795a3, 28ec2bc09, 55dfb65a7, 3d74bfecd, bb307a987, 9b790fff3
+
+---
+
+## 🗣️ COMMUNICATION RULES — DIRECT MODE (P0, Non-Negotiable)
+
+Applies to every response, every agent, every skill.
+
+1. **Open with flaw, gap, or risky assumption.** First sentence. If solid, one line, move on. Never invent objections.
+2. **Tag confidence:** `[Certain]` / `[Likely]` / `[Guessing]`. Mostly guesswork → say so upfront.
+3. **No filler praise.** Banned: "Great question", "You're absolutely right", "That makes sense", "Absolutely", "Definitely".
+4. **When Vikram is wrong:** "I disagree because [reason]. Instead: [alternative]. Risk in your approach: [specific downside]."
+5. **Lead with the uncomfortable truth** — first line, not paragraph three.
+6. **No warm-up paragraphs.** Start with the most useful thing.
+7. **On pushback, hold position** unless given new facts or original claim was `[Guessing]`.
+8. **Say "I don't know" plainly.** Don't manufacture answers.
+9. **Separate fact from opinion explicitly.** Don't blur.
+10. **When asked to choose, commit to ONE recommendation.** No "it depends" lists.
+11. **Surface assumptions BEFORE the answer**, not after.
+12. **If the question is wrong, say so** and give the better one.
+13. **Quantify.** Numbers, ranges, probabilities — not "many", "some", "significant".
+14. **Steelman the opposing view** before agreeing with Vikram's.
+15. **Flag rubber-stamp requests** when Vikram has already decided.
+16. **Give cost and downside** of your recommendation, not just upside.
+17. **State what evidence would change your mind** on a key claim.
+18. **One clear caveat beats five hedges.** No qualifier padding.
+19. **If a task is a bad idea, say so** before helping execute it well.
+20. **Match effort to stakes.** Don't over-explain small things.
+21. **On error, correct in one line.** No over-apologizing.
+22. **Name the tradeoff** when two goals conflict; force the choice.
+23. **Concrete example > abstract description.**
+24. **Don't adopt loaded framing.** Restate neutrally.
+25. **Tell Vikram when it's good enough** and he's over-engineering.
+26. **Don't soften numbers or deadlines** to sound better.
+27. **End with the single next action**, not a recap.
+
+**Severity:** P0 — applies before all other communication conventions including caveman mode formatting (caveman trims words; these rules govern stance).

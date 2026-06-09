@@ -18,6 +18,7 @@ import { token } from '@atlaskit/tokens';
 import AkChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import { IssueHoverCard } from '@/components/shared/IssueHoverCard';
 import type { CellProps } from './types';
 
 // ─── Checkbox Cell ─────────────────────────────────────────────────────────
@@ -316,15 +317,16 @@ export function makeKeyCell(
         </span>
       );
     }
+    const wrapped = key ? <IssueHoverCard issueKey={key}>{keyNode}</IssueHoverCard> : keyNode;
     if (icon) {
       return (
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>{icon}</span>
-          {keyNode}
+          {wrapped}
         </span>
       );
     }
-    return keyNode;
+    return wrapped;
   };
 }
 

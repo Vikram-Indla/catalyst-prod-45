@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRecentItems, useInfiniteSearchResults } from '@/hooks/useGlobalSearch';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
 import ProjectIcon from '@/components/shared/ProjectIcon';
+import { IssueHoverCard } from '@/components/shared/IssueHoverCard';
 import { FilterDropdown, FilterOption } from './FilterDropdown';
 import type { SearchResult } from '@/types/global-search';
 
@@ -381,7 +382,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
             ? it.item_type.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
             : '';
           return renderRow(r,
-            <>
+            <IssueHoverCard issueKey={it.item_key} disabled={!!it.archived_at}>
               <div style={{ width: 28, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
                 <WorkItemIcon type={iconType} size={18} />
               </div>
@@ -399,7 +400,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
                   )}
                 </div>
               </div>
-            </>,
+            </IssueHoverCard>,
             timeAgo(it.viewed_at),
           );
         })}

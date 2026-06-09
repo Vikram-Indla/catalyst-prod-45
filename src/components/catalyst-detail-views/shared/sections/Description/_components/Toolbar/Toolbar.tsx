@@ -11,6 +11,7 @@
  */
 import type { Editor } from '@tiptap/react';
 import { GenerateStoriesButton } from '@/components/catalyst-detail-views/epic/GenerateStoriesButton';
+import { GenerateEpicsButton } from '@/components/catalyst-detail-views/business-request/GenerateEpicsButton';
 import { TextStylesDropdown } from './buttons/TextStylesDropdown';
 import { BoldButton } from './buttons/BoldButton';
 import { InlineFormattingDropdown } from './buttons/InlineFormattingDropdown';
@@ -102,6 +103,7 @@ export function Toolbar({
         />
       )}
       <GenerateStoriesButton issue={issue ?? null} />
+      <GenerateEpicsButton issue={issue ?? null} />
       <TextStylesDropdown editor={editor} />
       <BoldButton editor={editor} />
       <InlineFormattingDropdown editor={editor} />
