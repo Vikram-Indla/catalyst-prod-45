@@ -33,21 +33,14 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { AttachmentPreviewModal } from './AttachmentPreviewModal';
+import type { PhAttachment } from './types';
 import './AttachmentsSection.css';
 
 const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024; // 25MB
 const BLOCKED_EXTS = ['exe', 'bat', 'sh', 'msi', 'cmd', 'com', 'scr'];
 
-export interface PhAttachment {
-  id: string;
-  work_item_id: string;
-  file_name: string;
-  file_size: number;
-  mime_type: string;
-  storage_path: string;
-  uploaded_by: string;
-  created_at: string;
-}
+// Re-export for backward compatibility
+export type { PhAttachment };
 
 type WorkItemSource = 'jira' | 'catalyst';
 

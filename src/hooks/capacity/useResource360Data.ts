@@ -323,7 +323,7 @@ export function useResource360Data(resourceId: string | null) {
     if (!profileId) return;
 
     const channel = supabase
-      .channel(`resource-360-${resourceId}`)
+      .channel(`resource-360-${resourceId}-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'stories', filter: `owner_id=eq.${profileId}` },
         () => queryClient.invalidateQueries({ queryKey: ['resource-360-work-items', resourceId, profileId] })

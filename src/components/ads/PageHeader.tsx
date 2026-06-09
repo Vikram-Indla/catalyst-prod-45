@@ -29,7 +29,7 @@
  */
 import { Inline } from '@atlaskit/primitives';
 import { type ReactNode } from 'react';
-import { adsTokens, cp } from '@/theme/ads/tokens';
+import { adsTokens, cp } from '@/theme/atlassian/tokens';
 import { Heading } from './Heading';
 import { forwardTestId } from './internal/forwardTestId';
 

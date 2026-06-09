@@ -65,7 +65,7 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
 import { useGadgetSettings as usePanelGadgetSettings } from '@/hooks/useGadgetSettings';
-import type { WidgetProps } from '../widget-registry';
+import type { WidgetProps } from '../widget-types';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 
 // ─────────────────────────────────────────────────────────────────────────────

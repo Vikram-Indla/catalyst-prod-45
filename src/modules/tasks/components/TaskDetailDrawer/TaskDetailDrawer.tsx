@@ -11,7 +11,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
-import { catalystToast } from '@/lib/catalystToast';
 import { X, Link2, Maximize2, MoreHorizontal, Copy, Trash2, Loader2, Check } from '@/lib/atlaskit-icons';
 import {
   Modal,

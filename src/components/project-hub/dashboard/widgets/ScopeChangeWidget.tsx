@@ -27,7 +27,7 @@
  *   - WidgetGearButton in headerBadges.
  *   - Sort + maxReleases + thresholds from gadget settings.
  */
-import type { WidgetProps } from '../widget-registry';
+import type { WidgetProps } from '../widget-types';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardScopeChange } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';

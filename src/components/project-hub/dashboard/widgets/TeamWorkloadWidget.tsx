@@ -27,7 +27,7 @@
  *     forwarded to the workload hook + the click-through.
  *   - Loading skeleton + EmptyState fallback.
  */
-import type { WidgetProps } from '../widget-registry';
+import type { WidgetProps } from '../widget-types';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardTeamWorkload, YEAR_2026_START } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';

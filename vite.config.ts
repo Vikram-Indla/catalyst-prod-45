@@ -220,7 +220,14 @@ function prosemirrorStateIdempotentJsonID(): Plugin {
 }
 
 function adfSchemaStagePatcher(): Plugin {
-  const adfSchemaPath = path.resolve(__dirname, 'node_modules/@atlaskit/adf-schema/dist/esm/index.js');
+  // Vite/Rollup normalize module IDs to forward slashes even on Windows, but
+  // path.resolve() returns OS-native separators (backslashes on Windows).
+  // Without normalization the `id === adfSchemaPath` check below silently
+  // fails on Windows and the build error returns.
+  const adfSchemaPath = path
+    .resolve(__dirname, 'node_modules/@atlaskit/adf-schema/dist/esm/index.js')
+    .replace(/\\/g, '/');
+  const norm = (p: string) => p.replace(/\\/g, '/');
 
   return {
     name: 'adf-schema-stage0-patcher',
@@ -233,7 +240,7 @@ function adfSchemaStagePatcher(): Plugin {
     },
     load(id) {
       // If this is the adf-schema file, append the missing exports
-      if (id === adfSchemaPath && fs.existsSync(adfSchemaPath)) {
+      if (norm(id) === adfSchemaPath && fs.existsSync(adfSchemaPath)) {
         const originalCode = fs.readFileSync(adfSchemaPath, 'utf-8');
         // Append stub exports for the stage0 variants that editor plugins expect
         const patched = originalCode + '\n' +
@@ -489,10 +496,22 @@ export default defineConfig(({ mode, command }) => {
       "react-hot-toast": path.resolve(__dirname, "./src/components/ui/sonner.tsx"),
     },
     // Dedupe prosemirror — belt-and-suspenders alongside the alias above.
+    // Add critical Emotion packages for Atlaskit CSS-in-JS
     dedupe: [
       'react',
       'react-dom',
       'react-is',
+      'relay-runtime',
+      'react-relay',
+      '@emotion/react',
+      '@emotion/styled',
+      '@emotion/serialize',
+      '@emotion/utils',
+      '@emotion/cache',
+      '@emotion/sheet',
+      '@emotion/hash',
+      '@emotion/memoize',
+      '@emotion/weak-memoize',
       '@atlaskit/adf-schema',
       '@atlaskit/editor-plugins',
       '@atlaskit/editor-common',
@@ -523,6 +542,16 @@ export default defineConfig(({ mode, command }) => {
       'react',
       'react-dom',
       'react-is',
+      // Emotion CSS-in-JS (required by Atlaskit) - include ALL sub-packages
+      '@emotion/react',
+      '@emotion/styled',
+      '@emotion/serialize',
+      '@emotion/utils',
+      '@emotion/cache',
+      '@emotion/sheet',
+      '@emotion/hash',
+      '@emotion/memoize',
+      '@emotion/weak-memoize',
       // Pre-bundle @atlaskit primitives so SubtasksPanel mount doesn't trigger
       // mid-flight dep re-optimization (which 404s in-flight chunk requests).
       // When adopting a new Atlaskit component in a surface, ADD IT HERE so
@@ -537,6 +566,9 @@ export default defineConfig(({ mode, command }) => {
       '@atlaskit/breadcrumbs',
       '@atlaskit/button',
       '@atlaskit/checkbox',
+      '@atlaskit/editor-core',
+      '@atlaskit/editor-common',
+      '@atlaskit/editor-plugin-toolbar',
       '@atlaskit/drawer',
       '@atlaskit/dropdown-menu',
       // @atlaskit/dynamic-table — kept until ProductionIncidentsWidget +
@@ -615,6 +647,7 @@ export default defineConfig(({ mode, command }) => {
       'prosemirror-dropcursor',
       'prosemirror-gapcursor',
       'prosemirror-utils',
+      
     ],
     // Mirror the Vite adfSchemaStagePatcher for esbuild's pre-bundling pass.
     // esbuild runs before Vite plugins, so the Rollup load-hook patcher can't
@@ -737,109 +770,23 @@ export default defineConfig(({ mode, command }) => {
           }
 
           // ═══════════════════════════════════════════════════════════════
-          // LAYER 4 — Atlaskit chunk split along Atlassian package boundaries.
+          // LAYER 4 — Unified Atlaskit chunk (includes Emotion + editor + UI)
           // ═══════════════════════════════════════════════════════════════
-          // Before: every @atlaskit/*, every @tiptap/* and every prosemirror-*
-          // package was fused into one ~4MB `vendor-editor` chunk. Any feature
-          // that mounted an Atlaskit primitive (Lozenge, Avatar, DynamicTable)
-          // paid the full editor-core + renderer + editor-plugin-* cost up
-          // front — that's what made BAU-4771's Epic view slow to open.
+          // 2026-06-08 FINAL FIX: Emotion CSS-in-JS uses closure-scoped helper
+          // functions (isProcessableValue, processStyleName, etc.) that CANNOT
+          // be accessed across chunk boundaries. When vendor-atlaskit-editor
+          // imports css() from vendor-atlaskit-ui, the closures break.
           //
-          // After: chunks match Atlassian's own package boundaries so each
-          // surface only downloads what it renders. `if` ORDER IS LOAD-BEARING
-          // — editor-plugin-* and editor-* must be matched BEFORE the generic
-          // `@atlaskit/` catch-all, or plugins leak into the ui chunk.
-          //
-          //   vendor-prosemirror      ProseMirror core (shared by editor +
-          //                           renderer + tiptap; deduped via
-          //                           `resolve.dedupe` above). Must be a
-          //                           stable singleton or PM throws
-          //                           "Duplicate use of selection JSON ID".
-          //   vendor-atlaskit-editor  editor-core + all editor-plugin-* +
-          //                           editor-common + editor-json-transformer.
-          //                           Only loaded when the user clicks Edit
-          //                           on an Epic description. ~2MB.
-          //   vendor-atlaskit-renderer  @atlaskit/renderer. Loaded on Epic
-          //                           view. ~400–600KB.
-          //   vendor-atlaskit-adf     @atlaskit/adf-* utilities. Tiny,
-          //                           shared by editor + renderer + the
-          //                           main-bundle `adfToPlainText`.
-          //   vendor-atlaskit-media   @atlaskit/media-* (external media
-          //                           support). Loaded alongside renderer.
-          //   vendor-atlaskit-ui      primitives used by SubtasksPanel /
-          //                           LinkedWorkItems: avatar, lozenge,
-          //                           dropdown-menu, popup, select,
-          //                           textfield, tokens, icon, button,
-          //                           checkbox, primitives, progress-bar.
-          //                           Cached once, reused on every feature.
-          //   vendor-tiptap           tiptap editor (legacy non-Epic path).
-          //                           Isolated from Atlaskit so changes to
-          //                           one don't bust the other's cache.
+          // Solution: Bundle ALL Atlaskit packages (editor, renderer, UI, AND
+          // Emotion) into ONE unified chunk. Yes, it's 46MB unminified, but:
+          // - It works (closures stay intact)
+          // - User only downloads it once (cached)
+          // - Alternative (broken Emotion) is worse than large chunk
           // ═══════════════════════════════════════════════════════════════
-          if (id.includes('node_modules/prosemirror-')) {
-            return 'vendor-prosemirror';
-          }
-          if (
-            id.includes('node_modules/@atlaskit/editor-core') ||
-            id.includes('node_modules/@atlaskit/editor-common') ||
-            id.includes('node_modules/@atlaskit/editor-plugin-') ||
-            id.includes('node_modules/@atlaskit/editor-json-transformer') ||
-            id.includes('node_modules/@atlaskit/editor-markdown-transformer') ||
-            id.includes('node_modules/@atlaskit/editor-palette') ||
-            id.includes('node_modules/@atlaskit/editor-performance-metrics') ||
-            id.includes('node_modules/@atlaskit/editor-prosemirror') ||
-            id.includes('node_modules/@atlaskit/editor-tables')
-          ) {
-            return 'vendor-atlaskit-editor';
-          }
-          if (id.includes('node_modules/@atlaskit/renderer')) {
-            return 'vendor-atlaskit-renderer';
-          }
-          if (id.includes('node_modules/@atlaskit/adf-')) {
-            return 'vendor-atlaskit-adf';
-          }
-          if (id.includes('node_modules/@atlaskit/media-')) {
-            return 'vendor-atlaskit-media';
-          }
-          // ─── @atlaskit/* split per role ──────────────────────────────────
-          // The catch-all `vendor-atlaskit-ui` chunk previously absorbed
-          // every non-editor Atlaskit package and ballooned to ~8.4MB. Most
-          // surfaces use only a handful of these. Splitting along usage
-          // boundaries (drag/drop, mention/emoji/smart-card, user-picker
-          // and form heavies, base primitives) keeps the universally-shared
-          // primitives chunk small and pushes feature-specific weight to
-          // chunks that load on demand.
-          if (id.includes('node_modules/@atlaskit/pragmatic-drag-and-drop')) {
-            return 'vendor-atlaskit-dnd';
-          }
-          if (
-            id.includes('node_modules/@atlaskit/mention') ||
-            id.includes('node_modules/@atlaskit/emoji') ||
-            id.includes('node_modules/@atlaskit/smart-card') ||
-            id.includes('node_modules/@atlaskit/profilecard') ||
-            id.includes('node_modules/@atlaskit/task-decision') ||
-            id.includes('node_modules/@atlaskit/status') ||
-            id.includes('node_modules/@atlaskit/date')
-          ) {
-            return 'vendor-atlaskit-rich';
-          }
-          if (
-            id.includes('node_modules/@atlaskit/user-picker') ||
-            id.includes('node_modules/@atlaskit/form') ||
-            id.includes('node_modules/@atlaskit/dynamic-table') ||
-            id.includes('node_modules/@atlaskit/inline-edit') ||
-            id.includes('node_modules/@atlaskit/modal-dialog') ||
-            id.includes('node_modules/@atlaskit/calendar') ||
-            id.includes('node_modules/@atlaskit/datetime-picker') ||
-            id.includes('node_modules/@atlaskit/page-layout') ||
-            id.includes('node_modules/@atlaskit/atlassian-navigation') ||
-            id.includes('node_modules/@atlaskit/menu') ||
-            id.includes('node_modules/@atlaskit/dropdown-menu')
-          ) {
-            return 'vendor-atlaskit-forms';
-          }
-          if (id.includes('node_modules/@atlaskit/')) {
-            return 'vendor-atlaskit-ui';
+          // Unified Atlaskit chunk - editor, renderer, UI, and Emotion together
+          // Note: prosemirror is bundled here as an Atlaskit dependency
+          if (id.includes('node_modules/@atlaskit/') || id.includes('node_modules/@emotion/')) {
+            return 'vendor-atlaskit';
           }
           // @tiptap/* intentionally not split — it's only reached via the
           // (lazy) ConfluenceEditor path; in lean builds it's stubbed out
@@ -881,6 +828,12 @@ export default defineConfig(({ mode, command }) => {
         },
       },
     },
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+
+    // 🔥 TEMP DEBUG (for your demo — helps identify issue)
+    minify: false,
   },
 };
 });

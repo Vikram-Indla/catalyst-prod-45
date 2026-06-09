@@ -26,7 +26,7 @@
  *   - All settings filters forwarded to the hook + click-through.
  *   - Loading skeleton + EmptyState fallback.
  */
-import type { WidgetProps } from '../widget-registry';
+import type { WidgetProps } from '../widget-types';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardOnHoldItems } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
