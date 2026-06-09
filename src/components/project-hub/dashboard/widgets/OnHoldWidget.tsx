@@ -342,18 +342,23 @@ function OnHoldRow({
         </span>
       )}
       {has('summary') && (
-        <span
+        <a
+          href={`/project-hub/${item.project_key ?? ''}/allwork?issue=${item.issue_key ?? ''}`}
+          onClick={(e) => e.stopPropagation()}
           style={{
             flex: 1,
             minWidth: 0,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
-            ...STRONG,
+            /* 2026-06-09 Vikram parity — match Epic Progress: BODY 14/400 link */
+            ...BODY,
+            color: token('color.link', '#0C66E4'),
+            textDecoration: 'none',
           }}
         >
           {item.summary}
-        </span>
+        </a>
       )}
       {has('assignee') && item.assignee_display_name && (
         <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 6 }}>

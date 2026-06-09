@@ -335,18 +335,24 @@ function OverdueRow({
         </span>
       )}
       {has('summary') && (
-        <span
+        <a
+          href={`/project-hub/${item.project_key ?? ''}/allwork?issue=${item.issue_key ?? ''}`}
+          onClick={(e) => e.stopPropagation()}
           style={{
             flex: 1,
             minWidth: 0,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
-            ...STRONG,
+            /* 2026-06-09 Vikram parity — match Epic Progress summary style:
+               14/400 blue link, not STRONG bold. */
+            ...BODY,
+            color: token('color.link', '#0C66E4'),
+            textDecoration: 'none',
           }}
         >
           {item.summary}
-        </span>
+        </a>
       )}
       {has('dueDate') && (item.effective_due_date ?? item.due_date) && (
         <span style={{ ...SMALL, color: token('color.text.subtle', '#42526E'), flexShrink: 0, whiteSpace: 'nowrap' }}>

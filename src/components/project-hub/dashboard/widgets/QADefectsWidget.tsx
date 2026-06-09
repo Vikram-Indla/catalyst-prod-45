@@ -196,7 +196,9 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    ...STRONG,
+                    /* 2026-06-09 Vikram parity — match Epic Progress: 14/400 link */
+                    ...BODY,
+                    color: token('color.link', '#0C66E4'),
                   }}
                 >
                   {d.title ?? ''}

@@ -200,7 +200,9 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    ...STRONG,
+                    /* 2026-06-09 Vikram parity — match Epic Progress: 14/400 link */
+                    ...BODY,
+                    color: token('color.link', '#0C66E4'),
                   }}
                 >
                   {inc.summary ?? ''}
