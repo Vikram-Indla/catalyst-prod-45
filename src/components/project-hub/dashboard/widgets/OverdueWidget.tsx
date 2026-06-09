@@ -272,12 +272,25 @@ function KpiCell({
   );
 }
 
+// 2026-06-09 Vikram parity — status lozenge appearance per ADS category.
+function statusAppearance(
+  statusCategory?: string | null,
+  status?: string | null,
+): 'default' | 'success' | 'inprogress' | 'moved' {
+  if (status && ['on hold', 'blocked', 'awaiting info'].includes(status.toLowerCase())) return 'moved';
+  const cat = (statusCategory || '').toLowerCase();
+  if (cat === 'done') return 'success';
+  if (cat === 'in progress') return 'inprogress';
+  return 'default';
+}
+
 // ─── Grid template + Header ───────────────────────────────────────────────
 
 // 2026-06-09 Vikram parity — Overdue rows now share this template with
 // OverdueHeader so columns visually align.
 //  Type(20) · Key(100) · Summary(1fr) · Due(80) · Assignee(200) · Days(110)
-const OVERDUE_GRID = '20px 100px 1fr 80px 200px 110px';
+// Type(20) · Key(100) · Summary(1fr) · Status(120) · Due(80) · Assignee(200) · Days(110)
+const OVERDUE_GRID = '20px 100px 1fr 120px 80px 200px 110px';
 
 function OverdueHeader({ activeColumns }: { activeColumns: string[] }) {
   const has = (c: string) => activeColumns.includes(c);
@@ -299,6 +312,7 @@ function OverdueHeader({ activeColumns }: { activeColumns: string[] }) {
       <span />
       <span>{has('key') ? 'Key' : ''}</span>
       <span>{has('summary') ? 'Summary' : ''}</span>
+      <span>{has('status') ? 'Status' : ''}</span>
       <span>{has('dueDate') ? 'Due' : ''}</span>
       <span>{has('assignee') ? 'Assignee' : ''}</span>
       <span style={{ justifySelf: 'end' }}>{has('days') ? 'Days' : ''}</span>
@@ -376,6 +390,13 @@ function OverdueRow({
       >
         {has('summary') ? item.summary : ''}
       </a>
+      <span data-cp-lozenge-jira-parity style={{ display: 'inline-flex' }}>
+        {has('status') && item.status && (
+          <Lozenge appearance={statusAppearance(item.status_category, item.status)}>
+            {item.status}
+          </Lozenge>
+        )}
+      </span>
       <span style={{ ...SMALL, color: token('color.text.subtle', '#42526E'), whiteSpace: 'nowrap' }}>
         {has('dueDate') && (item.effective_due_date ?? item.due_date)
           ? new Date(item.effective_due_date ?? item.due_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })

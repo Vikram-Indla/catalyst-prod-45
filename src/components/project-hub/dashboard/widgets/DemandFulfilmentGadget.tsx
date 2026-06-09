@@ -1120,7 +1120,7 @@ function DemandRowItem({
           // Apr 26, 2026 — column widths bumped to match the wider 14px
           // typography in cells (key 100→130, progress 160→180, target
           // 110→130). Header above uses identical grid so columns align.
-          gridTemplateColumns: '28px 20px 130px 2fr 1fr 110px 180px',
+          gridTemplateColumns: '28px 20px 120px 2fr 120px 1fr 100px 180px',
           alignItems: 'center',
           gap: 12,
           padding: `0 ${token('space.300', '24px')}`,
@@ -1197,6 +1197,16 @@ function DemandRowItem({
         >
           {row.title}
         </a>
+
+        {/* 2026-06-09 Vikram parity — Status column added (between Summary
+            and Progress). Sentence-case via data-cp-lozenge-jira-parity. */}
+        <span data-cp-lozenge-jira-parity style={{ display: 'inline-flex' }}>
+          {row.status && (
+            <Lozenge appearance={lozengeAppearance(row.status_category, row.status)}>
+              {row.status}
+            </Lozenge>
+          )}
+        </span>
 
         {/* Progress + stat — inline (bar left, text right). Apr 26, 2026:
             bar 6→10px height, fill colours via Atlaskit canonical bolder
@@ -1970,7 +1980,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '28px 20px 130px 2fr 1fr 110px 180px',
+          gridTemplateColumns: '28px 20px 120px 2fr 120px 1fr 100px 180px',
           alignItems: 'center',
           gap: 12,
           padding: `4px ${token('space.300', '24px')}`,
@@ -1988,6 +1998,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
         <span />
         <span>Key</span>
         <span>Summary</span>
+        <span>Status</span>
         <span>Progress</span>
         <span>Target</span>
         <span>Assignee</span>

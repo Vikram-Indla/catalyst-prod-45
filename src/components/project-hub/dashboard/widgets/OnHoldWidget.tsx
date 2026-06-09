@@ -278,12 +278,25 @@ function KpiCell({
   );
 }
 
+// 2026-06-09 Vikram parity — status lozenge appearance per ADS category.
+function statusAppearance(
+  statusCategory?: string | null,
+  status?: string | null,
+): 'default' | 'success' | 'inprogress' | 'moved' {
+  if (status && ['on hold', 'blocked', 'awaiting info'].includes(status.toLowerCase())) return 'moved';
+  const cat = (statusCategory || '').toLowerCase();
+  if (cat === 'done') return 'success';
+  if (cat === 'in progress') return 'inprogress';
+  return 'default';
+}
+
 // ─── Grid template + Header ───────────────────────────────────────────────
 
 // 2026-06-09 Vikram parity — OnHold rows share this template with header
 // so columns visually align.
 //  Type(20) · Key(100) · Summary(1fr) · Assignee(200) · Reason(140)
-const ONHOLD_GRID = '20px 100px 1fr 200px 140px';
+// Type(20) · Key(100) · Summary(1fr) · Status(120) · Assignee(200) · Reason(140)
+const ONHOLD_GRID = '20px 100px 1fr 120px 200px 140px';
 
 function OnHoldHeader({ activeColumns }: { activeColumns: string[] }) {
   const has = (c: string) => activeColumns.includes(c);
@@ -305,6 +318,7 @@ function OnHoldHeader({ activeColumns }: { activeColumns: string[] }) {
       <span />
       <span>{has('key') ? 'Key' : ''}</span>
       <span>{has('summary') ? 'Summary' : ''}</span>
+      <span>{has('status') ? 'Status' : ''}</span>
       <span>{has('assignee') ? 'Assignee' : ''}</span>
       <span style={{ justifySelf: 'end' }}>{has('reason') ? 'Reason' : ''}</span>
     </div>
@@ -381,6 +395,13 @@ function OnHoldRow({
       >
         {has('summary') ? item.summary : ''}
       </a>
+      <span data-cp-lozenge-jira-parity style={{ display: 'inline-flex' }}>
+        {has('status') && item.status && (
+          <Lozenge appearance={statusAppearance(item.status_category, item.status)}>
+            {item.status}
+          </Lozenge>
+        )}
+      </span>
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
         {has('assignee') && item.assignee_display_name && (
           <>
