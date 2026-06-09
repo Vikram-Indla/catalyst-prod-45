@@ -390,13 +390,11 @@ function OverdueRow({
       >
         {has('summary') ? item.summary : ''}
       </a>
-      <span data-cp-lozenge-jira-parity style={{ display: 'inline-flex' }}>
-        {has('status') && item.status && (
+      {has('status') && item.status && (
           <Lozenge appearance={statusAppearance(item.status_category, item.status)}>
             {item.status}
           </Lozenge>
         )}
-      </span>
       <span style={{ ...SMALL, color: token('color.text.subtle', '#42526E'), whiteSpace: 'nowrap' }}>
         {has('dueDate') && (item.effective_due_date ?? item.due_date)
           ? new Date(item.effective_due_date ?? item.due_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })

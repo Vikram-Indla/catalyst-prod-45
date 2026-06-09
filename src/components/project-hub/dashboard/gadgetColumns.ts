@@ -84,7 +84,7 @@ const ONHOLD_COLUMNS: GadgetColumnDef[] = [
   { id: 'key',      label: 'Key',      defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
   { id: 'summary',  label: 'Summary',  defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
   { id: 'assignee', label: 'Assignee', defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
-  { id: 'reason',   label: 'Reason',   defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
+  { id: 'reason',   label: 'Status',   defaultVisible: true,  defaultWidth: 0, minWidth: 0 },
 ];
 
 const COLUMN_REGISTRY: Partial<Record<GadgetType, GadgetColumnDef[]>> = {

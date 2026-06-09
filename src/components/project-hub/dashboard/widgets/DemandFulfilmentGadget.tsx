@@ -31,7 +31,9 @@ import {
 import { token } from '@atlaskit/tokens';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 
-import Lozenge from '@atlaskit/lozenge';
+// 2026-06-09 — switched from raw @atlaskit/lozenge to ADS wrapper so the
+// inline-block shrink-wrap applies (otherwise grid cells stretch the lozenge bg).
+import { Lozenge } from '@/components/ads';
 import Avatar from '@atlaskit/avatar';
 import EmptyState from '@atlaskit/empty-state';
 
@@ -1201,13 +1203,11 @@ function DemandRowItem({
 
         {/* 2026-06-09 Vikram parity — Status column added (between Summary
             and Progress). Sentence-case via data-cp-lozenge-jira-parity. */}
-        <span data-cp-lozenge-jira-parity style={{ display: 'inline-flex' }}>
-          {row.status && (
+        {row.status && (
             <Lozenge appearance={lozengeAppearance(row.status_category, row.status)}>
               {row.status}
             </Lozenge>
           )}
-        </span>
 
         {/* Progress + stat — inline (bar left, text right). Apr 26, 2026:
             bar 6→10px height, fill colours via Atlaskit canonical bolder
@@ -1383,11 +1383,9 @@ function DemandRowItem({
                     {story.summary}
                   </a>
                   {/* Sentence-case status via data-cp-lozenge-jira-parity */}
-                  <span data-cp-lozenge-jira-parity style={{ display: 'inline-flex' }}>
-                    <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
+                  <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
                       {story.status}
                     </Lozenge>
-                  </span>
                   {/* Progress placeholder — stories have no sub-rollup */}
                   <span />
                   {/* Target (Due date) — aligns with parent Target column */}
@@ -1589,11 +1587,9 @@ function DemandRowItem({
                           >
                             {story.summary}
                           </a>
-                          <span data-cp-lozenge-jira-parity style={{ display: 'inline-flex' }}>
-                            <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
+                          <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
                               {story.status}
                             </Lozenge>
-                          </span>
                           <span />
                           <span
                             style={{
@@ -1909,11 +1905,9 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                   data-cp-lozenge-jira-parity wrapper + global CSS in
                   index.css overrides Atlaskit's default text-transform:
                   uppercase + letter-spacing on the inner span. */}
-              <span data-cp-lozenge-jira-parity>
-                <Lozenge appearance={appearance}>
+              <Lozenge appearance={appearance}>
                   {label} · {count}
                 </Lozenge>
-              </span>
             </span>
           );
         };
@@ -1951,52 +1945,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
               />
             </div>
 
-            {/* ── Clickable filter pills (preserved behaviour) ──────── */}
-            <div
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: `8px ${token('space.200', '16px')}`,
-                borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
-                fontFamily: ATLAS_SANS,
-              }}
-            >
-              <span
-                style={{
-                  ...SMALL_STRONG,
-                  color: token('color.text.subtle', '#44546F'),
-                  marginRight: 4,
-                }}
-              >
-                Filter:
-              </span>
-              {renderPill('active', 'Active', activeCount, 'inprogress')}
-              {renderPill('overdue', 'Overdue', overdueCount, 'moved')}
-              {renderPill('done', 'Done', doneCount, 'success')}
-              {tab !== 'all' && (
-                <span
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setTab('all')}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setTab('all');
-                    }
-                  }}
-                  style={{
-                    ...SMALL_STRONG,
-                    color: token('color.link', '#0C66E4'),
-                    cursor: 'pointer',
-                    marginLeft: 'auto',
-                  }}
-                >
-                  Clear filter
-                </span>
-              )}
-            </div>
+            {/* 2026-06-09 Vikram — filter pill row removed (redundant with KPI strip). */}
           </div>
         );
       })()}

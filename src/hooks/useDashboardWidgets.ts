@@ -406,12 +406,14 @@ export function useDashboardTeamWorkload(
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
+      // 2026-06-09 — KPI strip now shows ToDo / In Progress / Done counts so
+      // the Done filter is removed; row-level "open" totals are derived
+      // (todo + inprogress) at the consumer.
       let q = supabase
         .from('ph_issues')
-        .select('assignee_display_name, issue_type, status_category')
+        .select('assignee_display_name, assignee_account_id, issue_type, status_category')
         .eq('project_key', pKey)
-        .is('deleted_at', null)
-        .neq('status_category', 'Done');
+        .is('deleted_at', null);
 
       if (dateFrom) q = q.gte('jira_created_at', dateFrom);
       if (dateTo) q = q.lte('jira_created_at', dateTo);
@@ -424,8 +426,13 @@ export function useDashboardTeamWorkload(
 
       type WorkloadEntry = {
         assignee: string;
-        total: number;
-        stories: number;
+        assignee_account_id: string | null;
+        total: number;       // all categories
+        open: number;        // todo + inprogress
+        todo: number;
+        inprogress: number;
+        done: number;
+        stories: number;     // type partition (open only)
         bugs: number;
         subtasks: number;
       };
@@ -445,24 +452,36 @@ export function useDashboardTeamWorkload(
         const v = t.toLowerCase().replace(/[-_\s]/g, '');
         return v === 'subtask';
       };
+      const catOf = (c: string | null) => {
+        const v = (c ?? '').toLowerCase();
+        if (v === 'done') return 'done';
+        if (v === 'inprogress' || v === 'in progress') return 'inprogress';
+        return 'todo';
+      };
       for (const issue of issues ?? []) {
         const name = issue.assignee_display_name || 'Unassigned';
         if (!map.has(name)) {
-          map.set(name, { assignee: name, total: 0, stories: 0, bugs: 0, subtasks: 0 });
+          map.set(name, {
+            assignee: name,
+            assignee_account_id: (issue as any).assignee_account_id ?? null,
+            total: 0, open: 0, todo: 0, inprogress: 0, done: 0,
+            stories: 0, bugs: 0, subtasks: 0,
+          });
         }
         const entry = map.get(name)!;
         entry.total++;
-        const it = issue.issue_type ?? '';
-        if (isBugType(it)) {
-          entry.bugs++;
-        } else if (isSubtaskType(it)) {
-          entry.subtasks++;
-        } else {
-          entry.stories++;
+        const cat = catOf((issue as any).status_category);
+        (entry as any)[cat]++;
+        if (cat !== 'done') {
+          entry.open++;
+          const it = issue.issue_type ?? '';
+          if (isBugType(it)) entry.bugs++;
+          else if (isSubtaskType(it)) entry.subtasks++;
+          else entry.stories++;
         }
       }
 
-      return Array.from(map.values()).sort((a, b) => b.total - a.total);
+      return Array.from(map.values()).sort((a, b) => b.open - a.open);
     },
     enabled: !!projectId,
     staleTime: 60_000,
@@ -1286,7 +1305,7 @@ export function useTimeInStatusMatrix(
           .from('ph_issues')
           .select(
             'issue_key, project_key, summary, issue_type, status, priority, assignee_display_name, jira_created_at, jira_updated_at',
-            { count: 'exact' },
+            { count: 'planned' },
           )
           .eq('project_key', projectKey!)
           .eq('issue_type', issueType);
@@ -1309,7 +1328,7 @@ export function useTimeInStatusMatrix(
           'issue_key, project_key, summary, issue_type, status, assignee_display_name, jira_created_at, jira_updated_at';
         let tq2 = supabase
           .from('ph_issues')
-          .select(fallbackSelect, { count: 'exact' })
+          .select(fallbackSelect, { count: 'planned' })
           .eq('project_key', projectKey!)
           .eq('issue_type', issueType);
         if (dateFrom) tq2 = tq2.gte('jira_updated_at', dateFrom);
@@ -1658,5 +1677,144 @@ export function useDashboardTimeInStatus(
     getNextPageParam: (last) => last.nextOffset,
     enabled: !!projectKey,
     staleTime: 60_000,
+  });
+}
+
+// ─── Team Workload hover-card supporting hooks ─────────────────────────────
+// 2026-06-09 — used by TeamMemberHoverCard inside TeamWorkloadWidget.
+
+export interface TeamRoleEntry {
+  jira_account_id: string | null;
+  profile_id: string | null;
+  role: string | null;
+}
+
+/** Resolve role-name + profile-id for a set of Jira account ids.
+ *  Role comes from resource_inventory.role_name (HR/admin source — actual job
+ *  title), NOT profiles.role which is the RBAC system role (admin/user/etc).
+ *  Profile id sourced from profiles for downstream user_recent_items lookup. */
+export function useTeamRoleMap(jiraAccountIds: (string | null)[]) {
+  const ids = Array.from(new Set(jiraAccountIds.filter(Boolean) as string[]));
+  return useQuery({
+    queryKey: ['team-role-map', ids],
+    enabled: ids.length > 0,
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const map = new Map<string, TeamRoleEntry>();
+      if (!ids.length) return map;
+      const [{ data: invRows }, { data: profRows }] = await Promise.all([
+        supabase
+          .from('resource_inventory')
+          .select('jira_account_id, role_name, department_name, profile_id')
+          .in('jira_account_id', ids),
+        supabase
+          .from('profiles')
+          .select('id, jira_account_id')
+          .in('jira_account_id', ids),
+      ]);
+      // Seed from resource_inventory (authoritative role source).
+      for (const row of (invRows ?? []) as any[]) {
+        if (!row.jira_account_id) continue;
+        map.set(row.jira_account_id, {
+          jira_account_id: row.jira_account_id,
+          profile_id: row.profile_id ?? null,
+          role: row.role_name ?? row.department_name ?? null,
+        });
+      }
+      // Backfill profile_id from profiles where resource_inventory lacked it.
+      for (const row of (profRows ?? []) as any[]) {
+        if (!row.jira_account_id) continue;
+        const existing = map.get(row.jira_account_id);
+        if (existing) {
+          if (!existing.profile_id && row.id) existing.profile_id = row.id;
+        } else {
+          map.set(row.jira_account_id, {
+            jira_account_id: row.jira_account_id,
+            profile_id: row.id ?? null,
+            role: null,
+          });
+        }
+      }
+      return map;
+    },
+  });
+}
+
+export interface TeamMemberRecentItem {
+  id: string;
+  entity_key: string | null;
+  display_summary: string;
+  nav_path: string;
+  visited_at: string;
+  issue_type: string | null;
+  status: string | null;
+  status_category: string | null;
+}
+
+/** Latest N recent items for ANOTHER user inside the current project.
+ *  Reads from user_recent_items (RLS lets project members view shared items
+ *  per migration user_recent_items_project_member_select). Enriches with
+ *  ph_issues for live status + type. */
+export function useTeamMemberRecentItems(
+  profileId: string | null | undefined,
+  projectId: string | null | undefined,
+  limit = 5,
+  enabled = true,
+) {
+  return useQuery({
+    queryKey: ['team-member-recent-items', profileId, projectId, limit],
+    enabled: !!profileId && !!projectId && enabled,
+    staleTime: 30_000,
+    queryFn: async (): Promise<TeamMemberRecentItem[]> => {
+      const { data, error } = await supabase
+        .from('user_recent_items')
+        .select('id, entity_key, display_summary, nav_path, visited_at, entity_type')
+        .eq('user_id', profileId!)
+        .eq('project_id', projectId!)
+        .order('visited_at', { ascending: false })
+        .limit(limit * 4);
+      if (error) {
+        console.warn('useTeamMemberRecentItems error:', error.message);
+        return [];
+      }
+
+      // Dedupe by nav_path, keep newest occurrence.
+      const seen = new Set<string>();
+      const deduped: any[] = [];
+      for (const r of (data ?? [])) {
+        if (!seen.has(r.nav_path)) { seen.add(r.nav_path); deduped.push(r); }
+        if (deduped.length === limit) break;
+      }
+
+      const keys = deduped.map((r) => r.entity_key).filter(Boolean) as string[];
+      let issueMap = new Map<string, { issue_type: string | null; status: string | null; status_category: string | null }>();
+      if (keys.length) {
+        const { data: rows } = await supabase
+          .from('ph_issues')
+          .select('issue_key, issue_type, status, status_category')
+          .in('issue_key', keys);
+        for (const row of (rows ?? []) as any[]) {
+          issueMap.set(row.issue_key, {
+            issue_type: row.issue_type ?? null,
+            status: row.status ?? null,
+            status_category: row.status_category ?? null,
+          });
+        }
+      }
+
+      return deduped.map((r) => {
+        const hit = r.entity_key ? issueMap.get(r.entity_key) : null;
+        return {
+          id: r.id,
+          entity_key: r.entity_key,
+          display_summary: r.display_summary,
+          nav_path: r.nav_path,
+          visited_at: r.visited_at,
+          issue_type: hit?.issue_type ?? r.entity_type ?? null,
+          status: hit?.status ?? null,
+          status_category: hit?.status_category ?? null,
+        };
+      });
+    },
   });
 }

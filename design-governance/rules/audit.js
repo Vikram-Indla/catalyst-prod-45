@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import ADSTokenScanner from './ads-token-scanner.js';
 import TypographyEnforcer from './typography-enforcer.js';
 import SpacingGridValidator from './spacing-grid-validator.js';
+import FontImportEnforcer from './font-import-enforcer.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,7 +63,13 @@ class DesignSystemAudit {
 
         if (fileStat.isDirectory()) {
           walk(filePath);
-        } else if (file.endsWith('.ts') || file.endsWith('.tsx')) {
+        } else if (
+          file.endsWith('.ts') ||
+          file.endsWith('.tsx') ||
+          file.endsWith('.jsx') ||
+          file.endsWith('.css') ||
+          file.endsWith('.html')
+        ) {
           validator.scanFile(filePath);
         }
       });
@@ -102,6 +109,12 @@ class DesignSystemAudit {
     const spacing = new SpacingGridValidator();
     this.scanWithExclusions(spacing, this.sourcePath, ['modules-dormant', '_graveyard']);
     this.results.spacing = spacing.report();
+
+    // Run Font Import Enforcer (scans .css/.html/.tsx/.ts/.jsx)
+    console.log('\n4️⃣  Running Font Import Enforcer...');
+    const fontImports = new FontImportEnforcer();
+    this.scanWithExclusions(fontImports, this.sourcePath, ['modules-dormant', '_graveyard']);
+    this.results.fontImports = fontImports.report();
 
     // Summary
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');

@@ -213,11 +213,19 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         },
         {
           key: 'status',
-          content: (
-            <StatusLozenge status={toStatusCategory(inc.status)}>
-              {statusLabel}
-            </StatusLozenge>
-          ),
+          /* 2026-06-09 Vikram parity — canonical Atlaskit Lozenge spec:
+             11/700/UPPERCASE via native Atlaskit (no isBold=false wrapper). */
+          content: (() => {
+            const cat = toStatusCategory(inc.status);
+            const ap: 'default' | 'inprogress' | 'success' | 'moved' = cat === 'done'
+              ? 'success'
+              : cat === 'inprogress'
+              ? 'inprogress'
+              : ['blocked','on hold','awaiting info'].includes((inc.status||'').toLowerCase())
+              ? 'moved'
+              : 'default';
+            return <Lozenge appearance={ap}>{statusLabel}</Lozenge>;
+          })(),
         },
         {
           key: 'assignee',

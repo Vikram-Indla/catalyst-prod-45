@@ -212,7 +212,17 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
           /* 2026-06-09 Vikram parity — match Production Incidents font:
              StatusLozenge with toStatusCategory mapping. */
           content: (
-            <StatusLozenge status={toStatusCategory(d.status)}>{statusLabel}</StatusLozenge>
+            (() => {
+              const cat = toStatusCategory(d.status);
+              const ap: 'default' | 'inprogress' | 'success' | 'moved' = cat === 'done'
+                ? 'success'
+                : cat === 'inprogress'
+                ? 'inprogress'
+                : ['blocked','on hold','awaiting info'].includes((d.status||'').toLowerCase())
+                ? 'moved'
+                : 'default';
+              return <Lozenge appearance={ap}>{statusLabel}</Lozenge>;
+            })()
           ),
         },
         {

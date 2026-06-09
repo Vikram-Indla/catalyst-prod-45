@@ -319,7 +319,7 @@ function OnHoldHeader({ activeColumns }: { activeColumns: string[] }) {
       <span>{has('key') ? 'Key' : ''}</span>
       <span>{has('summary') ? 'Summary' : ''}</span>
       <span>{has('assignee') ? 'Assignee' : ''}</span>
-      <span style={{ justifySelf: 'end' }}>{has('reason') ? 'Reason' : ''}</span>
+      <span style={{ justifySelf: 'end' }}>{has('reason') ? 'Status' : ''}</span>
     </div>
   );
 }

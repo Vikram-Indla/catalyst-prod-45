@@ -29,14 +29,30 @@ import {
   EmptyState,
   Lozenge,
   SectionMessage,
-  StatusLozenge,
 } from '@/components/ads';
+// 2026-06-09 — ADS wrapper for shrink-wrap behaviour.
+import { Lozenge as AkLozenge } from '@/components/ads';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
 import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG } from '../dashboardTypography';
 
-const ISSUE_TYPES = ['Story', 'Epic', 'Sub-task', 'Defect', 'Business Request', 'Task'];
+// Project module: Business Request + Task explicitly hidden.
+const ISSUE_TYPES = ['Story', 'Epic', 'Sub-task', 'Defect'];
+
+const lozengeAppearance = (
+  category?: 'todo' | 'in_progress' | 'done' | string | null,
+  status?: string | null,
+): 'default' | 'success' | 'removed' | 'inprogress' | 'moved' | 'new' => {
+  if (status && ['on hold', 'blocked', 'awaiting info'].includes(status.toLowerCase())) {
+    return 'moved';
+  }
+  if (!category) return 'default';
+  const c = String(category).toLowerCase();
+  if (c === 'done') return 'success';
+  if (c === 'in_progress' || c === 'in progress') return 'inprogress';
+  return 'default';
+};
 
 type WindowPreset = '14d' | '30d' | '90d' | 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'all';
 
@@ -220,13 +236,13 @@ export default function TimeInStatusFullscreenModal({
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: 6,
-                        height: 32,
-                        padding: '0 14px',
-                        ...STRONG,
-                        borderRadius: 'var(--ds-border-radius, 4px)',
-                        border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
-                        background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
-                        color: active ? 'var(--ds-text-selected, #0055CC)' : 'var(--ds-text-subtle, #505258)',
+                        height: 28,
+                        padding: '0 10px',
+                        ...(active ? SMALL_STRONG : SMALL),
+                        borderRadius: 'var(--ds-border-radius, 3px)',
+                        border: '1px solid transparent',
+                        background: active ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
+                        color: active ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtle, #505258)',
                         cursor: 'pointer',
                         whiteSpace: 'nowrap',
                       }}
@@ -246,13 +262,13 @@ export default function TimeInStatusFullscreenModal({
                       type="button"
                       onClick={() => { setWindowPreset(w); setOffset(0); }}
                       style={{
-                        height: 28,
-                        padding: '0 12px',
+                        height: 26,
+                        padding: '0 10px',
                         ...(active ? SMALL_STRONG : SMALL),
-                        borderRadius: 'var(--ds-border-radius, 4px)',
-                        border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
-                        background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
-                        color: active ? 'var(--ds-text-selected, #0055CC)' : 'var(--ds-text-subtle, #505258)',
+                        borderRadius: 'var(--ds-border-radius, 3px)',
+                        border: '1px solid transparent',
+                        background: active ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
+                        color: active ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtle, #505258)',
                         cursor: 'pointer',
                       }}
                       title={WINDOW_LABELS[w]}
@@ -330,9 +346,9 @@ export default function TimeInStatusFullscreenModal({
                             borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                           }}
                         >
-                          <StatusLozenge status={s.category === 'in_progress' ? 'inProgress' : s.category}>
+                          <AkLozenge appearance={lozengeAppearance(s.category, s.name)} isBold>
                             {s.name}
-                          </StatusLozenge>
+                          </AkLozenge>
                         </th>
                       ))}
                       <th
