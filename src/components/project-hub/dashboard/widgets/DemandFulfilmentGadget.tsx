@@ -356,7 +356,7 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
       const epicKeys = unlinked.map((e: any) => e.issue_key);
       const { data: children } = await (supabase as any)
         .from('ph_issues')
-        .select('parent_key, issue_key, summary, status, status_category, issue_type, assignee_user_id, assignee_display_name, jira_removed_at')
+        .select('parent_key, issue_key, summary, status, status_category, issue_type, assignee_user_id, assignee_display_name, jira_removed_at, due_date, effective_due_date')
         .in('parent_key', epicKeys)
         .in('issue_type', childTypes)
         .is('jira_removed_at', null)
@@ -544,7 +544,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
       if (childTypes.length > 0) {
         const { data } = await (supabase as any)
           .from('ph_issues')
-          .select('issue_key, parent_key, summary, status, status_category, issue_type, assignee_user_id, assignee_display_name')
+          .select('issue_key, parent_key, summary, status, status_category, issue_type, assignee_user_id, assignee_display_name, due_date, effective_due_date')
           .in('parent_key', epicKeys)
           .in('issue_type', childTypes)
           .is('jira_removed_at', null)
@@ -1330,19 +1330,19 @@ function DemandRowItem({
               const storyUrl = `/project-hub/${projectKey}/allwork?issue=${story.issue_key}`;
               const storyAssignee = story.assignee_display_name ?? '—';
               const hasAssignee = storyAssignee && storyAssignee !== '—';
+              const storyDue = (story as any).effective_due_date ?? (story as any).due_date ?? null;
               return (
                 <div
                   key={story.id}
                   style={{
                     display: 'grid',
-                    // 2026-06-09 Vikram parity — fixed widths for status (130)
-                    // + assignee (180) so child rows align with parent + show
-                    // full names. Was 'auto auto' which collapsed assignee to
-                    // 64px (avatar only, no name).
-                    gridTemplateColumns: '20px 20px 90px 1fr 130px 180px',
+                    /* 2026-06-09 Vikram parity — child grid mirrors PARENT row
+                       template so child Status + Target columns visually align
+                       with parent Status + Target. Was 6-col bespoke. */
+                    gridTemplateColumns: '28px 20px 120px 2fr 120px 1fr 100px 180px',
                     alignItems: 'center',
                     gap: 12,
-                    padding: '10px 16px 10px 28px',
+                    padding: '10px 24px 10px 28px',
                     minHeight: 40,
                     borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
                     borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
@@ -1357,7 +1357,7 @@ function DemandRowItem({
                     href={storyUrl}
                     onClick={(e) => e.stopPropagation()}
                     style={{
-                      ...SMALL_STRONG,
+                      ...BODY,
                       fontFamily: ATLAS_SANS,
                       color: token('color.link', '#0C66E4'),
                       textDecoration: 'none',
@@ -1383,10 +1383,25 @@ function DemandRowItem({
                     {story.summary}
                   </a>
                   {/* Sentence-case status via data-cp-lozenge-jira-parity */}
-                  <span data-cp-lozenge-jira-parity>
+                  <span data-cp-lozenge-jira-parity style={{ display: 'inline-flex' }}>
                     <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
                       {story.status}
                     </Lozenge>
+                  </span>
+                  {/* Progress placeholder — stories have no sub-rollup */}
+                  <span />
+                  {/* Target (Due date) — aligns with parent Target column */}
+                  <span
+                    style={{
+                      ...BODY,
+                      color: storyDue ? token('color.text', '#172B4D') : token('color.text.subtle', '#44546F'),
+                      whiteSpace: 'nowrap',
+                    }}
+                    title={storyDue ? `Due ${storyDue}` : 'No due date'}
+                  >
+                    {storyDue
+                      ? new Date(storyDue).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })
+                      : 'None'}
                   </span>
                   <span
                     style={{
@@ -1523,18 +1538,18 @@ function DemandRowItem({
                       const storyUrl = `/project-hub/${projectKey}/allwork?issue=${story.issue_key}`;
                       const storyAssignee = story.assignee_display_name ?? '—';
                       const hasAssignee = storyAssignee && storyAssignee !== '—';
+                      const storyDue = (story as any).effective_due_date ?? (story as any).due_date ?? null;
                       return (
                         <div
                           key={story.issue_key}
                           style={{
                             display: 'grid',
-                            // 2026-06-09 Vikram parity — same widths as parent
-                            // child block: status 130 + assignee 180 for full
-                            // name + 28px avatar.
-                            gridTemplateColumns: '20px 20px 90px 1fr 130px 180px',
+                            /* 2026-06-09 Vikram parity — mirrors parent grid so
+                               Status + Target columns align across hierarchy. */
+                            gridTemplateColumns: '28px 20px 120px 2fr 120px 1fr 100px 180px',
                             alignItems: 'center',
                             gap: 12,
-                            padding: '10px 16px 10px 28px',
+                            padding: '10px 24px 10px 28px',
                             minHeight: 40,
                             borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
                             borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
@@ -1549,7 +1564,7 @@ function DemandRowItem({
                             href={storyUrl}
                             onClick={(e) => e.stopPropagation()}
                             style={{
-                              ...SMALL_STRONG,
+                              ...BODY,
                               fontFamily: ATLAS_SANS,
                               color: token('color.link', '#0C66E4'),
                               textDecoration: 'none',
@@ -1574,10 +1589,23 @@ function DemandRowItem({
                           >
                             {story.summary}
                           </a>
-                          <span data-cp-lozenge-jira-parity>
+                          <span data-cp-lozenge-jira-parity style={{ display: 'inline-flex' }}>
                             <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
                               {story.status}
                             </Lozenge>
+                          </span>
+                          <span />
+                          <span
+                            style={{
+                              ...BODY,
+                              color: storyDue ? token('color.text', '#172B4D') : token('color.text.subtle', '#44546F'),
+                              whiteSpace: 'nowrap',
+                            }}
+                            title={storyDue ? `Due ${storyDue}` : 'No due date'}
+                          >
+                            {storyDue
+                              ? new Date(storyDue).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })
+                              : 'None'}
                           </span>
                           <span
                             style={{
