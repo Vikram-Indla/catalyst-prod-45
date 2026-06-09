@@ -1308,12 +1308,17 @@ function DemandRowItem({
             row.epics.map((story) => {
               const storyUrl = `/project-hub/${projectKey}/allwork?issue=${story.issue_key}`;
               const storyAssignee = story.assignee_display_name ?? '—';
+              const hasAssignee = storyAssignee && storyAssignee !== '—';
               return (
                 <div
                   key={story.id}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '20px 20px 90px 1fr auto auto',
+                    // 2026-06-09 Vikram parity — fixed widths for status (130)
+                    // + assignee (180) so child rows align with parent + show
+                    // full names. Was 'auto auto' which collapsed assignee to
+                    // 64px (avatar only, no name).
+                    gridTemplateColumns: '20px 20px 90px 1fr 130px 180px',
                     alignItems: 'center',
                     gap: 12,
                     padding: '10px 16px 10px 28px',
@@ -1352,31 +1357,43 @@ function DemandRowItem({
                   >
                     {story.summary}
                   </span>
-                  <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
-                    {story.status}
-                  </Lozenge>
+                  {/* Sentence-case status via data-cp-lozenge-jira-parity */}
+                  <span data-cp-lozenge-jira-parity>
+                    <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
+                      {story.status}
+                    </Lozenge>
+                  </span>
                   <span
                     style={{
-                      ...SMALL,
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: 6,
+                      gap: 8,
                       fontFamily: ATLAS_SANS,
-                      color: token('color.text.subtle', '#44546F'),
+                      fontSize: 14,
+                      fontWeight: 400,
+                      color: hasAssignee
+                        ? token('color.text', '#172B4D')
+                        : token('color.text.subtle', '#44546F'),
                       whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      minWidth: 0,
                     }}
+                    title={hasAssignee ? storyAssignee : 'Unassigned'}
                   >
                     <Avatar
-                      size="xsmall"
+                      size="small"
                       src={
                         (story as any).assignee_avatar
-                          || (storyAssignee && storyAssignee !== '—'
+                          || (hasAssignee
                             ? resolveAvatarUrl(storyAssignee) ?? undefined
                             : undefined)
                       }
-                      name={storyAssignee && storyAssignee !== '—' ? storyAssignee : 'Unassigned'}
+                      name={hasAssignee ? storyAssignee : 'Unassigned'}
                     />
-                    {storyAssignee.split(' ')[0]}
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {hasAssignee ? storyAssignee : 'Unassigned'}
+                    </span>
                   </span>
                 </div>
               );
@@ -1485,12 +1502,16 @@ function DemandRowItem({
                     {epicExpanded && (epic.stories ?? []).map((story) => {
                       const storyUrl = `/project-hub/${projectKey}/allwork?issue=${story.issue_key}`;
                       const storyAssignee = story.assignee_display_name ?? '—';
+                      const hasAssignee = storyAssignee && storyAssignee !== '—';
                       return (
                         <div
                           key={story.issue_key}
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: '20px 20px 90px 1fr auto auto',
+                            // 2026-06-09 Vikram parity — same widths as parent
+                            // child block: status 130 + assignee 180 for full
+                            // name + 28px avatar.
+                            gridTemplateColumns: '20px 20px 90px 1fr 130px 180px',
                             alignItems: 'center',
                             gap: 12,
                             padding: '10px 16px 10px 28px',
@@ -1529,31 +1550,42 @@ function DemandRowItem({
                           >
                             {story.summary}
                           </span>
-                          <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
-                            {story.status}
-                          </Lozenge>
+                          <span data-cp-lozenge-jira-parity>
+                            <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
+                              {story.status}
+                            </Lozenge>
+                          </span>
                           <span
                             style={{
-                              ...SMALL,
                               display: 'inline-flex',
                               alignItems: 'center',
-                              gap: 6,
+                              gap: 8,
                               fontFamily: ATLAS_SANS,
-                              color: token('color.text.subtle', '#44546F'),
+                              fontSize: 14,
+                              fontWeight: 400,
+                              color: hasAssignee
+                                ? token('color.text', '#172B4D')
+                                : token('color.text.subtle', '#44546F'),
                               whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              minWidth: 0,
                             }}
+                            title={hasAssignee ? storyAssignee : 'Unassigned'}
                           >
                             <Avatar
-                              size="xsmall"
+                              size="small"
                               src={
                                 (story as any).assignee_avatar
-                                  || (storyAssignee && storyAssignee !== '—'
+                                  || (hasAssignee
                                     ? resolveAvatarUrl(storyAssignee) ?? undefined
                                     : undefined)
                               }
-                              name={storyAssignee && storyAssignee !== '—' ? storyAssignee : 'Unassigned'}
+                              name={hasAssignee ? storyAssignee : 'Unassigned'}
                             />
-                            {storyAssignee.split(' ')[0]}
+                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {hasAssignee ? storyAssignee : 'Unassigned'}
+                            </span>
                           </span>
                         </div>
                       );
