@@ -1282,12 +1282,13 @@ function DemandRowItem({
         >
           <Avatar
             size="small"
-            src={
-              row.assignee_avatar
-                || (row.assignee_name && row.assignee_name !== '—'
-                  ? resolveAvatarUrl(row.assignee_name) ?? undefined
-                  : undefined)
-            }
+            /* 2026-06-09 Vikram compliance — external avatar CDN banned.
+               row.assignee_avatar (Supabase profile.avatar_url) could be
+               gravatar/atl-paas; ignore it. Use resolveAvatarUrl(name)
+               bundled local OR null (→ initials). */
+            src={row.assignee_name && row.assignee_name !== '—'
+              ? resolveAvatarUrl(row.assignee_name) ?? undefined
+              : undefined}
             name={row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : 'Unassigned'}
           />
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -1407,12 +1408,7 @@ function DemandRowItem({
                   >
                     <Avatar
                       size="small"
-                      src={
-                        (story as any).assignee_avatar
-                          || (hasAssignee
-                            ? resolveAvatarUrl(storyAssignee) ?? undefined
-                            : undefined)
-                      }
+                      src={hasAssignee ? resolveAvatarUrl(storyAssignee) ?? undefined : undefined}
                       name={hasAssignee ? storyAssignee : 'Unassigned'}
                     />
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -1603,12 +1599,7 @@ function DemandRowItem({
                           >
                             <Avatar
                               size="small"
-                              src={
-                                (story as any).assignee_avatar
-                                  || (hasAssignee
-                                    ? resolveAvatarUrl(storyAssignee) ?? undefined
-                                    : undefined)
-                              }
+                              src={hasAssignee ? resolveAvatarUrl(storyAssignee) ?? undefined : undefined}
                               name={hasAssignee ? storyAssignee : 'Unassigned'}
                             />
                             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
