@@ -169,9 +169,9 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
-                ...STRONG,
+                /* 2026-06-09 Vikram parity — Jira Key 14/400 sans, not 14/600 mono. */
+                ...BODY,
                 color: token('color.link', '#0C66E4'),
-                fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -251,7 +251,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                 style={{
                   ...STRONG,
                   color: token('color.text.subtle', '#44546F'),
-                  fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+                  /* 2026-06-09 Vikram parity — Jira Key uses Atlassian Sans 14/400, NOT mono */
                   whiteSpace: 'nowrap',
                 }}
               >

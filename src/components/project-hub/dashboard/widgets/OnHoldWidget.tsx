@@ -332,12 +332,10 @@ function OnHoldRow({
       {has('key') && (
         <span
           style={{
-            ...SMALL,
+            /* 2026-06-09 Vikram parity — Jira Key 14/400 sans link. */
+            ...BODY,
             color: token('color.link', '#0C66E4'),
-            fontWeight: 500,
-            fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
             flexShrink: 0,
-            fontVariantNumeric: 'tabular-nums',
           }}
         >
           {item.issue_key}

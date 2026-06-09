@@ -1160,8 +1160,10 @@ function DemandRowItem({
             href={detailUrl}
             onClick={(e) => e.stopPropagation()}
             style={{
-              ...STRONG,
-              fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+              /* 2026-06-09 Vikram parity — Jira Key cell: Atlassian Sans
+                 14/400/color.link, NOT mono, NOT STRONG. Probe side-by-side
+                 confirmed Catalyst was rendering 14/600/mono vs Jira 14/400/sans. */
+              ...BODY,
               color: token('color.link', '#0C66E4'),
               textDecoration: 'none',
               whiteSpace: 'nowrap',
