@@ -32,17 +32,40 @@ import { useUWV } from '@/components/universal-work-view/UWVContext';
 import {
   EmptyState,
   Lozenge,
-  SectionMessage,
-  StatusLozenge,
   toStatusCategory,
 } from '@/components/ads';
+// 2026-06-09 — ADS wrapper for shrink-wrap behaviour.
+import { Lozenge as AkLozenge } from '@/components/ads';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
 import TimeInStatusFullscreenModal from './TimeInStatusFullscreenModal';
 import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG } from '../dashboardTypography';
 
-const ISSUE_TYPES = ['Story', 'Epic', 'Sub-task', 'Defect', 'Business Request', 'Task'];
+// Project module: Business Request + Task explicitly hidden (per dashboard
+// guardrail — those types live in Product Hub / BAU TaskHub, not project
+// delivery). Story / Epic / Sub-task / Defect cover the project domain.
+const ISSUE_TYPES = ['Story', 'Epic', 'Sub-task', 'Defect'];
+
+/**
+ * Map Jira status_category (+ status name for blocked / on hold carve-out)
+ * to an Atlaskit Lozenge appearance — same mapping Epic Progress uses so the
+ * column-header status pills carry Jira-standard colors, not the washed-out
+ * `isBold={false}` look of the generic StatusLozenge wrapper.
+ */
+const lozengeAppearance = (
+  category?: 'todo' | 'in_progress' | 'done' | string | null,
+  status?: string | null,
+): 'default' | 'success' | 'removed' | 'inprogress' | 'moved' | 'new' => {
+  if (status && ['on hold', 'blocked', 'awaiting info'].includes(status.toLowerCase())) {
+    return 'moved';
+  }
+  if (!category) return 'default';
+  const c = String(category).toLowerCase();
+  if (c === 'done') return 'success';
+  if (c === 'in_progress' || c === 'in progress') return 'inprogress';
+  return 'default';
+};
 
 type WindowPreset = '14d' | '30d' | '90d' | 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'all';
 
@@ -140,7 +163,11 @@ export default function TimeInStatusWidget({
 }: WidgetProps) {
   const [issueType, setIssueType] = useState<string>('Story');
   const [windowPreset, setWindowPreset] = useState<WindowPreset>('Q2');
-  const [pageSize] = useState(50);
+  // Widget body shows top-10 worst offenders only. "View all in table"
+  // CTA hands off the full filtered set to UWV. Rest of the data lives
+  // there — keeps the dashboard cell light and the data drill-down
+  // explicit. Fullscreen modal keeps pageSize=50.
+  const [pageSize] = useState(10);
   const [offset, setOffset] = useState(0);
   // Fullscreen modal for the executive view. Replaces the previous
   // openUWV() route, which collapsed the matrix into a flat issue list
@@ -243,12 +270,12 @@ export default function TimeInStatusWidget({
                   alignItems: 'center',
                   gap: 6,
                   height: 28,
-                  padding: '0 12px',
+                  padding: '0 10px',
                   ...(active ? SMALL_STRONG : SMALL),
-                  borderRadius: 'var(--ds-border-radius, 4px)',
-                  border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
-                  background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
-                  color: active ? 'var(--ds-text-selected, #0055CC)' : 'var(--ds-text-subtle, #505258)',
+                  borderRadius: 'var(--ds-border-radius, 3px)',
+                  border: '1px solid transparent',
+                  background: active ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
+                  color: active ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtle, #505258)',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                 }}
@@ -272,11 +299,11 @@ export default function TimeInStatusWidget({
                 style={{
                   height: 26,
                   padding: '0 10px',
-                  ...LABEL,
-                  borderRadius: 'var(--ds-border-radius, 4px)',
-                  border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
-                  background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
-                  color: active ? 'var(--ds-text-selected, #0055CC)' : 'var(--ds-text-subtle, #505258)',
+                  ...(active ? SMALL_STRONG : SMALL),
+                  borderRadius: 'var(--ds-border-radius, 3px)',
+                  border: '1px solid transparent',
+                  background: active ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
+                  color: active ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtle, #505258)',
                   cursor: 'pointer',
                 }}
                 title={WINDOW_LABELS[w]}
@@ -288,17 +315,8 @@ export default function TimeInStatusWidget({
         </div>
       </div>
 
-      {/* ─── History accumulation banner (when no rows have transitions yet) ─── */}
-      {!isLoading && rows.length > 0 && !hasAnyHistory && (
-        <div style={{ padding: '12px 16px 0' }}>
-          <SectionMessage appearance="information" title="Lifecycle data accumulates forward">
-            Status transitions are tracked from now onwards. Cells currently
-            show full age in current status. As tickets transition, real
-            time-per-status will populate. Historical Jira changelog backfill
-            is a separate workstream.
-          </SectionMessage>
-        </div>
-      )}
+      {/* Banner removed 2026-06-09 — Vikram directive. Lifecycle-accumulating
+          messaging now lives in fullscreen modal only (executive view). */}
 
       {/* ─── Matrix body ────────────────────────────────────────── */}
       {isLoading ? (
@@ -366,9 +384,9 @@ export default function TimeInStatusWidget({
                       borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                     }}
                   >
-                    <StatusLozenge status={s.category === 'in_progress' ? 'inProgress' : s.category}>
+                    <AkLozenge appearance={lozengeAppearance(s.category, s.name)} isBold>
                       {s.name}
-                    </StatusLozenge>
+                    </AkLozenge>
                   </th>
                 ))}
                 <th
@@ -418,16 +436,17 @@ export default function TimeInStatusWidget({
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                       <PriorityIcon level={r.priority} size={16} />
+                      {/* 2026-06-09 Vikram parity — match Epic Progress
+                          summary cell: key + title both 14/400 blue link
+                          (BODY), Atlas Sans. Was 14/600 STRONG mono +
+                          14/600 STRONG black. Drift between widgets
+                          banned. */}
                       <span
                         style={{
                           display: 'inline-flex', alignItems: 'center', gap: 8,
                           color: token('color.link', '#0C66E4'),
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                          // Apr 26, 2026 — 12→14 / 500→600 to match
-                          // Demand Fulfilment + QA Defects + Production
-                          // Incidents row typography. Same density across
-                          // every dashboard table.
-                          ...STRONG, whiteSpace: 'nowrap',
+                          ...BODY, whiteSpace: 'nowrap',
                           flexShrink: 0,
                         }}
                       >
@@ -440,11 +459,8 @@ export default function TimeInStatusWidget({
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
-                          // Apr 26, 2026 — title now at 14/500 to match
-                          // the rest of the dashboard row titles. Was
-                          // unstyled (inheriting 12px from parent table).
-                          ...STRONG,
-                          color: token('color.text', '#292A2E'),
+                          ...BODY,
+                          color: token('color.link', '#0C66E4'),
                         }}
                       >
                         {r.title}
@@ -532,7 +548,10 @@ export default function TimeInStatusWidget({
             </tbody>
           </table>
 
-          {/* Pagination footer */}
+          {/* Footer — "View all N in table" handoff to UWV.
+              2026-06-09 Vikram directive: widget shows top-10 only;
+              rest of the data drilled via UWV (canonical full-table
+              surface). Replaces in-widget pagination. */}
           <div
             style={{
               display: 'flex',
@@ -546,38 +565,42 @@ export default function TimeInStatusWidget({
             }}
           >
             <span>
-              Showing {rows.length} of {total} {issueType} tickets · {WINDOW_LABELS[windowPreset]}
+              Top {rows.length} of {total} {issueType} tickets · {WINDOW_LABELS[windowPreset]}
             </span>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               {isFetching && <Spinner size="small" />}
-              {offset > 0 && (
+              {total > rows.length && (
                 <button
                   type="button"
-                  onClick={() => setOffset(Math.max(0, offset - pageSize))}
+                  onClick={() =>
+                    openUWV({
+                      project: projectKey,
+                      hubSource: ['projecthub'],
+                      dataType: 'issue',
+                      title: `${issueType} · ${WINDOW_LABELS[windowPreset]}`,
+                      filters: {
+                        issue_type: [issueType],
+                        ...(dateFrom ? { jira_updated_at_gte: dateFrom } : {}),
+                        ...(dateTo ? { jira_updated_at_lte: dateTo } : {}),
+                        ...(settings.assigneeFilter?.length
+                          ? { assignee_display_name: settings.assigneeFilter }
+                          : {}),
+                        ...(settings.priorityFilter?.length
+                          ? { priority: settings.priorityFilter }
+                          : {}),
+                      },
+                    } as any)
+                  }
                   style={{
-                    ...LABEL, height: 24, padding: '0 8px', cursor: 'pointer',
+                    ...LABEL, height: 24, padding: '0 10px', cursor: 'pointer',
                     border: '1px solid var(--ds-border, #DFE1E6)',
-                    borderRadius: 'var(--ds-border-radius, 4px)',
+                    borderRadius: 'var(--ds-border-radius, 3px)',
                     background: 'transparent',
-                    color: 'var(--ds-text-subtle, #505258)',
+                    color: 'var(--ds-link, #0C66E4)',
+                    fontWeight: 600,
                   }}
                 >
-                  ← Prev
-                </button>
-              )}
-              {offset + rows.length < total && (
-                <button
-                  type="button"
-                  onClick={() => setOffset(offset + pageSize)}
-                  style={{
-                    ...LABEL, height: 24, padding: '0 8px', cursor: 'pointer',
-                    border: '1px solid var(--ds-border, #DFE1E6)',
-                    borderRadius: 'var(--ds-border-radius, 4px)',
-                    background: 'transparent',
-                    color: 'var(--ds-text-subtle, #505258)',
-                  }}
-                >
-                  Next →
+                  View all {total} in table →
                 </button>
               )}
             </div>

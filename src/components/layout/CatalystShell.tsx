@@ -188,6 +188,13 @@ const ProductHubSidebar = lazyWithRetry(
     })),
   "ProductHubSidebar",
 );
+const ChatSidebar = lazyWithRetry(
+  () =>
+    import("./ChatSidebar").then((m) => ({
+      default: m.ChatSidebar,
+    })),
+  "ChatSidebar",
+);
 const WikiSidebar = lazyWithRetry(
   () => import("./WikiSidebar").then((m) => ({ default: m.WikiSidebar })),
   "WikiSidebar",
@@ -631,6 +638,11 @@ function CatalystShellContent() {
 
   // Determine sidebar based on workspaceType (single source of truth)
   const renderSidebar = () => {
+    // Chat uses canonical SidebarBase pattern (2026-06-09) — same chevron
+    // expand/collapse contract as ProjectHubSidebar / ProductHubSidebar.
+    if (location.pathname.startsWith("/chat")) {
+      return <ChatSidebar expanded={true} onToggle={cycleSidebarState} />;
+    }
     // C1 · Home (/) gets the personal command center rail. The previous
     // implementation fell through the workspaceType switch to `default:
     // null`, which left the wrapper mounted at 240px wide but empty —

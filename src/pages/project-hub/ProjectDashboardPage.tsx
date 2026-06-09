@@ -36,6 +36,87 @@ import { DashboardFilterProvider } from '@/contexts/DashboardFilterContext';
 import { useDashboardRealtime } from '@/hooks/useDashboardRealtime';
 
 
+// 2026-06-09 Vikram RCA — Atlaskit DropdownMenu was painting popup at (0,0)
+// because @atlaskit/popup's Popper boundary detection misfires inside
+// AtlaskitPageShell's flex header. Self-rolled position:absolute portal-free
+// dropdown anchored to the trigger ref — mirrors Session 3 LayoutDropdown fix.
+function KebabMenu({
+  onTV,
+  presentation,
+  onAddGadget,
+  onReset,
+}: {
+  onTV: () => void;
+  presentation: boolean;
+  onAddGadget: () => void;
+  onReset: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+  const itemStyle: React.CSSProperties = {
+    display: 'block',
+    width: '100%',
+    padding: '8px 14px',
+    border: 0,
+    background: 'transparent',
+    textAlign: 'left',
+    fontSize: 14,
+    color: token('color.text', '#292A2E'),
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+  };
+  const item = (label: string, fn: () => void) => (
+    <button
+      type="button"
+      onClick={() => { fn(); setOpen(false); }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'); }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+      style={itemStyle}
+    >
+      {label}
+    </button>
+  );
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'inline-flex' }}>
+      <AkIconButton
+        label="More dashboard actions"
+        icon={() => <MoreHorizontal size={16} />}
+        appearance="subtle"
+        spacing="compact"
+        onClick={() => setOpen((o) => !o)}
+      />
+      {open && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            right: 0,
+            zIndex: 400,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRadius: 4,
+            boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
+            minWidth: 220,
+            padding: '4px 0',
+          }}
+        >
+          {item(presentation ? 'Exit TV mode' : 'TV mode', onTV)}
+          {item('Add gadget', onAddGadget)}
+          {item('Reset to defaults', onReset)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ProjectDashboardPage() {
   return (
     <DashboardFilterProvider>
@@ -52,6 +133,15 @@ function ProjectDashboardPageInner() {
   const [draft, setDraft] = useState<ResolvedWidget[] | null>(null);
   const [savedFlag, setSavedFlag] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+
+  // 2026-06-09 Vikram RCA — @atlaskit/flag has NO autoDismiss prop.
+  // Without an explicit timer, "Layout saved" persists forever until
+  // the user clicks ×. Auto-clear after 4s.
+  useEffect(() => {
+    if (!savedFlag) return;
+    const t = window.setTimeout(() => setSavedFlag(false), 4000);
+    return () => window.clearTimeout(t);
+  }, [savedFlag]);
 
   // Presentation / TV mode — toggles a data attr on <html>.
   // CSS in index.css scales typography 1.45× when active so the dashboard
@@ -372,32 +462,12 @@ function ProjectDashboardPageInner() {
       >
         Edit
       </Button>
-      <DropdownMenu
-        trigger={({ triggerRef, ...triggerProps }) => (
-          <AkIconButton
-            ref={triggerRef}
-            {...triggerProps}
-            label="More dashboard actions"
-            icon={() => <MoreHorizontal size={16} />}
-            appearance="subtle"
-            spacing="compact"
-          />
-        )}
-      >
-        <DropdownItemGroup>
-          <DropdownItem onClick={() => setPresentation((p) => !p)}>
-            {presentation ? 'Exit TV mode' : 'TV mode'}
-          </DropdownItem>
-          <DropdownItem onClick={() => setGalleryOpen(true)}>Add gadget</DropdownItem>
-          <DropdownItem onClick={() => {
-            // 2026-06-09 Vikram parity: opens per-widget gear cluster so user
-            // can flip autoRefresh + autoRefreshMinutes for each gadget.
-            // Per-widget gear lives in WidgetWrapper → see GadgetSettingsPanel.
-            flag.info('Open any widget’s gear (⚙) to configure automatic refresh per gadget.');
-          }}>Configure automatic refresh</DropdownItem>
-          <DropdownItem onClick={resetLayout}>Reset to defaults</DropdownItem>
-        </DropdownItemGroup>
-      </DropdownMenu>
+      <KebabMenu
+        onTV={() => setPresentation((p) => !p)}
+        presentation={presentation}
+        onAddGadget={() => setGalleryOpen(true)}
+        onReset={resetLayout}
+      />
     </>
   );
 

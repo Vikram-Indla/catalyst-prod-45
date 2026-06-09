@@ -1,27 +1,28 @@
 /**
- * ChatMainView — the 3-pane Catalyst Chat main window (Slack-style):
- *   A) IconRail (72px)        — DMs / Channels / Threads / Mentions / Saved + Caty AI
- *   B) ConversationList (300) — Channels / Tickets / Direct messages / Archived
- *   C) Conversation pane      — header + message stream + composer
+ * ChatMainView — conversation pane only.
  *
- * Real data comes from useConversations() and useMessages(conversationId).
- * The component is a controlled/uncontrolled hybrid: it accepts an
- * activeConversationId + onSelectConversation, and falls back to local
- * selection state when those props are omitted.
+ * Workspace navigation (DMs, channels, threads, mentions, saved, drafts,
+ * people, conversation list) lives in ChatSidebar (CatalystShell). This
+ * component owns the right-of-sidebar conversation pane: header, message
+ * stream, composer, optional thread right pane.
+ *
+ * State is URL-driven:
+ *   ?conv=<conversationId>  → active conversation
+ *   ?rail=<threads|mentions|saved|drafts|people> → secondary panel
  */
 import React, { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useConversations } from '@/hooks/chat/useConversations';
 import { useMessages } from '@/hooks/chat/useMessages';
-import { IconRail, type RailKey } from './main/IconRail';
-import { ConversationList } from './main/ConversationList';
-import { PeopleList } from './main/PeopleList';
 import { ConversationHeader } from './main/ConversationHeader';
 import { MessageStream } from './main/MessageStream';
 import { MessageComposer } from './main/MessageComposer';
 import { ThreadPanel } from './main/ThreadPanel';
 import { ChatMentionsPanel } from './main/ChatMentionsPanel';
 import { ChatBookmarksPanel } from './main/ChatBookmarksPanel';
-// ads-scanner:ignore-next-line -- chat.css uses only ADS tokens (no hardcoded values); shared layout styles
+import { PeopleList } from './main/PeopleList';
+import { ChatRightPane } from './ChatRightPane';
+// ads-scanner:ignore-next-line -- chat.css uses only ADS tokens
 import './chat.css';
 
 export interface ChatMainViewProps {
@@ -30,80 +31,99 @@ export interface ChatMainViewProps {
 }
 
 export function ChatMainView({ activeConversationId, onSelectConversation }: ChatMainViewProps) {
-  const [railKey, setRailKey] = useState<RailKey>('dms');
-  const [localActiveId, setLocalActiveId] = useState<string | undefined>(undefined);
-  // Active thread parent id. When set, ThreadPanel renders on the right of the
-  // conversation pane. Cleared when user closes the panel or switches
-  // conversations (handled in handleSelect).
+  const [params, setParams] = useSearchParams();
+  const urlConv = params.get('conv') ?? undefined;
+  const rail = params.get('rail') ?? undefined;
+  const urlThread = params.get('thread') ?? undefined;
   const [threadParentId, setThreadParentId] = useState<string | null>(null);
 
-  const { conversations, isLoading: conversationsLoading } = useConversations();
+  const { conversations } = useConversations();
 
-  // Resolve the active conversation: controlled prop wins, then local state,
-  // then the first available conversation as a graceful default.
   const resolvedActiveId =
     activeConversationId ??
-    localActiveId ??
-    conversations.find(c => !c.isArchived)?.id;
+    urlConv ??
+    conversations.find((c) => !c.isArchived)?.id;
 
   const activeConversation = useMemo(
-    () => conversations.find(c => c.id === resolvedActiveId) ?? null,
+    () => conversations.find((c) => c.id === resolvedActiveId) ?? null,
     [conversations, resolvedActiveId],
   );
 
-  const { messages, isLoading: messagesLoading, hasMore, loadMore, sendMessage, editMessage, deleteMessage, toggleReaction, currentUserId } = useMessages(
-    resolvedActiveId ?? null,
-  );
+  const {
+    messages,
+    isLoading: messagesLoading,
+    hasMore,
+    loadMore,
+    sendMessage,
+    editMessage,
+    deleteMessage,
+    toggleReaction,
+    currentUserId,
+  } = useMessages(resolvedActiveId ?? null);
 
   const handleSelect = (id: string) => {
     if (onSelectConversation) onSelectConversation(id);
-    else setLocalActiveId(id);
-    // Closing an open thread when the user navigates to a different
-    // conversation — the parent message no longer applies.
+    const next = new URLSearchParams(params);
+    next.set('conv', id);
+    next.delete('rail');
+    setParams(next, { replace: true });
     setThreadParentId(null);
   };
 
   const threadParentMessage = useMemo(
-    () => (threadParentId ? messages.find(m => m.id === threadParentId) ?? null : null),
+    () => (threadParentId ? messages.find((m) => m.id === threadParentId) ?? null : null),
     [threadParentId, messages],
   );
 
-  const handleDmCreated = (id: string) => {
-    if (onSelectConversation) onSelectConversation(id);
-    else setLocalActiveId(id);
-    setRailKey('dms');
-  };
-
-  return (
-    <div className="cc-main">
-      <IconRail activeKey={railKey} onSelect={setRailKey} />
-
-      {railKey === 'people' ? (
-        <PeopleList onConversationCreated={handleDmCreated} />
-      ) : railKey === 'mentions' ? (
-        <ChatMentionsPanel
-          onOpenMessage={(messageId) => {
-            // Mention rows carry chat_messages.id. Resolve to the parent
-            // conversation by scanning the current conversations cache — if
-            // the conversation is already loaded we just switch to it.
-            const conv = conversations.find((c) => false /* placeholder */) ?? null;
-            if (conv) handleSelect(conv.id);
-            // If not loaded, leave selection as-is; clicking the mention
-            // marks it read and the user can navigate via the rail.
-            void messageId;
+  // Rail panel surfaces — when a `?rail=` param is set, the secondary
+  // panel replaces the conversation pane (Mentions / Saved / People).
+  // Threads rail renders ChatRightPane; Drafts falls through to conversation view
+  // (next-turn scope: dedicated aggregated views).
+  if (rail === 'mentions') {
+    return (
+      <div className="cc-main cc-main--rail">
+        <ChatMentionsPanel onOpenMessage={() => undefined} />
+      </div>
+    );
+  }
+  if (rail === 'saved') {
+    return (
+      <div className="cc-main cc-main--rail">
+        <ChatBookmarksPanel onOpenConversation={handleSelect} />
+      </div>
+    );
+  }
+  if (rail === 'people') {
+    return (
+      <div className="cc-main cc-main--rail">
+        <PeopleList onConversationCreated={handleSelect} />
+      </div>
+    );
+  }
+  if (rail === 'threads' && resolvedActiveId) {
+    return (
+      <div className="cc-main cc-main--rail">
+        <ChatRightPane
+          conversationId={resolvedActiveId}
+          threadParentId={urlThread}
+          onSelectThread={(id) => {
+            const next = new URLSearchParams(params);
+            next.set('thread', id);
+            setParams(next);
+          }}
+          onClose={() => {
+            const next = new URLSearchParams(params);
+            next.delete('thread');
+            next.delete('rail');
+            setParams(next);
           }}
         />
-      ) : railKey === 'saved' ? (
-        <ChatBookmarksPanel onOpenConversation={handleSelect} />
-      ) : (
-        <ConversationList
-          conversations={conversations}
-          isLoading={conversationsLoading}
-          activeConversationId={resolvedActiveId}
-          onSelectConversation={handleSelect}
-        />
-      )}
+      </div>
+    );
+  }
 
+  return (
+    <div className="cc-main cc-main--conv-only">
       <div className="cc-conv" style={{ display: 'flex', flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
           <ConversationHeader conversation={activeConversation} />

@@ -381,18 +381,28 @@ export default function WidgetWrapper({
               </span>
             )}
           </Tooltip>
-          {onSolo && widgetId && (
-            <Tooltip content={isSoloed ? 'Exit fullscreen (Esc)' : 'Maximize'} position="top">
+          {widgetId && (
+            <Tooltip content="Maximize" position="top">
               {(tp) => (
                 <span {...tp} style={{ display: 'inline-flex' }}>
                   <AkIconButton
-                    label={isSoloed ? 'Exit fullscreen' : 'Maximize'}
+                    label="Maximize"
                     icon={() => <Maximize2 size={14} />}
-                    appearance={isSoloed ? 'primary' : 'subtle'}
+                    appearance="subtle"
                     spacing="compact"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onSolo(isSoloed ? null : widgetId);
+                      // 2026-06-09 Vikram parity — native Fullscreen API
+                      // (Jira convention). Was triggering solo-mode which
+                      // only widened within grid; user expected viewport
+                      // fullscreen. ESC exits via native fullscreenchange.
+                      const el = cardRef.current;
+                      if (!el) return;
+                      if (document.fullscreenElement) {
+                        document.exitFullscreen().catch(() => { /* noop */ });
+                      } else {
+                        el.requestFullscreen().catch(() => { /* noop */ });
+                      }
                     }}
                   />
                 </span>

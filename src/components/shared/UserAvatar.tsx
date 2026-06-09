@@ -79,9 +79,14 @@ export function UserAvatar({
   size = 'medium',
   className,
 }: UserAvatarProps) {
-  // Photo resolution chain: explicit src → local-named fallback → null.
+  // 2026-06-09 Vikram compliance — external avatar CDN BANNED per CLAUDE.md
+  // §19 L3. Strip external src (gravatar, atl-paas, googleusercontent etc.)
+  // before resolution chain; fall through to name-resolver or initials.
+  const isExternalCDN = typeof src === 'string' && /^https?:\/\//.test(src) && !src.startsWith(typeof window !== 'undefined' ? window.location.origin : '');
+  const safeSrc = isExternalCDN ? null : src;
+  // Photo resolution chain: vetted src → local-named fallback → null.
   // CatalystAvatar handles null by rendering deterministic-colour initials.
-  const effectiveSrc = src ?? (name ? resolveAvatarUrl(name) : null);
+  const effectiveSrc = safeSrc ?? (name ? resolveAvatarUrl(name) : null);
   const flagEmoji = country ? COUNTRY_FLAGS[country] : null;
 
   return (

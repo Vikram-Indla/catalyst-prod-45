@@ -48,3 +48,10 @@ export interface ChatPeopleGroup {
   presence: ChatPresence;
   people: ChatPerson[];
 }
+
+export interface ChatThread {
+  id: string;
+  parentMessageSnippet: string;
+  replyCount: number;
+  lastReplyAt: string;
+}

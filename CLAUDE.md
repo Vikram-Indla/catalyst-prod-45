@@ -4,6 +4,54 @@ These rules apply to every implementation task. No exceptions. **Applies to ALL 
 
 ---
 
+## 🔤 FONTS BANNED EXCEPT ADS (P0, Non-Negotiable — added 2026-06-09)
+
+**Only the Atlassian Design System CDN and Atlassian-hosted font families are allowed in Catalyst. Every other font source — Google Fonts, Typekit, Fontsource npm packages, self-hosted woff2, system stacks declared as primary — is permanently banned across CSS, TSX, HTML, inline styles, npm dependencies, and CDN links.**
+
+### Allowed (the ONLY allowed sources)
+
+- **Font families (CSS values)**: `var(--ds-font-family-body)`, `var(--ds-font-family-heading)`, `var(--ds-font-family-code)`, `'Atlassian Sans'`, `'Atlassian Mono'`, `'Charlie Display'`, `'Charlie Text'`, `'Charlie Code'`, `inherit`, `unset`. System fallback stacks (`ui-sans-serif`, `-apple-system`, `system-ui`, `Segoe UI`, etc.) are allowed ONLY as fallbacks AFTER an Atlassian family in the same stack — never as the primary family.
+- **CDN hosts**: `ds-cdn.prod-east.frontend.public.atl-paas.net`, `*.atl-paas.net`, `*.atlassian.com`, `*.atlassian.design`. Nothing else.
+- **`@font-face` declarations**: allowed ONLY when `src: url(...)` points to an Atlassian CDN host above. Self-hosted `/fonts/*.woff2` is banned.
+
+### Banned (no exceptions, no per-case asks)
+
+- ❌ `@import url('https://fonts.googleapis.com/...')` / `fonts.gstatic.com` / `use.typekit.net` / `use.fontawesome.com` / `fontshare.com` / `cdnfonts.com` / `rsms.me/inter`
+- ❌ `@fontsource/*` and `@fontsource-variable/*` npm packages (Inter, Roboto, JetBrains Mono, Sora, Plus Jakarta Sans, etc.) — `import '@fontsource-variable/inter'` is a direct violation
+- ❌ `<link rel="stylesheet|preconnect|preload" href="<non-Atlassian font CDN>">`
+- ❌ `@font-face { src: url('/fonts/inter.woff2') }` (self-hosted woff2)
+- ❌ `font-family: 'Inter' | 'Roboto' | 'Open Sans' | 'Sora' | 'Plus Jakarta Sans' | 'JetBrains Mono' | 'Helvetica' | 'Arial' | 'Georgia' | 'Times New Roman' | 'Courier'` as primary
+- ❌ Tailwind `font-sans|font-serif|font-mono|font-[Inter]` utilities on any element (also banned by the existing ADS-token Tailwind rule)
+- ❌ Dynamic URL strings referencing banned CDNs: `const URL = 'https://fonts.googleapis.com/...'`
+
+### Enforcement (5 layers)
+
+1. **`design-governance/rules/font-import-enforcer.js`** — scans `.css`, `.html`, `.tsx`, `.ts`, `.jsx` for `@import url(...)`, `@font-face { src: url(...) }`, `<link href=...>`, and dynamic font-CDN URL strings. Emits `BANNED_FONT_IMPORT`, `BANNED_FONT_FACE`, `BANNED_FONT_LINK`, `BANNED_FONT_CDN_URL`.
+2. **`design-governance/rules/typography-enforcer.js`** — bans `font-family: 'Inter' | 'Sora' | ...` in inline styles (existing `BANNED_FONT_FAMILY` rule).
+3. **`design-governance/rules/ads-token-scanner.js`** — bans Tailwind `font-*` utilities (existing `TAILWIND_UTILITY` rule).
+4. **`index.html` CSP meta tag** — `font-src` allowlist limits the browser to Atlassian CDN + localhost (Vite HMR). Any non-Atlassian font request is blocked at the browser level with a console error.
+5. **`design-governance/scripts/self-test.mjs`** — 9 fixtures pin the font lockdown rules so the scanners cannot regress silently.
+
+### Adding a new font weight or script
+
+The only allowed path is to add it via the Atlassian CDN `@font-face` block in `index.html`. If a glyph or weight is missing from Atlassian Sans/Mono/Charlie, raise it with Vikram — do NOT install a Fontsource package or link to Google Fonts as a workaround.
+
+### Removing a banned font
+
+When the scanner flags `@fontsource-variable/inter` or similar:
+1. Remove the `import '@fontsource-variable/...'` line from `src/main.tsx` (or wherever).
+2. Uninstall the npm package: `npm uninstall @fontsource-variable/inter`.
+3. Grep for any `font-family: 'Inter'` left behind and replace with `var(--ds-font-family-body)`.
+4. Re-run `node design-governance/rules/audit.js src/` — should report 0 font violations.
+
+### Why this rule exists
+
+Pre-2026-06-09, `src/main.tsx` imported `@fontsource-variable/inter` and `@fontsource-variable/jetbrains-mono` (lines 8–9) — non-Atlassian fonts bundled into the production bundle. The comment claimed Inter "registers weight 653 for parity" but Atlassian Sans v4 (already loaded in `index.html` from the official CDN) provides weight 653 natively. Inter was redundant AND a parity drift from Jira's actual rendering. Without a scanner rule, the import had been shipping un-flagged.
+
+**Severity:** P0 — non-ADS fonts cannot ship. Every PR that introduces one is blocked by the audit CI gate.
+
+---
+
 ## ♻️ REUSE FIRST — NEVER REBUILD WHAT CATALYST ALREADY HAS (P0, Non-Negotiable)
 
 **Before writing ANY component, primitive, hook, util, or wrapper — search the Catalyst codebase AND `@atlaskit/*` for an existing implementation. Reuse it. Do not rebuild.**
