@@ -1274,6 +1274,42 @@
   opacity: 0.6;
 }
 
+/* ────── CHANNEL TABS (Messages / Files / Pins) ────── */
+
+.cc-conv-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-bottom: 1px solid var(--ds-border, #DFE1E6);
+  padding: 0 16px;
+  flex-shrink: 0;
+  background: var(--ds-surface, #FFFFFF);
+}
+
+.cc-conv-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ds-text-subtle, #44546F);
+  padding: 8px 12px;
+  margin-bottom: -1px;
+  transition: color 0.1s, border-color 0.1s;
+  white-space: nowrap;
+}
+
+.cc-conv-tab:hover {
+  color: var(--ds-text, #172B4D);
+}
+
+.cc-conv-tab.is-active {
+  color: var(--ds-link, #0052CC);
+  border-bottom-color: var(--ds-link, #0052CC);
+  font-weight: 500;
+}
+
 /* ────── CONVERSATION CREATION MODAL ────── */
 
 .cc-modal-overlay {

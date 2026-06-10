@@ -18,6 +18,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useConversations } from '@/hooks/chat/useConversations';
 import { useMessages } from '@/hooks/chat/useMessages';
 import { useConversationMembers } from '@/hooks/chat/useConversationMembers';
+import { useConversationPins, useTogglePin } from '@/hooks/chat/usePinsBookmarks';
 import type { ChatPerson } from '@/types/chat';
 import { supabase } from '@/integrations/supabase/client';
 import { ConversationHeader } from './main/ConversationHeader';
@@ -68,6 +69,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
   const composerRef = useRef<HTMLTextAreaElement>(null);
   const [showHint, setShowHint] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [convTab, setConvTab] = useState<'messages' | 'files' | 'pins'>('messages');
 
   useEffect(() => {
     const hasSeenHint = localStorage.getItem('catalyst.chat.hint-seen');
@@ -97,6 +99,14 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
   );
 
   const { data: memberRows = [] } = useConversationMembers(resolvedActiveId ?? null);
+  const { data: pins = [] } = useConversationPins(resolvedActiveId ?? null);
+  const togglePin = useTogglePin();
+
+  // File attachments in this conversation — messages with attachment_url set
+  const fileMessages = useMemo(
+    () => messages.filter((m) => (m as any).attachmentUrl || (m as any).attachment_url),
+    [messages],
+  );
   const members = useMemo<ChatPerson[]>(
     () =>
       memberRows.map((m) => ({
@@ -261,7 +271,115 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
             </div>
           )}
 
-          {messages.length === 0 ? (
+          {/* Channel tabs — Messages / Files / Pins */}
+          {activeConversation?.kind === 'channel' && (
+            <div className="cc-conv-tabs" role="tablist" aria-label="Channel content">
+              {(['messages', 'files', 'pins'] as const).map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  role="tab"
+                  aria-selected={convTab === t}
+                  className={`cc-conv-tab${convTab === t ? ' is-active' : ''}`}
+                  onClick={() => setConvTab(t)}
+                >
+                  {t.charAt(0).toUpperCase() + t.slice(1)}
+                  {t === 'files' && fileMessages.length > 0 && ` (${fileMessages.length})`}
+                  {t === 'pins' && pins.length > 0 && ` (${pins.length})`}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {convTab === 'files' && activeConversation?.kind === 'channel' ? (
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+              {fileMessages.length === 0 ? (
+                <div style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 13, textAlign: 'center', paddingTop: 32 }}>
+                  No files shared in this channel yet.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {fileMessages.map((m) => {
+                    const url = (m as any).attachmentUrl ?? (m as any).attachment_url ?? '';
+                    const name = url.split('/').pop() ?? 'file';
+                    return (
+                      <a
+                        key={m.id}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '8px 12px',
+                          border: '1px solid var(--ds-border, #DFE1E6)',
+                          borderRadius: 4,
+                          textDecoration: 'none',
+                          color: 'var(--ds-text, #172B4D)',
+                          fontSize: 13,
+                          background: 'var(--ds-surface, #FFFFFF)',
+                        }}
+                      >
+                        <span style={{ color: 'var(--ds-text-brand, #0C66E4)', fontSize: 16 }}>📎</span>
+                        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
+                        <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 11 }}>{m.authorName}</span>
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ) : convTab === 'pins' && activeConversation?.kind === 'channel' ? (
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+              {pins.length === 0 ? (
+                <div style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 13, textAlign: 'center', paddingTop: 32 }}>
+                  No pinned messages yet. Hover a message and pin it.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {pins.map((pin) => {
+                    const msg = messages.find((m) => m.id === pin.message_id);
+                    return (
+                      <div
+                        key={pin.id}
+                        style={{
+                          padding: '8px 12px',
+                          border: '1px solid var(--ds-border, #DFE1E6)',
+                          borderRadius: 4,
+                          fontSize: 13,
+                          background: 'var(--ds-surface, #FFFFFF)',
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: 8,
+                        }}
+                      >
+                        <span style={{ fontSize: 16 }}>📌</span>
+                        <div style={{ flex: 1 }}>
+                          {msg ? (
+                            <>
+                              <span style={{ fontWeight: 500, marginRight: 8 }}>{msg.authorName}</span>
+                              <span style={{ color: 'var(--ds-text-subtle, #44546F)' }}>{msg.bodyText.slice(0, 200)}</span>
+                            </>
+                          ) : (
+                            <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>Message no longer available</span>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 12, padding: '2px 4px' }}
+                          title="Unpin"
+                          onClick={() => resolvedActiveId && togglePin.mutate({ conversationId: resolvedActiveId, messageId: pin.message_id, currentlyPinned: true })}
+                        >
+                          Unpin
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ) : messages.length === 0 ? (
             <ConversationEmptyState
               onStartConversation={() => {
                 composerRef.current?.focus();
