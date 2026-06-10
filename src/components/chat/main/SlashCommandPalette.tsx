@@ -126,20 +126,26 @@ export function SlashCommandPalette({
     };
   }, [textareaRef, value]);
 
-  // Keyboard navigation
+  // Keyboard navigation — capture phase so we intercept before other handlers.
+  // This ensures Escape, ArrowUp, ArrowDown, and Enter only navigate the palette
+  // when it's open, rather than bubbling to parent handlers.
   useEffect(() => {
     if (!state.open) return;
 
     const onKeyDown = (e: KeyboardEvent) => {
+      // Escape → close palette
       if (e.key === 'Escape') {
         e.preventDefault();
+        e.stopPropagation();
         setState(INITIAL);
         onClose();
         return;
       }
 
+      // ArrowDown → next command
       if (e.key === 'ArrowDown') {
         e.preventDefault();
+        e.stopPropagation();
         setState(prev => ({
           ...prev,
           selectedIndex: (prev.selectedIndex + 1) % candidates.length,
@@ -147,8 +153,10 @@ export function SlashCommandPalette({
         return;
       }
 
+      // ArrowUp → previous command
       if (e.key === 'ArrowUp') {
         e.preventDefault();
+        e.stopPropagation();
         setState(prev => ({
           ...prev,
           selectedIndex: (prev.selectedIndex - 1 + candidates.length) % candidates.length,
@@ -156,8 +164,10 @@ export function SlashCommandPalette({
         return;
       }
 
+      // Enter → select current command
       if (e.key === 'Enter') {
         e.preventDefault();
+        e.stopPropagation();
         if (candidates.length > 0) {
           insertCommand(candidates[state.selectedIndex]);
         }
@@ -167,15 +177,16 @@ export function SlashCommandPalette({
 
     const el = textareaRef.current;
     if (el) {
-      el.addEventListener('keydown', onKeyDown);
+      // Capture phase beats other handlers (e.g., composer's own Enter key handling)
+      el.addEventListener('keydown', onKeyDown, true);
     }
 
     return () => {
       if (el) {
-        el.removeEventListener('keydown', onKeyDown);
+        el.removeEventListener('keydown', onKeyDown, true);
       }
     };
-  }, [state.open, state.selectedIndex]);
+  }, [state.open, state.selectedIndex, candidates]);
 
   const candidates = useMemo(() => {
     if (!state.open) return [];

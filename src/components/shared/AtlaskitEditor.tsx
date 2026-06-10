@@ -52,6 +52,7 @@ type EditorActionsLike = {
 export interface AtlaskitEditorRef {
   replaceDocument: (adf: ADFEntity) => void;
   getContent: () => ADFEntity | null;
+  getEditorView: () => any; // EditorView — optional, for keyboard shortcuts and advanced interactions
 }
 
 interface AtlaskitEditorProps {
@@ -93,6 +94,11 @@ const AtlaskitEditor = forwardRef<AtlaskitEditorRef, AtlaskitEditorProps>(
         }
       },
       getContent: () => contentRef.current,
+      getEditorView: () => {
+        // Access the internal EditorView for keyboard shortcuts and advanced interactions.
+        // @atlaskit/editor-core's EditorActions has a private _privateGetEditorView method.
+        return (actionsRef.current as any)?._privateGetEditorView?.() ?? null;
+      },
     }));
 
     const handleEditorReady = useCallback((actions: EditorActionsLike) => {
