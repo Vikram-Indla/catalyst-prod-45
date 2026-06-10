@@ -22,6 +22,9 @@
 import { token } from '@atlaskit/tokens';
 import TimeInStatusEtaStrip from './TimeInStatusEtaStrip';
 import DwellPatternLozenge from './DwellPatternLozenge';
+import UserAvatar from '@/components/shared/UserAvatar';
+import PriorityIcon from '@/components/shared/PriorityIcon';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { DwellPattern } from '@/lib/tis-dwell-classifier/classifier';
 
 const HOUR = 60 * 60 * 1000;
@@ -44,6 +47,14 @@ function fmtDuration(ms: number): string {
 }
 
 export interface TimeInStatusHoverCardProps {
+  // === Ticket header (Jira hover-card parity) ===
+  issueKey: string;
+  issueType?: string | null;
+  title?: string | null;
+  assigneeDisplayName?: string | null;
+  assigneeAvatarUrl?: string | null;
+  priority?: string | null;
+  // === Status window ===
   statusName: string;
   statusCategory?: 'todo' | 'in_progress' | 'done' | string | null;
   currentMs: number;
@@ -71,6 +82,12 @@ const CATEGORY_FG: Record<string, string> = {
 };
 
 export function TimeInStatusHoverCard({
+  issueKey,
+  issueType,
+  title,
+  assigneeDisplayName,
+  assigneeAvatarUrl,
+  priority,
   statusName,
   statusCategory,
   currentMs,
@@ -88,14 +105,61 @@ export function TimeInStatusHoverCard({
   return (
     <div
       style={{
-        width: 320,
+        width: 340,
         padding: '12px 14px',
         fontFamily: 'Atlassian Sans, -apple-system, system-ui, sans-serif',
         color: token('color.text', '#172B4D'),
       }}
     >
-      {/* Row 1 — status pill + duration */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+      {/* Row 0 — ticket header (Jira hover parity) — type icon + key + title */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 8,
+          marginBottom: 8,
+          paddingBottom: 8,
+          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+        }}
+      >
+        <span style={{ display: 'inline-flex', alignItems: 'center', paddingTop: 2, flexShrink: 0 }}>
+          <JiraIssueTypeIcon type={issueType ?? 'Task'} size={16} />
+        </span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div
+            style={{
+              fontSize: 14,
+              lineHeight: '20px',
+              fontWeight: 653,
+              color: token('color.link', '#0C66E4'),
+              wordBreak: 'break-word',
+            }}
+          >
+            <span style={{ fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace', marginRight: 6 }}>
+              {issueKey}
+            </span>
+            {title && <span style={{ fontFamily: 'inherit' }}>: {title}</span>}
+          </div>
+        </div>
+      </div>
+
+      {/* Row 0b — meta row: assignee + status pill + priority (mirrors Jira hover) */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          marginBottom: 10,
+          flexWrap: 'wrap',
+        }}
+      >
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title={assigneeDisplayName ?? 'Unassigned'}>
+          <UserAvatar
+            size="small"
+            name={assigneeDisplayName ?? undefined}
+            src={assigneeAvatarUrl ?? undefined}
+          />
+        </span>
         <span
           style={{
             display: 'inline-block',
@@ -112,6 +176,36 @@ export function TimeInStatusHoverCard({
           }}
         >
           {statusName}
+        </span>
+        {priority && (
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              fontSize: 12,
+              fontWeight: 500,
+              color: token('color.text.subtle', '#42526E'),
+            }}
+          >
+            <PriorityIcon level={priority} size={14} />
+            {priority}
+          </span>
+        )}
+      </div>
+
+      {/* Row 1 — duration prominent */}
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 6 }}>
+        <span
+          style={{
+            fontSize: 11,
+            fontWeight: 653,
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            color: token('color.text.subtlest', '#6B778C'),
+          }}
+        >
+          Time in status
         </span>
         <span
           style={{

@@ -601,6 +601,12 @@ export default function TimeInStatusWidget({
                               <Tooltip
                                 content={() => (
                                   <TimeInStatusHoverCard
+                                    issueKey={r.issue_key}
+                                    issueType={r.issue_type ?? issueType}
+                                    title={r.title}
+                                    assigneeDisplayName={r.assignee_display_name}
+                                    assigneeAvatarUrl={r.assignee_avatar_url}
+                                    priority={r.priority}
                                     statusName={s.name}
                                     statusCategory={s.category}
                                     currentMs={ms}
