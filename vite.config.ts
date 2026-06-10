@@ -595,7 +595,6 @@ export default defineConfig(({ mode, command }) => {
       '@atlaskit/popup',
       '@atlaskit/pragmatic-drag-and-drop',
       '@atlaskit/pragmatic-drag-and-drop-auto-scroll',
-      '@atlaskit/pragmatic-drag-and-drop-flourish',
       '@atlaskit/pragmatic-drag-and-drop-hitbox',
       '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator',
       '@atlaskit/primitives',
