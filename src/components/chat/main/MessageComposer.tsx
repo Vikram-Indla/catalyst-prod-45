@@ -11,7 +11,8 @@
  */
 import React, { useCallback, useRef, useState, lazy, Suspense, useEffect } from 'react';
 import Button from '@atlaskit/button/new';
-import { Flag, FlagGroup } from '@atlaskit/flag';
+import Flag from '@atlaskit/flag';
+import { FlagGroup } from '@atlaskit/flag';
 import ErrorIcon from '@atlaskit/icon/glyph/error';
 import SuccessIcon from '@atlaskit/icon/glyph/check-circle';
 import { MentionPicker } from './MentionPicker';
