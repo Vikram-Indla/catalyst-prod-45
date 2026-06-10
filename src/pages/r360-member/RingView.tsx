@@ -25,7 +25,7 @@ import {
   getCardPixelPosDynH, getSpokeEndpoints,
   getFromTagClass, getFromTagPrefix,
 } from './helpers';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { Lozenge, toStatusCategory } from '@/components/ads';
 import { MiniAvatar } from './SmallComponents';
 import { PresenceRing } from '@/components/shared/PresenceRing';
 import type { PresenceState } from '@/lib/presence';
@@ -437,7 +437,16 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
 
               {/* Row 3 (status bar): lozenge + from-tag + contributor ── 24px, pinned to bottom */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 'auto', flexShrink: 0, minHeight: 24 }}>
-                <StatusLozenge status={item.status} />
+                {item.status && (() => {
+                  const cat = toStatusCategory(item.status);
+                  const bgMap = { todo: 'rgb(221,222,225)', inProgress: 'rgb(143,184,246)', done: 'rgb(186,240,199)' };
+                  const bg = bgMap[cat as keyof typeof bgMap] || 'rgb(221,222,225)';
+                  return (
+                    <span style={{ backgroundColor: bg, padding: '2px 8px', borderRadius: 3, display: 'inline-flex', alignItems: 'center', height: 20, fontSize: 11, fontWeight: 600, color: T.text() }}>
+                      {item.status}
+                    </span>
+                  );
+                })()}
                 {item.carried_from_label && (
                   <span className={`r3-from-tag ${fromClass}`} title="Carried over from an earlier period">
                     {getFromTagPrefix(item.age_days)}{item.carried_from_label}
