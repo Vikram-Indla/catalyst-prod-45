@@ -41,8 +41,23 @@ export interface SavedFilterFull extends SavedFilter {
   last_used_at: string | null;
   use_count: number;
   health_status: FilterHealth;
+  // Jira directory sync (migration 20260610200000) — verbatim Jira structures
+  jira_filter_id?: string | null;
+  jira_owner_name?: string | null;
+  jira_owner_account_id?: string | null;
+  share_permissions?: JiraSharePermission[];
+  edit_permissions?: JiraSharePermission[];
   // joined
   owner?: OwnerProfile | null;
+}
+
+/** Verbatim Jira /rest/api/3/filter sharePermissions entry (subset we render) */
+export interface JiraSharePermission {
+  type: 'project' | 'group' | 'user' | 'loggedin' | 'organization' | 'authenticated' | 'global' | 'project-unknown';
+  project?: { key?: string; name?: string };
+  role?: { name?: string };
+  group?: { name?: string };
+  user?: { displayName?: string };
 }
 
 export function useSavedFilters(page?: string) {

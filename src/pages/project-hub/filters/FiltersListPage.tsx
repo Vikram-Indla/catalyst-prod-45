@@ -1,23 +1,36 @@
 /**
  * FiltersListPage — /project-hub/:key/filters · /product-hub/:key/filters
  *
- * Jira-parity Filters directory. Lists every filter visible to the user in
- * the canonical JiraTable (the same table primitive as the project backlog),
- * with star / owner / viewers / editors / starred-by / last-used columns and
- * the kebab actions menu (subscribe, copy, change owner, delete).
+ * Jira-exact Filters directory (probed live via /rest/api/3/filter/search on
+ * 2026-06-10 — 144 filters, sharePermissions types: loggedin 70 · project 55 ·
+ * group 1 · none/Private 17; editPermissions: none 120 · user 15 · group 9 ·
+ * project 3).
+ *
+ * Layout mirrors Jira's directory: Search filters + Owner / Project / Group
+ * dropdowns on the left, table = ★ · Name · Owner · Viewers · Editors ·
+ * Starred by · ⋯, rendered with the canonical JiraTable. Viewers/Editors are
+ * icon + text (lock Private, building My organization, project "Name, All
+ * roles", group name, stacked users) — never lozenges.
  */
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
-import Tabs, { Tab, TabList } from '@atlaskit/tabs';
+import Select from '@atlaskit/select';
 import AkAvatar from '@atlaskit/avatar';
-import Lozenge from '@atlaskit/lozenge';
 import SectionMessage from '@atlaskit/section-message';
+import LockIcon from '@atlaskit/icon/core/lock-locked';
+import OfficeBuildingIcon from '@atlaskit/icon/core/office-building';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column, SortOrder } from '@/components/shared/JiraTable';
-import { useFiltersForProject, useStarFilter, type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
+import {
+  useFiltersForProject,
+  useStarFilter,
+  type SavedFilterFull,
+  type JiraSharePermission,
+} from '@/hooks/workhub/useSavedFilters';
 import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { Star, StarOff, Plus, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,37 +42,98 @@ interface FiltersListPageProps {
   hubType?: HubType;
 }
 
-type TabId = 'my' | 'starred' | 'shared' | 'recent';
-
-function ViewersChip({ config }: { config: SavedFilterFull['viewers_config'] }) {
-  if (config.type === 'private') {
-    return <span data-cp-lozenge-jira-parity><Lozenge>Private</Lozenge></span>;
-  }
-  if (config.type === 'org') {
-    return <span data-cp-lozenge-jira-parity><Lozenge appearance="inprogress">Organisation</Lozenge></span>;
-  }
-  return <span data-cp-lozenge-jira-parity><Lozenge>{config.user_ids?.length ?? 0} people</Lozenge></span>;
+interface PermissionEntry {
+  icon: React.ReactNode;
+  label: string;
 }
 
-function EditorsChip({ config }: { config: SavedFilterFull['editors_config'] }) {
-  const label = config?.type === 'owner_only' ? 'Owner only' : `${config?.user_ids?.length ?? 0} people`;
-  return <span data-cp-lozenge-jira-parity><Lozenge>{label}</Lozenge></span>;
+const ICON_COLOR = 'var(--ds-icon, #44546F)';
+
+/** Jira sharePermissions → icon + text rows (exact Jira directory rendering) */
+function sharePermissionEntries(perms: JiraSharePermission[] | undefined): PermissionEntry[] {
+  if (!perms || perms.length === 0) {
+    return [{ icon: <LockIcon label="" color={ICON_COLOR} />, label: 'Private' }];
+  }
+  return perms.map(p => {
+    if (p.type === 'loggedin' || p.type === 'organization' || p.type === 'authenticated' || p.type === 'global') {
+      return { icon: <OfficeBuildingIcon label="" color={ICON_COLOR} />, label: 'My organization' };
+    }
+    if (p.type === 'project' || p.type === 'project-unknown') {
+      const name = p.project?.name ?? p.project?.key ?? 'Project';
+      return {
+        icon: <AkAvatar appearance="square" size="xsmall" name={name} />,
+        label: `${name}, ${p.role?.name ?? 'All roles'}`,
+      };
+    }
+    if (p.type === 'group') {
+      return { icon: <PeopleGroupIcon label="" color={ICON_COLOR} />, label: p.group?.name ?? 'Group' };
+    }
+    const userName = p.user?.displayName ?? 'User';
+    return {
+      icon: <AkAvatar size="xsmall" name={userName} src={resolveAvatarUrl(userName)} />,
+      label: userName,
+    };
+  });
 }
 
-function relativeDay(iso: string | null): string {
-  if (!iso) return '—';
-  return new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
-    Math.round((new Date(iso).getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
-    'day',
+/** Catalyst-native viewers_config → the same icon + text vocabulary */
+function viewersConfigEntries(config: SavedFilterFull['viewers_config']): PermissionEntry[] {
+  if (config?.type === 'org') {
+    return [{ icon: <OfficeBuildingIcon label="" color={ICON_COLOR} />, label: 'My organization' }];
+  }
+  if (config?.type === 'specific') {
+    const n = config.user_ids?.length ?? 0;
+    return [{ icon: <PeopleGroupIcon label="" color={ICON_COLOR} />, label: `${n} ${n === 1 ? 'person' : 'people'}` }];
+  }
+  return [{ icon: <LockIcon label="" color={ICON_COLOR} />, label: 'Private' }];
+}
+
+function editorsConfigEntries(config: SavedFilterFull['editors_config']): PermissionEntry[] {
+  if (config?.type === 'specific') {
+    const n = config.user_ids?.length ?? 0;
+    return [{ icon: <PeopleGroupIcon label="" color={ICON_COLOR} />, label: `${n} ${n === 1 ? 'person' : 'people'}` }];
+  }
+  return [{ icon: <LockIcon label="" color={ICON_COLOR} />, label: 'Private' }];
+}
+
+const MAX_PERMISSION_ROWS = 5;
+
+function PermissionList({ entries }: { entries: PermissionEntry[] }) {
+  const shown = entries.slice(0, MAX_PERMISSION_ROWS);
+  const more = entries.length - shown.length;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {shown.map((e, i) => (
+        <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ display: 'inline-flex', width: 20, justifyContent: 'center', flexShrink: 0 }}>
+            {e.icon}
+          </span>
+          <span style={{ fontSize: 14, color: token('color.text') }}>{e.label}</span>
+        </span>
+      ))}
+      {more > 0 && (
+        <span style={{ fontSize: 12, color: token('color.text.subtlest'), paddingLeft: 24 }}>
+          +{more} more
+        </span>
+      )}
+    </div>
   );
 }
+
+function ownerName(f: SavedFilterFull): string {
+  return f.owner?.full_name ?? f.jira_owner_name ?? '';
+}
+
+interface SelectOption { label: string; value: string }
 
 export default function FiltersListPage({ hubType = 'project' }: FiltersListPageProps) {
   const { key: projectKey } = useParams<{ key: string }>();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState<TabId>('my');
   const [search, setSearch] = useState('');
+  const [ownerFilter, setOwnerFilter] = useState<SelectOption | null>(null);
+  const [projectFilter, setProjectFilter] = useState<SelectOption | null>(null);
+  const [groupFilter, setGroupFilter] = useState<SelectOption | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
@@ -74,7 +148,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     ? `/project-hub/${projectKey}/filters/create`
     : `/project-hub/filters/create`;
 
-  // H7 P2 — keyboard shortcut: press N to open Create filter (Jira pattern)
+  // Keyboard shortcut: N opens the create flow (Jira pattern)
   React.useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (
@@ -94,20 +168,32 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
 
   const starFilter = useStarFilter();
 
+  // Dropdown option pools — derived from the live rows (Jira derives them the same way)
+  const ownerOptions = useMemo<SelectOption[]>(() => {
+    const names = [...new Set(filters.map(ownerName).filter(Boolean))].sort();
+    return names.map(n => ({ label: n, value: n }));
+  }, [filters]);
+
+  const projectOptions = useMemo<SelectOption[]>(() => {
+    const names = new Set<string>();
+    filters.forEach(f => (f.share_permissions ?? []).forEach(p => {
+      if ((p.type === 'project' || p.type === 'project-unknown') && p.project?.name) names.add(p.project.name);
+    }));
+    return [...names].sort().map(n => ({ label: n, value: n }));
+  }, [filters]);
+
+  const groupOptions = useMemo<SelectOption[]>(() => {
+    const names = new Set<string>();
+    filters.forEach(f => {
+      [...(f.share_permissions ?? []), ...(f.edit_permissions ?? [])].forEach(p => {
+        if (p.type === 'group' && p.group?.name) names.add(p.group.name);
+      });
+    });
+    return [...names].sort().map(n => ({ label: n, value: n }));
+  }, [filters]);
+
   const visibleFilters = useMemo(() => {
     let list = filters;
-
-    if (activeTab === 'my') {
-      list = list.filter(f => f.user_id === currentUserId || f.owner_id === currentUserId);
-    } else if (activeTab === 'starred') {
-      list = list.filter(f => currentUserId && f.starred_by_user_ids.includes(currentUserId));
-    } else if (activeTab === 'shared') {
-      list = list.filter(f =>
-        f.viewers_config?.type !== 'private' &&
-        f.user_id !== currentUserId &&
-        f.owner_id !== currentUserId
-      );
-    }
 
     if (search.trim()) {
       const q = search.trim().toLowerCase();
@@ -116,31 +202,30 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         (f.jql_query ?? '').toLowerCase().includes(q)
       );
     }
+    if (ownerFilter) {
+      list = list.filter(f => ownerName(f) === ownerFilter.value);
+    }
+    if (projectFilter) {
+      list = list.filter(f => (f.share_permissions ?? []).some(p =>
+        (p.type === 'project' || p.type === 'project-unknown') && p.project?.name === projectFilter.value));
+    }
+    if (groupFilter) {
+      list = list.filter(f =>
+        [...(f.share_permissions ?? []), ...(f.edit_permissions ?? [])].some(p =>
+          p.type === 'group' && p.group?.name === groupFilter.value));
+    }
 
-    // Sort — "recent" tab forces last-used desc; other tabs follow the header sort
     const dir = sortOrder === 'ASC' ? 1 : -1;
-    const sorted = [...list].sort((a, b) => {
-      if (activeTab === 'recent') {
-        const ta = a.last_used_at ? new Date(a.last_used_at).getTime() : 0;
-        const tb = b.last_used_at ? new Date(b.last_used_at).getTime() : 0;
-        return tb - ta;
-      }
+    return [...list].sort((a, b) => {
       if (sortKey === 'starred') {
         return (a.starred_by_user_ids.length - b.starred_by_user_ids.length) * dir;
       }
-      if (sortKey === 'lastUsed') {
-        const ta = a.last_used_at ? new Date(a.last_used_at).getTime() : 0;
-        const tb = b.last_used_at ? new Date(b.last_used_at).getTime() : 0;
-        return (ta - tb) * dir;
-      }
       if (sortKey === 'owner') {
-        return ((a.owner?.full_name ?? '').localeCompare(b.owner?.full_name ?? '')) * dir;
+        return ownerName(a).localeCompare(ownerName(b)) * dir;
       }
       return a.name.localeCompare(b.name) * dir;
     });
-
-    return sorted;
-  }, [filters, activeTab, search, currentUserId, sortKey, sortOrder]);
+  }, [filters, search, ownerFilter, projectFilter, groupFilter, sortKey, sortOrder]);
 
   const detailHref = (f: SavedFilterFull) => projectKey
     ? `/project-hub/${projectKey}/filters/${f.id}`
@@ -183,115 +268,79 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       alwaysVisible: true,
       accessor: f => f.name,
       cell: ({ row: f }) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-          <Link
-            to={detailHref(f)}
-            onClick={e => e.stopPropagation()}
-            style={{
-              color: token('color.link'),
-              fontWeight: token('font.weight.medium'),
-              fontSize: 14,
-              textDecoration: 'none',
-            }}
-            onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
-            onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
-          >
-            {f.name}
-          </Link>
-          {f.jql_query && (
-            <span
-              title={f.jql_query}
-              style={{
-                fontSize: 11,
-                color: token('color.text.subtlest'),
-                fontFamily: 'var(--ds-font-family-monospace, monospace)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                maxWidth: 420,
-              }}
-            >
-              {f.jql_query}
-            </span>
-          )}
-        </div>
+        <Link
+          to={detailHref(f)}
+          onClick={e => e.stopPropagation()}
+          title={f.jql_query ?? undefined}
+          style={{
+            color: token('color.link'),
+            fontWeight: token('font.weight.medium'),
+            fontSize: 14,
+            textDecoration: 'none',
+          }}
+          onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
+          onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
+        >
+          {f.name}
+        </Link>
       ),
     },
     {
       id: 'owner',
       label: 'Owner',
-      width: 14,
+      width: 16,
       sortable: true,
-      accessor: f => f.owner?.full_name ?? '',
-      cell: ({ row: f }) => f.owner ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <AkAvatar
-            src={resolveAvatarUrl(f.owner.full_name)}
-            name={f.owner.full_name ?? 'Unknown'}
-            size="xsmall"
-          />
-          <span style={{ fontSize: 14, color: token('color.text') }}>
-            {f.owner.full_name ?? 'Unknown'}
-          </span>
-        </div>
-      ) : (
-        <span style={{ fontSize: 14, color: token('color.text.subtlest') }}>—</span>
-      ),
+      accessor: f => ownerName(f),
+      cell: ({ row: f }) => {
+        const name = ownerName(f);
+        return name ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <AkAvatar src={resolveAvatarUrl(name)} name={name} size="small" />
+            <span style={{ fontSize: 14, color: token('color.text') }}>{name}</span>
+          </div>
+        ) : (
+          <span style={{ fontSize: 14, color: token('color.text.subtlest') }}>—</span>
+        );
+      },
     },
     {
       id: 'viewers',
       label: 'Viewers',
-      width: 10,
+      width: 20,
       cell: ({ row: f }) => (
-        <span title={
-          f.viewers_config.type === 'private' ? 'Only the owner can view' :
-          f.viewers_config.type === 'org'     ? 'Everyone in the organisation can view' :
-          `${f.viewers_config.user_ids?.length ?? 0} specific people can view`
-        }>
-          <ViewersChip config={f.viewers_config} />
-        </span>
+        <PermissionList entries={
+          f.jira_filter_id || (f.share_permissions?.length ?? 0) > 0
+            ? sharePermissionEntries(f.share_permissions)
+            : viewersConfigEntries(f.viewers_config)
+        } />
       ),
     },
     {
       id: 'editors',
       label: 'Editors',
-      width: 10,
+      width: 16,
       cell: ({ row: f }) => (
-        <span title={
-          f.editors_config?.type === 'owner_only'
-            ? 'Only the owner can edit'
-            : `${f.editors_config?.user_ids?.length ?? 0} specific people can edit`
-        }>
-          <EditorsChip config={f.editors_config} />
-        </span>
+        <PermissionList entries={
+          f.jira_filter_id || (f.edit_permissions?.length ?? 0) > 0
+            ? sharePermissionEntries(f.edit_permissions)
+            : editorsConfigEntries(f.editors_config)
+        } />
       ),
     },
     {
       id: 'starred',
       label: 'Starred by',
-      width: 8,
+      width: 9,
       sortable: true,
       accessor: f => f.starred_by_user_ids.length,
       cell: ({ row: f }) => {
         const n = f.starred_by_user_ids.length;
         return (
-          <span style={{ fontSize: 14, color: token('color.text.subtle') }}>
-            {n === 0 ? '—' : `${n} ${n === 1 ? 'person' : 'people'}`}
+          <span style={{ fontSize: 14, color: token('color.text') }}>
+            {n} {n === 1 ? 'person' : 'people'}
           </span>
         );
       },
-    },
-    {
-      id: 'lastUsed',
-      label: 'Last used',
-      width: 10,
-      sortable: true,
-      accessor: f => f.last_used_at,
-      cell: ({ row: f }) => (
-        <span style={{ fontSize: 14, color: token('color.text.subtle') }}>
-          {relativeDay(f.last_used_at)}
-        </span>
-      ),
     },
     {
       id: '__actions',
@@ -315,33 +364,23 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       background: token('elevation.surface'),
       color: token('color.text'),
     }}>
-      {/* Page header — 24px horizontal padding matches the project backlog */}
+      {/* Page header — Jira directory: title left, single CTA right, no subtitle */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '24px 24px 16px',
-        borderBottom: `1px solid ${token('color.border')}`,
         flexShrink: 0,
       }}>
-        <div>
-          <h1 style={{
-            margin: 0,
-            fontSize: 24,
-            fontWeight: 653,
-            color: token('color.text'),
-            lineHeight: '28px',
-          }}>
-            Filters
-          </h1>
-          <p style={{
-            margin: '4px 0 0',
-            fontSize: 14,
-            color: token('color.text.subtle'),
-          }}>
-            Saved filters for {hubType === 'product' ? 'product' : 'project'} views
-          </p>
-        </div>
+        <h1 style={{
+          margin: 0,
+          fontSize: 24,
+          fontWeight: 653,
+          color: token('color.text'),
+          lineHeight: '28px',
+        }}>
+          Filters
+        </h1>
         <Button
           appearance="primary"
           iconBefore={() => <Plus size="small" />}
@@ -351,28 +390,15 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         </Button>
       </div>
 
-      {/* Sub-tabs + search */}
+      {/* Toolbar — Search filters + Owner / Project / Group (Jira-exact) */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 24px',
-        borderBottom: `1px solid ${token('color.border')}`,
+        gap: 16,
+        padding: '0 24px 16px',
         flexShrink: 0,
       }}>
-        <Tabs
-          id="filters-tabs"
-          onChange={idx => setActiveTab((['my', 'starred', 'shared', 'recent'] as TabId[])[idx])}
-        >
-          <TabList>
-            <Tab>My filters</Tab>
-            <Tab>Starred</Tab>
-            <Tab>Shared</Tab>
-            <Tab>Recent</Tab>
-          </TabList>
-        </Tabs>
-
-        <div style={{ width: 240, paddingBottom: 8 }}>
+        <div style={{ width: 240 }}>
           <Textfield
             placeholder="Search filters"
             value={search}
@@ -384,10 +410,37 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             }
           />
         </div>
+        <div style={{ width: 200 }}>
+          <Select
+            placeholder="Owner"
+            options={ownerOptions}
+            value={ownerFilter}
+            onChange={v => setOwnerFilter(v as SelectOption | null)}
+            isClearable
+          />
+        </div>
+        <div style={{ width: 200 }}>
+          <Select
+            placeholder="Project"
+            options={projectOptions}
+            value={projectFilter}
+            onChange={v => setProjectFilter(v as SelectOption | null)}
+            isClearable
+          />
+        </div>
+        <div style={{ width: 200 }}>
+          <Select
+            placeholder="Group"
+            options={groupOptions}
+            value={groupFilter}
+            onChange={v => setGroupFilter(v as SelectOption | null)}
+            isClearable
+          />
+        </div>
       </div>
 
       {/* Canonical JiraTable — same table primitive as the project backlog */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 32px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 32px' }}>
         {error && (
           <div style={{ padding: '16px 0' }}>
             <SectionMessage appearance="error" title="Couldn't load filters">
@@ -400,12 +453,12 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           data={visibleFilters}
           getRowId={f => f.id}
           onRowClick={f => navigate(detailHref(f))}
-          sortKey={activeTab === 'recent' ? undefined : sortKey}
-          sortOrder={activeTab === 'recent' ? undefined : sortOrder}
+          sortKey={sortKey}
+          sortOrder={sortOrder}
           onSortChange={(k, o) => { setSortKey(k); setSortOrder(o); }}
           isLoading={isLoading}
           density="comfortable"
-          ariaLabel="Saved filters"
+          ariaLabel="Filters directory"
           showRowCount
           totalRowCount={filters.length}
           emptyView={
@@ -418,11 +471,13 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
               color: token('color.text.subtle'),
             }}>
               <span style={{ fontSize: 16, fontWeight: token('font.weight.medium') }}>
-                {search ? 'No filters match your search' : 'No filters yet'}
+                {search || ownerFilter || projectFilter || groupFilter
+                  ? 'No filters match your search'
+                  : 'No filters yet'}
               </span>
               {!search && (
                 <span style={{ fontSize: 13, color: token('color.text.subtlest') }}>
-                  Use the button above, or press N, to build your first filter.
+                  Use the button above, or press N, to build one.
                 </span>
               )}
             </div>

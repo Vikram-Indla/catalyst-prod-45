@@ -90,7 +90,7 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
           </DropdownItem>
             {isOwner && (
             <DropdownItem onClick={() => setTransferOpen(true)}>
-              Transfer ownership
+              Change owner
             </DropdownItem>
           )}
         </DropdownItemGroup>
