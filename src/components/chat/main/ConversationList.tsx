@@ -421,11 +421,7 @@ function ConversationItemRow({
       <div className="cc-item-content">
         <div className="cc-item-header">
           <span className="cc-item-title">
-            {variant === 'channel'
-              ? (c.projectName ?? c.title)
-              : variant === 'ticket' && c.ticketKey
-              ? c.ticketKey
-              : c.title}
+            {variant === 'channel' ? (c.projectName ?? c.title) : c.title}
           </span>
           {c.lastMessageAt && (
             <span className="cc-item-timestamp">{formatRelative(c.lastMessageAt)}</span>
