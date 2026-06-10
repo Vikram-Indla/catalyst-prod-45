@@ -1,0 +1,56 @@
+stages:
+  - github-clone
+  # - build
+  # - deploy
+
+variables:
+
+  #Example: GITHUB_URL: "github.com/mim-dxp/backend.git"
+  GITHUB_URL: "github.com/Vikram-Indla/catalyst-prod-45.git"
+  GITHUB_REPO_NAME: "catalyst-prod-45"
+  PROJECT_FOLDER: ${CI_PROJECT_NAME}
+  APP_NAME: catalyst
+
+github-pull-deploy:
+  tags:
+    - catalyst-dev-shell
+  variables:
+    STAGE_NAME: "github-clone"
+    GIT_STRATEGY: clone
+  stage: github-clone
+  before_script:
+    - whoami
+    - echo ${CI_PROJECT_NAME}
+    - echo ${PROJECT_FOLDER}
+    - pwd
+    - echo $CI_PROJECT_DIR
+    # - chmod +x slack_notify.sh
+
+  script:
+    - git clone -b main https://$GITHUB_TOKEN@${GITHUB_URL}
+    - echo $CI_PROJECT_DIR
+    - cd $CI_PROJECT_DIR/$GITHUB_REPO_NAME
+
+
+    # Get first 7 characters of commit ID from gitlab
+    - COMMIT_ID=$(git rev-parse HEAD | cut -c1-7)
+    - AUTHOR_NAME=$(git log -1 --pretty=format:"%an")
+    - COMMIT_MSG=$(git log -1 --pretty=format:"%B")
+
+    - IMAGE_TAG="${CI_PIPELINE_ID}-${COMMIT_ID}"
+    - cp $DEV_ENV_FILE .env
+    - sudo docker build -t catalyst:$IMAGE_TAG .
+    - sudo docker images
+    ##CleanUp the Images
+    - sudo docker images catalyst --format "{{.Tag}}" | tail -n +4 | xargs -I {} sudo docker rmi catalyst:{} || true
+    - sudo docker stop catalyst || true
+    - sudo docker rm catalyst || true
+    - sudo docker run -d --name catalyst --restart unless-stopped -p 8080:8080 catalyst:$IMAGE_TAG
+    - sudo docker ps
+ 
+   
+
+  # after_script:
+  #   - if [ ${CI_JOB_STATUS} == "success" ]; then EXIT_STATUS=0; else EXIT_STATUS=1; fi
+  #   - chmod +x slack_notify.sh || echo "Could not set permissions"
+  #   - ./slack_notify.sh complete

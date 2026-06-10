@@ -1,0 +1,80 @@
+/* ═══════════════════════════════════════════════════════
+   CATALYST DUAL-THEME TOKEN SYSTEM
+   NOCTURNE Warm Charcoal (dark) + Clean White (light)
+   ═══════════════════════════════════════════════════════ */
+
+:root, [data-theme="light"] {
+  --bg-page: #FFFFFF;
+  --bg-surface: #F8FAFC;
+  --bg-sunken: #F1F5F9;
+  --bg-elevated: #FFFFFF;
+  --bg-float: #FFFFFF;
+  --bg-overlay: rgba(0,0,0,0.5);
+  --text-1: #0F172A;
+  --text-2: #334155;
+  --text-3: #64748B;
+  --text-4: #94A3B8;
+  --text-inv: #FFFFFF;
+  --text-link: #2563EB;
+  --bd-subtle: rgba(15,23,42,0.06);
+  --bd-default: rgba(15,23,42,0.12);
+  --bd-strong: rgba(15,23,42,0.20);
+  --hover: rgba(15,23,42,0.04);
+  --press: rgba(15,23,42,0.08);
+  --sel: rgba(37,99,235,0.08);
+  --sel-hover: rgba(37,99,235,0.12);
+  --p60: #2563EB;
+  --p70: #1D4ED8;
+  --p5: rgba(37,99,235,0.06);
+  --ok60: #16A34A;
+  --warn60: #D97706;
+  --err60: #DC2626;
+  --loz-gr-bg: #DFE1E6;
+  --loz-gr-tx: #253858;
+  --loz-bl-bg: #DEEBFF;
+  --loz-bl-tx: #0747A6;
+  --loz-gn-bg: #E3FCEF;
+  --loz-gn-tx: #006644;
+  --pop-bg: #FFFFFF;
+  --pop-border: #E2E8F0;
+  --pop-hover: #F1F5F9;
+  --shadow-pop: 0 8px 24px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.2);
+}
+
+[data-theme="dark"] {
+  --bg-page: #0A0A0A;
+  --bg-surface: #0A0A0A;
+  --bg-sunken: #0A0A0A;
+  --bg-elevated: #1A1A1A;
+  --bg-float: #1A1A1A;
+  --bg-overlay: rgba(0,0,0,0.65);
+  --text-1: #EDEDED;
+  --text-2: #A1A1A1;
+  --text-3: #878787;
+  --text-4: #444444;
+  --text-inv: #FFFFFF;
+  --text-link: #60A5FA;
+  --bd-subtle: #292929;
+  --bd-default: #2E2E2E;
+  --bd-strong: #454545;
+  --hover: #1F1F1F;
+  --press: #2E2E2E;
+  --sel: rgba(96,165,250,0.10);
+  --sel-hover: rgba(96,165,250,0.15);
+  --p60: #3B82F6;
+  --p70: #2563EB;
+  --p5: rgba(59,130,246,0.08);
+  --ok60: #22C55E;
+  --warn60: #F59E0B;
+  --err60: #EF4444;
+  --loz-gr-bg: #1A1A1A;
+  --loz-gr-tx: #A1A1A1;
+  --loz-bl-bg: #1A2540;
+  --loz-bl-tx: #93C5FD;
+  --loz-gn-bg: #0F2A1A;
+  --loz-gn-tx: #86EFAC;
+  --pop-bg: #1A1A1A;
+  --pop-border: #2E2E2E;
+  --pop-hover: #1F1F1F;
+  --shadow-pop: 0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.5);
+}

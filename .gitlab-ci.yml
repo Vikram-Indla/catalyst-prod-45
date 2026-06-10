@@ -1,0 +1,9 @@
+include:
+  - local: "ci/dev-github.yml"
+    rules:
+      - if: '$CI_COMMIT_BRANCH == "main" && $CI_SERVER_HOST == "gitlab-prod.senaei.app"'
+      - when: never      
+
+  - local: "ci/prod.yml"
+    rules:
+      - if: '$CI_COMMIT_BRANCH == "prod"'

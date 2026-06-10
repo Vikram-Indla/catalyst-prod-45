@@ -560,7 +560,7 @@ export function useBusinessRequestsByProduct(productId: string | null | undefine
   useEffect(() => {
     if (!productId) return;
     const channel = supabase
-      .channel(`business-requests-product-${productId}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`business-requests-product-${productId}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'business_requests' }, () => {
         queryClient.invalidateQueries({ queryKey: ['business-requests-by-product', productId] });
       })

@@ -242,13 +242,20 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     if (!effectiveColumnOrder || effectiveColumnOrder.length === 0) return base;
     const idx = new Map<string, number>();
     effectiveColumnOrder.forEach((id, i) => idx.set(id, i));
-    // Stable reorder: structural columns (__*) keep schema position; others
-    // sort by their index in effectiveColumnOrder; unknown ids go to the end.
+    // Stable reorder: structural columns (__*) keep their relative side
+    // (`__actions` is always last; other `__*` columns like `__drag` are
+    // always first); reorderable columns sort by their index in
+    // effectiveColumnOrder; unknown ids go to the end.
     return [...base].sort((a, b) => {
       const aS = a.id.startsWith('__');
       const bS = b.id.startsWith('__');
+      const aEnd = a.id === '__actions';
+      const bEnd = b.id === '__actions';
+      if (aEnd && bEnd) return 0;
+      if (aEnd) return 1;   // __actions always last
+      if (bEnd) return -1;
       if (aS && bS) return base.indexOf(a) - base.indexOf(b);
-      if (aS) return -1;
+      if (aS) return -1;    // other structural (__drag, __select) first
       if (bS) return 1;
       const ai = idx.has(a.id) ? idx.get(a.id)! : 999;
       const bi = idx.has(b.id) ? idx.get(b.id)! : 999;
@@ -490,6 +497,17 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         box-shadow: inset 0 -2px 0 0 var(--ds-border, var(--ds-border, #C1C7D0)) !important;
         background: var(--ds-surface-sunken, #F7F8F9) !important;
       }
+      /* 2026-06-09 Sticky __actions header: white bg (so scrolled content
+         doesn't show through), left divider (visual separator from the
+         scrolling content underneath), bottom border (matches the rest
+         of the header row). Higher-specificity selector + !important
+         required to defeat the generic thead-th rule above. */
+      .jira-table-grid table thead > tr > th[data-actions-sticky] {
+        background: var(--cp-bg-elevated, #FFFFFF) !important;
+        box-shadow:
+          inset 1px 0 0 0 var(--ds-border, #C1C7D0),
+          inset 0 -2px 0 0 var(--ds-border, #C1C7D0) !important;
+      }
       /* Focused row overrides the td shadow with its own blue bar */
       .jira-table-grid .jira-table-row-focused > td:first-child {
         box-shadow: inset 3px 0 0 #0C66E4, inset 0 -1px 0 0 var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) !important;
@@ -507,9 +525,76 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded
          #F1F2F4. --ds-background-neutral-hovered is the next-step token
          used for active editor cells. */
-      .jira-table-grid table tbody > tr > td:has([data-jira-cell-editor]:hover),
-      .jira-table-grid table tbody > tr > td:has([data-jira-cell-editor][aria-expanded="true"]) {
+      .jira-table-grid table tbody > tr > td:has([data-jira-cell-editor]:hover):not(:has([data-jira-cell-summary])),
+      .jira-table-grid table tbody > tr > td:has([data-jira-cell-editor][aria-expanded="true"]):not(:has([data-jira-cell-summary])) {
         background-color: var(--ds-background-neutral-hovered, #F1F2F4) !important;
+      }
+      /* Title (summary) cell — Vikram directive (2026-06-11):
+         (1) td background — let the row's uniform gray hover tint
+             (tr:hover > td above) paint the title cell. Do NOT override.
+         (2) Atlaskit InlineEdit baked-in styling (compiled classes
+             _189e1dm9, _irr31dpa, _vwz4kb7n on the readView role=
+             presentation div + its outer wrapper) creates three
+             unwanted artifacts inside .cv-cell-inline-edit-no-label:
+               • a 2px transparent border that misaligns the title
+                 baseline against the icon + key,
+               • a gray :hover background (the "click-to-edit" bubble
+                 sitting on top of the row tint), and
+               • a line-height:1 outer wrapper that clips the bottom
+                 of descenders (g, y, p, q, j).
+             Override all three so the title sits at the SAME vertical
+             centre as the icon and key, descenders are not clipped,
+             and the hover tint is exactly the row-level gray.
+             Hover-action buttons (Open in panel / Create child) are
+             SIBLINGS of .cv-cell-inline-edit-no-label, so their own
+             hover affordance is untouched. */
+      .cv-cell-inline-edit-no-label,
+      .cv-cell-inline-edit-no-label *,
+      .cv-cell-inline-edit-no-label *:hover {
+        background: transparent !important;
+      }
+      /* Kill the 2px transparent border on the readView's role=presentation
+         div (Atlaskit class _189e1dm9). Use descendant selector — the
+         role=presentation div is nested several layers deep inside
+         <form> > <Field> > <_vwz4kb7n div>. */
+      .cv-cell-inline-edit-no-label div[role="presentation"] {
+        border-width: 0 !important;
+        padding-block: 0 !important;
+        vertical-align: middle !important;
+      }
+      /* Atlaskit InlineEdit renders an empty <button> (Pressable) as a
+         SIBLING of the role=presentation div that holds the title text.
+         The button is display:block with browser-default font-size, so
+         it occupies a vertical line of ~14-16px ABOVE the title — that's
+         why the title visibly sits BELOW the icon and key baseline
+         (Vikram screenshot 2026-06-11 003156). Pull the button out of
+         layout flow so the title sits at y=0 of the wrapper; keep it
+         focusable for keyboard users (don't touch pointer-events /
+         tabindex / visibility). Standard sr-only pattern. */
+      .cv-cell-inline-edit-no-label button {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+      }
+      /* Provide a positioned ancestor for the absolute button so it
+         stays inside the cell visually (off-screen but anchored). */
+      .cv-cell-inline-edit-no-label form {
+        position: relative !important;
+      }
+      /* Atlaskit Field wraps its child in <div css={{ marginBlockStart:
+         var(--ds-space-100, 8px) }}> — intended for stacking form fields.
+         In a table cell that 8px top margin pushes the title DOWN exactly
+         8px below the icon and key baseline (the visible offset in
+         Vikram's screenshot 2026-06-11 003156). Zero it. */
+      .cv-cell-inline-edit-no-label form > div {
+        margin-block-start: 0 !important;
+        margin-top: 0 !important;
       }
       /* Key cell -- clearly clickable */
       [data-jira-table-row-open] {
@@ -583,6 +668,19 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid table tbody > tr:hover .jira-row-menu-trigger {
         opacity: 1;
       }
+      /* Sticky create-row buttons: gray bg on hover (Jira parity). */
+      button.jira-table-create-btn,
+      button.jira-table-refresh-btn {
+        transition: background-color 120ms ease;
+      }
+      button.jira-table-create-btn:hover,
+      button.jira-table-refresh-btn:hover {
+        background-color: var(--ds-background-neutral, #EBECF0) !important;
+      }
+      button.jira-table-create-btn:active,
+      button.jira-table-refresh-btn:active {
+        background-color: var(--ds-background-neutral-hovered, #DCDFE4) !important;
+      }
       /* ── Round H additions ─────────────────────────────────────────
          Sticky header + resize handle. The scroll container is the table
          viewport (.jira-table-viewport); position: sticky references
@@ -600,12 +698,30 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         width: 100%;
         /* Smooth horizontal scroll on touchpads / mobile */
         -webkit-overflow-scrolling: touch;
-        /* Apr 27, 2026 (audit pass 9): scrollbar-gutter:stable reserves
-           a fixed gutter for the vertical scrollbar so layout doesn't
-           shift when rows fill / drain. Without this, removing the
-           outer-wrapper padding made the right edge "jump" by ~12px
-           every time the scrollbar appeared/disappeared. */
-        scrollbar-gutter: stable;
+        /* Thin scrollbars (Atlassian parity). Firefox uses scrollbar-width;
+           WebKit/Blink use ::-webkit-scrollbar rules below. */
+        scrollbar-width: thin;
+        scrollbar-color: var(--ds-background-neutral-hovered, #DCDFE4) transparent;
+      }
+      .jira-table-viewport::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+      .jira-table-viewport::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .jira-table-viewport::-webkit-scrollbar-thumb {
+        background: var(--ds-background-neutral-hovered, #DCDFE4);
+        border-radius: 5px;
+        border: 2px solid transparent;
+        background-clip: content-box;
+      }
+      .jira-table-viewport::-webkit-scrollbar-thumb:hover {
+        background: var(--ds-background-neutral-pressed, #B3B9C4);
+        background-clip: content-box;
+      }
+      .jira-table-viewport::-webkit-scrollbar-corner {
+        background: transparent;
       }
       .jira-table-grid table {
         width: 100%;
@@ -879,10 +995,13 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         visibility: visible;
       }
       /* 2026-05-12 Jira parity: row hover reveals ↗ open + add child buttons
-         on the right edge of the Summary cell. Pattern mirrors .jira-drag-handle:
-         visibility: hidden at rest (set inline), flip to visible on tr:hover. */
+         on the right edge of the Summary cell.
+         2026-06-11: switched to display: none at rest (was visibility: hidden)
+         so the buttons no longer reserve ~52px of layout width while idle —
+         the title cell now gets that space back, eliminating premature
+         ellipsis clipping on titles that comfortably fit the column. */
       .jira-table-grid table tbody > tr:hover [data-jira-row-hover-action] {
-        visibility: visible !important;
+        display: inline-flex !important;
       }
       /* "Add comment" ghost text — always visible (Jira parity: shown at rest in every row) */
       .jira-table-grid table tbody > tr td [data-jira-cell-ghost] {
@@ -1003,9 +1122,20 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     }
 
     for (const col of visibleColumns) {
-      cells.push({
-        key: col.id,
-        content: (
+      // 2026-06-09: column-picker icon is now overlaid on top of the
+      // `__actions` header (Jira parity — Jira's column-picker icon lives
+      // in the row-actions column header, not in a dedicated column).
+      const isActionsHeader = col.id === '__actions';
+      const headerContent =
+        isActionsHeader && showColumnManager ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+            <ColumnManagerTrigger
+              columns={columns}
+              visibility={columnVisibility!}
+              onChange={onColumnVisibilityChange!}
+            />
+          </div>
+        ) : (
           <span
             // Header label — Jira parity (2026-04-26 re-probe from
             // BAU list view "Summary"): 12px / 700 / #505258 /
@@ -1023,24 +1153,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
           >
             {col.label}
           </span>
-        ),
+        );
+      cells.push({
+        key: col.id,
+        content: headerContent,
         isSortable: !!col.sortable,
         width: col.width,
-      });
-    }
-
-    // Trailing `+` column manager header.
-    if (showColumnManager) {
-      cells.push({
-        key: '__column-manager',
-        content: (
-          <ColumnManagerTrigger
-            columns={columns}
-            visibility={columnVisibility!}
-            onChange={onColumnVisibilityChange!}
-          />
-        ),
-        width: 3,
       });
     }
 
@@ -1238,14 +1356,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         });
       });
 
-      // Match the trailing `+` column-manager header with an empty row cell
-      // so row/header widths line up under @atlaskit/dynamic-table's isFixedSize.
-      if (showColumnManager) {
-        rowCells.push({
-          key: `${id}-__column-manager`,
-          content: <span aria-hidden="true" />,
-        });
-      }
+      // 2026-06-09: column-manager no longer has a dedicated column; its
+      // icon is overlaid on the `__actions` header. No row cell needed.
 
       return {
         key: id,
@@ -1289,7 +1401,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       // visual "span" is handled by the first cell's absolute width + the
       // trailing cells being empty.
       const totalCellCount =
-        (selectable ? 1 : 0) + visibleColumns.length + (showColumnManager ? 1 : 0);
+        (selectable ? 1 : 0) + visibleColumns.length;
 
       for (const g of groups) {
         const collapsed = g.isCollapsed || !!collapsedGroups?.has(g.id);
@@ -1463,7 +1575,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         if (!collapsed && renderGroupInlineRow) {
           const inline = renderGroupInlineRow(g.id);
           if (inline != null) {
-            const totalCols = (selectable ? 1 : 0) + visibleColumns.length + (showColumnManager ? 1 : 0);
+            const totalCols = (selectable ? 1 : 0) + visibleColumns.length;
             out.push({
               key: `__group-${g.id}-inline-create`,
               className: 'jira-table-group-inline-create-row',
@@ -1537,12 +1649,13 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     id: string;
     width: number;
     widthCss: string;
+    sumWidth: number;
     resizable: boolean;
     sortable: boolean;
   }> = [];
   if (selectable) {
     const px = effectiveWidthFor('__select', 40);
-    colWidthEntries.push({ id: '__select', width: px, widthCss: `${px}px`, resizable: false, sortable: false });
+    colWidthEntries.push({ id: '__select', width: px, widthCss: `${px}px`, sumWidth: px, resizable: false, sortable: false });
   }
   for (const col of visibleColumns) {
     const userOverride = columnWidths[col.id];
@@ -1552,23 +1665,37 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     //   - The ONE flex column (Summary) gets NO width on its <col> so the
     //     browser hands it all remaining space after fixed cols are placed.
     //   - User resize overrides stay pinned to pixels as before.
+    // 2026-06-09: flex column (Work / Summary) keeps its expand-to-fill
+    // behavior so it has its wide default; but the sum we compute for the
+    // TABLE width below also reserves at least FLEX_MIN_WIDTH per flex
+    // column. That way the table extends rather than letting the flex col
+    // shrink when more columns are added.
     const widthCss = userOverride != null
       ? `${userOverride}px`
       : col.flex
-        ? ''          // no width → browser gives it all remaining space
+        ? ''          // flex → browser hands it remaining space
         : `${naturalPx}px`;
+    // 2026-06-09: `sumWidth` is the pixel value used ONLY for the table's
+    // total width. For flex columns we use a generous floor (640px) so
+    // the table is wide enough that the flex column (Work / Summary) can
+    // display full work-item titles by default even when many other
+    // columns are added. The column itself still expands beyond this
+    // floor when the viewport has spare room.
+    const FLEX_SUM_FLOOR = 640;
+    const sumWidth = col.flex
+      ? Math.max(naturalPx, FLEX_SUM_FLOOR)
+      : (userOverride ?? naturalPx);
     colWidthEntries.push({
       id: col.id,
       width: userOverride ?? naturalPx,
       widthCss,
+      sumWidth,
       resizable: !col.id.startsWith('__'),
       sortable: !!col.sortable,
     });
   }
-  if (showColumnManager) {
-    const px = effectiveWidthFor('__column-manager', 40);
-    colWidthEntries.push({ id: '__column-manager', width: px, widthCss: `${px}px`, resizable: false, sortable: false });
-  }
+  // 2026-06-09: __column-manager no longer occupies a column; its icon is
+  // overlaid on the __actions header. No width entry needed.
 
   const viewportRef = useRef<HTMLDivElement>(null);
   const useVirtual = enableVirtualization;
@@ -1621,7 +1748,22 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         ref={viewportRef}
         style={useVirtual ? { overflowY: 'auto', flex: 1, minHeight: 0 } : undefined}
       >
-        <table role="grid">
+        <table
+          role="grid"
+          // 2026-06-09 Jira parity: table width is the SUM of each column's
+          // sumWidth (flex columns floor at 480px so adding new columns
+          // never shrinks the Work / Summary column below its full default
+          // width). Combined with max(100%, ...) so narrow tables still
+          // fill the container — the flex column expands to absorb the
+          // leftover. Viewport overflow-x:auto handles scroll when total
+          // exceeds container.
+          style={{
+            width: `max(100%, ${colWidthEntries.reduce(
+              (sum, e) => sum + Math.max(48, e.sumWidth),
+              0,
+            )}px)`,
+          }}
+        >
           <colgroup>
             {colWidthEntries.map((e) => (
               <col key={e.id} style={{ width: e.widthCss, minWidth: 48 }} />
@@ -1651,6 +1793,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   <th
                     key={cell.key}
                     className={meta?.sortable ? 'jira-th-sortable' : undefined}
+                    data-actions-sticky={meta?.id === '__actions' ? '' : undefined}
                     aria-sort={isSorted ? (sortOrder === 'ASC' ? 'ascending' : 'descending') : 'none'}
                     onClick={() => meta && handleHeaderClick(meta.id, meta.sortable)}
                     // ── Column reorder (HTML5 native DnD; opt-in) ──────────
@@ -1695,11 +1838,30 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       setDragOverId(null);
                     } : undefined}
                     style={{
+                      // 2026-06-09 Jira parity: __actions header (and ONLY
+                      // the header, not the column body) is pinned to the
+                      // right edge so the column-picker icon stays visible
+                      // while data scrolls underneath horizontally. Body
+                      // cells scroll naturally with the rest of the row.
+                      // Higher z-index keeps it above the body row above.
                       position: 'sticky',
                       top: 0,
+                      right: meta?.id === '__actions' ? 0 : undefined,
+                      zIndex: meta?.id === '__actions' ? 3 : undefined,
+                      background:
+                        meta?.id === '__actions'
+                          ? 'var(--cp-bg-elevated, #FFFFFF)'
+                          : undefined,
+                      // 2026-06-09: when __actions header sticks during
+                      // horizontal scroll, add a 1px left divider so the
+                      // sticky cell visually separates from the scrolling
+                      // content sliding underneath it. Combined with the
+                      // bottom border that all headers share.
                       boxShadow: isDragOverThis
                         ? 'inset -2px 0 0 0 #0C66E4, inset 0 -2px 0 0 var(--ds-border, #C1C7D0)'
-                        : 'inset 0 -2px 0 0 var(--ds-border, #C1C7D0)',
+                        : meta?.id === '__actions'
+                          ? 'inset 1px 0 0 0 var(--ds-border, #C1C7D0), inset 0 -2px 0 0 var(--ds-border, #C1C7D0)'
+                          : 'inset 0 -2px 0 0 var(--ds-border, #C1C7D0)',
                       // 2026-05-10 Jira-parity: sort affordance wins over reorder
                       // affordance for cursor. Sortable headers always show pointer
                       // so click-to-sort is discoverable. Active drag shows grabbing.
@@ -1893,51 +2055,6 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               );
             })()}
           </tbody>
-          {/* Jira-parity: sticky inline-create footer row. Always visible at the
-              bottom of the table, pinned via position:sticky bottom:0.
-              Renders a placeholder "What needs to be done?" row in idle state;
-              switches to `active` content when the consumer opens the create form.
-              2026-05-17: feature flag `enableStickyCreateFooter` gates this entire feature
-              to ensure consumers declare intent explicitly via canonical prop. */}
-          {enableStickyCreateFooter && stickyCreateFooter && (
-            <tfoot style={{ position: 'sticky', bottom: 0, zIndex: 3 }}>
-              <tr>
-                <td
-                  colSpan={head.cells.length}
-                  style={{
-                    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                    boxShadow: 'inset 0 1px 0 0 var(--ds-border, rgba(11,18,14,0.14))',
-                    padding: 0,
-                    height: 40,
-                  }}
-                >
-                  {stickyCreateFooter.active ?? (
-                    <button
-                      type="button"
-                      onClick={stickyCreateFooter.onActivate}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        width: '100%',
-                        height: 40,
-                        padding: '0 12px',
-                        border: 'none',
-                        background: 'transparent',
-                        cursor: 'text',
-                        color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
-                        fontSize: 14,
-                        textAlign: 'left',
-                      }}
-                    >
-                      <span style={{ fontSize: 18, lineHeight: 1, marginTop: -1 }}>+</span>
-                      <span>{stickyCreateFooter.placeholder ?? 'What needs to be done?'}</span>
-                    </button>
-                  )}
-                </td>
-              </tr>
-            </tfoot>
-          )}
         </table>
         {/* Apr 27, 2026 (L70): bottomSlot renders INSIDE the viewport
             so the horizontal scrollbar appears BELOW it, not between
@@ -1945,6 +2062,122 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             against the table's last row with zero visual gap. */}
         {props.bottomSlot}
       </div>
+      {/* Sticky create row — rendered OUTSIDE the viewport so it does
+          NOT move with the table's horizontal scroll. Sits at the bottom
+          of the .jira-table-grid flex column at the visible viewport width. */}
+      {enableStickyCreateFooter && stickyCreateFooter && (() => {
+        const visible = data?.length ?? 0;
+        const total = totalRowCount ?? visible;
+        const showCount = showRowCount && !groups && data && data.length > 0 && !onPageChange;
+        const countLabel = `${visible} of ${total}`;
+        const creating = stickyCreateFooter.active != null;
+        return (
+          <div
+            style={{
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              minHeight: 40,
+              flexShrink: 0,
+              marginTop: 'auto',
+              ...(creating ? {
+                borderTop: '2px solid var(--ds-border-focused, #0C66E4)',
+                borderLeft: '2px solid var(--ds-border-focused, #0C66E4)',
+                borderRight: '2px solid var(--ds-border-focused, #0C66E4)',
+                borderBottom: '2px solid var(--ds-border-focused, #0C66E4)',
+                borderBottomLeftRadius: 8,
+                borderBottomRightRadius: 8,
+              } : {
+                boxShadow: 'inset 0 1px 0 0 var(--ds-border, rgba(11,18,14,0.14))',
+              }),
+            }}
+          >
+            {stickyCreateFooter.active ?? (
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr auto 1fr',
+                  alignItems: 'center',
+                  height: 40,
+                  padding: '0 8px',
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={stickyCreateFooter.onActivate}
+                  className="jira-table-create-btn"
+                  style={{
+                    justifySelf: 'start',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    height: 28,
+                    padding: '0 8px',
+                    border: 'none',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    color: 'var(--ds-text, #292A2E)',
+                    fontSize: 14,
+                    fontWeight: 600,
+                    borderRadius: 3,
+                  }}
+                >
+                  <span style={{ fontSize: 22, lineHeight: 1, marginTop: -2, fontWeight: 400 }}>+</span>
+                  <span>{stickyCreateFooter.placeholder ?? 'Create'}</span>
+                </button>
+                <div
+                  style={{
+                    justifySelf: 'center',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: 'var(--ds-text, #292A2E)',
+                  }}
+                >
+                  {showCount && <span>{countLabel}</span>}
+                  {stickyCreateFooter.onRefresh && (
+                    <button
+                      type="button"
+                      onClick={() => { void stickyCreateFooter.onRefresh?.(); }}
+                      className="jira-table-refresh-btn"
+                      aria-label="Refresh"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: 26,
+                        height: 26,
+                        border: 'none',
+                        background: 'transparent',
+                        borderRadius: 3,
+                        cursor: 'pointer',
+                        padding: 0,
+                        color: 'var(--ds-text, #292A2E)',
+                      }}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.75}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                        <path d="M3 3v5h5" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                <div />
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Pagination footer — simple prev / next / page counter. Only shown
           when the caller provides onPageChange + rowsPerPage and data
@@ -1981,35 +2214,6 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               disabled={current >= totalPages}
               style={pageBtnStyle(current >= totalPages)}
             >Next ›</button>
-          </div>
-        );
-      })()}
-
-      {/* Row-count footer — renders "{N} of {Total} items" (or just "{N} items"
-          when totalRowCount is omitted). Hidden when grouping is active
-          (groups have their own row counts) or when data is empty.
-          2026-05-17 jira-compare: parity with Jira's "50 of 1000+" footer. */}
-      {showRowCount && !groups && data && data.length > 0 && !onPageChange && (() => {
-        const visible = data.length;
-        const total = totalRowCount ?? visible;
-        const label = visible === total
-          ? `${visible} item${visible === 1 ? '' : 's'}`
-          : `${visible} of ${total} items`;
-        return (
-          <div
-            data-testid="jira-table-row-count"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '8px 12px',
-              borderTop: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
-              fontSize: 12,
-              color: 'var(--ds-text-subtle, #505258)',
-              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-            }}
-          >
-            {label}
           </div>
         );
       })()}
@@ -2162,6 +2366,7 @@ function ColumnManagerTrigger<TRow>({
     };
   }, [isOpen]);
 
+
   useEffect(() => {
     if (!isOpen) return;
     const onDown = (e: MouseEvent) => {
@@ -2214,24 +2419,46 @@ function ColumnManagerTrigger<TRow>({
         type="button"
         aria-label="Manage columns"
         aria-expanded={isOpen}
-        data-jira-cell-editor
         onClick={(e) => { e.stopPropagation(); setIsOpen((v) => !v); }}
         style={{
-          width: 24,
-          height: 24,
+          width: 28,
+          height: 28,
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
           border: 'none',
           background: 'transparent',
-          color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+          // 2026-06-09: black stroke (color.text default) per user spec —
+          // was inheriting subtle gray which was too light against Jira.
+          color: 'var(--ds-text, #172B4D)',
           cursor: 'pointer',
           borderRadius: 3,
+          outline: 'none',
+          boxShadow: 'none',
         }}
         onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, #F1F2F4)')}
         onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+        onFocus={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, #F1F2F4)')}
+        onBlur={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
       >
-        <PlusIcon size={14} />
+        {/* 2026-06-09 Jira parity: Jira's column-picker icon is a bordered
+            rectangle with three internal vertical bars (a "closed" columns
+            icon), not the open Lucide Columns3 glyph. Inline SVG to match.
+            18×18 at strokeWidth 1.25 — visible at the larger size without
+            the bolder weight from the 1.75 stroke I tried previously. */}
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.25"
+          aria-hidden="true"
+        >
+          <rect x="2" y="3" width="12" height="10" rx="1.5" />
+          <line x1="6" y1="3" x2="6" y2="13" />
+          <line x1="10" y1="3" x2="10" y2="13" />
+        </svg>
       </button>
       {isOpen && anchor && createPortal(
         <div

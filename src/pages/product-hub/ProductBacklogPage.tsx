@@ -101,31 +101,39 @@ export default function ProductBacklogPage() {
   // Inject ChromeHeader into the adapter at render time so it stays in sync
   // with product changes (without forcing the adapter hook to depend on JSX).
   //
-  // 2026-06-01: `allowedColumnIds` gates the column picker to ONLY columns
-  // that apply to business_requests (the slim 22-column schema). Hides the
-  // project-only columns (parent, sprint_release, labels, assignee, due_date,
-  // priority, reporter, comments) inherited from the project hub registry.
-  // BR-specific columns (theme, stakeholders, urgency-as-Priority, etc.)
-  // will be added to the registry in a follow-up PR; for now the product
-  // picker exposes only the columns that already exist AND apply to BRs.
+  // `allowedColumnIds` gates the column picker (and the columns rendered
+  // by default) to ONLY those that correspond to fields in the Create
+  // modal opened from the top "+ Create" button on this route — minus
+  // `Summary` and `Description` which are not column-worthy. `key` is the
+  // structural row identifier and is kept regardless so users can click
+  // into the detail view.
+  //
+  // Modal field → column id mapping (note label vs id where they differ):
+  //   Work Type   → 'request_type'    (column label: 'Type')
+  //   Status      → 'status'
+  //   Parent      → 'parent'
+  //   Priority    → 'priority'        (the BR adapter maps urgency → priority,
+  //                                    so this column reads the BR's urgency
+  //                                    value via the adapter; `urgency` column
+  //                                    is omitted to avoid two "Priority" rows
+  //                                    in the picker)
+  //   Sprint/Release → 'sprint_release'
+  //   Assignee    → 'assignee'        (adapter maps Delivery Manager → assignee_name)
+  //   Reporter    → 'reporter'        (adapter maps Product Owner → reporter_name)
+  //   Labels      → 'labels'
   const adapterWithChrome = {
     ...adapter,
     ChromeHeader: ProductChromeHeader,
     allowedColumnIds: [
-      'key',
-      'status',
-      'request_type',
-      'category',
-      'theme',
-      'urgency',
-      'planned_quarter',
-      'target_date',
-      'delivery_manager',
-      'product_owner',
-      'stakeholders',
-      'targeted_feature',
-      'created',
-      'updated',
+      'key',             // structural row identifier
+      'request_type',    // modal: Work Type (rendered as "Type")
+      'status',          // modal: Status
+      'parent',          // modal: Parent
+      'priority',        // modal: Priority
+      'sprint_release',  // modal: Sprint/Release
+      'assignee',        // modal: Assignee
+      'reporter',        // modal: Reporter
+      'labels',          // modal: Labels
     ] as const,
   };
 

@@ -1159,7 +1159,7 @@
 [dir="rtl"] .clmp-arch-v2-flow svg { transform: scaleX(-1); }
 
 .clmp-arch-core-v2 {
-  background: var(--ds-background-information-subtle, #E9F2FF);
+  background: var(--cp-bg-elevated, #FFFFFF);
   border: 2px solid var(--ds-border-information, #0055CC);
   border-radius: 10px;
   padding: 20px 14px 16px;

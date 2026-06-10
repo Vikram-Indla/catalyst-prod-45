@@ -56,7 +56,7 @@ export function useDesigns(workItemId: string | null | undefined): UseDesignsRes
   useEffect(() => {
     if (!enabled) return;
     const channel = supabase
-      .channel(`ph-designs:${workItemId}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`ph-designs:${workItemId}`)
       .on(
         'postgres_changes',
         {

@@ -15,7 +15,7 @@ export function useRealtimeNotifications(
     if (!userId) return;
 
     const channel = supabase
-      .channel(`notifications:${userId}`)
+      .channel(`notifications:${userId}-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {
