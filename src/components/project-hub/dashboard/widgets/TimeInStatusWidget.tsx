@@ -40,12 +40,31 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
 import TimeInStatusFullscreenModal from './TimeInStatusFullscreenModal';
+import TimeInStatusEtaStrip from './TimeInStatusEtaStrip';
 import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG } from '../dashboardTypography';
 
 // Project module: Business Request + Task explicitly hidden (per dashboard
 // guardrail — those types live in Product Hub / BAU TaskHub, not project
 // delivery). Story / Epic / Sub-task / Defect cover the project domain.
 const ISSUE_TYPES = ['Story', 'Epic', 'Sub-task', 'Defect'];
+
+// Phase 4 row 5 — outlier #1 (Predictive ETA). Mocked client-side cohort
+// table until tis-forecast-cohort edge fn ships in row 9. P50 per
+// (issue_type, status_name) in HOURS. Confidence is a flat constant for V1.
+const COHORT_P50_HOURS: Record<string, Record<string, number>> = {
+  Story:    { 'In Requirements': 168, 'Demand Validation': 96, 'In Design': 192, 'Prioritized Backlog': 240, 'In Development': 168, 'In Review': 48,  'Done': 0, 'On Hold': 720 },
+  Epic:     { 'In Requirements': 336, 'Demand Validation': 168,'In Design': 480, 'Prioritized Backlog': 720, 'In Development': 1440,'In Review': 96,  'Done': 0, 'On Hold': 1440 },
+  'Sub-task':{ 'In Requirements': 48, 'Demand Validation': 24, 'In Design': 96,  'Prioritized Backlog': 168, 'In Development': 96,  'In Review': 24,  'Done': 0, 'On Hold': 168 },
+  Defect:   { 'In Requirements': 24,  'Demand Validation': 24, 'In Design': 48,  'Prioritized Backlog': 96,  'In Development': 72,  'In Review': 24,  'Done': 0, 'On Hold': 96 },
+};
+const MOCK_CONFIDENCE = 0.71;
+function getCohortP50Hours(issueType: string, statusName: string): number | null {
+  const row = COHORT_P50_HOURS[issueType];
+  if (!row) return null;
+  const v = row[statusName];
+  if (v == null || v <= 0) return null;
+  return v;
+}
 
 /**
  * Map Jira status_category (+ status name for blocked / on hold carve-out)
@@ -490,37 +509,49 @@ export default function TimeInStatusWidget({
                         }}
                       >
                         {ms > 0 ? (
-                          <Tooltip
-                            content={
-                              visits > 1
-                                ? `In ${s.name}: ${fmtDuration(ms)} across ${visits} visits`
-                                : `In ${s.name}: ${fmtDuration(ms)}`
-                            }
-                            position="top"
-                          >
-                            {(tp) => (
-                              <span
-                                {...tp}
-                                style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
-                              >
-                                {fmtDuration(ms)}
-                                {visits > 1 && (
-                                  <span
-                                    style={{
-                                      ...LABEL,
-                                      color: 'var(--ds-text-accent-red, #AE2A19)',
-                                      padding: '0 4px',
-                                      borderRadius: 'var(--ds-border-radius, 4px)',
-                                      background: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
-                                    }}
-                                    aria-label={`${visits} visits`}
-                                  >
-                                    ×{visits}
-                                  </span>
-                                )}
-                              </span>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                            <Tooltip
+                              content={
+                                visits > 1
+                                  ? `In ${s.name}: ${fmtDuration(ms)} across ${visits} visits`
+                                  : `In ${s.name}: ${fmtDuration(ms)}`
+                              }
+                              position="top"
+                            >
+                              {(tp) => (
+                                <span
+                                  {...tp}
+                                  style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                                >
+                                  {fmtDuration(ms)}
+                                  {visits > 1 && (
+                                    <span
+                                      style={{
+                                        ...LABEL,
+                                        color: 'var(--ds-text-accent-red, #AE2A19)',
+                                        padding: '0 4px',
+                                        borderRadius: 'var(--ds-border-radius, 4px)',
+                                        background: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
+                                      }}
+                                      aria-label={`${visits} visits`}
+                                    >
+                                      ×{visits}
+                                    </span>
+                                  )}
+                                </span>
+                              )}
+                            </Tooltip>
+                            {/* Phase 4 row 5 — outlier #1 ETA strip.
+                                Only render on in_progress category cells —
+                                done/todo cells aren't forecasting candidates. */}
+                            {s.category === 'in_progress' && (
+                              <TimeInStatusEtaStrip
+                                currentMs={ms}
+                                p50Hours={getCohortP50Hours(issueType, s.name)}
+                                confidence={MOCK_CONFIDENCE}
+                              />
                             )}
-                          </Tooltip>
+                          </div>
                         ) : (
                           <span style={{ color: token('color.text.disabled', '#B3B9C4') }}>—</span>
                         )}
