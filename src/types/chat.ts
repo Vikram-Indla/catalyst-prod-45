@@ -5,7 +5,9 @@ export interface ChatConversation {
   id: string;
   kind: ChatConversationKind;
   ticketKey: string | null;
+  ticketType: string | null;
   projectKey: string | null;
+  projectName: string | null;
   title: string;
   isArchived: boolean;
   lastMessageAt: string | null;

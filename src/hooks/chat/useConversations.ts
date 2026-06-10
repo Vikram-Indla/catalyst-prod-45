@@ -61,6 +61,38 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
       .map((m) => ({ member: m, conv: pickConversation(m.chat_conversations) }))
       .filter((x): x is { member: MemberRow; conv: ConversationRow } => !!x.conv);
 
+    // Batch-enrich: project names from ph_jira_projects, issue types from ph_issues.
+    const projectKeys = [...new Set(rows.map(r => r.conv.project_key).filter(Boolean))] as string[];
+    const ticketKeys = [...new Set(rows.filter(r => r.conv.kind === 'ticket').map(r => r.conv.ticket_key).filter(Boolean))] as string[];
+
+    const projectNameMap: Record<string, string> = {};
+    const ticketTypeMap: Record<string, string> = {};
+
+    await Promise.all([
+      projectKeys.length > 0
+        ? supabase
+            .from('ph_jira_projects')
+            .select('project_key, name')
+            .in('project_key', projectKeys)
+            .then(({ data }) => {
+              (data ?? []).forEach((p: { project_key: string; name: string }) => {
+                if (p.project_key) projectNameMap[p.project_key] = p.name;
+              });
+            })
+        : Promise.resolve(),
+      ticketKeys.length > 0
+        ? supabase
+            .from('ph_issues')
+            .select('issue_key, issue_type')
+            .in('issue_key', ticketKeys)
+            .then(({ data }) => {
+              (data ?? []).forEach((i: { issue_key: string; issue_type: string }) => {
+                if (i.issue_key) ticketTypeMap[i.issue_key] = i.issue_type;
+              });
+            })
+        : Promise.resolve(),
+    ]);
+
     const conversations = await Promise.all(
       rows.map(async ({ member, conv }) => {
         let unreadCount = 0;
@@ -82,7 +114,9 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
           id: conv.id,
           kind: (conv.kind ?? 'channel') as ChatConversationKind,
           ticketKey: conv.ticket_key ?? null,
+          ticketType: conv.ticket_key ? (ticketTypeMap[conv.ticket_key] ?? null) : null,
           projectKey: conv.project_key ?? null,
+          projectName: conv.project_key ? (projectNameMap[conv.project_key] ?? null) : null,
           title: conv.title ?? '',
           isArchived: !!conv.is_archived,
           lastMessageAt: conv.last_message_at ?? null,

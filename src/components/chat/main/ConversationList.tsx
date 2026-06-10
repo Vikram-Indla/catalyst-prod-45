@@ -405,7 +405,7 @@ function ConversationItemRow({
       )}
       {variant === 'ticket' && (
         <span className="cc-item-icon">
-          <JiraIssueTypeIcon type={(c.ticketType as any) ?? 'Task'} size={14} />
+          <JiraIssueTypeIcon type={c.ticketType ?? 'Task'} size={14} />
         </span>
       )}
       {variant === 'dm' && presence && (
@@ -420,7 +420,13 @@ function ConversationItemRow({
       {/* Content — title, preview, timestamp */}
       <div className="cc-item-content">
         <div className="cc-item-header">
-          <span className="cc-item-title">{c.title}</span>
+          <span className="cc-item-title">
+            {variant === 'channel'
+              ? (c.projectName ?? c.title)
+              : variant === 'ticket' && c.ticketKey
+              ? c.ticketKey
+              : c.title}
+          </span>
           {c.lastMessageAt && (
             <span className="cc-item-timestamp">{formatRelative(c.lastMessageAt)}</span>
           )}

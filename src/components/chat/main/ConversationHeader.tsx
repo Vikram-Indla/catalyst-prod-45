@@ -134,7 +134,7 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
 
   const glyph = isTicket ? (
     <span className="cc-typesq cc-conv-head__typesq">
-      <JiraIssueTypeIcon type="Story" size={12} />
+      <JiraIssueTypeIcon type={conversation.ticketType ?? 'Task'} size={12} />
     </span>
   ) : isChannel ? (
     <ProjectIcon projectKey={conversation.projectKey ?? ''} size="medium" />
@@ -142,8 +142,11 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
     <Avatar name={conversation.title} seed={conversation.id} size={28} />
   );
 
+  // Channels: show full project name (from ph_jira_projects.name), not the slug.
+  // Sidebar can abbreviate; main panel always shows the full readable name.
+  const channelDisplayName = conversation.projectName ?? conversation.title;
   const titleText = isChannel
-    ? `#${conversation.title.replace(/^#\s*/, '')}`
+    ? channelDisplayName
     : conversation.title;
 
   return (
