@@ -27,8 +27,7 @@
  *     forwarded to the workload hook + the click-through.
  *   - Loading skeleton + EmptyState fallback.
  */
-import { useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { WidgetProps } from '../widget-types';
 import WidgetWrapper from '../WidgetWrapper';
 import {
@@ -75,7 +74,17 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
     priorityFilter: settings.priorityFilter,
   });
   const { openUWV } = useUWV();
-  const navigate = useNavigate();
+  // Detect native fullscreen of this widget's card. When fullscreen, drop the
+  // 10-row cap so all teammates are visible in the maximised view.
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  useEffect(() => {
+    const onChange = () => {
+      const el = document.fullscreenElement as HTMLElement | null;
+      setIsFullscreen(!!el?.matches?.('[data-widget-id]'));
+    };
+    document.addEventListener('fullscreenchange', onChange);
+    return () => document.removeEventListener('fullscreenchange', onChange);
+  }, []);
 
   // Workflow-aware status filter — preserved verbatim. Long staleTime —
   // workflow definitions change rarely.
@@ -144,10 +153,18 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
       onToggleCollapse={onToggleCollapse}
       onExpand={handleExpand}
       headerBadges={<WidgetGearButton gadgetType="workload" projectKey={projectKey} projectId={projectId} />}
-      footer={overflow > 0 ? (
+      footer={overflow > 0 && !isFullscreen ? (
         <button
           type="button"
-          onClick={() => navigate(`/project-hub/${projectKey}/allwork`)}
+          onClick={(e) => {
+            const card = (e.currentTarget as HTMLElement).closest('[data-widget-id]') as HTMLElement | null;
+            if (!card) return;
+            if (document.fullscreenElement) {
+              document.exitFullscreen().catch(() => {});
+            } else {
+              card.requestFullscreen().catch(() => {});
+            }
+          }}
           style={{
             background: 'transparent',
             border: 0,
@@ -160,7 +177,7 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
             gap: 4,
           }}
         >
-          View all {sorted.length} teammates ↗
+          View all {sorted.length} teammates · open fullscreen ⤢
         </button>
       ) : undefined}
     >
@@ -195,7 +212,7 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
 
           {/* ── Workload rows ─────────────────────────────────────────── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {sorted.slice(0, ROW_CAP).map((w) => {
+            {(isFullscreen ? sorted : sorted.slice(0, ROW_CAP)).map((w) => {
               const accountId = (w as any).assignee_account_id ?? '';
               const role = roleMap?.get(accountId)?.role ?? null;
               const profileId = roleMap?.get(accountId)?.profile_id ?? null;
