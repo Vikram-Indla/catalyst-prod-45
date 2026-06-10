@@ -33,6 +33,7 @@ import {
 } from '@/components/ads';
 // 2026-06-09 — ADS wrapper for shrink-wrap behaviour.
 import { Lozenge as AkLozenge } from '@/components/ads';
+import { StatusPill as JiraStatusPill } from '@/components/shared/JiraTable/cells';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
@@ -109,16 +110,18 @@ function fmtDuration(ms: number | undefined): string {
   return `${sec}s`;
 }
 
+// 2026-06-10 — Jira-canonical cell tints (alpha-mixed pill colors).
+// Matches TimeInStatusWidget.
 function categoryBg(category: 'todo' | 'in_progress' | 'done' | undefined, ms: number): string {
   if (!ms || ms <= 0) return 'transparent';
   switch (category) {
     case 'in_progress':
-      return 'var(--ds-background-accent-blue-subtler, #CCE0FF)';
+      return 'rgba(143, 184, 246, 0.22)';
     case 'done':
-      return 'var(--ds-background-accent-green-subtler, #BAF3DB)';
+      return 'rgba(179, 223, 114, 0.30)';
     case 'todo':
     default:
-      return 'var(--ds-background-accent-gray-subtler, #DCDFE4)';
+      return 'rgba(221, 222, 225, 0.55)';
   }
 }
 
@@ -346,13 +349,11 @@ export default function TimeInStatusFullscreenModal({
                             borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                           }}
                         >
-                          {/* 2026-06-10 Fix 1 — drop isBold (banned per
-                              CLAUDE.md: isBold on Lozenge → H4=0). Default
-                              non-bold lozenge uses ADS category colours,
-                              NOT black. */}
-                          <AkLozenge appearance={lozengeAppearance(s.category, s.name)}>
+                          {/* 2026-06-10 — Jira-canonical StatusPill
+                              (cornflower/lime/gray DOM-probed hexes). */}
+                          <JiraStatusPill appearance={lozengeAppearance(s.category, s.name)}>
                             {s.name}
-                          </AkLozenge>
+                          </JiraStatusPill>
                         </th>
                       ))}
                       <th

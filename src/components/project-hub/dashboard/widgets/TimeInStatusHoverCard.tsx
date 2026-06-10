@@ -56,15 +56,18 @@ export interface TimeInStatusHoverCardProps {
   patternDescription?: string;
 }
 
+// 2026-06-10 — Jira-canonical pill colors (DOM-probed 2026-05-16 per
+// JiraTable cells.tsx). Same hexes as the matrix cell pills + tints —
+// keeps the hover card visually consistent with what triggered it.
 const CATEGORY_BG: Record<string, string> = {
-  todo: 'var(--ds-background-accent-gray-subtler, #DCDFE4)',
-  in_progress: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
-  done: 'var(--ds-background-accent-green-subtler, #BAF3DB)',
+  todo: '#DDDEE1',         // gray
+  in_progress: '#8FB8F6',  // cornflower
+  done: '#B3DF72',         // lime
 };
 const CATEGORY_FG: Record<string, string> = {
-  todo: 'var(--ds-text-subtle, #42526E)',
-  in_progress: 'var(--ds-text-accent-blue, #0055CC)',
-  done: 'var(--ds-text-accent-green, #216E4E)',
+  todo: 'rgb(41, 42, 46)',
+  in_progress: 'rgb(41, 42, 46)',
+  done: 'rgb(41, 42, 46)',
 };
 
 export function TimeInStatusHoverCard({
