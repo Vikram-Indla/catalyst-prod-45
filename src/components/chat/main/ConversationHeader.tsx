@@ -278,22 +278,8 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
         )}
       </button>
 
-      {/* Huddle stub — #19 */}
-      <button
-        type="button"
-        className="cc-iconbtn"
-        aria-label="Start huddle (coming soon)"
-        title="Huddle — coming soon"
-        onClick={() => {
-          alert('Huddles are coming soon to Catalyst Chat.');
-        }}
-      >
-        <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2}>
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.26 12 19.79 19.79 0 0 1 1.15 3.32 2 2 0 0 1 3.12 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.58a16 16 0 0 0 6 6l.36-.36a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21 16.92z" />
-        </svg>
-      </button>
 
-      <div
+<div
         ref={menuWrapRef}
         style={{ position: 'relative', display: 'inline-block' }}
       >
