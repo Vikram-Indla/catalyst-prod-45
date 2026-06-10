@@ -1775,3 +1775,14 @@ Applies to every response, every agent, every skill.
 27. **End with the single next action**, not a recap.
 
 **Severity:** P0 — applies before all other communication conventions including caveman mode formatting (caveman trims words; these rules govern stance).
+
+---
+
+## 2026-06-10 — audit.js CLI guard silently no-oped on this machine (smart-apostrophe path); always negative-test the audit CLI
+
+**Surface:** design-governance/rules/audit.js CLI invocation (local dev + any script calling `node audit.js <path>`)
+**Pattern:** The CLI guard `import.meta.url === \`file://${process.argv[1]}\`` never matched because the repo's real path contains U+2019, which is percent-encoded in `import.meta.url` but raw in `process.argv[1]`. Every local `node design-governance/rules/audit.js <path>` invocation exited 0 having scanned NOTHING — the same silent-pass failure class as the 2026-05-19 audit fraud, but at the CLI entry layer. CI was unaffected (runner paths are ASCII). Found by a subagent that noticed the audit "passed" instantly on a file with known violations.
+**Fix (4357aa8a7):** compare `fs.realpathSync(fileURLToPath(import.meta.url))` to `fs.realpathSync(process.argv[1])` in a try/catch returning false.
+**Rule:** After any change to audit infrastructure (or when running it on a new machine), run a NEGATIVE test first: point the CLI at a file with known violations and confirm violations print. An instant "✅ PASSED" on a known-bad file means the tool didn't run. Also: never compare `import.meta.url` to argv with string interpolation — always `fileURLToPath` + realpath.
+**Open question flagged (not changed):** spacing-grid violations print but do not fail the exit code even in STRICT mode — pre-existing gate policy; needs explicit Vikram decision whether spacing should block.
+**Severity:** P0 (every local audit run on this machine was a no-op; pre-commit hook signal was fake)
