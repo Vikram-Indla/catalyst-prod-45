@@ -105,6 +105,18 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
     [conversations],
   );
 
+  const {
+    messages,
+    isLoading: messagesLoading,
+    hasMore,
+    loadMore,
+    sendMessage,
+    editMessage,
+    deleteMessage,
+    toggleReaction,
+    currentUserId,
+  } = useMessages(resolvedActiveId ?? null);
+
   const { data: memberRows = [] } = useConversationMembers(resolvedActiveId ?? null);
   const currentUserMuted = useMemo(
     () => memberRows.find((m) => m.userId === currentUserId)?.isMuted ?? false,
@@ -134,18 +146,6 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
       })),
     [memberRows, presenceMap],
   );
-
-  const {
-    messages,
-    isLoading: messagesLoading,
-    hasMore,
-    loadMore,
-    sendMessage,
-    editMessage,
-    deleteMessage,
-    toggleReaction,
-    currentUserId,
-  } = useMessages(resolvedActiveId ?? null);
 
   // In-conversation search — full-text via Postgres tsvector
   const { results: searchResults, isSearching, search: runSearch } = useMessageSearch(
