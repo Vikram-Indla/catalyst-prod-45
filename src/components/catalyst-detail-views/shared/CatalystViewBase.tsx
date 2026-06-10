@@ -27,6 +27,8 @@ import { Skel } from '@/modules/project-work-hub/components/dialogs/story-detail
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
+import { useStartTicketThread } from '@/hooks/chat/useStartTicketThread';
+import { openConversationInDock } from '@/lib/chat-dock-bridge';
 
 /* ═══════════════════════════════════════════
    ANIMATIONS — injected once
@@ -167,6 +169,24 @@ export function CatalystViewBase({
   const [moreAnchor, setMoreAnchor] = useState<DOMRect | null>(null);
   const moreTriggerRef = useRef<HTMLButtonElement>(null);
   const isDraggingRef = useRef(false);
+
+  /* Discuss CTA — find-or-create the ticket-anchored chat thread and open
+     the global chat dock on it. Inherited by ALL detail views via the ⋯ menu.
+     Reuses chat_get_or_create_ticket_thread RPC (migration 20260608000100). */
+  const startThread = useStartTicketThread();
+  const handleDiscuss = useCallback(async () => {
+    if (!itemKey || startThread.isPending) return;
+    try {
+      const convId = await startThread.mutateAsync(itemKey);
+      openConversationInDock(convId);
+    } catch (e) {
+      console.error('Discuss failed:', e);
+    }
+  }, [itemKey, startThread]);
+  const effectiveMoreMenuItems = [
+    ...(itemKey ? [{ label: 'Discuss', onClick: handleDiscuss }] : []),
+    ...(moreMenuItems ?? []),
+  ];
 
   /* G4: Track recently visited issues in localStorage (catalyst-recent-issues).
      Push when the issue key changes and the panel is open. */
@@ -486,7 +506,7 @@ export function CatalystViewBase({
               />
             </Tooltip>
 
-            {moreMenuItems && moreMenuItems.length > 0 && (
+            {effectiveMoreMenuItems.length > 0 && (
               <>
                 <button
                   ref={moreTriggerRef}
@@ -529,7 +549,7 @@ export function CatalystViewBase({
                       border: '1px solid var(--ds-border, #DFE1E6)',
                     }}
                   >
-                    {moreMenuItems.filter(item => !item.danger).map((item, i) => (
+                    {effectiveMoreMenuItems.filter(item => !item.danger).map((item, i) => (
                       <button key={i} onClick={() => { item.onClick(); setMoreOpen(false); }}
                         style={{
                           display: 'block', width: '100%', textAlign: 'left',
@@ -540,10 +560,10 @@ export function CatalystViewBase({
                         onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                       >{item.label}</button>
                     ))}
-                    {moreMenuItems.some(item => item.danger) && (
+                    {effectiveMoreMenuItems.some(item => item.danger) && (
                       <>
                         <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
-                        {moreMenuItems.filter(item => item.danger).map((item, i) => (
+                        {effectiveMoreMenuItems.filter(item => item.danger).map((item, i) => (
                           <button key={i} onClick={() => { item.onClick(); setMoreOpen(false); }}
                             style={{
                               display: 'block', width: '100%', textAlign: 'left',
