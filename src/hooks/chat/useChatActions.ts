@@ -97,6 +97,26 @@ export function useChatSetNotificationPref() {
   });
 }
 
+export function useChatToggleStar() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ convId, starred }: { convId: string; starred: boolean }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      const { error } = await (supabase as any)
+        .from('chat_conversation_members')
+        .update({ is_starred: starred })
+        .eq('conversation_id', convId)
+        .eq('user_id', user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['chat', 'conversations'] });
+      qc.invalidateQueries({ queryKey: ['chat', 'members'] });
+    },
+  });
+}
+
 export function useChatRemoveMember() {
   const qc = useQueryClient();
   return useMutation({

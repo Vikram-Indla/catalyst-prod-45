@@ -13,7 +13,7 @@
  *   ?rail=<home|dms|activity|later|more|threads> → rail selection
  *   (legacy values mentions/saved/people map to activity/later/more)
  */
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useConversations } from '@/hooks/chat/useConversations';
 import { useMessages } from '@/hooks/chat/useMessages';
@@ -70,6 +70,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
   const [showHint, setShowHint] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [convTab, setConvTab] = useState<'messages' | 'files' | 'pins'>('messages');
+  const [catySummary, setCatySummary] = useState<{ open: boolean; loading: boolean; text: string }>({ open: false, loading: false, text: '' });
 
   useEffect(() => {
     const hasSeenHint = localStorage.getItem('catalyst.chat.hint-seen');
@@ -99,6 +100,14 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
   );
 
   const { data: memberRows = [] } = useConversationMembers(resolvedActiveId ?? null);
+  const currentUserMuted = useMemo(
+    () => memberRows.find((m) => m.userId === currentUserId)?.isMuted ?? false,
+    [memberRows, currentUserId],
+  );
+  const currentUserStarred = useMemo(
+    () => memberRows.find((m) => m.userId === currentUserId)?.isStarred ?? false,
+    [memberRows, currentUserId],
+  );
   const { data: pins = [] } = useConversationPins(resolvedActiveId ?? null);
   const togglePin = useTogglePin();
 
@@ -131,6 +140,22 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
     toggleReaction,
     currentUserId,
   } = useMessages(resolvedActiveId ?? null);
+
+  const handleAskCaty = useCallback(async () => {
+    if (!resolvedActiveId) return;
+    setCatySummary({ open: true, loading: true, text: '' });
+    try {
+      const snippet = messages.slice(-30).map((m) => `${m.authorName}: ${m.bodyText}`).join('\n');
+      const { data, error } = await (supabase as any).functions.invoke('ai-digest', {
+        body: { action: 'summarize_chat', content: snippet, conversationId: resolvedActiveId },
+      });
+      if (error) throw error;
+      const text = (data as any)?.summary ?? (data as any)?.text ?? (data as any)?.content ?? 'No summary available.';
+      setCatySummary({ open: true, loading: false, text });
+    } catch {
+      setCatySummary({ open: true, loading: false, text: 'Unable to summarize this conversation right now.' });
+    }
+  }, [resolvedActiveId, messages]);
 
   const handleSelect = (id: string) => {
     if (onSelectConversation) onSelectConversation(id);
@@ -237,7 +262,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
     ) : (
       <>
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
-          <ConversationHeader conversation={activeConversation} members={members} />
+          <ConversationHeader conversation={activeConversation} members={members} currentUserMuted={currentUserMuted} currentUserStarred={currentUserStarred} onAskCaty={handleAskCaty} />
 
           {showHint && (
             <div
@@ -454,6 +479,48 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
       <div className="cc-conv" style={{ display: 'flex', flex: 1, minWidth: 0 }}>
         {mainPane}
       </div>
+
+      {/* CATY channel summarize modal (#20) */}
+      {catySummary.open && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(9,30,66,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 2000,
+          }}
+          onClick={() => setCatySummary({ open: false, loading: false, text: '' })}
+        >
+          <div
+            style={{
+              background: 'var(--ds-surface-overlay, #FFFFFF)',
+              borderRadius: 8,
+              boxShadow: '0 8px 32px rgba(9,30,66,0.24)',
+              width: 520,
+              maxWidth: '90vw',
+              maxHeight: '70vh',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Rainbow AI header */}
+            <div style={{ padding: '2px', background: 'conic-gradient(from 0deg, #FF3CAC, #784BA0, #2B86C5, #00C9FF, #92FE9D, #FFD700, #FF3CAC)', borderRadius: '8px 8px 0 0', flexShrink: 0 }}>
+              <div style={{ background: 'var(--ds-surface-overlay, #FFFFFF)', padding: '12px 16px', borderRadius: '6px 6px 0 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>✦ Ask Caty — Channel Summary</span>
+                <button type="button" onClick={() => setCatySummary({ open: false, loading: false, text: '' })} style={{ marginLeft: 'auto', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 16, lineHeight: 1 }} aria-label="Close">✕</button>
+              </div>
+            </div>
+            <div style={{ padding: 16, overflowY: 'auto', flex: 1, fontSize: 14, color: 'var(--ds-text, #172B4D)', lineHeight: 1.6 }}>
+              {catySummary.loading ? (
+                <div style={{ color: 'var(--ds-text-subtle, #44546F)', fontStyle: 'italic' }}>Thinking…</div>
+              ) : (
+                <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit', margin: 0 }}>{catySummary.text}</pre>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

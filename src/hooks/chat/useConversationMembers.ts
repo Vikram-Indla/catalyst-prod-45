@@ -18,6 +18,7 @@ export interface ConversationMember {
   joinedAt: string;
   lastReadAt: string | null;
   isMuted: boolean;
+  isStarred: boolean;
 }
 
 const db = supabase as unknown as { from: (table: string) => any };
@@ -28,6 +29,7 @@ interface MemberRow {
   joined_at: string;
   last_read_at: string | null;
   is_muted: boolean | null;
+  is_starred: boolean | null;
   profiles: {
     id: string;
     full_name: string | null;
@@ -44,7 +46,7 @@ async function fetchMembers(conversationId: string): Promise<ConversationMember[
   const { data, error } = await db
     .from('chat_conversation_members')
     .select(`
-      user_id, role, joined_at, last_read_at, is_muted,
+      user_id, role, joined_at, last_read_at, is_muted, is_starred,
       profiles:user_id ( id, full_name, email )
     `)
     .eq('conversation_id', conversationId)
@@ -63,6 +65,7 @@ async function fetchMembers(conversationId: string): Promise<ConversationMember[
         joinedAt: row.joined_at,
         lastReadAt: row.last_read_at,
         isMuted: !!row.is_muted,
+        isStarred: !!row.is_starred,
       };
     });
 }

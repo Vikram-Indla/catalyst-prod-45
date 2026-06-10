@@ -17,6 +17,7 @@ import {
   useChatLeave,
   useChatMarkRead,
   useChatSetNotificationPref,
+  useChatToggleStar,
 } from '@/hooks/chat/useChatActions';
 import { AddPeopleModal } from './AddPeopleModal';
 import { RosterPanel } from './RosterPanel';
@@ -26,6 +27,8 @@ export interface ConversationHeaderProps {
   conversation: ChatConversation | null;
   members?: ChatPerson[];
   onAskCaty?: () => void;
+  currentUserMuted?: boolean;
+  currentUserStarred?: boolean;
 }
 
 const PRESENCE_MAP: Record<string, PresenceColor> = {
@@ -77,7 +80,7 @@ function ConversationMenuItem({
   );
 }
 
-export function ConversationHeader({ conversation, members = [], onAskCaty }: ConversationHeaderProps) {
+export function ConversationHeader({ conversation, members = [], onAskCaty, currentUserMuted = false, currentUserStarred = false }: ConversationHeaderProps) {
   const [addOpen, setAddOpen] = useState(false);
   const [rosterOpen, setRosterOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -85,6 +88,7 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
   const archive = useChatArchive();
   const unarchive = useChatUnarchive();
   const mute = useChatSetMute();
+  const toggleStar = useChatToggleStar();
   const leave = useChatLeave();
   const markRead = useChatMarkRead();
   const setNotifPref = useChatSetNotificationPref();
@@ -232,6 +236,46 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
           affordance. Now lives as a contextual menu item below, enabled
           only when there are messages to act on. */}
 
+      {/* Bell — mute toggle shortcut */}
+      <button
+        type="button"
+        className="cc-iconbtn"
+        aria-label={currentUserMuted ? 'Unmute notifications' : 'Mute notifications'}
+        title={currentUserMuted ? 'Unmute notifications' : 'Mute notifications'}
+        onClick={() => conversation && mute.mutate({ convId: conversation.id, muted: !currentUserMuted })}
+        style={{ color: currentUserMuted ? 'var(--ds-text-subtlest, #6B778C)' : 'inherit', position: 'relative' }}
+      >
+        {currentUserMuted ? (
+          <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2}>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            <path d="M18.63 13A17.89 17.89 0 0 1 18 8" />
+            <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14" />
+            <path d="M18 8a6 6 0 0 0-9.33-5" />
+            <line x1="1" y1="1" x2="23" y2="23" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2}>
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          </svg>
+        )}
+      </button>
+
+      {/* Huddle stub — #19 */}
+      <button
+        type="button"
+        className="cc-iconbtn"
+        aria-label="Start huddle (coming soon)"
+        title="Huddle — coming soon"
+        onClick={() => {
+          alert('Huddles are coming soon to Catalyst Chat.');
+        }}
+      >
+        <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2}>
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.26 12 19.79 19.79 0 0 1 1.15 3.32 2 2 0 0 1 3.12 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.58a16 16 0 0 0 6 6l.36-.36a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21 16.92z" />
+        </svg>
+      </button>
+
       <div
         ref={menuWrapRef}
         style={{ position: 'relative', display: 'inline-block' }}
@@ -295,8 +339,12 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
               onClick={() => { markRead.mutate(conversation.id); setMenuOpen(false); }}
             />
             <ConversationMenuItem
-              label="Mute conversation"
-              onClick={() => { mute.mutate({ convId: conversation.id, muted: true }); setMenuOpen(false); }}
+              label={currentUserStarred ? 'Unstar conversation' : 'Star conversation'}
+              onClick={() => { toggleStar.mutate({ convId: conversation.id, starred: !currentUserStarred }); setMenuOpen(false); }}
+            />
+            <ConversationMenuItem
+              label={currentUserMuted ? 'Unmute conversation' : 'Mute conversation'}
+              onClick={() => { mute.mutate({ convId: conversation.id, muted: !currentUserMuted }); setMenuOpen(false); }}
             />
             <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
             <div style={{ padding: '4px 10px', fontSize: 11, color: 'var(--ds-text-subtle, #44546F)', textTransform: 'none' }}>
