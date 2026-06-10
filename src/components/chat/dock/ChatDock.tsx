@@ -21,6 +21,7 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { useConversations } from '@/hooks/chat/useConversations';
 import type { ChatConversation, ChatPresence } from '@/types/chat';
 import catalystChatIcon from '@/assets/catalyst-chat-icon.svg';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { CatyPanel } from './CatyPanel';
 import { DockDirectory } from './DockDirectory';
 import { DockConversationPane } from './DockConversationPane';
@@ -108,10 +109,9 @@ function ConvGlyph({ conversation }: { conversation: ChatConversation }) {
     );
   }
   if (conversation.kind === 'ticket') {
-    const num = (conversation.ticketKey ?? conversation.title).split('-').pop() ?? '';
     return (
-      <span style={{ ...tileBase, fontSize: 9, background: 'var(--ds-background-brand-bold, #0C66E4)' }}>
-        {num.slice(0, 4)}
+      <span style={{ ...tileBase, background: 'transparent' }}>
+        <JiraIssueTypeIcon type={conversation.ticketType ?? 'Task'} size={20} />
       </span>
     );
   }
