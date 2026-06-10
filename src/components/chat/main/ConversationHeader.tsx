@@ -27,6 +27,7 @@ export interface ConversationHeaderProps {
   conversation: ChatConversation | null;
   members?: ChatPerson[];
   onAskCaty?: () => void;
+  onOpenSearch?: () => void;
   currentUserMuted?: boolean;
   currentUserStarred?: boolean;
 }
@@ -80,7 +81,7 @@ function ConversationMenuItem({
   );
 }
 
-export function ConversationHeader({ conversation, members = [], onAskCaty, currentUserMuted = false, currentUserStarred = false }: ConversationHeaderProps) {
+export function ConversationHeader({ conversation, members = [], onAskCaty, onOpenSearch, currentUserMuted = false, currentUserStarred = false }: ConversationHeaderProps) {
   const [addOpen, setAddOpen] = useState(false);
   const [rosterOpen, setRosterOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -235,6 +236,22 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, curr
           On empty channels the button has nothing to summarize — dead
           affordance. Now lives as a contextual menu item below, enabled
           only when there are messages to act on. */}
+
+      {/* Search — in-conversation search */}
+      {onOpenSearch && (
+        <button
+          type="button"
+          className="cc-iconbtn"
+          aria-label="Search in conversation"
+          title="Search messages"
+          onClick={onOpenSearch}
+        >
+          <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2}>
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </button>
+      )}
 
       {/* Bell — mute toggle shortcut */}
       <button

@@ -19,6 +19,7 @@ import { useConversations } from '@/hooks/chat/useConversations';
 import { useMessages } from '@/hooks/chat/useMessages';
 import { useConversationMembers } from '@/hooks/chat/useConversationMembers';
 import { useConversationPins, useTogglePin } from '@/hooks/chat/usePinsBookmarks';
+import { useMessageSearch } from '@/hooks/chat/useMessageSearch';
 import type { ChatPerson } from '@/types/chat';
 import { supabase } from '@/integrations/supabase/client';
 import { ConversationHeader } from './main/ConversationHeader';
@@ -71,6 +72,9 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [convTab, setConvTab] = useState<'messages' | 'files' | 'pins'>('messages');
   const [catySummary, setCatySummary] = useState<{ open: boolean; loading: boolean; text: string }>({ open: false, loading: false, text: '' });
+  // In-conversation search (#13)
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   // Realtime presence: map userId → 'online' | 'offline'
   const [presenceMap, setPresenceMap] = useState<Record<string, 'online' | 'offline'>>({});
 
@@ -142,6 +146,17 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
     toggleReaction,
     currentUserId,
   } = useMessages(resolvedActiveId ?? null);
+
+  // In-conversation search — full-text via Postgres tsvector
+  const { results: searchResults, isSearching, search: runSearch } = useMessageSearch(
+    searchOpen ? resolvedActiveId : null,
+  );
+
+  // Close search when switching conversations
+  useEffect(() => { setSearchOpen(false); setSearchQuery(''); }, [resolvedActiveId]);
+
+  // Trigger search on query change (debounced via hook's internal runId)
+  useEffect(() => { if (searchOpen && searchQuery.trim().length >= 2) runSearch(searchQuery); }, [searchOpen, searchQuery, runSearch]);
 
   const handleAskCaty = useCallback(async () => {
     if (!resolvedActiveId) return;
@@ -293,7 +308,93 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
     ) : (
       <>
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
-          <ConversationHeader conversation={activeConversation} members={members} currentUserMuted={currentUserMuted} currentUserStarred={currentUserStarred} onAskCaty={handleAskCaty} />
+          <ConversationHeader
+            conversation={activeConversation}
+            members={members}
+            currentUserMuted={currentUserMuted}
+            currentUserStarred={currentUserStarred}
+            onAskCaty={handleAskCaty}
+            onOpenSearch={resolvedActiveId ? () => setSearchOpen((v) => !v) : undefined}
+          />
+          {/* In-conversation search bar (#13) */}
+          {searchOpen && (
+            <div style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface, #FFFFFF)', padding: '8px 16px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth={2} style={{ flexShrink: 0 }}>
+                  <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input
+                  autoFocus
+                  type="search"
+                  placeholder="Search messages…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Escape') { setSearchOpen(false); setSearchQuery(''); } }}
+                  style={{
+                    flex: 1,
+                    border: 'none',
+                    outline: 'none',
+                    background: 'transparent',
+                    fontSize: 13,
+                    color: 'var(--ds-text, #172B4D)',
+                  }}
+                />
+                {isSearching && <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>Searching…</span>}
+                <button
+                  type="button"
+                  onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 16, lineHeight: 1, padding: '0 4px' }}
+                  aria-label="Close search"
+                >×</button>
+              </div>
+              {searchQuery.trim().length >= 2 && (
+                <div style={{ marginTop: 8, maxHeight: 320, overflowY: 'auto', borderRadius: 4, border: '1px solid var(--ds-border, #DFE1E6)' }}>
+                  {searchResults.length === 0 && !isSearching ? (
+                    <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                      No messages found for "{searchQuery}"
+                    </div>
+                  ) : (
+                    searchResults.map((r) => (
+                      <button
+                        key={r.message.id}
+                        type="button"
+                        onClick={() => {
+                          setSearchOpen(false);
+                          setSearchQuery('');
+                          // Scroll to the message if in the same conversation
+                          const el = document.getElementById(`chat-msg-${r.message.id}`);
+                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }}
+                        style={{
+                          display: 'block',
+                          width: '100%',
+                          textAlign: 'left',
+                          padding: '8px 16px',
+                          background: 'transparent',
+                          border: 'none',
+                          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+                          cursor: 'pointer',
+                          fontSize: 13,
+                        }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)'; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                      >
+                        <span style={{ fontWeight: 500, color: 'var(--ds-text, #172B4D)', marginRight: 8 }}>{r.message.authorName}</span>
+                        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                          {new Date(r.message.createdAt).toLocaleDateString()}
+                        </span>
+                        <div style={{ marginTop: 2, color: 'var(--ds-text-subtle, #44546F)' }}>
+                          {r.snippetBefore}
+                          <strong style={{ color: 'var(--ds-text, #172B4D)' }}>{r.matchedText}</strong>
+                          {r.snippetAfter || r.message.bodyText.slice(0, 80)}
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {showHint && (
             <div
