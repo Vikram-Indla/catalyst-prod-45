@@ -56,8 +56,11 @@
   background: var(--ds-surface, #FFFFFF);
   color: var(--ds-text, #172B4D);
   font-size: 14px;
+  font-weight: 400;
   line-height: 20px;
+  font-family: var(--ds-font-family-body, 'Atlassian Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ---------- COLUMN A — icon rail ---------- */
@@ -123,7 +126,7 @@
   align-items: center;
   justify-content: space-between;
 }
-.cc-cl-head__ttl { font-size: 16px; font-weight: 600; }
+.cc-cl-head__ttl { font-size: 16px; font-weight: 700; color: var(--ds-text, #172B4D); }
 .cc-iconbtn {
   width: 28px;
   height: 28px;
@@ -272,8 +275,8 @@
 .cc-conv-title { display: flex; align-items: baseline; gap: var(--ds-space-075, 6px); min-width: 0; }
 .cc-conv-title__k { font-size: 13px; font-weight: 600; color: var(--ds-text-brand, #0C66E4); }
 .cc-conv-title__s {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--ds-text, #172B4D);
   white-space: nowrap;
   overflow: hidden;
@@ -350,9 +353,9 @@
 .cc-msg__av { width: 36px; height: 36px; font-size: 13px; }
 .cc-msg__body { flex: 1; min-width: 0; }
 .cc-msg__head { display: flex; align-items: baseline; gap: 8px; margin-bottom: var(--ds-space-025, 2px); }
-.cc-msg__name { font-size: 14px; font-weight: 600; color: var(--ds-text, #172B4D); }
-.cc-msg__time { font-size: 12px; color: var(--ds-text-subtlest, #6B778C); }
-.cc-msg__text { font-size: 14px; line-height: 20px; color: var(--ds-text, #172B4D); white-space: pre-wrap; word-break: break-word; }
+.cc-msg__name { font-size: 14px; font-weight: 700; color: var(--ds-text, #172B4D); }
+.cc-msg__time { font-size: 12px; font-weight: 400; color: var(--ds-text-subtlest, #626F86); }
+.cc-msg__text { font-size: 14px; font-weight: 400; line-height: 22px; color: var(--ds-text, #172B4D); white-space: pre-wrap; word-break: break-word; }
 .cc-mention {
   background: var(--ds-background-selected, #E9F2FE);
   color: var(--ds-text-brand, #0C66E4);

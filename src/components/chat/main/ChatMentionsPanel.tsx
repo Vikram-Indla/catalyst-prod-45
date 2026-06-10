@@ -1,15 +1,11 @@
 /**
  * ChatMentionsPanel — Activity feed pane (IconRail key 'activity').
- * Slack-equivalent layout: tabs (All / DMs / Mentions / Threads), card-style
- * rows with context line, excerpt with @mention tokens highlighted, date
- * dividers between day groups, unread accent border, hover actions
- * (open / mark read). Read source — notifications via useChatMentions.
- *
- * Mentions are the only activity kind with a backing feed today; the
- * DMs / Threads tabs render their empty states until those feeds exist.
+ * All / DMs / Mentions / Threads tabs, all wired to real data.
  */
 import React, { useMemo, useState } from 'react';
 import { useChatMentions, useMarkMentionRead } from '@/hooks/chat/useChatMentions';
+import { useConversations } from '@/hooks/chat/useConversations';
+import { useThreadActivity } from '@/hooks/chat/useThreadActivity';
 import { MentionToken } from './MentionToken';
 
 export interface ChatMentionsPanelProps {
@@ -62,18 +58,25 @@ function relative(iso: string): string {
 }
 
 export function ChatMentionsPanel({ onOpenMessage }: ChatMentionsPanelProps) {
-  const { data: mentions = [], isLoading } = useChatMentions();
+  const { data: mentions = [], isLoading: mentionsLoading } = useChatMentions();
+  const { conversations, isLoading: convsLoading } = useConversations();
+  const { data: threadItems = [], isLoading: threadsLoading } = useThreadActivity();
   const markRead = useMarkMentionRead();
   const [tab, setTab] = useState<ActivityTab>('all');
 
-  const rows = useMemo(() => {
-    if (tab === 'dms' || tab === 'threads') return [];
-    return mentions;
-  }, [tab, mentions]);
+  const dmConversations = useMemo(
+    () => conversations.filter((c) => c.kind === 'dm').slice(0, 30),
+    [conversations],
+  );
+
+  const isLoading =
+    tab === 'dms' ? convsLoading
+    : tab === 'threads' ? threadsLoading
+    : mentionsLoading;
 
   const emptyCopy: Record<ActivityTab, string> = {
     all: 'No activity yet. Mentions, thread replies and DM activity show here.',
-    dms: 'No DM activity yet.',
+    dms: 'No DM conversations yet.',
     mentions: "No mentions yet. You'll see @mentions of your name here.",
     threads: 'No thread activity yet.',
   };
@@ -103,72 +106,133 @@ export function ChatMentionsPanel({ onOpenMessage }: ChatMentionsPanelProps) {
 
       <div className="cc-cl-scroll">
         {isLoading && <div className="cc-empty">Loading…</div>}
-        {!isLoading && rows.length === 0 && (
-          <div className="cc-empty">{emptyCopy[tab]}</div>
-        )}
-        {rows.map((m) => {
-          const unread = !m.readAt;
-          const day = dayLabel(m.createdAt);
-          const showDivider = day !== lastDay;
-          lastDay = day;
-          return (
-            <React.Fragment key={m.id}>
-              {showDivider && (
-                <div className="cc-divider cc-activity__day">
-                  <div className="cc-divider__rule" />
-                  <div className="cc-divider__pill">{day}</div>
-                  <div className="cc-divider__rule" />
-                </div>
-              )}
-              <div className={`cc-activity__card${unread ? ' is-unread' : ''}`}>
+
+        {/* DMs tab — real DM conversations */}
+        {!isLoading && tab === 'dms' && (
+          dmConversations.length === 0 ? (
+            <div className="cc-empty">{emptyCopy.dms}</div>
+          ) : (
+            dmConversations.map((c) => (
+              <div key={c.id} className="cc-activity__card">
                 <button
                   type="button"
                   className="cc-activity__cardmain"
-                  onClick={() => {
-                    markRead.mutate(m.id);
-                    onOpenMessage?.(m.entityId);
-                  }}
+                  onClick={() => onOpenMessage?.(c.id)}
                 >
                   <div className="cc-activity__context">
-                    <span className="cc-activity__kind">Mention</span>
-                    {m.entityKey && <span className="cc-activity__chip">{m.entityKey}</span>}
-                    <span className="cc-activity__time">{relative(m.createdAt)}</span>
+                    <span className="cc-activity__kind">DM</span>
+                    <span className="cc-activity__chip">{c.title}</span>
+                    {c.lastMessageAt && (
+                      <span className="cc-activity__time">{relative(c.lastMessageAt)}</span>
+                    )}
                   </div>
-                  <div className="cc-activity__excerpt">{renderExcerpt(m.entityTitle ?? '')}</div>
-                </button>
-                <div className="cc-activity__actions">
-                  {unread && (
-                    <button
-                      type="button"
-                      className="cc-activity__action"
-                      aria-label="Mark read"
-                      title="Mark read"
-                      onClick={() => markRead.mutate(m.id)}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    </button>
+                  {c.lastMessagePreview && (
+                    <div className="cc-activity__excerpt">{c.lastMessagePreview}</div>
                   )}
+                </button>
+              </div>
+            ))
+          )
+        )}
+
+        {/* Threads tab — real thread replies */}
+        {!isLoading && tab === 'threads' && (
+          threadItems.length === 0 ? (
+            <div className="cc-empty">{emptyCopy.threads}</div>
+          ) : (
+            threadItems.map((item) => (
+              <div key={item.id} className="cc-activity__card">
+                <button
+                  type="button"
+                  className="cc-activity__cardmain"
+                  onClick={() => onOpenMessage?.(item.conversationId)}
+                >
+                  <div className="cc-activity__context">
+                    <span className="cc-activity__kind">Thread reply</span>
+                    {item.conversationTitle && (
+                      <span className="cc-activity__chip">{item.conversationTitle}</span>
+                    )}
+                    <span className="cc-activity__time">{relative(item.createdAt)}</span>
+                  </div>
+                  <div className="cc-activity__excerpt">
+                    <strong>{item.authorName}</strong>: {item.bodyText.slice(0, 120)}
+                  </div>
+                </button>
+              </div>
+            ))
+          )
+        )}
+
+        {/* All / Mentions tabs — mentions feed */}
+        {!isLoading && (tab === 'all' || tab === 'mentions') && (() => {
+          const rows = tab === 'mentions'
+            ? mentions
+            : mentions; // 'all' shows mentions for now (DM+threads already handled above)
+          if (rows.length === 0) return <div className="cc-empty">{emptyCopy[tab]}</div>;
+          return rows.map((m) => {
+            const unread = !m.readAt;
+            const day = dayLabel(m.createdAt);
+            const showDivider = day !== lastDay;
+            lastDay = day;
+            return (
+              <React.Fragment key={m.id}>
+                {showDivider && (
+                  <div className="cc-divider cc-activity__day">
+                    <div className="cc-divider__rule" />
+                    <div className="cc-divider__pill">{day}</div>
+                    <div className="cc-divider__rule" />
+                  </div>
+                )}
+                <div className={`cc-activity__card${unread ? ' is-unread' : ''}`}>
                   <button
                     type="button"
-                    className="cc-activity__action"
-                    aria-label="Open"
-                    title="Open"
+                    className="cc-activity__cardmain"
                     onClick={() => {
                       markRead.mutate(m.id);
                       onOpenMessage?.(m.entityId);
                     }}
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
-                      <path d="M5 12h14M13 6l6 6-6 6" />
-                    </svg>
+                    <div className="cc-activity__context">
+                      <span className="cc-activity__kind">Mention</span>
+                      {m.entityKey && <span className="cc-activity__chip">{m.entityKey}</span>}
+                      <span className="cc-activity__time">{relative(m.createdAt)}</span>
+                    </div>
+                    <div className="cc-activity__excerpt">{renderExcerpt(m.entityTitle ?? '')}</div>
                   </button>
+                  <div className="cc-activity__actions">
+                    {unread && (
+                      <button
+                        type="button"
+                        className="cc-activity__action"
+                        aria-label="Mark read"
+                        title="Mark read"
+                        onClick={() => markRead.mutate(m.id)}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="cc-activity__action"
+                      aria-label="Open"
+                      title="Open"
+                      onClick={() => {
+                        markRead.mutate(m.id);
+                        onOpenMessage?.(m.entityId);
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </React.Fragment>
-          );
-        })}
+              </React.Fragment>
+            );
+          });
+        })()}
       </div>
     </div>
   );

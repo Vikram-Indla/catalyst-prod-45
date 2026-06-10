@@ -48,7 +48,7 @@ function railFromParam(raw: string | undefined): RailKey | 'threads' {
       return 'later';
     case 'more':
     case 'people':
-      return 'more';
+      return 'people';
     case 'threads':
       return 'threads';
     default:
@@ -151,7 +151,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
         return <ChatMentionsPanel onOpenMessage={() => undefined} />;
       case 'later':
         return <ChatBookmarksPanel onOpenConversation={handleSelect} />;
-      case 'more':
+      case 'people':
         return <PeopleList onConversationCreated={handleSelect} />;
       default:
         return (
