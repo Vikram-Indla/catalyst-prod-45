@@ -13,7 +13,7 @@
  *   ?rail=<home|dms|activity|later|more|threads> → rail selection
  *   (legacy values mentions/saved/people map to activity/later/more)
  */
-import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useRef, useEffect, useCallback, useReducer } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useConversations } from '@/hooks/chat/useConversations';
 import { useMessages } from '@/hooks/chat/useMessages';
@@ -71,6 +71,8 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [convTab, setConvTab] = useState<'messages' | 'files' | 'pins'>('messages');
   const [catySummary, setCatySummary] = useState<{ open: boolean; loading: boolean; text: string }>({ open: false, loading: false, text: '' });
+  // Realtime presence: map userId → 'online' | 'offline'
+  const [presenceMap, setPresenceMap] = useState<Record<string, 'online' | 'offline'>>({});
 
   useEffect(() => {
     const hasSeenHint = localStorage.getItem('catalyst.chat.hint-seen');
@@ -123,10 +125,10 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
         name: m.name,
         role: m.role,
         avatarUrl: null,
-        presence: 'offline' as const,
+        presence: (presenceMap[m.userId] === 'online' ? 'available' : 'offline') as ChatPerson['presence'],
         presenceNote: null,
       })),
-    [memberRows],
+    [memberRows, presenceMap],
   );
 
   const {
@@ -176,6 +178,35 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
     () => (threadParentId ? messages.find((m) => m.id === threadParentId) ?? null : null),
     [threadParentId, messages],
   );
+
+  // Realtime presence — broadcast self as online, track others
+  useEffect(() => {
+    if (!resolvedActiveId || !currentUserId) return;
+    const ch = supabase.channel(`chat-presence:${resolvedActiveId}`, {
+      config: { presence: { key: currentUserId } },
+    });
+    ch.on('presence', { event: 'sync' }, () => {
+      const state = ch.presenceState<{ status: string }>();
+      const next: Record<string, 'online' | 'offline'> = {};
+      for (const [userId, arr] of Object.entries(state)) {
+        next[userId] = (arr as any[]).some((p: any) => p.status === 'online') ? 'online' : 'offline';
+      }
+      setPresenceMap(next);
+    });
+    ch.subscribe(async (status) => {
+      if (status === 'SUBSCRIBED') {
+        await ch.track({ status: 'online', userId: currentUserId });
+      }
+    });
+    const heartbeat = setInterval(() => {
+      ch.track({ status: 'online', userId: currentUserId }).catch(() => {});
+    }, 30_000);
+    return () => {
+      clearInterval(heartbeat);
+      ch.untrack().catch(() => {});
+      supabase.removeChannel(ch);
+    };
+  }, [resolvedActiveId, currentUserId]);
 
   // "New" unread divider — the stream marks the first of the trailing
   // unreadCount top-level messages. Derived from the conversation row
