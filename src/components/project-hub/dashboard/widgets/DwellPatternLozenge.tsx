@@ -9,36 +9,44 @@
  */
 import type { DwellPattern } from '@/lib/tis-dwell-classifier/classifier';
 
-const PATTERN_META: Record<Exclude<DwellPattern, 'none'>, { emoji: string; label: string; bg: string; color: string }> = {
+// 2026-06-10 Fix 2 — Emoji glyphs banned per CLAUDE.md L2 (no non-Jira
+// icons). Replaced with 2-letter ADS-style code prefix + colored chip.
+// Code reads like a status pill: "PP" / "SD" / "PL" / "SR" / "XD".
+const PATTERN_META: Record<Exclude<DwellPattern, 'none'>, { code: string; label: string; bg: string; color: string; dot: string }> = {
   ping_pong: {
-    emoji: '🔄',
+    code: 'PP',
     label: 'Ping-pong',
     bg: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
     color: 'var(--ds-text-accent-red, #AE2A19)',
+    dot: 'var(--ds-text-accent-red, #AE2A19)',
   },
   pl_gap: {
-    emoji: '☕',
+    code: 'PL',
     label: 'PL gap',
     bg: 'var(--ds-background-accent-yellow-subtler, #F8E6A0)',
     color: 'var(--ds-text-accent-yellow, #7F5F01)',
+    dot: 'var(--ds-text-accent-yellow, #7F5F01)',
   },
   spec_rewrite: {
-    emoji: '📋',
+    code: 'SR',
     label: 'Spec rewrite',
     bg: 'var(--ds-background-accent-purple-subtler, #DFD8FD)',
     color: 'var(--ds-text-accent-purple, #5E4DB2)',
+    dot: 'var(--ds-text-accent-purple, #5E4DB2)',
   },
   external_dep: {
-    emoji: '🔗',
+    code: 'XD',
     label: 'External dep',
     bg: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
     color: 'var(--ds-text-accent-blue, #0055CC)',
+    dot: 'var(--ds-text-accent-blue, #0055CC)',
   },
   silent: {
-    emoji: '🐌',
+    code: 'SD',
     label: 'Silent',
     bg: 'var(--ds-background-neutral, #F1F2F4)',
     color: 'var(--ds-text-subtle, #42526E)',
+    dot: 'var(--ds-text-subtle, #42526E)',
   },
 };
 
@@ -86,8 +94,21 @@ export function DwellPatternLozenge({
         cursor: 'help',
       }}
     >
-      <span style={{ fontSize: 11 }}>{meta.emoji}</span>
-      {!compact && <span>{meta.label}</span>}
+      <span
+        aria-hidden
+        style={{
+          width: 6,
+          height: 6,
+          borderRadius: '50%',
+          background: meta.dot,
+          flexShrink: 0,
+        }}
+      />
+      {compact ? (
+        <span style={{ fontWeight: 653 }}>{meta.code}</span>
+      ) : (
+        <span>{meta.label}</span>
+      )}
     </span>
   );
 }

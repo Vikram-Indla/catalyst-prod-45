@@ -51,21 +51,38 @@ import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG } from '../dashboardTypography
 const ISSUE_TYPES = ['Story', 'Epic', 'Sub-task', 'Defect'];
 
 // Phase 4 row 5 — outlier #1 (Predictive ETA). Mocked client-side cohort
-// table until tis-forecast-cohort edge fn ships in row 9. P50 per
-// (issue_type, status_name) in HOURS. Confidence is a flat constant for V1.
-const COHORT_P50_HOURS: Record<string, Record<string, number>> = {
-  Story:    { 'In Requirements': 168, 'Demand Validation': 96, 'In Design': 192, 'Prioritized Backlog': 240, 'In Development': 168, 'In Review': 48,  'Done': 0, 'On Hold': 720 },
-  Epic:     { 'In Requirements': 336, 'Demand Validation': 168,'In Design': 480, 'Prioritized Backlog': 720, 'In Development': 1440,'In Review': 96,  'Done': 0, 'On Hold': 1440 },
-  'Sub-task':{ 'In Requirements': 48, 'Demand Validation': 24, 'In Design': 96,  'Prioritized Backlog': 168, 'In Development': 96,  'In Review': 24,  'Done': 0, 'On Hold': 168 },
-  Defect:   { 'In Requirements': 24,  'Demand Validation': 24, 'In Design': 48,  'Prioritized Backlog': 96,  'In Development': 72,  'In Review': 24,  'Done': 0, 'On Hold': 96 },
+// fallback until tis-forecast-cohort edge fn ships in row 9.
+//
+// 2026-06-10 Fix 1 — per-status hardcoded P50 table failed for actual BAU
+// statuses (STAGING/QA, IN BETA, etc.). Replace with CATEGORY-driven
+// fallback so every non-done in_progress cell forecasts. Per-status
+// overrides retained for known statuses (delta from real cohort once
+// backfill lands).
+const DEFAULT_P50_HOURS_BY_CATEGORY: Record<string, number> = {
+  todo: 168,         // 7d — generic backlog dwell
+  in_progress: 192,  // 8d — generic in-flight dwell
+  done: 0,           // no forecast for done
+};
+const PER_STATUS_OVERRIDES: Record<string, number> = {
+  'In Requirements': 168,
+  'Demand Validation': 96,
+  'In Design': 192,
+  'Prioritized Backlog': 240,
+  'In Development': 240,
+  'In Review': 48,
+  'STAGING/QA': 72,
+  'IN BETA': 96,
+  'PRODUCTION READY': 24,
+  'IN PRODUCTION': 0,
+  'On Hold': 720,
 };
 const MOCK_CONFIDENCE = 0.71;
-function getCohortP50Hours(issueType: string, statusName: string): number | null {
-  const row = COHORT_P50_HOURS[issueType];
-  if (!row) return null;
-  const v = row[statusName];
-  if (v == null || v <= 0) return null;
-  return v;
+function getCohortP50Hours(_issueType: string, statusName: string, category?: string | null): number | null {
+  const override = PER_STATUS_OVERRIDES[statusName];
+  if (override != null) return override > 0 ? override : null;
+  if (!category) return null;
+  const fallback = DEFAULT_P50_HOURS_BY_CATEGORY[category];
+  return fallback != null && fallback > 0 ? fallback : null;
 }
 
 // Phase 4 row 6 — outlier #5 (Pattern Lozenge). V1 mocks dwell input from
@@ -77,9 +94,11 @@ function getCohortP50Hours(issueType: string, statusName: string): number | null
 function classifyCellMocked(opts: {
   issueType: string;
   statusName: string;
+  category?: string | null;
   durationMs: number;
   visits: number;
 }): { pattern: DwellPattern; confidence: number; description?: string } {
+  const p50h = getCohortP50Hours(opts.issueType, opts.statusName, opts.category);
   // Proxy ping_pong on visits ≥ 2 (re-entered the status).
   if (opts.visits >= 2) {
     return classifyDwell({
@@ -91,11 +110,10 @@ function classifyCellMocked(opts: {
       comments: [],
       links: [],
       durationMs: opts.durationMs,
-      p50Hours: getCohortP50Hours(opts.issueType, opts.statusName),
+      p50Hours: p50h,
     });
   }
   // Proxy silent dwell when current > 2x P50 AND no revisit signal.
-  const p50h = getCohortP50Hours(opts.issueType, opts.statusName);
   if (p50h != null && opts.durationMs > 2 * p50h * 60 * 60 * 1000) {
     return classifyDwell({
       events: [],
@@ -586,10 +604,10 @@ export default function TimeInStatusWidget({
                             {/* Phase 4 row 5 — outlier #1 ETA strip.
                                 Only render on in_progress category cells —
                                 done/todo cells aren't forecasting candidates. */}
-                            {s.category === 'in_progress' && (
+                            {s.category !== 'done' && (
                               <TimeInStatusEtaStrip
                                 currentMs={ms}
-                                p50Hours={getCohortP50Hours(issueType, s.name)}
+                                p50Hours={getCohortP50Hours(issueType, s.name, s.category)}
                                 confidence={MOCK_CONFIDENCE}
                               />
                             )}
@@ -600,6 +618,7 @@ export default function TimeInStatusWidget({
                               const cls = classifyCellMocked({
                                 issueType,
                                 statusName: s.name,
+                                category: s.category,
                                 durationMs: ms,
                                 visits,
                               });
@@ -667,25 +686,11 @@ export default function TimeInStatusWidget({
               {total > rows.length && (
                 <button
                   type="button"
-                  onClick={() =>
-                    openUWV({
-                      project: projectKey,
-                      hubSource: ['projecthub'],
-                      dataType: 'issue',
-                      title: `${issueType} · ${WINDOW_LABELS[windowPreset]}`,
-                      filters: {
-                        issue_type: [issueType],
-                        ...(dateFrom ? { jira_updated_at_gte: dateFrom } : {}),
-                        ...(dateTo ? { jira_updated_at_lte: dateTo } : {}),
-                        ...(settings.assigneeFilter?.length
-                          ? { assignee_display_name: settings.assigneeFilter }
-                          : {}),
-                        ...(settings.priorityFilter?.length
-                          ? { priority: settings.priorityFilter }
-                          : {}),
-                      },
-                    } as any)
-                  }
+                  // 2026-06-10 Fix 3 — "View all" must open the fullscreen
+                  // TIS matrix modal, NOT route to UWV (a flat list viewer
+                  // that strips the status × ticket matrix). Preserves the
+                  // SAME matrix view, just expanded to all N tickets.
+                  onClick={() => setFullscreen(true)}
                   style={{
                     ...LABEL, height: 24, padding: '0 10px', cursor: 'pointer',
                     border: '1px solid var(--ds-border, #DFE1E6)',
@@ -695,7 +700,7 @@ export default function TimeInStatusWidget({
                     fontWeight: 600,
                   }}
                 >
-                  View all {total} in table →
+                  View all {total} in matrix →
                 </button>
               )}
             </div>
