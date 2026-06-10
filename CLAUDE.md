@@ -1786,3 +1786,13 @@ Applies to every response, every agent, every skill.
 **Rule:** After any change to audit infrastructure (or when running it on a new machine), run a NEGATIVE test first: point the CLI at a file with known violations and confirm violations print. An instant "✅ PASSED" on a known-bad file means the tool didn't run. Also: never compare `import.meta.url` to argv with string interpolation — always `fileURLToPath` + realpath.
 **Open question flagged (not changed):** spacing-grid violations print but do not fail the exit code even in STRICT mode — pre-existing gate policy; needs explicit Vikram decision whether spacing should block.
 **Severity:** P0 (every local audit run on this machine was a no-op; pre-commit hook signal was fake)
+
+---
+
+## 2026-06-10 — SQL-function param shadowing: `m.user_id = user_id` is always-true; RLS membership leaked every conversation
+
+**Surface:** `chat_is_member()` (SECURITY DEFINER helper used by all chat RLS), found during chat design-critique live probe
+**Pattern:** The helper's WHERE clause `m.user_id = user_id` resolved the unqualified `user_id` to the COLUMN (columns shadow parameters in SQL-language functions) → self-comparison, always true. Every authenticated user passed the membership check for any conversation with ≥1 member — full cross-user read access to private DMs/ticket conversations. Sibling bug class to the 2026-05-09 `project_members.project_id = project_members.id` policy self-join. Compounding: the recursion-fix migration had also dropped SELECT policies on chat_conversations and SELECT/INSERT on chat_messages entirely, so the leak was masked by "everything empty" until the policies were restored.
+**Rule:** In every SQL/plpgsql function used by RLS: (1) ALWAYS qualify parameters as `function_name.param` (or prefix params `p_`), never bare names that can collide with column names; (2) after restoring/altering ANY RLS policy set, run the 2-user isolation test (SET LOCAL ROLE authenticated + request.jwt.claims swap) BEFORE declaring fixed — the member-sees-N assertion alone is insufficient, the stranger-sees-0 assertion is the one that catches leaks; (3) when a migration "fixes recursion", diff the before/after policy list per table — dropped-but-not-recreated policies fail silent (reads return empty, not errors).
+**Fix:** `62191d24f` (policies restored) + `fix_chat_is_member_param_shadowing` migration (qualified params). Verified: stranger 9 browsable channels / 0 private / 0 messages; member 13 / 16.
+**Severity:** P0 (cross-user data exposure + total feature blackout, both invisible to screenshots — found only by structural DOM/network/SQL probing)
