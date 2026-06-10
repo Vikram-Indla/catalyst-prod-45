@@ -178,12 +178,30 @@ export default function ItemsByStatusWidget({
           {/* ── Thick H-bars ────────────────────────────────────────────── */}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {buckets.map((b) => (
-              <BarRow key={b.key} bucket={b} total={total} />
+              <BarRow
+                key={b.key}
+                bucket={b}
+                total={total}
+                /* 2026-06-09 Vikram parity — clicking a status bar opens
+                   UWV filtered to that bucket's underlying Jira statuses. */
+                onClick={() => openUWV({
+                  project: projectKey,
+                  hubSource: ['projecthub'],
+                  dataType: 'epics',
+                  title: `${b.label} · ${projectKey}`,
+                  dateFrom: settings.dateFrom ?? null,
+                  dateTo: settings.dateTo ?? null,
+                  statusFilter:
+                    b.key === 'done'       ? ['Done', 'Closed', 'Resolved']
+                  : b.key === 'todo'       ? ['To Do', 'Backlog', 'Open', 'New']
+                  : b.key === 'inProgress' ? ['In Progress', 'In Review', 'In Development', 'In Design']
+                  : /* blocked */            ['Blocked', 'On Hold', 'Awaiting Info', 'Impediment'],
+                })}
+              />
             ))}
           </div>
-
-          {/* ── Blocked breakdown ──────────────────────────────────────── */}
-          {blocked > 0 && <BlockedBreakdown detail={blockedDetail} blocked={blocked} />}
+          {/* Blocked breakdown removed 2026-06-09 per Vikram — redundant
+              with the Blocked bar + clickable bar drill-through. */}
         </div>
       )}
     </WidgetWrapper>
@@ -291,13 +309,23 @@ function KpiHeadline({
 // Subtle row hover state. Empty buckets render an em-dash so the eye
 // can audit the four canonical categories without counting.
 
-function BarRow({ bucket: b, total }: { bucket: Bucket; total: number }) {
+function BarRow({ bucket: b, total, onClick }: { bucket: Bucket; total: number; onClick?: () => void }) {
   const ratio = total > 0 ? b.count / total : 0;
   const pct = Math.round(ratio * 100);
   // Minimum visible bar width when count > 0 but ratio is tiny (e.g. 2/408)
   const widthPct = b.count === 0 ? 0 : Math.max(2, ratio * 100);
   return (
     <div
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (!onClick) return;
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -307,6 +335,7 @@ function BarRow({ bucket: b, total }: { bucket: Bucket; total: number }) {
         marginInline: -8,
         borderRadius: token('border.radius', '4px'),
         transition: 'background 80ms ease',
+        cursor: onClick ? 'pointer' : 'default',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4');

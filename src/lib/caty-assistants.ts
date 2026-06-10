@@ -17,6 +17,8 @@ export interface CatyAssistant {
   iconType: string | null;
   // ADS token for accent colour (avatar bg, active border)
   accentToken: string;
+  // ADS subtler token for clean tile background in picker (light tinted surface)
+  tileBgToken: string;
   minSystemRole: UserRole;
   allowedProductRoles: ProductRoleCode[];
   lockedMessage: string;
@@ -39,6 +41,7 @@ export const CATY_ASSISTANTS: CatyAssistant[] = [
     tagline: 'General Catalyst assistant — projects, epics, and work items',
     iconType: null,
     accentToken: 'var(--ds-background-brand-bold, #0C66E4)',
+    tileBgToken: 'var(--ds-background-accent-blue-subtler, #E9F2FE)',
     minSystemRole: 'user',
     allowedProductRoles: [
       'developer', 'qa_tester', 'product_owner', 'product_manager',
@@ -63,6 +66,7 @@ export const CATY_ASSISTANTS: CatyAssistant[] = [
     tagline: 'Summarize epics, list child stories, identify gaps',
     iconType: 'Epic',
     accentToken: 'var(--ds-background-accent-purple-bolder, #6E5DC6)',
+    tileBgToken: 'var(--ds-background-accent-purple-subtler, #F3F0FF)',
     minSystemRole: 'team_lead',
     allowedProductRoles: ['product_owner', 'product_manager', 'enterprise_architect', 'project_manager'],
     lockedMessage: 'Epic Assistant requires Team Lead or Product role',
@@ -83,6 +87,7 @@ export const CATY_ASSISTANTS: CatyAssistant[] = [
     tagline: 'Break down epics into stories — provide an epic key to start',
     iconType: 'Story',
     accentToken: 'var(--ds-background-accent-blue-bolder, #0C66E4)',
+    tileBgToken: 'var(--ds-background-accent-blue-subtler, #E9F2FE)',
     minSystemRole: 'program_manager',
     allowedProductRoles: ['product_owner', 'product_manager'],
     lockedMessage: 'Story breakdown requires Product Owner or Program Manager access',
@@ -103,6 +108,7 @@ export const CATY_ASSISTANTS: CatyAssistant[] = [
     tagline: 'Draft BRs, suggest priority, link to existing epics',
     iconType: 'Business Request',
     accentToken: 'var(--ds-background-accent-yellow-bolder, #946F00)',
+    tileBgToken: 'var(--ds-background-accent-yellow-subtler, #FFF7D6)',
     minSystemRole: 'program_manager',
     allowedProductRoles: ['product_owner', 'product_manager', 'enterprise_architect'],
     lockedMessage: 'Business Request Assistant requires Program Manager or Product Owner access',
@@ -123,6 +129,7 @@ export const CATY_ASSISTANTS: CatyAssistant[] = [
     tagline: 'Draft defect reports, find similar bugs, suggest severity',
     iconType: 'QA Bug',
     accentToken: 'var(--ds-background-accent-red-bolder, #AE2A19)',
+    tileBgToken: 'var(--ds-background-accent-red-subtler, #FFECEB)',
     minSystemRole: 'user',
     allowedProductRoles: [
       'developer', 'qa_tester', 'product_owner', 'product_manager',
@@ -146,6 +153,7 @@ export const CATY_ASSISTANTS: CatyAssistant[] = [
     tagline: 'Draft incident summaries, timelines, and follow-up tasks',
     iconType: 'Production Incident',
     accentToken: 'var(--ds-background-danger-bold, #E34935)',
+    tileBgToken: 'var(--ds-background-accent-orange-subtler, #FFE2BD)',
     minSystemRole: 'team_lead',
     allowedProductRoles: ['product_owner', 'product_manager', 'enterprise_architect', 'project_manager'],
     lockedMessage: 'Incident Assistant requires Team Lead or above',
@@ -166,6 +174,7 @@ export const CATY_ASSISTANTS: CatyAssistant[] = [
     tagline: 'Summarize releases, check completion, draft release notes',
     iconType: 'Feature',
     accentToken: 'var(--ds-background-accent-green-bolder, #22A06B)',
+    tileBgToken: 'var(--ds-background-accent-green-subtler, #DCFFF1)',
     minSystemRole: 'team_lead',
     allowedProductRoles: ['product_owner', 'product_manager', 'enterprise_architect', 'project_manager'],
     lockedMessage: 'Release Assistant requires Team Lead or above',

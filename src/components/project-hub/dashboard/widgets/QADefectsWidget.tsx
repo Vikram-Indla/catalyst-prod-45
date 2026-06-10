@@ -169,9 +169,9 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
-                ...STRONG,
+                /* 2026-06-09 Vikram parity — Jira Key 14/400 sans, not 14/600 mono. */
+                ...BODY,
                 color: token('color.link', '#0C66E4'),
-                fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -196,7 +196,9 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    ...STRONG,
+                    /* 2026-06-09 Vikram parity — match Epic Progress: 14/400 link */
+                    ...BODY,
+                    color: token('color.link', '#0C66E4'),
                   }}
                 >
                   {d.title ?? ''}
@@ -207,8 +209,20 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         },
         {
           key: 'status',
+          /* 2026-06-09 Vikram parity — match Production Incidents font:
+             StatusLozenge with toStatusCategory mapping. */
           content: (
-            <StatusLozenge status={toStatusCategory(d.status)}>{statusLabel}</StatusLozenge>
+            (() => {
+              const cat = toStatusCategory(d.status);
+              const ap: 'default' | 'inprogress' | 'success' | 'moved' = cat === 'done'
+                ? 'success'
+                : cat === 'inprogress'
+                ? 'inprogress'
+                : ['blocked','on hold','awaiting info'].includes((d.status||'').toLowerCase())
+                ? 'moved'
+                : 'default';
+              return <Lozenge appearance={ap}>{statusLabel}</Lozenge>;
+            })()
           ),
         },
         {
@@ -232,30 +246,29 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         },
         {
           key: 'age',
+          /* 2026-06-09 Vikram parity — Age now = days since created (NOT a
+             date). Closed defects have no age (blank). Style matches Epic
+             Progress Target column (BODY 14/400). */
           content: (() => {
+            const isDone = ['closed', 'resolved', 'done', 'fixed', 'verified'].includes((d.status || '').toLowerCase());
+            if (isDone) return <span />;
             const raw = d.created_at ?? d.jira_created_at ?? null;
-            let display = '—';
-            if (raw) {
-              try {
-                const dt = new Date(raw);
-                if (!Number.isNaN(dt.getTime())) {
-                  const dd = String(dt.getDate()).padStart(2, '0');
-                  const mon = dt.toLocaleString('en-GB', { month: 'short' });
-                  const yy = String(dt.getFullYear()).slice(-2);
-                  display = `${dd}/${mon}/${yy}`;
-                }
-              } catch { /* fallback */ }
-            }
+            if (!raw) return <span style={{ ...BODY, color: token('color.text.subtle', '#44546F') }}>—</span>;
+            const dt = new Date(raw);
+            if (Number.isNaN(dt.getTime())) return <span style={{ ...BODY, color: token('color.text.subtle', '#44546F') }}>—</span>;
+            const days = Math.max(0, Math.floor((Date.now() - dt.getTime()) / (1000 * 60 * 60 * 24)));
+            const label = days === 0 ? 'today' : `${days}d`;
             return (
               <span
                 style={{
-                  ...STRONG,
-                  color: token('color.text.subtle', '#44546F'),
-                  fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+                  ...BODY,
+                  color: token('color.text', '#172B4D'),
                   whiteSpace: 'nowrap',
+                  fontVariantNumeric: 'tabular-nums',
                 }}
+                title={`Open for ${days} day${days === 1 ? '' : 's'}`}
               >
-                {display}
+                {label}
               </span>
             );
           })(),

@@ -161,17 +161,23 @@ class TypographyEnforcer {
         }
       }
 
-      // Check for banned font families
+      // Check for banned font families. 2026-06-09 ADS compliance sweep —
+      // extended ban list to include Inter, Sora, Plus Jakarta Sans, JetBrains
+      // Mono (Catalyst pre-ADS picks). Only Atlassian Sans + canonical fallback
+      // system stack permitted (atlassian.design/foundations/typography).
       if ((line.includes('fontFamily') || line.includes('font-family')) && !line.includes('var(')) {
-        const bannedFonts = ['Arial', 'Helvetica', 'Georgia', 'Times New Roman', 'Courier'];
+        const bannedFonts = [
+          'Arial', 'Helvetica', 'Georgia', 'Times New Roman', 'Courier',
+          'Inter', 'Sora', 'Plus Jakarta Sans', 'JetBrains Mono', 'Roboto', 'Open Sans',
+        ];
         for (const font of bannedFonts) {
-          if (line.includes(`'${font}'`) || line.includes(`"${font}"`)) {
+          if (line.includes(`'${font}'`) || line.includes(`"${font}"`) || line.match(new RegExp(`\\b${font}\\b`))) {
             this.violations.push({
               file: filePath,
               line: index + 1,
               type: 'BANNED_FONT_FAMILY',
               content: line.trim(),
-              fix: 'Use system fonts or Atlassian Sans from ADS; remove hardcoded font-family'
+              fix: `Replace '${font}' with the ADS Sans stack: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' (or canonical mono stack).`
             });
           }
         }

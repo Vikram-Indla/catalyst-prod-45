@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Catalyst Filters Revamp — Design Mockup (jira-compare 2026-06-10)</title>
+<style>
+  :root {
+    --surface: var(--ds-surface, #FFFFFF);
+    --sunken: var(--ds-surface-sunken, #F7F8F9);
+    --neutral: var(--ds-background-neutral, #F1F2F4);
+    --text: var(--ds-text, #172B4D);
+    --subtle: var(--ds-text-subtle, #42526E);
+    --subtlest: var(--ds-text-subtlest, #6B778C);
+    --border: var(--ds-border, #DFE1E6);
+    --link: var(--ds-link, #0052CC);
+    --brand: var(--ds-background-brand-bold, #0C66E4);
+    --info: var(--ds-background-information, #E9F2FF);
+  }
+  body { font-family: 'Atlassian Sans', -apple-system, system-ui, sans-serif; margin: 0; background: var(--neutral); color: var(--text); }
+  .frame { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin: 32px auto; max-width: 1200px; overflow: hidden; }
+  .frame-label { font-size: 12px; font-weight: 653; color: var(--subtlest); padding: 8px 24px; background: var(--sunken); border-bottom: 1px solid var(--border); }
+  .page-head { display: flex; justify-content: space-between; align-items: center; padding: 24px 24px 16px; border-bottom: 1px solid var(--border); }
+  h1 { margin: 0; font-size: 24px; font-weight: 653; line-height: 28px; }
+  .sub { margin: 4px 0 0; font-size: 14px; color: var(--subtle); }
+  .btn { font-size: 14px; font-weight: 500; border-radius: 3px; padding: 6px 12px; border: none; cursor: pointer; }
+  .btn-primary { background: var(--brand); color: #FFFFFF; }
+  .btn-subtle { background: transparent; color: var(--subtle); }
+  .tabs { display: flex; gap: 16px; padding: 0 24px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--subtle); }
+  .tab { padding: 8px 4px; }
+  .tab.active { color: var(--link); border-bottom: 2px solid var(--link); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-size: 12px; font-weight: 653; color: var(--subtle); padding: 4px 8px; border-bottom: 2px solid var(--border); }
+  td { padding: 8px; border-bottom: 1px solid var(--border); }
+  .pad { padding: 16px 24px 32px; }
+  .lozenge { display: inline-block; font-size: 11px; font-weight: 653; padding: 2px 6px; border-radius: 3px; background: var(--neutral); color: var(--subtle); }
+  .loz-blue { background: var(--info); color: var(--ds-text-information, #0055CC); }
+  .loz-green { background: var(--ds-background-success, #DCFFF1); color: var(--ds-text-success, #216E4E); }
+  .mono { font-family: 'Atlassian Mono', ui-monospace, monospace; font-size: 11px; color: var(--subtlest); }
+  .jqlbox { background: var(--sunken); border-radius: 3px; padding: 12px; font-family: 'Atlassian Mono', ui-monospace, monospace; font-size: 12px; color: var(--subtle); margin: 16px 24px; }
+  .results-head { display: flex; gap: 8px; align-items: center; margin: 24px 24px 8px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .results-head h2 { margin: 0; font-size: 16px; font-weight: 653; }
+  .count { font-size: 12px; color: var(--subtlest); }
+  .key { color: var(--link); font-weight: 500; }
+  .modal { max-width: 480px; margin: 32px auto; background: var(--surface); border-radius: 3px; box-shadow: 0 8px 28px rgba(9,30,66,0.25); padding: 24px; }
+  .modal h2 { margin: 0 0 16px; font-size: 20px; font-weight: 653; }
+  .infobar { background: var(--info); border-radius: 3px; padding: 8px 12px; font-size: 13px; margin-bottom: 16px; }
+  .field-label { font-size: 12px; font-weight: 653; color: var(--subtle); display: block; margin: 12px 0 4px; }
+  .input { width: 100%; border: 2px solid var(--border); border-radius: 3px; padding: 6px 8px; font-size: 14px; box-sizing: border-box; }
+</style>
+</head>
+<body>
+
+<!-- ════ 1. FILTERS LIST — canonical JiraTable, single Create CTA ════ -->
+<div class="frame">
+  <div class="frame-label">1 · /project-hub/BAU/filters — Filters directory (canonical JiraTable, backlog padding 24px)</div>
+  <div class="page-head">
+    <div><h1>Filters</h1><p class="sub">Saved filters for project views</p></div>
+    <button class="btn btn-primary">Create filter</button>
+  </div>
+  <div class="tabs"><span class="tab active">My filters</span><span class="tab">Starred</span><span class="tab">Shared</span><span class="tab">Recent</span><span style="margin-left:auto;padding:6px 0"><input class="input" style="width:220px" placeholder="Search filters"></span></div>
+  <div class="pad">
+    <table>
+      <tr><th></th><th>Name</th><th>Owner</th><th>Viewers</th><th>Editors</th><th>Starred by</th><th>Last used</th><th></th></tr>
+      <tr><td>★</td><td><span class="key">All open defects</span><br><span class="mono">issuetype = "QA Bug" AND status != Done</span></td><td>vikram indla</td><td><span class="lozenge loz-blue">Organisation</span></td><td><span class="lozenge">Owner only</span></td><td>3 people</td><td>today</td><td>⋯</td></tr>
+      <tr><td>☆</td><td><span class="key">My week</span><br><span class="mono">assignee = currentUser() AND updated >= -7d</span></td><td>vikram indla</td><td><span class="lozenge">Private</span></td><td><span class="lozenge">Owner only</span></td><td>—</td><td>yesterday</td><td>⋯</td></tr>
+    </table>
+    <p class="count" style="padding:8px">2 of 12 items</p>
+  </div>
+</div>
+
+<!-- ════ 2. CREATE FILTER — builder tabs + persistent LIVE results table ════ -->
+<div class="frame">
+  <div class="frame-label">2 · /project-hub/BAU/filters/create — builder + live cross-project results (the table from project backlog)</div>
+  <div class="page-head">
+    <div><h1>Create filter</h1><p class="sub">Define your filter using the builder, JQL, a template, or Ask CATY — results preview live below</p></div>
+    <div><button class="btn btn-subtle">Cancel</button> <button class="btn btn-primary">Save filter <span class="lozenge" style="background:rgba(255,255,255,.24);color:#fff">2</span></button></div>
+  </div>
+  <div class="tabs"><span class="tab">Basic</span><span class="tab active">JQL</span><span class="tab">Templates</span><span class="tab">Ask CATY</span></div>
+  <div class="jqlbox">assignee = currentUser() AND status != Done ORDER BY updated DESC<br><span class="count">2 active filters · full-width editor with autocomplete</span></div>
+  <div class="results-head"><h2>Results</h2><span class="count">47 work items</span><span class="lozenge loz-blue">3 projects</span></div>
+  <div class="pad" style="padding-top:0">
+    <table>
+      <tr><th>Key</th><th>Summary</th><th>Project</th><th>Status</th><th>Assignee</th><th>Priority</th><th>Updated</th><th>Due date</th></tr>
+      <tr><td><span class="key">BAU-6037</span></td><td>Existing requests handling</td><td>BAU</td><td><span class="lozenge">BACKLOG</span></td><td>Hassan Raza</td><td>High</td><td>Jun 9, 2026</td><td>—</td></tr>
+      <tr><td><span class="key">MDT-850</span></td><td>Modify customs exemption workflow</td><td>MDT</td><td><span class="lozenge loz-blue">IN PROGRESS</span></td><td>vikram indla</td><td>Medium</td><td>Jun 8, 2026</td><td>—</td></tr>
+      <tr><td><span class="key">MWR-977</span></td><td>Non-profit sector informational page</td><td>MWR</td><td><span class="lozenge loz-green">READY FOR QA</span></td><td>Divyam K</td><td>High</td><td>Jun 7, 2026</td><td>Jun 12, 2026</td></tr>
+    </table>
+    <p class="count" style="padding:8px">Rows are clickable → opens the work-item detail. Sortable headers. Same JiraTable as /backlog.</p>
+  </div>
+</div>
+
+<!-- ════ 3. SAVE FILTER MODAL — informed save ════ -->
+<div class="modal">
+  <h2>Save filter</h2>
+  <div class="infobar"><strong>47 work items</strong> <span style="color:var(--subtle)">currently match this filter</span></div>
+  <label class="field-label">JQL query</label>
+  <div class="jqlbox" style="margin:0">assignee = currentUser() AND status != Done ORDER BY updated DESC</div>
+  <label class="field-label">Name *</label>
+  <input class="input" value="My open work">
+  <label class="field-label">Description</label>
+  <input class="input" placeholder="What does this filter show?">
+  <label class="field-label">Who can view</label>
+  <div style="font-size:14px">◉ Private (only me) &nbsp; ○ Organisation &nbsp; ○ Specific people</div>
+  <label class="field-label">Who can edit</label>
+  <div style="font-size:14px">◉ Owner only &nbsp; ○ Specific people</div>
+  <div style="text-align:right;margin-top:24px"><button class="btn btn-subtle">Cancel</button> <button class="btn btn-primary">Save filter</button></div>
+</div>
+
+<!-- ════ 4. FILTER DETAIL — filter in use ════ -->
+<div class="frame">
+  <div class="frame-label">4 · /project-hub/BAU/filters/:id — detail with live results (filter is usable in place)</div>
+  <div class="page-head">
+    <div><h1>All open defects</h1><p class="sub">Every QA Bug not yet done, across synced projects</p></div>
+    <div><button class="btn btn-subtle">Version history</button> <button class="btn btn-subtle">Edit filter</button> <button class="btn btn-primary">Apply to backlog</button></div>
+  </div>
+  <div class="jqlbox">issuetype = "QA Bug" AND status != Done ORDER BY priority DESC</div>
+  <div class="results-head"><h2>Results</h2><span class="count">12 work items</span></div>
+  <div class="pad" style="padding-top:0">
+    <table>
+      <tr><th>Key</th><th>Summary</th><th>Project</th><th>Status</th><th>Assignee</th><th>Priority</th><th>Updated</th><th>Due date</th></tr>
+      <tr><td><span class="key">BAU-6034</span></td><td>Wrong label name National ID</td><td>BAU</td><td><span class="lozenge">TO DO</span></td><td>Muhammad Ayaz</td><td>Highest</td><td>Jun 9, 2026</td><td>—</td></tr>
+      <tr><td><span class="key">BAU-6033</span></td><td>Wrong text in confirmation message</td><td>BAU</td><td><span class="lozenge loz-green">READY FOR QA</span></td><td>Yazeed Daraz</td><td>High</td><td>Jun 8, 2026</td><td>—</td></tr>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

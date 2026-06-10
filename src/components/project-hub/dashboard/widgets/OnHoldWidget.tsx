@@ -179,9 +179,10 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
 
           {/* ── On-hold rows ──────────────────────────────────────────── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <OnHoldHeader activeColumns={activeColumns} />
             {/* No slice cap — body has standardised height with internal
                 scroll, so the entire list is visible without truncation. */}
-            {enriched.map((item) => (
+            {enriched.slice(0, 10).map((item) => (
               <OnHoldRow
                 key={item.id}
                 item={item}
@@ -277,6 +278,52 @@ function KpiCell({
   );
 }
 
+// 2026-06-09 Vikram parity — status lozenge appearance per ADS category.
+function statusAppearance(
+  statusCategory?: string | null,
+  status?: string | null,
+): 'default' | 'success' | 'inprogress' | 'moved' {
+  if (status && ['on hold', 'blocked', 'awaiting info'].includes(status.toLowerCase())) return 'moved';
+  const cat = (statusCategory || '').toLowerCase();
+  if (cat === 'done') return 'success';
+  if (cat === 'in progress') return 'inprogress';
+  return 'default';
+}
+
+// ─── Grid template + Header ───────────────────────────────────────────────
+
+// 2026-06-09 Vikram parity — OnHold rows share this template with header
+// so columns visually align.
+//  Type(20) · Key(100) · Summary(1fr) · Assignee(200) · Reason(140)
+// Type(20) · Key(100) · Summary(1fr) · Assignee(200) · Reason(140)
+const ONHOLD_GRID = '20px 100px 1fr 200px 140px';
+
+function OnHoldHeader({ activeColumns }: { activeColumns: string[] }) {
+  const has = (c: string) => activeColumns.includes(c);
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: ONHOLD_GRID,
+        alignItems: 'center',
+        gap: 12,
+        padding: '8px',
+        marginInline: -8,
+        borderBottom: `2px solid ${token('color.border', '#DFE1E6')}`,
+        ...SMALL,
+        fontWeight: 600,
+        color: token('color.text.subtle', '#6B778C'),
+      }}
+    >
+      <span />
+      <span>{has('key') ? 'Key' : ''}</span>
+      <span>{has('summary') ? 'Summary' : ''}</span>
+      <span>{has('assignee') ? 'Assignee' : ''}</span>
+      <span style={{ justifySelf: 'end' }}>{has('reason') ? 'Status' : ''}</span>
+    </div>
+  );
+}
+
 // ─── On-hold row ───────────────────────────────────────────────────────────
 
 function OnHoldRow({
@@ -313,9 +360,11 @@ function OnHoldRow({
         e.currentTarget.style.background = 'transparent';
       }}
       style={{
-        display: 'flex',
+        /* 2026-06-09 Vikram parity — grid template matches OnHoldHeader. */
+        display: 'grid',
+        gridTemplateColumns: ONHOLD_GRID,
         alignItems: 'center',
-        gap: 10,
+        gap: 12,
         padding: '8px',
         marginInline: -8,
         borderRadius: token('border.radius', '4px'),
@@ -324,56 +373,44 @@ function OnHoldRow({
         minHeight: 36,
       }}
     >
-      {has('type') && (
-        <span style={{ display: 'inline-flex', flexShrink: 0 }}>
-          <JiraIssueTypeIcon type={(item as any).issue_type ?? 'Task'} size={16} />
-        </span>
-      )}
-      {has('key') && (
-        <span
-          style={{
-            ...SMALL,
-            color: token('color.link', '#0C66E4'),
-            fontWeight: 500,
-            fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-            flexShrink: 0,
-            fontVariantNumeric: 'tabular-nums',
-          }}
-        >
-          {item.issue_key}
-        </span>
-      )}
-      {has('summary') && (
-        <span
-          style={{
-            flex: 1,
-            minWidth: 0,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            ...STRONG,
-          }}
-        >
-          {item.summary}
-        </span>
-      )}
-      {has('assignee') && item.assignee_display_name && (
-        <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-          <UserAvatar
-            size="small"
-            name={item.assignee_display_name}
-            src={(item as any).assignee_avatar_url}
-          />
-          <span style={{ ...BODY, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 100 }}>
-            {item.assignee_display_name.split(' ')[0]}
-          </span>
-        </span>
-      )}
-      {has('reason') && (
-        <span style={{ flexShrink: 0 }}>
-          <Lozenge appearance={appearance}>{reasonLabel}</Lozenge>
-        </span>
-      )}
+      <span style={{ display: 'inline-flex', justifyContent: 'center' }}>
+        {has('type') && <JiraIssueTypeIcon type={(item as any).issue_type ?? 'Task'} size={16} />}
+      </span>
+      <span style={{ ...BODY, color: token('color.link', '#0C66E4'), whiteSpace: 'nowrap' }}>
+        {has('key') ? item.issue_key : ''}
+      </span>
+      <a
+        href={`/project-hub/${item.project_key ?? ''}/allwork?issue=${item.issue_key ?? ''}`}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          minWidth: 0,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          ...BODY,
+          color: token('color.link', '#0C66E4'),
+          textDecoration: 'none',
+        }}
+      >
+        {has('summary') ? item.summary : ''}
+      </a>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+        {has('assignee') && item.assignee_display_name && (
+          <>
+            <UserAvatar
+              size="small"
+              name={item.assignee_display_name}
+              src={(item as any).assignee_avatar_url}
+            />
+            <span style={{ ...BODY, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {item.assignee_display_name}
+            </span>
+          </>
+        )}
+      </span>
+      <span style={{ justifySelf: 'end' }}>
+        {has('reason') && <Lozenge appearance={appearance}>{reasonLabel}</Lozenge>}
+      </span>
     </div>
   );
 }

@@ -59,9 +59,11 @@ export interface ResolvedWidget {
 type WidgetDef = (typeof WIDGET_REGISTRY)[number];
 
 export function effectiveSpan(w: ResolvedWidget): number {
-  const base = w.span ?? w.defaultSpan;
-  const min = w.minSpan ?? 1;
-  return Math.max(min, Math.min(12, base));
+  // 2026-06-09 Vikram parity directive — one gadget per row. Force every
+  // widget to full-width 12-column span regardless of registry default
+  // or persisted user override. Resize ladder remains for future use if
+  // multi-up layout is ever re-enabled.
+  return 12;
 }
 
 export function resolveWidgets(configs: DashboardWidgetConfig[]): ResolvedWidget[] {
@@ -72,7 +74,8 @@ export function resolveWidgets(configs: DashboardWidgetConfig[]): ResolvedWidget
       ...def,
       visible: cfg?.visible ?? true,
       position: cfg?.position ?? def.defaultPosition,
-      collapsed: cfg?.collapsed ?? false,
+      /* 2026-06-09 Vikram parity — default collapsed when no persisted cfg. */
+      collapsed: cfg?.collapsed ?? true,
       span: cfg?.span ?? null,
     } as ResolvedWidget;
   }).sort((a, b) => a.position - b.position);
@@ -112,7 +115,9 @@ export function useDashboardWidgetConfig(projectId: string) {
         widget_id: def.id,
         visible: true,
         position: def.defaultPosition,
-        collapsed: false,
+        /* 2026-06-09 Vikram parity — gadgets default to collapsed so
+           dashboard reads as widget index; user expands per-widget. */
+        collapsed: true,
         span: def.defaultSpan,
       }));
       const { error } = await typedQuery('dashboard_widget_config' as any).upsert(rows, {

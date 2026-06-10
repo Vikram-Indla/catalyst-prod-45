@@ -451,16 +451,36 @@
   width: 100%;
   min-width: max-content;
 }
+/* 2026-06-09 Spec parity (Filter Results gadget v1) — TD/TH layout.
+   Was: padding 4px, TH weight 500 / primary color / 0.56px border.
+   Now: TD 14/400/N800 + 12px padding + 1px N20 row separator (spec §5);
+        TH 12/600/N200 subtle + 8/12 padding + 2px N30 bottom (spec §4). */
 .dashboard-widget-body td,
 .dashboard-widget-body th {
   white-space: nowrap;
-  padding: 4px;
+}
+.dashboard-widget-body td {
+  padding: 12px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--ds-text, #172B4D);
+  border-bottom: 1px solid var(--ds-border, #EBECF0);
+  vertical-align: top;
+}
+.dashboard-widget-body tbody tr:hover td {
+  background-color: var(--ds-background-neutral-subtle-hovered, #F4F5F7);
 }
 .dashboard-widget-body th {
+  padding: 8px 12px;
   font-size: 12px;
-  font-weight: 500;
-  color: var(--ds-text, #292A2E);
-  border-bottom: 0.5px solid rgba(11, 18, 14, 0.14);
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--ds-text-subtle, #6B778C);
+  border-bottom: 2px solid var(--ds-border, #DFE1E6);
+  text-transform: none;
+  letter-spacing: 0;
+  vertical-align: middle;
 }
 /* Title column (2nd td) gets a 24px right gutter so the title text
    clears the Status lozenge with comfortable breathing room. 16px
@@ -5878,21 +5898,11 @@ table th[class*="css-"] {
   letter-spacing: 0 !important;
 }
 
-[data-cp-lozenge-jira-parity] > span,
-[data-cp-lozenge-jira-parity] > span > span,
-[data-cp-lozenge-jira-parity] span[class^="css-"] {
-  text-transform: none !important;
-  letter-spacing: 0 !important;
-  /* jira-compare follow-up (2026-05-02): Lane A re-probe of Jira
-     BAU-5609 status button measured font-weight 500, not 600. The
-     earlier 600 override was inferred from Atlaskit's old default and
-     never re-validated. Aligning to live Jira measurement. */
-  font-weight: 500 !important;
-  /* V-2 (2026-05-10): Atlaskit lozenge inner span defaults to 11px.
-     ForYouRow meta row is 12px/400 — lozenge at 11px reads smaller than
-     surrounding meta text. Bump to 12px for visual balance. */
-  font-size: 12px !important;
-}
+/* 2026-06-09 Vikram directive — Atlaskit canonical 11/700/UPPERCASE/3px radius
+   restored. Previous override (sentence-case 12/500) removed. The
+   data-cp-lozenge-jira-parity wrapper was also dropped from src/components/ads/Lozenge.tsx
+   so AkLozenge native styling renders everywhere. Reverses 2026-04-28
+   lesson. */
 
 /* ────────────────────────────────────────────────────────────────────────
    Status listbox scoped override (jira-compare DC3 A4, 2026-05-11)
@@ -5902,12 +5912,7 @@ table th[class*="css-"] {
    Scope correction to .cv-status-listbox so header pill lozenges (12px/500)
    are unaffected. jira-compare bypass: measured Jira value, no matching ADS token.
    ────────────────────────────────────────────────────────────────────── */
-.cv-status-listbox [data-cp-lozenge-jira-parity] > span,
-.cv-status-listbox [data-cp-lozenge-jira-parity] > span > span,
-.cv-status-listbox [data-cp-lozenge-jira-parity] span[class^="css-"] {
-  font-size: 14px !important;
-  font-weight: 400 !important;
-}
+/* cv-status-listbox override also dropped 2026-06-09 — Atlaskit native styling. */
 
 
 /* ────────────────────────────────────────────────────────────────────────

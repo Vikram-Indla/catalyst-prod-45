@@ -615,7 +615,7 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
               >
                 <span
                   className="cp-picker__icon"
-                  style={{ background: unlocked ? a.accentToken.replace('var(', '').split(',')[1]?.trim().slice(0, -1) ?? 'var(--ds-background-neutral, #F1F2F4)' : 'var(--ds-background-neutral, #F1F2F4)' }}
+                  style={{ background: unlocked ? a.tileBgToken : 'var(--ds-background-neutral, #F1F2F4)' }}
                 >
                   <AssistantIcon assistant={a} />
                 </span>

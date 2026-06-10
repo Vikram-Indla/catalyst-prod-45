@@ -56,8 +56,14 @@ export function Lozenge({
   children,
   testId,
 }: LozengeProps) {
+  // 2026-06-09 — Vikram directive: render Atlaskit canonical (11/700/UPPERCASE/3px).
+  // Inline-block wrapper shrinks to content width — otherwise grid cells with
+  // `display: grid` stretch the bare AkLozenge across the full column (bleed).
+  // NO `data-cp-lozenge-jira-parity` attribute → the global CSS override that
+  // forced sentence-case 12/500 no longer matches → Atlaskit native typography
+  // wins. Wrapper exists solely for layout shrink-wrap.
   return (
-    <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+    <span style={{ display: 'inline-block', width: 'fit-content', justifySelf: 'start', alignSelf: 'center' }}>
       <AkLozenge
         appearance={appearance}
         isBold={isBold}

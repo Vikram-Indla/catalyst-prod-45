@@ -25,18 +25,36 @@ import {
   useTimeInStatusMatrix,
   type TimeInStatusMatrixRow,
 } from '@/hooks/useDashboardWidgets';
+import TimeInStatusHoverCard from './TimeInStatusHoverCard';
 import {
   EmptyState,
   Lozenge,
   SectionMessage,
-  StatusLozenge,
 } from '@/components/ads';
+// 2026-06-09 — ADS wrapper for shrink-wrap behaviour.
+import { Lozenge as AkLozenge } from '@/components/ads';
+import { StatusPill as JiraStatusPill } from '@/components/shared/JiraTable/cells';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
 import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG } from '../dashboardTypography';
 
-const ISSUE_TYPES = ['Story', 'Epic', 'Sub-task', 'Defect', 'Business Request', 'Task'];
+// Project module: Business Request + Task explicitly hidden.
+const ISSUE_TYPES = ['Story', 'Epic', 'Sub-task', 'Defect'];
+
+const lozengeAppearance = (
+  category?: 'todo' | 'in_progress' | 'done' | string | null,
+  status?: string | null,
+): 'default' | 'success' | 'removed' | 'inprogress' | 'moved' | 'new' => {
+  if (status && ['on hold', 'blocked', 'awaiting info'].includes(status.toLowerCase())) {
+    return 'moved';
+  }
+  if (!category) return 'default';
+  const c = String(category).toLowerCase();
+  if (c === 'done') return 'success';
+  if (c === 'in_progress' || c === 'in progress') return 'inprogress';
+  return 'default';
+};
 
 type WindowPreset = '14d' | '30d' | '90d' | 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'all';
 
@@ -92,16 +110,18 @@ function fmtDuration(ms: number | undefined): string {
   return `${sec}s`;
 }
 
+// 2026-06-10 — Jira-canonical cell tints (alpha-mixed pill colors).
+// Matches TimeInStatusWidget.
 function categoryBg(category: 'todo' | 'in_progress' | 'done' | undefined, ms: number): string {
   if (!ms || ms <= 0) return 'transparent';
   switch (category) {
     case 'in_progress':
-      return 'var(--ds-background-accent-blue-subtler, #CCE0FF)';
+      return 'rgba(143, 184, 246, 0.22)';
     case 'done':
-      return 'var(--ds-background-accent-green-subtler, #BAF3DB)';
+      return 'rgba(179, 223, 114, 0.30)';
     case 'todo':
     default:
-      return 'var(--ds-background-accent-gray-subtler, #DCDFE4)';
+      return 'rgba(221, 222, 225, 0.55)';
   }
 }
 
@@ -113,8 +133,8 @@ function totalBg(ms: number, max: number): string {
 }
 
 const ROW_HEIGHT = 35;
-const STATUS_COL_MIN = 140;
-const FROZEN_LEFT_WIDTH = 460;
+const STATUS_COL_MIN = 160;
+const FROZEN_LEFT_WIDTH = 520;
 
 interface Props {
   isOpen: boolean;
@@ -137,8 +157,11 @@ export default function TimeInStatusFullscreenModal({
 }: Props) {
   const [issueType, setIssueType] = useState<string>(initialIssueType);
   const [windowPreset, setWindowPreset] = useState<WindowPreset>(initialWindowPreset);
-  const pageSize = 100; // Bigger page in executive view; whole matrix at once.
-  const [offset, setOffset] = useState(0);
+  // 2026-06-10 Fix 6 — load ALL tickets in modal (fullscreen IS the "all"
+  // surface). Drop pagination. pageSize bumped to a safe ceiling above
+  // any realistic project size; useTimeInStatusMatrix returns total + rows
+  // unaffected if total < limit.
+  const pageSize = 1000;
   const { dateFrom, dateTo } = resolveWindow(windowPreset);
 
   const { data, isLoading, isError, isFetching } = useTimeInStatusMatrix(projectKey, {
@@ -148,7 +171,7 @@ export default function TimeInStatusFullscreenModal({
     assigneeFilter,
     priorityFilter,
     limit: pageSize,
-    offset,
+    offset: 0,
   });
 
   const rows = data?.rows ?? [];
@@ -176,10 +199,12 @@ export default function TimeInStatusFullscreenModal({
       {isOpen && (
         <Modal
           onClose={onClose}
-          width="x-large"
+          // 2026-06-10 Fix 2 — modal stretches to 90vw. AtlasKit's
+          // x-large preset capped near 968px which left ~30% of viewport
+          // unused and truncated long status names. Numeric width prop
+          // accepts a px value.
+          width={Math.round((typeof window !== 'undefined' ? window.innerWidth : 1600) * 0.9)}
           shouldScrollInViewport={false}
-          // Bypass Atlaskit's max-width so the matrix can stretch to ~96vw
-          // for very wide workflows (10+ status columns).
           autoFocus
         >
           <ModalHeader>
@@ -220,13 +245,13 @@ export default function TimeInStatusFullscreenModal({
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: 6,
-                        height: 32,
-                        padding: '0 14px',
-                        ...STRONG,
-                        borderRadius: 'var(--ds-border-radius, 4px)',
-                        border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
-                        background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
-                        color: active ? 'var(--ds-text-selected, #0055CC)' : 'var(--ds-text-subtle, #505258)',
+                        height: 28,
+                        padding: '0 10px',
+                        ...(active ? SMALL_STRONG : SMALL),
+                        borderRadius: 'var(--ds-border-radius, 3px)',
+                        border: '1px solid transparent',
+                        background: active ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
+                        color: active ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtle, #505258)',
                         cursor: 'pointer',
                         whiteSpace: 'nowrap',
                       }}
@@ -246,13 +271,13 @@ export default function TimeInStatusFullscreenModal({
                       type="button"
                       onClick={() => { setWindowPreset(w); setOffset(0); }}
                       style={{
-                        height: 28,
-                        padding: '0 12px',
+                        height: 26,
+                        padding: '0 10px',
                         ...(active ? SMALL_STRONG : SMALL),
-                        borderRadius: 'var(--ds-border-radius, 4px)',
-                        border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
-                        background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
-                        color: active ? 'var(--ds-text-selected, #0055CC)' : 'var(--ds-text-subtle, #505258)',
+                        borderRadius: 'var(--ds-border-radius, 3px)',
+                        border: '1px solid transparent',
+                        background: active ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
+                        color: active ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtle, #505258)',
                         cursor: 'pointer',
                       }}
                       title={WINDOW_LABELS[w]}
@@ -264,15 +289,9 @@ export default function TimeInStatusFullscreenModal({
               </div>
             </div>
 
-            {!isLoading && rows.length > 0 && !hasAnyHistory && (
-              <div style={{ padding: '12px 0 0' }}>
-                <SectionMessage appearance="information" title="Lifecycle data accumulates forward">
-                  Status transitions are tracked from now onwards. Cells currently
-                  show full age in current status. Run the Jira changelog backfill
-                  to populate historical transitions.
-                </SectionMessage>
-              </div>
-            )}
+            {/* 2026-06-10 Fix 5 — Lifecycle banner removed in modal too.
+                Widget dropped this 2026-06-09 per Vikram directive;
+                modal continues that contract. */}
 
             {/* Matrix body */}
             {isLoading ? (
@@ -330,9 +349,11 @@ export default function TimeInStatusFullscreenModal({
                             borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                           }}
                         >
-                          <StatusLozenge status={s.category === 'in_progress' ? 'inProgress' : s.category}>
+                          {/* 2026-06-10 — Jira-canonical StatusPill
+                              (cornflower/lime/gray DOM-probed hexes). */}
+                          <JiraStatusPill appearance={lozengeAppearance(s.category, s.name)}>
                             {s.name}
-                          </StatusLozenge>
+                          </JiraStatusPill>
                         </th>
                       ))}
                       <th
@@ -370,18 +391,24 @@ export default function TimeInStatusFullscreenModal({
                             width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                           }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                            <PriorityIcon level={r.priority} size={14} />
+                          {/* 2026-06-10 Fix 3 — mirror widget BODY
+                              typography on the ticket cell. Was STRONG +
+                              mono bold for the key; now matches widget's
+                              14/400 blue link + 16px type icon. Avatar
+                              size kept small but `marginLeft: 'auto'`
+                              prevents bleed into sticky Total column. */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                            <PriorityIcon level={r.priority} size={16} />
                             <span
                               style={{
-                                display: 'inline-flex', alignItems: 'center', gap: 6,
+                                display: 'inline-flex', alignItems: 'center', gap: 8,
                                 color: token('color.link', '#0C66E4'),
                                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                                ...STRONG, whiteSpace: 'nowrap',
+                                ...BODY, whiteSpace: 'nowrap',
                                 flexShrink: 0,
                               }}
                             >
-                              <JiraIssueTypeIcon type={r.issue_type ?? 'Task'} size={14} />
+                              <JiraIssueTypeIcon type={r.issue_type ?? 'Task'} size={16} />
                               {r.issue_key}
                             </span>
                             <span
@@ -390,13 +417,16 @@ export default function TimeInStatusFullscreenModal({
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
-                                color: token('color.text', '#292A2E'),
+                                ...BODY,
+                                color: token('color.link', '#0C66E4'),
                               }}
                             >
                               {r.title}
                             </span>
                             {r.assignee_display_name && (
-                              <UserAvatar size="small" name={r.assignee_display_name} src={r.assignee_avatar_url} />
+                              <span style={{ flexShrink: 0, marginRight: 8 }}>
+                                <UserAvatar size="small" name={r.assignee_display_name} src={r.assignee_avatar_url} />
+                              </span>
                             )}
                           </div>
                         </td>
@@ -417,16 +447,32 @@ export default function TimeInStatusFullscreenModal({
                               }}
                             >
                               {ms > 0 ? (
+                                // 2026-06-10 — share the rich hover card
+                                // with the widget. Cell canonical = duration
+                                // only; ETA + pattern surface on hover.
                                 <Tooltip
-                                  content={
-                                    visits > 1
-                                      ? `In ${s.name}: ${fmtDuration(ms)} across ${visits} visits`
-                                      : `In ${s.name}: ${fmtDuration(ms)}`
-                                  }
+                                  content={() => (
+                                    <TimeInStatusHoverCard
+                                      issueKey={r.issue_key}
+                                      issueType={r.issue_type ?? issueType}
+                                      title={r.title}
+                                      assigneeDisplayName={r.assignee_display_name}
+                                      assigneeAvatarUrl={r.assignee_avatar_url}
+                                      priority={r.priority}
+                                      statusName={s.name}
+                                      statusCategory={s.category}
+                                      currentMs={ms}
+                                      visits={visits}
+                                      p50Hours={null}
+                                      confidence={0}
+                                      pattern="none"
+                                      patternConfidence={0}
+                                    />
+                                  )}
                                   position="top"
                                 >
                                   {(tp) => (
-                                    <span {...tp} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                    <span {...tp} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, cursor: 'help' }}>
                                       {fmtDuration(ms)}
                                       {visits > 1 && (
                                         <span
@@ -472,6 +518,9 @@ export default function TimeInStatusFullscreenModal({
             )}
           </ModalBody>
           <ModalFooter>
+            {/* 2026-06-10 Fix 6 — drop Prev/Next pagination. Fullscreen
+                IS the "all data" surface; load all rows in one fetch.
+                Footer = ticket count + close. */}
             <span
               style={{
                 ...SMALL,
@@ -479,25 +528,15 @@ export default function TimeInStatusFullscreenModal({
                 marginRight: 'auto',
               }}
             >
-              Showing {rows.length} of {total} {issueType} tickets · {WINDOW_LABELS[windowPreset]}
+              {total} {issueType} tickets · {WINDOW_LABELS[windowPreset]}
               {isFetching && (
                 <span style={{ marginLeft: 8, display: 'inline-flex', verticalAlign: 'middle' }}>
                   <Spinner size="small" />
                 </span>
               )}
             </span>
-            {offset > 0 && (
-              <Button appearance="subtle" onClick={() => setOffset(Math.max(0, offset - pageSize))}>
-                ← Prev
-              </Button>
-            )}
-            {offset + rows.length < total && (
-              <Button appearance="subtle" onClick={() => setOffset(offset + pageSize)}>
-                Next →
-              </Button>
-            )}
             <Button appearance="primary" onClick={onClose}>
-              Done
+              Close
             </Button>
           </ModalFooter>
         </Modal>

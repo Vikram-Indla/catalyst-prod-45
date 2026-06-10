@@ -127,7 +127,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
     { key: 'title',    content: headLabel('Title'),      isSortable: false },
     { key: 'status',   content: headLabel('Status'),     isSortable: true },
     { key: 'assignee', content: headLabel('Assignee'),   isSortable: false },
-    { key: 'started',  content: headLabel('Started'),    isSortable: true },
+    { key: 'started',  content: headLabel('Due date'),   isSortable: true },
     { key: 'reporter', content: headLabel('Reporter'),   isSortable: false },
     { key: 'severity', content: headLabel('Severity'),   isSortable: true },
     { key: 'created',  content: headLabel('Created'),    isSortable: true },
@@ -170,9 +170,9 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
-                ...STRONG,
+                /* 2026-06-09 Vikram parity — Jira Key 14/400 sans, not 14/600 mono. */
+                ...BODY,
                 color: token('color.link', '#0C66E4'),
-                fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -200,7 +200,9 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    ...STRONG,
+                    /* 2026-06-09 Vikram parity — match Epic Progress: 14/400 link */
+                    ...BODY,
+                    color: token('color.link', '#0C66E4'),
                   }}
                 >
                   {inc.summary ?? ''}
@@ -211,11 +213,19 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         },
         {
           key: 'status',
-          content: (
-            <StatusLozenge status={toStatusCategory(inc.status)}>
-              {statusLabel}
-            </StatusLozenge>
-          ),
+          /* 2026-06-09 Vikram parity — canonical Atlaskit Lozenge spec:
+             11/700/UPPERCASE via native Atlaskit (no isBold=false wrapper). */
+          content: (() => {
+            const cat = toStatusCategory(inc.status);
+            const ap: 'default' | 'inprogress' | 'success' | 'moved' = cat === 'done'
+              ? 'success'
+              : cat === 'inprogress'
+              ? 'inprogress'
+              : ['blocked','on hold','awaiting info'].includes((inc.status||'').toLowerCase())
+              ? 'moved'
+              : 'default';
+            return <Lozenge appearance={ap}>{statusLabel}</Lozenge>;
+          })(),
         },
         {
           key: 'assignee',
@@ -242,8 +252,10 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         },
         {
           key: 'started',
+          /* 2026-06-09 Vikram parity — column repurposed Started → Due date.
+             Fallback to created if due_date null so the column never empty. */
           content: (() => {
-            const raw = inc.jira_created_at ?? inc.created_at ?? null;
+            const raw = inc.effective_due_date ?? inc.due_date ?? inc.jira_created_at ?? inc.created_at ?? null;
             let display = '—';
             if (raw) {
               try {
@@ -261,7 +273,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                 style={{
                   ...STRONG,
                   color: token('color.text.subtle', '#44546F'),
-                  fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+                  /* 2026-06-09 Vikram parity — Jira Key uses Atlassian Sans 14/400, NOT mono */
                   whiteSpace: 'nowrap',
                 }}
               >

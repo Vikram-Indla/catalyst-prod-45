@@ -31,7 +31,9 @@ import {
 import { token } from '@atlaskit/tokens';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 
-import Lozenge from '@atlaskit/lozenge';
+// 2026-06-09 — switched from raw @atlaskit/lozenge to ADS wrapper so the
+// inline-block shrink-wrap applies (otherwise grid cells stretch the lozenge bg).
+import { Lozenge } from '@/components/ads';
 import Avatar from '@atlaskit/avatar';
 import EmptyState from '@atlaskit/empty-state';
 
@@ -356,7 +358,7 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
       const epicKeys = unlinked.map((e: any) => e.issue_key);
       const { data: children } = await (supabase as any)
         .from('ph_issues')
-        .select('parent_key, issue_key, summary, status, status_category, issue_type, assignee_user_id, assignee_display_name, jira_removed_at')
+        .select('parent_key, issue_key, summary, status, status_category, issue_type, assignee_user_id, assignee_display_name, jira_removed_at, due_date, effective_due_date')
         .in('parent_key', epicKeys)
         .in('issue_type', childTypes)
         .is('jira_removed_at', null)
@@ -544,7 +546,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
       if (childTypes.length > 0) {
         const { data } = await (supabase as any)
           .from('ph_issues')
-          .select('issue_key, parent_key, summary, status, status_category, issue_type, assignee_user_id, assignee_display_name')
+          .select('issue_key, parent_key, summary, status, status_category, issue_type, assignee_user_id, assignee_display_name, due_date, effective_due_date')
           .in('parent_key', epicKeys)
           .in('issue_type', childTypes)
           .is('jira_removed_at', null)
@@ -717,11 +719,13 @@ const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: num
     return (
       <span
         style={{
-          ...STRONG,
+          /* 2026-06-09 Vikram parity — match Summary cell styling: 14/400. */
+          ...BODY,
           color: token('color.text.subtle', '#44546F'),
         }}
+        title="No target date set"
       >
-        No target date
+        None
       </span>
     );
   }
@@ -1119,7 +1123,7 @@ function DemandRowItem({
           // Apr 26, 2026 — column widths bumped to match the wider 14px
           // typography in cells (key 100→130, progress 160→180, target
           // 110→130). Header above uses identical grid so columns align.
-          gridTemplateColumns: '28px 20px 130px 2fr 1fr 130px 32px',
+          gridTemplateColumns: '28px 20px 120px 2fr 120px 1fr 100px 180px',
           alignItems: 'center',
           gap: 12,
           padding: `0 ${token('space.300', '24px')}`,
@@ -1159,8 +1163,10 @@ function DemandRowItem({
             href={detailUrl}
             onClick={(e) => e.stopPropagation()}
             style={{
-              ...STRONG,
-              fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+              /* 2026-06-09 Vikram parity — Jira Key cell: Atlassian Sans
+                 14/400/color.link, NOT mono, NOT STRONG. Probe side-by-side
+                 confirmed Catalyst was rendering 14/600/mono vs Jira 14/400/sans. */
+              ...BODY,
               color: token('color.link', '#0C66E4'),
               textDecoration: 'none',
               whiteSpace: 'nowrap',
@@ -1174,19 +1180,34 @@ function DemandRowItem({
 
         {/* Summary — Apr 26, 2026: 13→14px, weight 400→500 to match
             primary-text density in Overdue / On Hold / Production
-            Incidents row titles. Same color.text token, just bolder. */}
-        <span
+            2026-06-09 Vikram parity RCA — Jira summary cell is a blue
+            link 14/400 (`<a>`), Catalyst was rendering as 14/600 black
+            span. Live DOM probe both sides confirmed weight + color +
+            element mismatch. Match Jira spec §7 .summary-link. */}
+        <a
+          href={`/project-hub/${projectKey}/allwork?issue=${row.issue_key ?? ''}`}
           title={row.title}
+          onClick={(e) => e.stopPropagation()}
           style={{
             ...BODY,
             fontFamily: ATLAS_SANS,
+            color: token('color.link', '#0C66E4'),
+            textDecoration: 'none',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
           }}
         >
           {row.title}
-        </span>
+        </a>
+
+        {/* 2026-06-09 Vikram parity — Status column added (between Summary
+            and Progress). Sentence-case via data-cp-lozenge-jira-parity. */}
+        {row.status && (
+            <Lozenge appearance={lozengeAppearance(row.status_category, row.status)}>
+              {row.status}
+            </Lozenge>
+          )}
 
         {/* Progress + stat — inline (bar left, text right). Apr 26, 2026:
             bar 6→10px height, fill colours via Atlaskit canonical bolder
@@ -1237,30 +1258,42 @@ function DemandRowItem({
         {/* Date / RAG pill */}
         <DatePill state={state} daysLeft={daysLeft} dateStr={row.target_complete} />
 
-        {/* Avatar + name — consistent with child rows */}
+        {/* Avatar + FULL name — 2026-06-09 Vikram parity directive.
+            Spec: 24px avatar (small) + 8px gap + full name (14/400/primary)
+            with ellipsis truncation. Column 180px wide. Unassigned state:
+            grey initials avatar + "Unassigned" subtle text. */}
         <span
           style={{
-            ...SMALL,
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 8,
             fontFamily: ATLAS_SANS,
-            color: token('color.text.subtle', '#44546F'),
+            color: row.assignee_name && row.assignee_name !== '—'
+              ? token('color.text', '#172B4D')
+              : token('color.text.subtle', '#44546F'),
+            fontSize: 14,
+            fontWeight: 400,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            minWidth: 0,
           }}
+          title={row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : 'Unassigned'}
         >
           <Avatar
-            size="xsmall"
-            src={
-              row.assignee_avatar
-                || (row.assignee_name && row.assignee_name !== '—'
-                  ? resolveAvatarUrl(row.assignee_name) ?? undefined
-                  : undefined)
-            }
+            size="small"
+            /* 2026-06-09 Vikram compliance — external avatar CDN banned.
+               row.assignee_avatar (Supabase profile.avatar_url) could be
+               gravatar/atl-paas; ignore it. Use resolveAvatarUrl(name)
+               bundled local OR null (→ initials). */
+            src={row.assignee_name && row.assignee_name !== '—'
+              ? resolveAvatarUrl(row.assignee_name) ?? undefined
+              : undefined}
             name={row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : 'Unassigned'}
           />
-          {row.assignee_name && row.assignee_name !== '—' ? row.assignee_name.split(' ')[0] : ''}
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : 'Unassigned'}
+          </span>
         </span>
       </div>
 
@@ -1296,15 +1329,20 @@ function DemandRowItem({
             row.epics.map((story) => {
               const storyUrl = `/project-hub/${projectKey}/allwork?issue=${story.issue_key}`;
               const storyAssignee = story.assignee_display_name ?? '—';
+              const hasAssignee = storyAssignee && storyAssignee !== '—';
+              const storyDue = (story as any).effective_due_date ?? (story as any).due_date ?? null;
               return (
                 <div
                   key={story.id}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '20px 20px 90px 1fr auto auto',
+                    /* 2026-06-09 Vikram parity — child grid mirrors PARENT row
+                       template so child Status + Target columns visually align
+                       with parent Status + Target. Was 6-col bespoke. */
+                    gridTemplateColumns: '28px 20px 120px 2fr 120px 1fr 100px 180px',
                     alignItems: 'center',
                     gap: 12,
-                    padding: '10px 16px 10px 28px',
+                    padding: '10px 24px 10px 28px',
                     minHeight: 40,
                     borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
                     borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
@@ -1319,7 +1357,7 @@ function DemandRowItem({
                     href={storyUrl}
                     onClick={(e) => e.stopPropagation()}
                     style={{
-                      ...SMALL_STRONG,
+                      ...BODY,
                       fontFamily: ATLAS_SANS,
                       color: token('color.link', '#0C66E4'),
                       textDecoration: 'none',
@@ -1328,43 +1366,67 @@ function DemandRowItem({
                   >
                     {story.issue_key}
                   </a>
-                  <span
+                  <a
+                    href={storyUrl}
                     title={story.summary}
+                    onClick={(e) => e.stopPropagation()}
                     style={{
                       ...BODY,
                       fontFamily: ATLAS_SANS,
+                      color: token('color.link', '#0C66E4'),
+                      textDecoration: 'none',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
                     }}
                   >
                     {story.summary}
-                  </span>
+                  </a>
+                  {/* Sentence-case status via data-cp-lozenge-jira-parity */}
                   <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
-                    {story.status}
-                  </Lozenge>
+                      {story.status}
+                    </Lozenge>
+                  {/* Progress placeholder — stories have no sub-rollup */}
+                  <span />
+                  {/* Target (Due date) — aligns with parent Target column */}
                   <span
                     style={{
-                      ...SMALL,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      fontFamily: ATLAS_SANS,
-                      color: token('color.text.subtle', '#44546F'),
+                      ...BODY,
+                      color: storyDue ? token('color.text', '#172B4D') : token('color.text.subtle', '#44546F'),
                       whiteSpace: 'nowrap',
                     }}
+                    title={storyDue ? `Due ${storyDue}` : 'No due date'}
+                  >
+                    {storyDue
+                      ? new Date(storyDue).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })
+                      : 'None'}
+                  </span>
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      fontFamily: ATLAS_SANS,
+                      fontSize: 14,
+                      fontWeight: 400,
+                      color: hasAssignee
+                        ? token('color.text', '#172B4D')
+                        : token('color.text.subtle', '#44546F'),
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      minWidth: 0,
+                    }}
+                    title={hasAssignee ? storyAssignee : 'Unassigned'}
                   >
                     <Avatar
-                      size="xsmall"
-                      src={
-                        (story as any).assignee_avatar
-                          || (storyAssignee && storyAssignee !== '—'
-                            ? resolveAvatarUrl(storyAssignee) ?? undefined
-                            : undefined)
-                      }
-                      name={storyAssignee && storyAssignee !== '—' ? storyAssignee : 'Unassigned'}
+                      size="small"
+                      src={hasAssignee ? resolveAvatarUrl(storyAssignee) ?? undefined : undefined}
+                      name={hasAssignee ? storyAssignee : 'Unassigned'}
                     />
-                    {storyAssignee.split(' ')[0]}
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {hasAssignee ? storyAssignee : 'Unassigned'}
+                    </span>
                   </span>
                 </div>
               );
@@ -1436,7 +1498,7 @@ function DemandRowItem({
                       <span
                         title={epic.summary}
                         style={{
-                          ...BODY,
+                          ...STRONG,
                           fontFamily: ATLAS_SANS,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -1473,15 +1535,19 @@ function DemandRowItem({
                     {epicExpanded && (epic.stories ?? []).map((story) => {
                       const storyUrl = `/project-hub/${projectKey}/allwork?issue=${story.issue_key}`;
                       const storyAssignee = story.assignee_display_name ?? '—';
+                      const hasAssignee = storyAssignee && storyAssignee !== '—';
+                      const storyDue = (story as any).effective_due_date ?? (story as any).due_date ?? null;
                       return (
                         <div
                           key={story.issue_key}
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: '20px 20px 90px 1fr auto auto',
+                            /* 2026-06-09 Vikram parity — mirrors parent grid so
+                               Status + Target columns align across hierarchy. */
+                            gridTemplateColumns: '28px 20px 120px 2fr 120px 1fr 100px 180px',
                             alignItems: 'center',
                             gap: 12,
-                            padding: '10px 16px 10px 28px',
+                            padding: '10px 24px 10px 28px',
                             minHeight: 40,
                             borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
                             borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
@@ -1496,7 +1562,7 @@ function DemandRowItem({
                             href={storyUrl}
                             onClick={(e) => e.stopPropagation()}
                             style={{
-                              ...SMALL_STRONG,
+                              ...BODY,
                               fontFamily: ATLAS_SANS,
                               color: token('color.link', '#0C66E4'),
                               textDecoration: 'none',
@@ -1505,43 +1571,64 @@ function DemandRowItem({
                           >
                             {story.issue_key}
                           </a>
-                          <span
+                          <a
+                            href={storyUrl}
                             title={story.summary}
+                            onClick={(e) => e.stopPropagation()}
                             style={{
                               ...BODY,
                               fontFamily: ATLAS_SANS,
+                              color: token('color.link', '#0C66E4'),
+                              textDecoration: 'none',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap',
                             }}
                           >
                             {story.summary}
-                          </span>
+                          </a>
                           <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
-                            {story.status}
-                          </Lozenge>
+                              {story.status}
+                            </Lozenge>
+                          <span />
                           <span
                             style={{
-                              ...SMALL,
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 6,
-                              fontFamily: ATLAS_SANS,
-                              color: token('color.text.subtle', '#44546F'),
+                              ...BODY,
+                              color: storyDue ? token('color.text', '#172B4D') : token('color.text.subtle', '#44546F'),
                               whiteSpace: 'nowrap',
                             }}
+                            title={storyDue ? `Due ${storyDue}` : 'No due date'}
+                          >
+                            {storyDue
+                              ? new Date(storyDue).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })
+                              : 'None'}
+                          </span>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 8,
+                              fontFamily: ATLAS_SANS,
+                              fontSize: 14,
+                              fontWeight: 400,
+                              color: hasAssignee
+                                ? token('color.text', '#172B4D')
+                                : token('color.text.subtle', '#44546F'),
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              minWidth: 0,
+                            }}
+                            title={hasAssignee ? storyAssignee : 'Unassigned'}
                           >
                             <Avatar
-                              size="xsmall"
-                              src={
-                                (story as any).assignee_avatar
-                                  || (storyAssignee && storyAssignee !== '—'
-                                    ? resolveAvatarUrl(storyAssignee) ?? undefined
-                                    : undefined)
-                              }
-                              name={storyAssignee && storyAssignee !== '—' ? storyAssignee : 'Unassigned'}
+                              size="small"
+                              src={hasAssignee ? resolveAvatarUrl(storyAssignee) ?? undefined : undefined}
+                              name={hasAssignee ? storyAssignee : 'Unassigned'}
                             />
-                            {storyAssignee.split(' ')[0]}
+                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {hasAssignee ? storyAssignee : 'Unassigned'}
+                            </span>
                           </span>
                         </div>
                       );
@@ -1686,7 +1773,8 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
   // No slice cap (Apr 26, 2026) — WidgetWrapper now enforces a 620px
   // standardised body height with internal scroll, so the dashboard
   // never exposes a half-truncated list. Render the full visible set.
-  const visibleRows = visibleByTab;
+  // 2026-06-09 Vikram directive — max 10 rows per gadget.
+  const visibleRows = visibleByTab.slice(0, 10);
 
 
 
@@ -1759,7 +1847,15 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
         const totalCount = mergedActive.length + delivered.length;
         const activeCount = mergedActive.filter((r) => !overdueRows.includes(r)).length;
         const overdueCount = overdueRows.length;
-        const doneCount = delivered.length;
+        // 2026-06-09 Vikram parity — "Fulfilled" should mean rows where all
+        // child stories are done (progress 100%), not rows where the epic
+        // status is 'closed'. Previous calc used delivered.length which only
+        // counted closed-status rows; epics with 34/34 done but status 'In
+        // Progress' were silently excluded → 0% even when half the visible
+        // rows showed 100%.
+        const allRows = [...mergedActive, ...delivered];
+        const fulfilledRows = allRows.filter((r) => r.total > 0 && r.done >= r.total);
+        const doneCount = fulfilledRows.length;
         const fulfilledPct = totalCount > 0
           ? Math.round((doneCount / totalCount) * 100)
           : 0;
@@ -1805,9 +1901,13 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                 transition: 'outline-color 80ms ease',
               }}
             >
+              {/* 2026-06-09 Vikram parity — Jira format "Active · 18".
+                  data-cp-lozenge-jira-parity wrapper + global CSS in
+                  index.css overrides Atlaskit's default text-transform:
+                  uppercase + letter-spacing on the inner span. */}
               <Lozenge appearance={appearance}>
-                {label} {count}
-              </Lozenge>
+                  {label} · {count}
+                </Lozenge>
             </span>
           );
         };
@@ -1845,52 +1945,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
               />
             </div>
 
-            {/* ── Clickable filter pills (preserved behaviour) ──────── */}
-            <div
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: `8px ${token('space.200', '16px')}`,
-                borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
-                fontFamily: ATLAS_SANS,
-              }}
-            >
-              <span
-                style={{
-                  ...SMALL_STRONG,
-                  color: token('color.text.subtle', '#44546F'),
-                  marginRight: 4,
-                }}
-              >
-                Filter:
-              </span>
-              {renderPill('active', 'Active', activeCount, 'inprogress')}
-              {renderPill('overdue', 'Overdue', overdueCount, 'moved')}
-              {renderPill('done', 'Done', doneCount, 'success')}
-              {tab !== 'all' && (
-                <span
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setTab('all')}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setTab('all');
-                    }
-                  }}
-                  style={{
-                    ...SMALL_STRONG,
-                    color: token('color.link', '#0C66E4'),
-                    cursor: 'pointer',
-                    marginLeft: 'auto',
-                  }}
-                >
-                  Clear filter
-                </span>
-              )}
-            </div>
+            {/* 2026-06-09 Vikram — filter pill row removed (redundant with KPI strip). */}
           </div>
         );
       })()}
@@ -1902,7 +1957,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '28px 20px 130px 2fr 1fr 130px 32px',
+          gridTemplateColumns: '28px 20px 120px 2fr 120px 1fr 100px 180px',
           alignItems: 'center',
           gap: 12,
           padding: `4px ${token('space.300', '24px')}`,
@@ -1920,9 +1975,10 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
         <span />
         <span>Key</span>
         <span>Summary</span>
+        <span>Status</span>
         <span>Progress</span>
         <span>Target</span>
-        <span />
+        <span>Assignee</span>
       </div>
 
 

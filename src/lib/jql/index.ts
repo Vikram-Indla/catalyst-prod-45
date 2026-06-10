@@ -7,6 +7,9 @@ export type { FieldDef, FieldType } from './fieldMap';
 export { translate } from './translator';
 export type { JqlFilter, FilterMethod } from './translator';
 
+export { parseOrderBy } from './orderBy';
+export type { OrderBySpec } from './orderBy';
+
 export { getSuggestions } from './autocomplete';
 export type { Suggestion, SuggestionResult, SuggestionType, ValuePool } from './autocomplete';
 

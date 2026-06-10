@@ -1,6 +1,96 @@
 # WAYS OF WORKING — MANDATORY FOR ALL IMPLEMENTATION
 
-These rules apply to every implementation task. No exceptions.
+These rules apply to every implementation task. No exceptions. **Applies to ALL agents, skills, and subagents** — main session, catalyst-agent, design-critique, jira-compare, preflight, code-review, every subagent. No exceptions.
+
+---
+
+## 🔤 FONTS BANNED EXCEPT ADS (P0, Non-Negotiable — added 2026-06-09)
+
+**Only the Atlassian Design System CDN and Atlassian-hosted font families are allowed in Catalyst. Every other font source — Google Fonts, Typekit, Fontsource npm packages, self-hosted woff2, system stacks declared as primary — is permanently banned across CSS, TSX, HTML, inline styles, npm dependencies, and CDN links.**
+
+### Allowed (the ONLY allowed sources)
+
+- **Font families (CSS values)**: `var(--ds-font-family-body)`, `var(--ds-font-family-heading)`, `var(--ds-font-family-code)`, `'Atlassian Sans'`, `'Atlassian Mono'`, `'Charlie Display'`, `'Charlie Text'`, `'Charlie Code'`, `inherit`, `unset`. System fallback stacks (`ui-sans-serif`, `-apple-system`, `system-ui`, `Segoe UI`, etc.) are allowed ONLY as fallbacks AFTER an Atlassian family in the same stack — never as the primary family.
+- **CDN hosts**: `ds-cdn.prod-east.frontend.public.atl-paas.net`, `*.atl-paas.net`, `*.atlassian.com`, `*.atlassian.design`. Nothing else.
+- **`@font-face` declarations**: allowed ONLY when `src: url(...)` points to an Atlassian CDN host above. Self-hosted `/fonts/*.woff2` is banned.
+
+### Banned (no exceptions, no per-case asks)
+
+- ❌ `@import url('https://fonts.googleapis.com/...')` / `fonts.gstatic.com` / `use.typekit.net` / `use.fontawesome.com` / `fontshare.com` / `cdnfonts.com` / `rsms.me/inter`
+- ❌ `@fontsource/*` and `@fontsource-variable/*` npm packages (Inter, Roboto, JetBrains Mono, Sora, Plus Jakarta Sans, etc.) — `import '@fontsource-variable/inter'` is a direct violation
+- ❌ `<link rel="stylesheet|preconnect|preload" href="<non-Atlassian font CDN>">`
+- ❌ `@font-face { src: url('/fonts/inter.woff2') }` (self-hosted woff2)
+- ❌ `font-family: 'Inter' | 'Roboto' | 'Open Sans' | 'Sora' | 'Plus Jakarta Sans' | 'JetBrains Mono' | 'Helvetica' | 'Arial' | 'Georgia' | 'Times New Roman' | 'Courier'` as primary
+- ❌ Tailwind `font-sans|font-serif|font-mono|font-[Inter]` utilities on any element (also banned by the existing ADS-token Tailwind rule)
+- ❌ Dynamic URL strings referencing banned CDNs: `const URL = 'https://fonts.googleapis.com/...'`
+
+### Enforcement (5 layers)
+
+1. **`design-governance/rules/font-import-enforcer.js`** — scans `.css`, `.html`, `.tsx`, `.ts`, `.jsx` for `@import url(...)`, `@font-face { src: url(...) }`, `<link href=...>`, and dynamic font-CDN URL strings. Emits `BANNED_FONT_IMPORT`, `BANNED_FONT_FACE`, `BANNED_FONT_LINK`, `BANNED_FONT_CDN_URL`.
+2. **`design-governance/rules/typography-enforcer.js`** — bans `font-family: 'Inter' | 'Sora' | ...` in inline styles (existing `BANNED_FONT_FAMILY` rule).
+3. **`design-governance/rules/ads-token-scanner.js`** — bans Tailwind `font-*` utilities (existing `TAILWIND_UTILITY` rule).
+4. **`index.html` CSP meta tag** — `font-src` allowlist limits the browser to Atlassian CDN + localhost (Vite HMR). Any non-Atlassian font request is blocked at the browser level with a console error.
+5. **`design-governance/scripts/self-test.mjs`** — 9 fixtures pin the font lockdown rules so the scanners cannot regress silently.
+
+### Adding a new font weight or script
+
+The only allowed path is to add it via the Atlassian CDN `@font-face` block in `index.html`. If a glyph or weight is missing from Atlassian Sans/Mono/Charlie, raise it with Vikram — do NOT install a Fontsource package or link to Google Fonts as a workaround.
+
+### Removing a banned font
+
+When the scanner flags `@fontsource-variable/inter` or similar:
+1. Remove the `import '@fontsource-variable/...'` line from `src/main.tsx` (or wherever).
+2. Uninstall the npm package: `npm uninstall @fontsource-variable/inter`.
+3. Grep for any `font-family: 'Inter'` left behind and replace with `var(--ds-font-family-body)`.
+4. Re-run `node design-governance/rules/audit.js src/` — should report 0 font violations.
+
+### Why this rule exists
+
+Pre-2026-06-09, `src/main.tsx` imported `@fontsource-variable/inter` and `@fontsource-variable/jetbrains-mono` (lines 8–9) — non-Atlassian fonts bundled into the production bundle. The comment claimed Inter "registers weight 653 for parity" but Atlassian Sans v4 (already loaded in `index.html` from the official CDN) provides weight 653 natively. Inter was redundant AND a parity drift from Jira's actual rendering. Without a scanner rule, the import had been shipping un-flagged.
+
+**Severity:** P0 — non-ADS fonts cannot ship. Every PR that introduces one is blocked by the audit CI gate.
+
+---
+
+## ♻️ REUSE FIRST — NEVER REBUILD WHAT CATALYST ALREADY HAS (P0, Non-Negotiable)
+
+**Before writing ANY component, primitive, hook, util, or wrapper — search the Catalyst codebase AND `@atlaskit/*` for an existing implementation. Reuse it. Do not rebuild.**
+
+### The Rule
+
+1. **Step 0 of every build task** — BEFORE writing code, run:
+   - `grep -r "<concept>" src/components src/lib src/hooks` (Catalyst-internal)
+   - Check `node_modules/@atlaskit/` and the catalyst-storybook MCP for an ADS primitive
+   - Search canonical components: `JiraTable`, `CatalystSidebarDetails`, `CatalystKeyDetails`, `CatalystViewBase`, `JiraIssueTypeIcon`, `CatalystStatusPill`, `EditableAssignee/Priority/Reporter`, `CatalystParentLinker`, `CatalystDueDateField`, `WatchersChip`, `ImproveIssueDropdown`, `AIIntelligenceButton`, `CatyRainbowCTA`, `InlineCreateWithAI`, `FilterDropdown`, `GroupByControl`, `ColumnManager`, `CatalystDescriptionSection`, `LinkedWorkItemsSection`, `SubtasksPanel`, `ActivityPanel`, `RecommendedPanel`, `AskCaty` surfaces, `ReactionStrip`, `ph_comments` helpers.
+   - Atlaskit equivalents always preferred over hand-rolled: `@atlaskit/button`, `@atlaskit/dropdown-menu`, `@atlaskit/select`, `@atlaskit/modal-dialog`, `@atlaskit/textfield`, `@atlaskit/tabs`, `@atlaskit/avatar`, `@atlaskit/lozenge`, `@atlaskit/spinner`, `@atlaskit/tooltip`, `@atlaskit/popup`, `@atlaskit/editor-core` (rich text), `@atlaskit/renderer`, `@atlaskit/dynamic-table` (only outside work-item lists), `@atlaskit/inline-edit`, `@atlaskit/datetime-picker`, `@atlaskit/side-navigation`, `@atlaskit/breadcrumbs`, `@atlaskit/checkbox`, `@atlaskit/radio`, `@atlaskit/toggle`, `@atlaskit/flag`.
+
+2. **Common reuse traps (never reimplement these):**
+   - Rich text editor → `@atlaskit/editor-core` + `AtlaskitRenderer` (NOT TipTap from scratch, NOT contenteditable)
+   - Avatar → `@atlaskit/avatar` (NOT `<img>` with border-radius)
+   - Work item type icon → `JiraIssueTypeIcon` from `src/lib/jira-issue-type-icons` (NOT colored dots, NOT custom SVG)
+   - Status pill → `CatalystStatusPill` / `StatusPill` (NOT `<span>` with bg color)
+   - Work item table → `JiraTable` (NOT new `<table>`, NOT raw `@atlaskit/dynamic-table` for work items — see canonical-table rule)
+   - Detail view shell → `CatalystViewBase` (NOT bespoke modal layout)
+   - Sidebar field rows → `CatalystSidebarDetails` (NOT raw form fields)
+   - Inline editable field → `EditableAssignee/Priority/Reporter` / `makeXEditCell` factories (NOT always-open select)
+   - Menu/dropdown → `@atlaskit/dropdown-menu` (NOT hand-rolled — WCAG violation; see 2026-05-10 lesson)
+   - Watcher chip → `WatchersChip` (NOT new popover)
+   - AI CTA → `AIIntelligenceButton` / `CatyRainbowCTA` (NOT new rainbow border — see 2026-06-07 lesson)
+   - Date field → `CatalystDueDateField` / `makeDateEditCell` (NOT raw `<input type="date">`)
+   - Toasts → `@atlaskit/flag` (NOT `sonner`, NOT custom)
+
+3. **If you think you need to build something new** — STOP and ask Vikram: *"I searched [X, Y, Z] and didn't find an existing component for [need]. Should I extend [closest existing] or build new?"* Never silently build a parallel implementation.
+
+4. **Forking a canonical component to fit a new data source is BANNED.** Parameterise via prop/adapter instead (see 2026-06-01 adopt-canonical-components lesson — product All Work reimplementation cost 18 parity defects).
+
+### Why this rule exists
+
+- 2026-05-19 — `CatalystJiraListView` (~1,300 LOC) built from scratch, then `JiraTable` discovered to already have every feature. Whole session wasted, component deleted same day.
+- 2026-06-01 — `BrSidebarDetails` / `BrListPanel` reimplemented project-hub surfaces from raw `@atlaskit/select` instead of mounting `CatalystSidebarDetails` + `StatusTransitionDropdown`. 18 parity defects.
+- 2026-05-10 — Hand-rolled dropdown in `CatalystViewBase` ⋯ menu = WCAG 2.1 AA failure. Should have used `@atlaskit/dropdown-menu`.
+- Every reimplementation drifts. The canonical component has icons, affordances, colours, keyboard nav, ARIA, a11y, and edge-case handling the new code will miss.
+
+**Severity:** P0 — building parallel implementations of existing components is the documented #1 cause of session-wasting defects and parity drift. Reuse first. Extend second. Build new only with explicit Vikram approval.
 
 ---
 
@@ -1619,3 +1709,69 @@ The "Improve writing" button in the comment editor toolbar rendered with rainbow
 
 **Files fixed (9):** AIIntelligenceButton.tsx, CatyRainbowCTA.tsx, ImproveIssueDropdown.tsx, ImproveButton.tsx, RecommendedPanel.tsx, SummarizeDigestModal.tsx, AssignedPanel.tsx, ReplyComposer.tsx, EditableAssignee.tsx, MicButton.tsx
 **Commits:** eb233ccf1, 832f795a3, 28ec2bc09, 55dfb65a7, 3d74bfecd, bb307a987, 9b790fff3
+
+---
+
+## 2026-06-10 — Dev Server Module Loading: vite.config + @atlaskit/flag import errors
+
+**Surface:** Dev server startup + MessageComposer.tsx runtime error
+**When:** Fresh dev server session; browser showed "Something went wrong" + truncated module path error.
+
+**Root cause (two separate bugs):**
+
+1. **vite.config.ts line 598: Non-existent package in optimizeDeps.include**
+   - Listed `'@atlaskit/pragmatic-drag-and-drop-flourish'` — package does NOT exist in npm
+   - Never in package.json; was likely a typo or removed package
+   - Error: `Failed to resolve dependency: @atlaskit/pragmatic-drag-and-drop-flourish, present in 'optimizeDeps.include'`
+   - Fix: Removed line 598
+   - Commit: `670338b`
+
+2. **MessageComposer.tsx line 14: Wrong import style for @atlaskit/flag**
+   - Was: `import { Flag, FlagGroup } from '@atlaskit/flag'`
+   - Problem: @atlaskit/flag exports `Flag` as DEFAULT, not named export. FlagGroup IS named.
+   - Error: `SyntaxError: module does not provide export named 'Flag'` (browser DevTools only)
+   - Fix: Split imports: `import Flag from '@atlaskit/flag'; import { FlagGroup } from '@atlaskit/flag'`
+   - Commit: `eb41e0d`
+
+**Lesson (P1):** 
+- Always verify every package in optimizeDeps.include exists in package.json + node_modules before committing. The only gate is runtime failure.
+- When a module export error occurs, check the actual module's dist/esm/index.js to see what IS exported. Named vs default exports are subtle and easy to get wrong.
+- Browser error messages are often truncated. Use DevTools Console for the FULL error message before debugging.
+
+**Severity:** P1 — broke dev server + app initialization; required DevTools inspection to diagnose.
+
+---
+
+## 🗣️ COMMUNICATION RULES — DIRECT MODE (P0, Non-Negotiable)
+
+Applies to every response, every agent, every skill.
+
+1. **Open with flaw, gap, or risky assumption.** First sentence. If solid, one line, move on. Never invent objections.
+2. **Tag confidence:** `[Certain]` / `[Likely]` / `[Guessing]`. Mostly guesswork → say so upfront.
+3. **No filler praise.** Banned: "Great question", "You're absolutely right", "That makes sense", "Absolutely", "Definitely".
+4. **When Vikram is wrong:** "I disagree because [reason]. Instead: [alternative]. Risk in your approach: [specific downside]."
+5. **Lead with the uncomfortable truth** — first line, not paragraph three.
+6. **No warm-up paragraphs.** Start with the most useful thing.
+7. **On pushback, hold position** unless given new facts or original claim was `[Guessing]`.
+8. **Say "I don't know" plainly.** Don't manufacture answers.
+9. **Separate fact from opinion explicitly.** Don't blur.
+10. **When asked to choose, commit to ONE recommendation.** No "it depends" lists.
+11. **Surface assumptions BEFORE the answer**, not after.
+12. **If the question is wrong, say so** and give the better one.
+13. **Quantify.** Numbers, ranges, probabilities — not "many", "some", "significant".
+14. **Steelman the opposing view** before agreeing with Vikram's.
+15. **Flag rubber-stamp requests** when Vikram has already decided.
+16. **Give cost and downside** of your recommendation, not just upside.
+17. **State what evidence would change your mind** on a key claim.
+18. **One clear caveat beats five hedges.** No qualifier padding.
+19. **If a task is a bad idea, say so** before helping execute it well.
+20. **Match effort to stakes.** Don't over-explain small things.
+21. **On error, correct in one line.** No over-apologizing.
+22. **Name the tradeoff** when two goals conflict; force the choice.
+23. **Concrete example > abstract description.**
+24. **Don't adopt loaded framing.** Restate neutrally.
+25. **Tell Vikram when it's good enough** and he's over-engineering.
+26. **Don't soften numbers or deadlines** to sound better.
+27. **End with the single next action**, not a recap.
+
+**Severity:** P0 — applies before all other communication conventions including caveman mode formatting (caveman trims words; these rules govern stance).

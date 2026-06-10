@@ -32,17 +32,123 @@ import { useUWV } from '@/components/universal-work-view/UWVContext';
 import {
   EmptyState,
   Lozenge,
-  SectionMessage,
-  StatusLozenge,
   toStatusCategory,
 } from '@/components/ads';
+// 2026-06-09 — ADS wrapper for shrink-wrap behaviour.
+import { Lozenge as AkLozenge } from '@/components/ads';
+// 2026-06-10 — reuse canonical Jira-probed StatusPill (DOM-measured hexes
+// per JiraTable cells.tsx). AkLozenge was rendering the wrong category
+// colors (bright ADS blue / dark forest green vs Jira's cornflower /
+// lime). See CLAUDE.md jira-compare lessons.
+import { StatusPill as JiraStatusPill } from '@/components/shared/JiraTable/cells';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
 import TimeInStatusFullscreenModal from './TimeInStatusFullscreenModal';
+import TimeInStatusHoverCard from './TimeInStatusHoverCard';
+import { classifyDwell, type DwellPattern } from '@/lib/tis-dwell-classifier/classifier';
 import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG } from '../dashboardTypography';
 
-const ISSUE_TYPES = ['Story', 'Epic', 'Sub-task', 'Defect', 'Business Request', 'Task'];
+// Project module: Business Request + Task explicitly hidden (per dashboard
+// guardrail — those types live in Product Hub / BAU TaskHub, not project
+// delivery). Story / Epic / Sub-task / Defect cover the project domain.
+const ISSUE_TYPES = ['Story', 'Epic', 'Sub-task', 'Defect'];
+
+// Phase 4 row 5 — outlier #1 (Predictive ETA). Mocked client-side cohort
+// fallback until tis-forecast-cohort edge fn ships in row 9.
+//
+// 2026-06-10 Fix 1 — per-status hardcoded P50 table failed for actual BAU
+// statuses (STAGING/QA, IN BETA, etc.). Replace with CATEGORY-driven
+// fallback so every non-done in_progress cell forecasts. Per-status
+// overrides retained for known statuses (delta from real cohort once
+// backfill lands).
+const DEFAULT_P50_HOURS_BY_CATEGORY: Record<string, number> = {
+  todo: 168,         // 7d — generic backlog dwell
+  in_progress: 192,  // 8d — generic in-flight dwell
+  done: 0,           // no forecast for done
+};
+const PER_STATUS_OVERRIDES: Record<string, number> = {
+  'In Requirements': 168,
+  'Demand Validation': 96,
+  'In Design': 192,
+  'Prioritized Backlog': 240,
+  'In Development': 240,
+  'In Review': 48,
+  'STAGING/QA': 72,
+  'IN BETA': 96,
+  'PRODUCTION READY': 24,
+  'IN PRODUCTION': 0,
+  'On Hold': 720,
+};
+const MOCK_CONFIDENCE = 0.71;
+function getCohortP50Hours(_issueType: string, statusName: string, category?: string | null): number | null {
+  const override = PER_STATUS_OVERRIDES[statusName];
+  if (override != null) return override > 0 ? override : null;
+  if (!category) return null;
+  const fallback = DEFAULT_P50_HOURS_BY_CATEGORY[category];
+  return fallback != null && fallback > 0 ? fallback : null;
+}
+
+// Phase 4 row 6 — outlier #5 (Pattern Lozenge). V1 mocks dwell input from
+// what we already know cell-side: visit count (proxy for reassignments)
+// and dwell vs P50. Once backfill (row 9) is live, this becomes a real
+// classifyDwell() call with the changelog events + comments + links from
+// the status window. Until then we still render the lozenge when the
+// proxy heuristics fire — it's directionally correct and unlocks the UI.
+function classifyCellMocked(opts: {
+  issueType: string;
+  statusName: string;
+  category?: string | null;
+  durationMs: number;
+  visits: number;
+}): { pattern: DwellPattern; confidence: number; description?: string } {
+  const p50h = getCohortP50Hours(opts.issueType, opts.statusName, opts.category);
+  // Proxy ping_pong on visits ≥ 2 (re-entered the status).
+  if (opts.visits >= 2) {
+    return classifyDwell({
+      events: [
+        { field: 'assignee', from_display: null, to_display: 'A', actor_name: 'sys', changed_at: new Date().toISOString() },
+        { field: 'assignee', from_display: 'A', to_display: 'B', actor_name: 'sys', changed_at: new Date().toISOString() },
+        { field: 'assignee', from_display: 'B', to_display: 'A', actor_name: 'sys', changed_at: new Date().toISOString() },
+      ],
+      comments: [],
+      links: [],
+      durationMs: opts.durationMs,
+      p50Hours: p50h,
+    });
+  }
+  // Proxy silent dwell when current > 2x P50 AND no revisit signal.
+  if (p50h != null && opts.durationMs > 2 * p50h * 60 * 60 * 1000) {
+    return classifyDwell({
+      events: [],
+      comments: [],
+      links: [],
+      durationMs: opts.durationMs,
+      p50Hours: p50h,
+    });
+  }
+  return { pattern: 'none', confidence: 0.4 };
+}
+
+/**
+ * Map Jira status_category (+ status name for blocked / on hold carve-out)
+ * to an Atlaskit Lozenge appearance — same mapping Epic Progress uses so the
+ * column-header status pills carry Jira-standard colors, not the washed-out
+ * `isBold={false}` look of the generic StatusLozenge wrapper.
+ */
+const lozengeAppearance = (
+  category?: 'todo' | 'in_progress' | 'done' | string | null,
+  status?: string | null,
+): 'default' | 'success' | 'removed' | 'inprogress' | 'moved' | 'new' => {
+  if (status && ['on hold', 'blocked', 'awaiting info'].includes(status.toLowerCase())) {
+    return 'moved';
+  }
+  if (!category) return 'default';
+  const c = String(category).toLowerCase();
+  if (c === 'done') return 'success';
+  if (c === 'in_progress' || c === 'in progress') return 'inprogress';
+  return 'default';
+};
 
 type WindowPreset = '14d' | '30d' | '90d' | 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'all';
 
@@ -106,16 +212,23 @@ function fmtDuration(ms: number | undefined): string {
  *  done        → green (color.background.accent.green.subtler)
  * Empty cells stay transparent. No more peach/red duration heatmap.
  */
+// 2026-06-10 — Jira-canonical cell tints (DOM-probed pill colors from
+// JiraTable cells.tsx, alpha-mixed to ~20% so the cell bg reads as a
+// soft hint, NOT as a vivid pill). Mirrors the same hue family the pills
+// use so the column reads as "lighter version of the status pill".
+//   in_progress  pill #8FB8F6 → cell bg rgba(143,184,246,0.22)
+//   done         pill #B3DF72 → cell bg rgba(179,223,114,0.30)
+//   todo         pill #DDDEE1 → cell bg rgba(221,222,225,0.55)
 function categoryBg(category: 'todo' | 'in_progress' | 'done' | undefined, ms: number): string {
   if (!ms || ms <= 0) return 'transparent';
   switch (category) {
     case 'in_progress':
-      return 'var(--ds-background-accent-blue-subtler, #CCE0FF)';
+      return 'rgba(143, 184, 246, 0.22)';
     case 'done':
-      return 'var(--ds-background-accent-green-subtler, #BAF3DB)';
+      return 'rgba(179, 223, 114, 0.30)';
     case 'todo':
     default:
-      return 'var(--ds-background-accent-gray-subtler, #DCDFE4)';
+      return 'rgba(221, 222, 225, 0.55)';
   }
 }
 
@@ -128,8 +241,8 @@ function totalBg(ms: number, max: number): string {
 }
 
 const ROW_HEIGHT = 35;
-const STATUS_COL_MIN = 128;       // bumped from 96 — gives "3mo 12d ×2" room to breathe
-const FROZEN_LEFT_WIDTH = 420;    // bumped from 380; priority + key + title + assignee
+const STATUS_COL_MIN = 160;       // 2026-06-10 Fix 7 — fits ADS-colored (non-black) lozenge + duration + chip
+const FROZEN_LEFT_WIDTH = 460;    // 2026-06-10 Fix 4 — avatar bleed mitigation, mirrors modal
 const TOTAL_COL_WIDTH = 110;
 
 export default function TimeInStatusWidget({
@@ -140,7 +253,11 @@ export default function TimeInStatusWidget({
 }: WidgetProps) {
   const [issueType, setIssueType] = useState<string>('Story');
   const [windowPreset, setWindowPreset] = useState<WindowPreset>('Q2');
-  const [pageSize] = useState(50);
+  // Widget body shows top-10 worst offenders only. "View all in table"
+  // CTA hands off the full filtered set to UWV. Rest of the data lives
+  // there — keeps the dashboard cell light and the data drill-down
+  // explicit. Fullscreen modal keeps pageSize=50.
+  const [pageSize] = useState(10);
   const [offset, setOffset] = useState(0);
   // Fullscreen modal for the executive view. Replaces the previous
   // openUWV() route, which collapsed the matrix into a flat issue list
@@ -243,12 +360,12 @@ export default function TimeInStatusWidget({
                   alignItems: 'center',
                   gap: 6,
                   height: 28,
-                  padding: '0 12px',
+                  padding: '0 10px',
                   ...(active ? SMALL_STRONG : SMALL),
-                  borderRadius: 'var(--ds-border-radius, 4px)',
-                  border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
-                  background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
-                  color: active ? 'var(--ds-text-selected, #0055CC)' : 'var(--ds-text-subtle, #505258)',
+                  borderRadius: 'var(--ds-border-radius, 3px)',
+                  border: '1px solid transparent',
+                  background: active ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
+                  color: active ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtle, #505258)',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                 }}
@@ -272,11 +389,11 @@ export default function TimeInStatusWidget({
                 style={{
                   height: 26,
                   padding: '0 10px',
-                  ...LABEL,
-                  borderRadius: 'var(--ds-border-radius, 4px)',
-                  border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
-                  background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
-                  color: active ? 'var(--ds-text-selected, #0055CC)' : 'var(--ds-text-subtle, #505258)',
+                  ...(active ? SMALL_STRONG : SMALL),
+                  borderRadius: 'var(--ds-border-radius, 3px)',
+                  border: '1px solid transparent',
+                  background: active ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
+                  color: active ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtle, #505258)',
                   cursor: 'pointer',
                 }}
                 title={WINDOW_LABELS[w]}
@@ -288,17 +405,8 @@ export default function TimeInStatusWidget({
         </div>
       </div>
 
-      {/* ─── History accumulation banner (when no rows have transitions yet) ─── */}
-      {!isLoading && rows.length > 0 && !hasAnyHistory && (
-        <div style={{ padding: '12px 16px 0' }}>
-          <SectionMessage appearance="information" title="Lifecycle data accumulates forward">
-            Status transitions are tracked from now onwards. Cells currently
-            show full age in current status. As tickets transition, real
-            time-per-status will populate. Historical Jira changelog backfill
-            is a separate workstream.
-          </SectionMessage>
-        </div>
-      )}
+      {/* Banner removed 2026-06-09 — Vikram directive. Lifecycle-accumulating
+          messaging now lives in fullscreen modal only (executive view). */}
 
       {/* ─── Matrix body ────────────────────────────────────────── */}
       {isLoading ? (
@@ -366,9 +474,13 @@ export default function TimeInStatusWidget({
                       borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                     }}
                   >
-                    <StatusLozenge status={s.category === 'in_progress' ? 'inProgress' : s.category}>
+                    {/* 2026-06-10 — Jira-canonical pill via shared StatusPill
+                        (DOM-probed cornflower/lime/gray per cells.tsx 2026-05-16).
+                        AkLozenge used the wrong appearance hexes — bright ADS
+                        blue and dark forest green vs Jira's cornflower and lime. */}
+                    <JiraStatusPill appearance={lozengeAppearance(s.category, s.name)}>
                       {s.name}
-                    </StatusLozenge>
+                    </JiraStatusPill>
                   </th>
                 ))}
                 <th
@@ -418,16 +530,17 @@ export default function TimeInStatusWidget({
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                       <PriorityIcon level={r.priority} size={16} />
+                      {/* 2026-06-09 Vikram parity — match Epic Progress
+                          summary cell: key + title both 14/400 blue link
+                          (BODY), Atlas Sans. Was 14/600 STRONG mono +
+                          14/600 STRONG black. Drift between widgets
+                          banned. */}
                       <span
                         style={{
                           display: 'inline-flex', alignItems: 'center', gap: 8,
                           color: token('color.link', '#0C66E4'),
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                          // Apr 26, 2026 — 12→14 / 500→600 to match
-                          // Demand Fulfilment + QA Defects + Production
-                          // Incidents row typography. Same density across
-                          // every dashboard table.
-                          ...STRONG, whiteSpace: 'nowrap',
+                          ...BODY, whiteSpace: 'nowrap',
                           flexShrink: 0,
                         }}
                       >
@@ -440,11 +553,8 @@ export default function TimeInStatusWidget({
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
-                          // Apr 26, 2026 — title now at 14/500 to match
-                          // the rest of the dashboard row titles. Was
-                          // unstyled (inheriting 12px from parent table).
-                          ...STRONG,
-                          color: token('color.text', '#292A2E'),
+                          ...BODY,
+                          color: token('color.link', '#0C66E4'),
                         }}
                       >
                         {r.title}
@@ -474,37 +584,67 @@ export default function TimeInStatusWidget({
                         }}
                       >
                         {ms > 0 ? (
-                          <Tooltip
-                            content={
-                              visits > 1
-                                ? `In ${s.name}: ${fmtDuration(ms)} across ${visits} visits`
-                                : `In ${s.name}: ${fmtDuration(ms)}`
-                            }
-                            position="top"
-                          >
-                            {(tp) => (
-                              <span
-                                {...tp}
-                                style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                          (() => {
+                            // 2026-06-10 Vikram directive — cell stays
+                            // CANONICAL (duration + optional ×N revisit).
+                            // ETA forecast + pattern diagnosis surface in
+                            // the rich hover card via @atlaskit/tooltip.
+                            const cls = classifyCellMocked({
+                              issueType,
+                              statusName: s.name,
+                              category: s.category,
+                              durationMs: ms,
+                              visits,
+                            });
+                            const p50 = getCohortP50Hours(issueType, s.name, s.category);
+                            return (
+                              <Tooltip
+                                content={() => (
+                                  <TimeInStatusHoverCard
+                                    issueKey={r.issue_key}
+                                    issueType={r.issue_type ?? issueType}
+                                    title={r.title}
+                                    assigneeDisplayName={r.assignee_display_name}
+                                    assigneeAvatarUrl={r.assignee_avatar_url}
+                                    priority={r.priority}
+                                    statusName={s.name}
+                                    statusCategory={s.category}
+                                    currentMs={ms}
+                                    visits={visits}
+                                    p50Hours={p50}
+                                    confidence={MOCK_CONFIDENCE}
+                                    pattern={cls.pattern}
+                                    patternConfidence={cls.confidence}
+                                    patternDescription={cls.description}
+                                  />
+                                )}
+                                position="top"
                               >
-                                {fmtDuration(ms)}
-                                {visits > 1 && (
+                                {(tp) => (
                                   <span
-                                    style={{
-                                      ...LABEL,
-                                      color: 'var(--ds-text-accent-red, #AE2A19)',
-                                      padding: '0 4px',
-                                      borderRadius: 'var(--ds-border-radius, 4px)',
-                                      background: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
-                                    }}
-                                    aria-label={`${visits} visits`}
+                                    {...tp}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: 4, cursor: 'help' }}
                                   >
-                                    ×{visits}
+                                    {fmtDuration(ms)}
+                                    {visits > 1 && (
+                                      <span
+                                        style={{
+                                          ...LABEL,
+                                          color: 'var(--ds-text-accent-red, #AE2A19)',
+                                          padding: '0 4px',
+                                          borderRadius: 'var(--ds-border-radius, 4px)',
+                                          background: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
+                                        }}
+                                        aria-label={`${visits} visits`}
+                                      >
+                                        ×{visits}
+                                      </span>
+                                    )}
                                   </span>
                                 )}
-                              </span>
-                            )}
-                          </Tooltip>
+                              </Tooltip>
+                            );
+                          })()
                         ) : (
                           <span style={{ color: token('color.text.disabled', '#B3B9C4') }}>—</span>
                         )}
@@ -532,7 +672,10 @@ export default function TimeInStatusWidget({
             </tbody>
           </table>
 
-          {/* Pagination footer */}
+          {/* Footer — "View all N in table" handoff to UWV.
+              2026-06-09 Vikram directive: widget shows top-10 only;
+              rest of the data drilled via UWV (canonical full-table
+              surface). Replaces in-widget pagination. */}
           <div
             style={{
               display: 'flex',
@@ -546,38 +689,28 @@ export default function TimeInStatusWidget({
             }}
           >
             <span>
-              Showing {rows.length} of {total} {issueType} tickets · {WINDOW_LABELS[windowPreset]}
+              Top {rows.length} of {total} {issueType} tickets · {WINDOW_LABELS[windowPreset]}
             </span>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               {isFetching && <Spinner size="small" />}
-              {offset > 0 && (
+              {total > rows.length && (
                 <button
                   type="button"
-                  onClick={() => setOffset(Math.max(0, offset - pageSize))}
+                  // 2026-06-10 Fix 3 — "View all" must open the fullscreen
+                  // TIS matrix modal, NOT route to UWV (a flat list viewer
+                  // that strips the status × ticket matrix). Preserves the
+                  // SAME matrix view, just expanded to all N tickets.
+                  onClick={() => setFullscreen(true)}
                   style={{
-                    ...LABEL, height: 24, padding: '0 8px', cursor: 'pointer',
+                    ...LABEL, height: 24, padding: '0 10px', cursor: 'pointer',
                     border: '1px solid var(--ds-border, #DFE1E6)',
-                    borderRadius: 'var(--ds-border-radius, 4px)',
+                    borderRadius: 'var(--ds-border-radius, 3px)',
                     background: 'transparent',
-                    color: 'var(--ds-text-subtle, #505258)',
+                    color: 'var(--ds-link, #0C66E4)',
+                    fontWeight: 600,
                   }}
                 >
-                  ← Prev
-                </button>
-              )}
-              {offset + rows.length < total && (
-                <button
-                  type="button"
-                  onClick={() => setOffset(offset + pageSize)}
-                  style={{
-                    ...LABEL, height: 24, padding: '0 8px', cursor: 'pointer',
-                    border: '1px solid var(--ds-border, #DFE1E6)',
-                    borderRadius: 'var(--ds-border-radius, 4px)',
-                    background: 'transparent',
-                    color: 'var(--ds-text-subtle, #505258)',
-                  }}
-                >
-                  Next →
+                  View all {total} in matrix →
                 </button>
               )}
             </div>

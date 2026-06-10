@@ -26,6 +26,7 @@ import { fileURLToPath } from 'url';
 import ADSTokenScanner from '../rules/ads-token-scanner.js';
 import TypographyEnforcer from '../rules/typography-enforcer.js';
 import SpacingGridValidator from '../rules/spacing-grid-validator.js';
+import FontImportEnforcer from '../rules/font-import-enforcer.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -255,11 +256,68 @@ const FIXTURES = [
     code: `/** Color reference: rgb(80,82,88) subtle text */`,
     expect: [],
   },
+
+  // ── 2026-06-09 — Font CDN/import lockdown ──────────────────────
+  {
+    name: 'google-fonts-import',
+    code: `@import url('https://fonts.googleapis.com/css?family=Roboto');`,
+    expect: [{ scanner: 'fontImports', type: 'BANNED_FONT_IMPORT' }],
+    ext: '.css',
+  },
+  {
+    name: 'typekit-import',
+    code: `@import url("https://use.typekit.net/abc.css");`,
+    expect: [{ scanner: 'fontImports', type: 'BANNED_FONT_IMPORT' }],
+    ext: '.css',
+  },
+  {
+    name: 'atlassian-cdn-import (must NOT flag)',
+    code: `@import url('https://ds-cdn.prod-east.frontend.public.atl-paas.net/fonts.css');`,
+    expect: [],
+    ext: '.css',
+  },
+  {
+    name: 'google-fonts-link-tag',
+    code: `<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter">`,
+    expect: [{ scanner: 'fontImports', type: 'BANNED_FONT_LINK' }],
+    ext: '.html',
+  },
+  {
+    name: 'fontawesome-link-tag',
+    code: `<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.0/css/all.css">`,
+    expect: [{ scanner: 'fontImports', type: 'BANNED_FONT_LINK' }],
+    ext: '.html',
+  },
+  {
+    name: 'atlassian-preconnect-link (must NOT flag)',
+    code: `<link rel="preconnect" href="https://ds-cdn.prod-east.frontend.public.atl-paas.net" crossorigin>`,
+    expect: [],
+    ext: '.html',
+  },
+  {
+    name: 'self-hosted-font-face',
+    code: `@font-face { font-family: 'Inter'; src: url('/fonts/inter.woff2') format('woff2'); }`,
+    expect: [{ scanner: 'fontImports', type: 'BANNED_FONT_FACE' }],
+    ext: '.css',
+  },
+  {
+    name: 'atlassian-font-face (must NOT flag)',
+    code: `@font-face { font-family: 'Atlassian Sans'; src: url('https://ds-cdn.prod-east.frontend.public.atl-paas.net/assets/fonts/atlassian-sans/v4/AtlassianSans-latin.woff2') format('woff2'); }`,
+    expect: [],
+    ext: '.css',
+  },
+  {
+    name: 'dynamic-google-fonts-url-string',
+    code: `const FONT_URL = 'https://fonts.googleapis.com/css2?family=Inter';`,
+    expect: [{ scanner: 'fontImports', type: 'BANNED_FONT_CDN_URL' }],
+    ext: '.ts',
+  },
 ];
 
-function runScannersOnFixture(code) {
-  // Write the fixture to a temp .tsx file and scan it.
-  const tmp = path.join(os.tmpdir(), `ads-audit-self-test-${Date.now()}-${Math.random().toString(36).slice(2)}.tsx`);
+function runScannersOnFixture(code, ext = '.tsx') {
+  // Write the fixture to a temp file with the appropriate extension and scan.
+  // ext defaults to .tsx; font-import / HTML fixtures override (.css/.html).
+  const tmp = path.join(os.tmpdir(), `ads-audit-self-test-${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`);
   fs.writeFileSync(tmp, code, 'utf-8');
   try {
     const tokens = new ADSTokenScanner();
@@ -268,10 +326,13 @@ function runScannersOnFixture(code) {
     typography.scanFile(tmp);
     const spacing = new SpacingGridValidator();
     spacing.scanFile(tmp);
+    const fontImports = new FontImportEnforcer();
+    fontImports.scanFile(tmp);
     return {
       tokens: tokens.violations,
       typography: typography.violations,
       spacing: spacing.violations,
+      fontImports: fontImports.violations,
     };
   } finally {
     fs.unlinkSync(tmp);
@@ -293,11 +354,12 @@ console.log(`\n${BOLD}━━ Design-system audit self-test ━━${RESET}\n`);
 console.log(`Running ${FIXTURES.length} fixtures…\n`);
 
 for (const fx of FIXTURES) {
-  const observed = runScannersOnFixture(fx.code);
+  const observed = runScannersOnFixture(fx.code, fx.ext);
   const observedFlat = [
     ...observed.tokens.map(v => ({ scanner: 'tokens', type: v.type })),
     ...observed.typography.map(v => ({ scanner: 'typography', type: v.type })),
     ...observed.spacing.map(v => ({ scanner: 'spacing', type: v.type })),
+    ...observed.fontImports.map(v => ({ scanner: 'fontImports', type: v.type })),
   ];
 
   const missingExpected = fx.expect.filter(

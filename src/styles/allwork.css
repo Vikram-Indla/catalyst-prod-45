@@ -702,7 +702,7 @@
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-ui, "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif);
   color: #29292E;
   display: flex;
   align-items: center;

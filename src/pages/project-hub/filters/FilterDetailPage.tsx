@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { FilterVersionHistory } from '@/components/filters/FilterVersionHistory';
 import { FilterUsageSparkline } from '@/components/filters/FilterUsageSparkline';
+import { FilterResultsPanel } from '@/components/filters/FilterResultsPanel';
 import { type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
 import { ArrowLeft, Edit, Clock } from '@/lib/atlaskit-icons';
 import { resolveAvatarUrl } from '@/lib/avatars';
@@ -111,7 +112,7 @@ export default function FilterDetailPage() {
         display: 'flex',
         alignItems: 'center',
         gap: 8,
-        padding: '16px 32px',
+        padding: '16px 24px',
         borderBottom: `1px solid ${token('color.border')}`,
         flexShrink: 0,
       }}>
@@ -127,8 +128,8 @@ export default function FilterDetailPage() {
         <span style={{ fontSize: 13, color: token('color.text.subtle') }}>{filter.name}</span>
       </div>
 
-      {/* Page content */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '32px' }}>
+      {/* Page content — 24px horizontal padding matches the project backlog */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
 
         {/* Title row */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
@@ -321,6 +322,14 @@ export default function FilterDetailPage() {
               add one now
             </Button>
           </div>
+        )}
+
+        {/* Live results — the filter in use, rendered with the canonical backlog table */}
+        {filter.jql_query && (
+          <FilterResultsPanel
+            jql={filter.jql_query}
+            emptyHint="This filter has no JQL yet — edit it to see matching work items."
+          />
         )}
 
       </div>

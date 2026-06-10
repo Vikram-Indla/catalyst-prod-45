@@ -48,14 +48,16 @@ import { downloadWidgetAsPdf } from '@/lib/widget-pdf';
 import { downloadWidgetAsCsv } from '@/lib/widget-csv';
 
 /** Jira-parity highlight colors for the gadget top border bar. */
+// 2026-06-09 Spec parity — ADS B400 #0052CC for the blue accent (was
+// #2684FF B200). Other category colors aligned to ADS canonical palette.
 const HIGHLIGHT_COLORS: Record<string, string> = {
-  blue: 'rgb(38, 132, 255)',
-  red: 'rgb(255, 86, 48)',
-  orange: 'rgb(255, 171, 0)',
-  green: 'rgb(54, 179, 126)',
-  teal: 'rgb(0, 184, 217)',
-  purple: 'rgb(101, 84, 192)',
-  grey: 'rgb(151, 160, 175)',
+  blue: '#0052CC',
+  red: '#DE350B',
+  orange: '#FF8B00',
+  green: '#006644',
+  teal: '#00B8D9',
+  purple: '#6554C0',
+  grey: '#6B778C',
   white: 'transparent',
 };
 
@@ -245,10 +247,11 @@ export default function WidgetWrapper({
         boxShadow: isSoloed
           ? token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)')
           : token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
-        borderTop: `4px solid ${HIGHLIGHT_COLORS[highlightColor] ?? HIGHLIGHT_COLORS.blue}`,
-        borderRadius: isSoloed
-          ? token('border.radius.200', '8px')
-          : token('border.radius', '3px'),
+        // 2026-06-09 Spec parity (Filter Results gadget v1) — radius 8px,
+        // top accent 3px #0052CC, 1px ds-border on remaining sides + shadow.
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderTop: `3px solid ${HIGHLIGHT_COLORS[highlightColor] ?? HIGHLIGHT_COLORS.blue}`,
+        borderRadius: token('border.radius.200', '8px'),
         outline: isEditing ? `1px dashed ${token('color.border.brand', '#0C66E4')}` : 'none',
         outlineOffset: isEditing ? '-1px' : '0',
         cursor: isEditing ? 'grab' : 'default',
@@ -275,7 +278,7 @@ export default function WidgetWrapper({
           justifyContent: 'space-between',
           gap: 8,
           minWidth: 0,
-          padding: '8px 16px',
+          padding: '16px 20px 12px 20px',
           background: headerHovered && !isEditing
             ? token('color.background.neutral.subtle.hovered', '#F1F2F4')
             : token('elevation.surface', '#FFFFFF'),
@@ -309,9 +312,11 @@ export default function WidgetWrapper({
           )}
           {headerIcon}
           <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: token('color.text', '#292A2E'), lineHeight: '20px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {/* 2026-06-09 Spec parity — semantic h2 + 16/600/#172B4D
+                /-0.006em letter-spacing per Filter Results gadget spec. */}
+            <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: token('color.text', '#172B4D'), lineHeight: '20px', letterSpacing: '-0.006em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {title}
-            </div>
+            </h2>
             {subtitle && (
               <span
                 style={{
@@ -376,18 +381,28 @@ export default function WidgetWrapper({
               </span>
             )}
           </Tooltip>
-          {onSolo && widgetId && (
-            <Tooltip content={isSoloed ? 'Exit fullscreen (Esc)' : 'Maximize'} position="top">
+          {widgetId && (
+            <Tooltip content="Maximize" position="top">
               {(tp) => (
                 <span {...tp} style={{ display: 'inline-flex' }}>
                   <AkIconButton
-                    label={isSoloed ? 'Exit fullscreen' : 'Maximize'}
+                    label="Maximize"
                     icon={() => <Maximize2 size={14} />}
-                    appearance={isSoloed ? 'primary' : 'subtle'}
+                    appearance="subtle"
                     spacing="compact"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onSolo(isSoloed ? null : widgetId);
+                      // 2026-06-09 Vikram parity — native Fullscreen API
+                      // (Jira convention). Was triggering solo-mode which
+                      // only widened within grid; user expected viewport
+                      // fullscreen. ESC exits via native fullscreenchange.
+                      const el = cardRef.current;
+                      if (!el) return;
+                      if (document.fullscreenElement) {
+                        document.exitFullscreen().catch(() => { /* noop */ });
+                      } else {
+                        el.requestFullscreen().catch(() => { /* noop */ });
+                      }
                     }}
                   />
                 </span>

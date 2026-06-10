@@ -160,6 +160,8 @@ export function GenerateStoriesButton({ issue }: GenerateStoriesButtonProps) {
     ? 'Generation limit reached'
     : 'Generate Stories';
 
+  if (issue?.issue_type !== 'Epic') return null;
+
   return (
     <>
       {/* Full overlay during generation — greys out entire epic */}

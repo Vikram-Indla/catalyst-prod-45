@@ -71,7 +71,7 @@ export function PageChrome({
             <div className="flex items-center gap-2">
               <h1
                 style={{
-                  fontFamily: '"Atlassian Sans", Inter, system-ui, -apple-system, sans-serif',
+                  fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
                   fontSize: 20,
                   fontWeight: 600,
                   color: 'var(--text-1)',
