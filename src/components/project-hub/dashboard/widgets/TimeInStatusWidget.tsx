@@ -41,6 +41,8 @@ import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
 import TimeInStatusFullscreenModal from './TimeInStatusFullscreenModal';
 import TimeInStatusEtaStrip from './TimeInStatusEtaStrip';
+import DwellPatternLozenge from './DwellPatternLozenge';
+import { classifyDwell, type DwellPattern } from '@/lib/tis-dwell-classifier/classifier';
 import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG } from '../dashboardTypography';
 
 // Project module: Business Request + Task explicitly hidden (per dashboard
@@ -64,6 +66,46 @@ function getCohortP50Hours(issueType: string, statusName: string): number | null
   const v = row[statusName];
   if (v == null || v <= 0) return null;
   return v;
+}
+
+// Phase 4 row 6 — outlier #5 (Pattern Lozenge). V1 mocks dwell input from
+// what we already know cell-side: visit count (proxy for reassignments)
+// and dwell vs P50. Once backfill (row 9) is live, this becomes a real
+// classifyDwell() call with the changelog events + comments + links from
+// the status window. Until then we still render the lozenge when the
+// proxy heuristics fire — it's directionally correct and unlocks the UI.
+function classifyCellMocked(opts: {
+  issueType: string;
+  statusName: string;
+  durationMs: number;
+  visits: number;
+}): { pattern: DwellPattern; confidence: number; description?: string } {
+  // Proxy ping_pong on visits ≥ 2 (re-entered the status).
+  if (opts.visits >= 2) {
+    return classifyDwell({
+      events: [
+        { field: 'assignee', from_display: null, to_display: 'A', actor_name: 'sys', changed_at: new Date().toISOString() },
+        { field: 'assignee', from_display: 'A', to_display: 'B', actor_name: 'sys', changed_at: new Date().toISOString() },
+        { field: 'assignee', from_display: 'B', to_display: 'A', actor_name: 'sys', changed_at: new Date().toISOString() },
+      ],
+      comments: [],
+      links: [],
+      durationMs: opts.durationMs,
+      p50Hours: getCohortP50Hours(opts.issueType, opts.statusName),
+    });
+  }
+  // Proxy silent dwell when current > 2x P50 AND no revisit signal.
+  const p50h = getCohortP50Hours(opts.issueType, opts.statusName);
+  if (p50h != null && opts.durationMs > 2 * p50h * 60 * 60 * 1000) {
+    return classifyDwell({
+      events: [],
+      comments: [],
+      links: [],
+      durationMs: opts.durationMs,
+      p50Hours: p50h,
+    });
+  }
+  return { pattern: 'none', confidence: 0.4 };
 }
 
 /**
@@ -551,6 +593,28 @@ export default function TimeInStatusWidget({
                                 confidence={MOCK_CONFIDENCE}
                               />
                             )}
+                            {/* Phase 4 row 6 — outlier #5 pattern lozenge
+                                (compact variant on cell). Returns null
+                                when classifier yields 'none'. */}
+                            {(() => {
+                              const cls = classifyCellMocked({
+                                issueType,
+                                statusName: s.name,
+                                durationMs: ms,
+                                visits,
+                              });
+                              if (cls.pattern === 'none') return null;
+                              return (
+                                <div style={{ marginTop: 2 }}>
+                                  <DwellPatternLozenge
+                                    pattern={cls.pattern}
+                                    confidence={cls.confidence}
+                                    description={cls.description}
+                                    compact
+                                  />
+                                </div>
+                              );
+                            })()}
                           </div>
                         ) : (
                           <span style={{ color: token('color.text.disabled', '#B3B9C4') }}>—</span>
