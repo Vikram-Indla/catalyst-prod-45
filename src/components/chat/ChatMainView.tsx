@@ -10,13 +10,14 @@
  *   ?conv=<conversationId>  → active conversation
  *   ?rail=<threads|mentions|saved|drafts|people> → secondary panel
  */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useConversations } from '@/hooks/chat/useConversations';
 import { useMessages } from '@/hooks/chat/useMessages';
 import { ConversationHeader } from './main/ConversationHeader';
 import { MessageStream } from './main/MessageStream';
 import { MessageComposer } from './main/MessageComposer';
+import { ConversationEmptyState } from './main/ConversationEmptyState';
 import { ThreadPanel } from './main/ThreadPanel';
 import { ChatMentionsPanel } from './main/ChatMentionsPanel';
 import { ChatBookmarksPanel } from './main/ChatBookmarksPanel';
@@ -36,6 +37,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
   const rail = params.get('rail') ?? undefined;
   const urlThread = params.get('thread') ?? undefined;
   const [threadParentId, setThreadParentId] = useState<string | null>(null);
+  const composerRef = useRef<HTMLTextAreaElement>(null);
 
   const { conversations } = useConversations();
 
@@ -128,20 +130,29 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
           <ConversationHeader conversation={activeConversation} />
 
-          <MessageStream
-            conversationId={resolvedActiveId}
-            messages={messages}
-            isLoading={messagesLoading}
-            hasMore={hasMore}
-            onLoadMore={loadMore}
-            onEdit={editMessage}
-            onDelete={deleteMessage}
-            onToggleReaction={toggleReaction}
-            onOpenThread={(messageId) => setThreadParentId(messageId)}
-            currentUserId={currentUserId}
-          />
+          {messages.length === 0 ? (
+            <ConversationEmptyState
+              onStartConversation={() => {
+                composerRef.current?.focus();
+              }}
+            />
+          ) : (
+            <MessageStream
+              conversationId={resolvedActiveId}
+              messages={messages}
+              isLoading={messagesLoading}
+              hasMore={hasMore}
+              onLoadMore={loadMore}
+              onEdit={editMessage}
+              onDelete={deleteMessage}
+              onToggleReaction={toggleReaction}
+              onOpenThread={(messageId) => setThreadParentId(messageId)}
+              currentUserId={currentUserId}
+            />
+          )}
 
           <MessageComposer
+            ref={composerRef}
             conversationTitle={activeConversation?.ticketKey ?? activeConversation?.title}
             conversationId={resolvedActiveId}
             disabled={!resolvedActiveId}

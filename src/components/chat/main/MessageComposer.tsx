@@ -8,8 +8,10 @@
  *
  * File upload methods: (1) button click, (2) paste (Ctrl+V / Cmd+V), (3) drag-drop.
  * Files are validated, uploaded to Supabase Storage, and attached to the last sent message.
+ *
+ * Forwards ref to the textarea element so callers can focus it programmatically.
  */
-import React, { useCallback, useRef, useState, lazy, Suspense, useEffect } from 'react';
+import React, { useCallback, useRef, useState, lazy, Suspense, useEffect, forwardRef } from 'react';
 import Button from '@atlaskit/button/new';
 import Flag from '@atlaskit/flag';
 import { FlagGroup } from '@atlaskit/flag';
@@ -41,14 +43,18 @@ export interface MessageComposerProps {
   lastSentMessageId?: string | null;
 }
 
-export function MessageComposer({
-  conversationTitle,
-  conversationId,
-  disabled,
-  onSend,
-  onAskCaty,
-  lastSentMessageId,
-}: MessageComposerProps) {
+export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerProps>(
+  function MessageComposer(
+    {
+      conversationTitle,
+      conversationId,
+      disabled,
+      onSend,
+      onAskCaty,
+      lastSentMessageId,
+    }: MessageComposerProps,
+    ref,
+  ) {
   // Drafts persist per conversation in localStorage. Clear on send.
   const draft = useDraft(conversationId ?? null);
   const value = draft.value;
@@ -57,7 +63,7 @@ export function MessageComposer({
   const [richMode, setRichMode] = useState(false);
   const [richAdf, setRichAdf] = useState<ADFEntity>(createEmptyADF());
   const [scheduledFor, setScheduledFor] = useState<string | null>(null);
-  const taRef = useRef<HTMLTextAreaElement>(null);
+  const taRef = (ref as React.MutableRefObject<HTMLTextAreaElement | null>) ?? useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<any>(null); // AtlaskitEditorRef
   const composerRef = useRef<HTMLDivElement>(null);
@@ -475,6 +481,7 @@ export function MessageComposer({
       </div>
     </div>
   );
-}
+},
+);
 
 export default MessageComposer;
