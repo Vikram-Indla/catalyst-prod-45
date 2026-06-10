@@ -596,47 +596,6 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
     setPendingStories([]);
   };
 
-  // ── Assistant picker overlay ──────────────────────────────────────────
-  if (showPicker) {
-    return (
-      <div className="cp-picker">
-        <div className="cp-picker__header">Switch assistant</div>
-        <div className="cp-picker__list">
-          {CATY_ASSISTANTS.map((a) => {
-            const unlocked = canUseAssistant(a, role, productRoles);
-            const isActive = a.id === activeId;
-            return (
-              <button
-                key={a.id}
-                type="button"
-                className={`cp-picker__row${isActive ? ' cp-picker__row--active' : ''}${!unlocked ? ' cp-picker__row--locked' : ''}`}
-                onClick={() => switchAssistant(a.id, unlocked)}
-                title={unlocked ? a.tagline : a.lockedMessage}
-              >
-                <span
-                  className="cp-picker__icon"
-                  style={{ background: unlocked ? a.tileBgToken : 'var(--ds-background-neutral, #F1F2F4)' }}
-                >
-                  <AssistantIcon assistant={a} />
-                </span>
-                <span className="cp-picker__name">{a.name}</span>
-                {isActive && <span className="cp-picker__check"><CheckIcon /></span>}
-                {!unlocked && <span className="cp-picker__lock"><LockIcon /></span>}
-              </button>
-            );
-          })}
-        </div>
-        <button
-          type="button"
-          className="cp-picker__back"
-          onClick={() => setShowPicker(false)}
-        >
-          ← Back to conversation
-        </button>
-      </div>
-    );
-  }
-
   // ── Locked state ──────────────────────────────────────────────────────
   const lockedPanel = !canUse ? (
     <>
@@ -667,7 +626,7 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
 
   return (
     <>
-      {/* Sub-header: hamburger · "Ask Caty · [Name] ∨" */}
+      {/* Title bar: Caty avatar · "Ask Caty" · assistant switcher · context chip */}
       <div className="cp-sub-header">
         <button
           type="button"
@@ -681,15 +640,25 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
           type="button"
           className="cp-assistant-trigger"
           aria-label="Switch assistant"
-          onClick={() => setShowPicker(true)}
+          aria-expanded={showPicker}
+          aria-haspopup="menu"
+          onClick={() => setShowPicker((v) => !v)}
         >
-          <AssistantIcon assistant={activeAssistant} />
+          <img src={catalystChatIcon} alt="" className="cp-assistant-trigger__avatar" width={20} height={20} />
           <span className="cp-assistant-trigger__label">Ask Caty</span>
           {activeAssistant.id !== 'general' && (
             <span className="cp-assistant-trigger__sub">· {activeAssistant.name}</span>
           )}
           <span className="cp-assistant-trigger__chevron"><ChevronDownIcon /></span>
         </button>
+        {activeContext && (
+          <span
+            className="cp-header-context"
+            title={`${activeContext.label} · ${activeContext.surface}`}
+          >
+            {activeContext.label}
+          </span>
+        )}
         <button
           type="button"
           style={{
@@ -728,6 +697,41 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
           </button>
         )}
       </div>
+
+      {/* Assistant switcher dropdown — anchored menu under the title bar.
+          Self-rolled (cp-view-menu pattern): @atlaskit/dropdown-menu popper
+          computes (0,0) inside the dock's position:fixed container (see
+          ConversationHeader.tsx note, 2026-06). */}
+      {showPicker && (
+        <div className="cp-view-menu cp-assistant-menu" role="menu" aria-label="Switch assistant">
+          <div className="cp-view-menu__header">Switch assistant</div>
+          {CATY_ASSISTANTS.map((a) => {
+            const unlocked = canUseAssistant(a, role, productRoles);
+            const isActive = a.id === activeId;
+            return (
+              <button
+                key={a.id}
+                type="button"
+                role="menuitem"
+                className={`cp-view-menu__item${isActive ? ' cp-view-menu__item--active' : ''}`}
+                onClick={() => switchAssistant(a.id, unlocked)}
+                title={unlocked ? a.tagline : a.lockedMessage}
+                aria-disabled={!unlocked}
+              >
+                <span
+                  className="cp-assistant-menu__icon"
+                  style={{ background: unlocked ? a.tileBgToken : 'var(--ds-background-neutral, #F1F2F4)' }}
+                >
+                  <AssistantIcon assistant={a} />
+                </span>
+                <span className="cp-view-menu__label">{a.name}</span>
+                {isActive && <CheckIcon />}
+                {!unlocked && <span className="cp-assistant-menu__lock"><LockIcon /></span>}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* View mode dropdown */}
       {showViewMenu && onViewModeChange && (
