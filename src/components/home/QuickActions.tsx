@@ -3,8 +3,6 @@
  */
 import React from 'react';
 
-const F = { inter: "-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif" };
-
 export function QuickActions({ presets, onSelect }: {
   presets: Array<{ label: string; query: string }>;
   onSelect: (query: string) => void;
@@ -13,7 +11,7 @@ export function QuickActions({ presets, onSelect }: {
     <div style={{ marginBottom: 16 }}>
       <span style={{
         fontSize: 10, fontWeight: 700, color: 'var(--fg-3)',
-        textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: F.inter,
+        textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: 'var(--ds-font-family-body)',
       }}>
         QUICK ACTIONS
       </span>
@@ -26,7 +24,7 @@ export function QuickActions({ presets, onSelect }: {
               padding: '8px 14px', borderRadius: 8,
               border: '1.5px solid var(--divider)', background: 'var(--cp-float)',
               cursor: 'pointer', fontSize: 12, fontWeight: 500, color: 'var(--fg-1)',
-              fontFamily: F.inter, transition: 'all 100ms',
+              fontFamily: 'var(--ds-font-family-body)', transition: 'all 100ms',
             }}
             onMouseEnter={e => {
               e.currentTarget.style.borderColor = 'var(--cp-blue)';

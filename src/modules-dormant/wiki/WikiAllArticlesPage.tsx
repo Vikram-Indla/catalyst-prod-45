@@ -71,7 +71,9 @@ export default function WikiAllArticlesPage() {
     qc.invalidateQueries({ queryKey: ['wiki-all-articles'] });
   }, [bulkAction, bulkValue, selected, articles, qc]);
 
-  const F = { sora: "'Sora', sans-serif", mono: "'JetBrains Mono', monospace" };
+  // Font tokens removed — using ADS tokens instead
+  // sora → var(--ds-font-family-body)
+  // mono → var(--ds-font-family-code)
 
   const borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.06)';
 
@@ -84,7 +86,7 @@ export default function WikiAllArticlesPage() {
       </nav>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-        <h1 style={{ fontFamily: F.sora, fontSize: 18, fontWeight: 700, margin: 0 }}>All Articles</h1>
+        <h1 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 18, fontWeight: 700, margin: 0 }}>All Articles</h1>
         {selected.size > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{selected.size} selected</span>
@@ -144,7 +146,7 @@ export default function WikiAllArticlesPage() {
         <div style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div onClick={() => setShowConfirm(false)} style={{ position: 'absolute', inset: 0, background: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(15,23,42,0.3)' }} />
           <div style={{ position: 'relative', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 24, width: 400, boxShadow: '0 12px 40px rgba(0,0,0,0.15)' }}>
-            <h3 style={{ fontFamily: F.sora, fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Confirm Bulk Action</h3>
+            <h3 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Confirm Bulk Action</h3>
             <p style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 20 }}>
               This will {bulkAction === 'archive' ? 'archive' : `update ${bulkAction} for`} <strong>{selected.size} articles</strong>. This cannot be undone easily.
             </p>
@@ -167,7 +169,7 @@ export default function WikiAllArticlesPage() {
         <div style={{
           display: 'grid', gridTemplateColumns: '32px 3% 1fr 80px 100px 80px 80px 100px 50px',
           background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '8px 12px', height: 50, alignItems: 'center',
-          fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
+          fontFamily: 'var(--ds-font-family-body)', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
           color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', letterSpacing: '0.05em', borderBottom: `0.75px solid ${borderColor}`,
         }}>
           <span>
@@ -205,10 +207,10 @@ export default function WikiAllArticlesPage() {
                 <span onClick={() => navigate(`/wiki/${a.slug}`)} style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
                 <span style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{a.domain_code}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: verBadge.bg, color: verBadge.color, width: 'fit-content' }}>{verBadge.label}</span>
-                <span style={{ fontFamily: F.mono, fontSize: 11, fontWeight: 500, color: confColor }}>{conf}%</span>
-                <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{a.view_count ?? 0}</span>
-                <span style={{ fontFamily: F.mono, fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{new Date(a.updated_at).toLocaleDateString()}</span>
-                <span style={{ fontFamily: F.mono, fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>v{a.version ?? 1}</span>
+                <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11, fontWeight: 500, color: confColor }}>{conf}%</span>
+                <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{a.view_count ?? 0}</span>
+                <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{new Date(a.updated_at).toLocaleDateString()}</span>
+                <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>v{a.version ?? 1}</span>
               </div>
             );
           })}

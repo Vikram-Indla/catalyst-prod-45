@@ -8,10 +8,9 @@ import { processPersonalizedQuery, type QueryResult } from '../home/Personalized
 
 type ViewState = 'land' | 'chat';
 
-const F = {
-  inter: "-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif",
-  sora: "'Sora', sans-serif",
-};
+// Font tokens removed — using ADS tokens instead
+// inter → var(--ds-font-family-body)
+// sora → var(--ds-font-family-body)
 
 export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { data: userCtx, isLoading: userLoading, refetch: refetchUser } = useUserContext();
@@ -140,7 +139,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           zIndex: 50, display: 'flex', flexDirection: 'column',
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 300ms cubic-bezier(0,0,0.2,1)',
-          fontFamily: F.inter,
+          fontFamily: 'var(--ds-font-family-body)',
         }}
       >
         {/* Header */}
@@ -176,10 +175,10 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               </svg>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1)', letterSpacing: '-0.01em', fontFamily: F.sora }}>
+              <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1)', letterSpacing: '-0.01em', fontFamily: 'var(--ds-font-family-body)' }}>
                 Knowledge Assist
               </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'var(--fg-3)', fontFamily: F.inter }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-blue)', flexShrink: 0, animation: 'ka-pulse 2s infinite' }} />
                 {userCtx ? `${effectiveRole} · Live` : 'Connecting...'}
               </span>
@@ -231,7 +230,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                         maxWidth: '85%', padding: '10px 16px',
                         borderRadius: '8px 8px 3px 8px', background: 'var(--cp-blue)',
                         color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 13, fontWeight: 500, lineHeight: 1.5,
-                        fontFamily: F.inter,
+                        fontFamily: 'var(--ds-font-family-body)',
                       }}>{msg.text}</div>
                     </div>
                   )}
@@ -248,7 +247,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               {isProcessing && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0', animation: 'ka-msg-in 200ms ease' }}>
                   <Loader2 size={16} color="#4C6EF5" style={{ animation: 'spin 1s linear infinite' }} />
-                  <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: F.inter }}>Searching your projects...</span>
+                  <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>Searching your projects...</span>
                 </div>
               )}
             </div>
@@ -297,7 +296,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               rows={1}
               style={{
                 flex: 1, border: 'none', outline: 'none', background: 'transparent',
-                fontSize: 14, color: 'var(--fg-1)', fontFamily: F.inter,
+                fontSize: 14, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)',
                 resize: 'none', minHeight: 32, lineHeight: 1.5,
                 padding: '4px 0', boxShadow: 'none',
               }}

@@ -19,11 +19,10 @@ const T = {
   danger: 'var(--sem-danger)', warning: 'var(--sem-warning)', teal: 'var(--sem-success)',
 };
 
-const F = {
-  inter: "'Inter', -apple-system, sans-serif",
-  sora: "'Sora', sans-serif",
-  mono: "'JetBrains Mono', monospace",
-};
+// Font tokens removed — using ADS tokens instead
+// inter → var(--ds-font-family-body)
+// sora → var(--ds-font-family-body)
+// mono → var(--ds-font-family-code)
 
 interface ItemData {
   issue_key: string;
@@ -203,7 +202,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
             <ArrowLeft size={18} />
           </button>
           <span style={{
-            fontFamily: F.mono, fontSize: 12, fontWeight: 600, color: T.primary,
+            fontFamily: 'var(--ds-font-family-code)', fontSize: 12, fontWeight: 600, color: T.primary,
             background: T.primaryBg, padding: '4px 12px', borderRadius: 4,
           }}>{issueKey}</span>
           <button
@@ -215,7 +214,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
         </div>
         <span style={{
           fontSize: 10, fontWeight: 700, color: T.primary, background: T.primaryBg,
-          padding: '3px 8px', borderRadius: 4, fontFamily: F.mono,
+          padding: '3px 8px', borderRadius: 4, fontFamily: 'var(--ds-font-family-code)',
           textTransform: 'uppercase', letterSpacing: '0.06em',
         }}>JIRA SYNC</span>
       </div>
@@ -238,7 +237,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
             <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
             <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, marginBottom: 6 }}>Item Not Found</div>
             <div style={{ fontSize: 13, color: T.inkMuted, marginBottom: 20 }}>
-              No item with key <span style={{ fontFamily: F.mono, fontWeight: 600, color: T.primary }}>{issueKey}</span> was found in the database.
+              No item with key <span style={{ fontFamily: 'var(--ds-font-family-code)', fontWeight: 600, color: T.primary }}>{issueKey}</span> was found in the database.
             </div>
             <button
               onClick={onClose}
@@ -258,7 +257,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
                 </div>
                 <div style={{ flex: 1 }}>
                   <h2 style={{
-                    fontFamily: F.sora, fontSize: 18, fontWeight: 700,
+                    fontFamily: 'var(--ds-font-family-body)', fontSize: 18, fontWeight: 700,
                     color: T.ink, letterSpacing: '-0.025em', lineHeight: 1.35, margin: 0,
                   }}>{item.summary}</h2>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
@@ -283,7 +282,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
                 <CornerDownLeft size={14} style={{ color: T.inkMuted, flexShrink: 0 }} />
                 <span style={{ fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>PARENT</span>
                 <JiraIssueTypeIcon type="epic" size={14} />
-                <span style={{ fontFamily: F.mono, fontSize: 12, fontWeight: 600, color: T.primary }}>{item.parent_key}</span>
+                <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, fontWeight: 600, color: T.primary }}>{item.parent_key}</span>
                 {item.parent_summary && (
                   <span style={{ fontSize: 13, fontWeight: 500, color: T.inkSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {item.parent_summary}
@@ -299,7 +298,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
               <FieldRow icon={<Layers size={13} />} label="Project"><span style={{ fontWeight: 600 }}>{item.project_name || item.project_key}</span></FieldRow>
               <FieldRow icon={<Tag size={13} />} label="Type"><JiraIssueTypeIcon type={item.issue_type} size={14} /><span>{item.issue_type}</span></FieldRow>
               {item.sprint_name && (
-                <FieldRow icon={<GitBranch size={13} />} label="Sprint"><span style={{ fontFamily: F.mono, fontSize: 12 }}>{item.sprint_name}</span></FieldRow>
+                <FieldRow icon={<GitBranch size={13} />} label="Sprint"><span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12 }}>{item.sprint_name}</span></FieldRow>
               )}
               {item.labels && item.labels.length > 0 && (
                 <FieldRow icon={<Tag size={13} />} label="Labels">
@@ -325,7 +324,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
             {/* Description */}
             <div style={{ margin: '0 24px 16px' }}>
               <h3 style={{
-                fontFamily: F.sora, fontSize: 14, fontWeight: 600, color: T.ink,
+                fontFamily: 'var(--ds-font-family-body)', fontSize: 14, fontWeight: 600, color: T.ink,
                 paddingBottom: 8, borderBottom: `1px solid ${T.border}`, marginBottom: 12,
               }}>Description</h3>
               <div style={{ fontSize: 13, color: T.inkSecondary, lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
@@ -337,7 +336,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
             {changelog.length > 0 && (
               <div style={{ margin: '0 24px 24px' }}>
                 <h3 style={{
-                  fontFamily: F.sora, fontSize: 14, fontWeight: 600, color: T.ink,
+                  fontFamily: 'var(--ds-font-family-body)', fontSize: 14, fontWeight: 600, color: T.ink,
                   paddingBottom: 8, borderBottom: `1px solid ${T.border}`, marginBottom: 12,
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}>

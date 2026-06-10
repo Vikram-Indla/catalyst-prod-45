@@ -11,9 +11,8 @@
  *   - Triggered by parent via onMouseEnter+200ms debounce, onMouseLeave hides.
  *   - Re-uses canonical primitives: UserAvatar, JiraIssueTypeIcon, <Lozenge>.
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { acquire as acquireHoverSlot, release as releaseHoverSlot } from '@/lib/hover-card-singleton';
 import { token } from '@atlaskit/tokens';
 import { Lozenge } from '@/components/ads';
 import UserAvatar from '@/components/shared/UserAvatar';
@@ -31,8 +30,6 @@ type Props = {
   onItemClick: (issueKey: string) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
-  /** Singleton — called when another hover card opens and wants this one closed. */
-  requestClose?: () => void;
 };
 
 function statusAppearance(category: string | null, status: string | null) {
@@ -46,21 +43,11 @@ function statusAppearance(category: string | null, status: string | null) {
 
 export default function TeamMemberHoverCard({
   open, anchorPoint, name, role, profileId, projectId,
-  onItemClick, onMouseEnter, onMouseLeave, requestClose,
+  onItemClick, onMouseEnter, onMouseLeave,
 }: Props) {
   const { data: items, isLoading } = useTeamMemberRecentItems(profileId, projectId, 5, open);
   const cardRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
-
-  // Singleton — register/release the close-callback so only one hover card
-  // is ever visible across the app.
-  const closeRef = useCallback(() => { requestClose?.(); }, [requestClose]);
-  useEffect(() => {
-    if (open) {
-      acquireHoverSlot(closeRef);
-      return () => releaseHoverSlot(closeRef);
-    }
-  }, [open, closeRef]);
 
   useEffect(() => {
     if (!open || !anchorPoint) { setPos(null); return; }

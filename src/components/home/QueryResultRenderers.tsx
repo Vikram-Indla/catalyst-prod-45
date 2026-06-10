@@ -4,11 +4,10 @@
 import React from 'react';
 import type { QueryResult } from './PersonalizedQueryProcessor';
 
-const F = {
-  inter: "-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif",
-  mono: "'JetBrains Mono', 'SF Mono', monospace",
-  sora: "'Sora', sans-serif",
-};
+// Font tokens removed — using ADS tokens instead
+// inter → var(--ds-font-family-body)
+// mono → var(--ds-font-family-code)
+// sora → var(--ds-font-family-body)
 
 const PROJECT_COLORS: Record<string, string> = {
   BAU: '#4C6EF5', SIMP: '#FA8C16', MDT: '#52C41A', ICP: '#722ED1',
@@ -38,7 +37,7 @@ function StatusLoz({ status }: { status: string }) {
       padding: '0 6px', borderRadius: 4,
       background: s.bg, color: s.color,
       fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
-      letterSpacing: '0.03em', fontFamily: F.inter,
+      letterSpacing: '0.03em', fontFamily: 'var(--ds-font-family-body)',
       whiteSpace: 'nowrap',
     }}>{status}</span>
   );
@@ -52,13 +51,13 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
   return (
     <div style={{ animation: 'ka-msg-in 200ms ease' }}>
       {/* Title */}
-      <h3 style={{ fontSize: 14, fontWeight: 650, color: 'var(--fg-1)', margin: '0 0 12px', fontFamily: F.sora }}>
+      <h3 style={{ fontSize: 14, fontWeight: 650, color: 'var(--fg-1)', margin: '0 0 12px', fontFamily: 'var(--ds-font-family-body)' }}>
         {result.title}
       </h3>
 
       {/* Narrative message */}
       {result.message && (
-        <p style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: '20px', margin: '0 0 16px', fontFamily: F.inter }}>
+        <p style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: '20px', margin: '0 0 16px', fontFamily: 'var(--ds-font-family-body)' }}>
           {result.message}
         </p>
       )}
@@ -80,7 +79,7 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--cp-float)'; e.currentTarget.style.borderColor = 'var(--divider)'; }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontFamily: F.mono, fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)' }}>
+                <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)' }}>
                   {item.issue_key}
                 </span>
                 <StatusLoz status={item.status} />
@@ -89,11 +88,11 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
                   {item.project_key}
                 </span>
               </div>
-              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: F.inter, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {item.summary}
               </span>
               {item.reason && (
-                <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: F.inter }}>{item.reason}</span>
+                <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>{item.reason}</span>
               )}
             </button>
           ))}
@@ -114,9 +113,9 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
             <tbody>
               {result.members.map((m: any, i: number) => (
                 <tr key={i} style={{ height: 34, borderBottom: '1px solid var(--divider)' }}>
-                  <td style={{ padding: '6px 12px', fontSize: 13, color: 'var(--fg-1)', fontFamily: F.inter }}>{m.name}</td>
-                  <td style={{ padding: '6px 12px', fontSize: 13, fontFamily: F.mono, textAlign: 'right', color: 'var(--fg-1)', fontWeight: 600 }}>{m.open}</td>
-                  <td style={{ padding: '6px 12px', fontSize: 13, fontFamily: F.mono, textAlign: 'right', color: m.blocked > 0 ? 'var(--sem-danger)' : 'var(--fg-3)', fontWeight: 600 }}>{m.blocked}</td>
+                  <td style={{ padding: '6px 12px', fontSize: 13, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}>{m.name}</td>
+                  <td style={{ padding: '6px 12px', fontSize: 13, fontFamily: 'var(--ds-font-family-code)', textAlign: 'right', color: 'var(--fg-1)', fontWeight: 600 }}>{m.open}</td>
+                  <td style={{ padding: '6px 12px', fontSize: 13, fontFamily: 'var(--ds-font-family-code)', textAlign: 'right', color: m.blocked > 0 ? 'var(--sem-danger)' : 'var(--fg-3)', fontWeight: 600 }}>{m.blocked}</td>
                 </tr>
               ))}
             </tbody>
@@ -162,7 +161,7 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
               <div key={i} style={{ padding: '12px 14px', border: '1px solid var(--divider)', borderRadius: 6, background: 'var(--cp-float)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                   <span style={{ width: 7, height: 7, borderRadius: '50%', background: PROJECT_COLORS[r.project] || 'var(--fg-3)' }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: F.inter }}>{r.project}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}>{r.project}</span>
                   <span style={{
                     marginLeft: 'auto', fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
                     padding: '2px 8px', borderRadius: 4,
@@ -176,7 +175,7 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
                 <div style={{ height: 6, borderRadius: 4, background: 'var(--bg-3)', overflow: 'hidden', marginBottom: 6 }}>
                   <div style={{ height: '100%', width: `${pct}%`, borderRadius: 4, background: r.health === 'on-track' ? 'var(--sem-success)' : 'var(--sem-warning)', transition: 'width 300ms' }} />
                 </div>
-                <div style={{ display: 'flex', gap: 16, fontSize: 11, color: 'var(--fg-3)', fontFamily: F.mono }}>
+                <div style={{ display: 'flex', gap: 16, fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-code)' }}>
                   <span>Done: {r.done}</span>
                   <span>In Progress: {r.inProgress}</span>
                   <span style={{ color: r.blocked > 0 ? 'var(--sem-danger)' : undefined }}>Blocked: {r.blocked}</span>
@@ -199,7 +198,7 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
                 padding: '7px 13px', borderRadius: 8,
                 border: '1.5px solid var(--divider)', background: 'var(--cp-float)',
                 cursor: 'pointer', fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)',
-                fontFamily: F.inter, transition: 'all 100ms',
+                fontFamily: 'var(--ds-font-family-body)', transition: 'all 100ms',
               }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.background = 'var(--cp-blue-wash)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.background = 'var(--cp-float)'; }}
@@ -216,6 +215,6 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
 const thStyle: React.CSSProperties = {
   padding: '6px 12px', fontSize: 10, fontWeight: 700,
   textTransform: 'uppercase', letterSpacing: '0.06em',
-  color: 'var(--fg-3)', fontFamily: F.inter,
+  color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)',
   borderBottom: '1px solid var(--divider)',
 };

@@ -16,6 +16,7 @@
  * 3 actions: Copy link · Summarize with CATY · View related links.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { acquire as acquireHoverSlot, release as releaseHoverSlot } from '@/lib/hover-card-singleton';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -561,11 +562,15 @@ export function IssueHoverCard({ issueKey, children, disabled }: IssueHoverCardP
     if (r.width === 0 && r.height === 0) return;
     setRect(r);
     setIsOpen(true);
+    // Singleton — close any other open hover card before showing this one.
+    acquireHoverSlot(close);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [disabled]);
 
   const close = useCallback(() => {
     setIsOpen(false);
     setRect(null);
+    releaseHoverSlot(close);
   }, []);
 
   const handleTriggerEnter = useCallback(() => {
@@ -582,12 +587,14 @@ export function IssueHoverCard({ issueKey, children, disabled }: IssueHoverCardP
     window.clearTimeout(leaveTimer.current);
   }, []);
 
-  // Cleanup pending timers on unmount.
+  // Cleanup pending timers + release singleton slot on unmount.
   useEffect(() => {
     return () => {
       window.clearTimeout(enterTimer.current);
       window.clearTimeout(leaveTimer.current);
+      releaseHoverSlot(close);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

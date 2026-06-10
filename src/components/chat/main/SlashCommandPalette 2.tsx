@@ -79,15 +79,6 @@ export function SlashCommandPalette({
 }: SlashCommandPaletteProps) {
   const [state, setState] = useState<CommandState>(INITIAL);
 
-  const candidates = useMemo(() => {
-    if (!state.open) return [];
-    const q = state.query.trim().toLowerCase();
-    const filtered = q
-      ? SLASH_COMMANDS.filter(cmd => cmd.name.toLowerCase().includes(q))
-      : SLASH_COMMANDS;
-    return filtered;
-  }, [state]);
-
   // Recompute open-state whenever the value or caret changes.
   useEffect(() => {
     const el = textareaRef.current;
@@ -196,6 +187,15 @@ export function SlashCommandPalette({
       }
     };
   }, [state.open, state.selectedIndex, candidates]);
+
+  const candidates = useMemo(() => {
+    if (!state.open) return [];
+    const q = state.query.trim().toLowerCase();
+    const filtered = q
+      ? SLASH_COMMANDS.filter(cmd => cmd.name.toLowerCase().includes(q))
+      : SLASH_COMMANDS;
+    return filtered;
+  }, [state]);
 
   const insertCommand = (cmd: SlashCommand) => {
     const before = value.slice(0, state.triggerIndex);

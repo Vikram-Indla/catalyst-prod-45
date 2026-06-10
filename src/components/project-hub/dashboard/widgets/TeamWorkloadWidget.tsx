@@ -27,9 +27,15 @@
  *     forwarded to the workload hook + the click-through.
  *   - Loading skeleton + EmptyState fallback.
  */
+import { useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { WidgetProps } from '../widget-types';
 import WidgetWrapper from '../WidgetWrapper';
-import { useDashboardTeamWorkload, YEAR_2026_START } from '@/hooks/useDashboardWidgets';
+import {
+  useDashboardTeamWorkload,
+  useTeamRoleMap,
+  YEAR_2026_START,
+} from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { useQuery } from '@tanstack/react-query';
 import { typedQuery } from '@/integrations/supabase/client';
@@ -38,6 +44,7 @@ import { EmptyState } from '@/components/ads';
 import UserAvatar from '@/components/shared/UserAvatar';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import WidgetGearButton from '../WidgetGearButton';
+import TeamMemberHoverCard from './TeamMemberHoverCard';
 import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG, TITLE, H_NUM } from '../dashboardTypography';
 
 // Atlaskit canonical bolder palette — same blues / reds / teals used by
@@ -48,6 +55,13 @@ import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG, TITLE, H_NUM } from '../dashb
 const STORIES_FILL = 'var(--ds-background-accent-blue-bolder, #0C66E4)';
 const SUBTASKS_FILL = 'var(--ds-background-accent-teal-bolder, #206A83)';
 const BUGS_FILL = 'var(--ds-background-accent-red-bolder, #C9372C)';
+
+// 2026-06-09 — capacity-target signal coloring. ≤80% brand blue, 80-100% amber,
+// >100% danger. Norman affordance: color = signal, not decoration.
+const CAPACITY_TARGET = 50;
+const FILL_HEALTHY = 'var(--ds-background-brand-bold, #0C66E4)';
+const FILL_HIGH = 'var(--ds-background-warning-bold, #946F00)';
+const FILL_OVER = 'var(--ds-background-danger-bold, #C9372C)';
 
 export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { settings } = useGadgetSettings('workload', projectKey);
@@ -61,6 +75,7 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
     priorityFilter: settings.priorityFilter,
   });
   const { openUWV } = useUWV();
+  const navigate = useNavigate();
 
   // Workflow-aware status filter — preserved verbatim. Long staleTime —
   // workflow definitions change rarely.
@@ -82,7 +97,18 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
   // Sort by total desc — top of list = highest load.
   const sorted = [...(workload ?? [])].sort((a, b) => b.total - a.total);
   const maxCount = Math.max(1, ...sorted.map((w) => w.total));
-  const totalOpen = sorted.reduce((s, w) => s + w.total, 0);
+  // 2026-06-09 Vikram — KPI strip now ToDo / In Progress / Done aggregates.
+  // Resolve role + profile-id for each assignee from resource_inventory.role_name.
+  const accountIds = sorted.map((w: any) => w.assignee_account_id ?? null);
+  const { data: roleMap } = useTeamRoleMap(accountIds);
+  const kpiTotals = sorted.reduce(
+    (acc, w: any) => ({
+      todo: acc.todo + (w.todo ?? 0),
+      inprogress: acc.inprogress + (w.inprogress ?? 0),
+      done: acc.done + (w.done ?? 0),
+    }),
+    { todo: 0, inprogress: 0, done: 0 },
+  );
   const top = sorted[0];
 
   // Mirror the widget hook's 2026 fiscal guardrail so UWV totals reconcile
@@ -105,6 +131,11 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
     releaseFilter: settings.releaseFilter,
   });
 
+  // 2026-06-09 Vikram — cap at 10 rows. If team > 10 teammates, footer link
+  // routes to UWV grouped by assignee for the complete list.
+  const ROW_CAP = 10;
+  const overflow = Math.max(0, sorted.length - ROW_CAP);
+
   return (
     <WidgetWrapper
       title="Team Workload"
@@ -113,6 +144,25 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
       onToggleCollapse={onToggleCollapse}
       onExpand={handleExpand}
       headerBadges={<WidgetGearButton gadgetType="workload" projectKey={projectKey} projectId={projectId} />}
+      footer={overflow > 0 ? (
+        <button
+          type="button"
+          onClick={() => navigate(`/project-hub/${projectKey}/allwork`)}
+          style={{
+            background: 'transparent',
+            border: 0,
+            cursor: 'pointer',
+            padding: 0,
+            ...SMALL,
+            color: token('color.link', '#0C66E4'),
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+          }}
+        >
+          View all {sorted.length} teammates ↗
+        </button>
+      ) : undefined}
     >
       {isLoading ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -138,23 +188,39 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* ── KPI headline strip ─────────────────────────────────────── */}
           <KpiHeadline
-            assignees={sorted.length}
-            totalOpen={totalOpen}
-            topName={top?.assignee ?? '—'}
-            topCount={top?.total ?? 0}
+            todo={kpiTotals.todo}
+            inprogress={kpiTotals.inprogress}
+            done={kpiTotals.done}
           />
 
           {/* ── Workload rows ─────────────────────────────────────────── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {sorted.map((w) => (
+            {sorted.slice(0, ROW_CAP).map((w) => {
+              const accountId = (w as any).assignee_account_id ?? '';
+              const role = roleMap?.get(accountId)?.role ?? null;
+              const profileId = roleMap?.get(accountId)?.profile_id ?? null;
+              return (
               <WorkloadRow
                 key={w.assignee}
                 assignee={w.assignee}
+                role={role}
+                profileId={profileId}
+                projectId={projectId ?? null}
                 total={w.total}
+                inprogress={(w as any).inprogress ?? 0}
                 stories={w.stories}
                 subtasks={(w as any).subtasks ?? 0}
                 bugs={w.bugs}
                 maxCount={maxCount}
+                onOpenIssue={(issueKey) =>
+                  openUWV({
+                    project: projectKey,
+                    hubSource: ['projecthub'],
+                    dataType: 'issue',
+                    title: issueKey,
+                    issueKey,
+                  })
+                }
                 onClick={() =>
                   openUWV({
                     project: projectKey,
@@ -176,7 +242,8 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
                   })
                 }
               />
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -191,16 +258,8 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
 // headline pattern so the dashboard reads with consistent rhythm.
 
 function KpiHeadline({
-  assignees,
-  totalOpen,
-  topName,
-  topCount,
-}: {
-  assignees: number;
-  totalOpen: number;
-  topName: string;
-  topCount: number;
-}) {
+  todo, inprogress, done,
+}: { todo: number; inprogress: number; done: number }) {
   return (
     <div
       style={{
@@ -211,30 +270,9 @@ function KpiHeadline({
         overflow: 'hidden',
       }}
     >
-      <KpiCell label="Assignees" value={assignees} />
-      <KpiCell label="Open Work" value={totalOpen} />
-      <KpiCell
-        label="Most Loaded"
-        value={
-          <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 8 }}>
-            <span
-              style={{
-                ...STRONG,
-                fontWeight: 500,
-                color: token('color.text.subtle', '#44546F'),
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                maxWidth: 140,
-              }}
-            >
-              {topName}
-            </span>
-            <span style={{ fontVariantNumeric: 'tabular-nums' }}>{topCount}</span>
-          </span>
-        }
-        last
-      />
+      <KpiCell label="To do" value={todo} accent={token('color.background.neutral.bold', '#44546F')} />
+      <KpiCell label="In progress" value={inprogress} accent={token('color.background.brand.bold', '#0C66E4')} />
+      <KpiCell label="Done" value={done} accent={token('color.background.success.bold', '#1F845A')} last />
     </div>
   );
 }
@@ -242,10 +280,12 @@ function KpiHeadline({
 function KpiCell({
   label,
   value,
+  accent,
   last,
 }: {
   label: string;
   value: React.ReactNode;
+  accent?: string;
   last?: boolean;
 }) {
   return (
@@ -254,19 +294,22 @@ function KpiCell({
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
+        gap: 4,
         padding: '10px 12px',
         borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
       }}
     >
-      <span
-        style={{
-          ...LABEL,
-          textTransform: 'none',
-          letterSpacing: '0.04em',
-        }}
-      >
-        {label}
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        {accent && <span aria-hidden style={{ width: 8, height: 8, borderRadius: 2, background: accent }} />}
+        <span
+          style={{
+            ...LABEL,
+            textTransform: 'none',
+            letterSpacing: '0.04em',
+          }}
+        >
+          {label}
+        </span>
       </span>
       <span
         style={{
@@ -287,202 +330,218 @@ function KpiCell({
 // target. Atlaskit-canonical hover + focus rings.
 
 function WorkloadRow({
-  assignee,
-  total,
-  stories,
-  subtasks,
-  bugs,
-  maxCount,
-  onClick,
+  assignee, role, profileId, projectId,
+  total, inprogress, stories, subtasks, bugs, maxCount,
+  onClick, onOpenIssue,
 }: {
   assignee: string;
-  total: number;
-  stories: number;
-  subtasks: number;
-  bugs: number;
-  maxCount: number;
+  role: string | null;
+  profileId: string | null;
+  projectId: string | null;
+  total: number; inprogress: number;
+  stories: number; subtasks: number; bugs: number; maxCount: number;
   onClick: () => void;
+  onOpenIssue: (issueKey: string) => void;
 }) {
-  // Width of the entire data band (relative to the most-loaded teammate).
-  // We never let it drop below 6% so even a single-item assignee shows a
-  // visible nub.
-  const bandPct = Math.max(6, (total / maxCount) * 100);
-  // Within the band, what fraction is stories vs subtasks vs bugs.
-  const storiesPct = total > 0 ? (stories / total) * 100 : 0;
-  const subtasksPct = total > 0 ? (subtasks / total) * 100 : 0;
-  const bugsPct = total > 0 ? (bugs / total) * 100 : 0;
+  const [hoverOpen, setHoverOpen] = useState(false);
+  const [anchorPoint, setAnchorPoint] = useState<{ x: number; y: number } | null>(null);
+  const openTimerRef = useRef<number | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
+
+  // Capacity-driven alert color (Norman affordance — color = signal).
+  const capacityPct = Math.min(150, Math.round((total / CAPACITY_TARGET) * 100));
+  const fillPct = Math.min(100, capacityPct);
+  const fillColor = capacityPct > 100 ? FILL_OVER : capacityPct >= 80 ? FILL_HIGH : FILL_HEALTHY;
+
+  // Inside the fill, sub-segment widths (only when healthy, else solid alert).
+  const showSegments = total > 0 && capacityPct <= 100;
+  const storiesPct = total ? (stories / total) * 100 : 0;
+  const subtasksPct = total ? (subtasks / total) * 100 : 0;
+  const bugsPct = total ? (bugs / total) * 100 : 0;
+
+  const cancelTimers = () => {
+    if (openTimerRef.current) { window.clearTimeout(openTimerRef.current); openTimerRef.current = null; }
+    if (closeTimerRef.current) { window.clearTimeout(closeTimerRef.current); closeTimerRef.current = null; }
+  };
+  const scheduleOpen = (x: number, y: number) => {
+    cancelTimers();
+    openTimerRef.current = window.setTimeout(() => {
+      setAnchorPoint({ x, y });
+      setHoverOpen(true);
+    }, 200);
+  };
+  const scheduleClose = () => {
+    cancelTimers();
+    closeTimerRef.current = window.setTimeout(() => setHoverOpen(false), 150);
+  };
+
+  const statsCaption = useMemo(() => {
+    const parts: string[] = [];
+    if (stories > 0) parts.push(`${stories} ${stories === 1 ? 'story' : 'stories'}`);
+    if (subtasks > 0) parts.push(`${subtasks} ${subtasks === 1 ? 'subtask' : 'subtasks'}`);
+    if (bugs > 0) parts.push(`${bugs} ${bugs === 1 ? 'bug' : 'bugs'}`);
+    if (!parts.length) parts.push('no items');
+    return parts.join(' · ');
+  }, [stories, subtasks, bugs]);
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          (e.currentTarget as HTMLDivElement).click();
-        }
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4');
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = 'transparent';
-      }}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        padding: '8px 8px',
-        marginInline: -8,
-        borderRadius: token('border.radius', '4px'),
-        cursor: 'pointer',
-        transition: 'background 80ms ease',
-      }}
-    >
-      {/* Avatar column — bigger so it anchors the row visually */}
-      <div style={{ flexShrink: 0 }}>
-        <UserAvatar size="medium" name={assignee} />
-      </div>
-
-      {/* Right-side data column — name+count on top, bar+meta below */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {/* Top line: name + count */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'baseline',
-            justifyContent: 'space-between',
-            gap: 12,
-          }}
-        >
-          <span
-            style={{
-              ...STRONG,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              minWidth: 0,
-              letterSpacing: '-0.005em',
-            }}
-          >
-            {assignee}
-          </span>
-          <span
-            style={{
-              ...TITLE,
-              fontWeight: 600,
-              fontVariantNumeric: 'tabular-nums',
-              flexShrink: 0,
-            }}
-          >
-            {total}
-          </span>
+    <>
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            (e.currentTarget as HTMLDivElement).click();
+          }
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4');
+          scheduleOpen(e.clientX, e.clientY);
+        }}
+        onMouseMove={(e) => {
+          if (!hoverOpen) return;
+          setAnchorPoint({ x: e.clientX, y: e.clientY });
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'transparent';
+          scheduleClose();
+        }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          padding: '10px 8px',
+          marginInline: -8,
+          borderRadius: token('border.radius', '4px'),
+          cursor: 'pointer',
+          transition: 'background 80ms ease',
+        }}
+      >
+        <div style={{ flexShrink: 0 }}>
+          <UserAvatar size="medium" name={assignee} />
         </div>
 
-        {/* Bottom line: stacked bar + meta */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* Bar track — 14px tall rounded, fills proportional to maxCount.
-              Inside, two segments side-by-side: stories blue, bugs red. */}
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {/* Top line — name · role | open count + in-progress sub-metric */}
           <div
             style={{
-              flex: 1,
-              height: 14,
-              borderRadius: 7,
+              display: 'flex',
+              alignItems: 'baseline',
+              justifyContent: 'space-between',
+              gap: 12,
+            }}
+          >
+            <span
+              style={{
+                ...STRONG,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                minWidth: 0,
+                letterSpacing: '-0.005em',
+              }}
+            >
+              {assignee}
+              {role && (
+                <span
+                  style={{
+                    ...BODY,
+                    fontWeight: 400,
+                    color: token('color.text.subtle', '#44546F'),
+                    marginLeft: 8,
+                  }}
+                >
+                  · {role}
+                </span>
+              )}
+            </span>
+            <span
+              style={{
+                ...TITLE,
+                fontWeight: 600,
+                fontVariantNumeric: 'tabular-nums',
+                flexShrink: 0,
+                display: 'inline-flex',
+                alignItems: 'baseline',
+                gap: 8,
+              }}
+            >
+              <span>{total}</span>
+              <span
+                style={{
+                  ...SMALL,
+                  fontWeight: 500,
+                  color: inprogress > 0
+                    ? token('color.text.brand', '#0C66E4')
+                    : token('color.text.subtle', '#44546F'),
+                }}
+              >
+                {inprogress > 0 ? `${inprogress} in progress` : 'idle'}
+              </span>
+            </span>
+          </div>
+
+          {/* Stats caption — ABOVE the bar */}
+          <div
+            style={{
+              ...SMALL,
+              color: token('color.text.subtle', '#44546F'),
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            {statsCaption}
+          </div>
+
+          {/* Capacity bar — neutral track, single signal-colored fill */}
+          <div
+            style={{
+              height: 10,
+              borderRadius: 5,
               background: token('color.background.neutral', '#F1F2F4'),
               overflow: 'hidden',
               position: 'relative',
             }}
+            aria-label={`${capacityPct}% of capacity`}
           >
             <div
               style={{
                 height: '100%',
-                width: `${bandPct}%`,
+                width: `${fillPct}%`,
+                background: showSegments ? 'transparent' : fillColor,
                 display: 'flex',
                 transition: 'width 320ms cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
-              {stories > 0 && (
-                <div
-                  style={{
-                    width: `${storiesPct}%`,
-                    background: STORIES_FILL,
-                  }}
-                  aria-label={`${stories} stories`}
-                />
+              {showSegments && stories > 0 && (
+                <div style={{ width: `${storiesPct}%`, background: STORIES_FILL }} />
               )}
-              {subtasks > 0 && (
-                <div
-                  style={{
-                    width: `${subtasksPct}%`,
-                    background: SUBTASKS_FILL,
-                  }}
-                  aria-label={`${subtasks} subtasks`}
-                />
+              {showSegments && subtasks > 0 && (
+                <div style={{ width: `${subtasksPct}%`, background: SUBTASKS_FILL }} />
               )}
-              {bugs > 0 && (
-                <div
-                  style={{
-                    width: `${bugsPct}%`,
-                    background: BUGS_FILL,
-                  }}
-                  aria-label={`${bugs} bugs`}
-                />
+              {showSegments && bugs > 0 && (
+                <div style={{ width: `${bugsPct}%`, background: BUGS_FILL }} />
               )}
             </div>
           </div>
-          {/* Meta — stories (blue), subtasks (teal), bugs (red). Order
-              matches the bar segment order so the eye can map dot → segment
-              left to right. */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              ...SMALL,
-              color: token('color.text.subtle', '#44546F'),
-              fontVariantNumeric: 'tabular-nums',
-              flexShrink: 0,
-              minWidth: 220,
-              justifyContent: 'flex-end',
-            }}
-          >
-            <MetaPill colour={STORIES_FILL} label="stories" count={stories} />
-            <MetaPill colour={SUBTASKS_FILL} label="subtasks" count={subtasks} />
-            <MetaPill colour={BUGS_FILL} label="bugs" count={bugs} />
-          </div>
         </div>
       </div>
-    </div>
+
+      <TeamMemberHoverCard
+        open={hoverOpen}
+        anchorPoint={anchorPoint}
+        name={assignee}
+        role={role}
+        profileId={profileId}
+        projectId={projectId}
+        onItemClick={(k) => { setHoverOpen(false); onOpenIssue(k); }}
+        onMouseEnter={cancelTimers}
+        onMouseLeave={scheduleClose}
+        requestClose={() => setHoverOpen(false)}
+      />
+    </>
   );
 }
 
-function MetaPill({
-  colour,
-  label,
-  count,
-}: {
-  colour: string;
-  label: string;
-  count: number;
-}) {
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-      <span
-        aria-hidden
-        style={{
-          width: 8,
-          height: 8,
-          borderRadius: '50%',
-          background: colour,
-          display: 'inline-block',
-          flexShrink: 0,
-        }}
-      />
-      <span style={{ fontWeight: 600, color: token('color.text', '#292A2E') }}>
-        {count}
-      </span>
-      <span>{label}</span>
-    </span>
-  );
-}
+// MetaPill removed 2026-06-09 — stats now rendered as a single caption above the bar.

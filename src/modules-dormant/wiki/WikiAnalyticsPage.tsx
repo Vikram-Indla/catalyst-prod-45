@@ -95,7 +95,9 @@ export default function WikiAnalyticsPage() {
   ] : [];
 
   const { isDark } = useTheme();
-  const F = { sora: "'Sora', sans-serif", mono: "'JetBrains Mono', monospace" };
+  // Font tokens removed — using ADS tokens instead
+  // sora → var(--ds-font-family-body)
+  // mono → var(--ds-font-family-code)
   const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.06)';
 
   return (
@@ -106,7 +108,7 @@ export default function WikiAnalyticsPage() {
         <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 600 }}>Analytics</span>
       </nav>
 
-      <h1 style={{ fontFamily: F.sora, fontSize: 18, fontWeight: 700, marginBottom: 24 }}>WikiHub Analytics</h1>
+      <h1 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 18, fontWeight: 700, marginBottom: 24 }}>WikiHub Analytics</h1>
 
       {/* Stats Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, marginBottom: 32 }}>
@@ -114,7 +116,7 @@ export default function WikiAnalyticsPage() {
           <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${border}`, height: 80 }} />
         )) : statCards.map(s => (
           <div key={s.label} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${border}`, textAlign: 'center' }}>
-            <div style={{ fontFamily: F.sora, fontSize: 24, fontWeight: 700, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{s.value}</div>
+            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 24, fontWeight: 700, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{s.value}</div>
             <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 4, letterSpacing: '0.05em' }}>{s.label}</div>
           </div>
         ))}
@@ -124,7 +126,7 @@ export default function WikiAnalyticsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 32 }}>
         {/* Articles per Domain */}
         <div style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${border}` }}>
-          <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 16, margin: '0 0 16px' }}>Articles per Domain</h2>
+          <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, fontWeight: 600, marginBottom: 16, margin: '0 0 16px' }}>Articles per Domain</h2>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={domainDistribution ?? []}>
               <CartesianGrid strokeDasharray="3 3" stroke={border} />
@@ -142,7 +144,7 @@ export default function WikiAnalyticsPage() {
 
         {/* Verification Status Pie */}
         <div style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${border}` }}>
-          <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 16, margin: '0 0 16px' }}>Verification Status</h2>
+          <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, fontWeight: 600, marginBottom: 16, margin: '0 0 16px' }}>Verification Status</h2>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie data={verificationPie ?? []} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" label={({ name, value }) => `${name}: ${value}`} labelLine={false}>
@@ -161,12 +163,12 @@ export default function WikiAnalyticsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
         {/* Most Viewed */}
         <div>
-          <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Most Viewed Articles</h2>
+          <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Most Viewed Articles</h2>
           <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflow: 'hidden' }}>
             <div style={{
               display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px',
               background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '0 14px', height: 32, alignItems: 'center',
-              fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
+              fontFamily: 'var(--ds-font-family-body)', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
               color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
             }}>
               <span>Article</span><span>Views</span><span>Help.</span><span>Conf.</span>
@@ -193,12 +195,12 @@ export default function WikiAnalyticsPage() {
 
         {/* Least Helpful */}
         <div>
-          <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Least Helpful Articles</h2>
+          <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Least Helpful Articles</h2>
           <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflow: 'hidden' }}>
             <div style={{
               display: 'grid', gridTemplateColumns: '1fr 60px 60px',
               background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '0 14px', height: 32, alignItems: 'center',
-              fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
+              fontFamily: 'var(--ds-font-family-body)', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
               color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
             }}>
               <span>Article</span><span>Help.</span><span>Votes</span>

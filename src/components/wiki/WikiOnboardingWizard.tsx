@@ -5,11 +5,10 @@ import { useWikiLearningPaths } from '@/hooks/useWikiHub';
 import { useTheme } from '@/hooks/useTheme';
 import { GraduationCap, ChevronRight, Check, Sparkles } from '@/lib/atlaskit-icons';
 
-const F = {
-  sora: "'Sora', sans-serif",
-  inter: "'Inter', system-ui, sans-serif",
-  mono: "'JetBrains Mono', monospace",
-};
+// Font tokens removed — using ADS tokens instead
+// sora → var(--ds-font-family-body)
+// inter → var(--ds-font-family-body)
+// mono → var(--ds-font-family-code)
 
 const DOMAINS = [
   { code: 'D1', name: 'Industrial Licensing' },
@@ -67,7 +66,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
         <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--cp-blue)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
           <Sparkles size={28} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
         </div>
-        <h2 style={{ fontFamily: F.sora, fontSize: 18, fontWeight: 700, marginBottom: 6, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Welcome to WikiHub</h2>
+        <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 18, fontWeight: 700, marginBottom: 6, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Welcome to WikiHub</h2>
         <p style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', lineHeight: 1.5 }}>Let's personalize your experience. What's your role?</p>
       </div>
       <div style={{ display: 'grid', gap: 6 }}>
@@ -88,7 +87,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
 
     // Step 2: Domains
     <div key="step2">
-      <h2 style={{ fontFamily: F.sora, fontSize: 16, fontWeight: 700, marginBottom: 6, textAlign: 'center', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Choose Your Domains</h2>
+      <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 16, fontWeight: 700, marginBottom: 6, textAlign: 'center', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Choose Your Domains</h2>
       <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Select domains you want to follow.</p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
         {DOMAINS.map(d => {
@@ -111,7 +110,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
 
     // Step 3: Learning Paths
     <div key="step3">
-      <h2 style={{ fontFamily: F.sora, fontSize: 16, fontWeight: 700, marginBottom: 6, textAlign: 'center', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Start a Learning Path</h2>
+      <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 16, fontWeight: 700, marginBottom: 6, textAlign: 'center', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Start a Learning Path</h2>
       <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Pick one to begin structured learning.</p>
       <div style={{ display: 'grid', gap: 8 }}>
         {(paths as any[]).slice(0, 3).map((p: any) => {
@@ -127,7 +126,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 <GraduationCap size={16} style={{ color: 'var(--cp-blue)' }} />
-                <span style={{ fontFamily: F.sora, fontSize: 12.5, fontWeight: 600, flex: 1, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>{p.title}</span>
+                <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12.5, fontWeight: 600, flex: 1, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>{p.title}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: diffColor }}>{p.difficulty}</span>
               </div>
               <p style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', lineHeight: 1.4 }}>{p.description}</p>
