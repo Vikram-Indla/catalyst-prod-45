@@ -14,7 +14,7 @@
  *   (legacy values mentions/saved/people map to activity/later/more)
  */
 import React, { useMemo, useState, useRef, useEffect, useCallback, useReducer } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useConversations } from '@/hooks/chat/useConversations';
 import { useMessages } from '@/hooks/chat/useMessages';
 import { useConversationMembers } from '@/hooks/chat/useConversationMembers';
@@ -62,6 +62,7 @@ function railFromParam(raw: string | undefined): RailKey | 'threads' {
 }
 
 export function ChatMainView({ activeConversationId, onSelectConversation }: ChatMainViewProps) {
+  const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const urlConv = params.get('conv') ?? undefined;
   const rail = railFromParam(params.get('rail') ?? undefined);
@@ -70,7 +71,8 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
   const composerRef = useRef<HTMLTextAreaElement>(null);
   const [showHint, setShowHint] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [convTab, setConvTab] = useState<'messages' | 'files' | 'pins'>('messages');
+  const [railHidden, setRailHidden] = useState(false);
+  const [convTab, setConvTab] = useState<'messages' | 'pins'>('messages');
   const [catySummary, setCatySummary] = useState<{ open: boolean; loading: boolean; text: string }>({ open: false, loading: false, text: '' });
   // In-conversation search (#13)
   const [searchOpen, setSearchOpen] = useState(false);
@@ -428,10 +430,10 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
             </div>
           )}
 
-          {/* Channel tabs — Messages / Files / Pins */}
+          {/* Channel tabs — Messages / Pins (Files removed: no attachment support) */}
           {activeConversation?.kind === 'channel' && (
             <div className="cc-conv-tabs" role="tablist" aria-label="Channel content">
-              {(['messages', 'files', 'pins'] as const).map((t) => (
+              {(['messages', 'pins'] as const).map((t) => (
                 <button
                   key={t}
                   type="button"
@@ -441,53 +443,13 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
                   onClick={() => setConvTab(t)}
                 >
                   {t.charAt(0).toUpperCase() + t.slice(1)}
-                  {t === 'files' && fileMessages.length > 0 && ` (${fileMessages.length})`}
                   {t === 'pins' && pins.length > 0 && ` (${pins.length})`}
                 </button>
               ))}
             </div>
           )}
 
-          {convTab === 'files' && activeConversation?.kind === 'channel' ? (
-            <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
-              {fileMessages.length === 0 ? (
-                <div style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 13, textAlign: 'center', paddingTop: 32 }}>
-                  No files shared in this channel yet.
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {fileMessages.map((m) => {
-                    const url = (m as any).attachmentUrl ?? (m as any).attachment_url ?? '';
-                    const name = url.split('/').pop() ?? 'file';
-                    return (
-                      <a
-                        key={m.id}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 8,
-                          padding: '8px 12px',
-                          border: '1px solid var(--ds-border, #DFE1E6)',
-                          borderRadius: 4,
-                          textDecoration: 'none',
-                          color: 'var(--ds-text, #172B4D)',
-                          fontSize: 13,
-                          background: 'var(--ds-surface, #FFFFFF)',
-                        }}
-                      >
-                        <span style={{ color: 'var(--ds-text-brand, #0C66E4)', fontSize: 16 }}>📎</span>
-                        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
-                        <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 11 }}>{m.authorName}</span>
-                      </a>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          ) : convTab === 'pins' && activeConversation?.kind === 'channel' ? (
+          {convTab === 'pins' && activeConversation?.kind === 'channel' ? (
             <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
               {pins.length === 0 ? (
                 <div style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 13, textAlign: 'center', paddingTop: 32 }}>
@@ -557,6 +519,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
               onSetReminder={handleSetReminder}
               currentUserId={currentUserId}
               firstUnreadId={firstUnreadId}
+              projectKey={activeConversation?.projectKey ?? undefined}
             />
           )}
 
@@ -583,32 +546,92 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
 
   return (
     <div className="cc-main cc-main--workspace">
-      <IconRail
-        activeKey={rail === 'threads' ? 'home' : rail}
-        onSelect={handleRailSelect}
-        activityCount={activityCount}
-      />
-      <div
-        className={`cc-sidebar-pane${sidebarCollapsed ? ' cc-sidebar-pane--collapsed' : ''}`}
-        style={{ position: 'relative' }}
-      >
-        {!sidebarCollapsed && sidebar}
-        {/* Chevron toggle — matches project module sidebar pattern */}
+      {!railHidden && (
+        <IconRail
+          activeKey={rail === 'threads' ? 'home' : rail}
+          onSelect={handleRailSelect}
+          activityCount={activityCount}
+        />
+      )}
+      {!railHidden && (
+        <div
+          className={`cc-sidebar-pane${sidebarCollapsed ? ' cc-sidebar-pane--collapsed' : ''}`}
+          style={{ position: 'relative' }}
+        >
+          {/* Back to Catalyst link */}
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              padding: '8px 12px',
+              background: 'transparent',
+              border: 'none',
+              borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+              width: '100%',
+              cursor: 'pointer',
+              fontSize: 12,
+              color: 'var(--ds-text-subtle, #44546F)',
+              fontWeight: 500,
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--ds-link, #0052CC)'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
+          >
+            <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="currentColor" strokeWidth={2.5}>
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Back to Catalyst
+          </button>
+          {!sidebarCollapsed && sidebar}
+          <button
+            type="button"
+            className="cc-sidebar-chevron"
+            aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            onClick={() => setSidebarCollapsed((v) => !v)}
+          >
+            <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2}>
+              {sidebarCollapsed
+                ? <polyline points="9 18 15 12 9 6" />
+                : <polyline points="15 18 9 12 15 6" />}
+            </svg>
+          </button>
+        </div>
+      )}
+      <div className="cc-conv" style={{ display: 'flex', flex: 1, minWidth: 0, position: 'relative' }}>
+        {/* Full-width expand/contract toggle */}
         <button
           type="button"
-          className="cc-sidebar-chevron"
-          aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          onClick={() => setSidebarCollapsed((v) => !v)}
+          onClick={() => { setRailHidden((v) => !v); setSidebarCollapsed(false); }}
+          style={{
+            position: 'absolute',
+            top: 12,
+            left: railHidden ? 12 : -1,
+            zIndex: 10,
+            background: 'var(--ds-surface, #FFFFFF)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 4,
+            padding: '3px 6px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            fontSize: 11,
+            color: 'var(--ds-text-subtle, #44546F)',
+            boxShadow: '0 1px 4px rgba(9,30,66,0.1)',
+          }}
+          title={railHidden ? 'Show sidebar' : 'Expand to full width'}
+          aria-label={railHidden ? 'Show sidebar' : 'Expand to full width'}
         >
-          <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2}>
-            {sidebarCollapsed
-              ? <polyline points="9 18 15 12 9 6" />
-              : <polyline points="15 18 9 12 15 6" />}
+          <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="currentColor" strokeWidth={2}>
+            {railHidden
+              ? <><polyline points="4 14 10 14 10 20" /><polyline points="20 10 14 10 14 4" /><line x1="10" y1="14" x2="21" y2="3" /><line x1="3" y1="21" x2="14" y2="10" /></>
+              : <><polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" /><line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" /></>}
           </svg>
+          {railHidden ? 'Panels' : 'Expand'}
         </button>
-      </div>
-      <div className="cc-conv" style={{ display: 'flex', flex: 1, minWidth: 0 }}>
         {mainPane}
       </div>
 

@@ -541,7 +541,7 @@
      a hover-gap losing the parent :hover state). Visually hidden via
      opacity + pointer-events until row or toolbar itself is hovered. */
   position: absolute;
-  top: -14px;
+  top: -20px;
   right: 8px;
   display: flex;
   opacity: 0;
@@ -564,8 +564,8 @@
 }
 
 .cc-msg__tool {
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;

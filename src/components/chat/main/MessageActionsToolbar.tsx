@@ -20,17 +20,20 @@ import CopyIcon from '@atlaskit/icon/core/copy';
 import NotificationIcon from '@atlaskit/icon/core/notification';
 import ClockIcon from '@atlaskit/icon/core/clock';
 import PageIcon from '@atlaskit/icon/core/page';
+import { CreateWorkItemModal } from '@/components/project-hub/work-items/CreateWorkItemModal';
 
 export interface MessageActionsToolbarProps {
   messageId: string;
   conversationId: string;
   messageText: string;
+  projectKey?: string;
+  projectId?: string;
   onCopyLink?: () => Promise<void>;
   onMarkUnread?: () => Promise<void>;
   onRemind?: (minutesFromNow: number) => Promise<void>;
   onTurnIntoIssue?: (title: string, description: string, assigneeId?: string) => Promise<void>;
   isUnread?: boolean;
-  onReturnFocus?: () => void; // Called when toolbar loses focus (Escape), returns focus to message row
+  onReturnFocus?: () => void;
 }
 
 /**
@@ -48,6 +51,8 @@ export function MessageActionsToolbar({
   messageId,
   conversationId,
   messageText,
+  projectKey,
+  projectId,
   onCopyLink,
   onMarkUnread,
   onRemind,
@@ -58,9 +63,6 @@ export function MessageActionsToolbar({
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [reminderOpen, setReminderOpen] = useState(false);
   const [issueOpen, setIssueOpen] = useState(false);
-  const [issueTitle, setIssueTitle] = useState('');
-  const [issueDesc, setIssueDesc] = useState(messageText);
-  const [issueAssignee, setIssueAssignee] = useState<string>('');
   const [focusedButtonIndex, setFocusedButtonIndex] = useState<number | null>(null);
 
   // Refs to the 4 action buttons for keyboard navigation
@@ -96,20 +98,6 @@ export function MessageActionsToolbar({
     try {
       await onRemind?.(minutes);
       setReminderOpen(false);
-    } finally {
-      setIsLoading(null);
-    }
-  };
-
-  const handleTurnIntoIssue = async () => {
-    if (!issueTitle.trim()) return;
-    setIsLoading('turninto');
-    try {
-      await onTurnIntoIssue?.(issueTitle.trim(), issueDesc, issueAssignee || undefined);
-      setIssueOpen(false);
-      setIssueTitle('');
-      setIssueDesc(messageText);
-      setIssueAssignee('');
     } finally {
       setIsLoading(null);
     }
@@ -176,18 +164,9 @@ export function MessageActionsToolbar({
     }
   }, []);
 
-  // Handle modal Escape key for reminder
   const handleReminderKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       setReminderOpen(false);
-      e.stopPropagation();
-    }
-  }, []);
-
-  // Handle modal Escape key for issue
-  const handleIssueKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      setIssueOpen(false);
       e.stopPropagation();
     }
   }, []);
@@ -207,7 +186,7 @@ export function MessageActionsToolbar({
           <IconButton
             ref={copyButtonRef}
             appearance="subtle"
-            spacing="compact"
+            spacing="default"
             icon={CopyIcon}
             label="Copy message link"
             onClick={handleCopyLink}
@@ -224,7 +203,7 @@ export function MessageActionsToolbar({
           <IconButton
             ref={unreadButtonRef}
             appearance="subtle"
-            spacing="compact"
+            spacing="default"
             icon={NotificationIcon}
             label={isUnread ? 'Mark message as read' : 'Mark message unread'}
             onClick={handleMarkUnread}
@@ -241,7 +220,7 @@ export function MessageActionsToolbar({
           <IconButton
             ref={remindButtonRef}
             appearance="subtle"
-            spacing="compact"
+            spacing="default"
             icon={ClockIcon}
             label="Set reminder for this message"
             onClick={() => setReminderOpen(true)}
@@ -258,7 +237,7 @@ export function MessageActionsToolbar({
           <IconButton
             ref={issueButtonRef}
             appearance="subtle"
-            spacing="compact"
+            spacing="default"
             icon={PageIcon}
             label="Turn this message into a work item"
             onClick={() => setIssueOpen(true)}
@@ -323,74 +302,17 @@ export function MessageActionsToolbar({
         </div>
       )}
 
-      {/* Turn into issue modal */}
       {issueOpen && (
-        <div className="cc-modal-overlay" onClick={() => setIssueOpen(false)}>
-          <div
-            className="cc-modal"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="issue-modal-title"
-            onKeyDown={handleIssueKeyDown}
-          >
-            <h3 className="cc-modal__title" id="issue-modal-title">Create issue from message</h3>
-            <div className="cc-modal__form">
-              <label className="cc-modal__label">
-                <span className="cc-modal__label-text">Title *</span>
-                <input
-                  type="text"
-                  className="cc-modal__input"
-                  placeholder="Issue title"
-                  value={issueTitle}
-                  onChange={(e) => setIssueTitle(e.target.value)}
-                  disabled={isLoading === 'turninto'}
-                  aria-required="true"
-                />
-              </label>
-              <label className="cc-modal__label">
-                <span className="cc-modal__label-text">Description</span>
-                <textarea
-                  className="cc-modal__textarea"
-                  placeholder="Issue description"
-                  value={issueDesc}
-                  onChange={(e) => setIssueDesc(e.target.value)}
-                  disabled={isLoading === 'turninto'}
-                  rows={4}
-                />
-              </label>
-              <label className="cc-modal__label">
-                <span className="cc-modal__label-text">Assign to</span>
-                <input
-                  type="text"
-                  className="cc-modal__input"
-                  placeholder="User ID or name"
-                  value={issueAssignee}
-                  onChange={(e) => setIssueAssignee(e.target.value)}
-                  disabled={isLoading === 'turninto'}
-                />
-              </label>
-            </div>
-            <div className="cc-modal__footer">
-              <button
-                type="button"
-                className="cc-modal__btn cc-modal__btn--cancel"
-                onClick={() => setIssueOpen(false)}
-                disabled={isLoading === 'turninto'}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="cc-modal__btn cc-modal__btn--primary"
-                onClick={handleTurnIntoIssue}
-                disabled={!issueTitle.trim() || isLoading === 'turninto'}
-              >
-                {isLoading === 'turninto' ? 'Creating…' : 'Create'}
-              </button>
-            </div>
-          </div>
-        </div>
+        <CreateWorkItemModal
+          open={issueOpen}
+          onClose={() => setIssueOpen(false)}
+          projectKey={projectKey ?? ''}
+          projectId={projectId ?? ''}
+          onCreated={(key) => {
+            setIssueOpen(false);
+            onTurnIntoIssue?.(messageText, messageText, undefined);
+          }}
+        />
       )}
     </>
   );

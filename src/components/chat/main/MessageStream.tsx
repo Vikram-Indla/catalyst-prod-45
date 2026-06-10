@@ -71,6 +71,8 @@ export interface MessageStreamProps {
   currentUserId?: string | null;
   /** Message id that starts the unread run — renders the red "New" divider above it. */
   firstUnreadId?: string;
+  /** Project key for the active conversation — passed to CreateWorkItemModal. */
+  projectKey?: string | null;
 }
 
 // Highlight @mention tokens (e.g. "@Yazeed Daraz") + broadcast tokens
@@ -181,6 +183,7 @@ export function MessageStream({
   onTurnIntoIssue,
   currentUserId,
   firstUnreadId,
+  projectKey,
 }: MessageStreamProps) {
   // Ticket-key linkification: one batched ph_issues lookup per message list.
   const ticketKeys = useMemo(
@@ -360,6 +363,7 @@ export function MessageStream({
             onTurnIntoIssue={onTurnIntoIssue}
             conversationId={conversationId ?? ''}
             isOwn={!!currentUserId && row.msg.authorId === currentUserId}
+            projectKey={projectKey}
           />
         ),
       )}
@@ -386,6 +390,7 @@ interface MessageRowProps {
   /** Consecutive-run follow-up — avatar + name suppressed, hover timestamp gutter. */
   grouped?: boolean;
   issueRefs?: IssueRefMap;
+  projectKey?: string | null;
 }
 
 const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
@@ -406,6 +411,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
   conversationId,
   isOwn,
   grouped,
+  projectKey,
 }, ref) => {
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(msg.bodyText);
@@ -498,6 +504,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
             messageId={msg.id}
             conversationId={conversationId}
             messageText={msg.bodyText}
+            projectKey={projectKey ?? undefined}
             onCopyLink={async () => {
               const url = `${window.location.origin}?message=${msg.id}`;
               await navigator.clipboard.writeText(url);
@@ -522,7 +529,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
               title="React"
               onClick={() => { setPickerAnchor('toolbar'); setShowReactPicker((s) => !s); setShowMore(false); }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
                 <circle cx="12" cy="12" r="10" />
                 <path d="M8 14s1.5 2 4 2 4-2 4-2" />
                 <line x1="9" y1="9" x2="9.01" y2="9" />
@@ -536,7 +543,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
               title="Reply in thread"
               onClick={() => onOpenThread?.(msg.id)}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
                 <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z" />
               </svg>
             </button>
@@ -548,7 +555,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
               onClick={onTogglePin}
               style={isPinned ? { color: 'var(--ds-icon-warning, #B38600)' } : undefined}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill={isPinned ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill={isPinned ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
                 <path d="M12 2v6m0 0l4 4-4 4-4-4 4-4zm0 10v10" />
               </svg>
             </button>
@@ -560,7 +567,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
               onClick={onToggleBookmark}
               style={isBookmarked ? { color: 'var(--ds-icon-brand, #0C66E4)' } : undefined}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill={isBookmarked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill={isBookmarked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
               </svg>
             </button>
@@ -571,7 +578,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
               title="More"
               onClick={() => { setShowMore((s) => !s); setShowReactPicker(false); }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
                 <circle cx="5" cy="12" r="1.4" />
                 <circle cx="12" cy="12" r="1.4" />
                 <circle cx="19" cy="12" r="1.4" />
