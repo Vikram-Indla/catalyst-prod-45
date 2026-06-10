@@ -23,8 +23,8 @@ COPY src/ ./src/
 COPY public/ ./public/
 
 RUN bun install --frozen-lockfile
-ENV NODE_OPTIONS="--max-old-space-size=4096"
-RUN bun run build
+RUN NODE_OPTIONS="--max-old-space-size=4096" bun run build
+
 
 # ── Runner ─────────────────────────────────────
 FROM node:22-alpine AS runner
