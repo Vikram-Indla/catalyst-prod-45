@@ -930,6 +930,7 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/filters/create" element={<S><CreateFilterPageLazy hubType="project" /></S>} />
         <Route path="/project-hub/:key/filters/:filterId" element={<S><FilterDetailPageLazy /></S>} />
         <Route path="/project-hub/filters" element={<S><FiltersListPageLazy /></S>} />
+        <Route path="/project-hub/filters/create" element={<S><CreateFilterPageLazy hubType="project" /></S>} />
         <Route path="/project-hub/:key/timeline" element={<PHPlaceholder title="Timeline" phase="Phase 3" />} />
         <Route path="/project-hub/:key/releases" element={<PHPlaceholder title="Releases" phase="Phase 3" />} />
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />
