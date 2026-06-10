@@ -375,20 +375,31 @@ function ConversationItemRow({
   variant,
   presence,
 }: ConversationItemRowProps) {
+  const hasPreview = Boolean(c.lastMessagePreview);
+  const ts = c.lastMessageAt ? formatRelative(c.lastMessageAt) : '';
+  const displayTitle = variant === 'channel' ? (c.projectName ?? c.title) : c.title;
+
   return (
     <button
       type="button"
-      className={`cc-row-polished${isActive ? ' is-active' : ''}${isDragging ? ' is-dragging' : ''}${c.isArchived ? ' is-archived' : ''}${c.unreadCount > 0 ? ' is-unread' : ''}`}
+      className={[
+        'cc-row-polished',
+        hasPreview ? 'cc-row-polished--preview' : '',
+        isActive ? 'is-active' : '',
+        isDragging ? 'is-dragging' : '',
+        c.isArchived ? 'is-archived' : '',
+        c.unreadCount > 0 ? 'is-unread' : '',
+      ].filter(Boolean).join(' ')}
       onClick={onSelect}
       draggable
       onDragStart={onDragStart}
       onDragOver={onDragOver}
       onDrop={onDrop}
     >
-      {/* Unread indicator — blue dot left edge when active + unread */}
-      {isActive && c.unreadCount > 0 && <div className="cc-unread-dot" />}
+      {/* Unread indicator — blue dot left edge */}
+      {c.unreadCount > 0 && <div className="cc-unread-dot" />}
 
-      {/* Icon — 16px flat, no background square (Catalyst nav-item pattern) */}
+      {/* Icon */}
       {variant === 'channel' && (
         <span className="cc-item-icon">
           {c.projectKey ? (
@@ -413,13 +424,23 @@ function ConversationItemRow({
         />
       )}
 
-      {/* Single-line title — Catalyst nav-item label */}
-      <span className="cc-item-title">
-        {variant === 'channel' ? (c.projectName ?? c.title) : c.title}
-      </span>
-
-      {/* Unread badge */}
-      {c.unreadCount > 0 && <span className="cc-badge">{c.unreadCount}</span>}
+      {hasPreview ? (
+        /* 2-line layout when preview exists */
+        <span className="cc-row-body">
+          <span className="cc-row-topline">
+            <span className="cc-item-title">{displayTitle}</span>
+            {ts && <span className="cc-row-ts">{ts}</span>}
+            {c.unreadCount > 0 && <span className="cc-badge">{c.unreadCount}</span>}
+          </span>
+          <span className="cc-row-preview">{c.lastMessagePreview}</span>
+        </span>
+      ) : (
+        /* Single-line when no preview */
+        <>
+          <span className="cc-item-title">{displayTitle}</span>
+          {c.unreadCount > 0 && <span className="cc-badge">{c.unreadCount}</span>}
+        </>
+      )}
     </button>
   );
 }

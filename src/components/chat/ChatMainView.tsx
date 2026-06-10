@@ -17,6 +17,9 @@ import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useConversations } from '@/hooks/chat/useConversations';
 import { useMessages } from '@/hooks/chat/useMessages';
+import { useConversationMembers } from '@/hooks/chat/useConversationMembers';
+import type { ChatPerson } from '@/types/chat';
+import { supabase } from '@/integrations/supabase/client';
 import { ConversationHeader } from './main/ConversationHeader';
 import { MessageStream } from './main/MessageStream';
 import { MessageComposer } from './main/MessageComposer';
@@ -93,6 +96,20 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
     [conversations],
   );
 
+  const { data: memberRows = [] } = useConversationMembers(resolvedActiveId ?? null);
+  const members = useMemo<ChatPerson[]>(
+    () =>
+      memberRows.map((m) => ({
+        id: m.userId,
+        name: m.name,
+        role: m.role,
+        avatarUrl: null,
+        presence: 'offline' as const,
+        presenceNote: null,
+      })),
+    [memberRows],
+  );
+
   const {
     messages,
     isLoading: messagesLoading,
@@ -165,6 +182,30 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
     }
   })();
 
+  // Mark a specific message as unread by rolling back last_read_at
+  const handleMarkUnread = async (messageId: string) => {
+    const msg = messages.find((m) => m.id === messageId);
+    if (!msg || !currentUserId || !resolvedActiveId) return;
+    const rollbackTs = new Date(new Date(msg.createdAt).getTime() - 1).toISOString();
+    await (supabase as any)
+      .from('chat_conversation_members')
+      .update({ last_read_at: rollbackTs })
+      .eq('conversation_id', resolvedActiveId)
+      .eq('user_id', currentUserId);
+  };
+
+  // Save for later (reminder) — bookmark the message with remind_at note
+  const handleSetReminder = async (messageId: string, minutesFromNow: number) => {
+    if (!resolvedActiveId) return;
+    const remindAt = new Date(Date.now() + minutesFromNow * 60000).toISOString();
+    await (supabase as any)
+      .from('chat_bookmarks')
+      .upsert(
+        { message_id: messageId, conversation_id: resolvedActiveId, note: `remind:${remindAt}` },
+        { onConflict: 'message_id' },
+      );
+  };
+
   // ── Main pane ─────────────────────────────────────────────────────────
   const mainPane =
     rail === 'threads' && resolvedActiveId ? (
@@ -186,7 +227,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
     ) : (
       <>
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
-          <ConversationHeader conversation={activeConversation} />
+          <ConversationHeader conversation={activeConversation} members={members} />
 
           {showHint && (
             <div
@@ -237,6 +278,8 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
               onDelete={deleteMessage}
               onToggleReaction={toggleReaction}
               onOpenThread={(messageId) => setThreadParentId(messageId)}
+              onMarkUnread={handleMarkUnread}
+              onSetReminder={handleSetReminder}
               currentUserId={currentUserId}
               firstUnreadId={firstUnreadId}
             />

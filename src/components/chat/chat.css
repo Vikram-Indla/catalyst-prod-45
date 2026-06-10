@@ -1214,6 +1214,55 @@
   color: var(--ds-text, #172B4D);
 }
 
+/* 2-line variant — when last message preview exists */
+.cc-row-polished--preview {
+  height: auto;
+  min-height: 48px;
+  padding: 6px 8px;
+  align-items: flex-start;
+}
+.cc-row-polished--preview .cc-item-icon,
+.cc-row-polished--preview .cc-item-avatar {
+  margin-top: 2px;
+}
+.cc-row-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 2px;
+}
+.cc-row-topline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+.cc-row-topline .cc-item-title {
+  flex: 1;
+}
+.cc-row-ts {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ds-text-subtlest, #6B778C);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cc-row-preview {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ds-text-subtlest, #6B778C);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 16px;
+}
+.cc-row-polished.is-unread .cc-row-preview {
+  color: var(--ds-text-subtle, #44546F);
+  font-weight: 500;
+}
+
 /* Drag-to-reorder visual feedback */
 .cc-row-polished.is-dragging {
   opacity: 0.5;

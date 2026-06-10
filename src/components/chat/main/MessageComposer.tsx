@@ -11,7 +11,8 @@
  *
  * Forwards ref to the textarea element so callers can focus it programmatically.
  */
-import React, { useCallback, useRef, useState, lazy, Suspense, forwardRef } from 'react';
+import React, { useCallback, useRef, useState, lazy, Suspense, forwardRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Button from '@atlaskit/button/new';
 import Flag from '@atlaskit/flag';
 import { FlagGroup } from '@atlaskit/flag';
@@ -62,6 +63,9 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
   const [flags, setFlags] = useState<Array<{ id: string; type: 'error' | 'success'; title: string; description?: string }>>(
     [],
   );
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  const emojiTriggerRef = useRef<HTMLButtonElement>(null);
+  const emojiPortalRef = useRef<HTMLDivElement | null>(null);
 
   const dismissFlag = (id: string) => {
     setFlags((f) => f.filter((x) => x.id !== id));
@@ -94,6 +98,49 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
     }
   }, [disabled, sending, onSend, richAdf, scheduledFor]);
 
+
+  // Insert emoji into editor via ProseMirror dispatch
+  const insertEmoji = useCallback((emoji: string) => {
+    setEmojiOpen(false);
+    const view = editorRef.current?.getEditorView?.();
+    if (view) {
+      const { state, dispatch } = view;
+      const tr = state.tr.insertText(emoji, state.selection.from, state.selection.to);
+      dispatch(tr);
+      view.focus();
+    }
+  }, []);
+
+  // Close emoji picker on outside click
+  useEffect(() => {
+    if (!emojiOpen) return;
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (emojiTriggerRef.current?.contains(t)) return;
+      if (emojiPortalRef.current?.contains(t)) return;
+      setEmojiOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [emojiOpen]);
+
+  // Compute portal position based on trigger button
+  const getEmojiPortalStyle = (): React.CSSProperties => {
+    const rect = emojiTriggerRef.current?.getBoundingClientRect();
+    if (!rect) return { display: 'none' };
+    return {
+      position: 'fixed',
+      bottom: window.innerHeight - rect.top + 4,
+      left: rect.left,
+      zIndex: 99999,
+    };
+  };
+
+  const EMOJI_GRID = [
+    '😀','😂','😍','🥰','😎','🤔','😅','🤣','😊','🙏',
+    '👍','👎','👏','🔥','❤️','💯','🎉','✅','⚡','🚀',
+    '😢','😡','🤦','🙄','😴','💪','🤝','👋','🎯','💡',
+  ];
 
   return (
     <div
@@ -129,7 +176,15 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
 
         {/* Slack-style bottom bar: attach / emoji / @ / slash / spacer / schedule / send */}
         <div className="cc-composer-tools">
-          <button type="button" className="cc-toolbtn" aria-label="Add emoji" title="Emoji">
+          <button
+            ref={emojiTriggerRef}
+            type="button"
+            className="cc-toolbtn"
+            aria-label="Add emoji"
+            aria-expanded={emojiOpen}
+            title="Emoji"
+            onClick={() => setEmojiOpen((v) => !v)}
+          >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <circle cx="12" cy="12" r="9" />
               <path d="M8 14s1.5 2 4 2 4-2 4-2" />
@@ -137,6 +192,49 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
               <line x1="15" y1="9" x2="15.01" y2="9" />
             </svg>
           </button>
+          {emojiOpen && createPortal(
+            <div
+              ref={emojiPortalRef}
+              style={{
+                ...getEmojiPortalStyle(),
+                background: 'var(--ds-surface-overlay, #FFFFFF)',
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                borderRadius: 8,
+                boxShadow: '0 4px 16px rgba(9,30,66,0.18)',
+                padding: 8,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(10, 28px)',
+                gap: 2,
+              }}
+              role="listbox"
+              aria-label="Emoji picker"
+            >
+              {EMOJI_GRID.map((em) => (
+                <button
+                  key={em}
+                  type="button"
+                  style={{
+                    width: 28,
+                    height: 28,
+                    border: 'none',
+                    background: 'transparent',
+                    borderRadius: 4,
+                    fontSize: 18,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    lineHeight: 1,
+                  }}
+                  onClick={() => insertEmoji(em)}
+                  title={em}
+                >
+                  {em}
+                </button>
+              ))}
+            </div>,
+            document.body,
+          )}
           <button type="button" className="cc-toolbtn" aria-label="Mention someone" title="Mention (@)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <circle cx="12" cy="12" r="4" />
