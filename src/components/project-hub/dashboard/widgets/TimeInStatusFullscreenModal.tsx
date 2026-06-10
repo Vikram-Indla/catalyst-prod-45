@@ -25,6 +25,7 @@ import {
   useTimeInStatusMatrix,
   type TimeInStatusMatrixRow,
 } from '@/hooks/useDashboardWidgets';
+import TimeInStatusHoverCard from './TimeInStatusHoverCard';
 import {
   EmptyState,
   Lozenge,
@@ -445,16 +446,26 @@ export default function TimeInStatusFullscreenModal({
                               }}
                             >
                               {ms > 0 ? (
+                                // 2026-06-10 — share the rich hover card
+                                // with the widget. Cell canonical = duration
+                                // only; ETA + pattern surface on hover.
                                 <Tooltip
-                                  content={
-                                    visits > 1
-                                      ? `In ${s.name}: ${fmtDuration(ms)} across ${visits} visits`
-                                      : `In ${s.name}: ${fmtDuration(ms)}`
-                                  }
+                                  content={() => (
+                                    <TimeInStatusHoverCard
+                                      statusName={s.name}
+                                      statusCategory={s.category}
+                                      currentMs={ms}
+                                      visits={visits}
+                                      p50Hours={null}
+                                      confidence={0}
+                                      pattern="none"
+                                      patternConfidence={0}
+                                    />
+                                  )}
                                   position="top"
                                 >
                                   {(tp) => (
-                                    <span {...tp} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                    <span {...tp} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, cursor: 'help' }}>
                                       {fmtDuration(ms)}
                                       {visits > 1 && (
                                         <span

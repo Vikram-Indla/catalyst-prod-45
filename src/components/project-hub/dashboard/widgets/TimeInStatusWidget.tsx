@@ -40,8 +40,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
 import TimeInStatusFullscreenModal from './TimeInStatusFullscreenModal';
-import TimeInStatusEtaStrip from './TimeInStatusEtaStrip';
-import DwellPatternLozenge from './DwellPatternLozenge';
+import TimeInStatusHoverCard from './TimeInStatusHoverCard';
 import { classifyDwell, type DwellPattern } from '@/lib/tis-dwell-classifier/classifier';
 import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG } from '../dashboardTypography';
 
@@ -572,72 +571,61 @@ export default function TimeInStatusWidget({
                         }}
                       >
                         {ms > 0 ? (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                            <Tooltip
-                              content={
-                                visits > 1
-                                  ? `In ${s.name}: ${fmtDuration(ms)} across ${visits} visits`
-                                  : `In ${s.name}: ${fmtDuration(ms)}`
-                              }
-                              position="top"
-                            >
-                              {(tp) => (
-                                <span
-                                  {...tp}
-                                  style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
-                                >
-                                  {fmtDuration(ms)}
-                                  {visits > 1 && (
-                                    <span
-                                      style={{
-                                        ...LABEL,
-                                        color: 'var(--ds-text-accent-red, #AE2A19)',
-                                        padding: '0 4px',
-                                        borderRadius: 'var(--ds-border-radius, 4px)',
-                                        background: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
-                                      }}
-                                      aria-label={`${visits} visits`}
-                                    >
-                                      ×{visits}
-                                    </span>
-                                  )}
-                                </span>
-                              )}
-                            </Tooltip>
-                            {/* Phase 4 row 5 — outlier #1 ETA strip.
-                                Only render on in_progress category cells —
-                                done/todo cells aren't forecasting candidates. */}
-                            {s.category !== 'done' && (
-                              <TimeInStatusEtaStrip
-                                currentMs={ms}
-                                p50Hours={getCohortP50Hours(issueType, s.name, s.category)}
-                                confidence={MOCK_CONFIDENCE}
-                              />
-                            )}
-                            {/* Phase 4 row 6 — outlier #5 pattern lozenge
-                                (compact variant on cell). Returns null
-                                when classifier yields 'none'. */}
-                            {(() => {
-                              const cls = classifyCellMocked({
-                                issueType,
-                                statusName: s.name,
-                                category: s.category,
-                                durationMs: ms,
-                                visits,
-                              });
-                              if (cls.pattern === 'none') return null;
-                              return (
-                                <div style={{ marginTop: 2 }}>
-                                  <DwellPatternLozenge
+                          (() => {
+                            // 2026-06-10 Vikram directive — cell stays
+                            // CANONICAL (duration + optional ×N revisit).
+                            // ETA forecast + pattern diagnosis surface in
+                            // the rich hover card via @atlaskit/tooltip.
+                            const cls = classifyCellMocked({
+                              issueType,
+                              statusName: s.name,
+                              category: s.category,
+                              durationMs: ms,
+                              visits,
+                            });
+                            const p50 = getCohortP50Hours(issueType, s.name, s.category);
+                            return (
+                              <Tooltip
+                                content={() => (
+                                  <TimeInStatusHoverCard
+                                    statusName={s.name}
+                                    statusCategory={s.category}
+                                    currentMs={ms}
+                                    visits={visits}
+                                    p50Hours={p50}
+                                    confidence={MOCK_CONFIDENCE}
                                     pattern={cls.pattern}
-                                    confidence={cls.confidence}
-                                    description={cls.description}
-                                    compact
+                                    patternConfidence={cls.confidence}
+                                    patternDescription={cls.description}
                                   />
-                                </div>
-                              );
-                            })()}
-                          </div>
+                                )}
+                                position="top"
+                              >
+                                {(tp) => (
+                                  <span
+                                    {...tp}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: 4, cursor: 'help' }}
+                                  >
+                                    {fmtDuration(ms)}
+                                    {visits > 1 && (
+                                      <span
+                                        style={{
+                                          ...LABEL,
+                                          color: 'var(--ds-text-accent-red, #AE2A19)',
+                                          padding: '0 4px',
+                                          borderRadius: 'var(--ds-border-radius, 4px)',
+                                          background: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
+                                        }}
+                                        aria-label={`${visits} visits`}
+                                      >
+                                        ×{visits}
+                                      </span>
+                                    )}
+                                  </span>
+                                )}
+                              </Tooltip>
+                            );
+                          })()
                         ) : (
                           <span style={{ color: token('color.text.disabled', '#B3B9C4') }}>—</span>
                         )}
