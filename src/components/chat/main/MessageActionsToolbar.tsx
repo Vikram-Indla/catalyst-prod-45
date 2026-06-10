@@ -15,7 +15,11 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import Tooltip from '@atlaskit/tooltip';
-import Spinner from '@atlaskit/spinner';
+import { IconButton } from '@atlaskit/button/new';
+import CopyIcon from '@atlaskit/icon/core/copy';
+import NotificationIcon from '@atlaskit/icon/core/notification';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import PageIcon from '@atlaskit/icon/core/page';
 
 export interface MessageActionsToolbarProps {
   messageId: string;
@@ -200,70 +204,70 @@ export function MessageActionsToolbar({
       >
         {/* Copy link button */}
         <Tooltip content="Copy link">
-          <button
+          <IconButton
             ref={copyButtonRef}
-            type="button"
-            className="cc-msg__action-btn"
+            appearance="subtle"
+            spacing="compact"
+            icon={CopyIcon}
+            label="Copy message link"
             onClick={handleCopyLink}
-            disabled={isLoading === 'copy'}
-            aria-label="Copy message link"
+            isDisabled={isLoading === 'copy'}
+            isLoading={isLoading === 'copy'}
             aria-busy={isLoading === 'copy'}
             title="Copy link"
             tabIndex={focusedButtonIndex === 0 ? 0 : -1}
-          >
-            {isLoading === 'copy' ? <Spinner size="small" /> : <CopyIcon />}
-          </button>
+          />
         </Tooltip>
 
         {/* Mark unread button */}
         <Tooltip content="Mark unread">
-          <button
+          <IconButton
             ref={unreadButtonRef}
-            type="button"
-            className="cc-msg__action-btn"
+            appearance="subtle"
+            spacing="compact"
+            icon={NotificationIcon}
+            label={isUnread ? 'Mark message as read' : 'Mark message unread'}
             onClick={handleMarkUnread}
-            disabled={isLoading === 'unread'}
-            aria-label={isUnread ? 'Mark message as read' : 'Mark message unread'}
+            isDisabled={isLoading === 'unread'}
+            isLoading={isLoading === 'unread'}
             aria-busy={isLoading === 'unread'}
             title={isUnread ? 'Mark as read' : 'Mark unread'}
             tabIndex={focusedButtonIndex === 1 ? 0 : -1}
-          >
-            {isLoading === 'unread' ? <Spinner size="small" /> : <BellIcon filled={isUnread} />}
-          </button>
+          />
         </Tooltip>
 
         {/* Remind button */}
         <Tooltip content="Set reminder">
-          <button
+          <IconButton
             ref={remindButtonRef}
-            type="button"
-            className="cc-msg__action-btn"
+            appearance="subtle"
+            spacing="compact"
+            icon={ClockIcon}
+            label="Set reminder for this message"
             onClick={() => setReminderOpen(true)}
-            disabled={isLoading === 'remind'}
-            aria-label="Set reminder for this message"
+            isDisabled={isLoading === 'remind'}
+            isLoading={isLoading === 'remind'}
             aria-busy={isLoading === 'remind'}
             title="Set reminder"
             tabIndex={focusedButtonIndex === 2 ? 0 : -1}
-          >
-            {isLoading === 'remind' ? <Spinner size="small" /> : <ClockIcon />}
-          </button>
+          />
         </Tooltip>
 
         {/* Turn into issue button */}
         <Tooltip content="Turn into issue">
-          <button
+          <IconButton
             ref={issueButtonRef}
-            type="button"
-            className="cc-msg__action-btn"
+            appearance="subtle"
+            spacing="compact"
+            icon={PageIcon}
+            label="Turn this message into a work item"
             onClick={() => setIssueOpen(true)}
-            disabled={isLoading === 'turninto'}
-            aria-label="Turn this message into a work item"
+            isDisabled={isLoading === 'turninto'}
+            isLoading={isLoading === 'turninto'}
             aria-busy={isLoading === 'turninto'}
             title="Turn into issue"
             tabIndex={focusedButtonIndex === 3 ? 0 : -1}
-          >
-            {isLoading === 'turninto' ? <Spinner size="small" /> : <DocumentIcon />}
-          </button>
+          />
         </Tooltip>
       </div>
 
@@ -389,49 +393,6 @@ export function MessageActionsToolbar({
         </div>
       )}
     </>
-  );
-}
-
-/**
- * Icon components for the toolbar.
- * All 14x14, inline SVGs, stroke-based for consistency.
- */
-
-function CopyIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-      <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-    </svg>
-  );
-}
-
-function BellIcon({ filled }: { filled?: boolean }) {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" aria-hidden>
-      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-    </svg>
-  );
-}
-
-function ClockIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  );
-}
-
-function DocumentIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="12" y1="13" x2="12" y2="17" />
-      <line x1="9" y1="15" x2="15" y2="15" />
-    </svg>
   );
 }
 
