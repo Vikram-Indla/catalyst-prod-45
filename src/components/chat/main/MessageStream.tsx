@@ -55,6 +55,8 @@ export interface MessageStreamProps {
   onSetReminder?: (messageId: string, minutesFromNow: number) => Promise<void>;
   onTurnIntoIssue?: (messageId: string, title: string, description: string, assigneeId?: string) => Promise<void>;
   currentUserId?: string | null;
+  /** Message id that starts the unread run — renders the red "New" divider above it. */
+  firstUnreadId?: string;
 }
 
 // Highlight @mention tokens (e.g. "@Yazeed Daraz") + broadcast tokens
@@ -164,6 +166,7 @@ export function MessageStream({
   onSetReminder,
   onTurnIntoIssue,
   currentUserId,
+  firstUnreadId,
 }: MessageStreamProps) {
   // Ticket-key linkification: one batched ph_issues lookup per message list.
   const ticketKeys = useMemo(
@@ -218,18 +221,38 @@ export function MessageStream({
   // Top-level messages only; group consecutive runs under a date divider.
   const rows = useMemo(() => {
     const top = messages.filter(m => !m.parentId && !m.deletedAt);
-    const out: Array<{ type: 'divider'; label: string; key: string } | { type: 'msg'; msg: ChatMessage }> = [];
+    const out: Array<
+      | { type: 'divider'; label: string; key: string }
+      | { type: 'new'; key: string }
+      | { type: 'msg'; msg: ChatMessage; grouped: boolean }
+    > = [];
     let lastDay = '';
+    let prev: ChatMessage | null = null;
+    const GROUP_WINDOW_MS = 5 * 60 * 1000;
     for (const m of top) {
       const dk = dayKey(m.createdAt);
+      let broke = false;
       if (dk !== lastDay) {
         out.push({ type: 'divider', label: dividerLabel(m.createdAt), key: `d-${dk}` });
         lastDay = dk;
+        broke = true;
       }
-      out.push({ type: 'msg', msg: m });
+      if (firstUnreadId && m.id === firstUnreadId) {
+        out.push({ type: 'new', key: `new-${m.id}` });
+        broke = true;
+      }
+      // Consecutive-message grouping: same author within 5 minutes, no
+      // divider in between → suppress avatar + name on the follow-up row.
+      const grouped =
+        !broke &&
+        !!prev &&
+        prev.authorId === m.authorId &&
+        new Date(m.createdAt).getTime() - new Date(prev.createdAt).getTime() < GROUP_WINDOW_MS;
+      out.push({ type: 'msg', msg: m, grouped });
+      prev = m;
     }
     return out;
-  }, [messages]);
+  }, [messages, firstUnreadId]);
 
   if (!isLoading && rows.length === 0) {
     return (
@@ -272,14 +295,20 @@ export function MessageStream({
 
       {rows.map(row =>
         row.type === 'divider' ? (
-          <div className="cc-divider" key={row.key}>
+          <div className="cc-divider cc-divider--sticky" key={row.key}>
             <div className="cc-divider__rule" />
             <div className="cc-divider__pill">{row.label}</div>
             <div className="cc-divider__rule" />
           </div>
+        ) : row.type === 'new' ? (
+          <div className="cc-newline" key={row.key} aria-label="New messages">
+            <div className="cc-newline__rule" />
+            <span className="cc-newline__lbl">New</span>
+          </div>
         ) : (
           <MessageRow
             key={row.msg.id}
+            grouped={row.grouped}
             msg={row.msg}
             ref={(ref) => {
               if (ref) {
@@ -339,6 +368,8 @@ interface MessageRowProps {
   onTurnIntoIssue?: (messageId: string, title: string, description: string, assigneeId?: string) => Promise<void>;
   conversationId?: string;
   isOwn?: boolean;
+  /** Consecutive-run follow-up — avatar + name suppressed, hover timestamp gutter. */
+  grouped?: boolean;
 }
 
 const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
@@ -357,6 +388,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
   onTurnIntoIssue,
   conversationId,
   isOwn,
+  grouped,
 }, ref) => {
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(msg.bodyText);
@@ -378,14 +410,21 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
   };
 
   return (
-    <div className="cc-msg cc-msg--row" ref={ref || messageRowRef} tabIndex={-1}>
-      <Avatar name={msg.authorName} seed={msg.authorId} color={colorFor(msg.authorId)} className="cc-msg__av" />
+    <div className={`cc-msg cc-msg--row${grouped ? ' cc-msg--grouped' : ''}`} ref={ref || messageRowRef} tabIndex={-1}>
+      {grouped ? (
+        <span className="cc-msg__gutter-time">{timeLabel(msg.createdAt)}</span>
+      ) : (
+        <Avatar name={msg.authorName} seed={msg.authorId} color={colorFor(msg.authorId)} className="cc-msg__av" />
+      )}
       <div className="cc-msg__body">
-        <div className="cc-msg__head">
-          <span className="cc-msg__name">{msg.authorName}</span>
-          <span className="cc-msg__time">{timeLabel(msg.createdAt)}</span>
-          {msg.editedAt && <span className="cc-msg__edited">(edited)</span>}
-        </div>
+        {!grouped && (
+          <div className="cc-msg__head">
+            <span className="cc-msg__name">{msg.authorName}</span>
+            <span className="cc-msg__time">{timeLabel(msg.createdAt)}</span>
+            {msg.editedAt && <span className="cc-msg__edited">(edited)</span>}
+          </div>
+        )}
+        {grouped && msg.editedAt && <span className="cc-msg__edited">(edited)</span>}
 
         {editing ? (
           <div className="cc-msg__editor">
