@@ -11,6 +11,7 @@
  * Click conversation → opens it.
  */
 import React, { useMemo, useState } from 'react';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import { useStartDm } from '@/hooks/chat/useStartDm';
 import { useStartProjectChannel } from '@/hooks/chat/useStartProjectChannel';
@@ -465,8 +466,8 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
                 className={`cc-dir__row${activeId === c.id ? ' cc-dir__row--active' : ''}`}
                 onClick={() => onSelectConversation(c.id)}
               >
-                <span className="cc-dir__channel-glyph" style={{ background: 'var(--ds-background-brand-bold, #0C66E4)', fontSize: 11 }}>
-                  {(c.ticketKey ?? 'TK').slice(0, 5)}
+                <span className="cc-dir__ticket-icon">
+                  <JiraIssueTypeIcon type={c.ticketType ?? 'Task'} size={20} />
                 </span>
                 <div className="cc-dir__body">
                   <div className="cc-dir__top">

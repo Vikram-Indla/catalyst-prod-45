@@ -378,8 +378,6 @@
   padding: 12px 16px 4px;
   font-size: 11px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
   color: var(--ds-text-subtlest, #6B778C);
 }
 
@@ -443,7 +441,7 @@
 
 .cc-dir__name {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ds-text, #172B4D);
   flex: 1;
   white-space: nowrap;
@@ -458,7 +456,7 @@
 }
 
 .cc-dir__preview {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--ds-text-subtle, #44546F);
   white-space: nowrap;
   overflow: hidden;
@@ -521,6 +519,15 @@
   color: var(--ds-text-inverse, #FFFFFF);
   font-size: 18px;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cc-dir__ticket-icon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
