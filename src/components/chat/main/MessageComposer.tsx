@@ -21,7 +21,6 @@ import { MentionPicker } from './MentionPicker';
 import { SlashCommandPalette } from './SlashCommandPalette';
 import { ScheduleSendDropdown } from './ScheduleSendDropdown';
 import { useComposerKeyboardShortcuts } from './useComposerKeyboardShortcuts';
-import { useUploadAttachment, useBatchUploadAttachments, validateFile, FileValidationError } from '@/hooks/chat/useChatAttachments';
 import { useDraft } from '@/hooks/chat/useDraft';
 import { adfToPlainText } from '@/utils/adf';
 import { createEmptyADF } from '@/utils/adf';
@@ -64,14 +63,9 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
   const [richAdf, setRichAdf] = useState<ADFEntity>(createEmptyADF());
   const [scheduledFor, setScheduledFor] = useState<string | null>(null);
   const taRef = (ref as React.MutableRefObject<HTMLTextAreaElement | null>) ?? useRef<HTMLTextAreaElement>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<any>(null); // AtlaskitEditorRef
   const composerRef = useRef<HTMLDivElement>(null);
-  const uploadAttachment = useUploadAttachment();
-  const batchUploadAttachments = useBatchUploadAttachments();
   const [showSlashPalette, setShowSlashPalette] = useState(false);
-  const [dragActive, setDragActive] = useState(false);
-  const [uploading, setUploading] = useState<Record<string, number>>({});
   const [flags, setFlags] = useState<Array<{ id: string; type: 'error' | 'success'; title: string; description?: string }>>(
     [],
   );
@@ -154,122 +148,14 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
     });
   };
 
-  const handleFileUpload = useCallback(
-    async (files: File[]) => {
-      if (!conversationId || !lastSentMessageId) {
-        if (files.length > 0 && conversationId) {
-          await onSend(`📎 ${files.map((f) => f.name).join(', ')}`);
-        }
-        return;
-      }
-
-      const validFiles: File[] = [];
-      const errors: FileValidationError[] = [];
-
-      for (const file of files) {
-        const err = validateFile(file);
-        if (err) {
-          errors.push(err);
-        } else {
-          validFiles.push(file);
-        }
-      }
-
-      errors.forEach((err) => {
-        addFlag('error', `Cannot upload ${err.filename}`, err.message);
-      });
-
-      if (validFiles.length === 0) return;
-
-      setUploading((prev) => ({
-        ...prev,
-        ...Object.fromEntries(validFiles.map((f) => [f.name, 0])),
-      }));
-
-      const attachments = await batchUploadAttachments({
-        conversationId,
-        messageId: lastSentMessageId,
-        files: validFiles,
-        onProgress: (filename, percent) => {
-          setUploading((prev) => ({ ...prev, [filename]: percent }));
-        },
-        onError: (err) => {
-          addFlag('error', `Failed to upload ${err.filename}`, err.message);
-        },
-      });
-
-      setUploading((prev) => {
-        const next = { ...prev };
-        validFiles.forEach((f) => delete next[f.name]);
-        return next;
-      });
-
-      if (attachments.length > 0) {
-        addFlag(
-          'success',
-          `${attachments.length} file${attachments.length === 1 ? '' : 's'} uploaded`,
-          `Attached to your message`,
-        );
-      }
-    },
-    [conversationId, lastSentMessageId, onSend, batchUploadAttachments],
-  );
-
-  const onPickFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files ? Array.from(e.target.files) : [];
-    if (fileRef.current) fileRef.current.value = '';
-    await handleFileUpload(files);
-  };
-
-  const onPaste = useCallback(
-    (e: React.ClipboardEvent<HTMLTextAreaElement | HTMLDivElement>) => {
-      const files = e.clipboardData?.files ? Array.from(e.clipboardData.files) : [];
-      if (files.length > 0) {
-        e.preventDefault();
-        void handleFileUpload(files);
-      }
-    },
-    [handleFileUpload],
-  );
-
-  const onDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(true);
-  }, []);
-
-  const onDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    if (e.currentTarget === composerRef.current) {
-      setDragActive(false);
-    }
-  }, []);
-
-  const onDrop = useCallback(
-    (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setDragActive(false);
-      const files = e.dataTransfer?.files ? Array.from(e.dataTransfer.files) : [];
-      if (files.length > 0) {
-        void handleFileUpload(files);
-      }
-    },
-    [handleFileUpload],
-  );
-
+  // Attachments are banned in Catalyst Chat (native-to-Catalyst decision,
+  // 2026-06-10) — no picker, no paste-upload, no drag-drop. Tickets are the
+  // attachment model.
   return (
     <div
       ref={composerRef}
       className="cc-composer"
-      style={{
-        position: 'relative',
-        backgroundColor: dragActive ? 'var(--ds-background-neutral-subtle, #F7F8F9)' : undefined,
-        borderRadius: dragActive ? 4 : 0,
-        transition: 'background-color 0.2s',
-      }}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
+      style={{ position: 'relative' }}
     >
       <FlagGroup onDismissed={(id) => dismissFlag(id)}>
         {flags.map((flag) => (
@@ -284,68 +170,7 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
         ))}
       </FlagGroup>
 
-      {dragActive && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            border: '2px dashed var(--ds-background-information-bold, #0C66E4)',
-            borderRadius: 4,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(12, 102, 228, 0.04)',
-            pointerEvents: 'none',
-            zIndex: 1,
-          }}
-        >
-          <div
-            style={{
-              fontSize: 14,
-              fontWeight: 500,
-              color: 'var(--ds-text, #172B4D)',
-              textAlign: 'center',
-            }}
-          >
-            Drop files to attach
-          </div>
-        </div>
-      )}
-
       <div className="cc-composer-box">
-        {/* Upload progress indicators */}
-        {Object.keys(uploading).length > 0 && (
-          <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-            {Object.entries(uploading).map(([filename, percent]) => (
-              <div key={filename} style={{ marginBottom: 8 }}>
-                <div style={{ fontSize: 12, marginBottom: 4, color: 'var(--ds-text-subtle, #626F86)' }}>
-                  {filename} ({percent}%)
-                </div>
-                <div
-                  style={{
-                    height: 4,
-                    backgroundColor: 'var(--ds-background-neutral, #F1F2F4)',
-                    borderRadius: 2,
-                    overflow: 'hidden',
-                  }}
-                >
-                  <div
-                    style={{
-                      height: '100%',
-                      width: `${percent}%`,
-                      backgroundColor: 'var(--ds-background-success-bold, #216E4E)',
-                      transition: 'width 0.2s',
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
         {richMode ? (
           <Suspense fallback={<div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtle, #44546F)' }}>Loading editor…</div>}>
             <div style={{ padding: 4 }}>
@@ -356,7 +181,6 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
                 defaultValue={richAdf}
                 onChange={(adf) => setRichAdf(adf)}
                 minHeight={80}
-                onPaste={(e: any) => onPaste(e as React.ClipboardEvent<HTMLDivElement>)}
               />
             </div>
           </Suspense>
@@ -373,7 +197,6 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
               autoGrow();
             }}
             onKeyDown={onKeyDown}
-            onPaste={onPaste}
             aria-label={placeholder}
           />
         )}
@@ -388,24 +211,9 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
             />
           </>
         )}
-        <input
-          ref={fileRef}
-          type="file"
-          multiple
-          style={{ display: 'none' }}
-          onChange={onPickFile}
-        />
+        {/* Attachments are banned in Catalyst Chat (native-to-Catalyst decision,
+            2026-06-10) — everything links to tickets instead. No file input. */}
         <div className="cc-composer-tools">
-          <button
-            type="button"
-            className="cc-toolbtn"
-            aria-label="Attach file"
-            onClick={() => fileRef.current?.click()}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path d="M21.4 11.05l-9.19 9.19a5 5 0 0 1-7.07-7.07l9.19-9.19a3.5 3.5 0 0 1 4.95 4.95l-9.2 9.19a1.5 1.5 0 0 1-2.12-2.12l8.49-8.48" />
-            </svg>
-          </button>
           <button type="button" className="cc-toolbtn" aria-label="Add emoji">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <circle cx="12" cy="12" r="9" />

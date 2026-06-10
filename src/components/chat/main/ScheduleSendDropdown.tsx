@@ -62,35 +62,37 @@ export function ScheduleSendDropdown({
     setCustomTime('09:00');
   }, [customDate, customTime, onSchedule]);
 
-  const trigger = (
-    <button
-      type="button"
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '4px',
-        padding: '6px 8px',
-        border: 'none',
-        borderRadius: '3px',
-        background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-        color: 'var(--ds-text, #172B4D)',
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        fontSize: '14px',
-        fontWeight: 500,
-        opacity: disabled ? 0.5 : 1,
-      }}
-      disabled={disabled}
-      aria-label="Schedule send options"
-      title="Schedule send"
-    >
-      <span>▾</span>
-    </button>
-  );
-
   return (
     <>
       <DropdownMenu
-        trigger={trigger}
+        trigger={({ triggerRef, ...providedProps }) => (
+          // Render-prop trigger: passing a <button> element directly makes
+          // DropdownMenu wrap it in its own button → invalid nested <button>.
+          <button
+            {...providedProps}
+            ref={triggerRef as React.Ref<HTMLButtonElement>}
+            type="button"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '6px 8px',
+              border: 'none',
+              borderRadius: '3px',
+              background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+              color: 'var(--ds-text, #172B4D)',
+              cursor: disabled ? 'not-allowed' : 'pointer',
+              fontSize: '14px',
+              fontWeight: 500,
+              opacity: disabled ? 0.5 : 1,
+            }}
+            disabled={disabled}
+            aria-label="Schedule send options"
+            title="Schedule send"
+          >
+            <span aria-hidden>▾</span>
+          </button>
+        )}
         placement="bottom-end"
         spacing="compact"
       >

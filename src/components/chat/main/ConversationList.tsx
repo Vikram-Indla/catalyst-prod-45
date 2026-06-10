@@ -15,6 +15,7 @@
 import React, { useMemo, useState, useRef } from 'react';
 import type { ChatConversation } from '@/types/chat';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import ProjectIcon from '@/components/shared/ProjectIcon';
 import { Avatar, type PresenceColor } from './avatar';
 import { ConversationCreationModal } from './ConversationCreationModal';
 
@@ -395,10 +396,11 @@ function ConversationItemRow({
       {/* Icon — variant-specific */}
       {variant === 'channel' && (
         <span className="cc-item-icon">
-          <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #6B778C)' }}>
-            {/* Project icon or # placeholder */}
-            #
-          </span>
+          {c.projectKey ? (
+            <ProjectIcon projectKey={c.projectKey} size="xsmall" />
+          ) : (
+            <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #6B778C)' }}>#</span>
+          )}
         </span>
       )}
       {variant === 'ticket' && (

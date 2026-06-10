@@ -638,10 +638,12 @@ function CatalystShellContent() {
 
   // Determine sidebar based on workspaceType (single source of truth)
   const renderSidebar = () => {
-    // Chat uses canonical SidebarBase pattern (2026-06-09) — same chevron
-    // expand/collapse contract as ProjectHubSidebar / ProductHubSidebar.
+    // Chat owns its full IA inside ChatMainView (icon rail + sidebar pane,
+    // Slack-style). The outer ChatSidebar duplicated that navigation — two
+    // competing chat navs was a design-critique P0 (2026-06-10). No shell
+    // sidebar on /chat.
     if (location.pathname.startsWith("/chat")) {
-      return <ChatSidebar expanded={true} onToggle={cycleSidebarState} />;
+      return null;
     }
     // C1 · Home (/) gets the personal command center rail. The previous
     // implementation fell through the workspaceType switch to `default:

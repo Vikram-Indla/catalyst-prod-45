@@ -154,7 +154,11 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
           <span className="cc-conv-title__k">{conversation.ticketKey}</span>
         ) : null}
         <span className="cc-conv-title__s">
-          {conversation.ticketKey ? ` · ${conversation.title}` : titleText}
+          {conversation.ticketKey
+            ? // Title is stored as "KEY · summary" — the key chip already shows
+              // the key, so strip the leading "KEY ·" to avoid "KEY · KEY · …".
+              ` · ${conversation.title.replace(new RegExp(`^${conversation.ticketKey}\\s*[·:-]\\s*`), '')}`
+            : titleText}
         </span>
       </div>
 

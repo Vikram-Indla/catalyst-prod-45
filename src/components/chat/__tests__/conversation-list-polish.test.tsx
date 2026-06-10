@@ -13,7 +13,18 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render as rtlRender, screen, fireEvent, within } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
+
+// ConversationList renders ProjectIcon → useIconOverrides → useQuery,
+// so every render needs a QueryClientProvider.
+const render = (ui: React.ReactElement) =>
+  rtlRender(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      {ui}
+    </QueryClientProvider>,
+  );
 import userEvent from '@testing-library/user-event';
 import { ConversationList } from '../main/ConversationList';
 import { ConversationCreationModal } from '../main/ConversationCreationModal';
