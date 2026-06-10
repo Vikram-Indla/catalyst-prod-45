@@ -1,20 +1,55 @@
 /**
- * MessageSearchPanel — search input + results, integrated in MessageStream.
+ * MessageSearchPanel — search input + filter chips + results, integrated in MessageStream.
  *
  * Handles:
  * - Opening/closing search (Ctrl+F or Cmd+F)
- * - Navigation through results (Arrow keys)
- * - Scroll to selected message
- * - Keyboard and mouse interactions
+ * - Filter chips: Person / Project / Ticket / Type (ChatSearchFilters)
+ * - Query operators: from:@name, in:#channel, key:BAU-123, "phrase", -term
+ * - Recent searches (last 5, localStorage) shown when input is empty
+ * - Navigation through results (Arrow keys), scroll to selected message
  */
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useMessageSearch } from '@/hooks/chat/useMessageSearch';
 import { MessageSearchInput } from './MessageSearchInput';
-import { MessageSearchResults, type SearchResult } from './MessageSearchResults';
+import { MessageSearchResults } from './MessageSearchResults';
 import type { ChatMessage } from '@/types/chat';
 import { useTicketRefSearch, isFullTicketKey } from '@/hooks/chat/useTicketRefSearch';
 import { openConversationInDock } from '@/lib/chat-dock-bridge';
+import {
+  ChatSearchFilters,
+  EMPTY_CHAT_SEARCH_FILTERS,
+  hasActiveFilters,
+  type ChatSearchFilterState,
+} from './ChatSearchFilters';
 import './message-search.css';
+
+const RECENT_SEARCHES_KEY = 'cc-chat-recent-searches';
+const RECENT_SEARCHES_MAX = 5;
+
+function loadRecentSearches(): string[] {
+  try {
+    const raw = localStorage.getItem(RECENT_SEARCHES_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter((s) => typeof s === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRecentSearch(q: string): string[] {
+  const trimmed = q.trim();
+  if (!trimmed) return loadRecentSearches();
+  const next = [trimmed, ...loadRecentSearches().filter((s) => s !== trimmed)].slice(
+    0,
+    RECENT_SEARCHES_MAX,
+  );
+  try {
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
+  } catch {
+    /* quota / private mode — non-fatal */
+  }
+  return next;
+}
 
 export interface MessageSearchPanelProps {
   conversationId?: string | null;
@@ -29,9 +64,12 @@ export function MessageSearchPanel({
 }: MessageSearchPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const [filters, setFilters] = useState<ChatSearchFilterState>(EMPTY_CHAT_SEARCH_FILTERS);
+  const [recentSearches, setRecentSearches] = useState<string[]>(loadRecentSearches);
+  const [injectedQuery, setInjectedQuery] = useState<string | undefined>(undefined);
+  const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { results, search, query } = useMessageSearch(conversationId);
+  const { results, search, query } = useMessageSearch(conversationId, filters);
 
   // Ticket-key mode: when the query IS a ticket key (e.g. "BAU-5757"),
   // also surface every conversation whose messages mention that key
@@ -57,6 +95,37 @@ export function MessageSearchPanel({
   useEffect(() => {
     setSelectedIndex(0);
   }, [results.length]);
+
+  // Re-run search when filter chips change while panel is open
+  useEffect(() => {
+    if (!isOpen) return;
+    search(query);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]);
+
+  const handleSearch = useCallback(
+    (q: string) => {
+      setInjectedQuery(undefined);
+      search(q);
+      // Persist to recent searches after the user pauses typing
+      if (persistTimer.current) clearTimeout(persistTimer.current);
+      if (q.trim()) {
+        persistTimer.current = setTimeout(() => {
+          setRecentSearches(saveRecentSearch(q));
+        }, 1500);
+      }
+    },
+    [search],
+  );
+
+  const handleRecentClick = useCallback(
+    (q: string) => {
+      setInjectedQuery(q);
+      search(q);
+      setRecentSearches(saveRecentSearch(q));
+    },
+    [search],
+  );
 
   const handleNavigate = useCallback(
     (direction: 'up' | 'down') => {
@@ -89,17 +158,39 @@ export function MessageSearchPanel({
     }
   }, [results, selectedIndex, handleSelectResult]);
 
+  const filtersActive = hasActiveFilters(filters);
+  const clearFilters = useCallback(() => setFilters(EMPTY_CHAT_SEARCH_FILTERS), []);
+
   return (
     <>
       <MessageSearchInput
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        onSearch={search}
+        onSearch={handleSearch}
         resultCount={results.length}
         selectedIndex={selectedIndex}
         onNavigate={handleNavigate}
         onSelectResult={handleSelectFromKeyboard}
+        value={injectedQuery}
       />
+
+      {isOpen && <ChatSearchFilters filters={filters} onChange={setFilters} />}
+
+      {isOpen && !query && recentSearches.length > 0 && (
+        <div className="cc-msg-search-recent" data-testid="chat-search-recent">
+          <div className="cc-msg-search-recent-title">Recent searches</div>
+          {recentSearches.map((q) => (
+            <button
+              key={q}
+              type="button"
+              className="cc-msg-search-recent-item"
+              onClick={() => handleRecentClick(q)}
+            >
+              {q}
+            </button>
+          ))}
+        </div>
+      )}
 
       {isOpen && ticketKeyQuery && ticketConvs.length > 0 && (
         <div
@@ -147,7 +238,7 @@ export function MessageSearchPanel({
         </div>
       )}
 
-      {isOpen && query && (
+      {isOpen && (query || filtersActive) && (
         <MessageSearchResults
           results={results}
           selectedIndex={selectedIndex}
@@ -155,6 +246,8 @@ export function MessageSearchPanel({
             setSelectedIndex(results.findIndex((r) => r.message.id === messageId));
             handleSelectResult(messageId);
           }}
+          hasFilters={filtersActive}
+          onClearFilters={clearFilters}
         />
       )}
     </>

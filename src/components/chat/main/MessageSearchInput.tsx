@@ -19,6 +19,8 @@ export interface MessageSearchInputProps {
   selectedIndex?: number;
   onNavigate?: (direction: 'up' | 'down') => void;
   onSelectResult?: () => void;
+  /** External query value (recent-search re-run). Syncs into the field when it changes. */
+  value?: string;
 }
 
 export function MessageSearchInput({
@@ -29,6 +31,7 @@ export function MessageSearchInput({
   selectedIndex = 0,
   onNavigate,
   onSelectResult,
+  value,
 }: MessageSearchInputProps) {
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -41,6 +44,13 @@ export function MessageSearchInput({
       setQuery('');
     }
   }, [isOpen]);
+
+  // Sync externally-set value (recent search click)
+  useEffect(() => {
+    if (value !== undefined) {
+      setQuery(value);
+    }
+  }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;

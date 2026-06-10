@@ -1,15 +1,20 @@
 /**
- * useMessageSearch — search chat messages in current conversation.
+ * useMessageSearch — search chat messages.
  *
  * Features:
- * - Full-text search via Postgres tsvector
- * - Limit 50 results
- * - Extracts snippets (±30 chars around match)
- * - Returns SearchResult[] with highlighted text
+ * - Full-text search via Postgres tsvector on body_text
+ * - Operator parsing: from:@name, in:#channel, key:BAU-123, "phrase", -term
+ *   (src/lib/chat/search-query.ts). Filter chips win over operators on conflict.
+ * - Cross-conversation search when any filter/operator widens scope;
+ *   otherwise scoped to the current conversation.
+ * - Limit 50 results, snippets ±30 chars around match.
  */
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { ChatMessage } from '@/types/chat';
+import { parseChatSearchQuery } from '@/lib/chat/search-query';
+import type { ChatSearchFilterState } from '@/components/chat/main/ChatSearchFilters';
+import { EMPTY_CHAT_SEARCH_FILTERS, hasActiveFilters } from '@/components/chat/main/ChatSearchFilters';
 
 export interface SearchResult {
   message: ChatMessage;
@@ -17,18 +22,46 @@ export interface SearchResult {
   snippetBefore: string;
   matchedText: string;
   snippetAfter: string;
+  conversationId: string;
+  conversationTitle: string;
+  conversationKind: string;
 }
 
 const SNIPPET_CONTEXT = 30; // chars before/after match
 
-export function useMessageSearch(conversationId: string | null | undefined) {
+function buildSnippet(bodyText: string, term: string) {
+  const lowerText = bodyText.toLowerCase();
+  const matchPos = term ? lowerText.indexOf(term.toLowerCase()) : -1;
+  if (matchPos === -1) {
+    const end = Math.min(bodyText.length, 80);
+    return {
+      snippetBefore: '',
+      matchedText: '',
+      snippetAfter: bodyText.substring(0, end) + (end < bodyText.length ? '…' : ''),
+    };
+  }
+  const start = Math.max(0, matchPos - SNIPPET_CONTEXT);
+  const end = Math.min(bodyText.length, matchPos + term.length + SNIPPET_CONTEXT);
+  const snippetBefore = (start > 0 ? '…' : '') + bodyText.substring(start, matchPos);
+  const matchedText = bodyText.substring(matchPos, matchPos + term.length);
+  const snippetAfter =
+    bodyText.substring(matchPos + term.length, end) + (end < bodyText.length ? '…' : '');
+  return { snippetBefore, matchedText, snippetAfter };
+}
+
+export function useMessageSearch(
+  conversationId: string | null | undefined,
+  filters: ChatSearchFilterState = EMPTY_CHAT_SEARCH_FILTERS,
+) {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [query, setQuery] = useState('');
+  const runId = useRef(0);
 
   const search = useCallback(
     async (q: string) => {
-      if (!conversationId || !q.trim()) {
+      const filtersActive = hasActiveFilters(filters);
+      if (!q.trim() && !filtersActive) {
         setResults([]);
         setQuery('');
         return;
@@ -36,28 +69,71 @@ export function useMessageSearch(conversationId: string | null | undefined) {
 
       setQuery(q);
       setIsSearching(true);
+      const myRun = ++runId.current;
 
       try {
-        // Query full-text search using Postgres tsvector.
-        // textSearch() uses plainto_tsquery for word-based matching.
-        // LIMIT 50 results. Order by created_at ASC for chronological order.
-        const db = supabase as unknown as {
-          from: (table: string) => {
-            select: (cols: string) => {
-              eq: (col: string, val: any) => {
-                is: (col: string, val: any) => {
-                  textSearch: (col: string, query: string, opts: any) => {
-                    order: (col: string, opts: any) => {
-                      limit: (n: number) => Promise<{ data: any[]; error: any }>;
-                    };
-                  };
-                };
-              };
-            };
-          };
-        };
+        const parsed = parseChatSearchQuery(q);
 
-        const { data, error } = await db
+        // Chips win over operators per dimension.
+        const authorIds = filters.authorIds;
+        const fromNames = authorIds.length > 0 ? [] : parsed.from;
+        const projectKeys = filters.projectKeys;
+        const channelNames = projectKeys.length > 0 ? [] : parsed.channels;
+        const issueKeys = filters.issueKeys.length > 0 ? filters.issueKeys : parsed.keys;
+        const kinds = filters.kinds;
+
+        const sb = supabase as any;
+
+        // Resolve from:@name → author ids
+        let resolvedAuthorIds = authorIds;
+        if (fromNames.length > 0) {
+          const ors = fromNames.map((n) => `full_name.ilike.%${n}%`).join(',');
+          const { data: profs } = await sb.from('profiles').select('id').or(ors).limit(50);
+          resolvedAuthorIds = (profs ?? []).map((p: any) => p.id);
+          if (resolvedAuthorIds.length === 0) {
+            if (runId.current === myRun) setResults([]);
+            return;
+          }
+        }
+
+        // Resolve conversation scope (project / in:#channel / kind)
+        let conversationIds: string[] | null = null;
+        const needConvFilter =
+          projectKeys.length > 0 || channelNames.length > 0 || kinds.length > 0;
+        if (needConvFilter) {
+          let cq = sb.from('chat_conversations').select('id');
+          if (projectKeys.length > 0) cq = cq.in('project_key', projectKeys);
+          if (channelNames.length > 0) {
+            cq = cq.or(channelNames.map((n) => `title.ilike.%${n}%`).join(','));
+          }
+          if (kinds.length > 0) cq = cq.in('kind', kinds);
+          const { data: convs } = await cq.limit(200);
+          conversationIds = (convs ?? []).map((c: any) => c.id);
+          if (conversationIds.length === 0) {
+            if (runId.current === myRun) setResults([]);
+            return;
+          }
+        }
+
+        // Resolve ticket keys → message ids
+        let messageIds: string[] | null = null;
+        if (issueKeys.length > 0) {
+          const { data: refs } = await sb
+            .from('chat_message_issue_refs')
+            .select('message_id')
+            .in('issue_key', issueKeys)
+            .limit(500);
+          messageIds = (refs ?? []).map((r: any) => r.message_id);
+          if (messageIds.length === 0) {
+            if (runId.current === myRun) setResults([]);
+            return;
+          }
+        }
+
+        const widenScope =
+          filtersActive || fromNames.length > 0 || channelNames.length > 0 || issueKeys.length > 0;
+
+        let mq = sb
           .from('chat_messages')
           .select(
             `
@@ -66,6 +142,7 @@ export function useMessageSearch(conversationId: string | null | undefined) {
             parent_id,
             author_id,
             author:profiles(id, full_name, avatar_url),
+            conversation:chat_conversations(id, title, kind),
             body_text,
             body_adf,
             created_at,
@@ -73,28 +150,44 @@ export function useMessageSearch(conversationId: string | null | undefined) {
             deleted_at
             `,
           )
-          .eq('conversation_id', conversationId)
-          .is('deleted_at', null)
-          .textSearch('body_text', q, { config: 'english', type: 'plain' })
-          .order('created_at', { ascending: true })
-          .limit(50);
+          .is('deleted_at', null);
+
+        if (conversationIds) {
+          mq = mq.in('conversation_id', conversationIds);
+        } else if (!widenScope) {
+          if (!conversationId) {
+            if (runId.current === myRun) setResults([]);
+            return;
+          }
+          mq = mq.eq('conversation_id', conversationId);
+        }
+        if (resolvedAuthorIds.length > 0) mq = mq.in('author_id', resolvedAuthorIds);
+        if (messageIds) mq = mq.in('id', messageIds);
+
+        const ftsText = [parsed.text, ...parsed.phrases].filter(Boolean).join(' ');
+        if (ftsText) {
+          mq = mq.textSearch('body_text', ftsText, { config: 'english', type: 'plain' });
+        }
+
+        const { data, error } = await mq.order('created_at', { ascending: true }).limit(50);
+
+        if (runId.current !== myRun) return;
 
         if (error) {
           console.error('Message search error:', error);
           setResults([]);
-          setIsSearching(false);
           return;
         }
 
-        if (!data || data.length === 0) {
-          setResults([]);
-          setIsSearching(false);
-          return;
-        }
+        const highlightTerm = parsed.phrases[0] || parsed.text.split(/\s+/)[0] || '';
 
-        // Map database rows to ChatMessage + extract snippets
-        // Data is ordered chronologically (ASC), so oldest first.
-        const searchResults: SearchResult[] = data
+        const searchResults: SearchResult[] = (data ?? [])
+          .filter((row: any) => {
+            const lower = (row.body_text || '').toLowerCase();
+            if (parsed.phrases.some((p) => !lower.includes(p.toLowerCase()))) return false;
+            if (parsed.exclude.some((x) => lower.includes(x.toLowerCase()))) return false;
+            return true;
+          })
           .map((row: any, idx: number) => {
             const message: ChatMessage = {
               id: row.id,
@@ -111,47 +204,25 @@ export function useMessageSearch(conversationId: string | null | undefined) {
               reactions: [],
               replyCount: 0,
             };
-
-            // Extract snippet with match highlight
-            const lowerText = row.body_text.toLowerCase();
-            const lowerQuery = q.toLowerCase();
-            const matchPos = lowerText.indexOf(lowerQuery);
-
-            if (matchPos === -1) {
-              // Shouldn't happen if full-text matched, but handle gracefully
-              return null;
-            }
-
-            // Extract context around match
-            const start = Math.max(0, matchPos - SNIPPET_CONTEXT);
-            const end = Math.min(row.body_text.length, matchPos + q.length + SNIPPET_CONTEXT);
-            const snippetBefore = row.body_text.substring(start, matchPos);
-            const matchedText = row.body_text.substring(matchPos, matchPos + q.length);
-            const snippetAfter = row.body_text.substring(matchPos + q.length, end);
-
-            // Add ellipsis if truncated
-            const before = start > 0 ? '…' + snippetBefore : snippetBefore;
-            const after = end < row.body_text.length ? snippetAfter + '…' : snippetAfter;
-
             return {
               message,
               matchIndex: idx,
-              snippetBefore: before,
-              matchedText,
-              snippetAfter: after,
+              ...buildSnippet(row.body_text || '', highlightTerm),
+              conversationId: row.conversation_id,
+              conversationTitle: row.conversation?.title || 'Untitled conversation',
+              conversationKind: row.conversation?.kind || 'channel',
             };
-          })
-          .filter((r): r is SearchResult => r !== null);
+          });
 
         setResults(searchResults);
       } catch (err) {
         console.error('Search exception:', err);
-        setResults([]);
+        if (runId.current === myRun) setResults([]);
       } finally {
-        setIsSearching(false);
+        if (runId.current === myRun) setIsSearching(false);
       }
     },
-    [conversationId],
+    [conversationId, filters],
   );
 
   // Reset results when conversation changes
