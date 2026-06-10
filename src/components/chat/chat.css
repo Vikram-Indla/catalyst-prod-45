@@ -695,6 +695,25 @@
   border-color: var(--ds-background-brand-bold, #0C66E4);
 }
 
+/* ── Reactions row + persistent add-reaction affordance (H6) ── */
+.cc-msg__react-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.cc-msg__add-react {
+  display: inline-flex;
+  opacity: 0.6;
+  transition: opacity 100ms ease;
+}
+
+.cc-msg--row:hover .cc-msg__add-react,
+.cc-msg__add-react:focus-within {
+  opacity: 1;
+}
+
 /* ---------- Message Actions Toolbar ---------- */
 .cc-msg__actions {
   display: flex;

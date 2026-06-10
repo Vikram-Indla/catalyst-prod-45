@@ -22,6 +22,9 @@ import { MessageActionsToolbar } from './MessageActionsToolbar';
 import { ReactionPicker } from './ReactionPicker';
 import { MessageReactions } from './MessageReactions';
 import { MessageSearchPanel } from './MessageSearchPanel';
+import Tooltip from '@atlaskit/tooltip';
+import { IconButton } from '@atlaskit/button/new';
+import EmojiAddIcon from '@atlaskit/icon/core/emoji-add';
 import { TicketKeyChip } from './TicketKeyChip';
 import { useIssueRefs, type IssueRefMap } from '@/hooks/chat/useIssueRefs';
 import { extractTicketKeys, splitByTicketKeys } from '@/lib/chat/ticket-refs';
@@ -31,6 +34,9 @@ import { extractTicketKeys, splitByTicketKeys } from '@/lib/chat/ticket-refs';
 const EpicDescriptionRenderer = lazy(
   () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer'),
 );
+
+/** One-time "Hover for actions" hint (H10) — dismissed state persisted. */
+const HOVER_HINT_KEY = 'cc-chat-hover-hint-dismissed';
 
 function isAdfPresent(adf: unknown): adf is { type: string; content?: unknown[] } {
   if (!adf || typeof adf !== 'object') return false;
@@ -395,6 +401,11 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
   const [showReactPicker, setShowReactPicker] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const reactButtonRef = useRef<HTMLButtonElement>(null);
+  const addReactionButtonRef = useRef<HTMLButtonElement>(null);
+  const [pickerAnchor, setPickerAnchor] = useState<'toolbar' | 'inline'>('toolbar');
+  const [showHoverHint, setShowHoverHint] = useState(
+    () => typeof window !== 'undefined' && window.localStorage.getItem(HOVER_HINT_KEY) !== '1',
+  );
   const messageRowRef = useRef<HTMLDivElement>(null);
   const { reactorsByEmoji } = useMessageReactions({ messageId: msg.id });
 
@@ -409,8 +420,16 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
     setEditing(false);
   };
 
-  return (
-    <div className={`cc-msg cc-msg--row${grouped ? ' cc-msg--grouped' : ''}`} ref={ref || messageRowRef} tabIndex={-1}>
+  const rowClassName = `cc-msg cc-msg--row${grouped ? ' cc-msg--grouped' : ''}`;
+
+  const assignRowRef = (el: HTMLDivElement | null) => {
+    if (typeof ref === 'function') ref(el);
+    else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
+    (messageRowRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+  };
+
+  const rowBody = (
+    <>
       {grouped ? (
         <span className="cc-msg__gutter-time">{timeLabel(msg.createdAt)}</span>
       ) : (
@@ -489,7 +508,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
               className="cc-msg__tool"
               aria-label="React"
               title="React"
-              onClick={() => { setShowReactPicker((s) => !s); setShowMore(false); }}
+              onClick={() => { setPickerAnchor('toolbar'); setShowReactPicker((s) => !s); setShowMore(false); }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
                 <circle cx="12" cy="12" r="10" />
@@ -547,15 +566,6 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
               </svg>
             </button>
 
-            <ReactionPicker
-              isOpen={showReactPicker}
-              onClose={() => setShowReactPicker(false)}
-              triggerRef={reactButtonRef}
-              onEmojiPick={(emoji) => {
-                onToggleReaction?.(msg.id, emoji);
-              }}
-            />
-
             {showMore && (
               <div className="cc-msg__moremenu">
                 <button type="button" className="cc-msg__moremenu-item" onClick={() => { navigator.clipboard?.writeText(msg.bodyText); setShowMore(false); }}>
@@ -576,12 +586,36 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
           </div>
         )}
 
-        <MessageReactions
-          reactions={msg.reactions}
-          onToggle={(emoji) => onToggleReaction?.(msg.id, emoji)}
-          currentUserId={msg.authorId}
-          reactorsByEmoji={reactorsByEmoji}
+        <ReactionPicker
+          isOpen={showReactPicker}
+          onClose={() => setShowReactPicker(false)}
+          triggerRef={pickerAnchor === 'inline' ? addReactionButtonRef : reactButtonRef}
+          onEmojiPick={(emoji) => {
+            onToggleReaction?.(msg.id, emoji);
+          }}
         />
+
+        <div className="cc-msg__react-row">
+          <MessageReactions
+            reactions={msg.reactions}
+            onToggle={(emoji) => onToggleReaction?.(msg.id, emoji)}
+            currentUserId={msg.authorId}
+            reactorsByEmoji={reactorsByEmoji}
+          />
+          {/* Persistent "Add reaction" affordance (H6) — always visible, not hover-gated */}
+          <span className="cc-msg__add-react">
+          <Tooltip content="Add reaction">
+            <IconButton
+              ref={addReactionButtonRef}
+              appearance="subtle"
+              spacing="compact"
+              icon={EmojiAddIcon}
+              label="Add reaction"
+              onClick={() => { setPickerAnchor('inline'); setShowReactPicker((s) => !s); setShowMore(false); }}
+            />
+          </Tooltip>
+          </span>
+        </div>
 
         {msg.replyCount > 0 ? (
           <button type="button" className="cc-thread" onClick={() => onOpenThread?.(msg.id)}>
@@ -596,6 +630,39 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
           </button>
         ) : null}
       </div>
+    </>
+  );
+
+  if (showHoverHint) {
+    return (
+      <Tooltip
+        content="Hover for actions"
+        position="top"
+        onShow={() => window.localStorage.setItem(HOVER_HINT_KEY, '1')}
+        onHide={() => setShowHoverHint(false)}
+      >
+        {(tooltipProps) => (
+          <div
+            {...tooltipProps}
+            className={rowClassName}
+            tabIndex={-1}
+            ref={(el: HTMLDivElement | null) => {
+              const tipRef = tooltipProps.ref as unknown;
+              if (typeof tipRef === 'function') (tipRef as (e: HTMLElement | null) => void)(el);
+              else if (tipRef && typeof tipRef === 'object') (tipRef as React.MutableRefObject<HTMLElement | null>).current = el;
+              assignRowRef(el);
+            }}
+          >
+            {rowBody}
+          </div>
+        )}
+      </Tooltip>
+    );
+  }
+
+  return (
+    <div className={rowClassName} ref={assignRowRef} tabIndex={-1}>
+      {rowBody}
     </div>
   );
 });
