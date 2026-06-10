@@ -117,7 +117,9 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
           ticketType: conv.ticket_key ? (ticketTypeMap[conv.ticket_key] ?? null) : null,
           projectKey: conv.project_key ?? null,
           projectName: conv.project_key ? (projectNameMap[conv.project_key] ?? null) : null,
-          title: conv.title ?? '',
+          title: conv.kind === 'channel' && conv.project_key
+            ? (projectNameMap[conv.project_key] ?? conv.title ?? '')
+            : (conv.title ?? ''),
           isArchived: !!conv.is_archived,
           lastMessageAt: conv.last_message_at ?? null,
           lastMessagePreview: conv.last_message_preview ?? null,
