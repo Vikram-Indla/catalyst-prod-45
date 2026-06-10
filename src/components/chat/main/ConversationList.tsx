@@ -173,13 +173,24 @@ export function ConversationList({
   return (
     <>
       <div className="cc-convlist">
-        {/* Header + New Conversation Button */}
+        {/* Header — title + create icon */}
         <div className="cc-cl-head">
           <div className="cc-cl-head__ttl">{title ?? (filter === 'dms' ? 'Direct messages' : 'Conversations')}</div>
+          <button
+            type="button"
+            className="cc-iconbtn"
+            onClick={handleCreateClick}
+            aria-label="Start a new conversation"
+          >
+            <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2}>
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
         </div>
 
         {showUnreadsToggle && (
-          <div style={{ padding: '0 8px 8px' }}>
+          <div style={{ padding: '0 4px 8px' }}>
             <button
               type="button"
               className={`cc-unreads-pill${unreadsOnly ? ' is-on' : ''}`}
@@ -191,35 +202,19 @@ export function ConversationList({
           </div>
         )}
 
-        {/* New Conversation Button — full width, "+ New conversation" */}
-        <div style={{ padding: '0 8px 8px' }}>
-          <button
-            type="button"
-            onClick={handleCreateClick}
-            className="cc-new-conv-btn"
-            aria-label="Start a new conversation"
-          >
-            <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2}>
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            <span>New conversation</span>
-          </button>
-        </div>
-
-        {/* Search Input — live filter */}
-        <div className="cc-cl-search">
-          <input
-            ref={searchInputRef}
-            type="text"
-            className="cc-cl-search__inp-field"
-            placeholder={searchPlaceholder ?? (filter === 'dms' ? 'Find a DM' : 'Search conversations…')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleSearchKeyDown}
-            aria-label="Search conversations by name or message"
-          />
-          {searchQuery && (
+        {/* Search — collapsed behind icon, shown only when searchQuery is non-empty or focused */}
+        {searchQuery ? (
+          <div className="cc-cl-search">
+            <input
+              ref={searchInputRef}
+              type="text"
+              className="cc-cl-search__inp-field"
+              placeholder={searchPlaceholder ?? (filter === 'dms' ? 'Find a DM' : 'Search conversations…')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+              aria-label="Search conversations by name or message"
+            />
             <button
               type="button"
               className="cc-cl-search__clear"
@@ -231,8 +226,8 @@ export function ConversationList({
             >
               ✕
             </button>
-          )}
-        </div>
+          </div>
+        ) : null}
 
       <div className="cc-cl-scroll">
         {isLoading ? (
@@ -393,13 +388,13 @@ function ConversationItemRow({
       {/* Unread indicator — blue dot left edge when active + unread */}
       {isActive && c.unreadCount > 0 && <div className="cc-unread-dot" />}
 
-      {/* Icon — variant-specific */}
+      {/* Icon — 16px flat, no background square (Catalyst nav-item pattern) */}
       {variant === 'channel' && (
         <span className="cc-item-icon">
           {c.projectKey ? (
             <ProjectIcon projectKey={c.projectKey} size="xsmall" />
           ) : (
-            <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #6B778C)' }}>#</span>
+            <span style={{ fontSize: '13px', lineHeight: 1 }}>#</span>
           )}
         </span>
       )}
@@ -414,25 +409,16 @@ function ConversationItemRow({
           seed={c.id}
           className="cc-item-avatar"
           presence={presence}
+          size={20}
         />
       )}
 
-      {/* Content — title, preview, timestamp */}
-      <div className="cc-item-content">
-        <div className="cc-item-header">
-          <span className="cc-item-title">
-            {variant === 'channel' ? (c.projectName ?? c.title) : c.title}
-          </span>
-          {c.lastMessageAt && (
-            <span className="cc-item-timestamp">{formatRelative(c.lastMessageAt)}</span>
-          )}
-        </div>
-        {c.lastMessagePreview && (
-          <div className="cc-item-preview">{c.lastMessagePreview}</div>
-        )}
-      </div>
+      {/* Single-line title — Catalyst nav-item label */}
+      <span className="cc-item-title">
+        {variant === 'channel' ? (c.projectName ?? c.title) : c.title}
+      </span>
 
-      {/* Unread badge (right side) */}
+      {/* Unread badge */}
       {c.unreadCount > 0 && <span className="cc-badge">{c.unreadCount}</span>}
     </button>
   );

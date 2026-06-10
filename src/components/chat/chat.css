@@ -1138,22 +1138,24 @@
 /* Polished Conversation Item Row */
 .cc-row-polished {
   position: relative;
-  padding: 8px 8px;
+  padding: 0 8px;
+  height: 32px;
+  min-height: 32px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
   width: 100%;
   background: transparent;
   border: none;
   font-family: inherit;
   text-align: left;
-  margin: 0 0;
-  border-radius: 6px;
+  margin: 0;
+  border-radius: 4px;
   transition: background 0.1s;
 }
 .cc-row-polished:hover {
-  background: var(--ds-background-neutral-subtle, #F7F8F9);
+  background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
 }
 .cc-row-polished.is-active {
   background: var(--ds-background-selected, #E9F2FE);
@@ -1172,49 +1174,32 @@
   flex: 0 0 auto;
 }
 
-/* Item icon */
+/* Item icon — 16px flat, no background square (Catalyst nav-item pattern) */
 .cc-item-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 4px;
+  width: 16px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  background: var(--ds-background-neutral-subtle, #F7F8F9);
   color: var(--ds-text-subtle, #44546F);
   font-size: 12px;
 }
 .cc-row-polished.is-active .cc-item-icon {
-  background: var(--ds-background-brand-subtle, #DEEBFF);
   color: var(--ds-text-brand, #0C66E4);
 }
 
 .cc-item-avatar {
-  width: 28px;
-  height: 28px;
-  font-size: 11px;
+  width: 20px;
+  height: 20px;
+  font-size: 9px;
+  flex: 0 0 auto;
 }
 
-/* Content container (title, preview, timestamp) */
-.cc-item-content {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--ds-space-025, 2px);
-}
-
-/* Header row — title + timestamp */
-.cc-item-header {
-  display: flex;
-  align-items: baseline;
-  gap: var(--ds-space-075, 6px);
-  justify-content: space-between;
-}
+/* Single-line title — Catalyst nav-item label style */
 .cc-item-title {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--ds-text, #172B4D);
   white-space: nowrap;
   overflow: hidden;
@@ -1222,27 +1207,12 @@
   flex: 1;
 }
 .cc-row-polished.is-active .cc-item-title {
+  font-weight: 500;
+  color: var(--ds-text-selected, #0C66E4);
+}
+.cc-row-polished.is-unread .cc-item-title {
   font-weight: 600;
-}
-
-/* Timestamp — 11px/400 grey, right-aligned, relative time */
-.cc-item-timestamp {
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--ds-text-subtlest, #6B778C);
-  flex: 0 0 auto;
-  white-space: nowrap;
-}
-
-/* Last message preview — 12px/400 grey, 1-line truncate */
-.cc-item-preview {
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--ds-text-subtle, #44546F);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 16px;
+  color: var(--ds-text, #172B4D);
 }
 
 /* Drag-to-reorder visual feedback */
@@ -1430,9 +1400,7 @@
   color: var(--ds-text-brand, #0C66E4);
 }
 
-/* Unread conversation rows — bold title */
-.cc-row-polished.is-unread .cc-item-title { font-weight: 700; color: var(--ds-text, #172B4D); }
-.cc-row-polished.is-unread .cc-item-preview { color: var(--ds-text, #172B4D); }
+/* Unread conversation rows — bold title (handled in .cc-item-title block above) */
 
 /* Activity feed */
 .cc-activity__tabs {
@@ -1462,14 +1430,14 @@
   position: relative;
   display: flex;
   align-items: flex-start;
-  margin: 4px 8px;
-  border: 1px solid var(--ds-border, #DFE1E6);
-  border-radius: 4px;
-  background: var(--ds-surface, #FFFFFF);
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
 }
 .cc-activity__card.is-unread {
   border-left: 2px solid var(--ds-border-selected, #0C66E4);
-  background: var(--ds-background-selected, #E9F2FE);
+  background: transparent;
 }
 .cc-activity__card:hover { background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06)); }
 .cc-activity__cardmain {
@@ -1487,7 +1455,7 @@
   align-items: baseline;
   gap: var(--ds-space-075, 6px);
   font-size: 11px;
-  color: var(--ds-text-subtle, #44546F);
+  color: var(--ds-text-subtle, #505258);
 }
 .cc-activity__kind { font-weight: 600; }
 .cc-activity__chip {
