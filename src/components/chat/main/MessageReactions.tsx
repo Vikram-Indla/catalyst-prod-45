@@ -1,0 +1,167 @@
+/**
+ * MessageReactions — display reactions as emoji chips.
+ * - Groups reactions by emoji
+ * - Shows count badge
+ * - "Reacted by me" highlight (blue)
+ * - Hover tooltip: "Alice, Bob, +2 others reacted with ❤️"
+ * - Click to toggle your reaction (add/remove)
+ * - Requires name+ID mapping for each reactor (fetched separately)
+ */
+import React, { useState, useRef, useEffect } from 'react';
+import type { ChatReaction } from '@/types/chat';
+
+interface Reactor {
+  userId: string;
+  userName: string;
+}
+
+export interface MessageReactionsProps {
+  reactions: ChatReaction[];
+  onToggle: (emoji: string) => void;
+  currentUserId?: string | null;
+  reactorsByEmoji?: Map<string, Reactor[]>; // emoji -> [{ userId, userName }, ...]
+}
+
+export function MessageReactions({
+  reactions,
+  onToggle,
+  currentUserId,
+  reactorsByEmoji,
+}: MessageReactionsProps) {
+  if (reactions.length === 0) return null;
+
+  return (
+    <div className="cc-reacts">
+      {reactions.map((r) => (
+        <ReactionChip
+          key={r.emoji}
+          emoji={r.emoji}
+          count={r.count}
+          reactedByMe={r.reactedByMe}
+          onToggle={() => onToggle(r.emoji)}
+          reactors={reactorsByEmoji?.get(r.emoji) ?? []}
+        />
+      ))}
+    </div>
+  );
+}
+
+function ReactionChip({
+  emoji,
+  count,
+  reactedByMe,
+  onToggle,
+  reactors,
+}: {
+  emoji: string;
+  count: number;
+  reactedByMe: boolean;
+  onToggle: () => void;
+  reactors: Reactor[];
+}) {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const chipRef = useRef<HTMLButtonElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+
+  // Close tooltip on click-outside
+  useEffect(() => {
+    if (!showTooltip) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        tooltipRef.current &&
+        !tooltipRef.current.contains(e.target as Node) &&
+        chipRef.current &&
+        !chipRef.current.contains(e.target as Node)
+      ) {
+        setShowTooltip(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showTooltip]);
+
+  // Get chip position for tooltip placement
+  const chipRect = chipRef.current?.getBoundingClientRect();
+  const tooltipTop = chipRect ? chipRect.bottom + 8 : 'auto';
+  const tooltipLeft = chipRect ? chipRect.left : 'auto';
+
+  // Build reactor list for tooltip
+  const reactorList = reactors.slice(0, 3).map((r) => r.userName).join(', ');
+  const otherCount = Math.max(0, reactors.length - 3);
+  const tooltipText = otherCount > 0
+    ? `${reactorList}, +${otherCount} other${otherCount === 1 ? '' : 's'} reacted with ${emoji}`
+    : `${reactorList} reacted with ${emoji}`;
+
+  return (
+    <div className="cc-react-wrapper" style={{ position: 'relative' }}>
+      <button
+        ref={chipRef}
+        type="button"
+        className={`cc-react${reactedByMe ? ' is-mine' : ''}`}
+        onClick={onToggle}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+        aria-pressed={reactedByMe}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
+          padding: '4px 8px',
+          background: reactedByMe
+            ? 'var(--ds-background-information-subtle, #E9F2FE)'
+            : 'var(--ds-background-neutral-subtle, #F7F8F9)',
+          border: reactedByMe
+            ? '1px solid var(--ds-border-information, #0C66E4)'
+            : '1px solid var(--ds-border, #DFE1E6)',
+          borderRadius: 12,
+          cursor: 'pointer',
+          fontSize: 14,
+          fontWeight: 500,
+          color: 'var(--ds-text, #172B4D)',
+          transition: 'all 100ms',
+          userSelect: 'none',
+        }}
+        onMouseEnter={(e) => {
+          const el = e.currentTarget;
+          el.style.background = reactedByMe
+            ? 'var(--ds-background-information, #E9F2FE)'
+            : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+        }}
+        onMouseLeave={(e) => {
+          const el = e.currentTarget;
+          el.style.background = reactedByMe
+            ? 'var(--ds-background-information-subtle, #E9F2FE)'
+            : 'var(--ds-background-neutral-subtle, #F7F8F9)';
+        }}
+      >
+        <span style={{ fontSize: 16 }}>{emoji}</span>
+        <span>{count}</span>
+      </button>
+
+      {/* Tooltip */}
+      {showTooltip && reactors.length > 0 && (
+        <div
+          ref={tooltipRef}
+          className="cc-react-tooltip"
+          role="tooltip"
+          style={{
+            position: 'fixed',
+            top: tooltipTop,
+            left: tooltipLeft,
+            zIndex: 1001,
+            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            border: `1px solid var(--ds-border, #DFE1E6)`,
+            borderRadius: 6,
+            padding: '8px 12px',
+            fontSize: 12,
+            color: 'var(--ds-text, #172B4D)',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 2px 8px rgba(9,30,66,0.13)',
+          }}
+        >
+          {tooltipText}
+        </div>
+      )}
+    </div>
+  );
+}
