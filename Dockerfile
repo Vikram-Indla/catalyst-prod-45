@@ -6,6 +6,7 @@ RUN npm install -g bun
 
 # Package manager files
 COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
 
 # Config files
 COPY index.html ./
@@ -22,7 +23,7 @@ COPY scripts/ ./scripts/
 COPY src/ ./src/
 COPY public/ ./public/
 
-RUN bun install --frozen-lockfile
+
 RUN NODE_OPTIONS="--max-old-space-size=4096" bun run build
 
 
