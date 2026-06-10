@@ -10,7 +10,7 @@
  *   ?conv=<conversationId>  → active conversation
  *   ?rail=<threads|mentions|saved|drafts|people> → secondary panel
  */
-import React, { useMemo, useState, useRef } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useConversations } from '@/hooks/chat/useConversations';
 import { useMessages } from '@/hooks/chat/useMessages';
@@ -38,6 +38,19 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
   const urlThread = params.get('thread') ?? undefined;
   const [threadParentId, setThreadParentId] = useState<string | null>(null);
   const composerRef = useRef<HTMLTextAreaElement>(null);
+  const [showHint, setShowHint] = useState(false);
+
+  useEffect(() => {
+    const hasSeenHint = localStorage.getItem('catalyst.chat.hint-seen');
+    if (!hasSeenHint) {
+      setShowHint(true);
+    }
+  }, []);
+
+  const dismissHint = () => {
+    localStorage.setItem('catalyst.chat.hint-seen', 'true');
+    setShowHint(false);
+  };
 
   const { conversations } = useConversations();
 
@@ -129,6 +142,38 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
       <div className="cc-conv" style={{ display: 'flex', flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
           <ConversationHeader conversation={activeConversation} />
+
+          {showHint && (
+            <div
+              style={{
+                padding: '12px 16px',
+                background: 'var(--ds-background-information-subtle, #E9F2FE)',
+                borderBottom: '1px solid var(--ds-border-information, #0C66E4)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '12px',
+                fontSize: '13px',
+                color: 'var(--ds-text, #172B4D)',
+              }}
+            >
+              <span>💡 Hover over messages for actions — copy, react, or turn into a work item</span>
+              <button
+                onClick={dismissHint}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--ds-text-subtle, #44546F)',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  padding: '0 4px',
+                }}
+                aria-label="Dismiss hint"
+              >
+                ×
+              </button>
+            </div>
+          )}
 
           {messages.length === 0 ? (
             <ConversationEmptyState

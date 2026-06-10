@@ -701,12 +701,8 @@
   align-items: center;
   gap: 4px;
   margin-top: 8px;
-  opacity: 0;
-  transition: opacity 150ms ease-in-out;
-}
-
-.cc-msg:hover .cc-msg__actions {
   opacity: 1;
+  transition: opacity 150ms ease-in-out;
 }
 
 .cc-msg__action-btn {

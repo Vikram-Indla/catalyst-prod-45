@@ -15,6 +15,7 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import Tooltip from '@atlaskit/tooltip';
+import Spinner from '@atlaskit/spinner';
 
 export interface MessageActionsToolbarProps {
   messageId: string;
@@ -206,10 +207,11 @@ export function MessageActionsToolbar({
             onClick={handleCopyLink}
             disabled={isLoading === 'copy'}
             aria-label="Copy message link"
+            aria-busy={isLoading === 'copy'}
             title="Copy link"
             tabIndex={focusedButtonIndex === 0 ? 0 : -1}
           >
-            <CopyIcon />
+            {isLoading === 'copy' ? <Spinner size="small" /> : <CopyIcon />}
           </button>
         </Tooltip>
 
@@ -222,10 +224,11 @@ export function MessageActionsToolbar({
             onClick={handleMarkUnread}
             disabled={isLoading === 'unread'}
             aria-label={isUnread ? 'Mark message as read' : 'Mark message unread'}
+            aria-busy={isLoading === 'unread'}
             title={isUnread ? 'Mark as read' : 'Mark unread'}
             tabIndex={focusedButtonIndex === 1 ? 0 : -1}
           >
-            <BellIcon filled={isUnread} />
+            {isLoading === 'unread' ? <Spinner size="small" /> : <BellIcon filled={isUnread} />}
           </button>
         </Tooltip>
 
@@ -238,10 +241,11 @@ export function MessageActionsToolbar({
             onClick={() => setReminderOpen(true)}
             disabled={isLoading === 'remind'}
             aria-label="Set reminder for this message"
+            aria-busy={isLoading === 'remind'}
             title="Set reminder"
             tabIndex={focusedButtonIndex === 2 ? 0 : -1}
           >
-            <ClockIcon />
+            {isLoading === 'remind' ? <Spinner size="small" /> : <ClockIcon />}
           </button>
         </Tooltip>
 
@@ -254,10 +258,11 @@ export function MessageActionsToolbar({
             onClick={() => setIssueOpen(true)}
             disabled={isLoading === 'turninto'}
             aria-label="Turn this message into a work item"
+            aria-busy={isLoading === 'turninto'}
             title="Turn into issue"
             tabIndex={focusedButtonIndex === 3 ? 0 : -1}
           >
-            <ArrowUpIcon />
+            {isLoading === 'turninto' ? <Spinner size="small" /> : <DocumentIcon />}
           </button>
         </Tooltip>
       </div>
@@ -419,11 +424,13 @@ function ClockIcon() {
   );
 }
 
-function ArrowUpIcon() {
+function DocumentIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-      <line x1="12" y1="19" x2="12" y2="5" />
-      <polyline points="5 12 12 5 19 12" />
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="12" y1="13" x2="12" y2="17" />
+      <line x1="9" y1="15" x2="15" y2="15" />
     </svg>
   );
 }
