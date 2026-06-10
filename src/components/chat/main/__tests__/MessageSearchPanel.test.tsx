@@ -8,10 +8,17 @@
  */
 
 import React from 'react';
+import { vi } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ChatMessage } from '@/types/chat';
 import { MessageSearchPanel } from '../MessageSearchPanel';
+
+function renderWithClient(ui: React.ReactElement) {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(<QueryClientProvider client={qc}>{ui}</QueryClientProvider>);
+}
 
 describe('MessageSearchPanel', () => {
   const mockMessages: ChatMessage[] = [
@@ -48,22 +55,22 @@ describe('MessageSearchPanel', () => {
   ];
 
   it('renders without crashing', () => {
-    const { container } = render(
+    const { container } = renderWithClient(
       <MessageSearchPanel conversationId="conv1" messages={mockMessages} />,
     );
     expect(container).toBeInTheDocument();
   });
 
   it('is hidden initially', () => {
-    render(<MessageSearchPanel conversationId="conv1" messages={mockMessages} />);
+    renderWithClient(<MessageSearchPanel conversationId="conv1" messages={mockMessages} />);
     expect(screen.queryByPlaceholderText('Search messages…')).not.toBeInTheDocument();
   });
 
   it('calls onScrollToMessage when result is clicked', async () => {
-    const onScrollToMessage = jest.fn();
+    const onScrollToMessage = vi.fn();
     const user = userEvent.setup();
 
-    render(
+    renderWithClient(
       <MessageSearchPanel
         conversationId="conv1"
         messages={mockMessages}

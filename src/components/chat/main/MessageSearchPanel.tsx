@@ -12,6 +12,8 @@ import { useMessageSearch } from '@/hooks/chat/useMessageSearch';
 import { MessageSearchInput } from './MessageSearchInput';
 import { MessageSearchResults, type SearchResult } from './MessageSearchResults';
 import type { ChatMessage } from '@/types/chat';
+import { useTicketRefSearch, isFullTicketKey } from '@/hooks/chat/useTicketRefSearch';
+import { openConversationInDock } from '@/lib/chat-dock-bridge';
 import './message-search.css';
 
 export interface MessageSearchPanelProps {
@@ -30,6 +32,12 @@ export function MessageSearchPanel({
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   const { results, search, query } = useMessageSearch(conversationId);
+
+  // Ticket-key mode: when the query IS a ticket key (e.g. "BAU-5757"),
+  // also surface every conversation whose messages mention that key
+  // (chat_message_issue_refs, server-extracted).
+  const ticketKeyQuery = isFullTicketKey(query) ? query.trim().toUpperCase() : '';
+  const { data: ticketConvs = [] } = useTicketRefSearch(query);
 
   // Global keyboard shortcut (Cmd+F / Ctrl+F)
   useEffect(() => {
@@ -92,6 +100,52 @@ export function MessageSearchPanel({
         onNavigate={handleNavigate}
         onSelectResult={handleSelectFromKeyboard}
       />
+
+      {isOpen && ticketKeyQuery && ticketConvs.length > 0 && (
+        <div
+          className="msg-search-ticket-refs"
+          data-testid="ticket-ref-section"
+          style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}
+        >
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'var(--ds-text-subtlest, #6B778C)',
+              marginBottom: 4,
+            }}
+          >
+            Conversations mentioning {ticketKeyQuery}
+          </div>
+          {ticketConvs.map((c) => (
+            <button
+              key={c.conversationId}
+              type="button"
+              onClick={() => openConversationInDock(c.conversationId)}
+              style={{
+                display: 'block',
+                width: '100%',
+                textAlign: 'left',
+                padding: '4px 8px',
+                border: 'none',
+                background: 'none',
+                borderRadius: 4,
+                cursor: 'pointer',
+                font: 'inherit',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+            >
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                {c.title}
+              </span>
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginLeft: 8 }}>
+                {c.matchCount} {c.matchCount === 1 ? 'mention' : 'mentions'}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {isOpen && query && (
         <MessageSearchResults
