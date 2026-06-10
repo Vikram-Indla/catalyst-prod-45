@@ -4,7 +4,7 @@
  * initials avatars, reaction chips, highlighted @mention tokens, and the
  * "N replies" thread affordance. Reads real ChatMessage[] from useMessages.
  */
-import React, { useMemo, useState, lazy, Suspense } from 'react';
+import React, { useMemo, useState, lazy, Suspense, useRef } from 'react';
 import type { ChatMessage } from '@/types/chat';
 import { Avatar, initialsOf, colorFor } from './avatar';
 import { useConversationAttachments, type ChatAttachment } from '@/hooks/chat/useChatAttachments';
@@ -16,7 +16,11 @@ import {
   useMyBookmarks,
   useToggleBookmark,
 } from '@/hooks/chat/usePinsBookmarks';
+import { useMessageReactions } from '@/hooks/chat/useMessageReactions';
 import { MentionToken } from './MentionToken';
+import { MessageActionsToolbar } from './MessageActionsToolbar';
+import { ReactionPicker } from './ReactionPicker';
+import { MessageReactions } from './MessageReactions';
 
 // Lazy renderer — Atlaskit @atlaskit/renderer chunk only loads when a
 // message actually has body_adf content.
@@ -43,6 +47,9 @@ export interface MessageStreamProps {
   onToggleReaction?: (messageId: string, emoji: string) => void;
   onEdit?: (messageId: string, bodyText: string) => void;
   onDelete?: (messageId: string) => void;
+  onMarkUnread?: (messageId: string) => Promise<void>;
+  onSetReminder?: (messageId: string, minutesFromNow: number) => Promise<void>;
+  onTurnIntoIssue?: (messageId: string, title: string, description: string, assigneeId?: string) => Promise<void>;
   currentUserId?: string | null;
 }
 
@@ -131,6 +138,9 @@ export function MessageStream({
   onToggleReaction,
   onEdit,
   onDelete,
+  onMarkUnread,
+  onSetReminder,
+  onTurnIntoIssue,
   currentUserId,
 }: MessageStreamProps) {
   // Pull attachments for the active conversation in a single batched query and
@@ -239,6 +249,10 @@ export function MessageStream({
             onToggleReaction={onToggleReaction}
             onEdit={onEdit}
             onDelete={onDelete}
+            onMarkUnread={onMarkUnread}
+            onSetReminder={onSetReminder}
+            onTurnIntoIssue={onTurnIntoIssue}
+            conversationId={conversationId ?? ''}
             isOwn={!!currentUserId && row.msg.authorId === currentUserId}
           />
         ),
@@ -258,6 +272,10 @@ function MessageRow({
   onToggleReaction,
   onEdit,
   onDelete,
+  onMarkUnread,
+  onSetReminder,
+  onTurnIntoIssue,
+  conversationId,
   isOwn,
 }: {
   msg: ChatMessage;
@@ -270,12 +288,23 @@ function MessageRow({
   onToggleReaction?: (id: string, emoji: string) => void;
   onEdit?: (id: string, body: string) => void;
   onDelete?: (id: string) => void;
+  onMarkUnread?: (messageId: string) => Promise<void>;
+  onSetReminder?: (messageId: string, minutesFromNow: number) => Promise<void>;
+  onTurnIntoIssue?: (messageId: string, title: string, description: string, assigneeId?: string) => Promise<void>;
+  conversationId?: string;
   isOwn?: boolean;
 }) {
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(msg.bodyText);
   const [showReactPicker, setShowReactPicker] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const reactButtonRef = useRef<HTMLButtonElement>(null);
+  const messageRowRef = useRef<HTMLDivElement>(null);
+  const { reactorsByEmoji } = useMessageReactions({ messageId: msg.id });
+
+  const handleReturnFocusToMessage = () => {
+    messageRowRef.current?.focus();
+  };
 
   const commitEdit = () => {
     if (editValue.trim() && editValue !== msg.bodyText) {
@@ -285,7 +314,7 @@ function MessageRow({
   };
 
   return (
-    <div className="cc-msg cc-msg--row">
+    <div className="cc-msg cc-msg--row" ref={messageRowRef} tabIndex={-1}>
       <Avatar name={msg.authorName} seed={msg.authorId} color={colorFor(msg.authorId)} className="cc-msg__av" />
       <div className="cc-msg__body">
         <div className="cc-msg__head">
@@ -329,10 +358,30 @@ function MessageRow({
         {/* Link unfurl cards — rendered for every URL detected in body_text. */}
         {!editing && msg.bodyText && <LinkUnfurl bodyText={msg.bodyText} />}
 
-        {/* Hover toolbar */}
+        {/* Message actions toolbar — copy link, mark unread, remind, turn into issue */}
+        {!editing && conversationId && (
+          <MessageActionsToolbar
+            messageId={msg.id}
+            conversationId={conversationId}
+            messageText={msg.bodyText}
+            onCopyLink={async () => {
+              const url = `${window.location.origin}?message=${msg.id}`;
+              await navigator.clipboard.writeText(url);
+            }}
+            onMarkUnread={async () => onMarkUnread?.(msg.id)}
+            onRemind={async (mins) => onSetReminder?.(msg.id, mins)}
+            onTurnIntoIssue={async (title, desc, assignee) =>
+              onTurnIntoIssue?.(msg.id, title, desc, assignee)
+            }
+            onReturnFocus={handleReturnFocusToMessage}
+          />
+        )}
+
+        {/* Legacy hover toolbar — kept for compatibility with quick reactions/thread reply */}
         {!editing && (
           <div className="cc-msg__toolbar" role="toolbar">
             <button
+              ref={reactButtonRef}
               type="button"
               className="cc-msg__tool"
               aria-label="React"
@@ -395,20 +444,14 @@ function MessageRow({
               </svg>
             </button>
 
-            {showReactPicker && (
-              <div className="cc-msg__reactpicker">
-                {QUICK_REACTIONS.map((emo) => (
-                  <button
-                    key={emo}
-                    type="button"
-                    className="cc-msg__reactpicker-btn"
-                    onClick={() => { onToggleReaction?.(msg.id, emo); setShowReactPicker(false); }}
-                  >
-                    {emo}
-                  </button>
-                ))}
-              </div>
-            )}
+            <ReactionPicker
+              isOpen={showReactPicker}
+              onClose={() => setShowReactPicker(false)}
+              triggerRef={reactButtonRef}
+              onEmojiPick={(emoji) => {
+                onToggleReaction?.(msg.id, emoji);
+              }}
+            />
 
             {showMore && (
               <div className="cc-msg__moremenu">
@@ -430,21 +473,12 @@ function MessageRow({
           </div>
         )}
 
-        {msg.reactions.length ? (
-          <div className="cc-reacts">
-            {msg.reactions.map(r => (
-              <button
-                key={r.emoji}
-                type="button"
-                className={`cc-react${r.reactedByMe ? ' is-mine' : ''}`}
-                onClick={() => onToggleReaction?.(msg.id, r.emoji)}
-                aria-pressed={r.reactedByMe}
-              >
-                {r.emoji} {r.count}
-              </button>
-            ))}
-          </div>
-        ) : null}
+        <MessageReactions
+          reactions={msg.reactions}
+          onToggle={(emoji) => onToggleReaction?.(msg.id, emoji)}
+          currentUserId={msg.authorId}
+          reactorsByEmoji={reactorsByEmoji}
+        />
 
         {msg.replyCount > 0 ? (
           <button type="button" className="cc-thread" onClick={() => onOpenThread?.(msg.id)}>
