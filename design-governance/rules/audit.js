@@ -169,8 +169,18 @@ class DesignSystemAudit {
   }
 }
 
-// CLI runner
-if (import.meta.url === `file://${process.argv[1]}`) {
+// CLI runner. Compare real paths, not URL strings — the repo path contains a
+// non-ASCII character that gets percent-encoded in import.meta.url, so a raw
+// string comparison never matches and the CLI silently exits 0 having run nothing.
+const isCliInvocation = (() => {
+  try {
+    return Boolean(process.argv[1])
+      && fs.realpathSync(fileURLToPath(import.meta.url)) === fs.realpathSync(process.argv[1]);
+  } catch {
+    return false;
+  }
+})();
+if (isCliInvocation) {
   const sourcePath = process.argv[2] || './src';
   const audit = new DesignSystemAudit(sourcePath);
   const results = audit.run();
