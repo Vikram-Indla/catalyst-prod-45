@@ -25,7 +25,7 @@
  */
 import { AlertTriangle } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
-import type { WidgetProps } from '../widget-registry';
+import type { WidgetProps } from '../widget-types';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardReleaseHealth } from '@/hooks/useDashboardWidgets';
 import { useUWV } from '@/components/universal-work-view/UWVContext';

@@ -25,7 +25,7 @@
  * `token()` resolver is render-time only; module-scope constants must
  * use the CSS variable form (paint-time, theme-aware via the provider).
  */
-import type { WidgetProps } from '../widget-registry';
+import type { WidgetProps } from '../widget-types';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
 import { useDashboardStatusCounts } from '@/hooks/useDashboardWidgets';

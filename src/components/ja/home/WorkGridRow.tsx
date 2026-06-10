@@ -27,33 +27,12 @@ import type { HomeRoleMode } from './HomeRoleModeSelector';
 import type { WorkItemNavigation, WorkItemContext } from '@/hooks/home/useUnifiedHomeData';
 import { LevelTag } from './LevelTag';
 import { ModeTag } from './ModeTag';
+import type { HomeLevel, WorkItemMode } from './types';
+import { getWorkItemMode } from './types';
 
-// ============================================
-// SHARED TYPES
-// ============================================
-// Level hierarchy type
-export type HomeLevel = 'Enterprise' | 'Product' | 'Program' | 'Project' | 'Release' | 'Planner';
-
-// Work item mode type
-export type WorkItemMode = 'Operations' | 'Delivery' | 'Planner';
-
-// Utility: Determine mode from work item type
-export function getWorkItemMode(type: string): WorkItemMode {
-  const typeStr = type.toLowerCase();
-  
-  // Operations: Incidents, Defects, Release-related
-  if (['incident', 'defect', 'release', 'change'].includes(typeStr)) {
-    return 'Operations';
-  }
-  
-  // Planner: Planning artifacts
-  if (['theme', 'objective', 'dependency', 'risk', 'business-request', 'business_request'].includes(typeStr)) {
-    return 'Planner';
-  }
-  
-  // Delivery: Everything else (epics, features, stories, tasks)
-  return 'Delivery';
-}
+// Re-export for backward compatibility
+export type { HomeLevel, WorkItemMode };
+export { getWorkItemMode };
 
 export interface BaseWorkItem {
   id: string;

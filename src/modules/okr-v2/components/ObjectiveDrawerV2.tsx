@@ -270,7 +270,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
     if (!objectiveId || !open) return;
 
     const channel = supabase
-      .channel(`objective-drawer-${objectiveId}`)
+      .channel(`objective-drawer-${objectiveId}-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {

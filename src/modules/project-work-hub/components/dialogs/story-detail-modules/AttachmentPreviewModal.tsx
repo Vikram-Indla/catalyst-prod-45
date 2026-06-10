@@ -11,7 +11,7 @@ import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import DownloadIcon from '@atlaskit/icon/core/download';
 import FileIcon from '@atlaskit/icon/core/file';
-import type { PhAttachment } from './AttachmentsSection';
+import type { PhAttachment } from './types';
 
 const BUCKET = 'attachments';
 

@@ -1056,7 +1056,9 @@ function DateDropdown({ label, value, placeholder = 'Select date...', onChange, 
           {selectedDate ? formatDisplayDate(selectedDate) : placeholder}
         </span>
         {selectedDate && !required && (
-          <X size={16} style={{ color: COLORS.textLight, cursor: 'pointer' }} onClick={handleClear} />
+          <div onClick={handleClear} style={{ display: 'flex', cursor: 'pointer' }}>
+            <X size={16} style={{ color: COLORS.textLight }} />
+          </div>
         )}
         <ChevronDown size={16} style={{ color: COLORS.textLight, transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }} />
       </div>

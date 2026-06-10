@@ -2,8 +2,17 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+// Publishable (anon) credentials for project lmqwtldpfacrrlvdnmld. These are
+// client-safe by design (they ship in the browser bundle) and are the same
+// values already documented in CLAUDE.md. They serve as a fallback so the app
+// always boots even when VITE_SUPABASE_* env vars are absent (fresh container,
+// web preview, or a dev server started before .env existed). Env vars, when
+// present, always take precedence.
+const SUPABASE_URL =
+  import.meta.env.VITE_SUPABASE_URL || 'https://lmqwtldpfacrrlvdnmld.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxtcXd0bGRwZmFjcnJsdmRubWxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NTkwODEsImV4cCI6MjA5NDQzNTA4MX0.CITWnsiEJEd1B-G4RReYZdaTFbBNvw8NnM8OrRvDX8s';
 
 // Import the supabase client like this:
 // import { supabase, typedQuery } from "@/integrations/supabase/client";
