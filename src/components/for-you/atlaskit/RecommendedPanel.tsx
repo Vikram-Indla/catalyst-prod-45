@@ -1278,12 +1278,11 @@ function ReplyComposer({
                   >
                     Caty
                   </span>
-                  {/* Catalyst favicon — the correct blue "C" brand mark.
-                      Source: /public/favicon.svg (512×512 blue rounded rect + white C path).
-                      RCA: prior SVG was a hand-rolled purple star — not the Catalyst brand. */}
+                  {/* Caty logo — dark background + white C mark.
+                      Source: /public/caty.svg (512×512 dark rounded rect + white C path). */}
                   <img
-                    src="/favicon.svg"
-                    alt="Catalyst"
+                    src="/caty.svg"
+                    alt="Caty"
                     width="18"
                     height="18"
                     style={{ borderRadius: 4, verticalAlign: 'middle', flexShrink: 0 }}
@@ -1394,7 +1393,7 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            padding: '0 10px',
+            padding: '4px 10px',
             borderRadius: 17,
             font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', '#172B4D'),
