@@ -21,6 +21,7 @@
  * (paginated; pass `start_after_key` to resume).
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { mapChangelogItem, type ChangelogContext } from './mapper.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -88,6 +89,10 @@ Deno.serve(async (req) => {
     issues_skipped_no_changelog: 0,
     transitions_inserted: 0,
     transitions_skipped_dupe: 0,
+    // 2026-06-10 — also count work_item_changelogs writes. Powers TIS hover
+    // card assignee history. See /preflight Phase 4 row 4b.
+    changelogs_inserted: 0,
+    changelogs_skipped_dupe: 0,
     errors: [] as Array<{ issue_key: string; message: string }>,
     last_issue_key_processed: null as string | null,
     has_more: false,
@@ -107,9 +112,10 @@ Deno.serve(async (req) => {
     const headers = { Authorization: authHeader, Accept: 'application/json' };
 
     // 3. Pull ph_issues rows to backfill (2026+ only)
+    // `id` is required to populate work_item_changelogs.work_item_id (FK).
     let q = supabase
       .from('ph_issues')
-      .select('issue_key, project_key, jira_created_at, jira_updated_at')
+      .select('id, issue_key, project_key, jira_created_at, jira_updated_at')
       .order('issue_key', { ascending: true })
       .limit(issueLimit);
     if (projectFilter?.length) q = q.in('project_key', projectFilter);
@@ -148,15 +154,10 @@ Deno.serve(async (req) => {
 
       let startAt = 0;
       let totalForIssue = Infinity;
-      const transitionsForIssue: Array<{
-        source: string;
-        issue_key: string;
-        project_key: string;
-        from_status: string | null;
-        to_status: string;
-        changed_at: string;
-        metadata: Record<string, unknown>;
-      }> = [];
+      // Buffers per issue — split inserts so a failure on one table
+      // doesn't roll back the other.
+      const transitionsForIssue: Array<Record<string, unknown>> = [];
+      const changelogsForIssue: Array<Record<string, unknown>> = [];
 
       while (startAt < totalForIssue) {
         const url = `${base}/rest/api/3/issue/${encodeURIComponent(tk.issue_key)}/changelog?startAt=${startAt}&maxResults=${PAGE_SIZE}`;
@@ -181,31 +182,22 @@ Deno.serve(async (req) => {
         totalForIssue = page.total ?? page.histories.length;
 
         for (const h of page.histories ?? []) {
+          const ctx: ChangelogContext = {
+            issue_key: tk.issue_key,
+            project_key: tk.project_key,
+            work_item_id: tk.id,
+            jira_history_id: h.id,
+            changed_at: h.created,
+            actor_name: h.author?.displayName ?? null,
+            actor_account_id: h.author?.accountId ?? null,
+            actor_avatar_url: null, // Jira avatar URLs aren't returned in
+            // /changelog; populate via /user lookup in a later row if
+            // needed. Leaving null is safe — UI falls back to initials.
+          };
           for (const item of h.items ?? []) {
-            if (item.field !== 'status') continue;
-            const toStatus = item.toString ?? item.to ?? '';
-            if (!toStatus) continue;
-            const actorName = h.author?.displayName ?? null;
-            const actorAccountId = h.author?.accountId ?? null;
-            transitionsForIssue.push({
-              source: 'jira',
-              issue_key: tk.issue_key,
-              project_key: tk.project_key,
-              from_status: item.fromString ?? item.from ?? null,
-              to_status: toStatus,
-              changed_at: h.created,
-              // First-class actor columns (Apr 26, 2026) — the Recent
-              // Activity widget reads these directly. Metadata copy kept
-              // for backwards-compat with anything that still parses JSON.
-              actor_name: actorName,
-              actor_account_id: actorAccountId,
-              metadata: {
-                backfilled: true,
-                jira_history_id: h.id,
-                jira_actor: actorName,
-                jira_actor_account_id: actorAccountId,
-              },
-            });
+            const rows = mapChangelogItem(item, ctx);
+            if (rows.status_history) transitionsForIssue.push(rows.status_history);
+            if (rows.changelog) changelogsForIssue.push(rows.changelog);
           }
         }
 
@@ -215,31 +207,54 @@ Deno.serve(async (req) => {
       }
 
       // 5. Insert (chunked, idempotent via unique index)
-      if (!transitionsForIssue.length) continue;
+      if (!transitionsForIssue.length && !changelogsForIssue.length) continue;
 
       if (dryRun) {
         summary.transitions_inserted += transitionsForIssue.length;
+        summary.changelogs_inserted += changelogsForIssue.length;
         continue;
       }
 
-      // Chunk inserts of 200 to keep payload modest
+      // 5a. catalyst_status_history — status transitions only.
+      // Idempotency key matches index added in
+      // 20260610000100_tis_history_rls_and_idempotency.sql.
       for (let i = 0; i < transitionsForIssue.length; i += 200) {
         const chunk = transitionsForIssue.slice(i, i + 200);
-        const { data: inserted, error: insErr, count } = await supabase
+        const { data: inserted, error: insErr } = await supabase
           .from('catalyst_status_history')
           .upsert(chunk, {
             onConflict: 'issue_key,changed_at,to_status,from_status',
             ignoreDuplicates: true,
           })
-          .select('id', { count: 'exact', head: false });
-
+          .select('id');
         if (insErr) {
-          summary.errors.push({ issue_key: tk.issue_key, message: `insert_failed: ${insErr.message}` });
+          summary.errors.push({ issue_key: tk.issue_key, message: `status_history_insert_failed: ${insErr.message}` });
           continue;
         }
         const insertedCount = inserted?.length ?? 0;
         summary.transitions_inserted += insertedCount;
         summary.transitions_skipped_dupe += chunk.length - insertedCount;
+      }
+
+      // 5b. work_item_changelogs — every changelog field. Unique key
+      // (work_item_id, jira_changelog_id, field_name) is pre-existing on
+      // the table. Powers TIS hover card assignee history.
+      for (let i = 0; i < changelogsForIssue.length; i += 200) {
+        const chunk = changelogsForIssue.slice(i, i + 200);
+        const { data: inserted, error: insErr } = await supabase
+          .from('work_item_changelogs')
+          .upsert(chunk, {
+            onConflict: 'work_item_id,jira_changelog_id,field_name',
+            ignoreDuplicates: true,
+          })
+          .select('id');
+        if (insErr) {
+          summary.errors.push({ issue_key: tk.issue_key, message: `changelog_insert_failed: ${insErr.message}` });
+          continue;
+        }
+        const insertedCount = inserted?.length ?? 0;
+        summary.changelogs_inserted += insertedCount;
+        summary.changelogs_skipped_dupe += chunk.length - insertedCount;
       }
 
       // Polite pacing between issues
