@@ -24,6 +24,14 @@ export interface ConversationListProps {
   activeConversationId?: string;
   onSelectConversation?: (id: string) => void;
   onCreateConversation?: (kind: 'dm' | 'group') => void;
+  /** Restrict sections — 'dms' renders only direct messages (DMs rail). */
+  filter?: 'all' | 'dms';
+  /** Show the Slack-style "Unreads" toggle pill above the list. */
+  showUnreadsToggle?: boolean;
+  /** Pane title — defaults to "Conversations". */
+  title?: string;
+  /** Search field placeholder — defaults to "Search conversations…". */
+  searchPlaceholder?: string;
 }
 
 // Deterministic presence dot for DMs derived from the conversation id so a
@@ -66,7 +74,12 @@ export function ConversationList({
   activeConversationId,
   onSelectConversation,
   onCreateConversation,
+  filter = 'all',
+  showUnreadsToggle = false,
+  title,
+  searchPlaceholder,
 }: ConversationListProps) {
+  const [unreadsOnly, setUnreadsOnly] = useState(false);
   const [open, setOpen] = useState({
     channels: true,
     tickets: true,
@@ -102,6 +115,7 @@ export function ConversationList({
 
   // Filter conversations by search query
   const filterConversations = (convs: ChatConversation[]) => {
+    if (unreadsOnly) convs = convs.filter((c) => c.unreadCount > 0);
     if (!searchQuery.trim()) return convs;
     const q = searchQuery.toLowerCase();
     return convs.filter(
@@ -160,8 +174,21 @@ export function ConversationList({
       <div className="cc-convlist">
         {/* Header + New Conversation Button */}
         <div className="cc-cl-head">
-          <div className="cc-cl-head__ttl">Conversations</div>
+          <div className="cc-cl-head__ttl">{title ?? (filter === 'dms' ? 'Direct messages' : 'Conversations')}</div>
         </div>
+
+        {showUnreadsToggle && (
+          <div style={{ padding: '0 8px 8px' }}>
+            <button
+              type="button"
+              className={`cc-unreads-pill${unreadsOnly ? ' is-on' : ''}`}
+              aria-pressed={unreadsOnly}
+              onClick={() => setUnreadsOnly((v) => !v)}
+            >
+              Unreads
+            </button>
+          </div>
+        )}
 
         {/* New Conversation Button — full width, "+ New conversation" */}
         <div style={{ padding: '0 8px 8px' }}>
@@ -185,7 +212,7 @@ export function ConversationList({
             ref={searchInputRef}
             type="text"
             className="cc-cl-search__inp-field"
-            placeholder="Search conversations…"
+            placeholder={searchPlaceholder ?? (filter === 'dms' ? 'Find a DM' : 'Search conversations…')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleSearchKeyDown}
@@ -212,7 +239,7 @@ export function ConversationList({
         ) : null}
 
         {/* Channels */}
-        {channels.length > 0 && (
+        {filter !== 'dms' && channels.length > 0 && (
           <>
             <SectionHeader
               label="Channels"
@@ -237,7 +264,7 @@ export function ConversationList({
         )}
 
         {/* Tickets */}
-        {tickets.length > 0 && (
+        {filter !== 'dms' && tickets.length > 0 && (
           <>
             <SectionHeader
               label="Tickets"
@@ -288,7 +315,7 @@ export function ConversationList({
         )}
 
         {/* Archived */}
-        {archived.length > 0 && (
+        {filter !== 'dms' && archived.length > 0 && (
           <>
             <SectionHeader
               label="Archived"
@@ -355,7 +382,7 @@ function ConversationItemRow({
   return (
     <button
       type="button"
-      className={`cc-row-polished${isActive ? ' is-active' : ''}${isDragging ? ' is-dragging' : ''}${c.isArchived ? ' is-archived' : ''}`}
+      className={`cc-row-polished${isActive ? ' is-active' : ''}${isDragging ? ' is-dragging' : ''}${c.isArchived ? ' is-archived' : ''}${c.unreadCount > 0 ? ' is-unread' : ''}`}
       onClick={onSelect}
       draggable
       onDragStart={onDragStart}

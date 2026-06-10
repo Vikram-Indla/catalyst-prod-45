@@ -1,17 +1,20 @@
 /**
- * IconRail — 72px left rail. Slack-style nav: DMs / Channels / Threads /
- * Mentions / Saved, with the current user avatar at top and Caty AI pinned
- * to the bottom. Self-labelling icons, sentence-case labels.
+ * IconRail — far-left icon rail for the full-screen chat workspace.
+ * Slack-equivalent nav: Home, DMs, Activity, Later, More — vertical,
+ * icon + 11px label, selected-state background, Activity unread badge.
+ * Current user avatar pinned top, Caty AI pinned bottom.
  */
 import React from 'react';
 
-export type RailKey = 'dms' | 'people' | 'channels' | 'threads' | 'mentions' | 'saved';
+export type RailKey = 'home' | 'dms' | 'activity' | 'later' | 'more';
 
 export interface IconRailProps {
   activeKey?: RailKey;
   onSelect?: (key: RailKey) => void;
   meInitials?: string;
   onOpenCaty?: () => void;
+  /** Unread activity count — renders a badge on the Activity item when > 0. */
+  activityCount?: number;
 }
 
 interface NavDef {
@@ -22,6 +25,16 @@ interface NavDef {
 
 const NAV: NavDef[] = [
   {
+    key: 'home',
+    label: 'Home',
+    icon: (
+      <>
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </>
+    ),
+  },
+  {
     key: 'dms',
     label: 'DMs',
     icon: (
@@ -29,39 +42,8 @@ const NAV: NavDef[] = [
     ),
   },
   {
-    key: 'people',
-    label: 'People',
-    icon: (
-      <>
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-      </>
-    ),
-  },
-  {
-    key: 'channels',
-    label: 'Channels',
-    icon: (
-      <>
-        <line x1="4" y1="9" x2="20" y2="9" />
-        <line x1="4" y1="15" x2="20" y2="15" />
-        <line x1="10" y1="3" x2="8" y2="21" />
-        <line x1="16" y1="3" x2="14" y2="21" />
-      </>
-    ),
-  },
-  {
-    key: 'threads',
-    label: 'Threads',
-    icon: (
-      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z" />
-    ),
-  },
-  {
-    key: 'mentions',
-    label: 'Mentions',
+    key: 'activity',
+    label: 'Activity',
     icon: (
       <>
         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -70,19 +52,31 @@ const NAV: NavDef[] = [
     ),
   },
   {
-    key: 'saved',
-    label: 'Saved',
+    key: 'later',
+    label: 'Later',
     icon: (
       <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    ),
+  },
+  {
+    key: 'more',
+    label: 'More',
+    icon: (
+      <>
+        <circle cx="5" cy="12" r="1.6" />
+        <circle cx="12" cy="12" r="1.6" />
+        <circle cx="19" cy="12" r="1.6" />
+      </>
     ),
   },
 ];
 
 export function IconRail({
-  activeKey = 'dms',
+  activeKey = 'home',
   onSelect,
   meInitials = 'VI',
   onOpenCaty,
+  activityCount = 0,
 }: IconRailProps) {
   return (
     <div className="cc-rail">
@@ -99,9 +93,16 @@ export function IconRail({
             aria-current={activeKey === item.key ? 'page' : undefined}
             onClick={() => onSelect?.(item.key)}
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-              {item.icon}
-            </svg>
+            <span className="cc-navitem__iconwrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                {item.icon}
+              </svg>
+              {item.key === 'activity' && activityCount > 0 && (
+                <span className="cc-navitem__badge" aria-label={`${activityCount} unread`}>
+                  {activityCount > 99 ? '99+' : activityCount}
+                </span>
+              )}
+            </span>
             <span className="cc-navitem__lbl">{item.label}</span>
           </button>
         ))}
