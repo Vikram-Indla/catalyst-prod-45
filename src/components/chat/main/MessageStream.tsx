@@ -316,6 +316,7 @@ export function MessageStream({
             key={row.msg.id}
             grouped={row.grouped}
             msg={row.msg}
+            issueRefs={issueRefs}
             ref={(ref) => {
               if (ref) {
                 messageRefs.current.set(row.msg.id, ref);
@@ -376,11 +377,13 @@ interface MessageRowProps {
   isOwn?: boolean;
   /** Consecutive-run follow-up — avatar + name suppressed, hover timestamp gutter. */
   grouped?: boolean;
+  issueRefs?: IssueRefMap;
 }
 
 const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
   msg,
   attachments,
+  issueRefs,
   isPinned,
   isBookmarked,
   onTogglePin,
