@@ -22,6 +22,9 @@ import { MessageActionsToolbar } from './MessageActionsToolbar';
 import { ReactionPicker } from './ReactionPicker';
 import { MessageReactions } from './MessageReactions';
 import { MessageSearchPanel } from './MessageSearchPanel';
+import { TicketKeyChip } from './TicketKeyChip';
+import { useIssueRefs, type IssueRefMap } from '@/hooks/chat/useIssueRefs';
+import { extractTicketKeys, splitByTicketKeys } from '@/lib/chat/ticket-refs';
 
 // Lazy renderer — Atlaskit @atlaskit/renderer chunk only loads when a
 // message actually has body_adf content.
@@ -60,7 +63,25 @@ export interface MessageStreamProps {
 const BROADCAST_RE = /(@here|@channel|@everyone)\b/g;
 const MENTION_RE = /(@[A-Za-z][A-Za-z .'-]*)/g;
 
-function renderBody(text: string): React.ReactNode[] {
+function renderPlain(text: string, keyPrefix: string, issueRefs?: IssueRefMap): React.ReactNode[] {
+  if (!issueRefs) return [<React.Fragment key={keyPrefix}>{text}</React.Fragment>];
+  return splitByTicketKeys(text).map((seg, k) => {
+    if (seg.type === 'key' && issueRefs[seg.value]) {
+      const ref = issueRefs[seg.value];
+      return (
+        <TicketKeyChip
+          key={`${keyPrefix}-k${k}`}
+          issueKey={seg.value}
+          issueType={ref.issueType}
+          summary={ref.summary}
+        />
+      );
+    }
+    return <React.Fragment key={`${keyPrefix}-t${k}`}>{seg.value}</React.Fragment>;
+  });
+}
+
+function renderBody(text: string, issueRefs?: IssueRefMap): React.ReactNode[] {
   // Split on broadcast tokens first so they aren't swallowed by MENTION_RE.
   const broadcastParts = text.split(BROADCAST_RE);
   const out: React.ReactNode[] = [];
@@ -88,7 +109,7 @@ function renderBody(text: string): React.ReactNode[] {
       if (MENTION_RE.test(sub)) {
         out.push(<MentionToken key={`m-${i}-${j}`} raw={sub} />);
       } else {
-        out.push(<React.Fragment key={`t-${i}-${j}`}>{sub}</React.Fragment>);
+        out.push(...renderPlain(sub, `t-${i}-${j}`, issueRefs));
       }
     });
   });
@@ -144,6 +165,13 @@ export function MessageStream({
   onTurnIntoIssue,
   currentUserId,
 }: MessageStreamProps) {
+  // Ticket-key linkification: one batched ph_issues lookup per message list.
+  const ticketKeys = useMemo(
+    () => messages.flatMap((m) => extractTicketKeys(m.bodyText ?? '')),
+    [messages],
+  );
+  const { data: issueRefs } = useIssueRefs(ticketKeys);
+
   // Message refs for scroll-to-message from search
   const messageRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
 
@@ -379,12 +407,12 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
           </div>
         ) : isAdfPresent(msg.bodyAdf) ? (
           <div className="cc-msg__text">
-            <Suspense fallback={<span>{renderBody(msg.bodyText)}</span>}>
+            <Suspense fallback={<span>{renderBody(msg.bodyText, issueRefs)}</span>}>
               <EpicDescriptionRenderer content={msg.bodyAdf as any} />
             </Suspense>
           </div>
         ) : (
-          <div className="cc-msg__text">{renderBody(msg.bodyText)}</div>
+          <div className="cc-msg__text">{renderBody(msg.bodyText, issueRefs)}</div>
         )}
 
         {attachments && attachments.length > 0 && (
