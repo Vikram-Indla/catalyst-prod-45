@@ -2,10 +2,17 @@
  * CreateFilterPage — /project-hub/:key/filters/create
  *                    /product-hub/filters/create
  *
- * Three-tab filter builder:
- *   Basic   — JiraFilterAtlaskit picker UI (field-by-field)
- *   JQL     — JQLEditor (freeform query string)
- *   Ask CATY — AskCatyInlineBar (natural-language → structured filter)
+ * Jira-parity filter builder: the builder tabs sit on top and a LIVE results
+ * table (canonical JiraTable, same as the project backlog) fills the rest of
+ * the page, re-querying as the JQL changes. Cross-project: results come from
+ * every synced project unless the JQL narrows the scope.
+ *
+ * Tabs:
+ *   Basic    — JiraFilterAtlaskit picker UI (field-by-field)
+ *   JQL      — JQLEditor (freeform query string)
+ *   Templates — pre-built filters; "Use this filter" loads the JQL, shows live
+ *              results, and opens the save modal pre-filled with the template
+ *   Ask CATY — natural-language → JQL via the canonical AskCatyInlineBar
  */
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -21,6 +28,7 @@ import {
 import { BasicFilterBar } from '@/components/filters/BasicFilterBar';
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
 import { FilterTemplateGallery } from '@/components/filters/FilterTemplateGallery';
+import { FilterResultsPanel } from '@/components/filters/FilterResultsPanel';
 import { translate } from '@/lib/jql';
 import type { HubType } from './FiltersListPage';
 import type { HubTemplateScope } from '@/lib/filters/filterTemplates';
@@ -40,6 +48,10 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
   const [catyJql,    setCatyJql]      = useState('');
   const [activeTabIdx, setActiveTabIdx] = useState(0);
   const [saveModalOpen, setSaveModalOpen] = useState(false);
+  // Pre-fills carried from a selected template into the save modal
+  const [templateMeta, setTemplateMeta] = useState<{ name: string } | null>(null);
+  // Live match count reported by the results panel — shown in the save modal
+  const [resultCount, setResultCount] = useState<number | null>(null);
 
   const pools = useFilterOptionPools(projectKey);
 
@@ -48,8 +60,8 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
   const effectiveJql: string = (() => {
     if (activeTabIdx === 0) return basicToJql(basicValue);
     if (activeTabIdx === 1) return jqlValue;
-    if (activeTabIdx === 3) return catyJql;
-    return ''; // Templates — JQL set on selection, switches to tab 1
+    if (activeTabIdx === 3) return catyJql || jqlValue;
+    return jqlValue; // Templates — JQL set on selection
   })();
 
   const filtersCount = effectiveJql.trim()
@@ -60,6 +72,10 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
     ? `/project-hub/${projectKey}/filters`
     : `/product-hub/filters`;
 
+  // Product hub filters scope to business_requests, not ph_issues — the live
+  // ph_issues preview only renders for project-hub filters (2026-05-21 lesson).
+  const showResults = hubType === 'project';
+
   return (
     <div style={{
       display: 'flex',
@@ -68,12 +84,12 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
       background: `var(--ds-surface, #FFFFFF)`,
       color: token('color.text'),
     }}>
-      {/* Header */}
+      {/* Header — 24px horizontal padding matches the project backlog */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '24px 32px 16px',
+        padding: '24px 24px 16px',
         borderBottom: `1px solid ${token('color.border')}`,
         flexShrink: 0,
       }}>
@@ -92,7 +108,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
             fontSize: 14,
             color: token('color.text.subtle'),
           }}>
-            Define your filter using the builder, JQL, or Ask CATY
+            Define your filter using the builder, JQL, a template, or Ask CATY — results preview live below
           </p>
         </div>
 
@@ -124,10 +140,11 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
         </div>
       </div>
 
-      {/* Tab body */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '24px 32px' }}>
+      {/* Builder + live results */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 32px' }}>
         <Tabs
           id="create-filter-tabs"
+          selected={activeTabIdx}
           onChange={setActiveTabIdx}
         >
           <TabList>
@@ -139,7 +156,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
 
           {/* ── Basic ── */}
           <TabPanel>
-            <div style={{ paddingTop: 16 }}>
+            <div style={{ paddingTop: 16, width: '100%' }}>
               <BasicFilterBar
                 value={basicValue}
                 onChange={setBasicValue}
@@ -151,42 +168,6 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                 labels={pools.labels}
                 isLoading={pools.isLoading}
               />
-
-              {/* Empty state — shown when no criteria selected yet */}
-              {activeTabIdx === 0 && !effectiveJql.trim() && (
-                <div style={{
-                  marginTop: 32,
-                  padding: '32px 24px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 8,
-                  background: `var(--ds-surface-sunken, #F7F8F9)`,
-                  borderRadius: 4,
-                  border: `1px dashed ${token('color.border')}`,
-                  textAlign: 'center',
-                }}>
-                  <span style={{ fontSize: 24, lineHeight: 1 }}>⚙</span>
-                  <p style={{
-                    margin: 0,
-                    fontSize: 14,
-                    fontWeight: token('font.weight.semibold'),
-                    color: token('color.text'),
-                  }}>
-                    No criteria selected
-                  </p>
-                  <p style={{
-                    margin: 0,
-                    fontSize: 13,
-                    color: token('color.text.subtle'),
-                    maxWidth: 360,
-                    lineHeight: 1.5,
-                  }}>
-                    Use the chips above to filter by Assignee, Type, Status, Priority or more.
-                    Your JQL query will appear here as you build it.
-                  </p>
-                </div>
-              )}
 
               {effectiveJql.trim() && (
                 <div style={{
@@ -225,20 +206,19 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
 
           {/* ── JQL ── */}
           <TabPanel>
-            <div style={{ paddingTop: 16 }}>
+            <div style={{ paddingTop: 16, width: '100%' }}>
               <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle') }}>
-                Write a JQL query. Press{' '}
-                <kbd style={{
+                Write a JQL query — results update live below. Add{' '}
+                <code style={{
                   background: `var(--ds-background-neutral, #F1F2F4)`,
-                  border: `1px solid ${token('color.border')}`,
                   borderRadius: 3,
                   padding: '0 4px',
                   fontSize: 11,
                   fontFamily: 'var(--ds-font-family-monospace, monospace)',
                 }}>
-                  Ctrl+Enter
-                </kbd>{' '}
-                to validate.
+                  project = {projectKey ?? 'KEY'}
+                </code>{' '}
+                to scope to one project, or omit it to search across all projects.
               </p>
               <JQLEditor
                 value={jqlValue}
@@ -259,16 +239,17 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
 
           {/* ── Templates ── */}
           <TabPanel>
-            <div style={{ paddingTop: 16 }}>
+            <div style={{ paddingTop: 16, width: '100%' }}>
               <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle') }}>
-                Choose a pre-built filter to start with. You can customise it in the JQL tab after selecting.
+                Choose a pre-built filter — its results load below and you can save it straight away.
               </p>
               <FilterTemplateGallery
                 hubScope={(hubType === 'product' ? 'product' : 'project') as HubTemplateScope}
                 projectKey={projectKey}
-                onSelect={(jql) => {
+                onSelect={(jql, templateName) => {
                   setJqlValue(jql);
-                  setActiveTabIdx(1); // switch to JQL tab so user can preview
+                  setTemplateMeta({ name: templateName });
+                  setSaveModalOpen(true);
                 }}
               />
             </div>
@@ -276,9 +257,10 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
 
           {/* ── Ask CATY ── */}
           <TabPanel>
-            <div style={{ paddingTop: 16 }}>
+            <div style={{ paddingTop: 16, width: '100%' }}>
               <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle') }}>
-                Describe what you want to find in plain language. CATY will build the filter for you.
+                Describe what you want to find in plain language. CATY builds the JQL and the results
+                preview live below.
               </p>
               <AskCatyInlineBar
                 projectKey={projectKey ?? null}
@@ -320,14 +302,24 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
             </div>
           </TabPanel>
         </Tabs>
+
+        {/* Live results — canonical backlog table, updates as the JQL changes */}
+        {showResults && (
+          <FilterResultsPanel
+            jql={effectiveJql}
+            onResultsChange={setResultCount}
+          />
+        )}
       </div>
 
       {/* Save modal */}
       {saveModalOpen && (
         <FilterSaveModal
           initialJql={effectiveJql}
+          initialName={templateMeta?.name}
+          resultCount={showResults ? resultCount : null}
           hubScope={hubType === 'product' ? 'product' : 'project'}
-          onClose={() => setSaveModalOpen(false)}
+          onClose={() => { setSaveModalOpen(false); setTemplateMeta(null); }}
           onSaved={() => navigate(listHref)}
         />
       )}

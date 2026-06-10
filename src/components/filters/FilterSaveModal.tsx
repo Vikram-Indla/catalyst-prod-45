@@ -20,6 +20,12 @@ interface FilterSaveModalProps {
   filter?: SavedFilterFull;
   /** JQL to pre-populate on create */
   initialJql?: string;
+  /** Pre-fill the name (e.g. from a selected template) */
+  initialName?: string;
+  /** Pre-fill the description (e.g. from a selected template) */
+  initialDescription?: string;
+  /** Live match count for the JQL — shown so the user knows what they're saving */
+  resultCount?: number | null;
   hubScope?: HubScope;
   onClose: () => void;
   onSaved?: (id: string) => void;
@@ -60,6 +66,9 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
 export function FilterSaveModal({
   filter,
   initialJql,
+  initialName,
+  initialDescription,
+  resultCount,
   hubScope = 'project',
   onClose,
   onSaved,
@@ -68,8 +77,8 @@ export function FilterSaveModal({
   const createFilter = useCreateSavedFilter();
   const updateFilter = useUpdateSavedFilter();
 
-  const [name, setName] = useState(filter?.name ?? '');
-  const [description, setDescription] = useState(filter?.description ?? '');
+  const [name, setName] = useState(filter?.name ?? initialName ?? '');
+  const [description, setDescription] = useState(filter?.description ?? initialDescription ?? '');
   // When editing a filter saved from AllWorkToolbar (filter_config exists but
   // jql_query is null), derive JQL from filter_config so the textarea isn't blank.
   const derivedJql = useMemo(() => {
@@ -184,6 +193,27 @@ export function FilterSaveModal({
 
       <ModalBody>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* What this filter matches right now — context so "save" is informed */}
+          {typeof resultCount === 'number' && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 12px',
+              background: token('color.background.information', '#E9F2FF'),
+              borderRadius: 3,
+              fontSize: 13,
+              color: token('color.text'),
+            }}>
+              <span style={{ fontWeight: token('font.weight.semibold') }}>
+                {resultCount === 0 ? 'No work items' : `${resultCount} work item${resultCount === 1 ? '' : 's'}`}
+              </span>
+              <span style={{ color: token('color.text.subtle') }}>
+                currently match this filter
+              </span>
+            </div>
+          )}
 
           {/* JQL query — always editable */}
           <div>
