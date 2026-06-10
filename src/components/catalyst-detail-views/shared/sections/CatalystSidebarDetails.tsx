@@ -347,7 +347,10 @@ export function CatalystSidebarDetails({
           and Vikram directive §9 says remove flash icon). flexWrap so narrow rails
           gracefully push Improve Story to a second line rather than overflow. */}
       {(statusPill || improveDropdown) && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'nowrap' }}>
+        <div
+          data-cv-sidebar-status-header="true"
+          style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'nowrap' }}
+        >
           {statusPill}
           {improveDropdown}
           {issue?.issue_key && <DiscussTicketButton issueKey={issue.issue_key} variant="full" />}

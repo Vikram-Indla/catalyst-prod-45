@@ -330,5 +330,11 @@ export interface JiraTableProps<TRow> {
     onActivate: () => void;
     /** When non-null, replaces the placeholder with the actual create form. */
     active: ReactNode | null;
+    /**
+     * Optional refresh callback. When provided, a refresh icon is rendered
+     * in the center of the create row alongside the row count (Jira parity).
+     * Click invokes this callback (typically refetches table data).
+     */
+    onRefresh?: () => void | Promise<void>;
   };
 }

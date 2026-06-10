@@ -9,7 +9,7 @@ export function usePlanSubscription(planId: string | null) {
     if (!planId) return;
 
     const channel = supabase
-      .channel(`plan:${planId}`)
+      .channel(`plan:${planId}-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'planhub_tasks', filter: `plan_id=eq.${planId}` },

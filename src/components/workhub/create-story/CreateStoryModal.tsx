@@ -28,11 +28,13 @@
 import {
   useState,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useCallback,
   useRef,
   type ReactNode,
 } from 'react';
+import ReactDOM from 'react-dom';
 // @atlaskit/modal-dialog uses @atlaskit/portal which renders empty in this
 // Vite build. Using direct-render replacements that bypass the portal layer.
 import {
@@ -114,6 +116,14 @@ export interface CreateStoryModalProps {
    * and call this callback so the caller can open CreateBusinessRequestModal instead.
    */
   onOpenBusinessRequest?: () => void;
+  /**
+   * Optional restricted list of work-type options. When omitted, the modal
+   * shows the full WORK_TYPES catalogue. Product hub passes
+   * ['Business Request'] so the dropdown shows only that single option.
+   */
+  workTypes?: readonly string[];
+  /** Initial value for the Work type field. Defaults to 'Story'. */
+  defaultWorkType?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -383,6 +393,8 @@ export function CreateStoryModal({
   onSuccess,
   linkedSource,
   onOpenBusinessRequest,
+  workTypes,
+  defaultWorkType = 'Story',
 }: CreateStoryModalProps) {
   const { user } = useAuth();
   const { form, updateField, reset } = useCreateStoryForm(projectId);
@@ -392,8 +404,15 @@ export function CreateStoryModal({
 
   const createMutation = useCreateStoryMutation();
 
-  const [workType, setWorkType] = useState<string>('Story');
+  const [workType, setWorkType] = useState<string>(defaultWorkType);
   const [createAnother, setCreateAnother] = useState(false);
+  // Status portal-dropdown — replaces @atlaskit/dropdown-menu (which routes
+  // through @atlaskit/portal and renders at 0,0 inside this modal's
+  // non-portaled build, per the comment at the top of the file).
+  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
+  const [statusMenuAnchor, setStatusMenuAnchor] = useState<{ top: number; left: number; width: number } | null>(null);
+  const statusTriggerRef = useRef<HTMLButtonElement>(null);
+  const statusMenuRef = useRef<HTMLDivElement>(null);
   // Incremented each time the form is reset — forces EpicDescriptionEditor to remount with empty content.
   const [editorKey, setEditorKey] = useState(0);
 
@@ -475,15 +494,102 @@ export function CreateStoryModal({
     [projects],
   );
 
+  // Source list — restricted by the caller (e.g. product hub passes
+  // ['Business Request']) or falls back to the full catalogue.
+  const effectiveWorkTypes = workTypes ?? WORK_TYPES;
   const workTypeOptions: IconOption[] = useMemo(
     () =>
-      WORK_TYPES.map((t) => ({
+      effectiveWorkTypes.map((t) => ({
         value: t,
         label: t,
         icon: <WorkItemTypeIcon type={t} size={16} />,
       })),
-    [],
+    [effectiveWorkTypes],
   );
+
+  // ── Status pill colors (token-mapped to status category) ────────────────
+  // Maps the 3-bucket statusAppearance (success/inprogress/default) to ADS
+  // background + text tokens so each status renders as a colored lozenge in
+  // BOTH the trigger button and the dropdown options.
+  const getStatusPillColors = useCallback((label: string): { background: string; color: string } => {
+    const appearance = statusAppearance(label);
+    if (appearance === 'success') {
+      return {
+        background: token('color.background.success', '#DCFFF1'),
+        color: token('color.text.success', '#216E4E'),
+      };
+    }
+    if (appearance === 'inprogress') {
+      return {
+        background: token('color.background.information', '#E9F2FF'),
+        color: token('color.text.information', '#0055CC'),
+      };
+    }
+    return {
+      background: token('color.background.neutral', '#DCDFE4'),
+      color: token('color.text', '#172B4D'),
+    };
+  }, []);
+  const StatusPill = useCallback(({ label }: { label: string }) => {
+    const c = getStatusPillColors(label);
+    return (
+      <span
+        style={{
+          display: 'inline-block',
+          padding: '2px 6px',
+          borderRadius: 3,
+          fontSize: 11,
+          fontWeight: 700,
+          textTransform: 'uppercase' as const,
+          letterSpacing: '0.3px',
+          lineHeight: '14px',
+          background: c.background,
+          color: c.color,
+        }}
+      >
+        {label}
+      </span>
+    );
+  }, [getStatusPillColors]);
+
+  // ── Status portal-dropdown wiring ───────────────────────────────────────
+  // Anchor recomputed on open AND on every scroll/resize so the menu glides
+  // with the trigger when the user scrolls the modal body.
+  const repositionStatusMenu = useCallback(() => {
+    if (!statusTriggerRef.current) return;
+    const r = statusTriggerRef.current.getBoundingClientRect();
+    setStatusMenuAnchor({ top: r.bottom + 4, left: r.left, width: r.width });
+  }, []);
+  useLayoutEffect(() => {
+    if (!statusMenuOpen) return;
+    repositionStatusMenu();
+  }, [statusMenuOpen, repositionStatusMenu]);
+  useEffect(() => {
+    if (!statusMenuOpen) return;
+    // capture-phase scroll so we catch nested scroll containers (the modal body).
+    window.addEventListener('scroll', repositionStatusMenu, true);
+    window.addEventListener('resize', repositionStatusMenu);
+    return () => {
+      window.removeEventListener('scroll', repositionStatusMenu, true);
+      window.removeEventListener('resize', repositionStatusMenu);
+    };
+  }, [statusMenuOpen, repositionStatusMenu]);
+  useEffect(() => {
+    if (!statusMenuOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (statusTriggerRef.current?.contains(t)) return;
+      if (statusMenuRef.current?.contains(t)) return;
+      setStatusMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setStatusMenuOpen(false); };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [statusMenuOpen]);
 
   const priorityOptions: IconOption[] = useMemo(
     () =>
@@ -755,45 +861,97 @@ export function CreateStoryModal({
               <Field name="status" label="Status">
                 {() => (
                   <>
-                    <DropdownMenu
-                      trigger={({ triggerRef, ...triggerProps }) => (
-                        <button
-                          {...(triggerProps as any)}
-                          ref={triggerRef as any}
-                          type="button"
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 4,
-                            background: token('color.background.neutral.subtle', 'rgba(5,21,36,0.06)'),
-                            border: 'none',
-                            borderRadius: 3,
-                            padding: '4px 8px',
-                            fontSize: 14,
-                            fontWeight: 500,
-                            color: token('color.text', '#292A2E'),
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {form.status || 'To Do'}
-                          <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true" style={{ flexShrink: 0 }}>
-                            <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        </button>
-                      )}
-                    >
-                      <DropdownItemGroup>
-                        {resolvedStatusOptions.map((opt) => (
-                          <DropdownItem
-                            key={opt.value}
-                            isSelected={form.status === opt.value}
-                            onClick={() => updateField('status', opt.value)}
-                          >
-                            {opt.label}
-                          </DropdownItem>
-                        ))}
-                      </DropdownItemGroup>
-                    </DropdownMenu>
+                    <div style={{ display: 'block', marginTop: 4 }}>
+                      <button
+                        ref={statusTriggerRef}
+                        type="button"
+                        aria-haspopup="listbox"
+                        aria-expanded={statusMenuOpen}
+                        onClick={() => setStatusMenuOpen((v) => !v)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          background: 'transparent',
+                          border: 'none',
+                          borderRadius: 3,
+                          padding: '4px 6px 4px 0',
+                          cursor: 'pointer',
+                          color: token('color.text.subtle', '#42526E'),
+                        }}
+                      >
+                        <StatusPill label={form.status || 'To Do'} />
+                        <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true" style={{ flexShrink: 0 }}>
+                          <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    </div>
+                    {statusMenuOpen && statusMenuAnchor && ReactDOM.createPortal(
+                      <div
+                        ref={statusMenuRef}
+                        role="listbox"
+                        aria-label="Select status"
+                        style={{
+                          position: 'fixed',
+                          top: statusMenuAnchor.top,
+                          left: statusMenuAnchor.left,
+                          minWidth: Math.max(160, statusMenuAnchor.width),
+                          maxHeight: '50vh',
+                          overflowY: 'auto',
+                          background: token('elevation.surface.overlay', '#FFFFFF'),
+                          border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                          borderRadius: 4,
+                          boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+                          padding: '4px 0',
+                          zIndex: 9999,
+                          fontFamily: 'inherit',
+                          fontSize: 14,
+                        }}
+                      >
+                        {resolvedStatusOptions.map((opt) => {
+                          const selected = form.status === opt.value;
+                          return (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              role="option"
+                              aria-selected={selected}
+                              onClick={() => {
+                                updateField('status', opt.value);
+                                setStatusMenuOpen(false);
+                                statusTriggerRef.current?.focus();
+                              }}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 8,
+                                width: '100%',
+                                padding: '8px 12px',
+                                border: 'none',
+                                outline: 'none',
+                                background: 'transparent',
+                                color: token('color.text', '#292A2E'),
+                                fontSize: 14,
+                                fontWeight: 400,
+                                fontFamily: 'inherit',
+                                textAlign: 'left',
+                                cursor: 'pointer',
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                            >
+                              <StatusPill label={opt.label} />
+                              {selected && (
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 'auto', color: token('color.text.brand', '#0C66E4') }} aria-hidden="true">
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>,
+                      document.body,
+                    )}
                     <Box xcss={statusHelperStyles}>
                       <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
                         This is the initial status upon creation

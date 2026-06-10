@@ -104,7 +104,7 @@ export function useOKRStrategicData(snapshotId?: string) {
     };
 
     const channel = supabase
-      .channel(`okr-strategic-data-${snapshotId ?? 'live'}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`okr-strategic-data-${snapshotId ?? 'live'}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'objectives' }, invalidate)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'strategic_themes' }, invalidate)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'key_results_v2' }, invalidate)

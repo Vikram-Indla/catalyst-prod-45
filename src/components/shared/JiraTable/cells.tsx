@@ -252,6 +252,13 @@ export function makeKeyCell(
   onOpen?: (row: any) => void,
   getHref?: (row: any) => string,
   getIcon?: (row: any) => React.ReactNode,
+  /**
+   * Optional handler invoked when the user clicks the hover-only "open in
+   * side panel" trigger rendered at the end of the cell. When provided,
+   * a sidebar-icon button appears on row hover (and on focus-visible).
+   * Click bubbling is stopped so the row's own onClick doesn't double-fire.
+   */
+  onSidebarClick?: (row: any) => void,
 ) {
   return function KeyCell({ row, isFocused }: CellProps<any>) {
     const key = getKey(row);
@@ -275,13 +282,14 @@ export function makeKeyCell(
       borderRadius: 3,
       padding: '2px 6px',
     } : {
-      display: 'inline-block',
-      padding: '2px 6px',
-      margin: '-2px -6px',
+      display: 'inline-flex',
+      alignItems: 'center',
+      padding: '0 2px',
       fontFamily: 'inherit',
       fontWeight: 400,
       color: token('color.link', '#0C66E4'),
       fontSize: 14,
+      lineHeight: 1,
       letterSpacing: 0,
       whiteSpace: 'nowrap',
       cursor: 'pointer',
@@ -316,10 +324,25 @@ export function makeKeyCell(
         </span>
       );
     }
-    if (icon) {
+    // Type icon only — no sidebar swap. The single sidebar affordance lives
+    // on the Summary cell's right-edge hover button (editors.tsx); per Vikram
+    // we never replace the type icon, which is the row's primary identifier.
+    const iconSlot = icon ? (
+      <span
+        className="jira-row-key-icon-slot"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </span>
+    ) : null;
+    if (iconSlot) {
       return (
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>{icon}</span>
+          {iconSlot}
           {keyNode}
         </span>
       );

@@ -1,0 +1,330 @@
+/* ============================================================
+   RESOURCE ALLOCATION — ENTERPRISE POLISH (Strategy D)
+   
+   RING-FENCE PROTOCOL:
+   ├── Namespace: --ra-* (Resource Allocation)
+   ├── Layer: @layer ra-polish
+   ├── Purpose: Visual refinements for 9.5+ score
+   └── Import: AFTER ra-enterprise-clean.css
+   
+   USAGE:
+   1. Import this file in CapacityAnalyticsView.tsx
+   2. Add className="ra-polish" to main container
+   
+   CHANGES FROM 8.7 → 9.5+:
+   ├── Bar: 4px → 5px height
+   ├── Project text: 9px → 11px
+   ├── Percent text: 12px → 14px bold
+   ├── Cards: Added shadows + hover
+   ├── END cells: Enhanced pill styling
+   ├── Bars: Solid → Gradient colors
+   └── Avatar: Added shadow + hover scale
+   ============================================================ */
+
+@layer ra-polish {
+
+/* ─────────────────────────────────────────────────────────────
+   POLISH TOKENS
+   ───────────────────────────────────────────────────────────── */
+.ra-polish {
+  /* Bar Polish */
+  --ra-bar-height-polish: 5px;
+  --ra-bar-radius-polish: 2.5px;
+  
+  /* Typography Polish */
+  --ra-text-project-size-polish: 11px;
+  --ra-text-percent-size-polish: 14px;
+  
+  /* Shadows */
+  --ra-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --ra-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  
+  /* Transitions */
+  --ra-transition-fast: 150ms ease;
+  --ra-transition-smooth: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* END Cell Polish */
+  --ra-end-pattern-polish: repeating-linear-gradient(
+    -45deg,
+    #f8fafc,
+    #f8fafc 4px,
+    #f1f5f9 4px,
+    #f1f5f9 8px
+  );
+  --ra-end-text-bg: rgba(255, 255, 255, 0.9);
+  
+  /* Project Gradients */
+  --ra-gradient-sectorial: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+  --ra-gradient-dataplatform: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  --ra-gradient-senaei: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+  --ra-gradient-tahommena: linear-gradient(90deg, #ec4899 0%, #db2777 100%);
+  --ra-gradient-inspection: linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%);
+  --ra-gradient-irplatform: linear-gradient(90deg, #06b6d4 0%, #0891b2 100%);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ALLOCATION CARD — POLISH
+   ───────────────────────────────────────────────────────────── */
+.ra-polish .allocation-cell > div,
+.ra-polish [class*="alloc-inner"],
+.ra-polish [class*="alloc-card"] {
+  /* Enhanced shadow */
+  box-shadow: var(--ra-card-shadow) !important;
+  
+  /* Smoother border */
+  border: 1px solid #e2e8f0 !important;
+  
+  /* Increased height */
+  min-height: 56px !important;
+  
+  /* Transition for hover */
+  transition: 
+    box-shadow var(--ra-transition-smooth),
+    transform var(--ra-transition-fast),
+    border-color var(--ra-transition-fast) !important;
+}
+
+.ra-polish .allocation-cell > div:hover,
+.ra-polish [class*="alloc-inner"]:hover,
+.ra-polish [class*="alloc-card"]:hover {
+  box-shadow: var(--ra-card-shadow-hover) !important;
+  border-color: #cbd5e1 !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HORIZONTAL BAR — THICKER (5px)
+   ───────────────────────────────────────────────────────────── */
+.ra-polish .allocation-bar,
+.ra-polish [class*="bar-track"],
+.ra-polish [class*="alloc-bar-track"] {
+  height: var(--ra-bar-height-polish) !important;
+  border-radius: var(--ra-bar-radius-polish) !important;
+  background: #e2e8f0 !important;
+}
+
+.ra-polish .allocation-bar > div,
+.ra-polish [class*="bar-fill"],
+.ra-polish [class*="alloc-bar-fill"] {
+  height: 100% !important;
+  border-radius: var(--ra-bar-radius-polish) !important;
+  transition: width var(--ra-transition-smooth) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PROJECT BAR COLORS — GRADIENT ENHANCEMENT
+   ───────────────────────────────────────────────────────────── */
+
+/* Sectorial Services - Blue Gradient */
+.ra-polish [class*="bar-fill"][style*="3b82f6"],
+.ra-polish .alloc-bar-fill.sectorial {
+  background: var(--ra-gradient-sectorial) !important;
+}
+
+/* Data Platform - Green Gradient */
+.ra-polish [class*="bar-fill"][style*="10b981"],
+.ra-polish .alloc-bar-fill.dataplatform {
+  background: var(--ra-gradient-dataplatform) !important;
+}
+
+/* Senaei 3.0 - Amber Gradient */
+.ra-polish [class*="bar-fill"][style*="f59e0b"],
+.ra-polish .alloc-bar-fill.senaei {
+  background: var(--ra-gradient-senaei) !important;
+}
+
+/* Tahommena 2.0 - Pink Gradient */
+.ra-polish [class*="bar-fill"][style*="ec4899"],
+.ra-polish .alloc-bar-fill.tahommena {
+  background: var(--ra-gradient-tahommena) !important;
+}
+
+/* Inspection Project - Purple Gradient */
+.ra-polish [class*="bar-fill"][style*="8b5cf6"],
+.ra-polish .alloc-bar-fill.inspection {
+  background: var(--ra-gradient-inspection) !important;
+}
+
+/* IR Platform - Cyan Gradient */
+.ra-polish [class*="bar-fill"][style*="06b6d4"],
+.ra-polish .alloc-bar-fill.irplatform {
+  background: var(--ra-gradient-irplatform) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TYPOGRAPHY — ENHANCED
+   ───────────────────────────────────────────────────────────── */
+
+/* Percent text - larger and bolder */
+.ra-polish [class*="alloc-percent"],
+.ra-polish [class*="cell-percent"],
+.ra-polish .allocation-cell .text-xs.font-semibold {
+  font-size: var(--ra-text-percent-size-polish) !important;
+  font-weight: 700 !important;
+  color: #1e293b !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* Project text - larger */
+.ra-polish [class*="alloc-project"],
+.ra-polish [class*="cell-project"],
+.ra-polish .allocation-cell .text-\[9px\] {
+  font-size: var(--ra-text-project-size-polish) !important;
+  font-weight: 500 !important;
+  color: #64748b !important;
+  margin-top: 3px !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   END CELL — ENHANCED
+   ───────────────────────────────────────────────────────────── */
+.ra-polish .allocation-cell.end > div,
+.ra-polish [class*="alloc-inner"].end,
+.ra-polish [class*="cell--end"],
+.ra-polish [data-status="end"] > div {
+  background: var(--ra-end-pattern-polish) !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: none !important;
+}
+
+.ra-polish .allocation-cell.end > div:hover,
+.ra-polish [class*="alloc-inner"].end:hover,
+.ra-polish [class*="cell--end"]:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* END text pill */
+.ra-polish .allocation-cell.end span,
+.ra-polish [class*="cell--end"] span,
+.ra-polish [data-status="end"] span {
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  color: #94a3b8 !important;
+  background: var(--ra-end-text-bg) !important;
+  padding: 4px 12px !important;
+  border-radius: 4px !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   AVATAR — POLISH
+   ───────────────────────────────────────────────────────────── */
+.ra-polish [class*="avatar"],
+.ra-polish .avatar {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+  transition: transform var(--ra-transition-fast) !important;
+}
+
+.ra-polish [class*="avatar"]:hover,
+.ra-polish .avatar:hover {
+  transform: scale(1.05) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   RESOURCE ROW — HOVER STATE
+   ───────────────────────────────────────────────────────────── */
+.ra-polish tr:hover td:first-child,
+.ra-polish tr:hover .resource-cell {
+  background: #f8fafc !important;
+}
+
+/* Resource name - bolder */
+.ra-polish .resource-name,
+.ra-polish [class*="resource-name"] {
+  font-weight: 700 !important;
+  color: #1e293b !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   UTILIZATION BADGE — POLISH
+   ───────────────────────────────────────────────────────────── */
+.ra-polish [class*="util-badge"],
+.ra-polish [class*="utilization"] > span {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  padding: 5px 12px !important;
+  border-radius: 6px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   COLUMN HEADERS — POLISH
+   ───────────────────────────────────────────────────────────── */
+.ra-polish thead th {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  color: #475569 !important;
+  background: #f8fafc !important;
+  border-bottom: 2px solid #e2e8f0 !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   DEPARTMENT HEADER — POLISH
+   ───────────────────────────────────────────────────────────── */
+.ra-polish [class*="dept-header"] td,
+.ra-polish [class*="DepartmentGroup"] td,
+.ra-polish tr td[colspan] {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.75px !important;
+  color: #2563eb !important;
+  padding: 16px 16px 10px !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LOCATION BADGE — POLISH
+   ───────────────────────────────────────────────────────────── */
+.ra-polish [class*="location-badge"],
+.ra-polish [class*="location"] span {
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
+  color: #64748b !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SCROLLBAR — POLISH (Optional)
+   ───────────────────────────────────────────────────────────── */
+.ra-polish::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.ra-polish::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.ra-polish::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.ra-polish::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+} /* END @layer ra-polish */
+
+/* ─────────────────────────────────────────────────────────────
+   DARK MODE — [data-theme="dark"] overrides for ra-polish
+   Outside @layer so it applies after all layer rules
+   ───────────────────────────────────────────────────────────── */
+[data-theme="dark"] .ra-polish {
+  /* Shadows — suppressed in dark */
+  --ra-card-shadow: none;
+  --ra-card-shadow-hover: 0 4px 12px rgba(0,0,0,0.3);
+
+  /* END Cell — dark pattern */
+  --ra-end-pattern-polish: repeating-linear-gradient(
+    -45deg,
+    #1F1F1F,
+    #1F1F1F 4px,
+    #292929 4px,
+    #292929 8px
+  );
+  --ra-end-text-bg: #292929;
+}

@@ -1,0 +1,843 @@
+/* ============================================================
+   PLANNER CALENDAR — RING-FENCED DESIGN SYSTEM
+   
+   CRITICAL: All tokens prefixed with --pln-cal-*
+   CRITICAL: Only applies within .planner-calendar-content
+   ============================================================ */
+
+.planner-calendar-content {
+  /* ==================== SURFACES ==================== */
+  --pln-cal-surface-page: #ffffff;
+  --pln-cal-surface-card: #ffffff;
+  --pln-cal-surface-hover: #f8fafc;
+  --pln-cal-surface-selected: #eff6ff;
+  --pln-cal-surface-today: #dbeafe;
+  --pln-cal-surface-weekend: #f8fafc;
+  --pln-cal-surface-adjacent: #f1f5f9;
+  
+  /* ==================== TEXT ==================== */
+  --pln-cal-text-primary: #0f172a;
+  --pln-cal-text-secondary: #334155;
+  --pln-cal-text-tertiary: #64748b;
+  --pln-cal-text-muted: #94a3b8;
+  --pln-cal-text-adjacent: #cbd5e1;
+  
+  /* ==================== BORDERS ==================== */
+  --pln-cal-border: #e2e8f0;
+  --pln-cal-border-light: #f1f5f9;
+  --pln-cal-border-focus: #2563eb;
+  
+  /* ==================== STATUS COLORS ==================== */
+  --pln-cal-status-backlog: #94a3b8;
+  --pln-cal-status-planned: #3b82f6;
+  --pln-cal-status-progress: #f59e0b;
+  --pln-cal-status-review: #8b5cf6;
+  --pln-cal-status-done: #10b981;
+  
+  /* ==================== PRIORITY COLORS ==================== */
+  --pln-cal-priority-critical: #dc2626;
+  --pln-cal-priority-high: #ea580c;
+  --pln-cal-priority-medium: #ca8a04;
+  --pln-cal-priority-low: #64748b;
+  
+  /* ==================== WORKSTREAM COLORS (Planner 7) ==================== */
+  --pln-cal-ws-senaie: #06b6d4;
+  --pln-cal-ws-catalyst: #8b5cf6;
+  --pln-cal-ws-tahommona: #6366f1;
+  --pln-cal-ws-delivery: #f97316;
+  --pln-cal-ws-mim: #ec4899;
+  --pln-cal-ws-standalone: #64748b;
+  --pln-cal-ws-data-ai: #14b8a6;
+  
+  /* ==================== ACCENT ==================== */
+  --pln-cal-accent: #2563eb;
+  --pln-cal-accent-light: #eff6ff;
+  
+  /* ==================== CAPACITY ==================== */
+  --pln-cal-capacity-normal: #22c55e;
+  --pln-cal-capacity-warning: #f59e0b;
+  --pln-cal-capacity-overload: #ef4444;
+  
+  /* ==================== SPACING ==================== */
+  --pln-cal-space-1: 4px;
+  --pln-cal-space-2: 8px;
+  --pln-cal-space-3: 12px;
+  --pln-cal-space-4: 16px;
+  --pln-cal-space-5: 20px;
+  --pln-cal-space-6: 24px;
+  
+  /* ==================== RADIUS ==================== */
+  --pln-cal-radius-sm: 4px;
+  --pln-cal-radius-md: 6px;
+  --pln-cal-radius-lg: 8px;
+  
+  /* ==================== SHADOWS ==================== */
+  --pln-cal-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --pln-cal-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --pln-cal-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --pln-cal-shadow-hover: 0 4px 16px rgba(37, 99, 235, 0.15);
+  
+  /* ==================== TYPOGRAPHY ==================== */
+  --pln-cal-font-family: var(--cp-font-body);
+  --pln-cal-font-size-xs: 10px;
+  --pln-cal-font-size-sm: 11px;
+  --pln-cal-font-size-base: 12px;
+  --pln-cal-font-size-md: 13px;
+  --pln-cal-font-size-lg: 14px;
+  --pln-cal-font-size-xl: 20px;
+  --pln-cal-font-weight-normal: 400;
+  --pln-cal-font-weight-medium: 500;
+  --pln-cal-font-weight-semibold: 600;
+  
+  /* ==================== TRANSITIONS ==================== */
+  --pln-cal-transition-fast: 100ms ease;
+  --pln-cal-transition-base: 150ms ease;
+  --pln-cal-transition-slow: 250ms ease;
+}
+
+/* ==================== TASK PILLS ==================== */
+.cal-task-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--pln-cal-space-1);
+  padding: 4px 8px 4px 10px;
+  background: var(--pln-cal-surface-card);
+  border: 1px solid var(--pln-cal-border);
+  border-radius: var(--pln-cal-radius-sm);
+  font-size: var(--pln-cal-font-size-base);
+  cursor: grab;
+  transition: all var(--pln-cal-transition-fast);
+  overflow: hidden;
+  min-height: 28px;
+}
+
+.cal-task-pill:hover {
+  box-shadow: var(--pln-cal-shadow-hover);
+  transform: translateY(-1px);
+  z-index: 10;
+  border-color: var(--pln-cal-border-focus);
+}
+
+.cal-task-pill:active {
+  cursor: grabbing;
+  transform: translateY(0);
+}
+
+.cal-task-pill.is-dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+/* Status stripe on left (3px) */
+.cal-task-pill::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+}
+
+.cal-task-pill[data-status="backlog"]::before { background: var(--pln-cal-status-backlog); }
+.cal-task-pill[data-status="planned"]::before { background: var(--pln-cal-status-planned); }
+.cal-task-pill[data-status="progress"]::before { background: var(--pln-cal-status-progress); }
+.cal-task-pill[data-status="review"]::before { background: var(--pln-cal-status-review); }
+.cal-task-pill[data-status="done"]::before { background: var(--pln-cal-status-done); }
+
+/* Priority shapes */
+.cal-priority-icon {
+  flex-shrink: 0;
+  font-size: var(--pln-cal-font-size-sm);
+  line-height: 1;
+}
+
+.cal-priority-icon[data-priority="critical"] { color: var(--pln-cal-priority-critical); }
+.cal-priority-icon[data-priority="high"] { color: var(--pln-cal-priority-high); }
+.cal-priority-icon[data-priority="medium"] { color: var(--pln-cal-priority-medium); }
+.cal-priority-icon[data-priority="low"] { color: var(--pln-cal-priority-low); }
+
+/* Task title */
+.cal-task-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--pln-cal-text-primary);
+  font-weight: var(--pln-cal-font-weight-medium);
+  font-size: var(--pln-cal-font-size-base);
+}
+
+/* Assignee avatar */
+.cal-task-assignee {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 9px;
+  font-weight: var(--pln-cal-font-weight-semibold);
+  flex-shrink: 0;
+  border: 1.5px solid var(--pln-cal-surface-card);
+}
+
+/* Overdue badge */
+.cal-overdue-badge {
+  font-size: 9px;
+  font-weight: var(--pln-cal-font-weight-semibold);
+  color: var(--pln-cal-priority-critical);
+  background: #fee2e2;
+  padding: 1px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Progress bar (bottom) */
+.cal-task-pill::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--pln-cal-accent);
+  width: var(--task-progress, 0%);
+  transition: width var(--pln-cal-transition-base);
+}
+
+/* Drag handle */
+.cal-drag-handle {
+  opacity: 0;
+  color: var(--pln-cal-text-muted);
+  cursor: grab;
+  transition: opacity var(--pln-cal-transition-fast);
+}
+
+.cal-task-pill:hover .cal-drag-handle {
+  opacity: 1;
+}
+
+/* ==================== HOVER CARD ==================== */
+.cal-hover-card {
+  position: fixed;
+  z-index: 50;
+  width: 320px;
+  background: var(--pln-cal-surface-card);
+  border: 1px solid var(--pln-cal-border);
+  border-radius: var(--pln-cal-radius-lg);
+  box-shadow: var(--pln-cal-shadow-lg);
+  padding: var(--pln-cal-space-4);
+  animation: cal-hover-card-in 150ms ease-out;
+}
+
+@keyframes cal-hover-card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.cal-hover-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--pln-cal-space-2);
+  margin-bottom: var(--pln-cal-space-3);
+}
+
+.cal-hover-card-key {
+  font-size: var(--pln-cal-font-size-xs);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--pln-cal-text-muted);
+  background: var(--pln-cal-surface-hover);
+  padding: 2px 6px;
+  border-radius: var(--pln-cal-radius-sm);
+}
+
+.cal-hover-card-title {
+  font-size: var(--pln-cal-font-size-lg);
+  font-weight: var(--pln-cal-font-weight-semibold);
+  color: var(--pln-cal-text-primary);
+  line-height: 1.4;
+}
+
+.cal-hover-card-description {
+  font-size: var(--pln-cal-font-size-base);
+  color: var(--pln-cal-text-secondary);
+  line-height: 1.5;
+  margin-bottom: var(--pln-cal-space-3);
+}
+
+.cal-hover-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pln-cal-space-2);
+  padding-top: var(--pln-cal-space-3);
+  border-top: 1px solid var(--pln-cal-border-light);
+}
+
+.cal-hover-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--pln-cal-font-size-sm);
+}
+
+.cal-hover-card-label {
+  color: var(--pln-cal-text-tertiary);
+}
+
+.cal-hover-card-value {
+  color: var(--pln-cal-text-primary);
+  font-weight: var(--pln-cal-font-weight-medium);
+}
+
+.cal-hover-card-progress {
+  margin-top: var(--pln-cal-space-2);
+}
+
+.cal-hover-card-progress-bar {
+  height: 4px;
+  background: var(--pln-cal-border-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cal-hover-card-progress-fill {
+  height: 100%;
+  background: var(--pln-cal-accent);
+  transition: width var(--pln-cal-transition-base);
+}
+
+.cal-hover-card-actions {
+  display: flex;
+  gap: var(--pln-cal-space-2);
+  margin-top: var(--pln-cal-space-3);
+  padding-top: var(--pln-cal-space-3);
+  border-top: 1px solid var(--pln-cal-border-light);
+}
+
+.cal-hover-card-btn {
+  flex: 1;
+  padding: 6px 12px;
+  font-size: var(--pln-cal-font-size-sm);
+  font-weight: var(--pln-cal-font-weight-medium);
+  color: var(--pln-cal-text-secondary);
+  background: var(--pln-cal-surface-hover);
+  border: 1px solid var(--pln-cal-border);
+  border-radius: var(--pln-cal-radius-sm);
+  cursor: pointer;
+  transition: all var(--pln-cal-transition-fast);
+}
+
+.cal-hover-card-btn:hover {
+  background: var(--pln-cal-border-light);
+  color: var(--pln-cal-text-primary);
+}
+
+/* ==================== CONTEXT MENU ==================== */
+.cal-context-menu {
+  position: fixed;
+  z-index: 100;
+  min-width: 180px;
+  background: var(--pln-cal-surface-card);
+  border: 1px solid var(--pln-cal-border);
+  border-radius: var(--pln-cal-radius-md);
+  box-shadow: var(--pln-cal-shadow-lg);
+  padding: var(--pln-cal-space-1);
+  animation: cal-context-menu-in 100ms ease-out;
+}
+
+@keyframes cal-context-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.cal-context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--pln-cal-space-2);
+  padding: var(--pln-cal-space-2) var(--pln-cal-space-3);
+  font-size: var(--pln-cal-font-size-md);
+  color: var(--pln-cal-text-primary);
+  border-radius: var(--pln-cal-radius-sm);
+  cursor: pointer;
+  transition: background var(--pln-cal-transition-fast);
+}
+
+.cal-context-menu-item:hover {
+  background: var(--pln-cal-surface-hover);
+}
+
+.cal-context-menu-item.danger {
+  color: var(--pln-cal-priority-critical);
+}
+
+.cal-context-menu-item.danger:hover {
+  background: #fef2f2;
+}
+
+.cal-context-menu-divider {
+  height: 1px;
+  background: var(--pln-cal-border-light);
+  margin: var(--pln-cal-space-1) 0;
+}
+
+.cal-context-menu-icon {
+  width: 16px;
+  text-align: center;
+}
+
+/* ==================== CAPACITY PANEL ==================== */
+.cal-capacity-panel {
+  background: var(--pln-cal-surface-card);
+  border: 1px solid var(--pln-cal-border);
+  border-radius: var(--pln-cal-radius-lg);
+  margin-bottom: var(--pln-cal-space-4);
+  overflow: hidden;
+}
+
+.cal-capacity-header {
+  display: grid;
+  grid-template-columns: 140px repeat(7, 1fr);
+  background: var(--pln-cal-surface-hover);
+  border-bottom: 1px solid var(--pln-cal-border);
+  font-size: var(--pln-cal-font-size-sm);
+  font-weight: var(--pln-cal-font-weight-semibold);
+  color: var(--pln-cal-text-secondary);
+}
+
+.cal-capacity-header > div {
+  padding: var(--pln-cal-space-2) var(--pln-cal-space-3);
+  text-align: center;
+}
+
+.cal-capacity-header > div:first-child {
+  text-align: left;
+}
+
+.cal-capacity-row {
+  display: grid;
+  grid-template-columns: 140px repeat(7, 1fr);
+  border-bottom: 1px solid var(--pln-cal-border-light);
+}
+
+.cal-capacity-row:last-child {
+  border-bottom: none;
+}
+
+.cal-capacity-user {
+  display: flex;
+  align-items: center;
+  gap: var(--pln-cal-space-2);
+  padding: var(--pln-cal-space-2) var(--pln-cal-space-3);
+  font-size: var(--pln-cal-font-size-sm);
+  color: var(--pln-cal-text-primary);
+}
+
+.cal-capacity-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--pln-cal-space-2);
+  gap: 2px;
+}
+
+.cal-capacity-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--pln-cal-border-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cal-capacity-fill {
+  height: 100%;
+  transition: width var(--pln-cal-transition-base);
+}
+
+.cal-capacity-fill.normal { background: var(--pln-cal-capacity-normal); }
+.cal-capacity-fill.warning { background: var(--pln-cal-capacity-warning); }
+.cal-capacity-fill.overload { background: var(--pln-cal-capacity-overload); }
+
+.cal-capacity-label {
+  font-size: var(--pln-cal-font-size-xs);
+  color: var(--pln-cal-text-tertiary);
+}
+
+.cal-capacity-label.overload {
+  color: var(--pln-cal-capacity-overload);
+  font-weight: var(--pln-cal-font-weight-semibold);
+}
+
+/* ==================== FILTER CHIPS ==================== */
+.cal-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pln-cal-space-2);
+  padding: var(--pln-cal-space-2) var(--pln-cal-space-4);
+  background: var(--pln-cal-surface-hover);
+  border-bottom: 1px solid var(--pln-cal-border);
+}
+
+.cal-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pln-cal-space-1);
+  padding: 4px 8px 4px 10px;
+  background: var(--pln-cal-accent-light);
+  color: var(--pln-cal-accent);
+  font-size: var(--pln-cal-font-size-sm);
+  font-weight: var(--pln-cal-font-weight-medium);
+  border-radius: 999px;
+  border: 1px solid var(--pln-cal-accent);
+}
+
+.cal-filter-chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--pln-cal-transition-fast);
+}
+
+.cal-filter-chip-remove:hover {
+  background: rgba(37, 99, 235, 0.2);
+}
+
+.cal-filter-clear-all {
+  font-size: var(--pln-cal-font-size-sm);
+  color: var(--pln-cal-text-tertiary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: auto;
+}
+
+.cal-filter-clear-all:hover {
+  color: var(--pln-cal-text-secondary);
+}
+
+/* ==================== CALENDAR GRID ==================== */
+.cal-grid-header {
+  display: grid;
+  grid-template-columns: 40px repeat(7, 1fr);
+  background: var(--pln-cal-surface-hover);
+  border-bottom: 1px solid var(--pln-cal-border);
+}
+
+.cal-grid-header-cell {
+  padding: var(--pln-cal-space-2) var(--pln-cal-space-3);
+  text-align: center;
+  font-size: var(--pln-cal-font-size-sm);
+  font-weight: var(--pln-cal-font-weight-semibold);
+  color: var(--pln-cal-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cal-grid-header-cell:first-child {
+  background: var(--pln-cal-surface-adjacent);
+  color: var(--pln-cal-text-muted);
+  font-size: var(--pln-cal-font-size-xs);
+}
+
+.cal-grid-header-cell.weekend {
+  color: var(--pln-cal-text-muted);
+}
+
+.cal-week-row {
+  display: grid;
+  grid-template-columns: 40px repeat(7, 1fr);
+  border-bottom: 1px solid var(--pln-cal-border-light);
+  min-height: 120px;
+}
+
+.cal-week-row:last-child {
+  border-bottom: none;
+}
+
+.cal-week-number {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: var(--pln-cal-space-2);
+  background: var(--pln-cal-surface-adjacent);
+  font-size: var(--pln-cal-font-size-xs);
+  font-weight: var(--pln-cal-font-weight-medium);
+  color: var(--pln-cal-text-muted);
+}
+
+.cal-day-cell {
+  position: relative;
+  padding: var(--pln-cal-space-2);
+  border-right: 1px solid var(--pln-cal-border-light);
+  background: var(--pln-cal-surface-card);
+  transition: background var(--pln-cal-transition-fast);
+  min-height: 100%;
+}
+
+.cal-day-cell:last-child {
+  border-right: none;
+}
+
+.cal-day-cell:hover {
+  background: var(--pln-cal-surface-hover);
+}
+
+.cal-day-cell.weekend {
+  background: var(--pln-cal-surface-weekend);
+}
+
+.cal-day-cell.adjacent {
+  background: var(--pln-cal-surface-adjacent);
+}
+
+.cal-day-cell.adjacent .cal-day-number {
+  color: var(--pln-cal-text-adjacent);
+}
+
+.cal-day-cell.today {
+  background: var(--pln-cal-surface-today);
+}
+
+.cal-day-cell.selected {
+  box-shadow: inset 0 0 0 2px var(--pln-cal-accent);
+}
+
+.cal-day-cell.drop-target {
+  background: var(--pln-cal-accent-light);
+  box-shadow: inset 0 0 0 2px var(--pln-cal-accent);
+}
+
+.cal-day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--pln-cal-space-1);
+}
+
+.cal-day-number {
+  font-size: var(--pln-cal-font-size-md);
+  font-weight: var(--pln-cal-font-weight-medium);
+  color: var(--pln-cal-text-secondary);
+  transition: all var(--pln-cal-transition-fast);
+}
+
+.cal-day-cell.today .cal-day-number {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pln-cal-accent);
+  color: white;
+  border-radius: 50%;
+  font-weight: var(--pln-cal-font-weight-semibold);
+}
+
+.cal-day-add-btn {
+  opacity: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--pln-cal-radius-sm);
+  color: var(--pln-cal-text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--pln-cal-transition-fast);
+}
+
+.cal-day-cell:hover .cal-day-add-btn {
+  opacity: 1;
+}
+
+.cal-day-add-btn:hover {
+  background: var(--pln-cal-border-light);
+  color: var(--pln-cal-text-primary);
+}
+
+.cal-day-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cal-more-tasks {
+  font-size: var(--pln-cal-font-size-sm);
+  color: var(--pln-cal-text-tertiary);
+  padding: 2px 4px;
+  cursor: pointer;
+  border-radius: var(--pln-cal-radius-sm);
+  transition: all var(--pln-cal-transition-fast);
+}
+
+.cal-more-tasks:hover {
+  background: var(--pln-cal-surface-hover);
+  color: var(--pln-cal-text-secondary);
+}
+
+.cal-task-count-badge {
+  position: absolute;
+  top: var(--pln-cal-space-1);
+  right: var(--pln-cal-space-1);
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--pln-cal-font-size-xs);
+  font-weight: var(--pln-cal-font-weight-semibold);
+  color: var(--pln-cal-text-tertiary);
+  background: var(--pln-cal-surface-hover);
+  border-radius: 999px;
+  padding: 0 4px;
+}
+
+/* ==================== LEGENDS ==================== */
+.cal-legends {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--pln-cal-space-3) var(--pln-cal-space-4);
+  background: var(--pln-cal-surface-hover);
+  border-top: 1px solid var(--pln-cal-border);
+}
+
+.cal-legend-section {
+  display: flex;
+  align-items: center;
+  gap: var(--pln-cal-space-4);
+}
+
+.cal-legend-title {
+  font-size: var(--pln-cal-font-size-xs);
+  font-weight: var(--pln-cal-font-weight-semibold);
+  color: var(--pln-cal-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cal-legend-items {
+  display: flex;
+  align-items: center;
+  gap: var(--pln-cal-space-3);
+}
+
+.cal-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--pln-cal-space-1);
+  font-size: var(--pln-cal-font-size-sm);
+  color: var(--pln-cal-text-secondary);
+}
+
+.cal-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.cal-legend-shape {
+  font-size: 10px;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes cal-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.cal-loading {
+  animation: cal-pulse 1.5s ease-in-out infinite;
+}
+
+/* ==================== FOCUS STATES ==================== */
+.cal-task-pill:focus-visible,
+.cal-day-cell:focus-visible,
+.cal-context-menu-item:focus-visible {
+  outline: 2px solid var(--pln-cal-accent);
+  outline-offset: 2px;
+}
+
+/* ==================== KEYBOARD FOCUS INDICATOR ==================== */
+.cal-keyboard-focus {
+  position: relative;
+}
+
+.cal-keyboard-focus::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--pln-cal-accent);
+  border-radius: var(--pln-cal-radius-md);
+  pointer-events: none;
+}
+
+/* ==================== DARK MODE ==================== */
+.dark .planner-calendar-content,
+[data-theme="dark"] .planner-calendar-content {
+  /* Surfaces */
+  --pln-cal-surface-page: #0f172a;
+  --pln-cal-surface-card: #1e293b;
+  --pln-cal-surface-hover: #334155;
+  --pln-cal-surface-selected: #1e3a5f;
+  --pln-cal-surface-today: #1e3a5f;
+  --pln-cal-surface-weekend: #1a2432;
+  --pln-cal-surface-adjacent: #0f172a;
+  
+  /* Text */
+  --pln-cal-text-primary: #f8fafc;
+  --pln-cal-text-secondary: #cbd5e1;
+  --pln-cal-text-tertiary: #94a3b8;
+  --pln-cal-text-muted: #64748b;
+  --pln-cal-text-adjacent: #475569;
+  
+  /* Borders */
+  --pln-cal-border: #334155;
+  --pln-cal-border-light: #1e293b;
+  --pln-cal-border-focus: #60a5fa;
+  
+  /* Shadows */
+  --pln-cal-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --pln-cal-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --pln-cal-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --pln-cal-shadow-hover: 0 4px 16px rgba(59, 130, 246, 0.3);
+  
+  /* Accent */
+  --pln-cal-accent: #3b82f6;
+  --pln-cal-accent-light: #1e3a5f;
+}
+
+/* Overdue badge dark mode adjustment */
+.dark .cal-overdue-badge,
+[data-theme="dark"] .cal-overdue-badge {
+  background: rgba(220, 38, 38, 0.2);
+  color: #fca5a5;
+}
+
+/* Context menu dark mode danger item */
+.dark .cal-context-menu-item.danger:hover,
+[data-theme="dark"] .cal-context-menu-item.danger:hover {
+  background: rgba(220, 38, 38, 0.15);
+}

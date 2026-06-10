@@ -58,7 +58,7 @@ export function useWebLinks(workItemId: string | null | undefined): UseWebLinksR
   useEffect(() => {
     if (!enabled) return;
     const channel = supabase
-      .channel(`ph-web-links:${workItemId}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`ph-web-links:${workItemId}`)
       .on(
         'postgres_changes',
         {

@@ -544,12 +544,42 @@ export default function NativeBacklogPage() {
     );
   }
   if (!projectId) return <EmptyState header="Project not found" description={`No project with key "${key}"`} />;
-  return <BacklogPage projectId={projectId} projectKey={key || ''} />;
+  // Column-picker restriction for /project-hub/:key/backlog. Matches the
+  // CreateStoryModal fields shown by the top "+ Create" button on this
+  // route, minus Summary and Description (not column-worthy). Mirrors the
+  // product-hub backlog restriction in ProductBacklogPage.tsx.
+  //
+  // Modal field → column id mapping (label differs in two cases):
+  //   Work Type      → 'request_type'    (column label: 'Type')
+  //   Status         → 'status'
+  //   Parent         → 'parent'
+  //   Priority       → 'priority'
+  //   Sprint/Release → 'sprint_release'
+  //   Assignee       → 'assignee'
+  //   Reporter       → 'reporter'
+  //   Labels         → 'labels'
+  return (
+    <BacklogPage
+      projectId={projectId}
+      projectKey={key || ''}
+      allowedColumnIds={[
+        'key',             // structural row identifier
+        'request_type',    // modal: Work Type (rendered as "Type")
+        'status',          // modal: Status
+        'parent',          // modal: Parent
+        'priority',        // modal: Priority
+        'sprint_release',  // modal: Sprint/Release
+        'assignee',        // modal: Assignee
+        'reporter',        // modal: Reporter
+        'labels',          // modal: Labels
+      ]}
+    />
+  );
 }
 
 /* ─── The canonical page ───────────────────────────────────────────────── */
 
-export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl, dataSource }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string; dataSource?: BacklogDataSource }) {
+export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl, dataSource, allowedColumnIds }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string; dataSource?: BacklogDataSource; allowedColumnIds?: readonly string[] }) {
   // Optional adapter — when present, BacklogPage reads rows + status vocab
   // from the adapter (e.g. business_requests for product hub) and routes all
   // mutations through it. When absent, behavior is identical to today's
@@ -558,6 +588,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   const ALL_BACKLOG_STATUSES = dataSource?.allStatuses ?? DEFAULT_ALL_BACKLOG_STATUSES;
   const statusAppearance = dataSource?.statusAppearance ?? defaultStatusAppearance;
   const statusLabel = dataSource?.statusLabel ?? defaultStatusLabel;
+  // Resolve the effective allowed-column-ids list. The dataSource adapter
+  // (product hub) wins; otherwise we fall back to the direct prop (passed
+  // from NativeBacklogPage for the project-hub backlog route). Both flow
+  // into the same downstream filter logic so the column picker, the table
+  // columns, and the URL-cols cleanup all behave consistently.
+  const effectiveAllowedColumnIds = dataSource?.allowedColumnIds ?? allowedColumnIds;
   // May 12, 2026 (Phase 1.3): CATY hooks for Ask CATY toolbar button.
   const { user } = useAuth();
   const createConversation = useCreateCatyConversation();
@@ -628,6 +664,38 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         .filter((m) => m.name && m.name !== 'Unknown');
     },
     enabled: !!projectId,
+    staleTime: 5 * 60_000,
+  });
+
+  // Assignee picker source for the inline create row — pulls EVERY active
+  // resource (org-wide), not just the rows in project_members. Same
+  // { key, name, src } shape as chromeBandMembers so InlineGroupCreateRow
+  // consumes it identically — no UI changes, no submit-handler changes.
+  // Rationale: project_members only contains explicitly-added members
+  // (Vikram/Adnan for BAU, zero rows for product hub since projectId is a
+  // products.id UUID there). resource_inventory is the canonical team
+  // roster (CLAUDE.md 2026-05-11). Filter to profile_id NOT NULL so we
+  // never offer an assignee we couldn't actually persist.
+  const { data: assigneePickerMembers = [] } = useQuery({
+    queryKey: ['assignee-picker-members', 'all-active-resources'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('resource_inventory')
+        .select('profile_id, name, avatar_url')
+        .eq('is_active', true)
+        .not('profile_id', 'is', null)
+        .order('name');
+      if (error) throw error;
+      return (data ?? [])
+        .filter((r: any) => r.name && r.profile_id)
+        .map((r: any) => ({
+          key: r.profile_id as string,
+          name: r.name as string,
+          // Prefer the resource's stored avatar_url (Jira-CDN sync result),
+          // fall back to the name-based resolver.
+          src: (r.avatar_url as string | null) ?? resolveAvatarUrl(r.name) ?? undefined,
+        }));
+    },
     staleTime: 5 * 60_000,
   });
 
@@ -793,10 +861,19 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // Without this, anyone with a saved `cols=…` query string would never
   // see the new column until they manually toggled it via the picker.
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
+    // Filter DEFAULT_VISIBLE_COLUMNS by the effective allowed-column-ids.
+    // Without this, defaults that aren't allowed get re-added on every
+    // Effect B reset, creating an infinite loop with the URL-sync effect below.
+    const adapterAllow = effectiveAllowedColumnIds
+      ? new Set([...effectiveAllowedColumnIds, '__drag', '__actions'])
+      : null;
+    const allowedDefaults = adapterAllow
+      ? DEFAULT_VISIBLE_COLUMNS.filter((c) => adapterAllow.has(c))
+      : DEFAULT_VISIBLE_COLUMNS;
     const raw = searchParams.get('cols');
-    if (!raw) return new Set(DEFAULT_VISIBLE_COLUMNS);
+    if (!raw) return new Set(allowedDefaults);
     const fromUrl = parseSet(raw);
-    DEFAULT_VISIBLE_COLUMNS.forEach((c) => fromUrl.add(c));
+    allowedDefaults.forEach((c) => fromUrl.add(c));
     return fromUrl;
   });
   // 2026-06-01 (catalyst-clone F2/F3): when the URL requests a column id
@@ -807,8 +884,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     const raw = searchParams.get('cols');
     if (!raw) return;
     const urlIds = raw.split(',').filter(Boolean);
-    const adapterAllow = dataSource?.allowedColumnIds
-      ? new Set([...dataSource.allowedColumnIds, '__drag', '__actions'])
+    const adapterAllow = effectiveAllowedColumnIds
+      ? new Set([...effectiveAllowedColumnIds, '__drag', '__actions'])
       : null;
     const unsupported = urlIds.filter((id) => {
       if (!ALLOWED_COLUMN_IDS.has(id)) return true;
@@ -827,10 +904,17 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     if (supportedIds.length) next.set('cols', supportedIds.join(','));
     else next.delete('cols');
     setSearchParams(next, { replace: true });
-    setVisibleColumns(new Set([...supportedIds, ...DEFAULT_VISIBLE_COLUMNS]));
+    // Filter defaults by adapterAllow too — otherwise disallowed defaults
+    // (e.g. `parent`/`assignee` on product backlog) keep getting re-merged,
+    // creating an infinite loop with the URL-sync effect that writes them
+    // back and re-triggers this cleanup pass.
+    const allowedDefaults = adapterAllow
+      ? DEFAULT_VISIBLE_COLUMNS.filter((c) => adapterAllow.has(c))
+      : DEFAULT_VISIBLE_COLUMNS;
+    setVisibleColumns(new Set([...supportedIds, ...allowedDefaults]));
     // Run-once on first mount when adapter is ready.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataSource?.allowedColumnIds]);
+  }, [effectiveAllowedColumnIds]);
   // Group-by — matches catalog 076-095. 'none' disables grouping.
   type GroupByKey = 'none' | 'type' | 'status' | 'parent' | 'assignee' | 'priority';
   // Apr 27, 2026 (audit pass 10, IRP-518 alignment): URL param renamed
@@ -977,27 +1061,34 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
 
   // Serialize view state → URL (replaceState, no history spam).
   // Only emit params that differ from defaults so URLs stay short.
+  // 2026-06-09: debounced 300ms so rapid checkbox toggles in the column
+  // picker don't trigger a URL write (and the cascading re-render through
+  // setSearchParams) on every single click. The URL still gets updated
+  // shortly after the user stops interacting; deep-link semantics intact.
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (typeFilter !== 'all') params.set('type', typeFilter);
-    if (search) params.set('q', search);
-    // Don't write the default sort back to the URL — keeps URLs clean.
-    if (sortKey && sortKey !== DEFAULT_SORT_KEY) params.set('sort', sortKey);
-    if (sortDir && sortDir !== DEFAULT_SORT_DIR) params.set('dir', sortDir);
-    if (page !== 1) params.set('page', String(page));
-    // 2026-05-12 task E: detail state (selectedIssue, panel mode) removed.
-    // Detail views now use full-page route /backlog/:issueKey.
-    if (groupBy !== 'none') params.set('groupBy', groupBy);
-    if (collapsedGroups.size) params.set('collapsed', Array.from(collapsedGroups).join(','));
-    if (expandedIds.size) params.set('expanded', Array.from(expandedIds).join(','));
-    // Only emit `cols` if it differs from defaults — so users who haven't
-    // customized don't see a noisy URL.
-    const defaultSet = new Set(DEFAULT_VISIBLE_COLUMNS);
-    const differs =
-      visibleColumns.size !== defaultSet.size ||
-      Array.from(visibleColumns).some((id) => !defaultSet.has(id));
-    if (differs) params.set('cols', Array.from(visibleColumns).join(','));
-    setSearchParams(params, { replace: true });
+    const t = setTimeout(() => {
+      const params = new URLSearchParams();
+      if (typeFilter !== 'all') params.set('type', typeFilter);
+      if (search) params.set('q', search);
+      // Don't write the default sort back to the URL — keeps URLs clean.
+      if (sortKey && sortKey !== DEFAULT_SORT_KEY) params.set('sort', sortKey);
+      if (sortDir && sortDir !== DEFAULT_SORT_DIR) params.set('dir', sortDir);
+      if (page !== 1) params.set('page', String(page));
+      // 2026-05-12 task E: detail state (selectedIssue, panel mode) removed.
+      // Detail views now use full-page route /backlog/:issueKey.
+      if (groupBy !== 'none') params.set('groupBy', groupBy);
+      if (collapsedGroups.size) params.set('collapsed', Array.from(collapsedGroups).join(','));
+      if (expandedIds.size) params.set('expanded', Array.from(expandedIds).join(','));
+      // Only emit `cols` if it differs from defaults — so users who haven't
+      // customized don't see a noisy URL.
+      const defaultSet = new Set(DEFAULT_VISIBLE_COLUMNS);
+      const differs =
+        visibleColumns.size !== defaultSet.size ||
+        Array.from(visibleColumns).some((id) => !defaultSet.has(id));
+      if (differs) params.set('cols', Array.from(visibleColumns).join(','));
+      setSearchParams(params, { replace: true });
+    }, 300);
+    return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typeFilter, search, sortKey, sortDir, page, groupBy, collapsedGroups, expandedIds, visibleColumns]);
   // containerRef was declared + attached to the outer wrapper but never
@@ -1767,26 +1858,42 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
 
   useEffect(() => { setPage(1); }, [typeFilter, search, filterValue, sortKey, sortDir]);
 
-  // ── Row click → full-width detail route ──
+  // ── Right side-panel state (replaces the prior navigate-to-route flow) ──
+  // openDetail now opens the canonical CatalystDetailRouter inside the
+  // in-page right column (panelMode={true}) instead of routing to
+  // /project-hub/:key/backlog/:issueKey. The detail route still exists for
+  // direct URL access; from a row inside the backlog the panel is the path.
+  const [panelItem, setPanelItem] = useState<{ id: string; itemType: string; key: string | null } | null>(null);
+  const closePanel = useCallback(() => setPanelItem(null), []);
+
+  // ── Row click → in-page right side panel ──
   const openDetail = useCallback((it: BacklogItem) => {
-    // Save scroll position before navigating to detail view
+    // Save scroll position before opening detail view
     const container = document.querySelector('[data-backlog-scroll-container]');
     if (container && projectKey) {
       sessionStorage.setItem(`backlog-scroll-${projectKey}`, Math.max(0, container.scrollTop).toString());
-    }
-    // Adapter-owned rows (e.g. business_requests in product hub) route to
-    // their own detail surface via the adapter's onOpenItem hook.
-    if (dataSource && (it as any).source === BIZ_SOURCE) {
-      dataSource.onOpenItem(it.key ?? null, it.id);
-      return;
     }
     writeTicketOrigin({
       fromUrl: `${resolvedBaseUrl}/backlog`,
       fromLabel: 'Backlog',
       fromType: 'story-backlog',
     });
-    navigate(`${resolvedBaseUrl}/backlog/${it.issue_key || it.id}`);
-  }, [projectKey, navigate, dataSource, resolvedBaseUrl]);
+    // Map BacklogItem.type → CatalystItemType. Product-hub BR rows
+    // (source === 'biz') always resolve to 'business_request'; project
+    // hub rows fall through with a small alias for bug → defect and
+    // initiative → business_request.
+    const sourceIsBiz = dataSource && (it as any).source === BIZ_SOURCE;
+    const rawType = (it.type as string) || 'story';
+    let itemType = rawType;
+    if (sourceIsBiz) itemType = 'business_request';
+    else if (rawType === 'bug') itemType = 'defect';
+    else if (rawType === 'initiative') itemType = 'business_request';
+    setPanelItem({
+      id: (it as any).issue_key || it.id,
+      itemType,
+      key: it.key ?? null,
+    });
+  }, [projectKey, dataSource, resolvedBaseUrl]);
   // Detail callbacks removed 2026-05-12 task E: no longer managing panel state.
 
   // Detail navigation (j/k keys) removed 2026-05-12 task E: detail view now
@@ -2098,7 +2205,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         const keyCellRenderer = makeKeyCell(
           (r: BacklogItem) => r.key,
           (r: BacklogItem) => openDetail(r),
-          (r: BacklogItem) => `/project-hub/${projectKey}/backlog/${r.key || r.id}`,
+          (r: BacklogItem) => `${resolvedBaseUrl}/backlog/${r.key || r.id}`,
           (it: BacklogItem) => {
           if ((it as any).source === 'biz') {
             return <JiraIssueTypeIcon type="Business Request" size={16} />;
@@ -2135,6 +2242,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           };
           return <JiraIssueTypeIcon type={typeMap[it.type as Exclude<BacklogType, 'initiative'>]} size={16} />;
         },
+        // 5th arg — onSidebarClick: shows a hover-only sidebar icon in the
+        // Key cell. Click opens the right-side detail panel (same handler
+        // as the key text link).
+        (r: BacklogItem) => openDetail(r),
         );
         const summaryCellRenderer = makeSummaryInlineEditCell<BacklogItem>({
           getSummary: (r) => r.title,
@@ -2160,8 +2271,22 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           // inline "Translate to English" affordance. Project hub rows (English-
           // only) are unaffected. Translation is per-row, per-session — never
           // persisted to DB.
+          //
+          // 2026-06-09: WorkCell now actually SWAPS the displayed title when
+          // BizArabicTranslateLink completes. Previously the translate hook
+          // returned the English text but the link's `onChange` was wired
+          // nowhere, so the cell kept showing the original Arabic — making
+          // it look like translate was broken. State is per-cell (each row
+          // has its own CellRenderer instance) and session-only.
+          // useState is called unconditionally so the hook list stays
+          // stable across re-renders even if isBizArabic flips.
           const row = props.row as BacklogItem;
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const [displayedTitle, setDisplayedTitle] = useState<string | null>(null);
           const isBizArabic = (row as any).source === 'biz' && containsArabicHelper(row.title);
+          const cellProps = displayedTitle != null
+            ? { ...props, row: { ...row, title: displayedTitle }, value: displayedTitle }
+            : props;
           return (
             <span
               style={{
@@ -2172,13 +2297,16 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 minWidth: 0,
               }}
             >
-              <span style={{ flexShrink: 0 }}>{keyCellRenderer(props)}</span>
+              {keyCellRenderer(props)}
               <span style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ flex: 1, minWidth: 0 }}>{summaryCellRenderer(props)}</span>
+                <span style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}>{summaryCellRenderer(cellProps)}</span>
                 {isBizArabic && row.key && (
                   <BizArabicTranslateLink
                     issueKey={row.key}
                     original={row.title}
+                    onChange={(next) =>
+                      setDisplayedTitle(next === row.title ? null : next)
+                    }
                   />
                 )}
               </span>
@@ -2632,17 +2760,24 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       ),
     },
     // 2026-06-01: Arabic title column removed — arabic_title DB column dropped.
+    // 2026-06-09: __actions column restored. Width bumped 3 → 5 (~60px)
+    // so the 28×28 row `⋯` button no longer clips against the column edge
+    // (the prior 36px column minus default td padding left ~20px of usable
+    // width, smaller than the button). Header keeps right-aligned picker
+    // overlay (Jira parity); rows center the `⋯` button via a flex wrapper.
     {
       id: '__actions',
       label: '',
-      width: 3,
-      align: 'end',
+      width: 5,
+      align: 'center',
       alwaysVisible: true,
-      cell: makeRowActionsCell<BacklogItem>({
-        // Hide "Open" from the ⋯ menu (the Key cell already opens the panel);
-        // keep it in the context menu only so right-clickers get a visible path.
-        actions: rowActions.filter((a) => a.id !== 'open'),
-      }),
+      cell: (props) => (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+          {makeRowActionsCell<BacklogItem>({
+            actions: rowActions.filter((a) => a.id !== 'open'),
+          })(props)}
+        </div>
+      ),
     },
   ]), [expandedIds, toggleExpanded, hasChildren, parentOptions, assigneeOptions, avatarsByName, updateField, rowActions, sortKey, sortDir, groupBy]);
 
@@ -2656,8 +2791,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // priority, reporter, comments) that don't apply to the slim BR schema.
   // Structural columns ('__drag', '__actions') are always allowed.
   const filteredCols = useMemo(() => {
-    const adapterAllow = dataSource?.allowedColumnIds
-      ? new Set([...dataSource.allowedColumnIds, '__drag', '__actions'])
+    const adapterAllow = effectiveAllowedColumnIds
+      ? new Set([...effectiveAllowedColumnIds, '__drag', '__actions'])
       : null;
     const allowed = columns.filter((col) => {
       if (!ALLOWED_COLUMN_IDS.has(col.id)) return false;
@@ -2666,20 +2801,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       if (adapterAllow && !adapterAllow.has(col.id)) return false;
       return true;
     });
-    // 2026-06-01 (catalyst-clone F11): when URL provides explicit `cols=` order,
-    // honor it. Structural columns (__drag, __actions) and any cols not in URL
-    // keep their registry order, appended after the URL-ordered set.
-    const urlCols = searchParams.get('cols');
-    if (!urlCols) return allowed;
-    const urlOrder = urlCols.split(',').filter(Boolean);
-    const orderIdx = new Map<string, number>();
-    urlOrder.forEach((id, i) => orderIdx.set(id, i));
-    return [...allowed].sort((a, b) => {
-      const ai = orderIdx.has(a.id) ? orderIdx.get(a.id)! : 9999;
-      const bi = orderIdx.has(b.id) ? orderIdx.get(b.id)! : 9999;
-      return ai - bi;
-    });
-  }, [columns, dataSource?.allowedColumnIds, searchParams]);
+    // 2026-06-09: previously this sorted columns by their position in the
+    // URL `cols=` parameter, which made checked-on columns appear in the
+    // order the user toggled them (Set insertion order) — so "check
+    // Status, check Created" put Status first regardless of schema. Now
+    // always preserve the registry / schema order so default column
+    // positions are predictable. Drag-reorder uses JiraTable's separate
+    // columnOrder mechanism, not the URL cols= param.
+    return allowed;
+  }, [columns, effectiveAllowedColumnIds]);
 
 
   // Editing state — used by EditBacklogItemModal below.
@@ -3238,12 +3368,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         // toolbar and (via marginBottom + the JiraTable wrapper below)
         // bleeds the same inset to the table head + body — see the
         // sibling wrapper directly after this div.
-        padding: '32px 24px 32px',
+        padding: panelItem ? '32px 504px 32px 24px' : '32px 24px 32px',
         marginBottom: 4,
         display: askCatyOpen ? 'none' : 'flex',
         gap: 12,
         alignItems: 'center',
         borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        transition: 'padding 180ms ease',
       }}>
         {/* Apr 27, 2026 — REVERTED toolbar Create button. Jira's list view
             does NOT have a Create CTA in the table toolbar; the only
@@ -3437,16 +3568,23 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         />
       )}
 
-      {/* Table + panel split — Jira 3-state machine:
-           • compact    → table flex:1, panel fixed 400px
-           • expanded   → table 40%, panel 60%
-           • fullscreen → table hidden, panel 100% */}
-      <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
+      {/* Table + panel split.
+           position: relative on the outer flex row anchors the absolutely-
+           positioned right panel. When the panel is open the table area
+           gets `paddingRight` equal to the panel width so the visible
+           columns aren't covered. The panel itself escapes the flex flow
+           via position: absolute → owns its full height (top:0 bottom:0)
+           and its internal scroll independently of the table. */}
+      <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden', position: 'relative' }}>
         <div
           data-backlog-scroll-container
           style={{
-            // Table container — full width (panel removed)
+            // Table container — fills available width; right padding when
+            // panel is open keeps the table's right edge visible.
+            flex: 1,
             minWidth: 0,
+            paddingRight: panelItem ? 480 : 0,
+            transition: 'padding-right 180ms ease',
             // Apr 27, 2026: page-level overflow was eating the table's own
             // .jira-table-viewport scroll. Switching to overflow:hidden +
             // flex column with minHeight:0 lets the inner viewport's
@@ -3467,7 +3605,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             // 0 → 24px so the table thead + tbody inset matches the
             // toolbar's new 24px inset. Without this the table still
             // hugs the white card edge.
-            padding: '4px 24px 0',
+            padding: '24px',
             transition: 'width 150ms ease, flex-basis 150ms ease',
           }}
         >
@@ -3512,11 +3650,20 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             stickyCreateFooter={{
               placeholder: 'Create',
               onActivate: () => setFooterCreateActive(true),
+              onRefresh: async () => {
+                await Promise.all([refetchStories(), refetchEpics()]);
+                if (dataSource?.invalidationKeys) {
+                  dataSource.invalidationKeys.forEach((k) =>
+                    queryClient.invalidateQueries({ queryKey: k as any }),
+                  );
+                }
+              },
               active: footerCreateActive ? (() => {
                 const submitFooter = async (
                   summaryText: string,
                   issueType: CreatableIssueType,
                   assignee: { id: string; name: string } | null,
+                  dueDate: string | null,
                 ) => {
                   const trimmed = summaryText.trim();
                   if (!trimmed || !projectKey) return;
@@ -3550,6 +3697,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                       source: 'catalyst',
                       assignee_account_id: assignee?.id ?? null,
                       assignee_display_name: assignee?.name ?? null,
+                      due_date: dueDate,
                       jira_created_at: nowIso,
                       jira_updated_at: nowIso,
                     } as any);
@@ -3576,9 +3724,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   <InlineGroupCreateRow
                     groupLabel=""
                     isSubmitting={inlineCreateSubmitting}
-                    members={chromeBandMembers}
+                    members={assigneePickerMembers}
                     onSubmit={submitFooter}
                     onCancel={() => setFooterCreateActive(false)}
+                    creatableTypes={dataSource ? ['Business Request'] : undefined}
+                    defaultIssueType={dataSource ? 'Business Request' : 'Story'}
                   />
                 );
               })() : null,
@@ -3733,6 +3883,179 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           />
           </div>
         </div>
+        {/* Right-side detail panel — mounted when a row's Key cell is clicked
+            (key link or hover-sidebar trigger). Same CatalystDetailRouter used
+            by /allwork and the global router, just constrained to this column
+            and rendered with panelMode={true}. Closes via the X in the panel
+            chrome (CatalystViewBase handles onClose). */}
+        {panelItem && (() => {
+          // Map the router-format itemType ('story'/'epic'/.../'business_request')
+          // to the icon-registry label used by JiraIssueTypeIcon.
+          const typeIconLabel = (() => {
+            const t = panelItem.itemType;
+            if (t === 'story') return 'Story';
+            if (t === 'epic') return 'Epic';
+            if (t === 'feature') return 'Feature';
+            if (t === 'task') return 'Task';
+            if (t === 'subtask') return 'Sub-task';
+            if (t === 'defect') return 'QA Bug';
+            if (t === 'incident') return 'Production Incident';
+            if (t === 'business_request') return 'Business Request';
+            if (t === 'idea') return 'Idea';
+            return 'Story';
+          })();
+          const goToFullPage = () => {
+            navigate(`${resolvedBaseUrl}/backlog/${panelItem.id}`);
+            closePanel();
+          };
+          return (
+          <div
+            data-cv-stacked-panel="true"
+            style={{
+              // Out of every container — anchored to the viewport, so it
+              // sits BELOW the Catalyst global topbar (56px tall, see
+              // CatalystHeader.tsx:83) and runs all the way to the page
+              // bottom. The table container's paddingRight (set to the
+              // panel width when open) squeezes columns so they share the
+              // page side-by-side with no overlap.
+              position: 'fixed',
+              top: 56,
+              right: 0,
+              bottom: 0,
+              width: 480,
+              zIndex: 50,
+              borderLeft: '1px solid var(--ds-border, #DFE1E6)',
+              background: 'var(--ds-surface, #FFFFFF)',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Phase C — Catalyst work-item panel header.
+                Sits above CatalystDetailRouter; left side carries the
+                ☑ + "Catalyst work item" label, right side has the dynamic
+                type-icon (click → navigate to full-page detail) + close X. */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '8px 12px',
+                minHeight: 44,
+                flexShrink: 0,
+                borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+                background: 'var(--ds-surface, #FFFFFF)',
+              }}
+            >
+              {/* Left: dynamic type icon + "Catalyst work item" label */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+                  <JiraIssueTypeIcon type={typeIconLabel} size={16} />
+                </span>
+                <span
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 500,
+                    color: 'var(--ds-text-subtle, #505258)',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  Catalyst work item
+                </span>
+              </div>
+
+              {/* Right: external-link redirect button → navigate to full-page
+                  detail view and close the panel. NOTE: aria-label intentionally
+                  differs from CatalystViewBase's built-in "Open in full page"
+                  button so the global hide rule in editors.tsx doesn't catch
+                  this one. */}
+              <button
+                type="button"
+                aria-label="Open detail in full page"
+                onClick={goToFullPage}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 28,
+                  height: 28,
+                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  borderRadius: 3,
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  padding: 0,
+                  flexShrink: 0,
+                  color: 'var(--ds-text-subtle, #505258)',
+                  transition: 'background-color 100ms ease',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, #EBECF0)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </button>
+
+              {/* Right: close X */}
+              <button
+                type="button"
+                aria-label="Close panel"
+                onClick={closePanel}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 28,
+                  height: 28,
+                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  borderRadius: 3,
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  padding: 0,
+                  flexShrink: 0,
+                  color: 'var(--ds-text-subtle, #505258)',
+                  transition: 'background-color 100ms ease',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, #EBECF0)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+              >
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" aria-hidden="true">
+                  <path d="M3 3l10 10M13 3L3 13" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Detail content */}
+            <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <Suspense fallback={<div style={{ padding: 24, color: 'var(--ds-text-subtle, #505258)', fontSize: 14 }}>Loading…</div>}>
+                <CatalystDetailRouter
+                  isOpen={true}
+                  onClose={closePanel}
+                  itemId={panelItem.id}
+                  itemType={panelItem.itemType}
+                  projectId={projectId}
+                  projectKey={projectKey}
+                  panelMode={true}
+                />
+              </Suspense>
+            </div>
+          </div>
+          );
+        })()}
       </div>
 
       {/* Atlaskit-native Edit modal (replaces shadcn Dialog wrapper).
@@ -5470,7 +5793,8 @@ type CreatableIssueType =
   | 'Production Incident'
   | 'Business Gap'
   | 'API Requirement'
-  | 'Change Request';
+  | 'Change Request'
+  | 'Business Request';
 
 /**
  * 2026-05-10 Per-column filter popup body — minimal multi-select.
@@ -5600,6 +5924,8 @@ function InlineGroupCreateRow({
   members,
   onSubmit,
   onCancel,
+  creatableTypes,
+  defaultIssueType = 'Story',
 }: {
   groupLabel: string;
   isSubmitting: boolean;
@@ -5614,13 +5940,35 @@ function InlineGroupCreateRow({
     summary: string,
     issueType: CreatableIssueType,
     assignee: { id: string; name: string } | null,
+    dueDate: string | null,
   ) => void;
   onCancel: () => void;
+  /**
+   * Per-instance creatable type list. Defaults to the global CREATABLE_TYPES
+   * when omitted. Product hub passes ['Business Request'] so the dropdown
+   * only offers that single option.
+   */
+  creatableTypes?: CreatableIssueType[];
+  /** Initial issue type selection. Defaults to 'Story'. */
+  defaultIssueType?: CreatableIssueType;
 }) {
+  const types: CreatableIssueType[] = creatableTypes ?? CREATABLE_TYPES;
   const [summary, setSummary] = useState('');
-  const [issueType, setIssueType] = useState<CreatableIssueType>('Story');
+  const [issueType, setIssueType] = useState<CreatableIssueType>(defaultIssueType);
   const [assigneeIdx, setAssigneeIdx] = useState<number>(-1); // -1 = Unassigned
   const inputRef = useRef<HTMLInputElement | null>(null);
+  // Ref on the outer row container so the global click-outside handler can
+  // detect clicks that fall OUTSIDE the inline create UI (and all of its
+  // portaled popovers) and dismiss the form.
+  const rowRef = useRef<HTMLDivElement>(null);
+  // Due date picker — local state (string in YYYY-MM-DD or null).
+  const [dueDate, setDueDate] = useState<string | null>(null);
+  const [dateMenuOpen, setDateMenuOpen] = useState(false);
+  const [dateMenuAnchor, setDateMenuAnchor] = useState<{ top?: number; bottom?: number; left: number } | null>(null);
+  const [displayMonth, setDisplayMonth] = useState<Date>(() => { const d = new Date(); d.setDate(1); return d; });
+  const [dateInputFocused, setDateInputFocused] = useState(false);
+  const dateBtnRef = useRef<HTMLButtonElement>(null);
+  const dateMenuRef = useRef<HTMLDivElement>(null);
   // 2026-05-10 Jira-parity: assignee portal dropdown — replaces click-cycle
   // (matches type picker pattern; CLAUDE.md 2026-05-08 click-cycle ≠ Jira).
   const [assigneeMenuOpen, setAssigneeMenuOpen] = useState(false);
@@ -5646,14 +5994,18 @@ function InlineGroupCreateRow({
   useLayoutEffect(() => {
     if (!typeMenuOpen || !typeMenuTriggerRef.current) return;
     const r = typeMenuTriggerRef.current.getBoundingClientRect();
-    const estimatedHeight = CREATABLE_TYPES.length * 36 + 16;
+    const estimatedHeight = types.length * 36 + 16;
+    const menuWidth = 200; // matches the portal's minWidth below
+    const margin = 8;
     const spaceBelow = window.innerHeight - r.bottom - 8;
+    // Horizontal clamp so the menu always stays fully inside the viewport.
+    const left = Math.max(margin, Math.min(r.left, window.innerWidth - menuWidth - margin));
     // Open upward when near the bottom of the viewport (sticky footer case)
     const anchor = spaceBelow < estimatedHeight && r.top > estimatedHeight
-      ? { bottom: window.innerHeight - r.top + 4, left: r.left }
-      : { top: r.bottom + 4, left: r.left };
+      ? { bottom: window.innerHeight - r.top + 4, left }
+      : { top: r.bottom + 4, left };
     setTypeMenuAnchor(anchor);
-    setTypeMenuFocusedIdx(CREATABLE_TYPES.indexOf(issueType) >= 0 ? CREATABLE_TYPES.indexOf(issueType) : 0);
+    setTypeMenuFocusedIdx(types.indexOf(issueType) >= 0 ? types.indexOf(issueType) : 0);
   }, [typeMenuOpen, issueType]);
 
   useEffect(() => {
@@ -5671,11 +6023,11 @@ function InlineGroupCreateRow({
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') { setTypeMenuOpen(false); typeMenuTriggerRef.current?.focus(); return; }
-      if (e.key === 'ArrowDown') { e.preventDefault(); setTypeMenuFocusedIdx((i) => (i + 1) % CREATABLE_TYPES.length); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); setTypeMenuFocusedIdx((i) => (i - 1 + CREATABLE_TYPES.length) % CREATABLE_TYPES.length); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); setTypeMenuFocusedIdx((i) => (i + 1) % types.length); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setTypeMenuFocusedIdx((i) => (i - 1 + types.length) % types.length); }
       else if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        setIssueType(CREATABLE_TYPES[typeMenuFocusedIdx]);
+        setIssueType(types[typeMenuFocusedIdx]);
         setTypeMenuOpen(false);
         typeMenuTriggerRef.current?.focus();
       }
@@ -5693,10 +6045,14 @@ function InlineGroupCreateRow({
     if (!assigneeMenuOpen || !assigneeTriggerRef.current) return;
     const r = assigneeTriggerRef.current.getBoundingClientRect();
     const estimatedHeight = Math.min(360, (members.length + 2) * 36 + 60);
+    const menuWidth = 240; // matches the portal's minWidth below
+    const margin = 8;
     const spaceBelow = window.innerHeight - r.bottom - 8;
+    // Horizontal clamp so the menu always stays fully inside the viewport.
+    const left = Math.max(margin, Math.min(r.left, window.innerWidth - menuWidth - margin));
     const anchor = spaceBelow < estimatedHeight && r.top > estimatedHeight
-      ? { bottom: window.innerHeight - r.top + 4, left: r.left }
-      : { top: r.bottom + 4, left: r.left };
+      ? { bottom: window.innerHeight - r.top + 4, left }
+      : { top: r.bottom + 4, left };
     setAssigneeMenuAnchor(anchor);
     setAssigneeQuery('');
   }, [assigneeMenuOpen, members.length]);
@@ -5717,20 +6073,124 @@ function InlineGroupCreateRow({
     };
   }, [assigneeMenuOpen]);
 
+  // Due-date menu — open/position + outside-click + Escape.
+  useLayoutEffect(() => {
+    if (!dateMenuOpen || !dateBtnRef.current) return;
+    const r = dateBtnRef.current.getBoundingClientRect();
+    const estimatedHeight = 340; // popover ≈ 340px tall
+    const menuWidth = 280; // matches the portal's width below
+    const margin = 8;
+    const spaceBelow = window.innerHeight - r.bottom - 8;
+    // Try center-aligning the popover under the trigger (-120 offset matches
+    // the popover's previous bias), then clamp so it stays fully on-screen.
+    const preferredLeft = r.left - 120;
+    const left = Math.max(margin, Math.min(preferredLeft, window.innerWidth - menuWidth - margin));
+    const anchor = spaceBelow < estimatedHeight && r.top > estimatedHeight
+      ? { bottom: window.innerHeight - r.top + 6, left }
+      : { top: r.bottom + 6, left };
+    setDateMenuAnchor(anchor);
+    // Sync display month with current dueDate (or today)
+    const d = dueDate ? new Date(dueDate + 'T00:00:00') : new Date();
+    setDisplayMonth(new Date(d.getFullYear(), d.getMonth(), 1));
+  }, [dateMenuOpen, dueDate]);
+  useEffect(() => {
+    if (!dateMenuOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (dateBtnRef.current?.contains(t)) return;
+      if (dateMenuRef.current?.contains(t)) return;
+      setDateMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setDateMenuOpen(false); };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [dateMenuOpen]);
+
+  // Global click-outside: close the inline create form when the user clicks
+  // anywhere that is NOT inside the row itself AND NOT inside any of the
+  // portaled popovers (type / assignee / date). The portal popovers manage
+  // their own outside-click independently — those handlers fire too, so the
+  // popover closes itself when the user clicks outside it but inside the row.
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (rowRef.current?.contains(t)) return;
+      if (typeMenuRef.current?.contains(t)) return;
+      if (assigneeMenuRef.current?.contains(t)) return;
+      if (dateMenuRef.current?.contains(t)) return;
+      onCancel();
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [onCancel]);
+
+  // Date helpers — local string format M/D/YYYY for input, YYYY-MM-DD for storage.
+  const toStorage = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const toDisplay = (iso: string | null) => {
+    if (!iso) return '';
+    const [y, m, day] = iso.split('-').map(Number);
+    return `${m}/${day}/${y}`;
+  };
+  const parseDisplay = (s: string): string | null => {
+    const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (!m) return null;
+    const mm = Number(m[1]), dd = Number(m[2]), yy = Number(m[3]);
+    const d = new Date(yy, mm - 1, dd);
+    if (d.getFullYear() !== yy || d.getMonth() !== mm - 1 || d.getDate() !== dd) return null;
+    return toStorage(d);
+  };
+  const todayIso = toStorage(new Date());
+  const effectiveDateInput = dueDate ?? todayIso;
+  const dateInputDisplay = toDisplay(effectiveDateInput);
+
+  // Build the 6-week day grid for displayMonth.
+  const monthStart = new Date(displayMonth.getFullYear(), displayMonth.getMonth(), 1);
+  const gridStart = new Date(monthStart);
+  gridStart.setDate(1 - monthStart.getDay()); // back up to the prior Sunday
+  const dayCells: Array<{ date: Date; iso: string; day: number; outside: boolean; isToday: boolean; isSelected: boolean }> = [];
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(gridStart);
+    d.setDate(gridStart.getDate() + i);
+    const iso = toStorage(d);
+    dayCells.push({
+      date: d,
+      iso,
+      day: d.getDate(),
+      outside: d.getMonth() !== displayMonth.getMonth(),
+      isToday: iso === todayIso,
+      isSelected: iso === dueDate,
+    });
+  }
+  const monthLabel = displayMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+
   const trimmed = summary.trim();
   const canSubmit = !!trimmed && !isSubmitting;
   const currentAssignee = assigneeIdx === -1 ? null : members[assigneeIdx] ?? null;
 
+  const submitNow = () => {
+    if (!canSubmit) return;
+    onSubmit(
+      summary,
+      issueType,
+      currentAssignee ? { id: currentAssignee.key, name: currentAssignee.name } : null,
+      dueDate,
+    );
+  };
+
   return (
     <div
+      ref={rowRef}
       data-testid="jira-table.group-row.inline-create-row"
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 8,
-        padding: '8px 16px',
-        background: token('elevation.surface', '#FFFFFF'),
-        borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        gap: 6,
+        padding: '4px 10px',
+        background: 'transparent',
       }}
       onKeyDown={(e) => {
         if (e.key === 'Escape') {
@@ -5738,20 +6198,12 @@ function InlineGroupCreateRow({
           onCancel();
         } else if (e.key === 'Enter') {
           e.preventDefault();
-          if (canSubmit) {
-            onSubmit(
-              summary,
-              issueType,
-              currentAssignee ? { id: currentAssignee.key, name: currentAssignee.name } : null,
-            );
-          }
+          submitNow();
         }
       }}
     >
-      {/* Type picker — 2026-05-08: replaced click-to-cycle with portal
-          dropdown matching Jira's "Select work type" dropdown exactly.
-          Same bespoke createPortal pattern as GroupByControl (L21 bug
-          prevents @atlaskit/dropdown-menu from rendering on this surface). */}
+      {/* Type picker — 2026-05-08: portal dropdown matching Jira's
+          "Select work type" dropdown. */}
       <>
         <button
           ref={typeMenuTriggerRef}
@@ -5765,22 +6217,22 @@ function InlineGroupCreateRow({
             display: 'inline-flex',
             alignItems: 'center',
             gap: 2,
-            height: 24,
+            height: 26,
             padding: '0 4px',
             border: 'none',
             borderRadius: 3,
-            background: typeMenuOpen ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)') : 'transparent',
+            background: 'transparent',
             color: token('color.text.subtle', '#42526E'),
             fontSize: 12,
             fontFamily: 'inherit',
             cursor: 'pointer',
             flexShrink: 0,
           }}
-          onMouseEnter={(e) => { if (!typeMenuOpen) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
-          onMouseLeave={(e) => { if (!typeMenuOpen) e.currentTarget.style.background = 'transparent'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
-          <JiraIssueTypeIcon type={issueType} size={16} />
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden><path d="M2.5 3.5 5 6l2.5-2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/></svg>
+          <JiraIssueTypeIcon type={issueType} size={20} />
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2.5 3.5 5 6l2.5-2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/></svg>
         </button>
         {typeMenuOpen && typeMenuAnchor && ReactDOM.createPortal(
           <div
@@ -5805,9 +6257,10 @@ function InlineGroupCreateRow({
               fontSize: 14,
             }}
           >
-            {CREATABLE_TYPES.map((t, i) => {
+            {types.map((t, i) => {
               const active = issueType === t;
               const focused = typeMenuFocusedIdx === i;
+              const highlight = active || focused;
               return (
                 <button
                   key={t}
@@ -5831,6 +6284,10 @@ function InlineGroupCreateRow({
                       : focused
                         ? token('color.background.neutral.subtle.hovered', '#091E4208')
                         : 'transparent',
+                    // Blue vertical bar (3px) on the left edge — appears on both
+                    // selected AND hovered/focused states (Jira parity). boxShadow
+                    // inset doesn't shift layout, so content alignment is preserved.
+                    boxShadow: highlight ? 'inset 3px 0 0 0 var(--ds-border-focused, #0C66E4)' : undefined,
                     color: active ? token('color.text.selected', '#0C66E4') : token('color.text', '#292A2E'),
                     fontWeight: active ? 500 : 400,
                     fontSize: 14,
@@ -5848,18 +6305,209 @@ function InlineGroupCreateRow({
           document.body
         )}
       </>
-      <Textfield
+      <input
         ref={inputRef as any}
-        isCompact
+        type="text"
         placeholder="What needs to be done?"
         value={summary}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSummary(e.target.value)}
-        elemBeforeInput={
-          <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
-            <AkAddIcon label="" size="small" />
-          </span>
-        }
+        onChange={(e) => setSummary(e.target.value)}
+        style={{
+          flex: 1,
+          minWidth: 80,
+          height: 28,
+          padding: '0 6px',
+          border: 'none',
+          outline: 'none',
+          background: 'transparent',
+          fontSize: 14,
+          color: token('color.text', '#292A2E'),
+          fontFamily: 'inherit',
+        }}
       />
+      {/* Due date trigger — opens the calendar popover. When open, button
+          carries a blue border + light-blue background (Jira parity). */}
+      <>
+        <button
+          ref={dateBtnRef}
+          type="button"
+          data-testid="jira-table.group-row.inline-create-date-trigger"
+          aria-label={dueDate ? `Due date: ${toDisplay(dueDate)}` : 'Set due date'}
+          aria-haspopup="dialog"
+          aria-expanded={dateMenuOpen}
+          onClick={() => setDateMenuOpen((v) => !v)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 28,
+            height: 28,
+            padding: 0,
+            border: dateMenuOpen
+              ? `1.5px solid ${token('color.border.focused', '#0C66E4')}`
+              : '1.5px solid transparent',
+            borderRadius: 4,
+            background: dateMenuOpen
+              ? token('color.background.information', '#E9F2FF')
+              : 'transparent',
+            color: dateMenuOpen
+              ? token('color.text.brand', '#0C66E4')
+              : token('color.text.subtle', '#505258'),
+            cursor: 'pointer',
+            flexShrink: 0,
+            transition: 'background-color 120ms ease, border-color 120ms ease',
+          }}
+          onMouseEnter={(e) => { if (!dateMenuOpen) e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+          onMouseLeave={(e) => { if (!dateMenuOpen) e.currentTarget.style.background = 'transparent'; }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+        </button>
+        {dateMenuOpen && dateMenuAnchor && ReactDOM.createPortal(
+          <div
+            ref={dateMenuRef}
+            role="dialog"
+            aria-label="Due date"
+            style={{
+              position: 'fixed',
+              top: dateMenuAnchor.top,
+              bottom: dateMenuAnchor.bottom,
+              left: dateMenuAnchor.left,
+              width: 280,
+              padding: 12,
+              background: token('elevation.surface.overlay', '#FFFFFF'),
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderRadius: 4,
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+              zIndex: 9999,
+              fontFamily: 'var(--cp-font-body)',
+            }}
+          >
+            <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text', '#292A2E'), marginBottom: 6 }}>
+              Due date
+            </div>
+            <div style={{ position: 'relative', marginBottom: 12 }}>
+              <input
+                type="text"
+                value={dateInputDisplay}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  const parsed = parseDisplay(v);
+                  if (parsed) setDueDate(parsed);
+                }}
+                onFocus={() => setDateInputFocused(true)}
+                onBlur={() => setDateInputFocused(false)}
+                style={{
+                  width: '100%',
+                  height: 32,
+                  padding: '0 32px 0 8px',
+                  fontSize: 14,
+                  border: dateInputFocused
+                    ? `2px solid ${token('color.border.focused', '#0C66E4')}`
+                    : `1px solid ${token('color.border', '#DFE1E6')}`,
+                  borderRadius: 4,
+                  outline: 'none',
+                  fontFamily: 'inherit',
+                  color: token('color.text', '#292A2E'),
+                  background: token('elevation.surface', '#FFFFFF'),
+                  boxSizing: 'border-box',
+                }}
+              />
+              {dueDate && (
+                <button
+                  type="button"
+                  onClick={() => setDueDate(null)}
+                  aria-label="Clear due date"
+                  style={{
+                    position: 'absolute',
+                    right: 6,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: 20,
+                    height: 20,
+                    border: 'none',
+                    borderRadius: '50%',
+                    background: token('color.background.neutral.bold', '#42526E'),
+                    color: token('color.text.inverse', '#FFFFFF'),
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 0,
+                  }}
+                >
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+                    <path d="M2 2l6 6M8 2l-6 6" />
+                  </svg>
+                </button>
+              )}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'auto auto 1fr auto auto', alignItems: 'center', gap: 4, marginBottom: 8 }}>
+              <button type="button" aria-label="Previous year" onClick={() => setDisplayMonth(d => new Date(d.getFullYear() - 1, d.getMonth(), 1))}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', '#505258'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+              >«</button>
+              <button type="button" aria-label="Previous month" onClick={() => setDisplayMonth(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', '#505258'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+              >‹</button>
+              <span style={{ textAlign: 'center', fontSize: 13, fontWeight: 600, color: token('color.text', '#292A2E') }}>{monthLabel}</span>
+              <button type="button" aria-label="Next month" onClick={() => setDisplayMonth(d => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', '#505258'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+              >›</button>
+              <button type="button" aria-label="Next year" onClick={() => setDisplayMonth(d => new Date(d.getFullYear() + 1, d.getMonth(), 1))}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', '#505258'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+              >»</button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
+                <div key={d} style={{ fontSize: 11, fontWeight: 500, textAlign: 'center', padding: '4px 0', color: token('color.text.subtle', '#505258') }}>{d}</div>
+              ))}
+              {dayCells.map((cell) => {
+                const highlight = cell.isSelected || (cell.isToday && !dueDate);
+                return (
+                  <button
+                    key={cell.iso}
+                    type="button"
+                    onClick={() => { setDueDate(cell.iso); }}
+                    style={{
+                      height: 28,
+                      border: 'none',
+                      borderBottom: highlight
+                        ? `2px solid ${token('color.border.focused', '#0C66E4')}`
+                        : '2px solid transparent',
+                      background: 'transparent',
+                      cursor: 'pointer',
+                      fontSize: 13,
+                      fontFamily: 'inherit',
+                      color: cell.outside
+                        ? token('color.text.subtlest', '#6B6E76')
+                        : highlight
+                          ? token('color.text.brand', '#0C66E4')
+                          : token('color.text', '#292A2E'),
+                      padding: 0,
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    {cell.day}
+                  </button>
+                );
+              })}
+            </div>
+          </div>,
+          document.body
+        )}
+      </>
       {/* Assignee picker — Apr 27 2026 (jira-compare regression F-NEW-2
           layer 3). Click cycles through Unassigned + project members
           (same click-cycle pattern as the type picker — avoids L21
@@ -5882,32 +6530,25 @@ function InlineGroupCreateRow({
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 6,
-                height: 27,
-                padding: '0 8px',
-                border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-                borderRadius: 3,
-                background: assigneeMenuOpen ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)') : token('elevation.surface', '#FFFFFF'),
-                color: token('color.text', '#292A2E'),
-                fontSize: 13,
-                fontWeight: 500,
-                fontFamily: 'inherit',
+                justifyContent: 'center',
+                width: 28,
+                height: 28,
+                padding: 0,
+                border: 'none',
+                borderRadius: '50%',
+                background: 'transparent',
+                color: token('color.text.subtle', '#505258'),
                 cursor: 'pointer',
                 flexShrink: 0,
-                maxWidth: 180,
               }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
               {currentAssignee ? (
-                <Avatar size="xsmall" src={currentAssignee.src} name={currentAssignee.name} />
+                <Avatar size="small" src={currentAssignee.src} name={currentAssignee.name} />
               ) : (
-                <AkPersonAvatarIcon label="" size="small" />
+                <AkPersonAvatarIcon label="" size="medium" />
               )}
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {currentLabel}
-              </span>
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden style={{ flexShrink: 0, opacity: 0.6 }}>
-                <path d="M2.5 3.5 5 6l2.5-2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-              </svg>
             </button>
             {assigneeMenuOpen && assigneeMenuAnchor && ReactDOM.createPortal(
               <div
@@ -6005,21 +6646,39 @@ function InlineGroupCreateRow({
           </>
         );
       })()}
-      <Button
-        appearance="primary"
-        spacing="compact"
-        isDisabled={!canSubmit}
-        onClick={() =>
-          canSubmit &&
-          onSubmit(
-            summary,
-            issueType,
-            currentAssignee ? { id: currentAssignee.key, name: currentAssignee.name } : null,
-          )
-        }
+      <button
+        type="button"
+        disabled={!canSubmit}
+        onClick={submitNow}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          height: 28,
+          padding: '0 12px',
+          border: 'none',
+          borderRadius: 4,
+          background: canSubmit
+            ? token('color.background.brand.bold', '#0C66E4')
+            : token('color.background.disabled', '#DCDFE4'),
+          color: canSubmit
+            ? token('color.text.inverse', '#FFFFFF')
+            : token('color.text.disabled', '#6B6E76'),
+          fontSize: 14,
+          fontWeight: 500,
+          fontFamily: 'inherit',
+          cursor: canSubmit ? 'pointer' : 'not-allowed',
+          flexShrink: 0,
+        }}
+        onMouseEnter={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold.hovered', '#0055CC'); }}
+        onMouseLeave={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold', '#0C66E4'); }}
       >
-        {isSubmitting ? 'Creating…' : 'Create'}
-      </Button>
+        <span>{isSubmitting ? 'Creating…' : 'Create'}</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <polyline points="9 10 4 15 9 20" />
+          <path d="M20 4v7a4 4 0 0 1-4 4H4" />
+        </svg>
+      </button>
     </div>
   );
 }

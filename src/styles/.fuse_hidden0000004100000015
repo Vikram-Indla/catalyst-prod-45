@@ -1,0 +1,1425 @@
+/**
+ * Budget Governance Module - Catalyst V8 Design System
+ * Route: /enterprise/budget-planner
+ * Version: 8.0 - Production Ready
+ * 
+ * DESIGN TOKENS FROM SPECIFICATION:
+ * - Primary: #2563eb (buttons, active states)
+ * - Insourced: #2563eb, Cosourced: #0d9488, Outsourced: #d97706
+ * - Licenses: #7c3aed
+ * - Text: #0f172a primary, #334155 secondary, #64748b muted
+ * - 5px solid top borders on cards, font-mono for values
+ */
+
+.budget-module {
+  /* ============================================
+     V8 PRIMARY COLORS
+     ============================================ */
+  --budget-primary: #2563eb;
+  --budget-primary-dark: #1d4ed8;
+  --budget-primary-light: rgba(37, 99, 235, 0.08);
+  --budget-primary-bg: #eff6ff;
+
+  /* ============================================
+     V8 BUDGET TYPE COLORS — PER SPEC
+     ============================================ */
+  --budget-insourced: #2563eb;      /* Blue */
+  --budget-insourced-dark: #1d4ed8;
+  --budget-insourced-light: rgba(37, 99, 235, 0.08);
+  
+  --budget-cosourced: #0d9488;      /* Teal */
+  --budget-cosourced-dark: #0f766e;
+  --budget-cosourced-light: rgba(13, 148, 136, 0.1);
+  
+  --budget-outsourced: #d97706;     /* Amber */
+  --budget-outsourced-dark: #b45309;
+  --budget-outsourced-light: rgba(217, 119, 6, 0.1);
+  
+  --budget-licenses: #7c3aed;       /* Violet */
+  --budget-licenses-dark: #6d28d9;
+  --budget-licenses-light: rgba(124, 58, 237, 0.1);
+
+  /* ============================================
+     V8 SEMANTIC COLORS
+     ============================================ */
+  --budget-success: #059669;
+  --budget-success-light: rgba(5, 150, 105, 0.1);
+  --budget-warning: #d97706;
+  --budget-warning-light: rgba(217, 119, 6, 0.1);
+  --budget-danger: #dc2626;
+  --budget-danger-light: rgba(220, 38, 38, 0.1);
+  --budget-info: #2563eb;
+
+  /* ============================================
+     V8 NEUTRALS (WCAG AA COMPLIANT)
+     ============================================ */
+  --slate-900: #0f172a;
+  --slate-800: #1e293b;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-400: #94a3b8;
+  --slate-300: #cbd5e1;
+  --slate-200: #e2e8f0;
+  --slate-100: #f1f5f9;
+  --slate-50: #f8fafc;
+  --white: #ffffff;
+
+  --budget-bg-page: #f8fafc;
+  --budget-bg-surface: #ffffff;
+  --budget-text-primary: #0f172a;
+  --budget-text-secondary: #334155;
+  --budget-text-muted: #64748b;
+  --budget-border: #e2e8f0;
+  --budget-border-strong: #cbd5e1;
+
+  /* Legacy aliases for compatibility */
+  --budget-bg: #f8fafc;
+  --budget-surface: #ffffff;
+  --budget-text: #0f172a;
+  --budget-border-light: #e2e8f0;
+
+  /* ============================================
+     V8 SHADOWS
+     ============================================ */
+  --budget-shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --budget-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --budget-shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+
+  /* ============================================
+     V8 TYPOGRAPHY
+     ============================================ */
+  --budget-font-ui:   var(--cp-font-body);
+  --budget-font-mono: var(--cp-font-mono);
+
+  /* ============================================
+     V8 BORDER RADIUS
+     ============================================ */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+
+  --budget-radius-xs: 4px;
+  --budget-radius-sm: 6px;
+  --budget-radius-md: 8px;
+  --budget-radius-lg: 12px;
+  --budget-radius-xl: 16px;
+}
+
+/* ============================================
+   DARK MODE — Map V8 budget tokens to the global theme
+   Ensures no white surfaces leak in dark mode.
+   ============================================ */
+.dark .budget-module,
+[data-theme="dark"] .budget-module {
+  /* Neutrals — hex only (no HSL) */
+  --slate-900: var(--fg-1, #EDEDED);
+  --slate-800: #EDEDED;
+  --slate-700: var(--fg-2, #A1A1A1);
+  --slate-600: var(--fg-3, #878787);
+  --slate-500: #7D7D7D;
+  --slate-400: var(--fg-4, rgba(237,237,237,0.30));
+  --slate-300: #454545;
+  --slate-200: #2E2E2E;
+  --slate-100: #292929;
+  --slate-50: #1F1F1F;
+  --white: #1A1A1A;
+
+  /* Surfaces + text */
+  --budget-bg-page: #0A0A0A;
+  --budget-bg-surface: #1A1A1A;
+  --budget-text-primary: var(--fg-1, #EDEDED);
+  --budget-text-secondary: var(--fg-2, #A1A1A1);
+  --budget-text-muted: var(--fg-3, #878787);
+  --budget-border: #2E2E2E;
+  --budget-border-strong: #454545;
+
+  /* Legacy aliases */
+  --budget-bg: #0A0A0A;
+  --budget-surface: #1A1A1A;
+  --budget-text: var(--fg-1, #EDEDED);
+  --budget-border-light: #2E2E2E;
+
+  /* Primary surfaces used in info/expanded rows */
+  --budget-primary-bg: rgba(59,130,246,0.10);
+  --budget-primary-light: rgba(59,130,246,0.12);
+
+  /* Semantic — darkened for dark bg */
+  --budget-success: #4ADE80;
+  --budget-success-light: rgba(74,222,128,0.12);
+  --budget-warning: #FDE68A;
+  --budget-warning-light: rgba(253,230,138,0.10);
+  --budget-danger: #FCA5A5;
+  --budget-danger-light: rgba(239,68,68,0.10);
+  --budget-info: #60A5FA;
+
+  /* Budget type colors — lightened for dark bg */
+  --budget-insourced: #60A5FA;
+  --budget-insourced-dark: #3B82F6;
+  --budget-insourced-light: rgba(59,130,246,0.10);
+  --budget-cosourced: #5EEAD4;
+  --budget-cosourced-dark: #2DD4BF;
+  --budget-cosourced-light: rgba(13,148,136,0.10);
+  --budget-outsourced: #FDE68A;
+  --budget-outsourced-dark: #FBBF24;
+  --budget-outsourced-light: rgba(217,119,6,0.10);
+  --budget-licenses: #A78BFA;
+  --budget-licenses-dark: #8B5CF6;
+  --budget-licenses-light: rgba(124,58,237,0.10);
+
+  /* Shadows — suppressed */
+  --budget-shadow-sm: none;
+  --budget-shadow-md: none;
+  --budget-shadow-lg: none;
+}
+
+/* ============================================
+   V8 PERIOD TOGGLE — Pill-style with clear hierarchy
+   Spec: Pill container with rounded-xl, active has white bg + shadow
+   ============================================ */
+.budget-module .period-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: var(--slate-100);
+  padding: 4px;
+  border-radius: 12px;
+  gap: 2px;
+}
+
+.budget-module .period-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--slate-600);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.budget-module .period-btn:hover {
+  color: var(--slate-800);
+}
+
+.budget-module .period-btn.active {
+  color: var(--budget-primary);
+  background: var(--white);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+}
+
+/* ============================================
+   V8 DEPARTMENT FILTER CARDS — Per spec
+   - Active card has left accent bar + gradient background
+   - Cards with 0 budget are muted
+   - Warning indicators for missing data
+   ============================================ */
+.budget-module .dept-filter {
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.budget-module .dept-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--slate-500);
+  margin-bottom: 12px;
+}
+
+.budget-module .dept-tabs {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+@media (max-width: 1400px) {
+  .budget-module .dept-tabs {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .budget-module .dept-tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.budget-module .dept-tab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 12px;
+  background: var(--white);
+  border: 2px solid var(--slate-200);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.budget-module .dept-tab:hover {
+  border-color: rgba(37, 99, 235, 0.5);
+  box-shadow: var(--budget-shadow-sm);
+}
+
+/* ACTIVE STATE with gradient + left accent bar */
+.budget-module .dept-tab.active {
+  border-color: var(--budget-primary);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(37, 99, 235, 0.08) 50%, rgba(37, 99, 235, 0.05) 100%);
+  box-shadow: var(--budget-shadow-sm);
+}
+
+/* Left accent bar - ONLY for active card */
+.budget-module .dept-tab.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  background: var(--budget-primary);
+  border-radius: 4px;
+}
+
+/* INACTIVE NO BUDGET (muted) */
+.budget-module .dept-tab.no-budget {
+  background: rgba(248, 250, 252, 0.5);
+  border-color: var(--slate-200);
+}
+
+.budget-module .dept-tab.no-budget:hover {
+  border-color: var(--slate-300);
+}
+
+.budget-module .dept-tab-name {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--slate-500);
+  margin-bottom: 8px;
+}
+
+.budget-module .dept-tab.active .dept-tab-name {
+  color: var(--budget-primary);
+}
+
+/* V8: Department amount uses font-mono with large size */
+.budget-module .dept-tab-amount {
+  font-family: var(--budget-font-mono);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--slate-800);
+  margin-bottom: 8px;
+}
+
+.budget-module .dept-tab.active .dept-tab-amount {
+  color: var(--budget-primary);
+}
+
+.budget-module .dept-tab.no-budget .dept-tab-amount {
+  color: var(--slate-400);
+}
+
+.budget-module .dept-tab-count {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--slate-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.budget-module .dept-tab.active .dept-tab-count {
+  color: rgba(37, 99, 235, 0.7);
+}
+
+.budget-module .dept-tab-count .warning {
+  color: var(--budget-warning);
+  font-weight: 600;
+}
+
+/* ============================================
+   V8 SUMMARY CARDS — Budget Type Cards
+   Spec: 5px top bar (gradient), hover lift, chevron indicator
+   ============================================ */
+.budget-module .summary-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 1200px) {
+  .budget-module .summary-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .budget-module .summary-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* V8: 4-column grid alias */
+.budget-module .summary-row.four-cols {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1200px) {
+  .budget-module .summary-row.four-cols {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.budget-module .summary-card {
+  position: relative;
+  background: var(--budget-bg-surface);
+  border: 1px solid var(--budget-border);
+  border-radius: 16px;
+  padding: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--budget-shadow-sm);
+}
+
+/* V8 CRITICAL: Hover effect - translateY + shadow */
+.budget-module .summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--budget-shadow-lg);
+}
+
+/* V8 CRITICAL: 6px solid top bar - gradient */
+.budget-module .summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  border-radius: 16px 16px 0 0;
+}
+
+.budget-module .summary-card.insourced::before { 
+  background: linear-gradient(90deg, var(--budget-insourced) 0%, #3b82f6 100%); 
+}
+.budget-module .summary-card.cosourced::before { 
+  background: linear-gradient(90deg, #0f766e 0%, var(--budget-cosourced) 100%); 
+}
+.budget-module .summary-card.outsourced::before { 
+  background: linear-gradient(90deg, var(--budget-outsourced) 0%, #f59e0b 100%); 
+}
+.budget-module .summary-card.licenses::before { 
+  background: linear-gradient(90deg, var(--budget-licenses) 0%, #a78bfa 100%); 
+}
+
+/* Ring effect when expanded */
+.budget-module .summary-card.active {
+  ring: 2px;
+  ring-offset: 2px;
+}
+
+.budget-module .summary-card.insourced.active { 
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3), var(--budget-shadow-lg);
+}
+.budget-module .summary-card.cosourced.active { 
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.3), var(--budget-shadow-lg);
+}
+.budget-module .summary-card.outsourced.active { 
+  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.3), var(--budget-shadow-lg);
+}
+.budget-module .summary-card.licenses.active { 
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.3), var(--budget-shadow-lg);
+}
+
+.budget-module .summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.budget-module .summary-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--slate-500);
+}
+
+.budget-module .summary-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
+.budget-module .summary-badge.insourced { 
+  background: var(--budget-insourced-light); 
+  color: var(--budget-insourced); 
+}
+.budget-module .summary-badge.cosourced { 
+  background: var(--budget-cosourced-light); 
+  color: var(--budget-cosourced); 
+}
+.budget-module .summary-badge.outsourced { 
+  background: var(--budget-outsourced-light); 
+  color: var(--budget-outsourced); 
+}
+.budget-module .summary-badge.licenses { 
+  background: var(--budget-licenses-light); 
+  color: var(--budget-licenses); 
+}
+
+/* V8 CRITICAL: Card value - 36px/700 JetBrains Mono */
+.budget-module .summary-value {
+  font-family: var(--budget-font-mono);
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.budget-module .summary-value.insourced { color: var(--budget-insourced); }
+.budget-module .summary-value.cosourced { color: var(--budget-cosourced); }
+.budget-module .summary-value.outsourced { color: var(--budget-outsourced); }
+.budget-module .summary-value.licenses { color: var(--budget-licenses); }
+
+.budget-module .summary-sub {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--slate-500);
+  margin-bottom: 16px;
+}
+
+/* Divider line */
+.budget-module .summary-divider {
+  height: 1px;
+  background: var(--slate-100);
+  margin: 16px 0;
+}
+
+.budget-module .summary-detail {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--slate-600);
+  padding-top: 16px;
+  border-top: 1px solid var(--slate-100);
+}
+
+.budget-module .summary-detail strong {
+  font-weight: 600;
+  color: var(--slate-800);
+}
+
+/* ============================================
+   INFO BOX
+   V8 Spec: Primary bg, 12px text, bold keywords
+   ============================================ */
+.budget-module .info-box {
+  background: var(--budget-primary-bg);
+  border: 1px solid var(--budget-primary-light);
+  border-radius: var(--budget-radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.budget-module .info-box-text {
+  font-size: 12px;
+  color: var(--budget-text-secondary);
+}
+
+.budget-module .info-box-text strong {
+  font-weight: 600;
+  color: var(--budget-primary);
+}
+
+/* ============================================
+   TABLE CARD
+   V8 Spec: Dense 12px/14px cells, 10px headers
+   ============================================ */
+.budget-module .table-card {
+  background: var(--budget-bg-surface);
+  border: 1px solid var(--budget-border);
+  border-radius: var(--budget-radius-lg);
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: var(--budget-shadow-sm);
+}
+
+.budget-module .table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--budget-border);
+}
+
+.budget-module .table-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--budget-text-primary);
+}
+
+.budget-module .table-title span {
+  font-weight: 500;
+  color: var(--budget-text-muted);
+}
+
+.budget-module table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.budget-module thead {
+  background: var(--budget-bg-page);
+}
+
+/* V8: Table headers 10px/700 uppercase */
+.budget-module th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--budget-text-muted);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--budget-border);
+  white-space: nowrap;
+}
+
+.budget-module th.right { text-align: right; }
+.budget-module th.center { text-align: center; }
+
+/* ============================================
+   V8 UI POLISH: Table cells - TIGHT 10px padding
+   Target row height: ~48px (not 60px+)
+   ============================================ */
+.budget-module td {
+  padding: 8px 14px; /* Reduced from 10px */
+  border-bottom: 1px solid var(--slate-100); /* tokenized divider */
+  vertical-align: middle;
+  font-size: 13px;
+  color: var(--budget-text-primary);
+}
+
+.budget-module td.right { text-align: right; }
+.budget-module td.center { text-align: center; }
+
+/* Expand cell styling - bigger arrows */
+.budget-module td.expand-cell {
+  padding: 8px 10px;
+  width: 44px;
+}
+
+/* Expand arrows - MORE VISIBLE (slate-600, 20px) */
+.budget-module td.expand-cell svg,
+.budget-module .expand-chevron {
+  width: 20px !important;
+  height: 20px !important;
+  color: var(--slate-600) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Arrow turns blue on row hover */
+.budget-module tbody tr.ledger-row:hover td.expand-cell svg {
+  color: var(--budget-primary) !important;
+}
+
+/* Arrow rotated + blue when expanded */
+.budget-module td.expand-cell svg.rotate-90 {
+  color: var(--budget-primary) !important;
+}
+
+.budget-module tbody tr {
+  transition: all 0.15s ease;
+}
+
+/* V8 UI POLISH: Row hover - slate-50 + blue left accent */
+.budget-module tbody tr.ledger-row:hover { 
+  background: var(--slate-50) !important;
+  box-shadow: inset 3px 0 0 var(--budget-primary);
+  cursor: pointer;
+}
+
+/* Expanded parent row */
+.budget-module tbody tr.expanded-parent {
+  background: var(--budget-primary-bg) !important;
+  box-shadow: inset 4px 0 0 var(--budget-primary);
+}
+
+/* No border on last row */
+.budget-module tbody tr:last-child td { 
+  border-bottom: none; 
+}
+
+/* ============================================
+   ASSIGNMENT CELL
+   V8 QA: Consistent slate-600 badge (not random colors)
+   ============================================ */
+.budget-module .assignment-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* V8 QA FIX: Assignment badge - CONSISTENT slate-600 color */
+.budget-module .assignment-badge {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  font-family: var(--budget-font-mono);
+  color: white;
+  flex-shrink: 0;
+  background: #475569; /* slate-600 - CONSISTENT */
+}
+
+/* Legacy support for old assignment-icon class */
+.budget-module .assignment-icon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  font-family: var(--budget-font-mono);
+  color: white;
+  flex-shrink: 0;
+  background: #475569; /* slate-600 - CONSISTENT */
+}
+
+/* Remove old type-based icon colors - now all consistent */
+.budget-module .assignment-icon.insourced,
+.budget-module .assignment-icon.cosourced,
+.budget-module .assignment-icon.outsourced { 
+  background: #475569; /* All same: slate-600 */
+}
+
+.budget-module .assignment-info {
+  line-height: 1.3;
+}
+
+.budget-module .assignment-info h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: var(--slate-800);
+}
+
+.budget-module .assignment-info span {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--slate-500);
+}
+
+/* ============================================
+   VENDOR CELL
+   V8 QA: Consistent styling for all cases
+   ============================================ */
+.budget-module .vendor-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.budget-module .vendor-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--slate-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--slate-600);
+  flex-shrink: 0;
+}
+
+.budget-module .vendor-name {
+  font-size: 13px;
+  color: var(--slate-700);
+}
+
+/* ============================================
+   BADGES
+   V8 QA: Consistent rounded-full styling
+   ============================================ */
+
+/* Type Badge - with border for extra definition */
+.budget-module .type-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 9999px; /* rounded-full */
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.budget-module .type-badge.insourced { 
+  background: #dbeafe; /* blue-100 */
+  color: #1d4ed8; /* blue-700 */
+  border-color: #93c5fd; /* blue-300 */
+}
+.budget-module .type-badge.cosourced { 
+  background: #ccfbf1; /* teal-100 */
+  color: #0f766e; /* teal-700 */
+  border-color: #5eead4; /* teal-300 */
+}
+.budget-module .type-badge.outsourced { 
+  background: #fef3c7; /* amber-100 */
+  color: #b45309; /* amber-700 */
+  border-color: #fcd34d; /* amber-300 */
+}
+
+/* ============================================
+   Status Badge - V8 UI POLISH
+   ALL statuses use SAME badge component with consistent styling
+   FIX: "Completed" now has proper badge (not plain text)
+   ============================================ */
+.budget-module .status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 9999px; /* rounded-full */
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* In Progress - Blue */
+.budget-module .status-badge.in-progress { 
+  background: #dbeafe; /* blue-100 */
+  color: #1d4ed8; /* blue-700 */
+}
+
+/* Completed - Slate (MUST have badge styling, not plain text) */
+.budget-module .status-badge.completed { 
+  background: #f1f5f9 !important; /* slate-100 */
+  color: #475569 !important; /* slate-600 */
+}
+
+/* On Hold - Amber */
+.budget-module .status-badge.on-hold { 
+  background: #fef3c7; /* amber-100 */
+  color: #b45309; /* amber-700 */
+}
+
+/* Not Started / Yet to Start - Light slate */
+.budget-module .status-badge.yet-to-start,
+.budget-module .status-badge.not-started { 
+  background: #f1f5f9; /* slate-100 */
+  color: #64748b; /* slate-500 */
+}
+
+/* Payment Badge - V8 QA: Clear red for unpaid, green for on-track */
+.budget-module .payment-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px; /* rounded-full */
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.budget-module .payment-badge.na { 
+  background: transparent;
+  color: #94a3b8; /* slate-400 */
+}
+.budget-module .payment-badge.on-track { 
+  background: #dcfce7; /* green-100 */
+  color: #166534; /* green-800 */
+}
+.budget-module .payment-badge.unpaid { 
+  background: #fee2e2; /* red-100 */
+  color: #b91c1c; /* red-700 */
+  font-weight: 700;
+}
+
+/* Cost Cell - with type colors */
+.budget-module .cost-cell {
+  font-family: var(--budget-font-mono);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.budget-module .cost-cell.insourced { color: #2563eb; }
+.budget-module .cost-cell.cosourced { color: #0d9488; }
+.budget-module .cost-cell.outsourced { color: #d97706; }
+.budget-module .cost-cell.muted { color: var(--budget-text-muted); }
+
+/* ============================================
+   TABLE FOOTER
+   V8 Spec: 9px label, 15px/700 Mono value
+   ============================================ */
+.budget-module .table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--budget-bg-page);
+  border-top: 1px solid var(--budget-border);
+}
+
+.budget-module .footer-stats {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--budget-text-muted);
+}
+
+.budget-module .footer-totals {
+  display: flex;
+  gap: 32px;
+}
+
+.budget-module .footer-total { 
+  text-align: right; 
+}
+
+.budget-module .footer-total-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--budget-text-muted);
+  margin-bottom: 2px;
+}
+
+.budget-module .footer-total-value {
+  font-family: var(--budget-font-mono);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* ============================================
+   DATA QUALITY PANEL
+   V8 Spec: Warning bg, 2px border, 13px title
+   ============================================ */
+.budget-module .quality-panel {
+  background: var(--budget-warning-light);
+  border: 2px solid #fbbf24;
+  border-radius: var(--budget-radius-md);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.budget-module .quality-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.budget-module .quality-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #92400e;
+}
+
+.budget-module .quality-toggle {
+  font-size: 11px;
+  font-weight: 600;
+  color: #92400e;
+  cursor: pointer;
+  text-decoration: underline;
+  background: none;
+  border: none;
+}
+
+.budget-module .quality-items {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px 24px;
+}
+
+.budget-module .quality-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #78350f;
+}
+
+/* ============================================
+   EXECUTIVE MODAL
+   V8 Spec: 12px radius, proper header/footer
+   ============================================ */
+.budget-module .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px); /* per spec I1.2 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 24px;
+}
+
+.budget-module .modal {
+  background: var(--budget-bg-surface);
+  border-radius: 16px; /* per spec I1.5 */
+  width: 100%;
+  max-width: 960px; /* per spec I1.4 */
+  max-height: calc(80vh);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--budget-shadow-lg);
+}
+
+.budget-module .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--budget-border);
+}
+
+.budget-module .modal-header h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--budget-text-primary);
+}
+
+.budget-module .modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  max-height: calc(80vh - 130px);
+}
+
+.budget-module .modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--budget-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Slide Navigation */
+.budget-module .slide-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.budget-module .slide-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--budget-border-strong);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.budget-module .slide-dot.active {
+  background: var(--budget-primary);
+  width: 24px;
+}
+
+/* Executive Summary Grid */
+.budget-module .exec-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.budget-module .exec-summary-item {
+  background: var(--budget-bg-page);
+  border-radius: var(--budget-radius-lg);
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--budget-shadow-sm);
+}
+
+.budget-module .exec-summary-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+.budget-module .exec-summary-item.insourced::before { background: var(--budget-insourced); }
+.budget-module .exec-summary-item.cosourced::before { background: var(--budget-cosourced); }
+.budget-module .exec-summary-item.outsourced::before { background: var(--budget-outsourced); }
+
+.budget-module .exec-summary-item:hover { 
+  border-color: var(--budget-primary); 
+  box-shadow: var(--budget-shadow-md);
+}
+
+.budget-module .exec-summary-item.active {
+  border-color: var(--budget-primary);
+  background: var(--budget-primary-bg);
+}
+
+.budget-module .exec-summary-item h3 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--budget-text-secondary);
+  margin-bottom: 8px;
+}
+
+/* V8: Exec modal values - 28px/700 Mono per audit spec D3 */
+.budget-module .exec-summary-item .value {
+  font-family: var(--budget-font-mono);
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.budget-module .exec-summary-item.insourced .value { color: var(--budget-insourced); }
+.budget-module .exec-summary-item.cosourced .value { color: var(--budget-cosourced); }
+.budget-module .exec-summary-item.outsourced .value { color: var(--budget-outsourced); }
+
+.budget-module .exec-summary-item .subtitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--budget-text-muted);
+  margin-top: 8px;
+}
+
+/* Alert Panel */
+.budget-module .exec-alert {
+  background: var(--budget-danger-light);
+  border: 1px solid #fecaca;
+  border-radius: var(--budget-radius-xl);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.budget-module .exec-alert-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #991b1b;
+  margin-bottom: 8px;
+}
+
+.budget-module .exec-alert-items {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.budget-module .exec-alert-item {
+  background: white;
+  border-radius: var(--budget-radius-md);
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.budget-module .exec-alert-item-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--budget-text-primary);
+}
+
+.budget-module .exec-alert-item-amount {
+  font-family: var(--budget-font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--budget-danger);
+}
+
+/* Vendor Cell */
+.budget-module .vendor-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.budget-module .vendor-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--budget-radius-sm);
+  background: var(--budget-bg-page);
+  border: 1px solid var(--budget-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--budget-text-secondary);
+}
+
+.budget-module .vendor-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--budget-text-primary);
+}
+
+/* ============================================
+   EXECUTIVE SUMMARY BUTTON
+   H1 Spec: Blue bg, white text - per audit
+   ============================================ */
+.budget-module .exec-summary-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px; /* per C2.4 spec */
+  background: var(--budget-primary); /* per H1.1: Blue bg */
+  border: none;
+  border-radius: var(--budget-radius-md);
+  color: white;
+  font-family: var(--budget-font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--budget-shadow-sm);
+  transition: all 0.15s ease;
+}
+
+.budget-module .exec-summary-btn:hover {
+  background: var(--budget-primary-dark); /* per H1.2: #1d4ed8 */
+  transform: translateY(-1px);
+  box-shadow: var(--budget-shadow-md);
+}
+
+.budget-module .exec-summary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.35);
+}
+
+.budget-module .exec-summary-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--budget-shadow-sm);
+}
+
+.budget-module .exec-summary-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ============================================
+   LIVE BADGE ANIMATION
+   ============================================ */
+@keyframes budget-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+.budget-module .live-dot {
+  animation: budget-pulse 2s infinite;
+}
+
+/* ============================================
+   FOCUS STATES (Accessibility)
+   ============================================ */
+.budget-module button:focus-visible,
+.budget-module .dept-tab:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .budget-module * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   EXPANDED PANELS (Summary Card Breakdowns)
+   ============================================ */
+.budget-module .expanded-panel {
+  background: var(--budget-bg-surface);
+  border: 1px solid var(--budget-border);
+  border-radius: var(--budget-radius-lg);
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: var(--budget-shadow-md);
+}
+
+.budget-module .expanded-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--budget-bg-page);
+  border-bottom: 1px solid var(--budget-border);
+}
+
+.budget-module .expanded-panel-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--budget-text-primary);
+}
+
+.budget-module .expanded-panel-body {
+  padding: 16px 18px;
+}
+
+.budget-module .expanded-panel-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.budget-module .expanded-panel-table th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--budget-text-muted);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--budget-border);
+}
+
+.budget-module .expanded-panel-table th.center { text-align: center; }
+.budget-module .expanded-panel-table th.right { text-align: right; }
+
+.budget-module .expanded-panel-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--budget-border-light);
+  font-size: 13px;
+  color: var(--budget-text-primary);
+}
+
+.budget-module .expanded-panel-table td.center { text-align: center; }
+.budget-module .expanded-panel-table td.right { text-align: right; }
+
+.budget-module .expanded-panel-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.budget-module .expanded-panel-table tbody tr:hover {
+  background: var(--budget-primary-bg);
+}
+
+/* ============================================
+   EXPANDED ROWS (Ledger Table Resource Details)
+   ============================================ */
+
+/* Parent row expansion indicator - blue left border */
+.budget-module tbody tr.expanded-parent {
+  background: #eff6ff !important; /* blue-50 */
+  border-left: 4px solid #2563eb !important;
+}
+
+.budget-module tbody tr.expanded-parent:hover {
+  background: #eff6ff !important;
+}
+
+/* Chevron rotation for expanded state */
+.budget-module .expand-chevron {
+  transition: transform 0.2s ease;
+  color: #94a3b8; /* slate-400 */
+}
+
+.budget-module .expand-chevron.expanded {
+  transform: rotate(90deg);
+  color: #2563eb; /* blue-600 */
+}
+
+.budget-module .expanded-row td {
+  padding: 0 !important;
+  background: var(--budget-bg-page);
+}
+
+.budget-module .expanded-content {
+  padding: 16px 20px 16px 64px;
+  border-top: 1px solid var(--budget-border);
+}
+
+.budget-module .expanded-table {
+  width: 100%;
+  background: var(--budget-bg-surface);
+  border: 1px solid var(--budget-border);
+  border-radius: var(--budget-radius-md);
+  overflow: hidden;
+  box-shadow: var(--budget-shadow-sm);
+}
+
+.budget-module .expanded-table th {
+  text-align: left;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--budget-text-muted);
+  padding: 8px 12px;
+  background: var(--budget-bg-page);
+  border-bottom: 1px solid var(--budget-border);
+}
+
+.budget-module .expanded-table th.right { text-align: right; }
+
+.budget-module .expanded-table td {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--budget-text-primary);
+  border-bottom: 1px solid var(--budget-border-light);
+}
+
+.budget-module .expanded-table td.right { text-align: right; }
+
+.budget-module .expanded-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.budget-module .expanded-table tbody tr:hover {
+  background: var(--budget-primary-bg);
+}
+
+/* Licenses badge color */
+.budget-module .summary-card.licenses .summary-badge {
+  background: var(--budget-warning-light);
+  color: var(--budget-warning);
+}
+
+/* Animated reveal */
+.budget-module .animate-in {
+  animation: slideInFromTop 0.2s ease-out;
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
