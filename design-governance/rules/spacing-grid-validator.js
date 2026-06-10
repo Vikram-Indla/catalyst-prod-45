@@ -9,9 +9,14 @@ import path from 'path';
 class SpacingGridValidator {
   constructor() {
     this.violations = [];
-    this.validSpacings = ['4px', '8px', '16px', '24px', '32px', '0px', '0'];
-    this.validSpacingsRem = ['0.25rem', '0.5rem', '1rem', '1.5rem', '2rem']; // 4/8/16/24/32 in rem
-    this.spacingProperties = ['padding', 'margin', 'gap', 'gutter', 'inset', 'top', 'bottom', 'left', 'right'];
+    // Canonical Catalyst grid {0,4,8,12,16,24,32,40,48} — aligned with
+    // ads-token-scanner's VALID_GRID (2026-05-19 audit-fraud fix). 12px was
+    // missing here, flagging legal values across the codebase.
+    this.validSpacings = ['4px', '8px', '12px', '16px', '24px', '32px', '40px', '48px', '0px', '0'];
+    this.validSpacingsRem = ['0.25rem', '0.5rem', '0.75rem', '1rem', '1.5rem', '2rem', '2.5rem', '3rem'];
+    // Positioning offsets (top/bottom/left/right/inset) are coordinates, not
+    // spacing — a 1px badge offset is not a grid violation. Spacing props only.
+    this.spacingProperties = ['padding', 'margin', 'gap', 'gutter'];
   }
 
   scanFile(filePath) {
@@ -44,12 +49,16 @@ class SpacingGridValidator {
         return;
       }
       if (opensBlock) inBlockComment = true;
+      // Strip var(...) expressions before matching — px values inside ADS
+      // token fallbacks (e.g. var(--ds-space-075, 6px)) are the canonical
+      // pattern, not violations (same fix as ads-token-scanner, 2026-05-19).
+      const scanLine = line.replace(/var\([^)]*\)/g, 'var()');
       this.spacingProperties.forEach(prop => {
         // Match inline style values like padding: 5px, margin: 10px, etc.
         const regex = new RegExp(`${prop}[^:]*:\\s*([0-9]+)px`, 'g');
         let match;
 
-        while ((match = regex.exec(line)) !== null) {
+        while ((match = regex.exec(scanLine)) !== null) {
           const value = `${match[1]}px`;
           
           if (!this.validSpacings.includes(value) && !line.trim().startsWith('//')) {

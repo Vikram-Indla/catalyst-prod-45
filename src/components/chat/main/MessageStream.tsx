@@ -24,6 +24,14 @@ import { MessageReactions } from './MessageReactions';
 import { MessageSearchPanel } from './MessageSearchPanel';
 import Tooltip from '@atlaskit/tooltip';
 import { IconButton } from '@atlaskit/button/new';
+import Button from '@atlaskit/button/new';
+import ModalDialog, {
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTransition,
+} from '@atlaskit/modal-dialog';
 import EmojiAddIcon from '@atlaskit/icon/core/emoji-add';
 import { TicketKeyChip } from './TicketKeyChip';
 import { useIssueRefs, type IssueRefMap } from '@/hooks/chat/useIssueRefs';
@@ -403,6 +411,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
   const [editValue, setEditValue] = useState(msg.bodyText);
   const [showReactPicker, setShowReactPicker] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const reactButtonRef = useRef<HTMLButtonElement>(null);
   const addReactionButtonRef = useRef<HTMLButtonElement>(null);
   const [pickerAnchor, setPickerAnchor] = useState<'toolbar' | 'inline'>('toolbar');
@@ -580,7 +589,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
                   </button>
                 )}
                 {isOwn && (
-                  <button type="button" className="cc-msg__moremenu-item cc-msg__moremenu-item--danger" onClick={() => { onDelete?.(msg.id); setShowMore(false); }}>
+                  <button type="button" className="cc-msg__moremenu-item cc-msg__moremenu-item--danger" onClick={() => { setConfirmDelete(true); setShowMore(false); }}>
                     Delete
                   </button>
                 )}
@@ -588,6 +597,34 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
             )}
           </div>
         )}
+
+        <ModalTransition>
+          {confirmDelete && (
+            <ModalDialog onClose={() => setConfirmDelete(false)} width="small">
+              <ModalHeader>
+                <ModalTitle appearance="danger">Delete message?</ModalTitle>
+              </ModalHeader>
+              <ModalBody>
+                This will permanently remove the message for everyone in the
+                conversation. This can't be undone.
+              </ModalBody>
+              <ModalFooter>
+                <Button appearance="subtle" onClick={() => setConfirmDelete(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  appearance="danger"
+                  onClick={() => {
+                    setConfirmDelete(false);
+                    onDelete?.(msg.id);
+                  }}
+                >
+                  Delete
+                </Button>
+              </ModalFooter>
+            </ModalDialog>
+          )}
+        </ModalTransition>
 
         <ReactionPicker
           isOpen={showReactPicker}

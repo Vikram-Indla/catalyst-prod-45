@@ -65,11 +65,13 @@ export function ScheduleSendDropdown({
   return (
     <>
       <DropdownMenu
-        trigger={({ triggerRef, ...providedProps }) => (
+        trigger={({ triggerRef, isSelected, testId, ...providedProps }: any) => (
           // Render-prop trigger: passing a <button> element directly makes
           // DropdownMenu wrap it in its own button → invalid nested <button>.
+          // isSelected/testId are Atlaskit-internal, not DOM attributes.
           <button
             {...providedProps}
+            data-testid={testId}
             ref={triggerRef as React.Ref<HTMLButtonElement>}
             type="button"
             style={{
