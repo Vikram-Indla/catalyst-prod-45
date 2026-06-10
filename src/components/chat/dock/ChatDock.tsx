@@ -15,7 +15,7 @@
 import React, { useState } from 'react';
 import { IconButton } from '@atlaskit/button/new';
 import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
-import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
+import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { useConversations } from '@/hooks/chat/useConversations';
@@ -219,12 +219,14 @@ export function ChatDock({
         </div>
 
         {/* Shared header icons — context-aware */}
-        {dockMode === 'messages' && (
-          <IconButton icon={EditorAddIcon} label="Browse directory" appearance="subtle" spacing="compact" onClick={onFocusDirectory} />
-        )}
-        <IconButton icon={ShortcutIcon} label="Pop out" appearance="subtle" spacing="compact" onClick={onPopOut} />
-        <IconButton icon={ChevronDownIcon} label="Minimize" appearance="subtle" spacing="compact" onClick={onToggleCollapsed} />
-        <IconButton icon={CrossIcon} label="Close" appearance="subtle" spacing="compact" onClick={onToggleCollapsed} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 0, paddingLeft: 4 }}>
+          {dockMode === 'messages' && (
+            <IconButton icon={EditorAddIcon} label="New conversation" appearance="subtle" spacing="compact" onClick={onFocusDirectory} />
+          )}
+          <IconButton icon={VidFullScreenOnIcon} label="Open full view" appearance="subtle" spacing="compact" onClick={onPopOut} />
+          <IconButton icon={ChevronDownIcon} label="Minimize" appearance="subtle" spacing="compact" onClick={onToggleCollapsed} />
+          <IconButton icon={CrossIcon} label="Close" appearance="subtle" spacing="compact" onClick={onToggleCollapsed} />
+        </div>
       </div>
 
       {/* Messages mode — directory OR conversation pane */}

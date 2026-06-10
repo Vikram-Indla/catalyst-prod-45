@@ -563,11 +563,11 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
                 <ProjectIcon projectKey={p.key} size="medium" />
                 <div className="cc-dir__body">
                   <div className="cc-dir__top">
-                    <span className="cc-dir__name">#{p.key.toLowerCase()}</span>
+                    <span className="cc-dir__name">{p.name || p.key}</span>
                     {c && <span className="cc-dir__time">{relativeShort(c.lastMessageAt)}</span>}
                   </div>
                   <div className="cc-dir__preview">
-                    {c?.lastMessagePreview ?? (p.name ? `${p.name} · project channel` : 'project channel')}
+                    {c?.lastMessagePreview ?? 'Project channel'}
                   </div>
                 </div>
                 {c && c.unreadCount > 0 ? (

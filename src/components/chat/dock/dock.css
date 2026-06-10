@@ -23,49 +23,60 @@
   /* ads-scanner:ignore-next-line */
   border-bottom: 1px solid var(--ds-border, #DFE1E6);
   display: flex;
-  align-items: center;
-  padding: 0 8px;
-  gap: 4px;
+  align-items: stretch;
+  padding: 0 4px 0 0;
+  gap: 0;
   background: var(--ds-surface, #FFFFFF);
 }
 
-/* Dual-mode tab pills */
+/* Dual-mode underline tabs — enterprise pattern (Slack/Jira nav style) */
 .cc-mode-tabs {
   flex: 1;
   display: flex;
-  align-items: center;
-  gap: 2px;
-  background: var(--ds-background-neutral, #F1F2F4);
-  border-radius: 6px;
-  padding: 2px;
+  align-items: stretch;
+  gap: 0;
   min-width: 0;
+  /* ads-scanner:ignore-next-line */
+  border-bottom: 1px solid var(--ds-border, #DFE1E6);
+  margin-bottom: -1px; /* overlap the header border-bottom */
 }
 
 .cc-mode-tab {
-  flex: 1;
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  height: 28px;
-  border-radius: 4px;
+  height: 47px;
   border: none;
+  border-bottom: 2px solid transparent;
   background: transparent;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 400;
   color: var(--ds-text-subtle, #44546F);
   cursor: pointer;
   white-space: nowrap;
-  padding: 0 8px;
+  padding: 0 16px;
   position: relative;
-  transition: background 0.1s, color 0.1s;
+  transition: color 0.1s, border-bottom-color 0.1s;
+}
+
+.cc-mode-tab:hover {
+  color: var(--ds-text, #172B4D);
+  background: var(--ds-background-neutral-subtle-hovered, #EBECF0);
 }
 
 .cc-mode-tab--active {
-  background: var(--ds-surface, #FFFFFF);
+  background: transparent;
   color: var(--ds-text, #172B4D);
   font-weight: 600;
-  box-shadow: var(--ds-shadow-raised, 0 1px 2px rgba(9, 30, 66, 0.18));
+  border-bottom-color: var(--ds-border-brand, #0C66E4);
+  box-shadow: none;
+}
+
+/* Small gap between mode tabs and action icons in header */
+.cc-dock__header > [class*="cc-mode-tabs"] + * {
+  margin-left: 4px;
 }
 
 .cc-mode-tab__badge {
