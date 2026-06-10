@@ -129,8 +129,8 @@ function totalBg(ms: number, max: number): string {
 }
 
 const ROW_HEIGHT = 35;
-const STATUS_COL_MIN = 140;
-const FROZEN_LEFT_WIDTH = 460;
+const STATUS_COL_MIN = 160;
+const FROZEN_LEFT_WIDTH = 520;
 
 interface Props {
   isOpen: boolean;
@@ -153,8 +153,11 @@ export default function TimeInStatusFullscreenModal({
 }: Props) {
   const [issueType, setIssueType] = useState<string>(initialIssueType);
   const [windowPreset, setWindowPreset] = useState<WindowPreset>(initialWindowPreset);
-  const pageSize = 100; // Bigger page in executive view; whole matrix at once.
-  const [offset, setOffset] = useState(0);
+  // 2026-06-10 Fix 6 — load ALL tickets in modal (fullscreen IS the "all"
+  // surface). Drop pagination. pageSize bumped to a safe ceiling above
+  // any realistic project size; useTimeInStatusMatrix returns total + rows
+  // unaffected if total < limit.
+  const pageSize = 1000;
   const { dateFrom, dateTo } = resolveWindow(windowPreset);
 
   const { data, isLoading, isError, isFetching } = useTimeInStatusMatrix(projectKey, {
@@ -164,7 +167,7 @@ export default function TimeInStatusFullscreenModal({
     assigneeFilter,
     priorityFilter,
     limit: pageSize,
-    offset,
+    offset: 0,
   });
 
   const rows = data?.rows ?? [];
@@ -192,10 +195,12 @@ export default function TimeInStatusFullscreenModal({
       {isOpen && (
         <Modal
           onClose={onClose}
-          width="x-large"
+          // 2026-06-10 Fix 2 — modal stretches to 90vw. AtlasKit's
+          // x-large preset capped near 968px which left ~30% of viewport
+          // unused and truncated long status names. Numeric width prop
+          // accepts a px value.
+          width={Math.round((typeof window !== 'undefined' ? window.innerWidth : 1600) * 0.9)}
           shouldScrollInViewport={false}
-          // Bypass Atlaskit's max-width so the matrix can stretch to ~96vw
-          // for very wide workflows (10+ status columns).
           autoFocus
         >
           <ModalHeader>
@@ -280,15 +285,9 @@ export default function TimeInStatusFullscreenModal({
               </div>
             </div>
 
-            {!isLoading && rows.length > 0 && !hasAnyHistory && (
-              <div style={{ padding: '12px 0 0' }}>
-                <SectionMessage appearance="information" title="Lifecycle data accumulates forward">
-                  Status transitions are tracked from now onwards. Cells currently
-                  show full age in current status. Run the Jira changelog backfill
-                  to populate historical transitions.
-                </SectionMessage>
-              </div>
-            )}
+            {/* 2026-06-10 Fix 5 — Lifecycle banner removed in modal too.
+                Widget dropped this 2026-06-09 per Vikram directive;
+                modal continues that contract. */}
 
             {/* Matrix body */}
             {isLoading ? (
@@ -346,7 +345,11 @@ export default function TimeInStatusFullscreenModal({
                             borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                           }}
                         >
-                          <AkLozenge appearance={lozengeAppearance(s.category, s.name)} isBold>
+                          {/* 2026-06-10 Fix 1 — drop isBold (banned per
+                              CLAUDE.md: isBold on Lozenge → H4=0). Default
+                              non-bold lozenge uses ADS category colours,
+                              NOT black. */}
+                          <AkLozenge appearance={lozengeAppearance(s.category, s.name)}>
                             {s.name}
                           </AkLozenge>
                         </th>
@@ -386,18 +389,24 @@ export default function TimeInStatusFullscreenModal({
                             width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                           }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                            <PriorityIcon level={r.priority} size={14} />
+                          {/* 2026-06-10 Fix 3 — mirror widget BODY
+                              typography on the ticket cell. Was STRONG +
+                              mono bold for the key; now matches widget's
+                              14/400 blue link + 16px type icon. Avatar
+                              size kept small but `marginLeft: 'auto'`
+                              prevents bleed into sticky Total column. */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                            <PriorityIcon level={r.priority} size={16} />
                             <span
                               style={{
-                                display: 'inline-flex', alignItems: 'center', gap: 6,
+                                display: 'inline-flex', alignItems: 'center', gap: 8,
                                 color: token('color.link', '#0C66E4'),
                                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                                ...STRONG, whiteSpace: 'nowrap',
+                                ...BODY, whiteSpace: 'nowrap',
                                 flexShrink: 0,
                               }}
                             >
-                              <JiraIssueTypeIcon type={r.issue_type ?? 'Task'} size={14} />
+                              <JiraIssueTypeIcon type={r.issue_type ?? 'Task'} size={16} />
                               {r.issue_key}
                             </span>
                             <span
@@ -406,13 +415,16 @@ export default function TimeInStatusFullscreenModal({
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
-                                color: token('color.text', '#292A2E'),
+                                ...BODY,
+                                color: token('color.link', '#0C66E4'),
                               }}
                             >
                               {r.title}
                             </span>
                             {r.assignee_display_name && (
-                              <UserAvatar size="small" name={r.assignee_display_name} src={r.assignee_avatar_url} />
+                              <span style={{ flexShrink: 0, marginRight: 8 }}>
+                                <UserAvatar size="small" name={r.assignee_display_name} src={r.assignee_avatar_url} />
+                              </span>
                             )}
                           </div>
                         </td>
@@ -488,6 +500,9 @@ export default function TimeInStatusFullscreenModal({
             )}
           </ModalBody>
           <ModalFooter>
+            {/* 2026-06-10 Fix 6 — drop Prev/Next pagination. Fullscreen
+                IS the "all data" surface; load all rows in one fetch.
+                Footer = ticket count + close. */}
             <span
               style={{
                 ...SMALL,
@@ -495,25 +510,15 @@ export default function TimeInStatusFullscreenModal({
                 marginRight: 'auto',
               }}
             >
-              Showing {rows.length} of {total} {issueType} tickets · {WINDOW_LABELS[windowPreset]}
+              {total} {issueType} tickets · {WINDOW_LABELS[windowPreset]}
               {isFetching && (
                 <span style={{ marginLeft: 8, display: 'inline-flex', verticalAlign: 'middle' }}>
                   <Spinner size="small" />
                 </span>
               )}
             </span>
-            {offset > 0 && (
-              <Button appearance="subtle" onClick={() => setOffset(Math.max(0, offset - pageSize))}>
-                ← Prev
-              </Button>
-            )}
-            {offset + rows.length < total && (
-              <Button appearance="subtle" onClick={() => setOffset(offset + pageSize)}>
-                Next →
-              </Button>
-            )}
             <Button appearance="primary" onClick={onClose}>
-              Done
+              Close
             </Button>
           </ModalFooter>
         </Modal>

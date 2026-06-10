@@ -230,8 +230,8 @@ function totalBg(ms: number, max: number): string {
 }
 
 const ROW_HEIGHT = 35;
-const STATUS_COL_MIN = 128;       // bumped from 96 — gives "3mo 12d ×2" room to breathe
-const FROZEN_LEFT_WIDTH = 420;    // bumped from 380; priority + key + title + assignee
+const STATUS_COL_MIN = 160;       // 2026-06-10 Fix 7 — fits ADS-colored (non-black) lozenge + duration + chip
+const FROZEN_LEFT_WIDTH = 460;    // 2026-06-10 Fix 4 — avatar bleed mitigation, mirrors modal
 const TOTAL_COL_WIDTH = 110;
 
 export default function TimeInStatusWidget({
@@ -463,7 +463,10 @@ export default function TimeInStatusWidget({
                       borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                     }}
                   >
-                    <AkLozenge appearance={lozengeAppearance(s.category, s.name)} isBold>
+                    {/* 2026-06-10 Fix 1 — isBold removed (banned per CLAUDE.md
+                        ADS sensor rule). Default appearance uses ADS category
+                        colours: todo→gray, in_progress→blue, done→green. NOT black. */}
+                    <AkLozenge appearance={lozengeAppearance(s.category, s.name)}>
                       {s.name}
                     </AkLozenge>
                   </th>
