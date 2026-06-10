@@ -157,7 +157,7 @@ const AtlaskitEditor = forwardRef<AtlaskitEditorRef, AtlaskitEditorProps>(
             placeholder={placeholder}
             disabled={disabled}
             onChange={handleChange}
-            onSave={appearance === 'comment' ? handleSave : undefined}
+            onSave={appearance === 'comment' && onSave ? handleSave : undefined}
             onCancel={onCancel}
             onEditorReady={handleEditorReady}
             primaryToolbarComponents={primaryToolbarComponents}
