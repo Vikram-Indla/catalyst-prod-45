@@ -4,7 +4,7 @@
  * initials avatars, reaction chips, highlighted @mention tokens, and the
  * "N replies" thread affordance. Reads real ChatMessage[] from useMessages.
  */
-import React, { useMemo, useState, lazy, Suspense, useRef } from 'react';
+import React, { useMemo, useState, lazy, Suspense, useRef, useCallback } from 'react';
 import type { ChatMessage } from '@/types/chat';
 import { Avatar, initialsOf, colorFor } from './avatar';
 import { useConversationAttachments, type ChatAttachment } from '@/hooks/chat/useChatAttachments';
@@ -21,6 +21,7 @@ import { MentionToken } from './MentionToken';
 import { MessageActionsToolbar } from './MessageActionsToolbar';
 import { ReactionPicker } from './ReactionPicker';
 import { MessageReactions } from './MessageReactions';
+import { MessageSearchPanel } from './MessageSearchPanel';
 
 // Lazy renderer — Atlaskit @atlaskit/renderer chunk only loads when a
 // message actually has body_adf content.
@@ -143,6 +144,22 @@ export function MessageStream({
   onTurnIntoIssue,
   currentUserId,
 }: MessageStreamProps) {
+  // Message refs for scroll-to-message from search
+  const messageRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
+
+  const handleScrollToMessage = useCallback((messageId: string) => {
+    const ref = messageRefs.current.get(messageId);
+    if (ref) {
+      ref.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      ref.focus();
+      // Flash highlight
+      ref.style.background = 'var(--ds-background-selected, #e9f2fe)';
+      setTimeout(() => {
+        ref.style.background = '';
+      }, 1500);
+    }
+  }, []);
+
   // Pull attachments for the active conversation in a single batched query and
   // index them by message_id so each MessageRow can render its own previews
   // without N+1 round-trips.
@@ -189,6 +206,11 @@ export function MessageStream({
   if (!isLoading && rows.length === 0) {
     return (
       <div className="cc-conv-stream">
+        <MessageSearchPanel
+          conversationId={conversationId}
+          messages={messages}
+          onScrollToMessage={handleScrollToMessage}
+        />
         <div className="cc-stream-empty">
           No messages yet — start the conversation below.
         </div>
@@ -198,6 +220,11 @@ export function MessageStream({
 
   return (
     <div className="cc-conv-stream">
+      <MessageSearchPanel
+        conversationId={conversationId}
+        messages={messages}
+        onScrollToMessage={handleScrollToMessage}
+      />
       {hasMore ? (
         <div className="cc-divider">
           <div className="cc-divider__rule" />
@@ -226,6 +253,13 @@ export function MessageStream({
           <MessageRow
             key={row.msg.id}
             msg={row.msg}
+            ref={(ref) => {
+              if (ref) {
+                messageRefs.current.set(row.msg.id, ref);
+              } else {
+                messageRefs.current.delete(row.msg.id);
+              }
+            }}
             attachments={attachmentsByMessage.get(row.msg.id) ?? []}
             isPinned={pinnedSet.has(row.msg.id)}
             isBookmarked={bookmarkedSet.has(row.msg.id)}
@@ -261,23 +295,7 @@ export function MessageStream({
   );
 }
 
-function MessageRow({
-  msg,
-  attachments,
-  isPinned,
-  isBookmarked,
-  onTogglePin,
-  onToggleBookmark,
-  onOpenThread,
-  onToggleReaction,
-  onEdit,
-  onDelete,
-  onMarkUnread,
-  onSetReminder,
-  onTurnIntoIssue,
-  conversationId,
-  isOwn,
-}: {
+interface MessageRowProps {
   msg: ChatMessage;
   attachments?: ChatAttachment[];
   isPinned?: boolean;
@@ -293,7 +311,25 @@ function MessageRow({
   onTurnIntoIssue?: (messageId: string, title: string, description: string, assigneeId?: string) => Promise<void>;
   conversationId?: string;
   isOwn?: boolean;
-}) {
+}
+
+const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
+  msg,
+  attachments,
+  isPinned,
+  isBookmarked,
+  onTogglePin,
+  onToggleBookmark,
+  onOpenThread,
+  onToggleReaction,
+  onEdit,
+  onDelete,
+  onMarkUnread,
+  onSetReminder,
+  onTurnIntoIssue,
+  conversationId,
+  isOwn,
+}, ref) => {
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(msg.bodyText);
   const [showReactPicker, setShowReactPicker] = useState(false);
@@ -314,7 +350,7 @@ function MessageRow({
   };
 
   return (
-    <div className="cc-msg cc-msg--row" ref={messageRowRef} tabIndex={-1}>
+    <div className="cc-msg cc-msg--row" ref={ref || messageRowRef} tabIndex={-1}>
       <Avatar name={msg.authorName} seed={msg.authorId} color={colorFor(msg.authorId)} className="cc-msg__av" />
       <div className="cc-msg__body">
         <div className="cc-msg__head">
@@ -495,7 +531,9 @@ function MessageRow({
       </div>
     </div>
   );
-}
+});
+
+MessageRow.displayName = 'MessageRow';
 
 export { initialsOf };
 export default MessageStream;
