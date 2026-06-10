@@ -5,6 +5,7 @@
  */
 import React, { useState } from 'react';
 import Button from '@atlaskit/button/new';
+import { Checkbox } from '@atlaskit/checkbox';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import type { ChatMessage } from '@/types/chat';
 import { useThreadMessages } from '@/hooks/chat/useThreadMessages';
@@ -14,12 +15,23 @@ export interface ThreadPanelProps {
   conversationId: string;
   parentMessage: ChatMessage;
   onClose: () => void;
+  /** Conversation name shown in the header ("Thread · <name>"). */
+  conversationTitle?: string;
+  /** When set, the "Also send to <conversation>" checkbox posts the reply to the conversation too. */
+  onAlsoSendToConversation?: (text: string) => void | Promise<void>;
 }
 
-export function ThreadPanel({ conversationId, parentMessage, onClose }: ThreadPanelProps) {
+export function ThreadPanel({
+  conversationId,
+  parentMessage,
+  onClose,
+  conversationTitle,
+  onAlsoSendToConversation,
+}: ThreadPanelProps) {
   const { messages, isLoading, sendReply } = useThreadMessages(conversationId, parentMessage.id);
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
+  const [alsoSend, setAlsoSend] = useState(false);
 
   const submit = async () => {
     const text = draft.trim();
@@ -27,7 +39,9 @@ export function ThreadPanel({ conversationId, parentMessage, onClose }: ThreadPa
     setSending(true);
     try {
       await sendReply(text);
+      if (alsoSend && onAlsoSendToConversation) await onAlsoSendToConversation(text);
       setDraft('');
+      setAlsoSend(false);
     } finally {
       setSending(false);
     }
@@ -52,7 +66,23 @@ export function ThreadPanel({ conversationId, parentMessage, onClose }: ThreadPa
           borderBottom: '1px solid var(--ds-border, #DFE1E6)',
         }}
       >
-        <div style={{ fontWeight: 500, fontSize: 14 }}>Thread</div>
+        <div style={{ fontWeight: 600, fontSize: 14, display: 'flex', alignItems: 'baseline', gap: 6, minWidth: 0 }}>
+          <span>Thread</span>
+          {conversationTitle && (
+            <span
+              style={{
+                fontWeight: 400,
+                fontSize: 12,
+                color: 'var(--ds-text-subtle, #44546F)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              · {conversationTitle}
+            </span>
+          )}
+        </div>
         <div style={{ flex: 1 }} />
         <button
           type="button"
@@ -119,7 +149,15 @@ export function ThreadPanel({ conversationId, parentMessage, onClose }: ThreadPa
             }
           }}
         />
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginTop: 8, gap: 8 }}>
+          {onAlsoSendToConversation && (
+            <Checkbox
+              isChecked={alsoSend}
+              onChange={(e) => setAlsoSend(e.currentTarget.checked)}
+              label={`Also send to ${conversationTitle ?? 'conversation'}`}
+            />
+          )}
+          <div style={{ flex: 1 }} />
           <Button appearance="primary" isDisabled={!draft.trim() || sending} onClick={submit}>
             {sending ? 'Sending…' : 'Reply'}
           </Button>

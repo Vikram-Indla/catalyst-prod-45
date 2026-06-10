@@ -158,6 +158,21 @@ export function ConversationHeader({ conversation, members = [], onAskCaty }: Co
         </span>
       </div>
 
+      {isChannel && members.length > 0 && (
+        <button
+          type="button"
+          className="cc-membercount"
+          aria-label={`${members.length} members — open roster`}
+          onClick={() => setRosterOpen(true)}
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+          </svg>
+          {members.length}
+        </button>
+      )}
+
       <div className="cc-conv-head__spacer" />
 
       {visible.length ? (
