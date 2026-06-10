@@ -35,4 +35,21 @@ describe('filters module — canonical components', () => {
     const matches = src.match(/Create (your first )?filter/g) ?? [];
     expect(matches.length).toBe(1);
   });
+
+  // Jira directory parity (live /rest/api/3/filter/search probe, 2026-06-10)
+  it('FiltersListPage uses the Jira directory toolbar, not tabs', () => {
+    const src = read('FiltersListPage.tsx');
+    expect(src).not.toMatch(/@atlaskit\/tabs/);
+    expect(src).toMatch(/placeholder="Owner"/);
+    expect(src).toMatch(/placeholder="Project"/);
+    expect(src).toMatch(/placeholder="Group"/);
+  });
+
+  it('FiltersListPage renders permissions as icon + text, not lozenges, and has no Last used column', () => {
+    const src = read('FiltersListPage.tsx');
+    expect(src).not.toMatch(/@atlaskit\/lozenge/);
+    expect(src).not.toMatch(/Last used/);
+    expect(src).toMatch(/My organization/);
+    expect(src).toMatch(/All roles/);
+  });
 });
