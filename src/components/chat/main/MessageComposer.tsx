@@ -11,14 +11,12 @@
  *
  * Forwards ref to the textarea element so callers can focus it programmatically.
  */
-import React, { useCallback, useRef, useState, lazy, Suspense, useEffect, forwardRef } from 'react';
+import React, { useCallback, useRef, useState, lazy, Suspense, forwardRef } from 'react';
 import Button from '@atlaskit/button/new';
 import Flag from '@atlaskit/flag';
 import { FlagGroup } from '@atlaskit/flag';
 import ErrorIcon from '@atlaskit/icon/glyph/error';
 import SuccessIcon from '@atlaskit/icon/glyph/check-circle';
-import { MentionPicker } from './MentionPicker';
-import { SlashCommandPalette } from './SlashCommandPalette';
 import { ScheduleSendDropdown } from './ScheduleSendDropdown';
 import { useComposerKeyboardShortcuts } from './useComposerKeyboardShortcuts';
 import { useDraft } from '@/hooks/chat/useDraft';
@@ -54,31 +52,16 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
     }: MessageComposerProps,
     ref,
   ) {
-  // Drafts persist per conversation in localStorage. Clear on send.
   const draft = useDraft(conversationId ?? null);
-  const value = draft.value;
-  const setValue = draft.setValue;
   const [sending, setSending] = useState(false);
-  const [richMode, setRichMode] = useState(false);
   const [richAdf, setRichAdf] = useState<ADFEntity>(createEmptyADF());
   const [scheduledFor, setScheduledFor] = useState<string | null>(null);
   const taRef = (ref as React.MutableRefObject<HTMLTextAreaElement | null>) ?? useRef<HTMLTextAreaElement>(null);
-  const editorRef = useRef<any>(null); // AtlaskitEditorRef
+  const editorRef = useRef<any>(null);
   const composerRef = useRef<HTMLDivElement>(null);
-  const [showSlashPalette, setShowSlashPalette] = useState(false);
   const [flags, setFlags] = useState<Array<{ id: string; type: 'error' | 'success'; title: string; description?: string }>>(
     [],
   );
-
-  const addFlag = (type: 'error' | 'success', title: string, description?: string) => {
-    const id = `flag-${Date.now()}-${Math.random()}`;
-    setFlags((f) => [...f, { id, type, title, description }]);
-    if (type === 'success') {
-      setTimeout(() => {
-        setFlags((f) => f.filter((x) => x.id !== id));
-      }, 3000);
-    }
-  };
 
   const dismissFlag = (id: string) => {
     setFlags((f) => f.filter((x) => x.id !== id));
@@ -87,70 +70,31 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
   // Wire keyboard shortcuts (Cmd+B, Cmd+I, Cmd+/, etc.)
   useComposerKeyboardShortcuts({
     textareaRef: taRef,
-    richMode,
-    onToggleRich: () => setRichMode(m => !m),
-    editorViewRef: richMode ? { current: editorRef.current?.getEditorView?.() } : undefined,
+    richMode: true,
+    onToggleRich: () => {},
+    editorViewRef: { current: editorRef.current?.getEditorView?.() },
   });
 
   const placeholder = conversationTitle ? `Message ${conversationTitle}` : 'Write a message…';
 
-  const autoGrow = useCallback(() => {
-    const el = taRef.current;
-    if (!el) return;
-    el.style.height = 'auto';
-    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
-  }, []);
-
   const submit = useCallback(async () => {
     if (disabled || sending) return;
-    let text = value.trim();
-    let adf: ADFEntity | null = null;
-    if (richMode) {
-      const candidate = adfToPlainText(richAdf).trim();
-      if (!candidate) return;
-      text = candidate;
-      adf = richAdf;
-    } else if (!text) {
-      return;
-    }
+    const candidate = adfToPlainText(richAdf).trim();
+    if (!candidate) return;
+    const text = candidate;
+    const adf = richAdf;
     setSending(true);
     try {
       await onSend(text, { adf, scheduled_for: scheduledFor });
       draft.clear();
       setScheduledFor(null);
-      if (richMode) setRichAdf(createEmptyADF());
-      requestAnimationFrame(() => {
-        if (taRef.current) taRef.current.style.height = 'auto';
-      });
+      setRichAdf(createEmptyADF());
     } finally {
       setSending(false);
     }
-  }, [value, disabled, sending, onSend, richMode, richAdf, scheduledFor]);
+  }, [disabled, sending, onSend, richAdf, scheduledFor]);
 
-  const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Submit on Enter (without Shift)
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      void submit();
-      return;
-    }
 
-    // Slash palette navigation and selection (only when open — checked via SlashCommandPalette)
-    // These are handled by SlashCommandPalette's own useEffect, so we don't duplicate here.
-    // Tab for indent/outdent in lists — deferred (currently plain textarea, not rich text)
-  };
-
-  const insert = (snippet: string) => {
-    setValue(v => (v ? `${v}${snippet}` : snippet));
-    requestAnimationFrame(() => {
-      taRef.current?.focus();
-      autoGrow();
-    });
-  };
-
-  // Attachments are banned in Catalyst Chat (native-to-Catalyst decision,
-  // 2026-06-10) — no picker, no paste-upload, no drag-drop. Tickets are the
-  // attachment model.
   return (
     <div
       ref={composerRef}
@@ -171,50 +115,21 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
       </FlagGroup>
 
       <div className="cc-composer-box">
-        {richMode ? (
-          <Suspense fallback={<div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtle, #44546F)' }}>Loading editor…</div>}>
-            <div style={{ padding: 4 }}>
-              <AtlaskitEditor
-                ref={editorRef}
-                appearance="comment"
-                placeholder={placeholder}
-                defaultValue={richAdf}
-                onChange={(adf) => setRichAdf(adf)}
-                minHeight={80}
-              />
-            </div>
-          </Suspense>
-        ) : (
-          <textarea
-            ref={taRef}
-            className="cc-composer-input"
+        {/* Always-rich AtlaskitEditor — Slack-style with top toolbar visible */}
+        <Suspense fallback={<div className="cc-composer-loading">Loading editor…</div>}>
+          <AtlaskitEditor
+            ref={editorRef}
+            appearance="comment"
             placeholder={placeholder}
-            value={value}
-            rows={1}
-            disabled={disabled}
-            onChange={e => {
-              setValue(e.target.value);
-              autoGrow();
-            }}
-            onKeyDown={onKeyDown}
-            aria-label={placeholder}
+            defaultValue={richAdf}
+            onChange={(adf) => setRichAdf(adf)}
+            minHeight={72}
           />
-        )}
-        {!richMode && (
-          <>
-            <MentionPicker textareaRef={taRef} value={value} onChange={setValue} />
-            <SlashCommandPalette
-              textareaRef={taRef}
-              value={value}
-              onChange={setValue}
-              onClose={() => setShowSlashPalette(false)}
-            />
-          </>
-        )}
-        {/* Attachments are banned in Catalyst Chat (native-to-Catalyst decision,
-            2026-06-10) — everything links to tickets instead. No file input. */}
+        </Suspense>
+
+        {/* Slack-style bottom bar: attach / emoji / @ / slash / spacer / schedule / send */}
         <div className="cc-composer-tools">
-          <button type="button" className="cc-toolbtn" aria-label="Add emoji">
+          <button type="button" className="cc-toolbtn" aria-label="Add emoji" title="Emoji">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <circle cx="12" cy="12" r="9" />
               <path d="M8 14s1.5 2 4 2 4-2 4-2" />
@@ -222,65 +137,31 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
               <line x1="15" y1="9" x2="15.01" y2="9" />
             </svg>
           </button>
-          <button type="button" className="cc-toolbtn" aria-label="Mention someone" onClick={() => insert('@')}>
+          <button type="button" className="cc-toolbtn" aria-label="Mention someone" title="Mention (@)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <circle cx="12" cy="12" r="4" />
               <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94" />
             </svg>
           </button>
-          <button type="button" className="cc-toolbtn" aria-label="Slash command" onClick={() => insert('/')}>
+          <button type="button" className="cc-toolbtn" aria-label="Slash command" title="Slash commands">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <line x1="15" y1="4" x2="9" y2="20" />
             </svg>
           </button>
 
-          {/* Rich text toggle — single subtle icon button, sized like the
-              other tool buttons. The previous bold "Aa" text was twice as
-              large as siblings and read as a brand element. Use a script
-              "A" icon so it sits inline with attach/emoji/@/slash. */}
-          <button
-            type="button"
-            className="cc-toolbtn"
-            aria-label={richMode ? 'Switch to plain text' : 'Switch to rich text'}
-            title={richMode ? 'Plain text' : 'Rich text'}
-            onClick={() => setRichMode((m) => !m)}
-            style={{
-              color: richMode ? 'var(--ds-icon-brand, #0C66E4)' : undefined,
-            }}
-          >
-            <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
-              <path d="M5 19h14M7 15l5-10 5 10M9 11h6" />
-            </svg>
-          </button>
-
           <div className="cc-composer-tools__spacer" />
-
-          {/* Ask Caty pill REMOVED from composer (2026-06-08 design directive).
-              Enterprise chat does not surface an AI affordance inside every
-              message draft. AI access remains via the dock's top "Ask Caty"
-              tab and the dedicated AI sidekick panel. */}
 
           <ScheduleSendDropdown
             onSchedule={(time) => {
               setScheduledFor(time);
             }}
-            disabled={
-              disabled ||
-              (richMode
-                ? adfToPlainText(richAdf).trim().length === 0
-                : !value.trim())
-            }
+            disabled={disabled || adfToPlainText(richAdf).trim().length === 0}
           />
 
           <Button
             appearance="primary"
             onClick={() => void submit()}
-            isDisabled={
-              disabled ||
-              (richMode
-                ? adfToPlainText(richAdf).trim().length === 0
-                : !value.trim())
-            }
+            isDisabled={disabled || adfToPlainText(richAdf).trim().length === 0}
             isLoading={sending}
           >
             Send

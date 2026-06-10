@@ -64,6 +64,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
   const [threadParentId, setThreadParentId] = useState<string | null>(null);
   const composerRef = useRef<HTMLTextAreaElement>(null);
   const [showHint, setShowHint] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     const hasSeenHint = localStorage.getItem('catalyst.chat.hint-seen');
@@ -269,7 +270,26 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
         onSelect={handleRailSelect}
         activityCount={activityCount}
       />
-      <div className="cc-sidebar-pane">{sidebar}</div>
+      <div
+        className={`cc-sidebar-pane${sidebarCollapsed ? ' cc-sidebar-pane--collapsed' : ''}`}
+        style={{ position: 'relative' }}
+      >
+        {!sidebarCollapsed && sidebar}
+        {/* Chevron toggle — matches project module sidebar pattern */}
+        <button
+          type="button"
+          className="cc-sidebar-chevron"
+          aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          onClick={() => setSidebarCollapsed((v) => !v)}
+        >
+          <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2}>
+            {sidebarCollapsed
+              ? <polyline points="9 18 15 12 9 6" />
+              : <polyline points="15 18 9 12 15 6" />}
+          </svg>
+        </button>
+      </div>
       <div className="cc-conv" style={{ display: 'flex', flex: 1, minWidth: 0 }}>
         {mainPane}
       </div>
