@@ -1712,6 +1712,36 @@ The "Improve writing" button in the comment editor toolbar rendered with rainbow
 
 ---
 
+## 2026-06-10 — Dev Server Module Loading: vite.config + @atlaskit/flag import errors
+
+**Surface:** Dev server startup + MessageComposer.tsx runtime error
+**When:** Fresh dev server session; browser showed "Something went wrong" + truncated module path error.
+
+**Root cause (two separate bugs):**
+
+1. **vite.config.ts line 598: Non-existent package in optimizeDeps.include**
+   - Listed `'@atlaskit/pragmatic-drag-and-drop-flourish'` — package does NOT exist in npm
+   - Never in package.json; was likely a typo or removed package
+   - Error: `Failed to resolve dependency: @atlaskit/pragmatic-drag-and-drop-flourish, present in 'optimizeDeps.include'`
+   - Fix: Removed line 598
+   - Commit: `670338b`
+
+2. **MessageComposer.tsx line 14: Wrong import style for @atlaskit/flag**
+   - Was: `import { Flag, FlagGroup } from '@atlaskit/flag'`
+   - Problem: @atlaskit/flag exports `Flag` as DEFAULT, not named export. FlagGroup IS named.
+   - Error: `SyntaxError: module does not provide export named 'Flag'` (browser DevTools only)
+   - Fix: Split imports: `import Flag from '@atlaskit/flag'; import { FlagGroup } from '@atlaskit/flag'`
+   - Commit: `eb41e0d`
+
+**Lesson (P1):** 
+- Always verify every package in optimizeDeps.include exists in package.json + node_modules before committing. The only gate is runtime failure.
+- When a module export error occurs, check the actual module's dist/esm/index.js to see what IS exported. Named vs default exports are subtle and easy to get wrong.
+- Browser error messages are often truncated. Use DevTools Console for the FULL error message before debugging.
+
+**Severity:** P1 — broke dev server + app initialization; required DevTools inspection to diagnose.
+
+---
+
 ## 🗣️ COMMUNICATION RULES — DIRECT MODE (P0, Non-Negotiable)
 
 Applies to every response, every agent, every skill.
