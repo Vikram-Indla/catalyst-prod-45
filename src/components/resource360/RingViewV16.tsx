@@ -216,20 +216,29 @@ function weekRange(weekStart: string): string {
   return `${fmt(s)} – ${fmt(e)}, ${s.getFullYear()}`;
 }
 
-// ─── STATUS PILL — CG-05 Desaturated (DEF-02 fix) ───
+// ─── STATUS PILL — canonical Jira-parity spec (11px/700/uppercase/borderRadius 3) ───
+const R360_PILL_BG: Record<StatusCat, string> = {
+  todo:     'rgb(221, 222, 225)',
+  progress: 'rgb(143, 184, 246)',
+  done:     'rgb(179, 223, 114)',
+};
 const StatusPill: React.FC<{ status: StatusCat; small?: boolean }> = ({ status, small }) => {
-  const c = STATUS_CG05[status];
-  const label = status === 'todo' ? 'To Do' : status === 'progress' ? 'In Progress' : 'Done';
+  const bg = R360_PILL_BG[status] ?? R360_PILL_BG.todo;
+  const label = status === 'todo' ? 'TO DO' : status === 'progress' ? 'IN PROGRESS' : 'DONE';
+  const h = small ? 16 : 20;
   return (
     <span style={{
-      display: 'inline-flex', alignItems: 'center', gap: 4,
-      padding: small ? '1px 6px' : '2px 8px',
-      borderRadius: 6, fontSize: small ? 9 : 10, fontWeight: 600,
-      background: c.bg, color: c.text, whiteSpace: 'nowrap',
-      lineHeight: 1.5,
+      display: 'inline-flex', alignItems: 'center',
+      backgroundColor: bg, borderRadius: 3,
+      padding: '0 7px', height: h,
     }}>
-      <span style={{ width: small ? 5 : 6, height: small ? 5 : 6, borderRadius: '50%', background: c.dot, flexShrink: 0 }} />
-      {label}
+      <span style={{
+        fontSize: 11, fontWeight: 700, lineHeight: `${h}px`,
+        color: 'rgb(41, 42, 46)', textTransform: 'uppercase',
+        letterSpacing: '0.06em', whiteSpace: 'nowrap',
+      }}>
+        {label}
+      </span>
     </span>
   );
 };

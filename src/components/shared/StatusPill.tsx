@@ -1,54 +1,49 @@
-/**
- * StatusPill - Canonical neutral status display component
- * 
- * HARD RULE: Status must be neutral (no color) across the entire app.
- * - No colored text
- * - No colored background  
- * - No colored border
- * - No per-status theming
- * 
- * This component renders ALL status values with the same neutral styling.
- */
-
-import { cn } from '@/lib/utils';
+import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 
 interface StatusPillProps {
-  /** The status value to display */
   value: string | null | undefined;
-  /** Optional custom label (if not provided, value will be formatted) */
   label?: string;
-  /** Optional additional className */
   className?: string;
 }
 
-/**
- * Formats a status value into a human-readable label
- * e.g., "new_request" -> "New request"
- */
-const formatStatusLabel = (value: string): string => {
-  return value
-    .replace(/_/g, ' ')
-    .replace(/^\w/, c => c.toUpperCase());
+const PILL_BG: Record<string, string> = {
+  success:    'rgb(179, 223, 114)',
+  inprogress: 'rgb(143, 184, 246)',
+  default:    'rgb(221, 222, 225)',
+  moved:      'rgb(243, 214, 100)',
+  removed:    'rgb(221, 222, 225)',
+  new:        'rgb(184, 172, 246)',
 };
 
-export function StatusPill({ value, label, className }: StatusPillProps) {
+export function StatusPill({ value, label }: StatusPillProps) {
   if (!value && !label) {
-    return <span className="text-muted-foreground">—</span>;
+    return <span style={{ color: 'var(--ds-text-subtlest, #7A869A)' }}>—</span>;
   }
-
-  const displayLabel = label || formatStatusLabel(value || '');
-
+  const displayLabel = label || (value || '').replace(/_/g, ' ');
+  const appearance = statusToLozenge(value);
+  const bg = PILL_BG[appearance] ?? PILL_BG.default;
   return (
-    <span
-      className={cn(
-        // Neutral styling - enforced globally
-        "catalyst-status",
-        "inline-flex items-center px-2.5 py-1 text-xs font-medium rounded",
-        "bg-muted/50 text-foreground border border-border",
-        className
-      )}
-    >
-      {displayLabel}
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      backgroundColor: bg,
+      borderRadius: '3px',
+      padding: '0 7px',
+      height: '20px',
+    }}>
+      <span style={{
+        fontSize: '11px',
+        fontWeight: 700,
+        lineHeight: '20px',
+        color: 'rgb(41, 42, 46)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.06em',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+      }}>
+        {displayLabel}
+      </span>
     </span>
   );
 }

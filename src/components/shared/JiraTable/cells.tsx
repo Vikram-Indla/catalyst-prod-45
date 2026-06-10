@@ -423,13 +423,12 @@ export function StatusPill({
       maxWidth: '200px',
     }}>
       <span style={{
-        // 2026-05-16: corrected to match Jira list DOM probe (11px/653/uppercase)
         fontSize: '11px',
-        fontWeight: 653,
+        fontWeight: 700,
         lineHeight: '16px',
         color: LOZENGE_FG,
         textTransform: 'uppercase',
-        letterSpacing: '0.165px',
+        letterSpacing: '0.06em',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',

@@ -1,39 +1,12 @@
-/**
- * StatusLozenge — legacy import path, now a thin shim over the ADS
- * (@atlaskit/lozenge) primitive.
- *
- * Phase 5 / Atlaskit Dark Mode Enforcement (2026-04-30):
- *   Previous implementation rendered a hand-rolled <span> with raw
- *   `var(--status-*)` background/foreground tokens. That bypassed
- *   @atlaskit/lozenge entirely, violating the ADS-only mandate
- *   (CLAUDE.md §5, jira-compare 2026-04-28 lesson) on every consumer
- *   surface — including the `/` route (ForYouPage).
- *
- *   This shim now delegates to `StatusLozenge` from `@/components/ads`,
- *   which wraps `@atlaskit/lozenge` and emits `data-cp-lozenge-jira-parity`
- *   for the sentence-case CSS override.
- *
- *   Behaviour preserved:
- *     - Same component name, same import path, same `{ status: string }` API.
- *     - Same display label (snake_case → "In Progress" mapping kept).
- *     - Same 3-bucket categorisation (todo / inprogress / done) via
- *       `toStatusCategory`, which is the canonical ADS edge adapter.
- *
- *   Result: zero behavioural drift, but every render now flows through
- *   `@atlaskit/lozenge` with `--ds-*` ADS tokens (dark-mode safe).
- */
-
 import React from "react";
-import {
-  StatusLozenge as AdsStatusLozenge,
-  toStatusCategory,
-} from "@/components/ads";
+import { toStatusCategory } from "@/components/ads";
 
-/**
- * Legacy display-name normaliser. The ADS `StatusLozenge` takes the label
- * as `children`, so we keep this mapping local to preserve the exact text
- * users have been seeing on /, /allwork, etc.
- */
+const PILL_BG: Record<string, string> = {
+  todo:       'rgb(221, 222, 225)',
+  inProgress: 'rgb(143, 184, 246)',
+  done:       'rgb(179, 223, 114)',
+};
+
 function getDisplayName(status: string): string {
   const snakeToJira: Record<string, string> = {
     pending_approval: "Pending approval",
@@ -61,7 +34,31 @@ function getDisplayName(status: string): string {
 export function StatusLozenge({ status }: { status: string }) {
   const category = toStatusCategory(status);
   const label = getDisplayName(status);
-  return <AdsStatusLozenge status={category}>{label}</AdsStatusLozenge>;
+  const bg = PILL_BG[category] ?? PILL_BG.todo;
+  return (
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      backgroundColor: bg,
+      borderRadius: '3px',
+      padding: '0 7px',
+      height: '20px',
+    }}>
+      <span style={{
+        fontSize: '11px',
+        fontWeight: 700,
+        lineHeight: '20px',
+        color: 'rgb(41, 42, 46)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.06em',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+      }}>
+        {label}
+      </span>
+    </span>
+  );
 }
 
 export default StatusLozenge;
