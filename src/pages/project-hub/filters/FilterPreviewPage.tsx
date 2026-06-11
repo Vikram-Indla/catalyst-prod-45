@@ -16,10 +16,13 @@ import { AtlaskitPageShell } from '@/components/ads';
 import {
   JiraTable,
   makeKeyCell,
-  makeSummaryCell,
+  makeSummaryInlineEditCell,
   makeStatusCell,
   makeParentCell,
   makeAssigneeCell,
+  makePriorityCell,
+  makeDateCell,
+  makeRowMenuCell,
 } from '@/components/shared/JiraTable';
 import type { Column, SortOrder } from '@/components/shared/JiraTable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -248,16 +251,21 @@ export function FilterPreviewPage() {
     [linkedEntities, addFlag, navigate, projectKey]
   );
 
-  // ── Column definitions ─────────────────────────────────────────────────────
+  // ── Column definitions — mirrors BacklogPage.atlaskit.tsx canonical structure
+  // JqlResultRow is read-only (no mutation), so edit cells use canEdit:()=>false.
 
   const columns = useMemo<Column<JqlResultRow>[]>(() => {
-    const keyFn = makeKeyCell(
+    const keyCellRenderer = makeKeyCell(
       (r: JqlResultRow) => r.key,
       (r: JqlResultRow) => openDetail(r.key),
       undefined,
       (r: JqlResultRow) => <JiraIssueTypeIcon type={jiraIconType(r.issueType)} size={16} />,
     );
-    const summaryFn = makeSummaryCell((r: JqlResultRow) => r.summary);
+    const summaryCellRenderer = makeSummaryInlineEditCell<JqlResultRow>({
+      getSummary: (r) => r.summary,
+      canEdit: () => false,
+      onChange: () => {},
+    });
 
     return [
       {
@@ -266,12 +274,13 @@ export function FilterPreviewPage() {
         flex: true,
         sortable: true,
         alwaysVisible: true,
-        accessor: (r: JqlResultRow) => r.key,
+        defaultVisible: true,
+        accessor: (r) => r.key,
         cell: function WorkCell(props: any) {
           return (
             <span style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', minWidth: 0 }}>
-              {keyFn(props)}
-              <span style={{ flex: 1, minWidth: 0 }}>{summaryFn(props)}</span>
+              {keyCellRenderer(props)}
+              <span style={{ flex: 1, minWidth: 0 }}>{summaryCellRenderer(props)}</span>
             </span>
           );
         },
@@ -280,8 +289,9 @@ export function FilterPreviewPage() {
         id: 'parent',
         label: 'Parent',
         width: 11,
-        sortable: false,
-        accessor: (r: JqlResultRow) => r.parentKey ?? '',
+        sortable: true,
+        defaultVisible: true,
+        accessor: (r) => r.parentKey ?? '',
         cell: makeParentCell((r: JqlResultRow) =>
           r.parentKey
             ? { key: r.parentKey, label: r.parentSummary ?? r.parentKey }
@@ -293,23 +303,71 @@ export function FilterPreviewPage() {
         label: 'Status',
         width: 15,
         sortable: true,
-        accessor: (r: JqlResultRow) => r.status,
+        defaultVisible: true,
+        accessor: (r) => r.status,
         cell: makeStatusCell(
           (r: JqlResultRow) => r.status || null,
           s => lozengeAppearance('', s ?? '')
         ),
       },
       {
-        id: 'assigneeName',
+        id: 'assignee',
         label: 'Assignee',
         width: 11,
         sortable: true,
-        accessor: (r: JqlResultRow) => r.assigneeName ?? '',
+        defaultVisible: true,
+        accessor: (r) => r.assigneeName ?? '',
         cell: makeAssigneeCell((r: JqlResultRow) =>
           r.assigneeName
             ? { name: r.assigneeName, avatarUrl: resolveAvatarUrl(r.assigneeName) }
             : null
         ),
+      },
+      {
+        id: 'priority',
+        label: 'Priority',
+        width: 6,
+        sortable: true,
+        defaultVisible: true,
+        accessor: (r) => r.priority ?? '',
+        cell: makePriorityCell((r: JqlResultRow) => r.priority),
+      },
+      {
+        id: 'due_date',
+        label: 'Due date',
+        width: 8,
+        sortable: true,
+        defaultVisible: false,
+        accessor: (r) => r.dueDate ?? '',
+        cell: makeDateCell((r: JqlResultRow) => r.dueDate),
+      },
+      {
+        id: 'created',
+        label: 'Created',
+        width: 8,
+        sortable: true,
+        defaultVisible: false,
+        accessor: (r) => r.created ?? '',
+        cell: makeDateCell((r: JqlResultRow) => r.created),
+      },
+      {
+        id: 'updated',
+        label: 'Updated',
+        width: 8,
+        sortable: true,
+        defaultVisible: false,
+        accessor: (r) => r.updated ?? '',
+        cell: makeDateCell((r: JqlResultRow) => r.updated),
+      },
+      {
+        id: '__menu',
+        label: '',
+        width: 3,
+        sortable: false,
+        alwaysVisible: true,
+        cell: makeRowMenuCell({
+          onOpen: (r: JqlResultRow) => openDetail(r.key),
+        }),
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -488,33 +546,32 @@ export function FilterPreviewPage() {
         </Button>
       </div>
 
-      {/* Table */}
+      {/* Table — same container pattern as BacklogPage (padding:24px on wrapper) */}
       <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
         <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, padding: '24px' }}>
-          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-            <JiraTable<JqlResultRow>
-              columns={columns}
-              data={items}
-              getRowId={r => r.id}
-              onRowClick={r => openDetail(r.key)}
-              sortKey={sortKey}
-              sortOrder={sortOrder}
-              onSortChange={(k, o) => { setSortKey(k); setSortOrder(o); }}
-              isLoading={isLoading}
-              density="comfortable"
-              ariaLabel="Filter preview"
-              showRowCount
-              totalRowCount={data?.totalCount}
-              selectable
-              selectedIds={selectedIds}
-              onSelectionChange={setSelectedIds}
-              emptyView={
-                <div style={{ padding: '32px 24px', textAlign: 'center', color: token('color.text.subtle'), fontSize: 14 }}>
-                  No work items match this filter. Adjust the criteria above.
-                </div>
-              }
-            />
-          </div>
+          <JiraTable<JqlResultRow>
+            columns={columns}
+            data={items}
+            getRowId={r => r.id}
+            onRowClick={r => openDetail(r.key)}
+            sortKey={sortKey}
+            sortOrder={sortOrder}
+            onSortChange={(k, o) => { setSortKey(k); setSortOrder(o); }}
+            isLoading={isLoading}
+            density="comfortable"
+            ariaLabel="Filter preview"
+            rowsPerPage={0}
+            totalRowCount={data?.totalCount}
+            stickyCreateFooter={{ onRefresh: () => {} }}
+            selectable
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+            emptyView={
+              <div style={{ padding: '32px 24px', textAlign: 'center', color: token('color.text.subtle'), fontSize: 14 }}>
+                No work items match this filter. Adjust the criteria above.
+              </div>
+            }
+          />
         </div>
       </div>
 
