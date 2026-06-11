@@ -20,6 +20,7 @@ import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
 import AkAvatar from '@atlaskit/avatar';
 import SectionMessage from '@atlaskit/section-message';
+import Tooltip from '@atlaskit/tooltip';
 import LockIcon from '@atlaskit/icon/core/lock-locked';
 import OfficeBuildingIcon from '@atlaskit/icon/core/office-building';
 import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
@@ -168,6 +169,10 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   const [quickTab, setQuickTab] = useState<QuickTab>('all');
   const [sortKey, setSortKey] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [columnVisibility, setColumnVisibility] = useState<Set<string>>(
+    () => new Set(['name', 'owner', 'viewers', 'editors', 'starred', 'updated'])
+  );
 
   // getSession() reads from local storage (no network) — resolves before first
   // render completes, avoiding the race where the kebab opened before the user
@@ -307,9 +312,10 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       width: 30,
       sortable: true,
       alwaysVisible: true,
+      defaultVisible: true,
       accessor: f => f.name,
       cell: ({ row: f }) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, overflow: 'hidden' }}>
           <Link
             to={detailHref(f)}
             onClick={e => e.stopPropagation()}
@@ -318,6 +324,9 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
               fontWeight: token('font.weight.medium'),
               fontSize: 14,
               textDecoration: 'none',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
             }}
             onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
             onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
@@ -331,7 +340,6 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
-              maxWidth: 500,
             }}>
               {f.jql_query}
             </span>
@@ -344,13 +352,15 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       label: 'Owner',
       width: 13,
       sortable: true,
+      defaultVisible: true,
       accessor: f => ownerName(f),
       cell: ({ row: f }) => {
         const name = ownerName(f);
         return name ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <AkAvatar src={resolveAvatarUrl(name)} name={name} size="xsmall" />
-            <span style={{ fontSize: 14, color: token('color.text') }}>{name}</span>
+            {/* aria-hidden avoids double screen-reader announcement (AkAvatar also labels with name) */}
+            <span aria-hidden="true" style={{ fontSize: 14, color: token('color.text') }}>{name}</span>
           </div>
         ) : (
           <span style={{ fontSize: 14, color: token('color.text.subtlest') }}>—</span>
@@ -362,6 +372,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       label: 'Viewers',
       width: 15,
       sortable: true,
+      defaultVisible: true,
       accessor: (f: SavedFilterFull) => {
         const entries = f.jira_filter_id || (f.share_permissions?.length ?? 0) > 0
           ? sharePermissionEntries(f.share_permissions)
@@ -381,6 +392,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       label: 'Editors',
       width: 13,
       sortable: true,
+      defaultVisible: true,
       accessor: (f: SavedFilterFull) => {
         const entries = f.jira_filter_id || (f.edit_permissions?.length ?? 0) > 0
           ? sharePermissionEntries(f.edit_permissions)
@@ -400,6 +412,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       label: 'Starred by',
       width: 7,
       sortable: true,
+      defaultVisible: true,
       accessor: f => f.starred_by_user_ids.length,
       cell: ({ row: f }) => {
         const n = f.starred_by_user_ids.length;
@@ -415,6 +428,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       label: 'Last modified',
       width: 10,
       sortable: true,
+      defaultVisible: true,
       accessor: (f: SavedFilterFull) => f.updated_at ?? '',
       cell: ({ row: f }) => (
         <span
@@ -464,13 +478,18 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         }}>
           Filters
         </h1>
-        <Button
-          appearance="primary"
-          iconBefore={() => <Plus size="small" />}
-          onClick={() => navigate(createHref)}
-        >
-          Create filter
-        </Button>
+        <Tooltip content="Create filter (N)">
+          {(tooltipProps) => (
+            <Button
+              {...tooltipProps}
+              appearance="primary"
+              iconBefore={() => <Plus size="small" />}
+              onClick={() => navigate(createHref)}
+            >
+              Create filter
+            </Button>
+          )}
+        </Tooltip>
       </div>
 
       {/* Quick-tab bar: All / My filters / Starred */}
@@ -583,6 +602,35 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             </SectionMessage>
           </div>
         )}
+        {/* Bulk-action bar — shows when rows are selected */}
+        {selectedIds.size > 0 && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            padding: '8px 12px',
+            background: token('color.background.selected'),
+            borderRadius: 3,
+            marginBottom: 8,
+            fontSize: 14,
+            color: token('color.text'),
+          }}>
+            <span style={{ fontWeight: 600 }}>{selectedIds.size} selected</span>
+            <Button
+              appearance="subtle"
+              spacing="compact"
+              onClick={() => {
+                if (!window.confirm(`Delete ${selectedIds.size} filter${selectedIds.size > 1 ? 's' : ''}? This cannot be undone.`)) return;
+                setSelectedIds(new Set());
+              }}
+            >
+              <span style={{ color: token('color.text.danger') }}>Delete</span>
+            </Button>
+            <Button appearance="subtle" spacing="compact" onClick={() => setSelectedIds(new Set())}>
+              Deselect all
+            </Button>
+          </div>
+        )}
         <JiraTable<SavedFilterFull>
           columns={columns}
           data={visibleFilters}
@@ -592,6 +640,10 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           sortOrder={sortOrder}
           onSortChange={(k, o) => { setSortKey(k); setSortOrder(o); }}
           isLoading={isLoading}
+          selectable
+          onSelectionChange={setSelectedIds}
+          columnVisibility={columnVisibility}
+          onColumnVisibilityChange={setColumnVisibility}
           density="comfortable"
           ariaLabel="Filters directory"
           showRowCount
@@ -623,6 +675,18 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             </div>
           }
         />
+        {/* Row count footer — "X of Y filters" */}
+        {!isLoading && visibleFilters.length > 0 && (
+          <div style={{
+            padding: '8px 4px',
+            fontSize: 12,
+            color: token('color.text.subtlest'),
+          }}>
+            {visibleFilters.length === filters.length
+              ? `${filters.length} filter${filters.length !== 1 ? 's' : ''}`
+              : `${visibleFilters.length} of ${filters.length} filter${filters.length !== 1 ? 's' : ''}`}
+          </div>
+        )}
       </div>
     </div>
   );
