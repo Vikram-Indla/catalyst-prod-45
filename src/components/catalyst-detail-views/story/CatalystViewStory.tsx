@@ -46,6 +46,7 @@ import type { CatalystViewBaseProps } from '../shared/types';
 export default function CatalystViewStory({
   isOpen, onClose, itemId, projectId, projectKey,
   onOpenItem, panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
+  hideSidebar,
 }: CatalystViewBaseProps) {
 
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
@@ -213,6 +214,7 @@ export default function CatalystViewStory({
         isOpen={isOpen}
         onClose={onClose}
         panelMode={panelMode}
+        hideSidebar={hideSidebar}
         fullPageMode={fullPageMode}
         itemType={issue?.issue_type || 'Story'}
         itemKey={issue?.issue_key || null}

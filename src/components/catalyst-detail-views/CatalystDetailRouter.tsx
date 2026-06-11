@@ -50,7 +50,7 @@ export default function CatalystDetailRouter({
   isOpen, onClose, itemId, itemType,
   projectId, projectKey, onOpenItem,
   panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
-  onConvert,
+  onConvert, hideSidebar,
 }: CatalystDetailRouterProps) {
 
   // F-iter9 PK fix: ph_issues' primary key is `issue_key` (text), not `id`.
@@ -92,7 +92,7 @@ export default function CatalystDetailRouter({
     isOpen, onClose, itemId,
     projectId, projectKey, onOpenItem,
     panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
-    onConvert,
+    onConvert, hideSidebar,
   };
 
   return (

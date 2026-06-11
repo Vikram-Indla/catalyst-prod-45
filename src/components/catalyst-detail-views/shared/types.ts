@@ -31,6 +31,10 @@ export interface CatalystViewBaseProps {
   onTogglePanelMode?: () => void;
   navigationItems?: { id: string; summary: string; issue_key?: string }[];
   onNavigate?: (itemId: string) => void;
+  /** When true, the right sidebar (cv-drawer-sidebar) is hidden regardless of
+   *  the @container query. Used by medium-layout panel mode where the detail
+   *  container width is insufficient to host both body and sidebar. */
+  hideSidebar?: boolean;
   /** Optional entity-specific promotion handler.
    *  Currently used by 'idea' to spawn a Request via CreateRequestDrawer.
    *  Other entity types ignore this prop. */

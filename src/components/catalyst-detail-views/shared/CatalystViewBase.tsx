@@ -139,6 +139,10 @@ export interface CatalystViewBaseLayoutProps {
   isLoading?: boolean;
   /* True when the query finished but returned no record (deleted/invalid issue key) */
   isNotFound?: boolean;
+  /** Force-hide the right sidebar regardless of @container query.
+   *  Used when the parent layout is in medium mode and the detail container
+   *  is too narrow to host both body and sidebar comfortably. */
+  hideSidebar?: boolean;
 }
 
 /* ═══════════════════════════════════════════
@@ -151,7 +155,7 @@ export function CatalystViewBase({
   moreMenuItems,
   onTogglePanelMode, navigationItems, currentItemId, onNavigate,
   leftContent, rightContent,
-  isLoading, isNotFound,
+  isLoading, isNotFound, hideSidebar,
 }: CatalystViewBaseLayoutProps) {
 
   /* ── State ──────────────────────────────── */
@@ -689,7 +693,7 @@ export function CatalystViewBase({
           <div className="cv-drawer-sidebar" style={{
             width: rightPanelWidth, minWidth: 220, maxWidth: 600,
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflowX: 'hidden',
-            display: 'flex', flexDirection: 'column', padding: '16px 4px 32px 16px',
+            display: hideSidebar ? 'none' : 'flex', flexDirection: 'column', padding: '16px 4px 32px 16px',
             minHeight: 0,
             ...(fullPageMode
               ? { position: 'sticky', top: 0, maxHeight: '100%', overflowY: 'auto', alignSelf: 'flex-start' }

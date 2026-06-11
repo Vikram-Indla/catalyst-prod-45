@@ -1201,6 +1201,32 @@ Surface-level "measured X column widths" reports without per-issue-type round-ro
 
 ---
 
+## 2026-06-11 — Responsive multi-panel layout: sidebar width must NEVER equal hide threshold
+
+**Surface:** ProjectAllWorkView (`/project-hub/BAU/allwork`) — 3-panel split (rail + list + detail)
+**Pattern:** First responsive fix used binary `isNarrow` breakpoint. In medium state (split 480–1119px), list shrunk to 260px but detail panel was 632px wide. The `@container (max-width: 440px)` rule hides `cv-drawer-sidebar` only when the cv-drawer-body container ≤ 440px. Sidebar width in panelMode = 440px. So: 632px container → sidebar SHOWS → body = 632 – 440 = 192px. Broken.
+
+**Root cause geometry:**
+- Sidebar width and @container hide-threshold were IDENTICAL (both 440px)
+- This means sidebar shows in the ENTIRE medium range (any detail width > 440px)
+- Sidebar presence collapses body to near-zero width — visually empty
+
+**Fix:**
+- Tri-state layout: `'wide' | 'medium' | 'narrow'` via ResizeObserver on split container
+- Wide (≥1120px): list=360px, hideSidebar=false → sidebar shows, body gets full room
+- Medium (480–1119px): list=260px, hideSidebar=true → sidebar force-hidden, body = full detail width
+- Narrow (<480px): list=100% width, detail hidden
+
+**Rule (NEW — applies to ALL future responsive layouts with a collapsible panel):**
+1. **Compute the geometry before coding.** For every breakpoint range, calculate: `detail_width = split_width - list_width - gap`. Then: `body_width = detail_width - sidebar_width`. If body_width < 200px for any split value in that range, the sidebar MUST be force-hidden.
+2. **Sidebar width and @container threshold are two independent values** — they only happen to match in panelMode. In any custom breakpoint scheme, explicitly compute whether the sidebar will show and whether that leaves the body usable.
+3. **`hideSidebar` prop chain:** `ProjectAllWorkView` (tri-state state) → `CatalystDetailRouter` (sharedProps) → all `CatalystView*` destructuring → `<CatalystViewBase hideSidebar={hideSidebar}>` → sidebar `display: hideSidebar ? 'none' : 'flex'`. Every `CatalystView*` component MUST forward `hideSidebar` — it's in `CatalystViewBaseProps`.
+4. **Never use binary isNarrow for a 3-panel layout.** Two thresholds are required: wide→medium (hide sidebar but keep list+detail visible) and medium→narrow (collapse to list only).
+
+**Severity:** P0 (broken layout shipped after first fix — required second pass with DOM probe RCA)
+
+---
+
 ## 2026-06-03 — BRANCH POLICY (simplified)
 
 **Default: work on `main`.** Every conversation starts on whatever branch is currently checked out (usually `main`). No automatic branch creation.
