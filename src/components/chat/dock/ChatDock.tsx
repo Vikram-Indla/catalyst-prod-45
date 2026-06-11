@@ -22,7 +22,7 @@ import VidFullScreenOnIcon from "@atlaskit/icon/glyph/vid-full-screen-on";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import catalystChatIcon from "@/assets/caty-ai-bg.svg";
-import catyIconTransparent from "@/assets/caty-icon.svg";
+import { CatyFabIcon } from "./CatyFabIcon";
 import { CatyPanel } from "./CatyPanel";
 import { DockDirectory } from "./DockDirectory";
 import { DockConversationPane } from "./DockConversationPane";
@@ -206,9 +206,12 @@ export function ChatDock({
         aria-label="Open messages"
         onClick={onToggleCollapsed}
       >
-        <img src={catalystChatIcon} alt="" width={51} height={51} />
+        <CatyFabIcon size={56} />
         {totalUnread > 0 && (
-          <span className="cc-fab__badge">
+          <span
+            className="cc-fab__badge"
+            aria-label={`${totalUnread > 99 ? "99+" : totalUnread} unread messages`}
+          >
             {totalUnread > 99 ? "99+" : totalUnread}
           </span>
         )}
@@ -225,7 +228,7 @@ export function ChatDock({
     <div
       className={`cc-dock${dockMode === "caty" && catyView === "sidebar" ? " cc-dock--sidebar" : ""}`}
       role="dialog"
-      aria-label={dockMode === "caty" ? "Ask Caty AI" : "Caty Connect"}
+      aria-label={dockMode === "caty" ? "Assistant" : "Caty Connect"}
     >
       {/* Shared header — Option C: AI-forward two-row title bar */}
       <div className="cc-dock__headerwrap" role="banner">
@@ -235,10 +238,10 @@ export function ChatDock({
         {/* Row 1 — brand identity + live status + action icons */}
         <div className="cc-dock__titlebar">
           <span className="cc-dock__badge" aria-hidden>
-            <img src={catyIconTransparent} alt="" width={22} height={22} className="cc-dock__logo-img" />
+            <img src={catalystChatIcon} alt="" width={28} height={28} className="cc-dock__logo-img" />
           </span>
           <div className="cc-dock__title">
-            <span className="cc-dock__wordmark">Caty</span>
+            <span className="cc-dock__wordmark">Caty Connect</span>
             <span className="cc-dock__status">
               <span className="cc-dock__status-dot" aria-hidden />
               {dockMode === "caty"
@@ -302,7 +305,7 @@ export function ChatDock({
             onClick={() => setDockMode("messages")}
             aria-selected={dockMode === "messages"}
           >
-            Connect
+            Messages
             {totalUnread > 0 && (
               <span className="cc-mode-tab__badge" aria-label={`${totalUnread} unread`}>
                 {totalUnread > 99 ? "99+" : totalUnread}
@@ -316,7 +319,7 @@ export function ChatDock({
             onClick={() => setDockMode("caty")}
             aria-selected={dockMode === "caty"}
           >
-            Ask Caty
+            Assistant
           </button>
         </div>
       </div>

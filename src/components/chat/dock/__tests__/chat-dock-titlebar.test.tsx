@@ -2,8 +2,8 @@
  * chat-dock-titlebar.test.tsx — TDD for ChatDock Option-C title bar (2026-06-11).
  *
  * Header contract:
- *   1. "Caty" wordmark is visible.
- *   2. Both mode tabs ("Connect", "Ask Caty") render as role="tab".
+ *   1. "Caty Connect" wordmark is visible.
+ *   2. Both mode tabs ("Messages", "Assistant") render as role="tab".
  *   3. A static AI gradient accent hairline (.cc-dock__accent) exists.
  *   4. A live status line (.cc-dock__status) renders unread count.
  */
@@ -32,15 +32,15 @@ const baseProps = {
 };
 
 describe('ChatDock Option-C title bar', () => {
-  it('renders the Caty wordmark', () => {
+  it('renders the Caty Connect wordmark', () => {
     render(<ChatDock {...baseProps} />);
-    expect(screen.getByText('Caty')).toBeInTheDocument();
+    expect(screen.getByText('Caty Connect')).toBeInTheDocument();
   });
 
   it('renders both mode tabs', () => {
     render(<ChatDock {...baseProps} />);
-    expect(screen.getByRole('tab', { name: /Connect/ })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /Ask Caty/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Messages/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Assistant/ })).toBeInTheDocument();
   });
 
   it('renders the static AI gradient accent hairline', () => {
