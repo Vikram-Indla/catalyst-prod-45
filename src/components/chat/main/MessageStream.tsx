@@ -314,7 +314,12 @@ export function MessageStream({
         row.type === 'divider' ? (
           <div className="cc-divider cc-divider--sticky" key={row.key}>
             <div className="cc-divider__rule" />
-            <div className="cc-divider__pill">{row.label}</div>
+            <div className="cc-divider__pill">
+              {row.label}
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden>
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
             <div className="cc-divider__rule" />
           </div>
         ) : row.type === 'new' ? (
@@ -673,6 +678,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
             <span className="cc-thread__link">
               {msg.replyCount} {msg.replyCount === 1 ? 'reply' : 'replies'}
             </span>
+            <span className="cc-thread__sep">·</span>
             <span className="cc-thread__last">Last reply {relativeLabel(msg.createdAt)}</span>
           </button>
         ) : null}

@@ -62,16 +62,7 @@ export function MentionToken({ raw }: MentionTokenProps) {
       onClick={onClick}
       disabled={busy}
       title={`Message ${raw.replace(/^@/, '').trim()}`}
-      style={{
-        background: 'var(--ds-background-information, #E9F2FE)',
-        color: 'var(--ds-text-information, #0055CC)',
-        border: 'none',
-        padding: '0 4px',
-        borderRadius: 3,
-        fontWeight: 500,
-        cursor: busy ? 'wait' : 'pointer',
-        font: 'inherit',
-      }}
+      style={{ cursor: busy ? 'wait' : 'pointer' }}
     >
       {raw}
     </button>
