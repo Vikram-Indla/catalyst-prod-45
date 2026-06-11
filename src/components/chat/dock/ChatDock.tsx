@@ -237,20 +237,22 @@ export function ChatDock({
         {/* Row 1 — brand identity + live status + action icons */}
         <div className="cc-dock__titlebar">
           <span className="cc-dock__badge" aria-hidden>
-            {/* caty-light.svg — dark cat for light header background, static (no anim for header) */}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="130 70 270 370" width="34" height="34" aria-hidden>
-              <path d="M404 392 Q462 392 456 336" fill="none" stroke="#2A2832" strokeWidth="26" strokeLinecap="round"/>
-              <path d="M270 100 Q300 26 322 100 Z" fill="#2A2832"/>
-              <path d="M358 100 Q388 24 408 100 Z" fill="#2A2832"/>
-              <path d="M288 96 Q301 56 312 94" fill="none" stroke="#F6F4EF" strokeWidth="9" strokeLinecap="round" opacity=".6"/>
-              <path d="M374 96 Q387 54 398 94" fill="none" stroke="#F6F4EF" strokeWidth="9" strokeLinecap="round" opacity=".6"/>
-              <path d="M421.802 200.296V93.9727H259.279L233.457 127.389L210.674 93.9727H154.474C39.037 223.991 106.375 363.832 154.474 417.5H421.802V309.658H279.025L236.495 374.971C170.878 271.685 209.155 173.969 236.495 138.021L279.025 200.296H421.802Z" fill="#2A2832"/>
-              <path d="M300 176 Q238 174 224 190" fill="none" stroke="#2A2832" strokeWidth="10" strokeLinecap="round"/>
-              <path d="M398 176 Q462 174 476 190" fill="none" stroke="#2A2832" strokeWidth="10" strokeLinecap="round"/>
-              <path d="M400 192 Q458 198 470 214" fill="none" stroke="#2A2832" strokeWidth="10" strokeLinecap="round"/>
-              <path d="M340 178 L356 178 Q348 190 340 178 Z" fill="#F6F4EF"/>
-              <path d="M306 150 Q322 168 338 150" fill="none" stroke="#F6F4EF" strokeWidth="12" strokeLinecap="round"/>
-              <path d="M358 150 Q374 168 390 150" fill="none" stroke="#F6F4EF" strokeWidth="12" strokeLinecap="round"/>
+            {/* caty-ai.svg — gradient C mark */}
+            <svg width="34" height="34" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <defs>
+                {/* ads-scanner:ignore-next-line — Caty brand gradient, no ADS token equivalent */}
+                <linearGradient id="cai-hdr" x1="256.269" y1="93.9727" x2="256.269" y2="417.5" gradientUnits="userSpaceOnUse">
+                  {/* ads-scanner:ignore-next-line */}
+                  <stop stopColor="#F79357"/>
+                  {/* ads-scanner:ignore-next-line */}
+                  <stop offset="0.5" stopColor="#F53F68"/>
+                  {/* ads-scanner:ignore-next-line */}
+                  <stop offset="0.75" stopColor="#B41572"/>
+                  {/* ads-scanner:ignore-next-line */}
+                  <stop offset="1" stopColor="#CC1E9A"/>
+                </linearGradient>
+              </defs>
+              <path d="M421.802 200.296V93.9727H259.279L233.457 127.389L210.674 93.9727H154.474C39.037 223.991 106.375 363.832 154.474 417.5H421.802V309.658H279.025L236.495 374.971C170.878 271.685 209.155 173.969 236.495 138.021L279.025 200.296H421.802Z" fill="url(#cai-hdr)"/>
             </svg>
           </span>
           <div className="cc-dock__title">
