@@ -88,18 +88,29 @@ function saveCollapsed(state: Record<string, boolean>) {
   try { localStorage.setItem(LS_COLLAPSED_KEY, JSON.stringify(state)); } catch { /* ignore */ }
 }
 
-/** Jira-parity status pill used in Caty suggestion rows. */
+/**
+ * Status pill for Caty suggestion rows.
+ * Colors sourced from CatalystStatusPill.tsx canonical map (line 131–138).
+ * statusToLozenge appearance → rgb values probed from live Jira DOM.
+ */
 function CatyStatusPill({ status, statusCategory }: { status: string; statusCategory: string | null }) {
-  const cat = (statusCategory ?? '').toLowerCase().replace(/[\s_-]+/g, '');
-  let bg: string;
-  let color: string;
-  if (cat === 'done') {
-    bg = '#94C748'; color = '#292A2E';
-  } else if (cat.includes('progress') || cat === 'indeterminate') {
-    bg = '#669DF1'; color = '#FFFFFF';
-  } else {
-    bg = 'rgba(5,21,36,0.08)'; color = '#292A2E';
-  }
+  // Mirror statusToLozenge category logic (no import to keep this file lean).
+  const cat = (statusCategory ?? '').toLowerCase();
+  let lozengeKey: string;
+  if (cat === 'done') lozengeKey = 'success';
+  else if (cat === 'in_progress' || cat === 'indeterminate') lozengeKey = 'inprogress';
+  else lozengeKey = 'default';
+
+  // Exact rgb values from CatalystStatusPill.tsx — canonical source of truth.
+  const BG: Record<string, string> = {
+    success:    'rgb(148, 199, 72)',   // lime green
+    inprogress: 'rgb(143, 184, 246)',  // light blue
+    moved:      'rgb(243, 214, 100)',  // yellow
+    removed:    'rgb(221, 222, 225)',  // grey-red
+    new:        'rgb(184, 172, 246)',  // purple
+    default:    'rgb(221, 222, 225)',  // grey
+  };
+
   return (
     <span
       style={{
@@ -113,8 +124,8 @@ function CatyStatusPill({ status, statusCategory }: { status: string; statusCate
         lineHeight: 1,
         letterSpacing: '0.08em',
         textTransform: 'uppercase',
-        background: bg,
-        color,
+        background: BG[lozengeKey] ?? BG.default,
+        color: 'rgb(41, 42, 46)',
         whiteSpace: 'nowrap',
         flexShrink: 0,
       }}
