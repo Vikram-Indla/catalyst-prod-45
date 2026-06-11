@@ -23,7 +23,6 @@ import { useChatSearch, groupSearchHits } from '@/hooks/chat/useChatSearch';
 import { useChatArchive, useChatUnarchive, useChatTogglePin, useChatToggleStar } from '@/hooks/chat/useChatActions';
 import { useCatySuggestions, useDismissCatySuggestion } from '@/hooks/chat/useCatySuggestions';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
-import catyMark from '@/assets/caty-icon.svg';
 import { NewGroupDmModal } from './NewGroupDmModal';
 import { BrowseChannelsModal } from './BrowseChannelsModal';
 import ProjectIcon from '@/components/shared/ProjectIcon';
@@ -87,6 +86,42 @@ function loadCollapsed(): Record<string, boolean> {
 
 function saveCollapsed(state: Record<string, boolean>) {
   try { localStorage.setItem(LS_COLLAPSED_KEY, JSON.stringify(state)); } catch { /* ignore */ }
+}
+
+/** Jira-parity status pill used in Caty suggestion rows. */
+function CatyStatusPill({ status, statusCategory }: { status: string; statusCategory: string | null }) {
+  const cat = (statusCategory ?? '').toLowerCase().replace(/[\s_-]+/g, '');
+  let bg: string;
+  let color: string;
+  if (cat === 'done') {
+    bg = '#94C748'; color = '#292A2E';
+  } else if (cat.includes('progress') || cat === 'indeterminate') {
+    bg = '#669DF1'; color = '#FFFFFF';
+  } else {
+    bg = 'rgba(5,21,36,0.08)'; color = '#292A2E';
+  }
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        height: 16,
+        padding: '0 5px',
+        borderRadius: 3,
+        fontSize: 11,
+        fontWeight: 653,
+        lineHeight: 1,
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase',
+        background: bg,
+        color,
+        whiteSpace: 'nowrap',
+        flexShrink: 0,
+      }}
+    >
+      {status}
+    </span>
+  );
 }
 
 function relativeShort(iso: string | null | undefined): string {
@@ -666,7 +701,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
           </div>
         )}
 
-        {/* Caty suggestions — rolling nudges from stale active work items */}
+        {/* Caty suggestions — trending/active work-item nudges */}
         {catySuggestions.length > 0 && (
           <>
             <SectionHeader
@@ -689,8 +724,20 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
                   }
                 }}
               >
-                <img src={catyMark} alt="" width={14} height={14} className="cc-dir__caty-mark" />
-                <span className="cc-dir__caty-text">{s.text}</span>
+                {s.issueType
+                  ? <JiraIssueTypeIcon type={s.issueType} size={14} />
+                  : null}
+                <span className="cc-dir__caty-body">
+                  <span className="cc-dir__caty-text">{s.text}</span>
+                  <span className="cc-dir__caty-meta">
+                    {s.status && (
+                      <CatyStatusPill status={s.status} statusCategory={s.status_category} />
+                    )}
+                    {s.signal && (
+                      <span className="cc-dir__caty-signal">{s.signal}</span>
+                    )}
+                  </span>
+                </span>
                 <button
                   type="button"
                   className="cc-dir__caty-x"

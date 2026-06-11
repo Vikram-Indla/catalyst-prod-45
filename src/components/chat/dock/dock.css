@@ -44,7 +44,7 @@
   padding: 0 8px 0 12px;
 }
 
-/* Tinted rounded badge holding the transparent Caty C */
+/* Badge holding caty-ai-bg.svg (self-contained dark-bg icon — no extra bg needed) */
 .cc-dock__badge {
   width: 34px;
   height: 34px;
@@ -53,10 +53,9 @@
   align-items: center;
   justify-content: center;
   border-radius: 9px;
-  /* ads-scanner:ignore-next-line — faint Caty-pink tint behind the AI mark */
-  background: var(--ds-background-accent-magenta-subtlest, #FBF1F6);
-  /* ads-scanner:ignore-next-line */
-  border: 1px solid var(--ds-border, #F5D9E8);
+  overflow: hidden;
+  background: transparent;
+  border: none;
 }
 
 .cc-dock__title {
@@ -854,11 +853,34 @@
   display: block;
 }
 
-.cc-dir__caty-text {
+.cc-dir__caty-body {
   flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cc-dir__caty-text {
   font-size: 12px;
   line-height: 1.4;
   color: var(--ds-text, #172B4D);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cc-dir__caty-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cc-dir__caty-signal {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ds-text-subtle, #42526E);
 }
 
 .cc-dir__caty-x {
