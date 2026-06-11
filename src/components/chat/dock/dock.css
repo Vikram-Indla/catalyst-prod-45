@@ -827,6 +827,58 @@
   color: var(--ds-icon-warning, #E2B203);
 }
 
+/* Caty suggestion cards — rolling nudges */
+.cc-dir__caty {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 4px 8px;
+  padding: 8px;
+  border-radius: 6px;
+  background: var(--ds-surface, #FFFFFF);
+  /* ads-scanner:ignore-next-line */
+  border: 1px solid var(--ds-border, #DFE1E6);
+  /* ads-scanner:ignore-next-line — Caty brand accent (pink), no ADS token equivalent */
+  border-left: 2px solid #F53F68;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.cc-dir__caty:hover {
+  background: var(--ds-background-neutral-subtle-hovered, #EBECF0);
+}
+
+.cc-dir__caty-mark {
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: block;
+}
+
+.cc-dir__caty-text {
+  flex: 1;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ds-text, #172B4D);
+}
+
+.cc-dir__caty-x {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--ds-text-subtlest, #6B778C);
+  cursor: pointer;
+  padding: 0;
+  border-radius: 3px;
+  transition: color 0.1s;
+}
+
+.cc-dir__caty-x:hover {
+  color: var(--ds-text, #172B4D);
+}
+
 /* Row focus visible (finding 50) */
 .cc-dir__row:focus-visible {
   outline: 2px solid var(--ds-border-focused, #388BFF);

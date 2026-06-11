@@ -21,6 +21,9 @@ import { useStartDm } from '@/hooks/chat/useStartDm';
 import { useStartProjectChannel } from '@/hooks/chat/useStartProjectChannel';
 import { useChatSearch, groupSearchHits } from '@/hooks/chat/useChatSearch';
 import { useChatArchive, useChatUnarchive, useChatTogglePin, useChatToggleStar } from '@/hooks/chat/useChatActions';
+import { useCatySuggestions, useDismissCatySuggestion } from '@/hooks/chat/useCatySuggestions';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import catyMark from '@/assets/caty-icon.svg';
 import { NewGroupDmModal } from './NewGroupDmModal';
 import { BrowseChannelsModal } from './BrowseChannelsModal';
 import ProjectIcon from '@/components/shared/ProjectIcon';
@@ -276,6 +279,8 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
   const unarchive = useChatUnarchive();
   const togglePin = useChatTogglePin();
   const toggleStar = useChatToggleStar();
+  const { suggestions: catySuggestions } = useCatySuggestions();
+  const dismissSuggestion = useDismissCatySuggestion();
   const handleTogglePin = useCallback((id: string, next: boolean) => togglePin.mutate({ convId: id, pinned: next }), [togglePin]);
   const handleToggleStar = useCallback((id: string, next: boolean) => toggleStar.mutate({ convId: id, starred: next }), [toggleStar]);
   const qc = useQueryClient();
@@ -659,6 +664,48 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
               onClick={() => setArchiveDismissed(true)}
             >×</button>
           </div>
+        )}
+
+        {/* Caty suggestions — rolling nudges from stale active work items */}
+        {catySuggestions.length > 0 && (
+          <>
+            <SectionHeader
+              label="Caty suggestions"
+              count={catySuggestions.length}
+              collapsed={!!collapsed['caty']}
+              onToggle={() => toggleSection('caty')}
+            />
+            {!collapsed['caty'] && catySuggestions.map((s) => (
+              <div
+                key={s.key}
+                className="cc-dir__caty"
+                role="button"
+                tabIndex={0}
+                onClick={() => useGlobalSearchStore.getState().openDetail({ id: s.issueKey })}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    useGlobalSearchStore.getState().openDetail({ id: s.issueKey });
+                  }
+                }}
+              >
+                <img src={catyMark} alt="" width={14} height={14} className="cc-dir__caty-mark" />
+                <span className="cc-dir__caty-text">{s.text}</span>
+                <button
+                  type="button"
+                  className="cc-dir__caty-x"
+                  aria-label="Dismiss suggestion"
+                  title="Dismiss"
+                  onClick={(e) => { e.stopPropagation(); dismissSuggestion.mutate(s.key); }}
+                >
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden>
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+            <div className="cc-dir__section-divider" />
+          </>
         )}
 
         {/* Pinned */}
