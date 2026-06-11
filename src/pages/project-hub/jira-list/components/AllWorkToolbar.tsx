@@ -200,8 +200,8 @@ const ASK_CATY_PLACEHOLDER_SAMPLES: string[] = [
    other fields"). Jira's full list is 225 — Catalyst exposes the
    subset that has data in WorkItem; date ranges + custom fields queued
    as a follow-up WO. */
-const TOP_LEVEL_FACETS: FilterFacet[] = ["workType", "status", "assignee"];
-const MORE_FILTERS_FACETS: FilterFacet[] = [
+export const TOP_LEVEL_FACETS: FilterFacet[] = ["workType", "status", "assignee"];
+export const MORE_FILTERS_FACETS: FilterFacet[] = [
   "sprintReleases",
   "parent",
   "labels",
@@ -213,7 +213,7 @@ const MORE_FILTERS_FACETS: FilterFacet[] = [
   "severity",
 ];
 
-const FACET_LABELS: Record<FilterFacet, string> = {
+export const FACET_LABELS: Record<FilterFacet, string> = {
   sprintReleases: "Sprint/Release",
   parent: "Parent",
   assignee: "Assignee",
@@ -284,7 +284,7 @@ function toLabel(v: unknown): string {
    visuals: avatar URL for assignees/reporters, work type id for parent
    icons, status category for lozenge appearance, etc. Falls back to the
    original {value, label} shape for facets that don't need icons. */
-interface FacetOption {
+export interface FacetOption {
   value: string;
   label: string;
   meta?: {
@@ -297,7 +297,7 @@ interface FacetOption {
 }
 
 /** Derive distinct option values for a given facet from the items list. */
-function distinctOptions(items: WorkItem[], facet: FilterFacet): FacetOption[] {
+export function distinctOptions(items: WorkItem[], facet: FilterFacet): FacetOption[] {
   // Build a parentKey → rawType lookup so parent rows can render the
   // parent's work-item-type icon. Walks items[] to find any child whose
   // own row matches the parentKey.
@@ -328,9 +328,13 @@ function distinctOptions(items: WorkItem[], facet: FilterFacet): FacetOption[] {
         break;
       }
       case "assignee": {
+        // value MUST be assigneeId (assignee_account_id) — applyServerFilter
+        // does .in('assignee_account_id', filter.assignee). Using the display
+        // name here caused the server filter to match nothing (name !== UUID).
+        const id = toLabel(i.assigneeId);
         const nm = toLabel(i.assignee?.name);
-        if (nm && !map.has(nm)) {
-          map.set(nm, { value: nm, label: nm });
+        if (id && nm && !map.has(id)) {
+          map.set(id, { value: id, label: nm });
         }
         break;
       }
@@ -461,7 +465,7 @@ const SparkIcon = () => <SparkIconCore label="" color={SUBTLE} />;
  * Re-position on resize/scroll: a tiny ResizeObserver + scroll listener
  *   re-reads the trigger rect so the popup stays anchored.
  */
-interface FilterTriggerAndPopupProps {
+export interface FilterTriggerAndPopupProps {
   triggerLabel: string;
   isOpen: boolean;
   onOpenChange: (next: boolean) => void;
@@ -469,7 +473,7 @@ interface FilterTriggerAndPopupProps {
   renderContent: () => React.ReactNode;
 }
 
-function FilterTriggerAndPopup({
+export function FilterTriggerAndPopup({
   triggerLabel,
   isOpen,
   onOpenChange,
@@ -704,24 +708,26 @@ function renderFacetRow(
  * appearance (blue background, white text) — matches Jira's selected-
  * chip styling. Inactive: "default" with subtle styling.
  */
-interface FilterChipProps {
+export interface FilterChipProps {
   label: string;
   facet: FilterFacet;
   options: FacetOption[];
   selected: string[];
   onToggle: (value: string) => void;
+  onClear: () => void;
   isOpen: boolean;
   onOpenChange: (next: boolean) => void;
   /** Optional headline shown at top of dropdown — Jira uses "Status = (equals)" pattern. */
   headline?: string;
 }
 
-function FilterChip({
+export function FilterChip({
   label,
   facet,
   options,
   selected,
   onToggle,
+  onClear,
   isOpen,
   onOpenChange,
   headline,
@@ -940,12 +946,32 @@ function FilterChip({
                 color: "var(--ds-text-subtle, #505258)",
                 display: "flex",
                 justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
               <span>
                 {filteredOptions.length} of {options.length}
               </span>
-              {count > 0 && <span>{count} selected</span>}
+              {count > 0 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClear();
+                    onOpenChange(false);
+                  }}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "var(--ds-link, #0C66E4)",
+                    fontSize: 11,
+                    padding: "2px 4px",
+                    fontFamily: "inherit",
+                  }}
+                >
+                  Clear
+                </button>
+              )}
             </div>
           </div>,
           document.body,
@@ -1260,11 +1286,58 @@ export function AllWorkToolbar({
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [savedFiltersRefreshKey, setSavedFiltersRefreshKey] = useState(0);
 
+  // Full-project options pool — fetches ALL distinct facet values for the
+  // project, independent of the current filter and page window.
+  // Without this, facet options collapse to only what's on the current page
+  // and disappear after a filter is applied (e.g. Assignee=Vikram → only
+  // "Vikram" remains in the Assignee dropdown, can't switch to someone else).
+  const TOOLBAR_FACET_TYPES = ['Story', 'Backend', 'Frontend', 'Sub-task', 'Epic', 'Feature'];
+  const { data: allProjectRows = [] } = useQuery<WorkItem[]>({
+    queryKey: ['allwork-facet-options', projectKey],
+    enabled: !!projectKey,
+    staleTime: 5 * 60 * 1000, // 5 min — options change infrequently
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issues')
+        .select('issue_key, issue_type, status, status_category, assignee_account_id, assignee_display_name, reporter_account_id, reporter_display_name, priority, labels, sprint_release, sprint_name, resolution, severity, parent_key, parent_summary')
+        .eq('project_key', projectKey)
+        .in('issue_type', TOOLBAR_FACET_TYPES)
+        .is('jira_removed_at', null)
+        .is('archived_at', null)
+        .is('deleted_at', null)
+        .limit(5000);
+      if (!data) return [];
+      // Map to minimal WorkItem shape that distinctOptions reads from.
+      return data.map((r: any) => ({
+        id: r.issue_key,
+        assigneeId: r.assignee_account_id ?? null,
+        assignee: r.assignee_display_name
+          ? { id: r.assignee_account_id ?? r.assignee_display_name, name: r.assignee_display_name, avatarUrl: null, initials: '', color: '' }
+          : undefined,
+        rawType: r.issue_type ?? null,
+        statusName: r.status ?? null,
+        statusCategory: r.status_category ?? null,
+        priority: r.priority ?? null,
+        labels: r.labels ?? [],
+        sprintRelease: Array.isArray(r.sprint_release) && r.sprint_release.length > 0 ? r.sprint_release[0] : null,
+        sprintName: r.sprint_name ?? null,
+        resolution: r.resolution ?? null,
+        severity: r.severity ?? null,
+        parentKey: r.parent_key ?? null,
+        parentSummary: r.parent_summary ?? null,
+        reporter: r.reporter_display_name ? { id: r.reporter_account_id ?? '', name: r.reporter_display_name } : undefined,
+      } as unknown as WorkItem));
+    },
+  });
+
   const facetOptions = useMemo(() => {
+    // Use full-project rows as the options pool so available choices don't
+    // collapse when a filter is active or when viewing a later page.
+    const pool = allProjectRows.length > 0 ? allProjectRows : items;
     const out = {} as Record<FilterFacet, FacetOption[]>;
-    for (const f of FACET_ORDER) out[f] = distinctOptions(items, f);
+    for (const f of FACET_ORDER) out[f] = distinctOptions(pool, f);
     return out;
-  }, [items]);
+  }, [allProjectRows, items]);
 
   const totalCount = totalSelected(selectedFilters);
 
@@ -1769,6 +1842,7 @@ export function AllWorkToolbar({
         options={facetOptions.workType}
         selected={selectedFilters.workType}
         onToggle={(v) => toggleValue("workType", v)}
+        onClear={() => updateFacet("workType", [])}
         isOpen={openChipKey === "workType"}
         onOpenChange={(open) => setOpenChipKey(open ? "workType" : null)}
         headline="Type = (equals)"
@@ -1779,6 +1853,7 @@ export function AllWorkToolbar({
         options={facetOptions.status}
         selected={selectedFilters.status}
         onToggle={(v) => toggleValue("status", v)}
+        onClear={() => updateFacet("status", [])}
         isOpen={openChipKey === "status"}
         onOpenChange={(open) => setOpenChipKey(open ? "status" : null)}
         headline="Status = (equals)"
@@ -1789,6 +1864,7 @@ export function AllWorkToolbar({
         options={facetOptions.assignee}
         selected={selectedFilters.assignee}
         onToggle={(v) => toggleValue("assignee", v)}
+        onClear={() => updateFacet("assignee", [])}
         isOpen={openChipKey === "assignee"}
         onOpenChange={(open) => setOpenChipKey(open ? "assignee" : null)}
         headline="Assignee = (equals)"
@@ -1858,24 +1934,6 @@ export function AllWorkToolbar({
         </Button>
       )}
 
-      {/* Save filter — wired to allwork_saved_filters table (Vikram-run SQL).
-          Click → CLOSES any open chip popup (fixes 2026-05-03 overlap defect
-          where Save filter modal sat on top of an open More filters popup),
-          then opens SaveFilterModal. */}
-      <Button
-        appearance="subtle"
-        isDisabled={totalSelected(selectedFilters) === 0}
-        onClick={() => {
-          setOpenChipKey(null); // close any open chip popup before modal opens
-          setSaveModalOpen(true);
-        }}
-        testId="catalyst-allwork-toolbar.save-filter"
-      >
-        <span style={{ color: "var(--ds-text-brand, #0C66E4)" }}>
-          Save filter
-        </span>
-      </Button>
-
       {/* Saved filters dropdown — Read + Apply + Delete (R + D of CRUD).
           Shows the user's saved views for this project; click to apply state
           to the chip bar. Renders nothing if the user has no saved filters. */}
@@ -1898,19 +1956,6 @@ export function AllWorkToolbar({
 
       <span style={{ flex: 1 }} />
 
-      {/* Save filter button — shown when parent provides onSaveFilter (create-filter or
-          viewing-filter modes). Appears at the right end of the toolbar, before the meatball.
-          Matches Jira's "Save as" / "Update filter" button placement. */}
-      {onSaveFilter && (
-        <Button
-          appearance="primary"
-          spacing="compact"
-          onClick={onSaveFilter}
-          testId="catalyst-allwork-toolbar.save-filter"
-        >
-          {saveFilterLabel}
-        </Button>
-      )}
 
       {/* ADS flag queue — replaces sonner toast. Fixed bottom-right overlay. */}
       {flags.length > 0 && (

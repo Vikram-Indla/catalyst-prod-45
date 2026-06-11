@@ -184,7 +184,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   }, []);
 
   const createHref = projectKey
-    ? `/project-hub/${projectKey}/allwork?mode=create-filter`
+    ? `/project-hub/${projectKey}/filters/create`
     : `/product-hub/allwork?mode=create-filter`;
 
   // Keyboard shortcut: N opens the create flow (Jira pattern)
