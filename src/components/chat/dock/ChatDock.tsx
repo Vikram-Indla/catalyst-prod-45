@@ -226,7 +226,7 @@ export function ChatDock({
         {/* Brand logo + dual-mode underline tabs */}
         <div className="cc-dock__brand" aria-hidden>
           <span className="cc-dock__logo-wrap">
-            <img src={catalystChatIcon} alt="" width={24} height={24} className="cc-dock__logo-img" />
+            <img src="/favicon.svg" alt="" width={28} height={28} className="cc-dock__logo-img" style={{ borderRadius: 7 }} />
           </span>
         </div>
         <div className="cc-mode-tabs" role="tablist" aria-label="Chat modes">

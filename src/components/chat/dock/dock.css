@@ -18,10 +18,10 @@
 }
 
 .cc-dock__header {
-  height: 48px;
+  height: 56px;
   flex: 0 0 auto;
   /* ads-scanner:ignore-next-line */
-  border-bottom: 1px solid var(--ds-border, #DFE1E6);
+  border-bottom: 1px solid var(--ds-border, #EBECF0);
   display: flex;
   align-items: stretch;
   padding: 0 4px 0 8px;
@@ -41,12 +41,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  /* ads-scanner:ignore-next-line */
-  background: #2A2832;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
 }
 
@@ -61,7 +57,7 @@
   gap: 0;
   flex: 0 0 auto;
   /* ads-scanner:ignore-next-line */
-  border-left: 1px solid var(--ds-border, #DFE1E6);
+  border-left: 1px solid var(--ds-border, #EBECF0);
   margin-left: 4px;
   padding-left: 4px;
 }
@@ -81,11 +77,11 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  height: 48px;
+  height: 56px;
   border: none;
   border-bottom: 2px solid transparent;
   background: transparent;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--ds-text-subtle, #44546F);
   cursor: pointer;
