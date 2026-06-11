@@ -31,6 +31,7 @@ import { jiraIconType } from '@/components/universal-work-view/uwv.utils';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { useJqlResults, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
+import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { supabase } from '@/integrations/supabase/client';
@@ -227,6 +228,10 @@ export function FilterPreviewPage() {
     return rows;
   }, [data?.items, sortKey, sortOrder, search]);
 
+  // Resolve each parent's TRUE issue_type so the Parent cell draws the real
+  // icon (no hardcoded "Story" lie — CLAUDE.md zero-assumption 2026-06-11).
+  const parentTypeMap = useParentIssueTypes((data?.items ?? []).map((r) => r.parentKey));
+
   const totalCount = totalSelected(filters);
   const moreCount = MORE_FILTERS_FACETS.reduce((n, f) => n + filters[f].length, 0);
 
@@ -327,14 +332,16 @@ export function FilterPreviewPage() {
         defaultVisible: true,
         accessor: (r) => r.parentKey ?? '',
         cell: makeParentEditCell<JqlResultRow>({
-          getParent: (r) => r.parentKey
-            ? {
-                id: r.parentKey,
-                key: r.parentKey,
-                label: r.parentSummary ?? r.parentKey,
-                icon: <JiraIssueTypeIcon type="Story" size={16} />,
-              }
-            : null,
+          getParent: (r) => {
+            if (!r.parentKey) return null;
+            const pType = parentTypeMap.get(r.parentKey);
+            return {
+              id: r.parentKey,
+              key: r.parentKey,
+              label: r.parentSummary ?? r.parentKey,
+              icon: pType ? <JiraIssueTypeIcon type={pType} size={16} /> : undefined,
+            };
+          },
           options: [],
           canEdit: () => false,
           onChange: () => {},
@@ -427,7 +434,7 @@ export function FilterPreviewPage() {
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [parentTypeMap]);
 
   // ── Render ─────────────────────────────────────────────────────────────────
 

@@ -18,8 +18,9 @@
 import React, { useState, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { buildProjectHeaderTitle } from './projectHeaderTitle';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import { token } from '@atlaskit/tokens';
@@ -89,6 +90,7 @@ interface Props {
 
 export function ProjectHeaderChip({ projectKey, adapter }: Props) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Three-dots menu: bespoke portal popup (replaces @atlaskit/dropdown-menu
   // which has the known @atlaskit/popup v4.16 empty-portal positioning bug).
@@ -137,6 +139,11 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
   });
 
   const projectName = project?.name ?? iconKey;
+
+  // Route-aware chip title: `<KEY> <RouteWord>` (e.g. "BAU Backlog",
+  // "BAU Board", "BAU Work", "BAU Filters"). Falls back to the project
+  // name on unrecognised routes (Vikram 2026-06-11).
+  const headerTitle = buildProjectHeaderTitle(location.pathname, iconKey) ?? projectName;
 
   // ── Member CRUD — resolved against the adapter (default = project_members
   //    when no adapter is supplied; product wrapper supplies its own). ────────
@@ -323,7 +330,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
             fontFamily: 'inherit',
           }}
         >
-          {projectName}
+          {headerTitle}
         </h1>
 
         {/* Add people icon button — inline, instant open */}

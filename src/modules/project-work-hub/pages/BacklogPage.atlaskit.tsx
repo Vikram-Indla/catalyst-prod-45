@@ -124,6 +124,7 @@ import { applyCatyFilterBacklog } from '@/components/caty/applyCatyFilterBacklog
 // Shared with the AllWork toolbar so both surfaces read identically.
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { useProject } from '@/hooks/useProjects';
+import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
 // Apr 28, 2026 (carryover #9): Star/Unstar persisted via the canonical
 // starred_items table chokepoint. Replaces the prior local useState toggle
 // that didn't persist.
@@ -131,7 +132,7 @@ import { useStarredItems } from '@/hooks/useStarredItems';
 import { DangerConfirmModal } from '@/components/shared/DangerConfirmModal';
 import type { RequestRow } from '../hooks/useBacklogData';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
-import { STORY_STATUS_LOZENGE, getPriorityLabel } from '../utils/backlog.utils';
+import { STORY_STATUS_LOZENGE, getPriorityLabel, shouldSynthesizeEpicRow, keyCellIconType, flattenTree } from '../utils/backlog.utils';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useAtlaskitThemeSync } from '../components/SubtasksPanel/atlaskitTheme';
 import { writeTicketOrigin } from '../hooks/useTicketOrigin';
@@ -291,6 +292,12 @@ export type BacklogType = 'initiative' | 'epic' | 'feature' | 'story' | 'bug' | 
 export interface BacklogItem {
   id: string;
   type: BacklogType;
+  /** Raw Jira issue_type ('Story' | 'Sub-task' | 'Backend' | 'Frontend' |
+   *  'Feature' | 'QA Bug' | 'Production Incident' | 'Epic' | ...). Drives the
+   *  Key-cell type icon so Sub-task/Backend/Frontend/Feature render their own
+   *  glyph instead of collapsing to the Story bookmark. `type` (BacklogType)
+   *  is kept for pills/filters/grouping. null only for synthetic rows. */
+  issue_type: string | null;
   key: string | null;
   title: string;
   status: string | null;
@@ -730,6 +737,19 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // resolve to the original arrays and downstream code is unchanged.
   const effectiveStories = dataSource ? dataSource.extraStories : stories;
   const effectiveEpics = dataSource ? dataSource.extraEpics : epics;
+
+  // Resolve each parent's TRUE issue_type so the Parent cell icon is correct
+  // for non-Epic parents (Story/Task/Feature). epicMap only covers Epics;
+  // without this, non-Epic parents render no icon. No fabricated default —
+  // unsynced parents stay icon-less (CLAUDE.md zero-assumption 2026-06-11).
+  const parentTypeMap = useParentIssueTypes(
+    useMemo(() => {
+      const ks: Array<string | null | undefined> = [];
+      (effectiveStories ?? []).forEach((s: any) => ks.push(s?.parent_key));
+      (effectiveEpics ?? []).forEach((e: any) => ks.push(e?.parent_key));
+      return ks;
+    }, [effectiveStories, effectiveEpics]),
+  );
 
   // Request (Business Request) resolution — per the ProductBacklog ERD,
   // ph_requests.initiative_key appears as ph_issues.parent_key on any
@@ -1289,6 +1309,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         out.push({
           id: init.id,
           type: 'initiative',
+          issue_type: null,
           key: init.initiative_key,
           title: init.title,
           status: null,
@@ -1323,6 +1344,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       out.push({
         id: e.id,
         type: 'epic',
+        issue_type: (e as any).issue_type ?? 'Epic',
         key: e.epic_key,
         title: e.name,
         status: e.status,
@@ -1359,7 +1381,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         jira_updated_at?: string | null;
         jira_created_at?: string | null;
       } | null | undefined;
-      if (ep && !epicSeen.has(ep.id)) {
+      // Only genuine Epics may be synthesized as top-level rows. A Story or
+      // Feature parent (pulled into epicMap because useStoryBacklog also
+      // fetches its Sub-task/Frontend/Backend children) must stay a leaf row —
+      // synthesizing it created a phantom Epic twin that collided by id with
+      // the real Story and flipped Story↔Epic on expand/collapse (RCA 2026-06-11).
+      if (shouldSynthesizeEpicRow(ep) && ep && !epicSeen.has(ep.id)) {
         epicSeen.add(ep.id);
         // Synthesized epics don't carry parent_key on the BacklogStory.feature
         // shape; when/if BAU epics ever gain a parent_key pointing at an
@@ -1368,6 +1395,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         out.push({
           id: ep.id,
           type: 'epic',
+          issue_type: (ep as any).issue_type ?? 'Epic',
           key: ep.epic_key,
           title: ep.name,
           status: ep.status ?? null,
@@ -1417,10 +1445,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // L54: parent's real issue_type from epicMap. The parent might be a
       // Feature/Story/Task (not an Epic), so this drives the Parent column's
       // icon canonically — no more hardcoded purple Epic lightning.
-      const parentIssueType = (ep as any)?.issue_type ?? null;
+      const parentIssueType = (ep as any)?.issue_type
+        ?? (rawParentKey ? parentTypeMap.get(rawParentKey) : null)
+        ?? null;
       out.push({
         id: s.id,
         type: leafTypeFromIssueType((s as any).issue_type),
+        issue_type: (s as any).issue_type ?? null,
         key: s.story_key,
         title: s.title,
         status: s.status,
@@ -1458,7 +1489,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       });
     });
     return out;
-  }, [effectiveEpics, effectiveStories, initiativesByKey]);
+  }, [effectiveEpics, effectiveStories, initiativesByKey, parentTypeMap]);
 
   // ── Three-level tree: Request → Epic → Story.
   //   - Items with parent_id go into childrenOf[parent_id].
@@ -1488,9 +1519,48 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     return { topLevel, childrenOf };
   }, [items]);
 
+  // Structural depth per row id (Request/Epic = 0, its child = 1, grandchild =
+  // 2 …) so JiraTable indents each level by 16px. Independent of filters/sort.
+  const depthById = useMemo(() => {
+    const m = new Map<string, number>();
+    const visited = new Set<string>();
+    const assign = (node: BacklogItem, d: number) => {
+      if (visited.has(node.id)) return; // cycle guard
+      visited.add(node.id);
+      m.set(node.id, d);
+      for (const k of childrenOf.get(node.id) ?? []) assign(k, d + 1);
+    };
+    const idSet = new Set(items.map((i) => i.id));
+    const orphanRoots = items.filter((it) => it.parent_id && !idSet.has(it.parent_id));
+    for (const root of [...topLevel, ...orphanRoots]) assign(root, 0);
+    return m;
+  }, [topLevel, childrenOf, items]);
+
+  // Row comparator (shared by the hierarchy sibling-sort below and the flat-mode
+  // sort further down). In hierarchy mode we sort SIBLINGS within each parent so
+  // the tree order is preserved; a global flat sort would scatter children away
+  // from their parents (only masked when keys happen to be sequential).
+  const compareRows = useCallback((a: BacklogItem, b: BacklogItem): number => {
+    if (!sortKey || !sortDir) return 0;
+    const getValue = (it: BacklogItem): string | number => {
+      switch (sortKey) {
+        case 'key': return it.key || '';
+        case 'summary': return (it.title || '').toLowerCase();
+        case 'status': return (it.status || '').toLowerCase();
+        case 'parent': return (it.parent_label || '').toLowerCase();
+        case 'assignee': return (it.assignee_name || '').toLowerCase();
+        case 'priority': { const i = PRIORITY_ORDER.indexOf((it.priority || '').toLowerCase()); return i >= 0 ? i : 999; }
+        case 'updated': return it.updated_at || '';
+        default: return '';
+      }
+    };
+    const av = getValue(a); const bv = getValue(b);
+    const cmp = typeof av === 'number' && typeof bv === 'number' ? av - bv : String(av).localeCompare(String(bv));
+    return sortDir === 'ASC' ? cmp : -cmp;
+  }, [sortKey, sortDir]);
+
   // Flatten tree into visible rows given expandedIds + typeFilter + search + filters.
   const visibleRows: BacklogItem[] = useMemo(() => {
-    const out: BacklogItem[] = [];
     const q = search.trim().toLowerCase();
     const matchesText = (it: BacklogItem) =>
       !q ||
@@ -1525,17 +1595,6 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       return true;
     };
 
-    // Track emitted IDs so we never push the same row twice — orphan stories
-    // without a parent_id already land in topLevel (the topLevel builder
-    // treats them as top-level), so the orphans loop below was double-
-    // emitting them. Duplicate-key fix (2026-04-18).
-    const emitted = new Set<string>();
-    const tryPush = (it: BacklogItem) => {
-      if (emitted.has(it.id)) return;
-      emitted.add(it.id);
-      out.push(it);
-    };
-
     // Apr 28 2026 (carryover #13 — chevron discoverability fix).
     // Pattern source: Jira BAU list view live DOM probe — clicked the
     // expand button on BAU-5419, observed delta +10 rows (children
@@ -1553,34 +1612,32 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     // EXPANDED rows. Initial set is empty (URL-seeded), so all parents
     // start collapsed. Clicking a chevron adds the parent's id to the
     // set. Same behaviour for every typeFilter. Matches Jira parity.
-    for (const top of topLevel) {
-      const topVisible = matchesText(top) && matchesType(top) && matchesFilterBar(top);
-      const kids = childrenOf.get(top.id) ?? [];
-      const matchingKids = kids.filter((k) => matchesText(k) && matchesType(k) && matchesFilterBar(k));
-      if (topVisible) tryPush(top);
-      // 2026-05-12 Jira parity: when showHierarchy is OFF, render ALL children
-      // flat (no parent grouping, no expand/collapse). When ON (default),
-      // children render only when their parent is in expandedIds.
-      const showChildren = !showHierarchy || expandedIds.has(top.id);
-      if (showChildren) {
-        for (const k of matchingKids) tryPush(k);
-      }
+    // 2026-06-11: recursive depth-first flatten via flattenTree (unit-tested).
+    // Handles ARBITRARY depth (Epic → Story → Sub-task/Frontend/Backend). The
+    // prior two-level loop left grandchildren unhandled, so an orphan loop
+    // resurfaced them at the top level (the Story↔Epic icon/parent flip).
+    // Roots = top-level items (no parent_id) PLUS genuine orphans whose parent
+    // is NOT in the dataset (e.g. unsynced). showHierarchy OFF → every node
+    // treated expanded (flat). ON (default) → expand only when in expandedIds.
+    const idSet = new Set(items.map((i) => i.id));
+    const orphanRoots = items.filter((it) => it.parent_id && !idSet.has(it.parent_id));
+    let roots = [...topLevel, ...orphanRoots];
+    let effectiveChildrenOf = childrenOf;
+    // Hierarchy mode: sort SIBLINGS (roots + each child list) so DFS order is
+    // correct. Flat mode (showHierarchy off) leaves global sort to sortedRows.
+    if (showHierarchy && sortKey && sortDir) {
+      roots = [...roots].sort(compareRows);
+      effectiveChildrenOf = new Map<string, BacklogItem[]>();
+      childrenOf.forEach((v, k) => effectiveChildrenOf.set(k, [...v].sort(compareRows)));
     }
-    // Orphan leaf rows (no parent_id, or parent not in epics list).
-    // Apr 27, 2026: extended from 'story' only to also cover 'bug' and
-    // 'incident' so the new Defects + Incidents pills surface their
-    // unparented items. The matchesType() guard ensures the filter still
-    // narrows correctly on each pill.
-    if (typeFilter === 'all' || typeFilter === 'story' || typeFilter === 'bug' || typeFilter === 'incident') {
-      for (const it of items) {
-        if (it.type !== 'story' && it.type !== 'bug' && it.type !== 'incident') continue;
-        if (!it.parent_id || !topLevel.find((t) => t.id === it.parent_id)) {
-          if (matchesText(it) && matchesType(it) && matchesFilterBar(it)) tryPush(it);
-        }
-      }
-    }
-    return out;
-  }, [topLevel, childrenOf, items, expandedIds, showHierarchy, typeFilter, search, filterValue]);
+    // flattenTree already dedups by id, so it is the final ordered list.
+    return flattenTree<BacklogItem>(
+      roots,
+      effectiveChildrenOf,
+      (id) => !showHierarchy || expandedIds.has(id),
+      (node) => matchesText(node) && matchesType(node) && matchesFilterBar(node),
+    );
+  }, [topLevel, childrenOf, items, expandedIds, showHierarchy, typeFilter, search, filterValue, sortKey, sortDir, compareRows]);
 
   // ── "Hide done work items" filter (Apr 27 2026 — Jira parity View
   // options menu). When toggled on, rows whose status indicates a
@@ -1625,31 +1682,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   ]);
 
   // ── Sorting ──
+  // Hierarchy mode: rows are already sibling-sorted inside visibleRows (so the
+  // tree order is preserved) — do NOT re-sort the flattened list or children
+  // scatter away from parents. Flat mode (showHierarchy off): sort globally.
   const sortedRows: BacklogItem[] = useMemo(() => {
-    if (!sortKey || !sortDir) return filteredVisibleRows;
-    const s = [...filteredVisibleRows];
-    const getValue = (it: BacklogItem): string | number => {
-      switch (sortKey) {
-        case 'key': return it.key || '';
-        case 'summary': return (it.title || '').toLowerCase();
-        case 'status': return (it.status || '').toLowerCase();
-        case 'parent': return (it.parent_label || '').toLowerCase();
-        case 'assignee': return (it.assignee_name || '').toLowerCase();
-        case 'priority': {
-          const i = PRIORITY_ORDER.indexOf((it.priority || '').toLowerCase());
-          return i >= 0 ? i : 999;
-        }
-        case 'updated': return it.updated_at || '';
-        default: return '';
-      }
-    };
-    s.sort((a, b) => {
-      const av = getValue(a); const bv = getValue(b);
-      const cmp = typeof av === 'number' && typeof bv === 'number' ? av - bv : String(av).localeCompare(String(bv));
-      return sortDir === 'ASC' ? cmp : -cmp;
-    });
-    return s;
-  }, [filteredVisibleRows, sortKey, sortDir]);
+    if (showHierarchy || !sortKey || !sortDir) return filteredVisibleRows;
+    return [...filteredVisibleRows].sort(compareRows);
+  }, [filteredVisibleRows, showHierarchy, sortKey, sortDir, compareRows]);
 
   const total = sortedRows.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -2233,14 +2272,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               </span>
             );
           }
-          const typeMap: Record<Exclude<BacklogType, 'initiative'>, string> = {
-            epic: 'Epic',
-            feature: 'Feature',
-            story: 'Story',
-            bug: 'QA Bug',
-            incident: 'Production Incident',
-          };
-          return <JiraIssueTypeIcon type={typeMap[it.type as Exclude<BacklogType, 'initiative'>]} size={16} />;
+          return <JiraIssueTypeIcon type={keyCellIconType(it)} size={16} />;
         },
         // 5th arg — onSidebarClick: shows a hover-only sidebar icon in the
         // Key cell. Click opens the right-side detail panel (same handler
@@ -3740,19 +3772,18 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             contextMenuActions={rowActions}
             getRowId={(r) => r.id}
             getRowDepth={(r) => {
-              // 2026-05-10: Indent only in flat view — when grouped, children
-              // share the group's visual scope and additional indent is noise.
-              if (groupBy && groupBy !== 'parent') return 0;
-              // Three-level hierarchy: Request/Epic (0) → child (1) → grandchild (2).
-              // Covers all child types (story/bug/task/subtask/feature/incident).
-              if (r.type === 'initiative') return 0;
-              if (r.type === 'epic' && r.parent_id) return 1;
-              const childTypes = ['story', 'bug', 'task', 'subtask', 'feature', 'incident'];
-              if (childTypes.includes(r.type) && r.parent_id) {
-                const parent = items.find((it) => it.id === r.parent_id);
-                return parent?.parent_id ? 2 : 1;
-              }
-              return 0;
+              // Indent only when not grouped under a non-parent key (grouped
+              // children share the group's visual scope). depthById is the TRUE
+              // structural depth — supports arbitrary nesting (Epic → Story →
+              // Sub-task), unlike the old type-heuristic that capped at 2 and
+              // returned 0 for the default ungrouped view (groupBy==='none').
+              // Only suppress indent when actively grouped by a NON-parent key
+              // (grouped children share the group's scope). 'none' is the
+              // default ungrouped view and MUST still indent — the old
+              // `groupBy && …` test wrongly treated truthy 'none' as grouped.
+              if (groupBy !== 'none' && groupBy !== 'parent') return 0;
+              if (!showHierarchy) return 0;
+              return depthById.get(r.id) ?? 0;
             }}
             onRowClick={openDetail}
             selectable

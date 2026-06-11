@@ -13,8 +13,10 @@
  * roles", group name, stacked users) — never lozenges.
  */
 import React, { useState, useMemo } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
+import { buildProjectHeaderTitle } from '@/components/layout/projectHeaderTitle';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
@@ -159,6 +161,9 @@ interface SelectOption { label: string; value: string }
 
 export default function FiltersListPage({ hubType = 'project' }: FiltersListPageProps) {
   const { key: projectKey } = useParams<{ key: string }>();
+  const location = useLocation();
+  // Route-aware title with project icon: `<icon> BAU Filters` (Vikram 2026-06-11).
+  const headerTitle = buildProjectHeaderTitle(location.pathname, projectKey) ?? 'Filters';
   const navigate = useNavigate();
 
   const [search, setSearch] = useState('');
@@ -477,15 +482,18 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         padding: '24px 24px 16px',
         flexShrink: 0,
       }}>
-        <h1 style={{
-          margin: 0,
-          fontSize: 24,
-          fontWeight: 653,
-          color: token('color.text'),
-          lineHeight: '28px',
-        }}>
-          Filters
-        </h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <ProjectIcon size="small" projectKey={projectKey} name={projectKey} />
+          <h1 style={{
+            margin: 0,
+            fontSize: 24,
+            fontWeight: 653,
+            color: token('color.text'),
+            lineHeight: '28px',
+          }}>
+            {headerTitle}
+          </h1>
+        </div>
         <Tooltip content="Create filter (N)">
           {(tooltipProps) => (
             <Button
