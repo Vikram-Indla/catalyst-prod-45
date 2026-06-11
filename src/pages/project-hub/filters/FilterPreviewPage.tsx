@@ -370,9 +370,9 @@ export function FilterPreviewPage() {
         cell: makeDateCell((r: JqlResultRow) => r.updated),
       },
       {
-        id: '__menu',
+        id: '__actions',
         label: '',
-        width: 3,
+        width: 5,
         sortable: false,
         alwaysVisible: true,
         cell: makeRowMenuCell({
