@@ -349,7 +349,7 @@ export function CatalystSidebarDetails({
       {(statusPill || improveDropdown) && (
         <div
           data-cv-sidebar-status-header="true"
-          style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'nowrap' }}
+          style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}
         >
           {statusPill}
           {improveDropdown}
