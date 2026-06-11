@@ -697,17 +697,26 @@
   border-color: var(--ds-background-brand-bold, #0C66E4);
 }
 
-/* ── Reactions row + persistent add-reaction affordance (H6) ── */
+/* ── Reactions row + add-reaction affordance ── */
+/* Row hidden at rest; shown on hover or when reaction chips exist */
 .cc-msg__react-row {
-  display: flex;
+  display: none;
   align-items: center;
   gap: 4px;
   margin-top: 4px;
 }
+/* Show the row on message hover */
+.cc-msg--row:hover .cc-msg__react-row {
+  display: flex;
+}
+/* Also show when reaction chips are present (has children other than add-react button) */
+.cc-msg__react-row:has(.cc-react) {
+  display: flex;
+}
 
 .cc-msg__add-react {
   display: inline-flex;
-  opacity: 0.6;
+  opacity: 0;
   transition: opacity 100ms ease;
 }
 
@@ -717,13 +726,17 @@
 }
 
 /* ---------- Message Actions Toolbar ---------- */
+/* Hidden at rest — shown only on row hover (Slack pattern) */
 .cc-msg__actions {
-  display: flex;
+  display: none;
   align-items: center;
   gap: 4px;
-  margin-top: 8px;
-  opacity: 1;
+  margin-top: 4px;
   transition: opacity 150ms ease-in-out;
+}
+.cc-msg--row:hover .cc-msg__actions,
+.cc-msg__actions:focus-within {
+  display: flex;
 }
 
 .cc-msg__action-btn {
