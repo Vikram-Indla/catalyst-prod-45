@@ -36,7 +36,7 @@
  * - Tab switch → updates activeTab + persists to localStorage
  * - View all projects → /projects route
  */
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import { useAuth } from '@/lib/auth';
@@ -55,6 +55,30 @@ import R360Panel from '@/components/for-you/atlaskit/R360Panel';
 import BoardPanel from '@/components/for-you/atlaskit/BoardPanel';
 
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
+
+/** Side-panel width — matches the backlog's panel (BacklogPage.atlaskit.tsx). */
+const SIDE_PANEL_WIDTH = 480;
+/** Below the Catalyst global topbar (CatalystHeader.tsx is 56px tall). */
+const TOPBAR_HEIGHT = 56;
+
+/** Map router itemType to JiraIssueTypeIcon's `type` registry label. */
+function resolveTypeIconLabel(itemType: string | undefined): string {
+  switch (itemType) {
+    case 'epic': return 'Epic';
+    case 'feature': return 'Feature';
+    case 'task': return 'Task';
+    case 'subtask': return 'Sub-task';
+    case 'defect': return 'QA Bug';
+    case 'incident': return 'Production Incident';
+    case 'business_request': return 'Business Request';
+    case 'idea': return 'Idea';
+    case 'story':
+    default: return 'Story';
+  }
+}
 
 const PAGE_SIZE = 20;
 
@@ -140,6 +164,16 @@ export default function ForYouPageAtlaskit() {
   }
   const { tab: urlTab } = useParams<{ tab?: string }>();
   const navigate = useNavigate();
+
+  // Side panel — opened locally on this page when a card's "View thread"
+  // link sets `panelMode: true` on the pending item. CatalystShell skips
+  // rendering for panelMode items so this page can mount the panel inline
+  // (mirrors the project-hub BacklogPage pattern: page owns the panel,
+  // page owns the responsive squeeze on its own content).
+  const pendingItem = useGlobalSearchStore((s) => s.pendingItem);
+  const clearDetail = useGlobalSearchStore((s) => s.clearDetail);
+  const sidePanelItem = pendingItem?.panelMode ? pendingItem : null;
+  const sidePanelOpen = !!sidePanelItem;
 
   // Build the visible tab strip — Team Pulse appended for leads/admins only.
   const visibleTabs = useMemo<ForYouTabDefinition[]>(
@@ -280,7 +314,12 @@ export default function ForYouPageAtlaskit() {
         width: '100%',
         background: token('elevation.surface', '#FFFFFF'),
         color: token('color.text', '#292A2E'),
+        // Squeeze when the side panel is open so the panel sits next to
+        // the feed instead of overlapping it. Same affordance the
+        // project-hub backlog uses on its table column.
         paddingInline: 24,
+        paddingInlineEnd: sidePanelOpen ? SIDE_PANEL_WIDTH + 24 : 24,
+        transition: 'padding-inline-end 180ms ease',
         boxSizing: 'border-box',
       }}
     >
@@ -378,9 +417,136 @@ export default function ForYouPageAtlaskit() {
         </div>
       )}
 
-      {/* Detail rendering: CatalystShell mounts CatalystDetailRouter
-          for the pending item set by handleSelect → openDetail().
-          (Bespoke ForYouDetailPanel deleted 2026-05-11.) */}
+      {/* Detail rendering — MODAL mode is owned by CatalystShell. PANEL
+          mode (View thread link) is owned here so the page can squeeze
+          its own content via `paddingInlineEnd` above. Mirrors the
+          project-hub BacklogPage side-panel pattern. */}
+      {sidePanelItem && (
+        <div
+          data-cv-stacked-panel="true"
+          style={{
+            position: 'fixed',
+            top: TOPBAR_HEIGHT,
+            right: 0,
+            bottom: 0,
+            width: SIDE_PANEL_WIDTH,
+            zIndex: 50,
+            borderLeft: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-surface, #FFFFFF)',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Panel header — type icon + "Catalyst work item" label,
+              open-in-full-page link, close X. Same chrome BacklogPage
+              renders for its side panel. */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '8px 12px',
+              minHeight: 44,
+              flexShrink: 0,
+              borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+              background: 'var(--ds-surface, #FFFFFF)',
+            }}
+          >
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+                <JiraIssueTypeIcon type={resolveTypeIconLabel(sidePanelItem.itemType)} size={16} />
+              </span>
+              <span
+                style={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: 'var(--ds-text-subtle, #505258)',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                Catalyst work item
+              </span>
+            </div>
+            {sidePanelItem.projectKey && (
+              <button
+                type="button"
+                aria-label="Open detail in full page"
+                onClick={() => {
+                  navigate(`/project-hub/${sidePanelItem.projectKey}/backlog/${sidePanelItem.id}`);
+                  clearDetail();
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 28,
+                  height: 28,
+                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  borderRadius: 3,
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  padding: 0,
+                  flexShrink: 0,
+                  color: 'var(--ds-text-subtle, #505258)',
+                  transition: 'background-color 100ms ease',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, #EBECF0)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </button>
+            )}
+            <button
+              type="button"
+              aria-label="Close panel"
+              onClick={clearDetail}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 28,
+                height: 28,
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                borderRadius: 3,
+                background: 'transparent',
+                cursor: 'pointer',
+                padding: 0,
+                flexShrink: 0,
+                color: 'var(--ds-text-subtle, #505258)',
+                transition: 'background-color 100ms ease',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, #EBECF0)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" aria-hidden="true">
+                <path d="M3 3l10 10M13 3L3 13" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Detail content — the router handles its own internal scroll. */}
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <Suspense fallback={<div style={{ padding: 24, color: 'var(--ds-text-subtle, #505258)', fontSize: 14 }}>Loading…</div>}>
+              <CatalystDetailRouter
+                isOpen={true}
+                onClose={clearDetail}
+                itemId={sidePanelItem.id}
+                itemType={sidePanelItem.itemType}
+                projectId={sidePanelItem.projectId || ''}
+                projectKey={sidePanelItem.projectKey || ''}
+                panelMode={true}
+              />
+            </Suspense>
+          </div>
+        </div>
+      )}
 
       {/* Modal pattern for Ask Caty - Themify was tried (commit bdf8c6584)
           but failed to render — see commit message + AssignedPanel JSDoc.

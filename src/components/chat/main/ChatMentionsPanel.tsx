@@ -6,7 +6,10 @@ import React, { useMemo, useState } from 'react';
 import { useChatMentions, useMarkMentionRead } from '@/hooks/chat/useChatMentions';
 import { useConversations } from '@/hooks/chat/useConversations';
 import { useThreadActivity } from '@/hooks/chat/useThreadActivity';
+import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import { MentionToken } from './MentionToken';
+import { parseMentions } from '@/lib/mentions/parseMentions';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface ChatMentionsPanelProps {
   /** Called with the chat_messages.id of the mention so the host can open it. */
@@ -22,14 +25,26 @@ const TABS: Array<{ key: ActivityTab; label: string }> = [
   { key: 'threads', label: 'Threads' },
 ];
 
-const MENTION_RE = /(@[A-Za-z][A-Za-z .'-]*)/g;
-
-function renderExcerpt(text: string): React.ReactNode[] {
-  return text.split(MENTION_RE).map((part, i) =>
-    MENTION_RE.test(part) ? (
-      <MentionToken key={`m-${i}`} raw={part} />
+// Roster-aware mention rendering — supports names of any word count.
+// Longest-matches against the live people roster so "Maria Garcia Lopez"
+// renders as a single canonical mention chip even with 3 words. Pure
+// visual wrapper — the styling comes from the shared mentionStyles
+// stylesheet via MentionToken → CatalystMention.
+function renderExcerpt(
+  text: string,
+  roster: readonly { name: string; userId: string | null }[],
+  currentUserId: string | null,
+): React.ReactNode[] {
+  return parseMentions(text, roster).map((part, i) =>
+    part.type === 'mention' ? (
+      <MentionToken
+        key={`m-${i}`}
+        raw={part.raw}
+        userId={part.userId}
+        currentUserId={currentUserId}
+      />
     ) : (
-      <React.Fragment key={`t-${i}`}>{part}</React.Fragment>
+      <React.Fragment key={`t-${i}`}>{part.value}</React.Fragment>
     ),
   );
 }
@@ -63,6 +78,17 @@ export function ChatMentionsPanel({ onOpenMessage }: ChatMentionsPanelProps) {
   const { data: threadItems = [], isLoading: threadsLoading } = useThreadActivity();
   const markRead = useMarkMentionRead();
   const [tab, setTab] = useState<ActivityTab>('all');
+
+  const { user } = useAuth();
+  const currentUserId = user?.id ?? null;
+  const { groups: peopleGroups } = useChatPeople();
+  const roster = useMemo(
+    () =>
+      peopleGroups.flatMap((g) =>
+        g.people.map((p) => ({ name: p.name, userId: p.profileId })),
+      ),
+    [peopleGroups],
+  );
 
   const dmConversations = useMemo(
     () => conversations.filter((c) => c.kind === 'dm').slice(0, 30),
@@ -205,7 +231,7 @@ export function ChatMentionsPanel({ onOpenMessage }: ChatMentionsPanelProps) {
                       {m.entityKey && <span className="cc-activity__chip">{m.entityKey}</span>}
                       <span className="cc-activity__time">{relative(m.createdAt)}</span>
                     </div>
-                    <div className="cc-activity__excerpt">{renderExcerpt(m.entityTitle ?? '')}</div>
+                    <div className="cc-activity__excerpt">{renderExcerpt(m.entityTitle ?? '', roster, currentUserId)}</div>
                   </button>
                   <div className="cc-activity__actions">
                     {unread && (
@@ -247,7 +273,7 @@ export function ChatMentionsPanel({ onOpenMessage }: ChatMentionsPanelProps) {
                       <span className="cc-activity__chip">{item.title}</span>
                       <span className="cc-activity__time">{relative(item.time)}</span>
                     </div>
-                    {item.excerpt && <div className="cc-activity__excerpt">{item.excerpt}</div>}
+                    {item.excerpt && <div className="cc-activity__excerpt">{renderExcerpt(item.excerpt, roster, currentUserId)}</div>}
                   </button>
                 </div>
               </React.Fragment>

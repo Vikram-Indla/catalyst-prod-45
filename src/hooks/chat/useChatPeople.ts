@@ -75,6 +75,7 @@ async function fetchPeople(): Promise<ChatPeopleGroup[]> {
       const pres = r.profile_id ? presenceByProfile.get(r.profile_id) : undefined;
       return {
         id: r.id,
+        profileId: r.profile_id ?? null,
         name: r.name ?? '',
         role: r.role_code ?? null,
         avatarUrl: resolveAvatarUrl(r.name),

@@ -36,6 +36,9 @@ import EmojiAddIcon from '@atlaskit/icon/core/emoji-add';
 import { TicketKeyChip } from './TicketKeyChip';
 import { useIssueRefs, type IssueRefMap } from '@/hooks/chat/useIssueRefs';
 import { extractTicketKeys, splitByTicketKeys } from '@/lib/chat/ticket-refs';
+import { useChatPeople } from '@/hooks/chat/useChatPeople';
+import { parseMentions } from '@/lib/mentions/parseMentions';
+import { useAuth } from '@/hooks/useAuth';
 
 // Lazy renderer — Atlaskit @atlaskit/renderer chunk only loads when a
 // message actually has body_adf content.
@@ -75,11 +78,11 @@ export interface MessageStreamProps {
   projectKey?: string | null;
 }
 
-// Highlight @mention tokens (e.g. "@Yazeed Daraz") + broadcast tokens
-// (@here / @channel / @everyone) inside body text. Broadcast tokens use
-// a stronger background to signal scope.
+// Broadcast tokens (@here / @channel / @everyone) — these use a distinct
+// warning background so the scope reads at a glance. Regular @mentions are
+// resolved against the live people roster (see renderBody) so multi-word
+// names of any length render correctly.
 const BROADCAST_RE = /(@here|@channel|@everyone)\b/g;
-const MENTION_RE = /(@[A-Za-z][A-Za-z .'-]*)/g;
 
 function renderPlain(text: string, keyPrefix: string, issueRefs?: IssueRefMap): React.ReactNode[] {
   if (!issueRefs) return [<React.Fragment key={keyPrefix}>{text}</React.Fragment>];
@@ -99,8 +102,13 @@ function renderPlain(text: string, keyPrefix: string, issueRefs?: IssueRefMap): 
   });
 }
 
-function renderBody(text: string, issueRefs?: IssueRefMap): React.ReactNode[] {
-  // Split on broadcast tokens first so they aren't swallowed by MENTION_RE.
+function renderBody(
+  text: string,
+  roster: readonly { name: string; userId: string | null }[],
+  currentUserId: string | null,
+  issueRefs?: IssueRefMap,
+): React.ReactNode[] {
+  // Split on broadcast tokens first so they aren't consumed by the mention parser.
   const broadcastParts = text.split(BROADCAST_RE);
   const out: React.ReactNode[] = [];
   broadcastParts.forEach((part, i) => {
@@ -122,12 +130,20 @@ function renderBody(text: string, issueRefs?: IssueRefMap): React.ReactNode[] {
       );
       return;
     }
-    const subParts = part.split(MENTION_RE);
-    subParts.forEach((sub, j) => {
-      if (MENTION_RE.test(sub)) {
-        out.push(<MentionToken key={`m-${i}-${j}`} raw={sub} />);
+    // Roster-aware mention parsing — supports names of any word count.
+    const mentionParts = parseMentions(part, roster);
+    mentionParts.forEach((m, j) => {
+      if (m.type === 'mention') {
+        out.push(
+          <MentionToken
+            key={`m-${i}-${j}`}
+            raw={m.raw}
+            userId={m.userId}
+            currentUserId={currentUserId}
+          />,
+        );
       } else {
-        out.push(...renderPlain(sub, `t-${i}-${j}`, issueRefs));
+        out.push(...renderPlain(m.value, `t-${i}-${j}`, issueRefs));
       }
     });
   });
@@ -261,6 +277,20 @@ export function MessageStream({
   );
   const togglePin = useTogglePin();
   const toggleBookmark = useToggleBookmark();
+
+  // Roster of canonical people — feeds parseMentions so multi-word names
+  // ("Maria Garcia Lopez", "Abdul Rahman Al-Saud") render as a single
+  // mention pill regardless of word count, AND so each rendered mention
+  // carries the profile id needed by the canonical `data-mention-id`
+  // paint contract in mentionStyles.ts.
+  const { groups: peopleGroups } = useChatPeople();
+  const roster = useMemo(
+    () =>
+      peopleGroups.flatMap((g) =>
+        g.people.map((p) => ({ name: p.name, userId: p.profileId })),
+      ),
+    [peopleGroups],
+  );
   // Top-level messages only; group consecutive runs under a date divider.
   const rows = useMemo(() => {
     const top = messages.filter(m => !m.parentId && !m.deletedAt);
@@ -390,6 +420,7 @@ export function MessageStream({
             grouped={row.grouped}
             msg={row.msg}
             issueRefs={issueRefs}
+            roster={roster}
             ref={(ref) => {
               if (ref) {
                 messageRefs.current.set(row.msg.id, ref);
@@ -453,6 +484,7 @@ interface MessageRowProps {
   grouped?: boolean;
   issueRefs?: IssueRefMap;
   projectKey?: string | null;
+  roster?: readonly { name: string; userId: string | null }[];
 }
 
 const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
@@ -474,7 +506,11 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
   isOwn,
   grouped,
   projectKey,
+  roster,
 }, ref) => {
+  const { user } = useAuth();
+  const currentUserId = user?.id ?? null;
+  const mentionRoster = roster ?? [];
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(msg.bodyText);
   const [showReactPicker, setShowReactPicker] = useState(false);
@@ -545,12 +581,12 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
           </div>
         ) : isAdfPresent(msg.bodyAdf) ? (
           <div className="cc-msg__text">
-            <Suspense fallback={<span>{renderBody(msg.bodyText, issueRefs)}</span>}>
+            <Suspense fallback={<span>{renderBody(msg.bodyText, mentionRoster, currentUserId, issueRefs)}</span>}>
               <EpicDescriptionRenderer content={msg.bodyAdf as any} />
             </Suspense>
           </div>
         ) : (
-          <div className="cc-msg__text">{renderBody(msg.bodyText, issueRefs)}</div>
+          <div className="cc-msg__text">{renderBody(msg.bodyText, mentionRoster, currentUserId, issueRefs)}</div>
         )}
 
         {attachments && attachments.length > 0 && (
