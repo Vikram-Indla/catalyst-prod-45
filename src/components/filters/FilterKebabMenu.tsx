@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import { IconButton } from '@atlaskit/button/new';
 import Button from '@atlaskit/button/new';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import { MoreHorizontal } from '@/lib/atlaskit-icons';
@@ -63,15 +62,28 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
     <>
       <DropdownMenu
         placement="bottom-end"
-        trigger={({ triggerRef, ...props }) => (
-          <IconButton
+        trigger={({ triggerRef, ...triggerProps }) => (
+          <button
+            {...triggerProps}
             ref={triggerRef}
-            {...props}
-            icon={MoreHorizontal}
-            label="Filter actions"
-            appearance="subtle"
-            spacing="compact"
-          />
+            type="button"
+            aria-label="Filter actions"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 32,
+              height: 32,
+              padding: 0,
+              border: 'none',
+              borderRadius: 3,
+              background: 'transparent',
+              color: token('color.icon.subtle', '#44546F'),
+              cursor: 'pointer',
+            }}
+          >
+            <MoreHorizontal size="small" />
+          </button>
         )}
       >
         <DropdownItemGroup>
