@@ -65,7 +65,15 @@ import { renderContent as renderCommentContent } from '@/components/catalyst-ds/
 import { Comment } from '@/components/catalyst-ds/comments/Comment';
 import { CommentToolbar } from '@/components/catalyst-ds/comments/CommentToolbar';
 import { CommentEditor } from '@/components/catalyst-ds/comments/CommentEditor';
-import { CommentNode, TRUNK_X, LINE_COLOR, LINE_WIDTH } from '@/components/catalyst-ds/comments/CommentNode';
+import {
+  CommentNode,
+  TRUNK_X,
+  LINE_COLOR,
+  LINE_WIDTH,
+  BRANCH_WIDTH,
+  BRANCH_HEIGHT,
+  REPLY_INDENT,
+} from '@/components/catalyst-ds/comments/CommentNode';
 import type { CdsComment, CdsCommentReaction, CdsUser } from '@/components/catalyst-ds/types';
 import { useAuth } from '@/hooks/useAuth';
 import { useChatPeople } from '@/hooks/chat/useChatPeople';
@@ -771,26 +779,8 @@ function FeedCard({
           <span title={absolute}>{relative}</span>
         </div>
 
-        {/* G-02: View thread — Jira parity, "Reply to comments" rows only.
-            DOM probe 2026-05-29: BUTTON element, 13px/500/link-blue, below the meta row. */}
-        {row.showViewThread && (
-          <button
-            type="button"
-            onClick={onOpen}
-            style={{
-              all: 'unset',
-              cursor: 'pointer',
-              display: 'inline-block',
-              fontSize: 13,
-              fontWeight: 500,
-              lineHeight: '16px',
-              color: token('color.link', '#1868DB'),
-              paddingBlockStart: 2,
-            }}
-          >
-            View thread
-          </button>
-        )}
+        {/* "View thread" link moved into ForYouCardFooter (above the
+            reactions toolbar, Phase 1 dashboard layout). */}
 
         {/* Comment body — left accent bar separates "what was said" from card chrome.
             borderLeft uses color.link token (same blue as @mention chips). */}
@@ -813,10 +803,10 @@ function FeedCard({
           </div>
         </div>
 
-        {/* Footer zone — border-top groups reactions + composer into one visual block. */}
+        {/* Footer zone — Phase 1 dashboard layout: NO top divider.
+            The "View thread" link inside ForYouCardFooter sits in the
+            space the divider previously occupied. */}
         <div style={{
-          borderTop: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
-          paddingTop: 8,
           marginBlockStart: 8,
           display: 'flex',
           flexDirection: 'column',
@@ -2340,24 +2330,52 @@ function ForYouCardFooter({
     queryClient.invalidateQueries({ queryKey: ['fy-reply-tree', issueUuid] });
   };
 
+  // Phase 1 dashboard layout:
+  //   • "View thread" link sits above the reactions toolbar — only when
+  //     the row actually carries a thread to view. Clickable placeholder;
+  //     the trigger is wired in a later phase.
+  //   • CommentToolbar shows reactions only — Reply icon and ⋯ More menu
+  //     are intentionally hidden by NOT passing `onReply` / `onCopyLink`.
+  //   • Nested reply tree (<ForYouReplyTree>) is NOT rendered on the
+  //     dashboard. The "Leave a reply" rest-state box replaces both the
+  //     standalone SuggestReplyTile and the reply list.
   return (
     <>
+      {row.showViewThread && (
+        <button
+          type="button"
+          onClick={() => { /* Phase 2 — wire thread open */ }}
+          style={{
+            all: 'unset',
+            cursor: 'pointer',
+            display: 'inline-block',
+            fontSize: 13,
+            fontWeight: 500,
+            lineHeight: '16px',
+            color: token('color.link', '#1868DB'),
+            textDecoration: 'underline',
+            textUnderlineOffset: 2,
+          }}
+        >
+          View thread
+        </button>
+      )}
       <CommentToolbar
         reactions={cdsReactions}
         onToggleReaction={handleToggleReaction}
-        onReply={() => {
+      />
+      <LeaveAReplyBox
+        currentUser={currentUser}
+        composerOpen={composerOpen}
+        suggestLoading={suggestPhase === 'loading'}
+        suggestError={suggestPhase === 'error'}
+        onOpen={() => {
           setComposerDefault('');
           setComposerKey((k) => k + 1);
           setComposerOpen(true);
         }}
-        onCopyLink={() => {
-          const url = new URL(window.location.origin + `/browse/${row.issueKey}`);
-          if (row.commentId) url.searchParams.set('comment', row.commentId);
-          void navigator.clipboard?.writeText(url.toString());
-        }}
-      />
-      {composerOpen && (
-        <div style={{ marginBlockStart: 4 }}>
+        onSuggest={handleSuggestReply}
+        editor={
           <CommentEditor
             key={composerKey}
             currentUser={currentUser}
@@ -2374,40 +2392,211 @@ function ForYouCardFooter({
               issueSummary: row.issueSummary,
             }}
           />
-        </div>
-      )}
-      {/* Ask Caty — suggest a reply. ALWAYS visible under the toolbar
-          (matching the legacy ReplyComposer behavior). Clicking it
-          triggers handleSuggestReply which opens the composer
-          pre-filled with the AI-generated suggestion. */}
-      {suggestPhase !== 'loading' && (
-        <SuggestReplyTile
-          phase={suggestPhase === 'error' ? 'error' : 'idle'}
-          onSuggest={handleSuggestReply}
-        />
-      )}
-      {suggestPhase === 'loading' && (
-        <div
-          style={{
-            marginBlockStart: 8,
-            marginInlineStart: 34,
-            font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-            color: token('color.text.subtle', '#505258'),
-          }}
-        >
-          Ask Caty…
-        </div>
-      )}
-      {/* Nested reply tree — every descendant of this top-level
-          comment in ph_comments. Renders the curved trunk + Bezier
-          branches via CommentNode (Jira parity). */}
-      <ForYouReplyTree
-        parentResolvedId={resolvedId}
-        issueUuid={issueUuid}
-        ensurePhComment={ensurePhComment}
-        onSubmitReplyTo={handleSubmitReplyTo}
+        }
       />
     </>
+  );
+}
+
+/**
+ * LeaveAReplyBox — rest-state composer surface used on the For You
+ * dashboard. Renders a tree-line connector + current-user avatar + a
+ * bordered "Leave a reply" container with the Ask Caty button inside it.
+ *
+ * Click anywhere in the container (except the Ask Caty button) → opens
+ * the real CommentEditor in place. Click Ask Caty → triggers the AI
+ * suggestion stream (handled by the parent). When `composerOpen` is
+ * true the bordered placeholder is swapped for the `editor` slot so the
+ * tree-line + avatar layout stays put — no jump.
+ */
+function LeaveAReplyBox({
+  currentUser,
+  composerOpen,
+  suggestLoading,
+  suggestError,
+  onOpen,
+  onSuggest,
+  editor,
+}: {
+  currentUser?: CdsUser;
+  composerOpen: boolean;
+  suggestLoading: boolean;
+  suggestError: boolean;
+  onOpen: () => void;
+  onSuggest: () => void;
+  editor: React.ReactNode;
+}) {
+  const placeholder = suggestLoading
+    ? 'Ask Caty…'
+    : suggestError
+    ? 'Could not generate a suggestion. Try again.'
+    : 'Leave a reply';
+
+  // Trunk anchoring — same pattern ForYouReplyTree uses so the vertical
+  // line emerges from BELOW the FeedCard's parent avatar (in the outer
+  // flex column), passes DOWN through the comment body / reactions /
+  // "View thread" link, and curves into the reply avatar here.
+  //   • marginLeft shifts this container so its `left: TRUNK_X` aligns
+  //     with the parent avatar's horizontal CENTER.
+  //   • trunkTop is a NEGATIVE offset measured up from this container's
+  //     top to the parent avatar's bottom — that's how high the trunk
+  //     extends above us into the parent's body area.
+  // Both are measured at runtime because neither the FeedCard padding
+  // nor the avatar's box are stable enough to hard-code.
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [marginLeft, setMarginLeft] = useState(0);
+  const [trunkTop, setTrunkTop] = useState(0);
+
+  useLayoutEffect(() => {
+    const wrapper = containerRef.current;
+    if (!wrapper) return;
+    const update = () => {
+      const parent = wrapper.parentElement;
+      const feedCard = wrapper.closest('[data-fy-feedcard]');
+      const avatar = feedCard?.querySelector('[data-fy-avatar]') as HTMLElement | null;
+      if (!parent || !avatar) return;
+
+      const aRect = avatar.getBoundingClientRect();
+      const pRect = parent.getBoundingClientRect();
+      const avatarCenterX = aRect.left + aRect.width / 2;
+      setMarginLeft(avatarCenterX - pRect.left - TRUNK_X);
+
+      const wRect = wrapper.getBoundingClientRect();
+      const upDistance = wRect.top - aRect.bottom;
+      setTrunkTop(-Math.max(0, upDistance));
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(wrapper);
+    const feedCard = wrapper.closest('[data-fy-feedcard]');
+    if (feedCard) ro.observe(feedCard);
+    window.addEventListener('resize', update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', update);
+    };
+  }, [composerOpen, suggestLoading, suggestError]);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        position: 'relative',
+        paddingLeft: REPLY_INDENT,
+        marginBlockStart: 8,
+        marginLeft,
+      }}
+    >
+      {/* Vertical trunk — extends UP from our top (top: trunkTop, a
+          negative value) so it visually emerges from BELOW the parent
+          FeedCard's avatar and passes through the comment body / view
+          thread / reactions area. */}
+      <span
+        aria-hidden
+        style={{
+          position: 'absolute',
+          left: TRUNK_X,
+          top: trunkTop,
+          height: -trunkTop,
+          width: 0,
+          borderLeft: `${LINE_WIDTH}px solid ${LINE_COLOR}`,
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Curved branch — picks up where the trunk ends (top: 0) and
+          curves into the current-user avatar at its VERTICAL MIDDLE.
+          CommentNode's BRANCH_HEIGHT (24) was tuned for a 24px avatar
+          inside a padded row landing at y=24; here the avatar is the
+          first flex child (no top padding) and Atlaskit's `medium`
+          size is 32px, so the true vertical middle sits at y=16. */}
+      {(() => {
+        const branchEndY = 16;
+        return (
+          <svg
+            aria-hidden
+            width={BRANCH_WIDTH}
+            height={branchEndY}
+            viewBox={`0 0 ${BRANCH_WIDTH} ${branchEndY}`}
+            style={{
+              position: 'absolute',
+              left: TRUNK_X,
+              top: 0,
+              overflow: 'visible',
+              pointerEvents: 'none',
+            }}
+          >
+            <path
+              d={`M 0 0 Q 0 ${branchEndY} ${BRANCH_WIDTH} ${branchEndY}`}
+              fill="none"
+              stroke={LINE_COLOR}
+              strokeWidth={LINE_WIDTH}
+            />
+          </svg>
+        );
+      })()}
+
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+        {/* Avatar rendered ONLY in the rest state — CommentEditor draws
+            its own author avatar, so showing one here too would stack
+            two side-by-side when the editor opens. */}
+        {!composerOpen && (
+          <span style={{ flexShrink: 0, marginInlineStart: -16 }}>
+            <Avatar
+              size="medium"
+              name={currentUser?.name ?? 'You'}
+              src={currentUser?.avatarUrl}
+            />
+          </span>
+        )}
+
+        {composerOpen ? (
+          <div style={{ flex: 1, minWidth: 0 }}>{editor}</div>
+        ) : (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={onOpen}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onOpen();
+              }
+            }}
+            style={{
+              flex: 1,
+              minWidth: 0,
+              cursor: 'text',
+              border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+              borderRadius: 6,
+              padding: '10px 12px',
+              background: 'var(--ds-surface, #FFFFFF)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+            }}
+          >
+            <span
+              style={{
+                font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+                color: token('color.text.subtlest', '#6B778C'),
+              }}
+            >
+              {placeholder}
+            </span>
+            {/* Stop propagation so clicking the Ask Caty button does
+                NOT also trigger the outer "open editor" handler on the
+                bordered box. */}
+            <span onClick={(e) => e.stopPropagation()}>
+              <SuggestReplyTile
+                phase={suggestError ? 'error' : 'idle'}
+                onSuggest={onSuggest}
+              />
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
