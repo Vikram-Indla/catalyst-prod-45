@@ -167,7 +167,7 @@ export function CatalystViewBase({
   // (raised from 220 → 260 on 2026-05-19: "Improve Production Incident" button is 236px
   // and was visually clipping at 220px; 260 gives it breathing room without crowding the
   // left content area at typical 1140px AllWork panel widths).
-  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 440 : 480);
+  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 260 : 480);
   const [showCopyFlag, setShowCopyFlag] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [moreAnchor, setMoreAnchor] = useState<DOMRect | null>(null);
@@ -318,7 +318,6 @@ export function CatalystViewBase({
     display: 'flex', flexDirection: 'column',
   } : panelMode ? {
     position: 'relative', width: '100%', height: '100%',
-    display: 'flex', flexDirection: 'column',
   } : {
     position: 'fixed', inset: 0, zIndex: 1000,
     display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
@@ -337,7 +336,7 @@ export function CatalystViewBase({
     width: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
   } : panelMode ? {
-    width: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    width: '100%', minWidth: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
     // 2026-05-24 — anti-dance fix: cv-panel-in slide-in intentionally absent here.
     // The panel is already on-screen; replaying the entrance animation on every
