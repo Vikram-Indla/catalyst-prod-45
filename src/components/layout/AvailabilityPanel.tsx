@@ -6,10 +6,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import type { PresenceState } from '@/lib/presence';
 
-const QUICK_SET: { label: string; state: PresenceState; color: string }[] = [
-  { label: 'Onsite',   state: 'available', color: 'var(--ds-icon-success, #22A06B)' },
-  { label: 'Remote',   state: 'busy',      color: 'var(--ds-icon-information, #1D7AFC)' },
-  { label: 'Away',     state: 'away',      color: 'var(--ds-icon-warning, #E2B203)' },
+const QUICK_SET: { label: string; state: Exclude<PresenceState, 'on_leave'>; color: string }[] = [
+  { label: 'In office', state: 'on_set', color: 'var(--ds-icon-success, #22A06B)' },
+  { label: 'Remote',    state: 'remote', color: 'var(--ds-icon-information, #1D7AFC)' },
+  { label: 'Away',      state: 'away',   color: 'var(--ds-icon-warning, #E2B203)' },
 ];
 
 const LEAVE_KIND_LABELS: Record<string, string> = {
@@ -49,7 +49,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
   });
 
   const handleQuickSet = useCallback(
-    async (state: PresenceState) => {
+    async (state: Exclude<PresenceState, 'on_leave'>) => {
       await setPresence({ state });
       onDone?.();
     },
@@ -116,7 +116,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
-                  padding: '6px 8px',
+                  padding: '8px',
                   border: 'none',
                   borderRadius: 3,
                   background: isActive
@@ -206,7 +206,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                   fontSize: 11,
                   fontWeight: 600,
                   color: token('color.text.danger', '#AE2A19'),
-                  padding: '2px 4px',
+                  padding: '4px',
                   opacity: clearing ? 0.5 : 1,
                 }}
               >
@@ -238,7 +238,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
         <div
           style={{
             borderTop: hasActiveLeave ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-            paddingTop: hasActiveLeave ? 4 : 6,
+            paddingTop: hasActiveLeave ? 4 : 8,
           }}
         >
           <button
@@ -246,7 +246,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
             style={{
               background: 'none',
               border: 'none',
-              padding: '3px 0',
+              padding: '4px 0',
               cursor: 'pointer',
               fontSize: 13,
               fontWeight: 400,

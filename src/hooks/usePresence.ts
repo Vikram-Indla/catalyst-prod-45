@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { PresenceState } from '@/lib/presence';
 
 interface SetPresenceArgs {
-  state: Exclude<PresenceState, 'offline' | 'on_leave'>;
+  state: Exclude<PresenceState, 'on_leave'>;
   /** Duration the manual override lasts (ms). Defaults to 4 h. */
   durationMs?: number;
 }
@@ -30,9 +30,9 @@ export function usePresence() {
       if (!user) throw new Error('Not authenticated');
 
       const now = new Date();
-      const manual_until = state === 'busy'
+      const manual_until = state === 'remote'
         ? new Date(now.getTime() + durationMs).toISOString()
-        : null;   // available/away: clear manual override
+        : null;   // on_set/away: clear manual override
 
       const { error } = await supabase.from('user_presence').upsert(
         {

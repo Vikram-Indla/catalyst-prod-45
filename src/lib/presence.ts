@@ -1,4 +1,4 @@
-export type PresenceState = 'available' | 'away' | 'busy' | 'offline' | 'on_leave';
+export type PresenceState = 'on_set' | 'remote' | 'away' | 'on_leave';
 export type AvailabilityKind = 'vacation' | 'public_holiday' | 'sick' | 'ooo';
 
 export interface UserStatus {
@@ -13,33 +13,28 @@ export interface UserStatus {
   backup_user_id: string | null;
 }
 
-// Ring colors — evidence-based mental model (2026-06-03 design-critique)
-// Matches Slack, Microsoft Teams, Google Chat, Jira: green=available, amber=away, red=busy, grey=offline
-// on_leave uses dashed blue: blue = informational/planned (calendar), dashed = secondary redundant cue (WCAG-safe)
+// Ring colors — presence model on_set/remote/away/on_leave (2026-06-11).
+// on_set=green (in office), remote=blue (offsite), away=amber, on_leave=dashed blue (planned).
 export const PRESENCE_RING: Record<PresenceState, string> = {
-  available: 'var(--ds-icon-success, #22A06B)',   // GREEN  — universal "online/available"
-  away:      'var(--ds-icon-warning, #E2B203)',    // AMBER  — universal "away/idle"
-  busy:      'var(--ds-icon-information, #1D7AFC)', // BLUE   — "remote/offsite" (renamed from busy)
-  offline:   'var(--ds-text-subtlest, #6B6E76)',   // GREY   — universal "offline/inactive"
-  on_leave:  'var(--ds-link, #1868DB)',            // BLUE   — "planned/scheduled absence"
+  on_set:   'var(--ds-icon-success, #22A06B)',     // GREEN — in office / working
+  remote:   'var(--ds-icon-information, #1D7AFC)',  // BLUE  — remote / offsite
+  away:     'var(--ds-icon-warning, #E2B203)',      // AMBER — away / idle
+  on_leave: 'var(--ds-link, #1868DB)',             // BLUE  — planned / scheduled absence
 };
 
-// away: solid ring (distinct amber color; no longer needs dashed treatment)
 // on_leave: dashed blue — secondary cue on top of blue color (safe for colorblind users)
 export const PRESENCE_DASHED: Record<PresenceState, boolean> = {
-  available: false,
-  away:      false,
-  busy:      false,
-  offline:   false,
-  on_leave:  true,
+  on_set:   false,
+  remote:   false,
+  away:     false,
+  on_leave: true,
 };
 
 export const PRESENCE_LABEL: Record<PresenceState, string> = {
-  available: 'Available',
-  away:      'Away',
-  busy:      'Busy',
-  offline:   'Offline',
-  on_leave:  'On leave',
+  on_set:   'In office',
+  remote:   'Remote',
+  away:     'Away',
+  on_leave: 'On leave',
 };
 
 export const AVAILABILITY_KIND_LABEL: Record<AvailabilityKind, string> = {
