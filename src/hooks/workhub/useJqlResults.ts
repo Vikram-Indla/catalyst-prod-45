@@ -24,11 +24,14 @@ export interface JqlResultRow {
   created: string | null;
   updated: string | null;
   dueDate: string | null;
+  parentKey: string | null;
+  parentSummary: string | null;
+  parentIssueType: string | null;
 }
 
 const RESULT_SELECT = `id, issue_key, summary, status, status_category, issue_type,
   assignee_display_name, project_key, jira_created_at, jira_updated_at,
-  due_date, effective_due_date, priority`;
+  due_date, effective_due_date, priority, parent_key, parent_summary, parent_issue_type`;
 
 export const JQL_RESULTS_LIMIT = 100;
 
@@ -84,6 +87,9 @@ export function useJqlResults(jql: string, enabled = true) {
         created: r.jira_created_at ?? null,
         updated: r.jira_updated_at ?? null,
         dueDate: r.effective_due_date ?? r.due_date ?? null,
+        parentKey: r.parent_key ?? null,
+        parentSummary: r.parent_summary ?? null,
+        parentIssueType: r.parent_issue_type ?? null,
       }));
 
       return { items, totalCount: count ?? items.length };

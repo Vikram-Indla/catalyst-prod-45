@@ -80,15 +80,29 @@ export function tokenize(jql: string): Token[] {
     const values: string[] = [];
     while (i < src.length && src[i] !== ')') {
       skipWs();
+      if (src[i] === ')') break;
       if (src[i] === '"') {
         values.push(readQuotedString());
-      } else if (src[i] !== ')' && src[i] !== ',') {
-        values.push(readBareWord());
+      } else if (src[i] !== ',' ) {
+        const word = readBareWord();
+        // Function call like currentUser() — skip the '(...)' arg block
+        if (src[i] === '(') {
+          let depth = 1;
+          i++; // skip opening '('
+          while (i < src.length && depth > 0) {
+            if (src[i] === '(') depth++;
+            else if (src[i] === ')') depth--;
+            i++;
+          }
+          if (word) values.push(word + '()');
+        } else {
+          if (word) values.push(word);
+        }
       }
       skipWs();
       if (src[i] === ',') i++;
     }
-    if (src[i] === ')') i++; // skip ')'
+    if (i < src.length && src[i] === ')') i++; // skip ')'
     return values.map(v => v.trim()).filter(Boolean);
   }
 
