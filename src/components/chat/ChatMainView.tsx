@@ -533,13 +533,15 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
         </div>
 
         {threadParentMessage && resolvedActiveId && (
-          <ThreadPanel
-            conversationId={resolvedActiveId}
-            parentMessage={threadParentMessage}
-            conversationTitle={activeConversation?.title}
-            onAlsoSendToConversation={(text) => sendMessage(text, { adf: null })}
-            onClose={() => setThreadParentId(null)}
-          />
+          <div style={{ width: 360, flexShrink: 0, display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <ThreadPanel
+              conversationId={resolvedActiveId}
+              parentMessage={threadParentMessage}
+              conversationTitle={activeConversation?.title}
+              onAlsoSendToConversation={(text) => sendMessage(text, { adf: null })}
+              onClose={() => setThreadParentId(null)}
+            />
+          </div>
         )}
       </>
     );

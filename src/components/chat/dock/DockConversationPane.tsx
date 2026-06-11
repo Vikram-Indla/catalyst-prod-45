@@ -40,7 +40,12 @@ export function DockConversationPane({ conversation, onBack }: DockConversationP
         <span>All messages</span>
       </button>
 
-      <ConversationHeader conversation={conversation} />
+      <ConversationHeader
+        conversation={conversation}
+        currentUserMuted={conversation.isMuted ?? false}
+        currentUserStarred={conversation.isStarred ?? false}
+        onBack={onBack}
+      />
 
       {/* Ticket summary pill — finding 52: Caty can summarize ticket threads */}
       {conversation.kind === 'ticket' && !summaryDismissed && messages.length >= 3 && (

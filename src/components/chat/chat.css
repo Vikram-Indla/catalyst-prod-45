@@ -431,7 +431,7 @@
   flex: 0 0 auto;
   border-top: 1px solid var(--ds-border, #DFE1E6);
   background: var(--ds-surface, #FFFFFF);
-  padding: 12px 24px;
+  padding: 8px 16px;
 }
 .cc-composer-box {
   border: 1px solid var(--ds-border, #DFE1E6);

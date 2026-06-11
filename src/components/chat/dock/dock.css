@@ -50,16 +50,23 @@
   display: block;
 }
 
+/* Cross/close button 20% smaller than sibling icons */
+.cc-dock__actions button[aria-label="Close"] {
+  transform: scale(0.8);
+}
+
 /* Action icon group — divider on left, icons on right */
 .cc-dock__actions {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 8px;
   flex: 0 0 auto;
   /* ads-scanner:ignore-next-line */
   border-left: 1px solid var(--ds-border, #EBECF0);
   margin-left: 4px;
   padding-left: 8px;
+  transform: scale(0.7);
+  transform-origin: center right;
 }
 
 /* Dual-mode underline tabs — enterprise pattern (Slack/Jira nav style) */
@@ -269,6 +276,18 @@
   background: transparent;
   cursor: pointer;
   padding: 0;
+  opacity: 0;
+  transition: opacity 0.1s;
+  margin-left: 2px;
+  border-radius: 3px;
+}
+.cc-tab:hover .cc-tab__x,
+.cc-tab--active .cc-tab__x {
+  opacity: 0.6;
+}
+.cc-tab__x:hover {
+  opacity: 1 !important;
+  background: var(--ds-background-neutral-hovered, #EBECF0);
 }
 
 .cc-tab__add {
@@ -286,24 +305,24 @@
   flex: 0 0 auto;
 }
 
-/* collapsed launcher FAB — transparent, drop-shadow tracks icon alpha */
+/* collapsed launcher FAB — 51px (3× the 17px reduced size) */
 .cc-fab {
   position: fixed;
   right: 24px;
   bottom: 24px;
-  width: 56px;
-  height: 56px;
+  width: 51px;
+  height: 51px;
   background: transparent;
   border: none;
   padding: 0;
   cursor: pointer;
   z-index: 600;
-  filter: drop-shadow(0 4px 14px rgba(9, 30, 66, 0.32)) drop-shadow(0 1px 4px rgba(9, 30, 66, 0.18));
-  transition: transform 0.15s ease;
+  filter: drop-shadow(0 2px 6px rgba(9, 30, 66, 0.28)) drop-shadow(0 1px 3px rgba(9, 30, 66, 0.14));
+  transition: filter 0.15s ease;
 }
 
 .cc-fab:hover {
-  transform: scale(1.06);
+  filter: drop-shadow(0 6px 18px rgba(9, 30, 66, 0.38)) drop-shadow(0 2px 8px rgba(9, 30, 66, 0.22));
 }
 
 .cc-fab:active {
@@ -316,11 +335,11 @@
   right: -6px;
   min-width: 20px;
   height: 20px;
-  padding: 0 6px;
+  padding: 0 5px;
   border-radius: 10px;
   background: var(--ds-background-danger-bold, #E34935);
   color: var(--ds-text-inverse, #FFFFFF);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   line-height: 20px;
   text-align: center;
@@ -331,8 +350,8 @@
   position: absolute;
   bottom: -2px;
   left: -2px;
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
   background: var(--ds-icon-success, #22A06B);
   border: 2px solid var(--ds-surface, #FFFFFF);
@@ -419,9 +438,9 @@
   gap: 6px;
   padding: 8px 16px 2px;
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--ds-text-subtlest, #6B778C);
 }
 

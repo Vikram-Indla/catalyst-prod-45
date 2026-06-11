@@ -30,6 +30,8 @@ export interface ConversationHeaderProps {
   onOpenSearch?: () => void;
   currentUserMuted?: boolean;
   currentUserStarred?: boolean;
+  /** Called after archive or leave succeeds — lets dock navigate back to directory. */
+  onBack?: () => void;
 }
 
 const PRESENCE_MAP: Record<string, PresenceColor> = {
@@ -81,7 +83,7 @@ function ConversationMenuItem({
   );
 }
 
-export function ConversationHeader({ conversation, members = [], onAskCaty, onOpenSearch, currentUserMuted = false, currentUserStarred = false }: ConversationHeaderProps) {
+export function ConversationHeader({ conversation, members = [], onAskCaty, onOpenSearch, currentUserMuted = false, currentUserStarred = false, onBack }: ConversationHeaderProps) {
   const [addOpen, setAddOpen] = useState(false);
   const [rosterOpen, setRosterOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -372,7 +374,10 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
             {!conversation.isArchived ? (
               <ConversationMenuItem
                 label="Archive conversation"
-                onClick={() => { archive.mutate(conversation.id); setMenuOpen(false); }}
+                onClick={() => {
+                  setMenuOpen(false);
+                  archive.mutate(conversation.id, { onSuccess: () => onBack?.() });
+                }}
               />
             ) : (
               <ConversationMenuItem
@@ -386,7 +391,10 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
                 <ConversationMenuItem
                   label="Leave conversation"
                   danger
-                  onClick={() => { leave.mutate(conversation.id); setMenuOpen(false); }}
+                  onClick={() => {
+                    setMenuOpen(false);
+                    leave.mutate(conversation.id, { onSuccess: () => onBack?.() });
+                  }}
                 />
               </>
             )}
