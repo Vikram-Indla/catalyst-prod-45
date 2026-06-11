@@ -1055,8 +1055,18 @@ export function CatalystShell() {
     <CatalystContextProvider>
       <CatalystShellContent />
       {/* GlobalSearch is rendered inside CatalystHeader as the anchored search trigger */}
-      {/* Global CatalystDetailRouter — opened from GlobalSearch, Notifications, ForYou, etc. */}
-      {pendingItem && (
+      {/*
+       * Global CatalystDetailRouter — modal mode only. Opened from
+       * GlobalSearch, Notifications, R360, etc.
+       *
+       * When `pendingItem.panelMode === true`, this shell SKIPS rendering
+       * and the page that triggered the open (e.g. ForYouPage) is
+       * responsible for mounting its own side panel inline. That matches
+       * the project-hub BacklogPage pattern where the panel lives inside
+       * the page's own layout and the page itself controls how its
+       * content responds to the panel width.
+       */}
+      {pendingItem && !pendingItem.panelMode && (
         <Suspense fallback={null}>
           <CatalystDetailRouter
             isOpen={true}

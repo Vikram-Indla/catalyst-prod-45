@@ -342,6 +342,10 @@ export default function RecommendedPanel({
               projectKey: m.projectKey,
               commentBody: m.commentBody,
               commentCreatedAt: m.commentCreatedAt,
+              // Every For You card has a thread to view — the issue's
+              // comments. View thread is the canonical drop-into-comments
+              // affordance, so it's enabled across mentions AND replies.
+              showViewThread: true,
             }))}
             onOpen={resolveSelect}
             onDismiss={handleDismiss}
@@ -2446,23 +2450,21 @@ function ForYouCardFooter({
   return (
     <>
       {row.showViewThread && (
-        <button
-          type="button"
-          onClick={() => { /* Phase 2 — wire thread open */ }}
-          style={{
-            all: 'unset',
-            cursor: 'pointer',
-            display: 'inline-block',
-            fontSize: 13,
-            fontWeight: 500,
-            lineHeight: '16px',
-            color: token('color.link', '#1868DB'),
-            textDecoration: 'underline',
-            textUnderlineOffset: 2,
+        <ViewThreadLink
+          onActivate={() => {
+            // Drop the viewer directly onto the Comments tab of the
+            // issue's detail view, rendered as the right-side panel
+            // (same affordance the project-hub backlog uses) — not the
+            // default centred modal.
+            useGlobalSearchStore.getState().setFocusSection('comments');
+            useGlobalSearchStore.getState().openDetail({
+              id: row.issueKey,
+              itemType: row.issueType,
+              projectKey: row.projectKey,
+              panelMode: true,
+            });
           }}
-        >
-          View thread
-        </button>
+        />
       )}
       <CommentToolbar
         reactions={cdsReactions}
@@ -2775,6 +2777,45 @@ function aiTextToAdfWithMentions(
 
   if (paragraphs.length === 0) paragraphs.push({ type: 'paragraph' });
   return { type: 'doc', version: 1, content: paragraphs };
+}
+
+/**
+ * ViewThreadLink — small blue link rendered above the reactions toolbar
+ * on every For You card.
+ *
+ *   • Idle:  link-blue, no underline.
+ *   • Hover: text-information-bold (darker blue) + matching underline.
+ *
+ * No layout shift on hover — the underline appears via `text-decoration`
+ * on the same line so neighbouring elements don't move.
+ */
+function ViewThreadLink({ onActivate }: { onActivate: () => void }) {
+  const [hover, setHover] = useState(false);
+  const idleColor = token('color.link', '#1868DB');
+  const hoverColor = token('color.text.information.bolder', '#0055CC');
+  return (
+    <button
+      type="button"
+      onClick={onActivate}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onFocus={() => setHover(true)}
+      onBlur={() => setHover(false)}
+      style={{
+        all: 'unset',
+        cursor: 'pointer',
+        display: 'inline-block',
+        font: `500 13px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+        color: hover ? hoverColor : idleColor,
+        textDecoration: hover ? 'underline' : 'none',
+        textDecorationColor: hover ? hoverColor : 'transparent',
+        textUnderlineOffset: 2,
+        transition: 'color 120ms ease',
+      }}
+    >
+      View thread
+    </button>
+  );
 }
 
 /**

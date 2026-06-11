@@ -17,6 +17,8 @@ import { useCommentsSummaryStream } from '@/components/catalyst-detail-views/imp
 import { useCatySummarize } from '@/components/catalyst-detail-views/improve/catySummarizeStore';
 import { useAiSummaryFeedback } from '@/components/catalyst-detail-views/improve/useAiSummaryFeedback';
 import { useInteractionRecorder } from '@/hooks/useInteractionRecorder';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import type { ActivityTabKey } from '@/components/catalyst-ds/activity/ActivityPanel';
 
 interface CatalystActivitySectionProps {
   itemId: string;
@@ -536,6 +538,25 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     prevShowSummaryCard.current = showSummaryCard;
   }, [showSummaryCard]);
 
+  // Focus-section signal — set by callers (e.g. For You's "View thread"
+  // link) right before openDetail. The store is read SYNCHRONOUSLY at
+  // first render so ActivityPanel's `useState(defaultTab)` initializer
+  // sees the right value (it doesn't react to defaultTab changes after
+  // mount). The clear happens in a mount effect alongside the scroll so
+  // the signal only fires once per open.
+  const clearFocusSection = useGlobalSearchStore((s) => s.clearFocusSection);
+  const [activityDefaultTab] = useState<ActivityTabKey>(() => {
+    const initial = useGlobalSearchStore.getState().focusSection;
+    return initial === 'comments' ? 'comments' : 'all';
+  });
+  useEffect(() => {
+    if (activityDefaultTab !== 'comments') return;
+    requestAnimationFrame(() => {
+      sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      clearFocusSection();
+    });
+  }, [activityDefaultTab, clearFocusSection]);
+
   return (
     <div
       ref={sectionRef}
@@ -568,7 +589,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
         isLoadingComments={isLoadingComments}
         isLoadingHistory={isLoadingHistory}
         quickReplies={QUICK_REPLIES}
-        defaultTab="all"
+        defaultTab={activityDefaultTab}
         defaultSortOrder="newest"
         jiraUserMap={jiraUserMap}
         workItemId={resolvedWorkItemId ?? undefined}
