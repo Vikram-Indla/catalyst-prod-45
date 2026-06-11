@@ -92,6 +92,7 @@ export function AIIntelligenceButton({
         fontSize: 12,
         fontWeight: 600,
         letterSpacing: 'normal',
+        whiteSpace: 'nowrap',
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.6 : 1,
         display: 'inline-flex',

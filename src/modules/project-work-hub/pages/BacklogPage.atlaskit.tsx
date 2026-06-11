@@ -2335,7 +2335,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           // shapes even when they were the same source SVG. 16×16 is
           // pixel-perfect at 1× zoom and aligns with the row-1 type
           // icon's size (also 16).
-          icon: <JiraIssueTypeIcon type={r.parent_issue_type || 'Story'} size={16} />,
+          icon: r.parent_issue_type ? <JiraIssueTypeIcon type={r.parent_issue_type} size={16} /> : undefined,
         } : null,
         options: parentOptions,
         // Editable for any row — Jira-synced items still fail at mutation
@@ -3389,11 +3389,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             digital-transformation.atlassian.net BAU list view). Catalyst
             previously rendered Ask CATY in the global top nav — wrong
             location. Moved here per jira-compare 2026-05-12 finding. */}
-        <AIIntelligenceButton
-          label="Ask Caty"
-          onClick={() => setAskCatyOpen(true)}
-          tooltip="Ask Caty about this backlog"
-        />
+        <div style={{ flexShrink: 0 }}>
+          <AIIntelligenceButton
+            label="Ask Caty"
+            onClick={() => setAskCatyOpen(true)}
+            tooltip="Ask Caty about this backlog"
+          />
+        </div>
         {/* Apr 28, 2026 (jira-compare cycle 2 T5): wrapper width fixed
             280 → flex:1 with min/max so the input expands like Jira's
             (probed Jira width=625px) instead of cramming at 280. */}
