@@ -49,6 +49,19 @@ interface PermissionEntry {
 
 const ICON_COLOR = 'var(--ds-icon, #44546F)';
 
+const GROUP_NAME_MAP: Record<string, string> = {
+  'org-admins':          'Organisation admins',
+  'administrators':      'Administrators',
+  'jira-admins':         'Jira admins',
+  'jira-software-users': 'Software users',
+  'site-admins':         'Site admins',
+  'trusted-users':       'Trusted users',
+};
+function humanizeGroupName(raw: string | undefined): string {
+  if (!raw) return 'Group';
+  return GROUP_NAME_MAP[raw.toLowerCase()] ?? raw.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
 /** Jira sharePermissions → icon + text rows (exact Jira directory rendering) */
 function sharePermissionEntries(perms: JiraSharePermission[] | undefined): PermissionEntry[] {
   if (!perms || perms.length === 0) {
@@ -61,12 +74,12 @@ function sharePermissionEntries(perms: JiraSharePermission[] | undefined): Permi
     if (p.type === 'project' || p.type === 'project-unknown') {
       const name = p.project?.name ?? p.project?.key ?? 'Project';
       return {
-        icon: <AkAvatar appearance="square" size="xsmall" name={name} />,
+        icon: <AkAvatar appearance="square" size="xsmall" name={name} src={(p.project as any)?.avatarUrls?.['16x16'] ?? undefined} />,
         label: `${name}, ${p.role?.name ?? 'All roles'}`,
       };
     }
     if (p.type === 'group') {
-      return { icon: <PeopleGroupIcon label="" color={ICON_COLOR} />, label: p.group?.name ?? 'Group' };
+      return { icon: <PeopleGroupIcon label="" color={ICON_COLOR} />, label: humanizeGroupName(p.group?.name) };
     }
     const userName = p.user?.displayName ?? 'User';
     return {
@@ -138,9 +151,12 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   const [sortKey, setSortKey] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
 
+  // getSession() reads from local storage (no network) — resolves before first
+  // render completes, avoiding the race where the kebab opened before the user
+  // id arrived and hid all owner-only items (F024).
   React.useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) setCurrentUserId(user.id);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user?.id) setCurrentUserId(session.user.id);
     });
   }, []);
 
