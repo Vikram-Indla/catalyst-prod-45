@@ -2,10 +2,10 @@
  * chat-dock-titlebar.test.tsx — TDD for ChatDock Option-C title bar (2026-06-11).
  *
  * Header contract:
- *   1. "Caty Connect" wordmark is visible.
+ *   1. "CATY" wordmark is visible (renamed from "Caty Connect" 2026-06-12).
  *   2. Both mode tabs ("Messages", "Assistant") render as role="tab".
  *   3. A static AI gradient accent hairline (.cc-dock__accent) exists.
- *   4. A live status line (.cc-dock__status) renders unread count.
+ *   4. Unread count surfaces in the Messages tab badge (status line removed 2026-06-12).
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -32,9 +32,9 @@ const baseProps = {
 };
 
 describe('ChatDock Option-C title bar', () => {
-  it('renders the Caty Connect wordmark', () => {
+  it('renders the CATY wordmark', () => {
     render(<ChatDock {...baseProps} />);
-    expect(screen.getByText('Caty Connect')).toBeInTheDocument();
+    expect(screen.getByText('CATY')).toBeInTheDocument();
   });
 
   it('renders both mode tabs', () => {
@@ -48,10 +48,9 @@ describe('ChatDock Option-C title bar', () => {
     expect(container.querySelector('.cc-dock__accent')).toBeTruthy();
   });
 
-  it('renders a live status line with the unread count', () => {
-    const { container } = render(<ChatDock {...baseProps} />);
-    const status = container.querySelector('.cc-dock__status');
-    expect(status).toBeTruthy();
-    expect(status?.textContent).toMatch(/5/);
+  it('renders unread count in Messages tab badge', () => {
+    render(<ChatDock {...baseProps} />);
+    const tab = screen.getByRole('tab', { name: /Messages/ });
+    expect(tab.textContent).toMatch(/5/);
   });
 });
