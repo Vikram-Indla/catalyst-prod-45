@@ -16,6 +16,7 @@ import React, { useState } from "react";
 import { IconButton } from "@atlaskit/button/new";
 import AddIcon from "@atlaskit/icon/glyph/add";
 import CrossIcon from "@atlaskit/icon/glyph/cross";
+import VidFullScreenOnIcon from "@atlaskit/icon/glyph/vid-full-screen-on";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import catalystChatIcon from "@/assets/caty-ai-bg.svg";
@@ -222,7 +223,12 @@ export function ChatDock({
     >
       {/* Shared header — mode tabs + shared icons */}
       <div className="cc-dock__header" role="banner">
-        {/* Dual-mode underline tabs */}
+        {/* Brand logo + dual-mode underline tabs */}
+        <div className="cc-dock__brand" aria-hidden>
+          <span className="cc-dock__logo-wrap">
+            <img src={catalystChatIcon} alt="" width={24} height={24} className="cc-dock__logo-img" />
+          </span>
+        </div>
         <div className="cc-mode-tabs" role="tablist" aria-label="Chat modes">
           <button
             type="button"
@@ -231,7 +237,7 @@ export function ChatDock({
             onClick={() => setDockMode("messages")}
             aria-selected={dockMode === "messages"}
           >
-            Caty Connect
+            Connect
             {totalUnread > 0 && (
               <span className="cc-mode-tab__badge" aria-label={`${totalUnread} unread`}>
                 {totalUnread > 99 ? "99+" : totalUnread}
@@ -248,15 +254,15 @@ export function ChatDock({
             <img
               src={catyIcon}
               alt=""
-              width={14}
-              height={14}
-              style={{ verticalAlign: "middle", marginRight: 4 }}
+              width={13}
+              height={13}
+              style={{ verticalAlign: "middle" }}
             />
             Ask Caty
           </button>
         </div>
 
-        {/* Divider + action icons — compose + close only (findings 02-03) */}
+        {/* Divider + action icons */}
         <div className="cc-dock__actions">
           <IconButton
             icon={AddIcon}
@@ -264,6 +270,13 @@ export function ChatDock({
             appearance="subtle"
             spacing="compact"
             onClick={onFocusDirectory}
+          />
+          <IconButton
+            icon={VidFullScreenOnIcon}
+            label="Open full screen"
+            appearance="subtle"
+            spacing="compact"
+            onClick={onPopOut}
           />
           <IconButton
             icon={CrossIcon}

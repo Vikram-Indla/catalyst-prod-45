@@ -784,6 +784,18 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
         {!isLoading && query && filtered.dms.length === 0 && filtered.tickets.length === 0 && filtered.channelRows.length === 0 && filtered.people.length === 0 && (
           <div className="cc-dir__empty">No matches for "{query}".</div>
         )}
+        {/* Collapsed-all nudge — visible only when no rows are visible and search is empty */}
+        {!isLoading && !query && collapsed['dms'] && collapsed['tickets'] && collapsed['projects'] && collapsed['people'] && (
+          <div className="cc-dir__collapsed-nudge">
+            <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth={1.5} aria-hidden>
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <div>
+              <div className="cc-dir__collapsed-nudge-title">Expand a section to see messages</div>
+              <div className="cc-dir__collapsed-nudge-sub">Click a section header above to open it</div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

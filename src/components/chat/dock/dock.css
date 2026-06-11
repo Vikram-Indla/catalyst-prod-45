@@ -24,9 +24,34 @@
   border-bottom: 1px solid var(--ds-border, #DFE1E6);
   display: flex;
   align-items: stretch;
-  padding: 0 4px;
+  padding: 0 4px 0 8px;
   gap: 0;
   background: var(--ds-surface, #FFFFFF);
+}
+
+/* Brand logo squircle — left edge of header */
+.cc-dock__brand {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  padding-right: 6px;
+}
+
+.cc-dock__logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  /* ads-scanner:ignore-next-line */
+  background: #2A2832;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+.cc-dock__logo-img {
+  display: block;
 }
 
 /* Action icon group — divider on left, icons on right */
@@ -60,8 +85,8 @@
   border: none;
   border-bottom: 2px solid transparent;
   background: transparent;
-  font-size: 14px;
-  font-weight: 400;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--ds-text-subtle, #44546F);
   cursor: pointer;
   white-space: nowrap;
@@ -396,9 +421,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 12px 16px 4px;
+  padding: 8px 16px 2px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--ds-text-subtlest, #6B778C);
 }
 
@@ -584,7 +611,7 @@
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 12px 12px 4px;
+  padding: 8px 12px 2px;
 }
 
 .cc-dir__section-toggle {
@@ -595,12 +622,13 @@
   background: transparent;
   border: none;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--ds-text-subtlest, #6B778C);
   cursor: pointer;
   text-align: left;
   padding: 0;
-  text-transform: none;
 }
 
 .cc-dir__section-toggle:hover {
@@ -705,4 +733,27 @@
   color: var(--ds-text-danger, #AE2A19);
 }
 
+/* Collapsed-all nudge — shown when every section is collapsed */
+.cc-dir__collapsed-nudge {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 32px 24px;
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--ds-background-neutral-subtle, #F7F8F9);
+  /* ads-scanner:ignore-next-line */
+  border: 1px dashed var(--ds-border, #DFE1E6);
+}
 
+.cc-dir__collapsed-nudge-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ds-text-subtle, #44546F);
+  margin-bottom: 2px;
+}
+
+.cc-dir__collapsed-nudge-sub {
+  font-size: 12px;
+  color: var(--ds-text-subtlest, #6B778C);
+}
