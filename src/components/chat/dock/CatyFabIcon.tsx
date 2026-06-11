@@ -1,7 +1,8 @@
 /**
- * CatyFabIcon — inline Caty SVG, no background container.
- * Inline (not <img>) so CSS breathing animation + hover ear/tail work.
- * Fill colours adapt to light/dark via CSS vars (--caty-fg / --caty-bg).
+ * CatyFabIcon — inline Ask Caty gradient SVG.
+ * Inline (not <img>) so CSS breathing + hover/active animations work.
+ * Gradient fills (#F79357→#CC1E9A) are visible on both light and dark backgrounds.
+ * Dark detail fills use var(--caty-fg) so they adapt if dark mode is ever enabled.
  */
 
 export function CatyFabIcon({ size = 56 }: { size?: number }) {
@@ -16,8 +17,22 @@ export function CatyFabIcon({ size = 56 }: { size?: number }) {
         width={size}
         height={size}
         role="img"
-        aria-label="Caty"
+        aria-label="Ask Caty"
       >
+        <defs>
+          {/* ads-scanner:ignore-next-line — Caty brand gradient, no ADS token equivalent */}
+          <linearGradient id="cdg" x1="256" y1="40" x2="256" y2="470" gradientUnits="userSpaceOnUse">
+            {/* ads-scanner:ignore-next-line */}
+            <stop stopColor="#F79357" />
+            {/* ads-scanner:ignore-next-line */}
+            <stop offset=".5" stopColor="#F53F68" />
+            {/* ads-scanner:ignore-next-line */}
+            <stop offset=".75" stopColor="#B41572" />
+            {/* ads-scanner:ignore-next-line */}
+            <stop offset="1" stopColor="#CC1E9A" />
+          </linearGradient>
+        </defs>
+
         <style>{`
           .cf { transform-box: fill-box; transform-origin: 50% 55%;
                 animation: cfB 3.6s ease-in-out infinite;
@@ -41,42 +56,52 @@ export function CatyFabIcon({ size = 56 }: { size?: number }) {
           @media (prefers-reduced-motion: reduce) { .cf { animation: none; transform: scale(1) } }
         `}</style>
 
-        {/* Caty character */}
         <g className="cf">
           <path
             className="cf-tail"
             d="M404 392 Q462 392 456 336"
             fill="none"
-            stroke="var(--caty-fg, #2A2832)"
+            stroke="url(#cdg)"
             strokeWidth="26"
             strokeLinecap="round"
           />
           <g className="cf-ears">
-            <path d="M270 100 Q300 26 322 100 Z" fill="var(--caty-fg, #2A2832)" />
-            <path d="M358 100 Q388 24 408 100 Z" fill="var(--caty-fg, #2A2832)" />
-            <path d="M288 96 Q301 56 312 94" fill="none" stroke="var(--caty-bg, #F6F4EF)" strokeWidth="9" strokeLinecap="round" opacity=".6" />
-            <path d="M374 96 Q387 54 398 94" fill="none" stroke="var(--caty-bg, #F6F4EF)" strokeWidth="9" strokeLinecap="round" opacity=".6" />
+            <path d="M270 100 Q300 26 322 100 Z" fill="url(#cdg)" />
+            <path d="M358 100 Q388 24 408 100 Z" fill="url(#cdg)" />
+            <path d="M288 96 Q301 56 312 94" fill="none" stroke="var(--caty-fg, #2A2832)" strokeWidth="9" strokeLinecap="round" opacity=".6" />
+            <path d="M374 96 Q387 54 398 94" fill="none" stroke="var(--caty-fg, #2A2832)" strokeWidth="9" strokeLinecap="round" opacity=".6" />
           </g>
           <path
-            d="M421.802 200.296V93.9727H259.279L233.457 127.389L210.674 93.9727H154.474C39.037 223.991 106.375 363.832 154.474 417.5H421.802V309.658H279.025L236.495 374.971C170.878 271.685 209.155 173.969 236.495 138.021L279.025 200.296H421.802Z"
-            fill="var(--caty-fg, #2A2832)"
+            d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z"
+            fill="url(#cdg)"
           />
+          <text
+            x="350" y="293"
+            textAnchor="middle"
+            fontFamily="'Atlassian Sans', system-ui, sans-serif"
+            fontSize="82"
+            fontWeight="800"
+            fontStyle="italic"
+            fill="var(--caty-fg, #2A2832)"
+          >
+            ask
+          </text>
           <g fill="none" stroke="var(--caty-fg, #2A2832)" strokeWidth="10" strokeLinecap="round">
             <path d="M300 176 Q238 174 224 190" />
             <path d="M398 176 Q462 174 476 190" />
             <path d="M400 192 Q458 198 470 214" />
           </g>
-          <path d="M340 178 L356 178 Q348 190 340 178 Z" fill="var(--caty-bg, #F6F4EF)" />
+          <path d="M340 178 L356 178 Q348 190 340 178 Z" fill="var(--caty-fg, #2A2832)" />
 
           {/* Eyes — sleep (default) */}
-          <g className="cf-eyes cf-sleep" fill="none" stroke="var(--caty-bg, #F6F4EF)" strokeWidth="12" strokeLinecap="round">
+          <g className="cf-eyes cf-sleep" fill="none" stroke="var(--caty-fg, #2A2832)" strokeWidth="12" strokeLinecap="round">
             <path d="M306 150 Q322 168 338 150" />
             <path d="M358 150 Q374 168 390 150" />
           </g>
           {/* Eyes — awake */}
           <g className="cf-eyes cf-awake" opacity="0">
-            <circle cx="322" cy="150" r="20" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-bg, #F6F4EF)" strokeWidth="4" />
-            <circle cx="374" cy="150" r="20" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-bg, #F6F4EF)" strokeWidth="4" />
+            <circle cx="322" cy="150" r="20" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #2A2832)" strokeWidth="4" />
+            <circle cx="374" cy="150" r="20" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #2A2832)" strokeWidth="4" />
             <circle cx="324" cy="153" r="8.5" fill="var(--caty-fg, #2A2832)" />
             <circle cx="376" cy="153" r="8.5" fill="var(--caty-fg, #2A2832)" />
             <circle cx="320" cy="148" r="3" fill="var(--ds-surface, #FFFFFF)" />
@@ -84,8 +109,8 @@ export function CatyFabIcon({ size = 56 }: { size?: number }) {
           </g>
           {/* Eyes — excited */}
           <g className="cf-eyes cf-excited" opacity="0">
-            <circle cx="322" cy="148" r="23" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-bg, #F6F4EF)" strokeWidth="4" />
-            <circle cx="374" cy="148" r="23" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-bg, #F6F4EF)" strokeWidth="4" />
+            <circle cx="322" cy="148" r="23" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #2A2832)" strokeWidth="4" />
+            <circle cx="374" cy="148" r="23" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #2A2832)" strokeWidth="4" />
             <circle cx="324" cy="151" r="10" fill="var(--caty-fg, #2A2832)" />
             <circle cx="376" cy="151" r="10" fill="var(--caty-fg, #2A2832)" />
             <circle cx="319" cy="145" r="4" fill="var(--ds-surface, #FFFFFF)" />
