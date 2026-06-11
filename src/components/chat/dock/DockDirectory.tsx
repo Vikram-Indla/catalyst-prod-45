@@ -546,7 +546,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
           ref={searchRef}
           type="text"
           className="cc-dir__search-input"
-          placeholder="Search people, projects, tickets"
+          placeholder="Search work items, channels, people"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -734,7 +734,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
           <>
             <div className="cc-dir__section-divider" />
             <SectionHeader
-              label="Tickets"
+              label="Work items"
               count={filtered.tickets.length}
               collapsed={!!collapsed['tickets']}
               unreadInSection={ticketUnread}
@@ -749,11 +749,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
                 onArchive={(id) => archive.mutate(id)}
                 onTogglePin={handleTogglePin}
                 onToggleStar={handleToggleStar}
-                glyph={
-                  <span className="cc-dir__ticket-icon">
-                    <JiraIssueTypeIcon type={c.ticketType ?? 'Task'} size={20} />
-                  </span>
-                }
+                glyph={convGlyph(c)}
                 titleOverride={c.ticketKey ?? c.title}
                 previewOverride={c.lastMessagePreview ?? c.title}
               />
@@ -892,15 +888,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
                 onArchive={(id) => archive.mutate(id)}
                 onUnarchive={(id) => unarchive.mutate(id)}
                 isArchived
-                glyph={
-                  c.kind === 'ticket' ? (
-                    <span className="cc-dir__ticket-icon"><JiraIssueTypeIcon type={c.ticketType ?? 'Task'} size={20} /></span>
-                  ) : c.kind === 'channel' ? (
-                    <ProjectIcon projectKey={c.projectKey ?? ''} size="medium" />
-                  ) : (
-                    <Avatar name={c.title} seed={c.id} className="cc-dir__avatar" />
-                  )
-                }
+                glyph={convGlyph(c)}
               />
             ))}
           </>
