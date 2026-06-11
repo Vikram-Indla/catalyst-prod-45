@@ -15,7 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
-import catalystChatIcon from '@/assets/caty-ai-bg.svg';
+// catalystChatIcon removed — replaced with inline caty-ai.svg gradient C mark
 import catyIcon from '@/assets/caty-icon.svg';
 import {
   CATY_ASSISTANTS,
@@ -967,6 +967,7 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
           }
           disabled={loading || !canUse}
           onSend={handleComposerSend}
+          minHeight={40}
         />
       )}
 
