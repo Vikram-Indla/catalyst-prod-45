@@ -296,6 +296,170 @@ An extended 12-rule variant exists (originally published by @mnilax / Mnimiy on 
 
 ---
 
+## 🚨 ZERO-ASSUMPTION CODE — THE LIE VS SILENCE PRINCIPLE (P0, Non-Negotiable — added 2026-06-11)
+
+**When data is unknown, uncertain, or missing — render NOTHING (dash, empty, no icon). NEVER render a plausible-sounding default that is factually wrong. A lie is always worse than silence.**
+
+### The Root Pattern That Keeps Killing This Codebase
+
+Every "schoolboy error" caught in this repo traces to one of five assumption classes. They are all banned. No exceptions, no per-case asks.
+
+---
+
+### Assumption Class 1 — TYPED DOMAIN FALLBACKS (P0)
+
+**Banned pattern:** `value || 'SomeSpecificDomainValue'`
+
+This is the most common and most destructive class. A field is null/undefined (data doesn't exist, wasn't fetched, entity not synced). Instead of admitting it, code silently renders a lie.
+
+```tsx
+// ❌ BANNED — 'Story' is a lie when parent type is unknown
+icon: <JiraIssueTypeIcon type={r.parent_issue_type || 'Story'} size={16} />
+
+// ❌ BANNED — 'Epic' is a lie when parent type is unknown
+icon: <JiraIssueTypeIcon type={r.parent_issue_type || 'Epic'} size={16} />
+
+// ❌ BANNED — status is unknown, 'todo' is a lie
+const status = row.status || 'todo';
+
+// ❌ BANNED — priority is unknown, 'Medium' is a lie
+const priority = issue.priority || 'Medium';
+```
+
+```tsx
+// ✅ CORRECT — render nothing when type is unknown
+icon: r.parent_issue_type ? <JiraIssueTypeIcon type={r.parent_issue_type} size={16} /> : undefined
+
+// ✅ CORRECT — show dash when status unknown
+const status = row.status ?? null;
+// in JSX: {status ?? '—'}
+
+// ✅ CORRECT — omit icon when unknown, don't lie
+{issue.priority && <PriorityIcon priority={issue.priority} />}
+```
+
+**Allowed fallbacks (genuinely neutral):** `null`, `undefined`, `''`, `0`, `'—'`, `'Unknown'`, `'Loading...'`
+
+**Banned fallbacks (specific domain values):** Any type name (`'Story'`, `'Epic'`, `'Bug'`, `'Task'`, `'Feature'`), any status name (`'todo'`, `'done'`, `'in_progress'`), any priority name (`'Medium'`, `'High'`), any color name/hex.
+
+---
+
+### Assumption Class 2 — DB COLUMN EXISTENCE (P0)
+
+**Pattern:** Writing `row.field_name` in code without verifying `field_name` is in the SELECT and exists as a column in the table.
+
+**Pre-code mandatory check — run this for ANY new field access:**
+```bash
+# 1. Verify column exists in DB
+# (use Supabase MCP execute_sql)
+SELECT column_name FROM information_schema.columns
+WHERE table_name = 'your_table' AND column_name = 'your_field';
+
+# 2. Verify column is in SELECT string
+grep -n "select\|SELECT" path/to/hook.ts | grep "your_field"
+```
+
+If the column doesn't exist in DB → **STOP. Do not write code that accesses it. Either add the column via migration first, or don't display the data.**
+
+**Caught examples:**
+- 2026-05-19: `violation.rule` accessed but DB column was `rule_name` → silent empty render
+- 2026-05-29: `issue?.statusCategory` (camelCase) on a raw DB row that had `status_category` (snake_case) + field not even in SELECT
+- 2026-06-11: `r.parent_issue_type` used in icon render — column doesn't exist on ph_issues at all
+
+---
+
+### Assumption Class 3 — ENTITY EXISTENCE IN DB (P0)
+
+**Pattern:** Rendering metadata about entity A (e.g., a parent issue) by looking it up in table B — without handling the case where entity B has no row for that entity.
+
+**The specific trap:** `entity.related_entity?.field ?? null` silently produces `null` when `related_entity` is not yet synced. Code then falls into the Assumption Class 1 trap and lies with a default.
+
+**Rule:** When rendering any field that comes from a JOINED or LOOKED-UP entity (parent, assignee, project, epic, etc.):
+1. Explicitly check if the lookup returned data
+2. If no data → render gracefully (dash, empty chip with key-only, no icon)
+3. NEVER fall back to a domain-specific value
+
+```tsx
+// ❌ BANNED — assumes parent exists in ph_issues
+const parentType = epicMap[parentKey]?.issue_type || 'Epic';
+
+// ✅ CORRECT — parent may not be synced; admit it
+const parentType = epicMap[parentKey]?.issue_type ?? null;
+// render: parentType ? <JiraIssueTypeIcon type={parentType} /> : null
+```
+
+---
+
+### Assumption Class 4 — CAMELCASE vs SNAKE_CASE FIELD ACCESS (P0)
+
+**Pattern:** Accessing a raw Supabase row (DB result) with camelCase when the DB column is snake_case. TypeScript won't catch this — `row.statusCategory` on a raw DB row returns `undefined` silently.
+
+**Rule:**
+- Raw DB rows (from `.select()`, `.from().eq()`) → **always snake_case**: `row.status_category`, `row.issue_type`, `row.parent_key`
+- `WorkItem` / mapped TypeScript objects → **camelCase**: `item.statusCategory`, `item.issueType`
+- Before writing `row.someField`, ask: "Is this a raw DB row or a mapped object?" If unsure, `console.log(row)` and check.
+
+**Grep to run before every PR on hooks:**
+```bash
+grep -n "issue?\." src/hooks/ | grep -E "[a-z][A-Z]" | grep -v "//"`
+# Any camelCase access on a variable named 'issue', 'row', 'r', 's', 'e' coming from a .select() is suspect
+```
+
+---
+
+### Assumption Class 5 — RLS POLICY SELF-REFERENCE AND WRONG AUTH PATTERNS (P0)
+
+Already documented in detail under 2026-05-19 and 2026-06-10 lessons. The patterns:
+- ❌ `auth.jwt() ->> 'role'` — JWT has no role in Catalyst
+- ❌ `m.user_id = user_id` (unqualified param = column self-compare, always true)
+- ❌ EXISTS subquery on the SAME table the policy is on → infinite recursion
+
+See those sections for the correct patterns.
+
+---
+
+### The Pre-Ship Assumption Audit Loop (MANDATORY before every commit)
+
+Run this grep sequence on every file you touched. If any match → investigate before committing:
+
+```bash
+# 1. Typed domain fallbacks (the most dangerous class)
+grep -rn "|| 'Story'\||| 'Epic'\||| 'Bug'\||| 'Task'\||| 'Feature'\||| 'todo'\||| 'done'\||| 'Medium'\||| 'High'\||| 'Low'" src/
+
+# 2. Icon rendering with fallbacks (must never lie)
+grep -rn "JiraIssueTypeIcon.*||" src/
+grep -rn "PriorityIcon.*||" src/
+
+# 3. Field access on variables that look like raw DB rows
+# (Look for camelCase access on 'row', 'r', 's', 'e', 'issue' from select() contexts)
+grep -rn "row\.\|r\.\b" src/hooks/ | grep -E "[a-z]{2,}[A-Z]"
+
+# 4. Optional chaining that silently produces null (may hide missing columns)
+grep -rn "\?\.[a-z_]*\s*??\s*null\|??\s*''" src/hooks/ | head -20
+
+# 5. Self-referential RLS (any SECURITY DEFINER function)
+grep -rn "user_id = user_id\|project_id = project_id\|conversation_id = conversation_id" supabase/
+```
+
+Any match in grep #1 or #2 is a **guaranteed defect unless you can prove the data is always present**.
+
+---
+
+### Why This Keeps Happening — The Root Psychology
+
+Developers (and Claude) write `|| 'Story'` because:
+1. TypeScript requires a non-null value for a typed prop
+2. The "most common" case is Story/Epic/whatever
+3. It "looks right" in the UI 99% of the time
+
+**This logic is wrong.** The 1% where it lies is exactly when real Jira data is incomplete — which is permanent in a migration/sync scenario. Every `|| 'TypedDefault'` is a bet that data will always be present. Catalyst's data is never guaranteed complete (sync is partial, ph_issues is a subset of Jira, parent rows may not be synced yet).
+
+**The correct mental model:** When uncertain about data existence, ask: "Would showing nothing be worse than showing a lie?" For icons, types, colors, statuses — silence is ALWAYS better than a lie. A missing icon is noticeable and fixable. A wrong icon teaches the user incorrect information about their data.
+
+**Severity:** P0 — every assumption-based default is a data integrity defect. Vikram should never have to debug an icon that lies about the type of his data.
+
+---
+
 ## 🚫 HARDCODED COLORS BANNED — ADS TOKENS MANDATORY (Non-Negotiable, P0)
 
 **Every color value in every file MUST use an ADS design token. Hardcoded hex, raw rgb(), rgba(), and hsl() values are permanently banned from all UI surfaces.**
