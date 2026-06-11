@@ -72,21 +72,27 @@ function filterStatusAppearance(status: string | null | undefined): LozengeAppea
   return 'default';
 }
 
+// Mirrors AllWorkToolbar's TOOLBAR_FACET_TYPES exactly — same type filter drives
+// the Work type chip options so FilterPreviewPage shows the same set as AllWork.
+const TOOLBAR_FACET_TYPES = ['Story', 'Backend', 'Frontend', 'Sub-task', 'Epic', 'Feature'];
+
 function useProjectFacetItems(projectKey: string | undefined): WorkItem[] {
   const { data = [] } = useQuery<WorkItem[]>({
     queryKey: ['filter-preview-facet-items', projectKey],
     enabled: !!projectKey,
-    staleTime: 60_000,
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const { data: rows } = await (supabase as any)
         .from('ph_issues')
         .select(
-          'issue_key, issue_type, status, status_category, assignee_display_name, assignee_account_id, priority, fix_versions, labels, parent_key, parent_summary, sprint_name, resolution, severity'
+          'issue_key, issue_type, status, status_category, assignee_account_id, assignee_display_name, reporter_account_id, reporter_display_name, priority, labels, sprint_release, sprint_name, resolution, severity, parent_key, parent_summary'
         )
         .eq('project_key', projectKey)
+        .in('issue_type', TOOLBAR_FACET_TYPES)
         .is('jira_removed_at', null)
+        .is('archived_at', null)
         .is('deleted_at', null)
-        .limit(500);
+        .limit(5000);
       if (!rows) return [];
       return (rows as any[]).map(
         (r: any): WorkItem =>
@@ -105,12 +111,15 @@ function useProjectFacetItems(projectKey: string | undefined): WorkItem[] {
             statusCategory: (r.status_category ?? 'todo') as any,
             assigneeId: r.assignee_account_id ?? null,
             assignee: r.assignee_display_name
-              ? { id: r.assignee_account_id ?? '', name: r.assignee_display_name, avatarUrl: null, initials: '', color: '' }
+              ? { id: r.assignee_account_id ?? r.assignee_display_name, name: r.assignee_display_name, avatarUrl: null, initials: '', color: '' }
               : undefined,
             reporterId: null,
+            reporter: r.reporter_display_name
+              ? { id: r.reporter_account_id ?? '', name: r.reporter_display_name }
+              : undefined,
             priority: (r.priority ?? 'medium') as any,
-            fixVersion: r.fix_versions?.[0] ?? null,
-            sprintRelease: r.fix_versions?.[0] ?? null,
+            fixVersion: null,
+            sprintRelease: Array.isArray(r.sprint_release) && r.sprint_release.length > 0 ? r.sprint_release[0] : null,
             sprintName: r.sprint_name ?? null,
             labels: r.labels ?? [],
             resolution: r.resolution ?? null,
@@ -122,6 +131,35 @@ function useProjectFacetItems(projectKey: string | undefined): WorkItem[] {
             createdBy: null,
           } as any)
       );
+    },
+  });
+  return data;
+}
+
+interface Member { id: string; name: string; src: string | null }
+
+function useProjectMembers(projectKey: string | undefined): Member[] {
+  const { data = [] } = useQuery<Member[]>({
+    queryKey: ['filter-preview-members', projectKey],
+    enabled: !!projectKey,
+    staleTime: 60 * 1000,
+    queryFn: async () => {
+      const { data: project } = await (supabase as any)
+        .from('projects')
+        .select('id')
+        .eq('key', projectKey)
+        .maybeSingle();
+      if (!project?.id) return [];
+      const { data } = await (supabase as any)
+        .from('project_members')
+        .select('user_id, profiles!inner(id, full_name, avatar_url)')
+        .eq('project_id', project.id)
+        .limit(20);
+      return ((data ?? []) as any[]).map((r) => ({
+        id: r.profiles?.id ?? r.user_id,
+        name: r.profiles?.full_name ?? 'Member',
+        src: r.profiles?.avatar_url ?? null,
+      }));
     },
   });
   return data;
@@ -198,6 +236,7 @@ export function FilterPreviewPage() {
 
   const linkedEntities = useLinkedEntities(savedFilterId);
   const facetItems = useProjectFacetItems(projectKey);
+  const members = useProjectMembers(projectKey);
 
   const facetOptions = useMemo(() => {
     const ALL_FACETS = ['workType', 'status', 'assignee', ...MORE_FILTERS_FACETS] as const;
@@ -246,16 +285,7 @@ export function FilterPreviewPage() {
   const openDetail = (key: string) =>
     useGlobalSearchStore.getState().openDetail({ id: key });
 
-  const activeAssignees = useMemo(() => {
-    const seen = new Set<string>();
-    const out: { id: string; name: string; avatarUrl: string | null }[] = [];
-    for (const r of items) {
-      if (!r.assigneeName || seen.has(r.assigneeName)) continue;
-      seen.add(r.assigneeName);
-      out.push({ id: r.assigneeName, name: r.assigneeName, avatarUrl: resolveAvatarUrl(r.assigneeName) });
-    }
-    return out.filter(a => a.avatarUrl);
-  }, [items]);
+  const avatarData = members.map((m) => ({ key: m.id, name: m.name, src: m.src ?? undefined }));
 
   // ── Save handlers ──────────────────────────────────────────────────────────
 
@@ -579,13 +609,17 @@ export function FilterPreviewPage() {
           </Button>
         )}
 
-        {activeAssignees.length > 0 && (
+        {avatarData.length > 0 && (
           <AvatarGroup
             appearance="stack"
             size="small"
-            maxCount={5}
+            maxCount={4}
             label="Assignees"
-            data={activeAssignees.map(a => ({ key: a.id, name: a.name, src: a.avatarUrl ?? undefined }))}
+            data={avatarData}
+            onAvatarClick={(_, member) => {
+              const id = (member as any).key as string;
+              toggleValue('assignee', id);
+            }}
           />
         )}
 
