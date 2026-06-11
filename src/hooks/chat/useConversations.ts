@@ -21,6 +21,8 @@ const db = supabase as unknown as {
 interface MemberRow {
   conversation_id: string;
   last_read_at: string | null;
+  is_pinned: boolean | null;
+  is_starred: boolean | null;
   chat_conversations: ConversationRow | ConversationRow[] | null;
 }
 
@@ -47,7 +49,7 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
     const { data: members, error } = await db
       .from('chat_conversation_members')
       .select(
-        `conversation_id, last_read_at,
+        `conversation_id, last_read_at, is_pinned, is_starred,
          chat_conversations:conversation_id (
            id, kind, ticket_key, project_key, title, is_archived,
            last_message_at, last_message_preview
@@ -121,6 +123,8 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
             ? (projectNameMap[conv.project_key] ?? conv.title ?? '')
             : (conv.title ?? ''),
           isArchived: !!conv.is_archived,
+          isPinned: !!member.is_pinned,
+          isStarred: !!member.is_starred,
           lastMessageAt: conv.last_message_at ?? null,
           lastMessagePreview: conv.last_message_preview ?? null,
           unreadCount,

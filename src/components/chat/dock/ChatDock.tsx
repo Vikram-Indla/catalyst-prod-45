@@ -22,6 +22,7 @@ import VidFullScreenOnIcon from "@atlaskit/icon/glyph/vid-full-screen-on";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import catalystChatIcon from "@/assets/caty-ai-bg.svg";
+import catyIconTransparent from "@/assets/caty-icon.svg";
 import { CatyPanel } from "./CatyPanel";
 import { DockDirectory } from "./DockDirectory";
 import { DockConversationPane } from "./DockConversationPane";
@@ -227,14 +228,73 @@ export function ChatDock({
       role="dialog"
       aria-label={dockMode === "caty" ? "Ask Caty AI" : "Caty Connect"}
     >
-      {/* Shared header — mode tabs + shared icons */}
-      <div className="cc-dock__header" role="banner">
-        {/* Brand logo + dual-mode underline tabs */}
-        <div className="cc-dock__brand" aria-hidden>
-          <span className="cc-dock__logo-wrap">
-            <img src={catalystChatIcon} alt="" width={26} height={26} className="cc-dock__logo-img" />
+      {/* Shared header — Option C: AI-forward two-row title bar */}
+      <div className="cc-dock__headerwrap" role="banner">
+        {/* Static gradient hairline — Caty AI signifier (no motion, CLAUDE.md AI-CTA carve-out) */}
+        <div className="cc-dock__accent" aria-hidden />
+
+        {/* Row 1 — brand identity + live status + action icons */}
+        <div className="cc-dock__titlebar">
+          <span className="cc-dock__badge" aria-hidden>
+            <img src={catyIconTransparent} alt="" width={22} height={22} className="cc-dock__logo-img" />
           </span>
+          <div className="cc-dock__title">
+            <span className="cc-dock__wordmark">Caty</span>
+            <span className="cc-dock__status">
+              <span className="cc-dock__status-dot" aria-hidden />
+              {dockMode === "caty"
+                ? "AI assistant · Gemini"
+                : totalUnread > 0
+                  ? `Online · ${totalUnread > 99 ? "99+" : totalUnread} unread`
+                  : "Online"}
+            </span>
+          </div>
+          <div className="cc-dock__actions">
+            <Tooltip content="New conversation" position="bottom">
+              <IconButton
+                icon={AddIcon}
+                label="New conversation"
+                appearance="subtle"
+                spacing="compact"
+                onClick={() => {
+                  // If a conversation is open, go back to directory.
+                  // Either way, signal directory to focus search so user can type a name.
+                  onFocusDirectory?.();
+                  setDirFocusTick((t) => t + 1);
+                }}
+              />
+            </Tooltip>
+            <Tooltip content="Open full screen" position="bottom">
+              <IconButton
+                icon={VidFullScreenOnIcon}
+                label="Open full screen"
+                appearance="subtle"
+                spacing="compact"
+                onClick={onPopOut}
+              />
+            </Tooltip>
+            <Tooltip content="Minimize" position="bottom">
+              <IconButton
+                icon={ChevronDownIcon}
+                label="Minimize"
+                appearance="subtle"
+                spacing="compact"
+                onClick={onToggleCollapsed}
+              />
+            </Tooltip>
+            <Tooltip content="Close" position="bottom">
+              <IconButton
+                icon={CrossIcon}
+                label="Close"
+                appearance="subtle"
+                spacing="compact"
+                onClick={onToggleCollapsed}
+              />
+            </Tooltip>
+          </div>
         </div>
+
+        {/* Row 2 — dual-mode underline tabs */}
         <div className="cc-mode-tabs" role="tablist" aria-label="Chat modes">
           <button
             type="button"
@@ -259,51 +319,6 @@ export function ChatDock({
           >
             Ask Caty
           </button>
-        </div>
-
-        {/* Divider + action icons */}
-        <div className="cc-dock__actions">
-          <Tooltip content="New conversation" position="bottom">
-            <IconButton
-              icon={AddIcon}
-              label="New conversation"
-              appearance="subtle"
-              spacing="compact"
-              onClick={() => {
-                // If a conversation is open, go back to directory.
-                // Either way, signal directory to focus search so user can type a name.
-                onFocusDirectory?.();
-                setDirFocusTick((t) => t + 1);
-              }}
-            />
-          </Tooltip>
-          <Tooltip content="Open full screen" position="bottom">
-            <IconButton
-              icon={VidFullScreenOnIcon}
-              label="Open full screen"
-              appearance="subtle"
-              spacing="compact"
-              onClick={onPopOut}
-            />
-          </Tooltip>
-          <Tooltip content="Minimize" position="bottom">
-            <IconButton
-              icon={ChevronDownIcon}
-              label="Minimize"
-              appearance="subtle"
-              spacing="compact"
-              onClick={onToggleCollapsed}
-            />
-          </Tooltip>
-          <Tooltip content="Close" position="bottom">
-            <IconButton
-              icon={CrossIcon}
-              label="Close"
-              appearance="subtle"
-              spacing="compact"
-              onClick={onToggleCollapsed}
-            />
-          </Tooltip>
         </div>
       </div>
 
@@ -381,7 +396,7 @@ export function ChatDock({
                         borderRadius: "50%",
                         background: "var(--ds-background-brand-bold, #0C66E4)",
                         flexShrink: 0,
-                        marginLeft: 2,
+                        marginLeft: 4,
                       }}
                     />
                   )}

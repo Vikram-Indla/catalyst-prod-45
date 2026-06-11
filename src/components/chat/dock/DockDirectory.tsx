@@ -20,7 +20,7 @@ import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import { useStartDm } from '@/hooks/chat/useStartDm';
 import { useStartProjectChannel } from '@/hooks/chat/useStartProjectChannel';
 import { useChatSearch, groupSearchHits } from '@/hooks/chat/useChatSearch';
-import { useChatArchive, useChatUnarchive } from '@/hooks/chat/useChatActions';
+import { useChatArchive, useChatUnarchive, useChatTogglePin, useChatToggleStar } from '@/hooks/chat/useChatActions';
 import { NewGroupDmModal } from './NewGroupDmModal';
 import { BrowseChannelsModal } from './BrowseChannelsModal';
 import ProjectIcon from '@/components/shared/ProjectIcon';
@@ -33,6 +33,23 @@ import { Avatar } from '@/components/chat/main/avatar';
 import { NewChannelModal } from './NewChannelModal';
 
 const EXCLUDED_PROJECT_KEYS = new Set(['INV', 'TH-DEFAULT', 'MDT']);
+
+/**
+ * Split live conversations into Pinned and Favourites buckets.
+ * Pinned wins over starred (a pinned+starred conversation shows only in Pinned).
+ * `excluded` is the id set of everything bucketed here so the normal
+ * Direct-messages / Work-items / Projects sections skip them (no duplicates).
+ */
+export function splitPinnedFavourites(live: ChatConversation[]): {
+  pinned: ChatConversation[];
+  favourites: ChatConversation[];
+  excluded: Set<string>;
+} {
+  const pinned = live.filter((c) => c.isPinned);
+  const favourites = live.filter((c) => !c.isPinned && c.isStarred);
+  const excluded = new Set<string>([...pinned, ...favourites].map((c) => c.id));
+  return { pinned, favourites, excluded };
+}
 
 const PRESENCE_LABEL: Record<ChatPresence, string> = {
   available: 'Active now',
@@ -140,9 +157,11 @@ interface ConvRowProps {
   glyph: React.ReactNode;
   titleOverride?: string;
   previewOverride?: string;
+  onTogglePin?: (id: string, next: boolean) => void;
+  onToggleStar?: (id: string, next: boolean) => void;
 }
 
-function ConvRow({ conversation: c, isActive, onSelect, onArchive, onUnarchive, isArchived, glyph, titleOverride, previewOverride }: ConvRowProps) {
+function ConvRow({ conversation: c, isActive, onSelect, onArchive, onUnarchive, isArchived, glyph, titleOverride, previewOverride, onTogglePin, onToggleStar }: ConvRowProps) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -187,26 +206,55 @@ function ConvRow({ conversation: c, isActive, onSelect, onArchive, onUnarchive, 
         )}
       </button>
       {hovered && (
-        <button
-          type="button"
-          className="cc-dir__archive-btn"
-          aria-label={isArchived ? 'Unarchive conversation' : 'Archive conversation'}
-          title={isArchived ? 'Unarchive' : 'Archive'}
-          onClick={(e) => { e.stopPropagation(); isArchived ? onUnarchive?.(c.id) : onArchive(c.id); }}
-        >
-          {isArchived ? (
-            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
-              <polyline points="1 6 1 22 23 22 23 6" /><polyline points="1 6 12 2 23 6" />
-              <line x1="12" y1="10" x2="12" y2="22" /><line x1="8" y1="15" x2="16" y2="15" />
-            </svg>
-          ) : (
-            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
-              <polyline points="21 8 21 21 3 21 3 8" />
-              <rect x="1" y="3" width="22" height="5" />
-              <line x1="10" y1="12" x2="14" y2="12" />
-            </svg>
+        <div className="cc-dir__row-actions">
+          {onTogglePin && !isArchived && (
+            <button
+              type="button"
+              className={`cc-dir__rowact${c.isPinned ? ' cc-dir__rowact--on' : ''}`}
+              aria-label={c.isPinned ? 'Unpin conversation' : 'Pin conversation'}
+              title={c.isPinned ? 'Unpin' : 'Pin'}
+              onClick={(e) => { e.stopPropagation(); onTogglePin(c.id, !c.isPinned); }}
+            >
+              <svg width={13} height={13} viewBox="0 0 24 24" fill={c.isPinned ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <line x1="12" y1="17" x2="12" y2="22" />
+                <path d="M5 17h14l-1.7-2.3a2 2 0 0 1-.3-1.1V7a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v6.6a2 2 0 0 1-.3 1.1L5 17z" />
+              </svg>
+            </button>
           )}
-        </button>
+          {onToggleStar && !isArchived && (
+            <button
+              type="button"
+              className={`cc-dir__rowact${c.isStarred ? ' cc-dir__rowact--star-on' : ''}`}
+              aria-label={c.isStarred ? 'Remove from favourites' : 'Add to favourites'}
+              title={c.isStarred ? 'Unfavourite' : 'Favourite'}
+              onClick={(e) => { e.stopPropagation(); onToggleStar(c.id, !c.isStarred); }}
+            >
+              <svg width={13} height={13} viewBox="0 0 24 24" fill={c.isStarred ? 'var(--ds-icon-warning, #E2B203)' : 'none'} stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </button>
+          )}
+          <button
+            type="button"
+            className="cc-dir__rowact"
+            aria-label={isArchived ? 'Unarchive conversation' : 'Archive conversation'}
+            title={isArchived ? 'Unarchive' : 'Archive'}
+            onClick={(e) => { e.stopPropagation(); isArchived ? onUnarchive?.(c.id) : onArchive(c.id); }}
+          >
+            {isArchived ? (
+              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+                <polyline points="1 6 1 22 23 22 23 6" /><polyline points="1 6 12 2 23 6" />
+                <line x1="12" y1="10" x2="12" y2="22" /><line x1="8" y1="15" x2="16" y2="15" />
+              </svg>
+            ) : (
+              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+                <polyline points="21 8 21 21 3 21 3 8" />
+                <rect x="1" y="3" width="22" height="5" />
+                <line x1="10" y1="12" x2="14" y2="12" />
+              </svg>
+            )}
+          </button>
+        </div>
       )}
     </div>
   );
@@ -229,6 +277,10 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
   const startChannel = useStartProjectChannel();
   const archive = useChatArchive();
   const unarchive = useChatUnarchive();
+  const togglePin = useChatTogglePin();
+  const toggleStar = useChatToggleStar();
+  const handleTogglePin = useCallback((id: string, next: boolean) => togglePin.mutate({ convId: id, pinned: next }), [togglePin]);
+  const handleToggleStar = useCallback((id: string, next: boolean) => toggleStar.mutate({ convId: id, starred: next }), [toggleStar]);
   const qc = useQueryClient();
   const [query, setQuery] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -357,9 +409,10 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const projects = (myProjects ?? []).filter((p) => !EXCLUDED_PROJECT_KEYS.has(p.key));
-    const dms = live.filter((c) => c.kind === 'dm' || c.kind === 'group_dm');
-    const channelConvs = live.filter((c) => c.kind === 'channel');
-    const tickets = live.filter((c) => c.kind === 'ticket');
+    const { pinned, favourites, excluded } = splitPinnedFavourites(live);
+    const dms = live.filter((c) => (c.kind === 'dm' || c.kind === 'group_dm') && !excluded.has(c.id));
+    const channelConvs = live.filter((c) => c.kind === 'channel' && !excluded.has(c.id));
+    const tickets = live.filter((c) => c.kind === 'ticket' && !excluded.has(c.id));
 
     const projectByKey = new Map<string, { id: string; key: string; name: string }>();
     projects.forEach((p) => projectByKey.set(p.key, p));
@@ -384,6 +437,8 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
     const channelRows = [...channelRowsFromConvs, ...channelRowsFromProjects];
 
     return {
+      pinned,
+      favourites,
       dms,
       tickets,
       channelRows,
@@ -429,6 +484,37 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
   const dmUnread = useMemo(() => filtered.dms.reduce((s, c) => s + c.unreadCount, 0), [filtered.dms]);
   const ticketUnread = useMemo(() => filtered.tickets.reduce((s, c) => s + c.unreadCount, 0), [filtered.tickets]);
   const projectUnread = useMemo(() => filtered.channelRows.reduce((s, { conversation: c }) => s + (c?.unreadCount ?? 0), 0), [filtered.channelRows]);
+
+  // Glyph for a mixed-kind row (Pinned / Favourites can hold any kind).
+  // Zero-assumption: a ticket with no known type renders its avatar, never a lied type.
+  const convGlyph = (c: ChatConversation) => {
+    if (c.kind === 'ticket') {
+      return c.ticketType ? (
+        <span className="cc-dir__ticket-icon"><JiraIssueTypeIcon type={c.ticketType} size={20} /></span>
+      ) : (
+        <Avatar name={c.ticketKey ?? c.title} seed={c.id} className="cc-dir__avatar" />
+      );
+    }
+    if (c.kind === 'channel') {
+      return <ProjectIcon projectKey={c.projectKey ?? ''} size="medium" />;
+    }
+    return <Avatar name={c.title} seed={c.id} className="cc-dir__avatar" />;
+  };
+
+  const renderMixedRow = (c: ChatConversation) => (
+    <ConvRow
+      key={c.id}
+      conversation={c}
+      isActive={activeId === c.id}
+      onSelect={onSelectConversation}
+      onArchive={(id) => archive.mutate(id)}
+      onTogglePin={handleTogglePin}
+      onToggleStar={handleToggleStar}
+      glyph={convGlyph(c)}
+      titleOverride={c.kind === 'ticket' ? (c.ticketKey ?? c.title) : undefined}
+      previewOverride={c.kind === 'ticket' ? (c.lastMessagePreview ?? c.title) : undefined}
+    />
+  );
 
   return (
     <div className="cc-dir">
@@ -548,8 +634,8 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            margin: '8px 10px 2px',
-            padding: '7px 10px',
+            margin: '8px 8px 4px',
+            padding: '8px',
             borderRadius: 6,
             background: 'var(--ds-background-neutral, #F1F2F4)',
             border: '1px solid var(--ds-border, #DFE1E6)',
@@ -564,7 +650,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
             </span>
             <button
               type="button"
-              style={{ background: 'transparent', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, padding: '2px 8px', fontSize: 11, cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}
+              style={{ background: 'transparent', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, padding: '4px 8px', fontSize: 11, cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}
               onClick={() => staleConversations.forEach(c => archive.mutate(c.id))}
             >
               Archive all
@@ -576,6 +662,35 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
               onClick={() => setArchiveDismissed(true)}
             >×</button>
           </div>
+        )}
+
+        {/* Pinned */}
+        {filtered.pinned.length > 0 && (
+          <>
+            <SectionHeader
+              label="Pinned"
+              count={filtered.pinned.length}
+              collapsed={!!collapsed['pinned']}
+              unreadInSection={filtered.pinned.reduce((s, c) => s + c.unreadCount, 0)}
+              onToggle={() => toggleSection('pinned')}
+            />
+            {!collapsed['pinned'] && filtered.pinned.map(renderMixedRow)}
+          </>
+        )}
+
+        {/* Favourites */}
+        {filtered.favourites.length > 0 && (
+          <>
+            <div className="cc-dir__section-divider" />
+            <SectionHeader
+              label="Favourites"
+              count={filtered.favourites.length}
+              collapsed={!!collapsed['favourites']}
+              unreadInSection={filtered.favourites.reduce((s, c) => s + c.unreadCount, 0)}
+              onToggle={() => toggleSection('favourites')}
+            />
+            {!collapsed['favourites'] && filtered.favourites.map(renderMixedRow)}
+          </>
         )}
 
         {/* Direct messages */}
@@ -608,6 +723,8 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
             isActive={activeId === c.id}
             onSelect={onSelectConversation}
             onArchive={(id) => archive.mutate(id)}
+            onTogglePin={handleTogglePin}
+            onToggleStar={handleToggleStar}
             glyph={<Avatar name={c.title} seed={c.id} className="cc-dir__avatar" />}
           />
         ))}
@@ -630,6 +747,8 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
                 isActive={activeId === c.id}
                 onSelect={onSelectConversation}
                 onArchive={(id) => archive.mutate(id)}
+                onTogglePin={handleTogglePin}
+                onToggleStar={handleToggleStar}
                 glyph={
                   <span className="cc-dir__ticket-icon">
                     <JiraIssueTypeIcon type={c.ticketType ?? 'Task'} size={20} />
