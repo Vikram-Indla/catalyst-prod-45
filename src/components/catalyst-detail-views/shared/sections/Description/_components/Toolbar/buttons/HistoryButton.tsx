@@ -8,14 +8,12 @@ interface Props {
 }
 
 export function HistoryButton({ available = false }: Props) {
+  // Hide when unavailable — disabled clock adds noise in composer/dock (finding 47)
+  if (!available) return null;
   return (
     <ToolbarIconButton
-      label={
-        available
-          ? 'View Changes Ctrl+Alt+Z'
-          : 'View Changes Ctrl+Alt+Z (no changes yet)'
-      }
-      disabled={!available}
+      label="View Changes Ctrl+Alt+Z"
+      disabled={false}
       testId="catalyst-desc-toolbar-history"
     >
       <ClockIcon label="" />

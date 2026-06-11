@@ -323,6 +323,19 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
     });
   }, [groups, idMap, user]);
 
+  // Smart archive suggestions (finding 55) — DMs/tickets inactive 14+ days
+  const STALE_MS = 14 * 24 * 60 * 60 * 1000;
+  const [archiveDismissed, setArchiveDismissed] = useState(false);
+  const staleConversations = useMemo(() =>
+    conversations.filter((c) =>
+      !c.isArchived &&
+      (c.kind === 'dm' || c.kind === 'ticket') &&
+      c.lastMessageAt &&
+      Date.now() - new Date(c.lastMessageAt).getTime() > STALE_MS
+    ),
+    [conversations]
+  );
+
   const { live, archived } = useMemo(() => {
     const q = query.trim().toLowerCase();
     const matchQ = (c: ChatConversation) =>
@@ -518,6 +531,42 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
               </>
             )}
           </>
+        )}
+
+        {/* Smart archive suggestion (finding 55) */}
+        {!archiveDismissed && staleConversations.length > 0 && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            margin: '8px 10px 2px',
+            padding: '7px 10px',
+            borderRadius: 6,
+            background: 'var(--ds-background-neutral, #F1F2F4)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            fontSize: 11,
+          }}>
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth={2} aria-hidden>
+              <polyline points="21 8 21 21 3 21 3 8" /><rect x="1" y="3" width="22" height="5" />
+              <line x1="10" y1="12" x2="14" y2="12" />
+            </svg>
+            <span style={{ flex: 1, color: 'var(--ds-text-subtle, #44546F)' }}>
+              {staleConversations.length} inactive conversation{staleConversations.length > 1 ? 's' : ''} — archive to clean up?
+            </span>
+            <button
+              type="button"
+              style={{ background: 'transparent', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, padding: '2px 8px', fontSize: 11, cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}
+              onClick={() => staleConversations.forEach(c => archive.mutate(c.id))}
+            >
+              Archive all
+            </button>
+            <button
+              type="button"
+              aria-label="Dismiss"
+              style={{ background: 'transparent', border: 'none', color: 'var(--ds-text-subtlest, #6B778C)', cursor: 'pointer', fontSize: 14, padding: 0 }}
+              onClick={() => setArchiveDismissed(true)}
+            >×</button>
+          </div>
         )}
 
         {/* Direct messages */}

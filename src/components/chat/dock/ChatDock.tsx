@@ -218,7 +218,7 @@ export function ChatDock({
     <div
       className={`cc-dock${dockMode === "caty" && catyView === "sidebar" ? " cc-dock--sidebar" : ""}`}
       role="dialog"
-      aria-label={dockMode === "caty" ? "Ask Caty AI" : "Messages"}
+      aria-label={dockMode === "caty" ? "Ask Caty AI" : "Caty Connect"}
     >
       {/* Shared header — mode tabs + shared icons */}
       <div className="cc-dock__header" role="banner">
@@ -231,7 +231,7 @@ export function ChatDock({
             onClick={() => setDockMode("messages")}
             aria-selected={dockMode === "messages"}
           >
-            Messages
+            Caty Connect
             {totalUnread > 0 && (
               <span className="cc-mode-tab__badge" aria-label={`${totalUnread} unread`}>
                 {totalUnread > 99 ? "99+" : totalUnread}
