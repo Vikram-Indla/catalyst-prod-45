@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
 import { token } from '@atlaskit/tokens';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
@@ -132,6 +133,9 @@ export function FilterPreviewPage() {
   const [sortKey, setSortKey] = useState<string>('updated');
   const [sortOrder, setSortOrder] = useState<SortOrder>('DESC');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  // Ask Caty inline bar — mirrors BacklogPage's setAskCatyOpen pattern
+  const [askCatyOpen, setAskCatyOpen] = useState(false);
 
   // Save state — isDirty gates the Save button; savedFilterId drives override logic
   const [savedFilterId, setSavedFilterId] = useState<string | null>(null);
@@ -330,14 +334,21 @@ export function FilterPreviewPage() {
         </h1>
       }
     >
-      {/* Toolbar */}
+      {/* Ask Caty inline bar — replaces toolbar row when open (mirrors BacklogPage) */}
+      {askCatyOpen && (
+        <AskCatyInlineBar
+          projectKey={projectKey ?? null}
+          onClose={() => setAskCatyOpen(false)}
+        />
+      )}
+
+      {/* Toolbar — hidden when Caty bar is open, same as BacklogPage pattern */}
       <div
         style={{
-          display: 'flex',
+          display: askCatyOpen ? 'none' : 'flex',
           alignItems: 'center',
-          gap: 8,
-          padding: '0 24px',
-          height: 56,
+          gap: 12,
+          padding: '32px 24px',
           flexShrink: 0,
           borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
           flexWrap: 'nowrap',
@@ -346,11 +357,11 @@ export function FilterPreviewPage() {
       >
         <AIIntelligenceButton
           label="Ask Caty"
-          onClick={() => {/* open caty panel */}}
+          onClick={() => setAskCatyOpen(true)}
           tooltip="Ask Caty about these results"
         />
 
-        <div style={{ flex: '0 0 auto', width: 240 }}>
+        <div style={{ flex: 1, minWidth: 240, maxWidth: 640 }}>
           <Textfield
             isCompact
             placeholder="Search list"
