@@ -34,7 +34,7 @@ export interface JqlResultRow {
 
 const RESULT_SELECT = `id, issue_key, summary, status, status_category, issue_type,
   assignee_display_name, reporter_display_name, project_key, jira_created_at, jira_updated_at,
-  due_date, effective_due_date, priority, labels, fix_versions, comments,
+  due_date, effective_due_date, priority, labels,
   parent_key, parent_summary`;
 
 export const JQL_RESULTS_LIMIT = 100;
@@ -77,14 +77,8 @@ export function useJqlResults(jql: string, enabled = true) {
       const { data, error, count } = await query.limit(JQL_RESULTS_LIMIT);
       if (error) throw new Error(error.message);
 
-      type RawRow = Record<string, string | null>;
       type RawRow = Record<string, unknown>;
       const items: JqlResultRow[] = ((data ?? []) as unknown as RawRow[]).map(r => {
-        const fixVersions = Array.isArray(r.fix_versions) ? r.fix_versions as Array<{ name?: string }> : null;
-        const sprintRelease = fixVersions && fixVersions.length > 0
-          ? fixVersions.map(v => (typeof v === 'object' && v !== null && 'name' in v ? String(v.name) : String(v))).filter(Boolean)
-          : null;
-        const comments = Array.isArray(r.comments) ? r.comments : null;
         return {
           id: r.id as string,
           key: r.issue_key as string,
@@ -97,8 +91,8 @@ export function useJqlResults(jql: string, enabled = true) {
           reporterName: (r.reporter_display_name as string | null) ?? null,
           priority: (r.priority as string | null) ?? null,
           labels: Array.isArray(r.labels) ? r.labels as string[] : null,
-          sprintRelease: sprintRelease && sprintRelease.length > 0 ? sprintRelease : null,
-          commentCount: comments ? comments.length : null,
+          sprintRelease: null,
+          commentCount: null,
           created: (r.jira_created_at as string | null) ?? null,
           updated: (r.jira_updated_at as string | null) ?? null,
           dueDate: (r.effective_due_date as string | null) ?? (r.due_date as string | null) ?? null,
