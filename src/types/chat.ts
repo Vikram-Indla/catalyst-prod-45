@@ -39,6 +39,8 @@ export interface ChatMessage {
 
 export interface ChatPerson {
   id: string;
+  /** profiles.id — the canonical USER_ID used by `data-mention-id`. */
+  profileId: string | null;
   name: string;
   role: string | null;
   avatarUrl: string | null;

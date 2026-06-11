@@ -10,6 +10,8 @@ import { CommentEditor } from '../../comments/CommentEditor';
 import { renderContent } from '../../comments/Comment';
 import { Edit2, Trash2 } from '@/lib/atlaskit-icons';
 import Tooltip from '@atlaskit/tooltip';
+import { useChatPeople } from '@/hooks/chat/useChatPeople';
+import type { MentionRosterEntry } from '@/lib/mentions/parseMentions';
 
 function formatAbsoluteDate(dateStr: string): string {
   const d = new Date(dateStr);
@@ -128,6 +130,16 @@ function WorkLogEntry({
 }) {
   const [editing, setEditing] = useState(false);
   const authorName = entry.author?.full_name || entry.author?.email || 'Unknown';
+  const { user } = useAuth();
+  const currentUserId = user?.id ?? null;
+  const { groups: peopleGroups } = useChatPeople();
+  const roster = React.useMemo<MentionRosterEntry[]>(
+    () =>
+      peopleGroups.flatMap((g) =>
+        g.people.map((p) => ({ name: p.name, userId: p.profileId })),
+      ),
+    [peopleGroups],
+  );
 
   if (editing) {
     return (
@@ -170,7 +182,7 @@ function WorkLogEntry({
         )}
         {entry.description && (
           <div style={{ marginTop: 8, fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>
-            {renderContent(entry.description)}
+            {renderContent(entry.description, { roster, currentUserId })}
           </div>
         )}
         {(canEdit || canDelete) && (

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import Lozenge from '@atlaskit/lozenge';
 import { token } from '@atlaskit/tokens';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
@@ -6,6 +6,10 @@ import ReactionBar from './ReactionBar';
 import ReplyComposer from './ReplyComposer';
 import type { DirectNotification } from '@/features/notifications/types';
 import { formatRelativeTime } from '@/features/notifications/utils/date';
+import { useChatPeople } from '@/hooks/chat/useChatPeople';
+import { parseMentions } from '@/lib/mentions/parseMentions';
+import { CatalystMention } from '@/components/shared/rich-text/mentions/CatalystMention';
+import { useAuth } from '@/hooks/useAuth';
 
 // ─── Section header icon ─────────────────────────────────────────────────────
 
@@ -52,24 +56,9 @@ function EntityTypeIcon({ type }: { type: string }) {
   );
 }
 
-// ─── @mention inline span ────────────────────────────────────────────────────
-
-function MentionSpan({ name }: { name: string }) {
-  return (
-    <span
-      style={{
-        fontWeight: 600,
-        color: 'var(--ds-text, #172B4D)',
-        padding: '0 4px',
-        borderRadius: 3,
-        cursor: 'default',
-      }}
-      aria-label={`Mention: ${name}`}
-    >
-      @{name}
-    </span>
-  );
-}
+// @mention chips are rendered via the canonical <CatalystMention> primitive
+// (see shared/rich-text/mentions/CatalystMention.tsx) so notification cards
+// look identical to chat messages and Description/Comment renderings.
 
 // ─── Metadata line (Project · Key · Timestamp) ───────────────────────────────
 
@@ -133,8 +122,22 @@ function mapStatusAppearance(statusAppearance: string): LozengeAppearance {
 function CommentBody({ text, isDark }: { text: string; isDark: boolean }) {
   const color = isDark ? 'var(--ds-text, #E6EDFA)' : token('color.text', '#172B4D');
 
-  // Parse @mention tokens — e.g. "@vikram indla"
-  const parts = text.split(/(@[\w][\w\s]*[\w]|@\w+)/g);
+  // Roster-aware @mention parsing — supports names of any word count.
+  // Longest-matches `@maria garcia lopez` as one mention even though it's
+  // three words, because the parser checks the actual people roster. Each
+  // matched mention renders via the canonical CatalystMention primitive so
+  // the chip looks identical to the Description / Comment renderers.
+  const { user } = useAuth();
+  const currentUserId = user?.id ?? null;
+  const { groups: peopleGroups } = useChatPeople();
+  const roster = useMemo(
+    () =>
+      peopleGroups.flatMap((g) =>
+        g.people.map((p) => ({ name: p.name, userId: p.profileId })),
+      ),
+    [peopleGroups],
+  );
+  const parts = parseMentions(text, roster);
 
   return (
     <p
@@ -147,10 +150,15 @@ function CommentBody({ text, isDark }: { text: string; isDark: boolean }) {
       }}
     >
       {parts.map((part, i) =>
-        part.startsWith('@') ? (
-          <MentionSpan key={i} name={part.slice(1)} />
+        part.type === 'mention' ? (
+          <CatalystMention
+            key={i}
+            name={part.name}
+            userId={part.userId}
+            currentUserId={currentUserId}
+          />
         ) : (
-          <span key={i}>{part}</span>
+          <span key={i}>{part.value}</span>
         ),
       )}
     </p>

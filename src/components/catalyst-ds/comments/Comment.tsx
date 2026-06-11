@@ -15,6 +15,9 @@ import {
 } from '@/components/shared/rich-text/mentions/mentionStyles';
 import { useAuth } from '@/hooks/useAuth';
 import { TicketLinkCard } from '@/components/shared/TicketLinkCard';
+import { useChatPeople } from '@/hooks/chat/useChatPeople';
+import { parseMentions, type MentionRosterEntry } from '@/lib/mentions/parseMentions';
+import { CatalystMention } from '@/components/shared/rich-text/mentions/CatalystMention';
 
 // ─── Per-block direction detection for read mode ─────────────────────
 //
@@ -134,7 +137,13 @@ function formatAbsoluteDate(dateStr: string): string {
   );
 }
 
-function renderContent(content: string, currentUserId?: string): React.ReactNode {
+function renderContent(
+  content: string,
+  options?: { roster?: readonly MentionRosterEntry[]; currentUserId?: string | null },
+): React.ReactNode {
+  const roster = options?.roster ?? [];
+  const currentUserId = options?.currentUserId ?? null;
+
   const adf = tryParseAdf(content);
   if (adf) {
     if (hasComplexAdfNodes(adf)) {
@@ -146,27 +155,49 @@ function renderContent(content: string, currentUserId?: string): React.ReactNode
     }
     return <AdfLightRenderer adf={adf} />;
   }
-  // Token-based renderer — handles inline images `![alt](url)`,
-  // legacy ADF mentions `@[Name](id)`, multi-word `@Capitalized Name`
-  // mentions, plain `@word` mentions, Atlassian browse URLs, and
-  // bare ticket keys (BAU-1234) → all rendered as smart TicketLinkCards.
+  // Token-based renderer — handles inline images `![alt](url)`, legacy ADF
+  // mentions `@[Name](id)`, Atlassian browse URLs, and bare ticket keys
+  // (BAU-1234) → all rendered as smart TicketLinkCards. Free-text
+  // `@Name` / `@first last` / `@FirstName LastName Lopez` mentions are
+  // delegated to parseMentions which longest-matches against the people
+  // roster, so multi-word AND lowercase names render as a single chip.
   //
   // URL alternative is listed before the bare-key alternative so that
-  // when a full URL appears, the regex captures the whole URL in one
-  // go (rather than matching the bare key inside it).
-  // Bare-key alternative uses negative look-arounds so it never
-  // matches a key sitting INSIDE a URL — those are handled by the
-  // browse-URL alternative above.
+  // when a full URL appears, the regex captures the whole URL in one go
+  // (rather than matching the bare key inside it). Bare-key alternative
+  // uses negative look-arounds so it never matches a key sitting INSIDE
+  // a URL — those are handled by the browse-URL alternative above.
   const pattern =
-    /!\[([^\]]*)\]\(([^)]+)\)|@\[([^\]]+)\]\([^)]+\)|@[A-Z][\w.]*(?:\s[A-Z][\w.]*)*|@\w+|https?:\/\/[a-z0-9-]+\.atlassian\.net\/browse\/([A-Z][A-Z0-9]{0,9}-\d+)(?:\?[^\s)]*)?(?:#[^\s)]*)?|(?<![A-Za-z0-9/?&=:_-])([A-Z][A-Z0-9]{0,9}-\d+)(?![A-Za-z0-9/?&=_-])/g;
+    /!\[([^\]]*)\]\(([^)]+)\)|@\[([^\]]+)\]\(([^)]+)\)|https?:\/\/[a-z0-9-]+\.atlassian\.net\/browse\/([A-Z][A-Z0-9]{0,9}-\d+)(?:\?[^\s)]*)?(?:#[^\s)]*)?|(?<![A-Za-z0-9/?&=:_-])([A-Z][A-Z0-9]{0,9}-\d+)(?![A-Za-z0-9/?&=_-])/g;
   const nodes: React.ReactNode[] = [];
   let lastIndex = 0;
   let key = 0;
   let m: RegExpExecArray | null;
 
+  const emitText = (text: string) => {
+    if (!text) return;
+    // Roster-aware mention parsing — handles any number of words AND
+    // lowercase names (e.g. `@vikram indla`, `@Maria Garcia Lopez`).
+    const parts = parseMentions(text, roster);
+    for (const part of parts) {
+      if (part.type === 'mention') {
+        nodes.push(
+          <CatalystMention
+            key={key++}
+            name={part.name}
+            userId={part.userId}
+            currentUserId={currentUserId}
+          />,
+        );
+      } else {
+        nodes.push(<React.Fragment key={key++}>{part.value}</React.Fragment>);
+      }
+    }
+  };
+
   while ((m = pattern.exec(content)) !== null) {
     if (m.index > lastIndex) {
-      nodes.push(<React.Fragment key={key++}>{content.slice(lastIndex, m.index)}</React.Fragment>);
+      emitText(content.slice(lastIndex, m.index));
     }
     const match = m[0];
     if (match.startsWith('![')) {
@@ -181,42 +212,29 @@ function renderContent(content: string, currentUserId?: string): React.ReactNode
         />
       );
     } else if (match.startsWith('@[')) {
+      // Legacy ADF mention `@[Name](id)` — the id is the canonical USER_ID,
+      // so this chip can paint self-vs-other directly.
       const name = m[3] ?? '';
-      // Extract the id portion from `@[Name](id)` so the runtime
-      // walker can stamp self vs other classes on this chip.
-      const idMatch = /^@\[[^\]]+\]\(([^)]+)\)$/.exec(match);
-      const mentionId = idMatch?.[1] ?? '';
+      const mentionId = m[4] ?? '';
       nodes.push(
-        <span
+        <CatalystMention
           key={key++}
-          data-mention-id={mentionId}
-          style={{ display: 'inline-block', fontSize: '0.9em' }}
-        >
-          @{name}
-        </span>
+          name={name}
+          userId={mentionId || null}
+          currentUserId={currentUserId}
+        />,
       );
-    } else if (m[4]) {
-      // Full Atlassian browse URL — group 4 captures the ticket key.
-      nodes.push(<TicketLinkCard key={key++} issueKey={m[4]} />);
     } else if (m[5]) {
-      // Bare ticket key (BAU-1234).
+      // Full Atlassian browse URL — group 5 captures the ticket key.
       nodes.push(<TicketLinkCard key={key++} issueKey={m[5]} />);
-    } else if (match.startsWith('@')) {
-      // Plain @word mention — no id, so always renders as other-user.
-      nodes.push(
-        <span
-          key={key++}
-          data-mention-id=""
-          style={{ display: 'inline-block', fontSize: '0.9em' }}
-        >
-          {match}
-        </span>
-      );
+    } else if (m[6]) {
+      // Bare ticket key (BAU-1234).
+      nodes.push(<TicketLinkCard key={key++} issueKey={m[6]} />);
     }
     lastIndex = m.index + match.length;
   }
   if (lastIndex < content.length) {
-    nodes.push(<React.Fragment key={key++}>{content.slice(lastIndex)}</React.Fragment>);
+    emitText(content.slice(lastIndex));
   }
 
   return nodes;
@@ -231,6 +249,14 @@ function CommentBody({ content }: { content: string }) {
   const ref = React.useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const currentUserId = user?.id ?? null;
+  const { groups: peopleGroups } = useChatPeople();
+  const roster = React.useMemo<MentionRosterEntry[]>(
+    () =>
+      peopleGroups.flatMap((g) =>
+        g.people.map((p) => ({ name: p.name, userId: p.profileId })),
+      ),
+    [peopleGroups],
+  );
   React.useEffect(() => {
     const root = ref.current;
     if (!root) return;
@@ -250,7 +276,7 @@ function CommentBody({ content }: { content: string }) {
       ref={ref}
       className="cds-comment-body text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] whitespace-pre-wrap leading-relaxed"
     >
-      {renderContent(content)}
+      {renderContent(content, { roster, currentUserId })}
     </div>
   );
 }

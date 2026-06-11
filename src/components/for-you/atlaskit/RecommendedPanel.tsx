@@ -68,6 +68,8 @@ import { CommentEditor } from '@/components/catalyst-ds/comments/CommentEditor';
 import { CommentNode, TRUNK_X, LINE_COLOR, LINE_WIDTH } from '@/components/catalyst-ds/comments/CommentNode';
 import type { CdsComment, CdsCommentReaction, CdsUser } from '@/components/catalyst-ds/types';
 import { useAuth } from '@/hooks/useAuth';
+import { useChatPeople } from '@/hooks/chat/useChatPeople';
+import type { MentionRosterEntry } from '@/lib/mentions/parseMentions';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLayoutEffect } from 'react';
 import { resolveAvatarUrl } from '@/lib/avatars';
@@ -628,6 +630,20 @@ function FeedCard({
 }) {
   const [hover, setHover] = React.useState(false);
   const [dismissFocused, setDismissFocused] = React.useState(false);
+  // Roster + viewer identity feed the canonical mention parser so the
+  // comment body renders `@vikram indla`, `@Maria Garcia Lopez`, and the
+  // current user's own name as a single canonical mention chip — same
+  // contract as Description and Comments.
+  const { user } = useAuth();
+  const currentUserId = user?.id ?? null;
+  const { groups: peopleGroups } = useChatPeople();
+  const roster = React.useMemo<MentionRosterEntry[]>(
+    () =>
+      peopleGroups.flatMap((g) =>
+        g.people.map((p) => ({ name: p.name, userId: p.profileId })),
+      ),
+    [peopleGroups],
+  );
   // Per-card "Ask Caty" summarize button REMOVED 2026-05-31 — duplicated the
   // panel-header digest CTA at the wrong granularity level. Users get one
   // canonical AI affordance per section ("Ask Caty — summarize N") that
@@ -793,7 +809,7 @@ function FeedCard({
               wordBreak: 'break-word',
             }}
           >
-            {renderCommentContent(row.commentBody)}
+            {renderCommentContent(row.commentBody, { roster, currentUserId })}
           </div>
         </div>
 
@@ -2751,192 +2767,13 @@ function HeadlineIssueTitle({
   );
 }
 
-// ─── Comment body rendering (Jira @-chip parity) ────────────────────────────
-
-/**
- * Render a comment body with @-mention pills. Two matchers run per line:
- *
- *   (1) CC detector — `\bcc:` / `\bCC:` appearing ANYWHERE in the line (not
- *       just at line start). Every token after `cc:` is rendered as a
- *       MentionChip, with "@" prepended when the raw text lacks it. This
- *       mirrors Jira's behavior: the ADF stores mentions as `[~accountid:…]`
- *       or prefixed displayName, but our `adfToPlainText` flattener in the
- *       edge-function drops the leading "@". Rendering cc-list tokens as
- *       pills unconditionally restores visual parity without a backfill.
- *
- *   (2) Default fallback — explicit `@Name` tokens elsewhere in the text
- *       become pills; everything else renders as plain text.
- *
- * Also strips Jira's legacy bracketed `[~accountid:xyz]` form which the
- * sync layer may still leave behind on old comments.
- *
- * CC matcher uses a word-boundary `\bcc\s*:` so it catches cases where `cc:`
- * follows punctuation with no space (e.g. `"Supported Service'.cc: vikram"`).
- */
-function renderCommentWithMentions(body: string): React.ReactNode {
-  if (!body) return null;
-
-  // Strip ADF mention placeholders (e.g. "[~accountid:abc123]") the sync
-  // layer may still leave behind on old comments.
-  // Also collapse runs of 2+ blank lines into a single newline — the Jira ADF
-  // plaintext flattener leaves double-newlines between paragraphs which balloon
-  // card height without adding information.
-  const deAdf = body
-    .replace(/\[~[^\]]+\]/g, '')
-    .replace(/\n{2,}/g, '\n')
-    .trim();
-  if (!deAdf) return null;
-
-  // Pre-processor — normalize CC/@-mention variants left by the adfToPlainText
-  // flattener in wh-jira-bulk-sync, which drops the `@` marker on the name
-  // and the newline between `cc:` and the name in inconsistent ways.
-  //
-  // Observed patterns (DOM probe of Catalyst For You, 2026-04-24):
-  //   Pattern A (SIMP-1699):  "…services sectionCC\nvikram indla"
-  //                            (no space before CC, no colon after it,
-  //                             name on the next line, lowercase name)
-  //   Pattern B (SIMP-1706):  "…Service'.cc: \nvikram indla"
-  //                            (punctuation→cc, colon present, trailing space
-  //                             before newline, lowercase name)
-  //
-  // Target canonical form (what the cc: branch below expects on one line):
-  //   "…prefix cc: @vikram indla"
-  //
-  // Two passes, both safe on bodies that already use the canonical form:
-  //   (a) Insert a space before a smushed "CC"/"Cc" so "sectionCC" becomes
-  //       "section CC" — required so pass (b)'s `\b` anchor sees CC as a
-  //       standalone token.
-  //   (b) Collapse any "cc" / "Cc" / "CC" followed by an OPTIONAL colon,
-  //       any amount of whitespace including a newline, and the rest of
-  //       the next line, into "cc: @<rest-of-line>". Capturing to `[^\n]+`
-  //       (rather than a fixed token count) lets lowercase names, multi-
-  //       word names, and "A and B" lists all survive — the downstream
-  //       ccMatch splits on commas / semicolons / " and ".
-  const cleaned = deAdf
-    .replace(/([a-z0-9])(CC|Cc)\b/g, '$1 $2')
-    .replace(/\b(?:CC|Cc|cc)\s*:?\s*\n+\s*([^\n]+)/g, (_, names: string) => {
-      const trimmed = names.trim();
-      return `cc: ${trimmed.startsWith('@') ? trimmed : '@' + trimmed}`;
-    });
-
-  const lines = cleaned.split(/\n/);
-
-  // Detect trailing pure-@mention lines — lines whose ENTIRE content is a
-  // single @Name token (common Jira pattern: each CC'd person on their own line).
-  // Collapse 1+ consecutive trailing mention-only lines into one compact inline
-  // "cc: @A  @B  @C" row so they don't each consume a full block line and inflate
-  // card height. A line qualifies when, after trimming, it starts with "@" and
-  // contains no message text before the "@".
-  const isMentionOnly = (line: string) => /^\s*@\S/.test(line) && !/\bcc\s*:/i.test(line);
-
-  let tailStart = lines.length;
-  for (let i = lines.length - 1; i >= 0; i--) {
-    if (isMentionOnly(lines[i])) tailStart = i;
-    else break;
-  }
-
-  const bodyLines = lines.slice(0, tailStart);
-  const trailingMentions = lines.slice(tailStart);
-
-  const renderBodyLine = (line: string, lineIdx: number): React.ReactNode => {
-    // cc: detector — find the FIRST "cc:" / "CC:" with a word-boundary.
-    const ccMatch = line.match(/^(.*?)\b(cc|CC)\s*:\s*(.*)$/);
-    if (ccMatch && ccMatch[3]) {
-      const [, preText, ccLiteral, namesPart] = ccMatch;
-      const nameTokens = namesPart
-        .split(/\s*[,;]\s*|\s+and\s+/)
-        .map(s => s.trim())
-        .filter(Boolean);
-      return (
-        <React.Fragment key={`l${lineIdx}`}>
-          {lineIdx > 0 ? '\n' : null}
-          {preText ? renderInlineAtMentions(preText) : null}
-          <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', marginInlineEnd: 4 }}>CC</span>
-          {nameTokens.map((tok, j) => {
-            const normalized = tok.startsWith('@') ? tok : `@${tok}`;
-            return (
-              <React.Fragment key={`cc-${lineIdx}-${j}`}>
-                {j > 0 ? '  ' : null}
-                <MentionChip label={normalized} />
-              </React.Fragment>
-            );
-          })}
-        </React.Fragment>
-      );
-    }
-    return (
-      <React.Fragment key={`l${lineIdx}`}>
-        {lineIdx > 0 ? '\n' : null}
-        {renderInlineAtMentions(line)}
-      </React.Fragment>
-    );
-  };
-
-  const bodyNodes = bodyLines.map((line, i) => renderBodyLine(line, i));
-
-  if (trailingMentions.length === 0) return bodyNodes;
-
-  // Build the collapsed inline cc row from all trailing mention lines.
-  const mentionLabels = trailingMentions.map(l => {
-    const t = l.trim();
-    return t.startsWith('@') ? t : `@${t}`;
-  });
-
-  const ccRow = (
-    <React.Fragment key="trailing-cc">
-      {bodyLines.length > 0 ? '\n' : null}
-      <span style={{
-        color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
-        fontSize: 11,
-        fontWeight: 700,
-        letterSpacing: '0.05em',
-        marginInlineEnd: 4,
-      }}>CC</span>
-      {mentionLabels.map((chip, i) => (
-        <React.Fragment key={`tc-${i}`}>
-          {i > 0 ? '  ' : null}
-          <MentionChip label={chip} />
-        </React.Fragment>
-      ))}
-    </React.Fragment>
-  );
-
-  return [...bodyNodes, ccRow];
-}
-
-/**
- * Split a run of text on explicit `@Name` tokens, returning an array of
- * <MentionChip> + plain-text React nodes. Used for any text that isn't in a
- * `cc:` block.
- */
-function renderInlineAtMentions(text: string): React.ReactNode[] {
-  const parts = text.split(/(@[A-Za-z][A-Za-z'.-]*(?:\s+[A-Za-z][A-Za-z'.-]*)?)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith('@')) {
-      return <MentionChip key={`m${i}`} label={part} />;
-    }
-    return <React.Fragment key={`t${i}`}>{part}</React.Fragment>;
-  });
-}
-
-function MentionChip({ label }: { label: string }) {
-  return (
-    <span
-      style={{
-        display: 'inline-block',
-        padding: '2px 8px',
-        borderRadius: 20,
-        background: 'var(--ds-background-information, #DEEBFF)',
-        border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
-        color: token('color.link', '#0052CC'),
-        font: `500 13px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {label}
-    </span>
-  );
-}
+// ─── Comment body rendering ─────────────────────────────────────────────────
+// Comment bodies are rendered via the shared `renderContent()` from
+// catalyst-ds/comments/Comment.tsx, fed with the live people roster + the
+// viewer's profile id. That delegates @mention parsing to parseMentions
+// (longest-match against the roster) and emits the canonical
+// <CatalystMention> chip — same DOM contract as Description / Comments.
+// No bespoke regex / MentionChip lives in this file any more.
 
 // ─── Utilities ──────────────────────────────────────────────────────────────
 
