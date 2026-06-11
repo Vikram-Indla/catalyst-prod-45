@@ -20,7 +20,11 @@ export interface JqlResultRow {
   statusCategory: string;
   projectKey: string;
   assigneeName: string | null;
+  reporterName: string | null;
   priority: string | null;
+  labels: string[] | null;
+  sprintRelease: string[] | null;
+  commentCount: number | null;
   created: string | null;
   updated: string | null;
   dueDate: string | null;
@@ -29,8 +33,9 @@ export interface JqlResultRow {
 }
 
 const RESULT_SELECT = `id, issue_key, summary, status, status_category, issue_type,
-  assignee_display_name, project_key, jira_created_at, jira_updated_at,
-  due_date, effective_due_date, priority, parent_key, parent_summary`;
+  assignee_display_name, reporter_display_name, project_key, jira_created_at, jira_updated_at,
+  due_date, effective_due_date, priority, labels, sprint_release, comment_count,
+  parent_key, parent_summary`;
 
 export const JQL_RESULTS_LIMIT = 100;
 
@@ -73,21 +78,26 @@ export function useJqlResults(jql: string, enabled = true) {
       if (error) throw new Error(error.message);
 
       type RawRow = Record<string, string | null>;
-      const items: JqlResultRow[] = ((data ?? []) as unknown as RawRow[]).map(r => ({
-        id: r.id,
-        key: r.issue_key,
-        summary: r.summary ?? '',
-        issueType: r.issue_type ?? 'Story',
-        status: r.status ?? '',
-        statusCategory: r.status_category ?? '',
-        projectKey: r.project_key ?? '',
-        assigneeName: r.assignee_display_name ?? null,
-        priority: r.priority ?? null,
-        created: r.jira_created_at ?? null,
-        updated: r.jira_updated_at ?? null,
-        dueDate: r.effective_due_date ?? r.due_date ?? null,
-        parentKey: r.parent_key ?? null,
-        parentSummary: r.parent_summary ?? null,
+      type ArrayRow = Record<string, string | string[] | number | null>;
+      const items: JqlResultRow[] = ((data ?? []) as unknown as ArrayRow[]).map(r => ({
+        id: r.id as string,
+        key: r.issue_key as string,
+        summary: (r.summary as string) ?? '',
+        issueType: (r.issue_type as string) ?? 'Story',
+        status: (r.status as string) ?? '',
+        statusCategory: (r.status_category as string) ?? '',
+        projectKey: (r.project_key as string) ?? '',
+        assigneeName: (r.assignee_display_name as string | null) ?? null,
+        reporterName: (r.reporter_display_name as string | null) ?? null,
+        priority: (r.priority as string | null) ?? null,
+        labels: Array.isArray(r.labels) ? r.labels as string[] : null,
+        sprintRelease: Array.isArray(r.sprint_release) ? r.sprint_release as string[] : null,
+        commentCount: typeof r.comment_count === 'number' ? r.comment_count : null,
+        created: (r.jira_created_at as string | null) ?? null,
+        updated: (r.jira_updated_at as string | null) ?? null,
+        dueDate: (r.effective_due_date as string | null) ?? (r.due_date as string | null) ?? null,
+        parentKey: (r.parent_key as string | null) ?? null,
+        parentSummary: (r.parent_summary as string | null) ?? null,
       }));
 
       return { items, totalCount: count ?? items.length };

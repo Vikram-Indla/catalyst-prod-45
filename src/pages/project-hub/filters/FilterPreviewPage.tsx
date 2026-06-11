@@ -20,10 +20,14 @@ import {
   makeStatusEditCell,
   makeParentEditCell,
   makeAssigneeEditCell,
+  makeAssigneeCell,
   makeDateCell,
   makeDateEditCell,
   makeRowMenuCell,
   makePriorityEditCell,
+  makeLabelsEditCell,
+  makeCommentsCell,
+  makeSprintReleaseCell,
 } from '@/components/shared/JiraTable';
 import type { Column, SortOrder, LozengeAppearance } from '@/components/shared/JiraTable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -423,6 +427,28 @@ export function FilterPreviewPage() {
         }),
       },
       {
+        id: 'comments',
+        label: 'Comments',
+        width: 8,
+        sortable: false,
+        defaultVisible: false,
+        alwaysVisible: false,
+        cell: makeCommentsCell(
+          (r: JqlResultRow) => r.commentCount,
+          (r: JqlResultRow) => openDetail(r.key),
+        ),
+      },
+      {
+        id: 'sprint_release',
+        label: 'Sprint/Release',
+        width: 18,
+        sortable: false,
+        defaultVisible: true,
+        accessor: (r) => (r.sprintRelease || []).join(', '),
+        cell: makeSprintReleaseCell((r: JqlResultRow) => r.sprintRelease),
+        include: (row: JqlResultRow) => row.issueType !== 'Feature',
+      },
+      {
         id: 'assignee',
         label: 'Assignee',
         width: 11,
@@ -434,6 +460,19 @@ export function FilterPreviewPage() {
             ? { id: r.assigneeName, name: r.assigneeName, avatarUrl: resolveAvatarUrl(r.assigneeName) }
             : null,
           options: [],
+          canEdit: () => false,
+          onChange: () => {},
+        }),
+      },
+      {
+        id: 'due_date',
+        label: 'Due date',
+        width: 8,
+        sortable: true,
+        defaultVisible: false,
+        accessor: (r) => r.dueDate ?? '',
+        cell: makeDateEditCell<JqlResultRow>({
+          getDate: (r) => r.dueDate,
           canEdit: () => false,
           onChange: () => {},
         }),
@@ -452,14 +491,14 @@ export function FilterPreviewPage() {
         }),
       },
       {
-        id: 'due_date',
-        label: 'Due date',
-        width: 8,
-        sortable: true,
+        id: 'labels',
+        label: 'Labels',
+        width: 7,
+        sortable: false,
         defaultVisible: false,
-        accessor: (r) => r.dueDate ?? '',
-        cell: makeDateEditCell<JqlResultRow>({
-          getDate: (r) => r.dueDate,
+        accessor: (r) => (r.labels || []).join(', '),
+        cell: makeLabelsEditCell<JqlResultRow>({
+          getLabels: (r) => r.labels,
           canEdit: () => false,
           onChange: () => {},
         }),
@@ -481,6 +520,19 @@ export function FilterPreviewPage() {
         defaultVisible: false,
         accessor: (r) => r.updated ?? '',
         cell: makeDateCell((r: JqlResultRow) => r.updated),
+      },
+      {
+        id: 'reporter',
+        label: 'Reporter',
+        width: 10,
+        sortable: true,
+        defaultVisible: false,
+        accessor: (r) => r.reporterName ?? '',
+        cell: makeAssigneeCell((r: JqlResultRow) =>
+          r.reporterName
+            ? { name: r.reporterName, avatarUrl: resolveAvatarUrl(r.reporterName) ?? null }
+            : null,
+        ),
       },
       {
         id: '__actions',
