@@ -34,6 +34,7 @@ import WidgetGalleryModal from '@/components/project-hub/dashboard/WidgetGallery
 import { nextSpan, type WidgetSpan } from '@/components/project-hub/dashboard/widget-registry';
 import { DashboardFilterProvider } from '@/contexts/DashboardFilterContext';
 import { useDashboardRealtime } from '@/hooks/useDashboardRealtime';
+import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 
 
 // 2026-06-09 Vikram RCA — Atlaskit DropdownMenu was painting popup at (0,0)
@@ -472,6 +473,8 @@ function ProjectDashboardPageInner() {
   );
 
   return (
+    <>
+      {pKey && <ProjectHeaderChip projectKey={pKey} />}
     <AtlaskitPageShell
       title={
         <span style={{ fontSize: 24, fontWeight: 653, letterSpacing: '-0.003em', color: token('color.text', '#292A2E') }}>
@@ -558,5 +561,6 @@ function ProjectDashboardPageInner() {
         )}
       </FlagGroup>
     </AtlaskitPageShell>
+    </>
   );
 }

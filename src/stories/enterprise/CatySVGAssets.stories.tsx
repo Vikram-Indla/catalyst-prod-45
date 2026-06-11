@@ -6,6 +6,10 @@ import askCatyGradient from '@/assets/ask-caty-gradient.svg';
 import catyDark from '@/assets/caty-dark.svg';
 import catyLight from '@/assets/caty-light.svg';
 import catyGradient from '@/assets/caty-gradient.svg';
+import catyAI from '@/assets/caty-ai.svg';
+import catyAIBg from '@/assets/caty-ai-bg.svg';
+import logoMarkLight from '@/assets/logo-mark-light.svg';
+import logoMarkDark from '@/assets/logo-mark-dark.svg';
 
 const meta: Meta = {
   title: 'Enterprise Components/Caty AI/SVG Assets',
@@ -101,6 +105,46 @@ export const AllVariants: StoryObj = {
           </div>
         ))}
       </div>
+    </div>
+  ),
+};
+
+export const BrandLogoMark: StoryObj = {
+  name: 'Brand — Logo Mark + Caty AI',
+  render: () => (
+    <div>
+      <AssetRow label="Caty AI — with background (dark canvas)">
+        {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={catyAIBg} alt="Caty AI with bg" />)}
+      </AssetRow>
+      <AssetRow label="Caty AI — no background (transparent)">
+        {sizes.map(s => <SizeChip key={s} size={s} bg="var(--ds-surface-sunken, #F7F8F9)" src={catyAI} alt="Caty AI" />)}
+        {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={catyAI} alt="Caty AI on dark" />)}
+      </AssetRow>
+      <AssetRow label="Logo Mark — Light (on light bg)">
+        {sizes.map(s => <SizeChip key={s} size={s} bg="var(--ds-surface, #FFFFFF)" src={logoMarkLight} alt="Logo mark light" />)}
+      </AssetRow>
+      <AssetRow label="Logo Mark — Dark (on dark bg)">
+        {sizes.map(s => <SizeChip key={s} size={s} bg="#1E2A3A" src={logoMarkDark} alt="Logo mark dark" />)}
+      </AssetRow>
+    </div>
+  ),
+};
+
+export const BrandComparison: StoryObj = {
+  name: 'Brand — All Mark Variants',
+  render: () => (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+      {[
+        { label: 'Caty AI BG', src: catyAIBg, bg: '#2A2832', textColor: '#F6F4EF' },
+        { label: 'Caty AI', src: catyAI, bg: 'var(--ds-surface-sunken, #F7F8F9)', textColor: 'var(--ds-text-subtle, #6B778C)' },
+        { label: 'Logo Mark Light', src: logoMarkLight, bg: 'var(--ds-surface, #FFFFFF)', textColor: 'var(--ds-text-subtle, #6B778C)' },
+        { label: 'Logo Mark Dark', src: logoMarkDark, bg: '#1E2A3A', textColor: '#F6F4EF' },
+      ].map(({ label, src, bg, textColor }) => (
+        <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, background: bg, borderRadius: 12, padding: 24 }}>
+          <img src={src} alt={label} width={80} height={80} />
+          <span style={{ fontSize: 12, color: textColor, fontWeight: 600 }}>{label}</span>
+        </div>
+      ))}
     </div>
   ),
 };
