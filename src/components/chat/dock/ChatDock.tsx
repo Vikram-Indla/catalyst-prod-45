@@ -15,12 +15,13 @@
 import React, { useState } from "react";
 import { IconButton } from "@atlaskit/button/new";
 import EditorAddIcon from "@atlaskit/icon/glyph/editor/add";
-import ShortcutIcon from "@atlaskit/icon/glyph/shortcut";
+import VidShareScreenIcon from "@atlaskit/icon/glyph/vid-share-screen";
 import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import CrossIcon from "@atlaskit/icon/glyph/cross";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import catalystChatIcon from "@/assets/caty-ai-bg.svg";
+import catyIcon from "@/assets/caty-icon.svg";
 import { CatyPanel } from "./CatyPanel";
 import { DockDirectory } from "./DockDirectory";
 import { DockConversationPane } from "./DockConversationPane";
@@ -98,7 +99,7 @@ function ConvGlyph({ conversation }: { conversation: ChatConversation }) {
     alignItems: "center",
     justifyContent: "center",
     color: "var(--ds-text-inverse, #FFFFFF)",
-    fontWeight: 700,
+    fontWeight: 600,
   } as const;
 
   if (conversation.kind === "channel") {
@@ -222,30 +223,32 @@ export function ChatDock({
       aria-label={dockMode === "caty" ? "Ask Caty AI" : "Messages"}
     >
       {/* Shared header — mode tabs + shared icons */}
-      <div className="cc-dock__header">
-        {/* Dual-mode tab pills */}
-        <div className="cc-mode-tabs">
+      <div className="cc-dock__header" role="banner">
+        {/* Dual-mode underline tabs */}
+        <div className="cc-mode-tabs" role="tablist" aria-label="Chat modes">
           <button
             type="button"
+            role="tab"
             className={`cc-mode-tab${dockMode === "messages" ? " cc-mode-tab--active" : ""}`}
             onClick={() => setDockMode("messages")}
-            aria-pressed={dockMode === "messages"}
+            aria-selected={dockMode === "messages"}
           >
             Messages
-            {totalUnread > 0 && dockMode !== "messages" && (
-              <span className="cc-mode-tab__badge">
+            {totalUnread > 0 && (
+              <span className="cc-mode-tab__badge" aria-label={`${totalUnread} unread`}>
                 {totalUnread > 9 ? "9+" : totalUnread}
               </span>
             )}
           </button>
           <button
             type="button"
+            role="tab"
             className={`cc-mode-tab${dockMode === "caty" ? " cc-mode-tab--active" : ""}`}
             onClick={() => setDockMode("caty")}
-            aria-pressed={dockMode === "caty"}
+            aria-selected={dockMode === "caty"}
           >
             <img
-              src={catalystChatIcon}
+              src={catyIcon}
               alt=""
               width={14}
               height={14}
@@ -255,37 +258,39 @@ export function ChatDock({
           </button>
         </div>
 
-        {/* Shared header icons — context-aware */}
-        {dockMode === "messages" && (
+        {/* Divider + action icons */}
+        <div className="cc-dock__actions">
+          {dockMode === "messages" && (
+            <IconButton
+              icon={EditorAddIcon}
+              label="New conversation"
+              appearance="subtle"
+              spacing="compact"
+              onClick={onFocusDirectory}
+            />
+          )}
           <IconButton
-            icon={EditorAddIcon}
-            label="Browse directory"
+            icon={VidShareScreenIcon}
+            label="Pop out"
             appearance="subtle"
             spacing="compact"
-            onClick={onFocusDirectory}
+            onClick={onPopOut}
           />
-        )}
-        <IconButton
-          icon={ShortcutIcon}
-          label="Pop out"
-          appearance="subtle"
-          spacing="compact"
-          onClick={onPopOut}
-        />
-        <IconButton
-          icon={ChevronDownIcon}
-          label="Minimize"
-          appearance="subtle"
-          spacing="compact"
-          onClick={onToggleCollapsed}
-        />
-        <IconButton
-          icon={CrossIcon}
-          label="Close"
-          appearance="subtle"
-          spacing="compact"
-          onClick={onToggleCollapsed}
-        />
+          <IconButton
+            icon={ChevronDownIcon}
+            label="Minimize"
+            appearance="subtle"
+            spacing="compact"
+            onClick={onToggleCollapsed}
+          />
+          <IconButton
+            icon={CrossIcon}
+            label="Close"
+            appearance="subtle"
+            spacing="compact"
+            onClick={onToggleCollapsed}
+          />
+        </div>
       </div>
 
       {/* Messages mode — directory OR conversation pane */}

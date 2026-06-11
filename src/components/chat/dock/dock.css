@@ -24,9 +24,21 @@
   border-bottom: 1px solid var(--ds-border, #DFE1E6);
   display: flex;
   align-items: stretch;
-  padding: 0 4px 0 0;
+  padding: 0 4px;
   gap: 0;
   background: var(--ds-surface, #FFFFFF);
+}
+
+/* Action icon group — divider on left, icons on right */
+.cc-dock__actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 0 0 auto;
+  /* ads-scanner:ignore-next-line */
+  border-left: 1px solid var(--ds-border, #DFE1E6);
+  margin-left: 4px;
+  padding-left: 4px;
 }
 
 /* Dual-mode underline tabs — enterprise pattern (Slack/Jira nav style) */
@@ -36,9 +48,6 @@
   align-items: stretch;
   gap: 0;
   min-width: 0;
-  /* ads-scanner:ignore-next-line */
-  border-bottom: 1px solid var(--ds-border, #DFE1E6);
-  margin-bottom: -1px; /* overlap the header border-bottom */
 }
 
 .cc-mode-tab {
@@ -46,12 +55,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  height: 47px;
+  gap: 6px;
+  height: 48px;
   border: none;
   border-bottom: 2px solid transparent;
   background: transparent;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 400;
   color: var(--ds-text-subtle, #44546F);
   cursor: pointer;
@@ -59,11 +68,16 @@
   padding: 0 16px;
   position: relative;
   transition: color 0.1s, border-bottom-color 0.1s;
+  outline: none;
 }
 
-.cc-mode-tab:hover {
+.cc-mode-tab:hover:not(.cc-mode-tab--active) {
   color: var(--ds-text, #172B4D);
   background: var(--ds-background-neutral-subtle-hovered, #EBECF0);
+}
+
+.cc-mode-tab:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--ds-border-focused, #388BFF);
 }
 
 .cc-mode-tab--active {
@@ -74,17 +88,12 @@
   box-shadow: none;
 }
 
-/* Small gap between mode tabs and action icons in header */
-.cc-dock__header > [class*="cc-mode-tabs"] + * {
-  margin-left: 4px;
-}
-
 .cc-mode-tab__badge {
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
   border-radius: 8px;
-  background: var(--ds-background-danger-bold, #E34935);
+  background: var(--ds-background-brand-bold, #0C66E4);
   color: var(--ds-text-inverse, #FFFFFF);
   font-size: 10px;
   font-weight: 700;

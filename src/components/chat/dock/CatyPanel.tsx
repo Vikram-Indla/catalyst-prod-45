@@ -16,6 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import catalystChatIcon from '@/assets/caty-ai-bg.svg';
+import catyIcon from '@/assets/caty-icon.svg';
 import {
   CATY_ASSISTANTS,
   canUseAssistant,
@@ -214,7 +215,7 @@ function StepIcon({ type }: { type: CatyStep['type'] }) {
 function AssistantIcon({ assistant }: { assistant: CatyAssistant }) {
   if (!assistant.iconType) {
     return (
-      <img src={catalystChatIcon} alt="" width={20} height={20} />
+      <img src={catyIcon} alt="" width={20} height={20} />
     );
   }
   return (
@@ -644,7 +645,7 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
           aria-haspopup="menu"
           onClick={() => setShowPicker((v) => !v)}
         >
-          <img src={catalystChatIcon} alt="" className="cp-assistant-trigger__avatar" width={20} height={20} />
+          <img src={catyIcon} alt="" className="cp-assistant-trigger__avatar" width={20} height={20} />
           <span className="cp-assistant-trigger__label">Ask Caty</span>
           {activeAssistant.id !== 'general' && (
             <span className="cp-assistant-trigger__sub">· {activeAssistant.name}</span>
