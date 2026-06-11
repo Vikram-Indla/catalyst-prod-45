@@ -175,7 +175,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                   padding: 12,
                   background: `var(--ds-surface-sunken, #F7F8F9)`,
                   borderRadius: 3,
-                  fontFamily: 'var(--ds-font-family-monospace, monospace)',
+                  fontFamily: 'var(--ds-font-family-code, monospace)',
                   fontSize: 12,
                   color: token('color.text.subtle'),
                   display: 'flex',
@@ -214,7 +214,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                   borderRadius: 3,
                   padding: '0 4px',
                   fontSize: 11,
-                  fontFamily: 'var(--ds-font-family-monospace, monospace)',
+                  fontFamily: 'var(--ds-font-family-code, monospace)',
                 }}>
                   project = {projectKey ?? 'KEY'}
                 </code>{' '}
@@ -276,7 +276,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                   padding: 12,
                   background: `var(--ds-surface-sunken, #F7F8F9)`,
                   borderRadius: 3,
-                  fontFamily: 'var(--ds-font-family-monospace, monospace)',
+                  fontFamily: 'var(--ds-font-family-code, monospace)',
                   fontSize: 12,
                   color: token('color.text.subtle'),
                   display: 'flex',

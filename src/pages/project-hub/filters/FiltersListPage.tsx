@@ -96,24 +96,24 @@ function editorsConfigEntries(config: SavedFilterFull['editors_config']): Permis
   return [{ icon: <LockIcon label="" color={ICON_COLOR} />, label: 'Private' }];
 }
 
-const MAX_PERMISSION_ROWS = 5;
+const MAX_PERMISSION_ROWS = 1;
 
 function PermissionList({ entries }: { entries: PermissionEntry[] }) {
   const shown = entries.slice(0, MAX_PERMISSION_ROWS);
   const more = entries.length - shown.length;
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       {shown.map((e, i) => (
-        <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ display: 'inline-flex', width: 20, justifyContent: 'center', flexShrink: 0 }}>
+        <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ display: 'inline-flex', width: 16, justifyContent: 'center', flexShrink: 0 }}>
             {e.icon}
           </span>
-          <span style={{ fontSize: 14, color: token('color.text') }}>{e.label}</span>
+          <span style={{ fontSize: 14, color: token('color.text'), whiteSpace: 'nowrap' }}>{e.label}</span>
         </span>
       ))}
       {more > 0 && (
-        <span style={{ fontSize: 12, color: token('color.text.subtlest'), paddingLeft: 24 }}>
-          +{more} more
+        <span style={{ fontSize: 12, color: token('color.text.subtlest') }}>
+          +{more}
         </span>
       )}
     </div>
@@ -263,32 +263,45 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     {
       id: 'name',
       label: 'Name',
-      flex: true,
+      width: 30,
       sortable: true,
       alwaysVisible: true,
       accessor: f => f.name,
       cell: ({ row: f }) => (
-        <Link
-          to={detailHref(f)}
-          onClick={e => e.stopPropagation()}
-          title={f.jql_query ?? undefined}
-          style={{
-            color: token('color.link'),
-            fontWeight: token('font.weight.medium'),
-            fontSize: 14,
-            textDecoration: 'none',
-          }}
-          onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
-          onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
-        >
-          {f.name}
-        </Link>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Link
+            to={detailHref(f)}
+            onClick={e => e.stopPropagation()}
+            style={{
+              color: token('color.link'),
+              fontWeight: token('font.weight.medium'),
+              fontSize: 14,
+              textDecoration: 'none',
+            }}
+            onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
+            onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
+          >
+            {f.name}
+          </Link>
+          {f.jql_query && (
+            <span style={{
+              fontSize: 12,
+              color: token('color.text.subtlest'),
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              maxWidth: 500,
+            }}>
+              {f.jql_query}
+            </span>
+          )}
+        </div>
       ),
     },
     {
       id: 'owner',
       label: 'Owner',
-      width: 16,
+      width: 13,
       sortable: true,
       accessor: f => ownerName(f),
       cell: ({ row: f }) => {
@@ -306,7 +319,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     {
       id: 'viewers',
       label: 'Viewers',
-      width: 20,
+      width: 15,
       cell: ({ row: f }) => (
         <PermissionList entries={
           f.jira_filter_id || (f.share_permissions?.length ?? 0) > 0
@@ -318,7 +331,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     {
       id: 'editors',
       label: 'Editors',
-      width: 16,
+      width: 13,
       cell: ({ row: f }) => (
         <PermissionList entries={
           f.jira_filter_id || (f.edit_permissions?.length ?? 0) > 0
@@ -330,14 +343,14 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     {
       id: 'starred',
       label: 'Starred by',
-      width: 9,
+      width: 7,
       sortable: true,
       accessor: f => f.starred_by_user_ids.length,
       cell: ({ row: f }) => {
         const n = f.starred_by_user_ids.length;
         return (
-          <span style={{ fontSize: 14, color: token('color.text') }}>
-            {n} {n === 1 ? 'person' : 'people'}
+          <span style={{ fontSize: 14, color: n > 0 ? token('color.text') : token('color.text.subtlest') }}>
+            ★ {n}
           </span>
         );
       },
@@ -466,8 +479,8 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              padding: '32px',
-              gap: 8,
+              padding: '48px 32px',
+              gap: 12,
               color: token('color.text.subtle'),
             }}>
               <span style={{ fontSize: 16, fontWeight: token('font.weight.medium') }}>
@@ -475,10 +488,15 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                   ? 'No filters match your search'
                   : 'No filters yet'}
               </span>
-              {!search && (
-                <span style={{ fontSize: 13, color: token('color.text.subtlest') }}>
-                  Use the button above, or press N, to build one.
-                </span>
+              {!search && !ownerFilter && !projectFilter && !groupFilter && (
+                <>
+                  <span style={{ fontSize: 14, color: token('color.text.subtlest') }}>
+                    Save a JQL query as a filter to find and reuse it later.
+                  </span>
+                  <Button appearance="primary" onClick={() => navigate(createHref)}>
+                    Create filter
+                  </Button>
+                </>
               )}
             </div>
           }
