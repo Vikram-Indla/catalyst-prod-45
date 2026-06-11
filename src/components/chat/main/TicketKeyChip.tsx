@@ -3,22 +3,31 @@
  * Canonical JiraIssueTypeIcon + key text. Click opens the Catalyst detail
  * view via useGlobalSearchStore.openDetail — ALWAYS the issue_key string,
  * never a UUID (CLAUDE.md 2026-05-10).
+ * Background tinted by status_category for at-a-glance status signal.
  */
 import React from 'react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
+export function statusBackground(cat: string | undefined): string {
+  if (cat === 'done') return 'rgba(148,199,72,0.18)';
+  if (cat === 'inprogress') return 'rgba(102,157,241,0.18)';
+  return 'var(--ds-background-neutral-subtle, #F7F8F9)';
+}
+
 export interface TicketKeyChipProps {
   issueKey: string;
   issueType: string;
   summary?: string;
+  statusCategory?: string;
 }
 
-export function TicketKeyChip({ issueKey, issueType, summary }: TicketKeyChipProps) {
+export function TicketKeyChip({ issueKey, issueType, summary, statusCategory }: TicketKeyChipProps) {
   return (
     <button
       type="button"
       data-testid="chat-ticket-key-chip"
+      data-status-category={statusCategory ?? ''}
       title={summary ? `${issueKey} — ${summary}` : issueKey}
       onClick={(e) => {
         e.stopPropagation();
@@ -31,7 +40,7 @@ export function TicketKeyChip({ issueKey, issueType, summary }: TicketKeyChipPro
         padding: '0 4px',
         margin: 0,
         border: 'none',
-        background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+        background: statusBackground(statusCategory),
         borderRadius: 3,
         color: 'var(--ds-link, #0052CC)',
         font: 'inherit',
