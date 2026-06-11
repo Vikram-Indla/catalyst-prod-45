@@ -572,6 +572,10 @@ export function FilterPreviewPage() {
         <AskCatyInlineBar
           projectKey={projectKey ?? null}
           onClose={() => setAskCatyOpen(false)}
+          onJqlGenerated={(generatedJql) => {
+            setSavedFilterJql(generatedJql);
+            markDirty();
+          }}
         />
       )}
 
