@@ -137,6 +137,23 @@ function ownerName(f: SavedFilterFull): string {
   return f.owner?.full_name ?? f.jira_owner_name ?? '';
 }
 
+function relativeTime(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 30) return `${days}d ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months}mo ago`;
+  return `${Math.floor(months / 12)}y ago`;
+}
+
+type QuickTab = 'all' | 'mine' | 'starred';
+
 interface SelectOption { label: string; value: string }
 
 export default function FiltersListPage({ hubType = 'project' }: FiltersListPageProps) {
@@ -148,6 +165,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   const [projectFilter, setProjectFilter] = useState<SelectOption | null>(null);
   const [groupFilter, setGroupFilter] = useState<SelectOption | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [quickTab, setQuickTab] = useState<QuickTab>('all');
   const [sortKey, setSortKey] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
 
@@ -205,11 +223,18 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         if (p.type === 'group' && p.group?.name) names.add(p.group.name);
       });
     });
-    return [...names].sort().map(n => ({ label: n, value: n }));
+    return [...names].sort().map(n => ({ label: humanizeGroupName(n), value: n }));
   }, [filters]);
 
   const visibleFilters = useMemo(() => {
     let list = filters;
+
+    // Quick-tab pre-filter
+    if (quickTab === 'mine' && currentUserId) {
+      list = list.filter(f => f.user_id === currentUserId || f.owner_id === currentUserId);
+    } else if (quickTab === 'starred' && currentUserId) {
+      list = list.filter(f => f.starred_by_user_ids.includes(currentUserId));
+    }
 
     if (search.trim()) {
       const q = search.trim().toLowerCase();
@@ -241,7 +266,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       }
       return a.name.localeCompare(b.name) * dir;
     });
-  }, [filters, search, ownerFilter, projectFilter, groupFilter, sortKey, sortOrder]);
+  }, [filters, quickTab, currentUserId, search, ownerFilter, projectFilter, groupFilter, sortKey, sortOrder]);
 
   const detailHref = (f: SavedFilterFull) => projectKey
     ? `/project-hub/${projectKey}/filters/${f.id}`
@@ -324,7 +349,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         const name = ownerName(f);
         return name ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <AkAvatar src={resolveAvatarUrl(name)} name={name} size="small" />
+            <AkAvatar src={resolveAvatarUrl(name)} name={name} size="xsmall" />
             <span style={{ fontSize: 14, color: token('color.text') }}>{name}</span>
           </div>
         ) : (
@@ -336,6 +361,13 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       id: 'viewers',
       label: 'Viewers',
       width: 15,
+      sortable: true,
+      accessor: (f: SavedFilterFull) => {
+        const entries = f.jira_filter_id || (f.share_permissions?.length ?? 0) > 0
+          ? sharePermissionEntries(f.share_permissions)
+          : viewersConfigEntries(f.viewers_config);
+        return entries[0]?.label ?? '';
+      },
       cell: ({ row: f }) => (
         <PermissionList entries={
           f.jira_filter_id || (f.share_permissions?.length ?? 0) > 0
@@ -348,6 +380,13 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       id: 'editors',
       label: 'Editors',
       width: 13,
+      sortable: true,
+      accessor: (f: SavedFilterFull) => {
+        const entries = f.jira_filter_id || (f.edit_permissions?.length ?? 0) > 0
+          ? sharePermissionEntries(f.edit_permissions)
+          : editorsConfigEntries(f.editors_config);
+        return entries[0]?.label ?? '';
+      },
       cell: ({ row: f }) => (
         <PermissionList entries={
           f.jira_filter_id || (f.edit_permissions?.length ?? 0) > 0
@@ -370,6 +409,21 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           </span>
         );
       },
+    },
+    {
+      id: 'updated',
+      label: 'Last modified',
+      width: 10,
+      sortable: true,
+      accessor: (f: SavedFilterFull) => f.updated_at ?? '',
+      cell: ({ row: f }) => (
+        <span
+          style={{ fontSize: 14, color: token('color.text.subtle') }}
+          title={f.updated_at ? new Date(f.updated_at).toLocaleString() : undefined}
+        >
+          {relativeTime(f.updated_at)}
+        </span>
+      ),
     },
     {
       id: '__actions',
@@ -419,15 +473,50 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         </Button>
       </div>
 
+      {/* Quick-tab bar: All / My filters / Starred */}
+      <div style={{
+        display: 'flex',
+        gap: 0,
+        padding: '0 24px',
+        borderBottom: `1px solid ${token('color.border')}`,
+        flexShrink: 0,
+        marginBottom: 0,
+      }}>
+        {(['all', 'mine', 'starred'] as QuickTab[]).map(tab => {
+          const labels: Record<QuickTab, string> = { all: 'All filters', mine: 'My filters', starred: 'Starred' };
+          const isActive = quickTab === tab;
+          return (
+            <button
+              key={tab}
+              onClick={() => setQuickTab(tab)}
+              style={{
+                background: 'none',
+                border: 'none',
+                borderBottom: isActive ? `2px solid ${token('color.border.selected', '#0052CC')}` : '2px solid transparent',
+                padding: '8px 16px',
+                fontSize: 14,
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? token('color.text.selected', '#0052CC') : token('color.text.subtle'),
+                cursor: 'pointer',
+                marginBottom: -1,
+              }}
+            >
+              {labels[tab]}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Toolbar — Search filters + Owner / Project / Group (Jira-exact) */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 16,
-        padding: '0 24px 16px',
+        flexWrap: 'wrap',
+        gap: 8,
+        padding: '12px 24px 12px',
         flexShrink: 0,
       }}>
-        <div style={{ width: 240 }}>
+        <div style={{ flex: '1 1 180px', minWidth: 140, maxWidth: 280 }}>
           <Textfield
             placeholder="Search filters"
             value={search}
@@ -439,7 +528,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             }
           />
         </div>
-        <div style={{ width: 200 }}>
+        <div style={{ flex: '1 1 140px', minWidth: 120, maxWidth: 200 }}>
           <Select
             placeholder="Owner"
             options={ownerOptions}
@@ -448,7 +537,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             isClearable
           />
         </div>
-        <div style={{ width: 200 }}>
+        <div style={{ flex: '1 1 140px', minWidth: 120, maxWidth: 200 }}>
           <Select
             placeholder="Project"
             options={projectOptions}
@@ -457,7 +546,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             isClearable
           />
         </div>
-        <div style={{ width: 200 }}>
+        <div style={{ flex: '1 1 140px', minWidth: 120, maxWidth: 200 }}>
           <Select
             placeholder="Group"
             options={groupOptions}
@@ -466,6 +555,23 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             isClearable
           />
         </div>
+        {(search || ownerFilter || projectFilter || groupFilter) && (
+          <button
+            onClick={() => { setSearch(''); setOwnerFilter(null); setProjectFilter(null); setGroupFilter(null); }}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '0 4px',
+              fontSize: 14,
+              color: token('color.link'),
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}
+          >
+            Clear all
+          </button>
+        )}
       </div>
 
       {/* Canonical JiraTable — same table primitive as the project backlog */}
