@@ -105,9 +105,9 @@ function viewersConfigEntries(config: SavedFilterFull['viewers_config']): Permis
 function editorsConfigEntries(config: SavedFilterFull['editors_config']): PermissionEntry[] {
   if (config?.type === 'specific') {
     const n = config.user_ids?.length ?? 0;
-    return [{ icon: <PeopleGroupIcon label="" color={ICON_COLOR} />, label: `${n} ${n === 1 ? 'person' : 'people'}` }];
+    return [{ icon: <PeopleGroupIcon label="" color={ICON_COLOR} />, label: `${n} ${n === 1 ? 'specific user' : `${n} specific users`}` }];
   }
-  return [{ icon: <LockIcon label="" color={ICON_COLOR} />, label: 'Private' }];
+  return [{ icon: <LockIcon label="" color={ICON_COLOR} />, label: 'Owner only' }];
 }
 
 const MAX_PERMISSION_ROWS = 1;
@@ -416,10 +416,18 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       accessor: f => f.starred_by_user_ids.length,
       cell: ({ row: f }) => {
         const n = f.starred_by_user_ids.length;
+        const tip = n === 0 ? 'No stars yet' : n === 1 ? '1 person starred this filter' : `${n} people starred this filter`;
         return (
-          <span style={{ fontSize: 14, color: n > 0 ? token('color.text') : token('color.text.subtlest') }}>
-            ★ {n}
-          </span>
+          <Tooltip content={tip}>
+            {(tipProps) => (
+              <span
+                {...tipProps}
+                style={{ fontSize: 14, color: n > 0 ? token('color.text') : token('color.text.subtlest'), cursor: 'default' }}
+              >
+                ★ {n}
+              </span>
+            )}
+          </Tooltip>
         );
       },
     },
@@ -591,14 +599,48 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             Clear all
           </button>
         )}
+        <button
+          onClick={() => {
+            const rows = visibleFilters.map(f => [
+              `"${(f.name ?? '').replace(/"/g, '""')}"`,
+              `"${(f.description ?? '').replace(/"/g, '""')}"`,
+              `"${(f.jql ?? '').replace(/"/g, '""')}"`,
+              `"${(f.is_shared ? 'Shared' : 'Private')}"`,
+              `"${(f.updated_at ? new Date(f.updated_at).toLocaleDateString() : '')}"`,
+            ].join(','));
+            const csv = ['Name,Description,JQL,Visibility,Updated', ...rows].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'filters.csv'; a.click();
+            URL.revokeObjectURL(url);
+          }}
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: '0 4px',
+            fontSize: 14,
+            color: token('color.text.subtle'),
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+          }}
+        >
+          Export CSV
+        </button>
       </div>
 
       {/* Canonical JiraTable — same table primitive as the project backlog */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 32px' }}>
         {error && (
           <div style={{ padding: '16px 0' }}>
-            <SectionMessage appearance="error" title="Couldn't load filters">
-              Check your connection and refresh the page.
+            <SectionMessage
+              appearance="error"
+              title={String(error).includes('403') || String(error).toLowerCase().includes('permission') ? 'Permission denied' : 'Couldn\'t load filters'}
+            >
+              {String(error).includes('403') || String(error).toLowerCase().includes('permission')
+                ? 'You don\'t have permission to view these filters. Contact your project admin.'
+                : 'Check your connection and refresh the page.'}
             </SectionMessage>
           </div>
         )}

@@ -11,6 +11,7 @@ import {
   useDeleteSavedFilter,
   useBoardsForProject,
   useToggleFilterBoardLink,
+  useToggleFilterSubscription,
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -43,9 +44,11 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const updateFilter     = useUpdateSavedFilter();
   const deleteFilter     = useDeleteSavedFilter();
   const boardLink        = useToggleFilterBoardLink();
+  const subscribeFilter  = useToggleFilterSubscription();
   const { data: boards = [] } = useBoardsForProject(projectKey);
 
   const isOwner = filter.user_id === currentUserId || filter.owner_id === currentUserId;
+  const isSubscribed = currentUserId ? (filter.subscriber_ids ?? []).includes(currentUserId) : false;
   const isPrivate = filter.viewers_config?.type === 'private';
 
   function handleToggleVisibility() {
@@ -79,6 +82,23 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
           )}
           <DropdownItem onClick={() => copyFilter.mutate(filter)}>
             Copy filter
+          </DropdownItem>
+          <DropdownItem
+            onClick={() => {
+              const base = window.location.origin;
+              const path = projectKey
+                ? `/project-hub/${projectKey}/filters/${filter.id}`
+                : `/product-hub/filters/${filter.id}`;
+              navigator.clipboard.writeText(base + path).catch(() => {});
+            }}
+          >
+            Copy link
+          </DropdownItem>
+          <DropdownItem
+            onClick={() => subscribeFilter.mutate({ filterId: filter.id, currentSubscriberIds: filter.subscriber_ids ?? [], userId: currentUserId ?? '' })}
+            isDisabled={!currentUserId}
+          >
+            {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
           </DropdownItem>
           {isOwner && (
             <DropdownItem onClick={handleToggleVisibility}>
