@@ -34,7 +34,7 @@ export interface JqlResultRow {
 
 const RESULT_SELECT = `id, issue_key, summary, status, status_category, issue_type,
   assignee_display_name, reporter_display_name, project_key, jira_created_at, jira_updated_at,
-  due_date, effective_due_date, priority, labels, sprint_release, comment_count,
+  due_date, effective_due_date, priority, labels, fix_versions, comments,
   parent_key, parent_summary`;
 
 export const JQL_RESULTS_LIMIT = 100;
@@ -78,27 +78,34 @@ export function useJqlResults(jql: string, enabled = true) {
       if (error) throw new Error(error.message);
 
       type RawRow = Record<string, string | null>;
-      type ArrayRow = Record<string, string | string[] | number | null>;
-      const items: JqlResultRow[] = ((data ?? []) as unknown as ArrayRow[]).map(r => ({
-        id: r.id as string,
-        key: r.issue_key as string,
-        summary: (r.summary as string) ?? '',
-        issueType: (r.issue_type as string) ?? 'Story',
-        status: (r.status as string) ?? '',
-        statusCategory: (r.status_category as string) ?? '',
-        projectKey: (r.project_key as string) ?? '',
-        assigneeName: (r.assignee_display_name as string | null) ?? null,
-        reporterName: (r.reporter_display_name as string | null) ?? null,
-        priority: (r.priority as string | null) ?? null,
-        labels: Array.isArray(r.labels) ? r.labels as string[] : null,
-        sprintRelease: Array.isArray(r.sprint_release) ? r.sprint_release as string[] : null,
-        commentCount: typeof r.comment_count === 'number' ? r.comment_count : null,
-        created: (r.jira_created_at as string | null) ?? null,
-        updated: (r.jira_updated_at as string | null) ?? null,
-        dueDate: (r.effective_due_date as string | null) ?? (r.due_date as string | null) ?? null,
-        parentKey: (r.parent_key as string | null) ?? null,
-        parentSummary: (r.parent_summary as string | null) ?? null,
-      }));
+      type RawRow = Record<string, unknown>;
+      const items: JqlResultRow[] = ((data ?? []) as unknown as RawRow[]).map(r => {
+        const fixVersions = Array.isArray(r.fix_versions) ? r.fix_versions as Array<{ name?: string }> : null;
+        const sprintRelease = fixVersions && fixVersions.length > 0
+          ? fixVersions.map(v => (typeof v === 'object' && v !== null && 'name' in v ? String(v.name) : String(v))).filter(Boolean)
+          : null;
+        const comments = Array.isArray(r.comments) ? r.comments : null;
+        return {
+          id: r.id as string,
+          key: r.issue_key as string,
+          summary: (r.summary as string) ?? '',
+          issueType: (r.issue_type as string) ?? 'Story',
+          status: (r.status as string) ?? '',
+          statusCategory: (r.status_category as string) ?? '',
+          projectKey: (r.project_key as string) ?? '',
+          assigneeName: (r.assignee_display_name as string | null) ?? null,
+          reporterName: (r.reporter_display_name as string | null) ?? null,
+          priority: (r.priority as string | null) ?? null,
+          labels: Array.isArray(r.labels) ? r.labels as string[] : null,
+          sprintRelease: sprintRelease && sprintRelease.length > 0 ? sprintRelease : null,
+          commentCount: comments ? comments.length : null,
+          created: (r.jira_created_at as string | null) ?? null,
+          updated: (r.jira_updated_at as string | null) ?? null,
+          dueDate: (r.effective_due_date as string | null) ?? (r.due_date as string | null) ?? null,
+          parentKey: (r.parent_key as string | null) ?? null,
+          parentSummary: (r.parent_summary as string | null) ?? null,
+        };
+      });
 
       return { items, totalCount: count ?? items.length };
     },
