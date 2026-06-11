@@ -840,9 +840,13 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
               const map = idMap?.get(p.id);
               const last = map ? lastSeen?.get(map.profileId) : undefined;
               const lastSeenStr = last ? `Last seen ${relativeShort(last)} ago` : '';
+              // Remote shows the captured location (presenceNote) when available.
+              const remoteLine = p.presenceNote ? `Remote · ${p.presenceNote}` : 'Remote';
               const statusLine = p.presence === 'on_set'
                 ? (p.role ? `${p.role} · In office` : 'In office')
-                : lastSeenStr || (p.role ? `${p.role} · ${PRESENCE_LABEL[p.presence]}` : PRESENCE_LABEL[p.presence]);
+                : p.presence === 'remote'
+                  ? (p.role ? `${p.role} · ${remoteLine}` : remoteLine)
+                  : lastSeenStr || (p.role ? `${p.role} · ${PRESENCE_LABEL[p.presence]}` : PRESENCE_LABEL[p.presence]);
               return (
                 <button
                   key={p.id}

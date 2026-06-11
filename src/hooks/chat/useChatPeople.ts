@@ -32,7 +32,7 @@ interface ResourceRow {
 interface PresenceRow {
   user_id: string;
   state: string | null;
-  note?: string | null;
+  location?: string | null;
 }
 
 function normalizePresence(state: string | null | undefined): ChatPresence {
@@ -61,7 +61,7 @@ async function fetchPeople(): Promise<ChatPeopleGroup[]> {
       try {
         const { data: presence } = await db
           .from('user_presence')
-          .select('user_id, state')
+          .select('user_id, state, location')
           .in('user_id', profileIds);
         if (presence) {
           for (const p of presence as PresenceRow[]) presenceByProfile.set(p.user_id, p);
@@ -79,7 +79,7 @@ async function fetchPeople(): Promise<ChatPeopleGroup[]> {
         role: r.role_code ?? null,
         avatarUrl: resolveAvatarUrl(r.name),
         presence: normalizePresence(pres?.state),
-        presenceNote: pres?.note ?? null,
+        presenceNote: pres?.location ?? null,
       };
     });
 
