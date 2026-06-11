@@ -1,7 +1,7 @@
 /**
  * Filters revamp guardrails (source-grep, mirrors no-type-icon-column.test.ts):
  *  1. FiltersListPage renders the canonical JiraTable — @atlaskit/dynamic-table is banned.
- *  2. CreateFilterPage and FilterDetailPage mount the live FilterResultsPanel.
+ *  2. FilterDetailPage mounts the live FilterResultsPanel.
  *  3. The list page has exactly ONE "Create filter" CTA (no duplicate in the empty state).
  */
 import { describe, it, expect } from 'vitest';
@@ -18,10 +18,6 @@ describe('filters module — canonical components', () => {
 
   it('FiltersListPage mounts the canonical JiraTable', () => {
     expect(read('FiltersListPage.tsx')).toMatch(/from '@\/components\/shared\/JiraTable'/);
-  });
-
-  it('CreateFilterPage mounts the live FilterResultsPanel', () => {
-    expect(read('CreateFilterPage.tsx')).toMatch(/FilterResultsPanel/);
   });
 
   it('FilterDetailPage mounts the live FilterResultsPanel', () => {

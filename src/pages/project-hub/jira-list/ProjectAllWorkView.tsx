@@ -375,11 +375,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
         onFilterOpenChange={setFilterOpen}
         selectedAssignees={toolbarAssignees}
         onAssigneesChange={setToolbarAssignees}
-        onSaveFilter={
-          (isCreateMode || !!urlFilterId)
-            ? () => setSaveModalOpen(true)
-            : undefined
-        }
+        onSaveFilter={() => setSaveModalOpen(true)}
         saveFilterLabel={urlFilterId ? 'Update filter' : 'Save filter'}
       />
 

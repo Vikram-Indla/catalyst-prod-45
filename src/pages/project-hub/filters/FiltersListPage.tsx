@@ -20,6 +20,7 @@ import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
 import AkAvatar from '@atlaskit/avatar';
 import SectionMessage from '@atlaskit/section-message';
+import Tooltip from '@atlaskit/tooltip';
 import LockIcon from '@atlaskit/icon/core/lock-locked';
 import OfficeBuildingIcon from '@atlaskit/icon/core/office-building';
 import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
@@ -49,6 +50,19 @@ interface PermissionEntry {
 
 const ICON_COLOR = 'var(--ds-icon, #44546F)';
 
+const GROUP_NAME_MAP: Record<string, string> = {
+  'org-admins':          'Organisation admins',
+  'administrators':      'Administrators',
+  'jira-admins':         'Jira admins',
+  'jira-software-users': 'Software users',
+  'site-admins':         'Site admins',
+  'trusted-users':       'Trusted users',
+};
+function humanizeGroupName(raw: string | undefined): string {
+  if (!raw) return 'Group';
+  return GROUP_NAME_MAP[raw.toLowerCase()] ?? raw.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
 /** Jira sharePermissions → icon + text rows (exact Jira directory rendering) */
 function sharePermissionEntries(perms: JiraSharePermission[] | undefined): PermissionEntry[] {
   if (!perms || perms.length === 0) {
@@ -61,12 +75,12 @@ function sharePermissionEntries(perms: JiraSharePermission[] | undefined): Permi
     if (p.type === 'project' || p.type === 'project-unknown') {
       const name = p.project?.name ?? p.project?.key ?? 'Project';
       return {
-        icon: <AkAvatar appearance="square" size="xsmall" name={name} />,
+        icon: <AkAvatar appearance="square" size="xsmall" name={name} src={(p.project as any)?.avatarUrls?.['16x16'] ?? undefined} />,
         label: `${name}, ${p.role?.name ?? 'All roles'}`,
       };
     }
     if (p.type === 'group') {
-      return { icon: <PeopleGroupIcon label="" color={ICON_COLOR} />, label: p.group?.name ?? 'Group' };
+      return { icon: <PeopleGroupIcon label="" color={ICON_COLOR} />, label: humanizeGroupName(p.group?.name) };
     }
     const userName = p.user?.displayName ?? 'User';
     return {
@@ -91,29 +105,29 @@ function viewersConfigEntries(config: SavedFilterFull['viewers_config']): Permis
 function editorsConfigEntries(config: SavedFilterFull['editors_config']): PermissionEntry[] {
   if (config?.type === 'specific') {
     const n = config.user_ids?.length ?? 0;
-    return [{ icon: <PeopleGroupIcon label="" color={ICON_COLOR} />, label: `${n} ${n === 1 ? 'person' : 'people'}` }];
+    return [{ icon: <PeopleGroupIcon label="" color={ICON_COLOR} />, label: `${n} ${n === 1 ? 'specific user' : `${n} specific users`}` }];
   }
-  return [{ icon: <LockIcon label="" color={ICON_COLOR} />, label: 'Private' }];
+  return [{ icon: <LockIcon label="" color={ICON_COLOR} />, label: 'Owner only' }];
 }
 
-const MAX_PERMISSION_ROWS = 5;
+const MAX_PERMISSION_ROWS = 1;
 
 function PermissionList({ entries }: { entries: PermissionEntry[] }) {
   const shown = entries.slice(0, MAX_PERMISSION_ROWS);
   const more = entries.length - shown.length;
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       {shown.map((e, i) => (
-        <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ display: 'inline-flex', width: 20, justifyContent: 'center', flexShrink: 0 }}>
+        <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ display: 'inline-flex', width: 16, justifyContent: 'center', flexShrink: 0 }}>
             {e.icon}
           </span>
-          <span style={{ fontSize: 14, color: token('color.text') }}>{e.label}</span>
+          <span style={{ fontSize: 14, color: token('color.text'), whiteSpace: 'nowrap' }}>{e.label}</span>
         </span>
       ))}
       {more > 0 && (
-        <span style={{ fontSize: 12, color: token('color.text.subtlest'), paddingLeft: 24 }}>
-          +{more} more
+        <span style={{ fontSize: 12, color: token('color.text.subtlest') }}>
+          +{more}
         </span>
       )}
     </div>
@@ -123,6 +137,23 @@ function PermissionList({ entries }: { entries: PermissionEntry[] }) {
 function ownerName(f: SavedFilterFull): string {
   return f.owner?.full_name ?? f.jira_owner_name ?? '';
 }
+
+function relativeTime(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 30) return `${days}d ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months}mo ago`;
+  return `${Math.floor(months / 12)}y ago`;
+}
+
+type QuickTab = 'all' | 'mine' | 'starred';
 
 interface SelectOption { label: string; value: string }
 
@@ -135,18 +166,26 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   const [projectFilter, setProjectFilter] = useState<SelectOption | null>(null);
   const [groupFilter, setGroupFilter] = useState<SelectOption | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [quickTab, setQuickTab] = useState<QuickTab>('all');
   const [sortKey, setSortKey] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [columnVisibility, setColumnVisibility] = useState<Set<string>>(
+    () => new Set(['name', 'owner', 'viewers', 'editors', 'starred', 'updated'])
+  );
 
+  // getSession() reads from local storage (no network) — resolves before first
+  // render completes, avoiding the race where the kebab opened before the user
+  // id arrived and hid all owner-only items (F024).
   React.useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) setCurrentUserId(user.id);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user?.id) setCurrentUserId(session.user.id);
     });
   }, []);
 
   const createHref = projectKey
     ? `/project-hub/${projectKey}/filters/create`
-    : `/project-hub/filters/create`;
+    : `/product-hub/allwork?mode=create-filter`;
 
   // Keyboard shortcut: N opens the create flow (Jira pattern)
   React.useEffect(() => {
@@ -189,11 +228,18 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         if (p.type === 'group' && p.group?.name) names.add(p.group.name);
       });
     });
-    return [...names].sort().map(n => ({ label: n, value: n }));
+    return [...names].sort().map(n => ({ label: humanizeGroupName(n), value: n }));
   }, [filters]);
 
   const visibleFilters = useMemo(() => {
     let list = filters;
+
+    // Quick-tab pre-filter
+    if (quickTab === 'mine' && currentUserId) {
+      list = list.filter(f => f.user_id === currentUserId || f.owner_id === currentUserId);
+    } else if (quickTab === 'starred' && currentUserId) {
+      list = list.filter(f => f.starred_by_user_ids.includes(currentUserId));
+    }
 
     if (search.trim()) {
       const q = search.trim().toLowerCase();
@@ -225,11 +271,11 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       }
       return a.name.localeCompare(b.name) * dir;
     });
-  }, [filters, search, ownerFilter, projectFilter, groupFilter, sortKey, sortOrder]);
+  }, [filters, quickTab, currentUserId, search, ownerFilter, projectFilter, groupFilter, sortKey, sortOrder]);
 
   const detailHref = (f: SavedFilterFull) => projectKey
-    ? `/project-hub/${projectKey}/filters/${f.id}`
-    : `/product-hub/filters/${f.id}`;
+    ? `/project-hub/${projectKey}/allwork?filterId=${f.id}`
+    : `/product-hub/allwork?filterId=${f.id}`;
 
   const columns = useMemo<Column<SavedFilterFull>[]>(() => [
     {
@@ -263,40 +309,58 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     {
       id: 'name',
       label: 'Name',
-      flex: true,
+      width: 30,
       sortable: true,
       alwaysVisible: true,
+      defaultVisible: true,
       accessor: f => f.name,
       cell: ({ row: f }) => (
-        <Link
-          to={detailHref(f)}
-          onClick={e => e.stopPropagation()}
-          title={f.jql_query ?? undefined}
-          style={{
-            color: token('color.link'),
-            fontWeight: token('font.weight.medium'),
-            fontSize: 14,
-            textDecoration: 'none',
-          }}
-          onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
-          onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
-        >
-          {f.name}
-        </Link>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, overflow: 'hidden' }}>
+          <Link
+            to={detailHref(f)}
+            onClick={e => e.stopPropagation()}
+            style={{
+              color: token('color.link'),
+              fontWeight: token('font.weight.medium'),
+              fontSize: 14,
+              textDecoration: 'none',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+            onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
+            onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
+          >
+            {f.name}
+          </Link>
+          {f.jql_query && (
+            <span style={{
+              fontSize: 12,
+              color: token('color.text.subtlest'),
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>
+              {f.jql_query}
+            </span>
+          )}
+        </div>
       ),
     },
     {
       id: 'owner',
       label: 'Owner',
-      width: 16,
+      width: 13,
       sortable: true,
+      defaultVisible: true,
       accessor: f => ownerName(f),
       cell: ({ row: f }) => {
         const name = ownerName(f);
         return name ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <AkAvatar src={resolveAvatarUrl(name)} name={name} size="small" />
-            <span style={{ fontSize: 14, color: token('color.text') }}>{name}</span>
+            <AkAvatar src={resolveAvatarUrl(name)} name={name} size="xsmall" />
+            {/* aria-hidden avoids double screen-reader announcement (AkAvatar also labels with name) */}
+            <span aria-hidden="true" style={{ fontSize: 14, color: token('color.text') }}>{name}</span>
           </div>
         ) : (
           <span style={{ fontSize: 14, color: token('color.text.subtlest') }}>—</span>
@@ -306,7 +370,15 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     {
       id: 'viewers',
       label: 'Viewers',
-      width: 20,
+      width: 15,
+      sortable: true,
+      defaultVisible: true,
+      accessor: (f: SavedFilterFull) => {
+        const entries = f.jira_filter_id || (f.share_permissions?.length ?? 0) > 0
+          ? sharePermissionEntries(f.share_permissions)
+          : viewersConfigEntries(f.viewers_config);
+        return entries[0]?.label ?? '';
+      },
       cell: ({ row: f }) => (
         <PermissionList entries={
           f.jira_filter_id || (f.share_permissions?.length ?? 0) > 0
@@ -318,7 +390,15 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     {
       id: 'editors',
       label: 'Editors',
-      width: 16,
+      width: 13,
+      sortable: true,
+      defaultVisible: true,
+      accessor: (f: SavedFilterFull) => {
+        const entries = f.jira_filter_id || (f.edit_permissions?.length ?? 0) > 0
+          ? sharePermissionEntries(f.edit_permissions)
+          : editorsConfigEntries(f.editors_config);
+        return entries[0]?.label ?? '';
+      },
       cell: ({ row: f }) => (
         <PermissionList entries={
           f.jira_filter_id || (f.edit_permissions?.length ?? 0) > 0
@@ -330,17 +410,42 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     {
       id: 'starred',
       label: 'Starred by',
-      width: 9,
+      width: 7,
       sortable: true,
+      defaultVisible: true,
       accessor: f => f.starred_by_user_ids.length,
       cell: ({ row: f }) => {
         const n = f.starred_by_user_ids.length;
+        const tip = n === 0 ? 'No stars yet' : n === 1 ? '1 person starred this filter' : `${n} people starred this filter`;
         return (
-          <span style={{ fontSize: 14, color: token('color.text') }}>
-            {n} {n === 1 ? 'person' : 'people'}
-          </span>
+          <Tooltip content={tip}>
+            {(tipProps) => (
+              <span
+                {...tipProps}
+                style={{ fontSize: 14, color: n > 0 ? token('color.text') : token('color.text.subtlest'), cursor: 'default' }}
+              >
+                ★ {n}
+              </span>
+            )}
+          </Tooltip>
         );
       },
+    },
+    {
+      id: 'updated',
+      label: 'Last modified',
+      width: 10,
+      sortable: true,
+      defaultVisible: true,
+      accessor: (f: SavedFilterFull) => f.updated_at ?? '',
+      cell: ({ row: f }) => (
+        <span
+          style={{ fontSize: 14, color: token('color.text.subtle') }}
+          title={f.updated_at ? new Date(f.updated_at).toLocaleString() : undefined}
+        >
+          {relativeTime(f.updated_at)}
+        </span>
+      ),
     },
     {
       id: '__actions',
@@ -381,24 +486,64 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         }}>
           Filters
         </h1>
-        <Button
-          appearance="primary"
-          iconBefore={() => <Plus size="small" />}
-          onClick={() => navigate(createHref)}
-        >
-          Create filter
-        </Button>
+        <Tooltip content="Create filter (N)">
+          {(tooltipProps) => (
+            <Button
+              {...tooltipProps}
+              appearance="primary"
+              iconBefore={() => <Plus size="small" />}
+              onClick={() => navigate(createHref)}
+            >
+              Create filter
+            </Button>
+          )}
+        </Tooltip>
+      </div>
+
+      {/* Quick-tab bar: All / My filters / Starred */}
+      <div style={{
+        display: 'flex',
+        gap: 0,
+        padding: '0 24px',
+        borderBottom: `1px solid ${token('color.border')}`,
+        flexShrink: 0,
+        marginBottom: 0,
+      }}>
+        {(['all', 'mine', 'starred'] as QuickTab[]).map(tab => {
+          const labels: Record<QuickTab, string> = { all: 'All filters', mine: 'My filters', starred: 'Starred' };
+          const isActive = quickTab === tab;
+          return (
+            <button
+              key={tab}
+              onClick={() => setQuickTab(tab)}
+              style={{
+                background: 'none',
+                border: 'none',
+                borderBottom: isActive ? `2px solid ${token('color.border.selected', '#0052CC')}` : '2px solid transparent',
+                padding: '8px 16px',
+                fontSize: 14,
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? token('color.text.selected', '#0052CC') : token('color.text.subtle'),
+                cursor: 'pointer',
+                marginBottom: -1,
+              }}
+            >
+              {labels[tab]}
+            </button>
+          );
+        })}
       </div>
 
       {/* Toolbar — Search filters + Owner / Project / Group (Jira-exact) */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 16,
-        padding: '0 24px 16px',
+        flexWrap: 'wrap',
+        gap: 8,
+        padding: '12px 24px 12px',
         flexShrink: 0,
       }}>
-        <div style={{ width: 240 }}>
+        <div style={{ flex: '1 1 180px', minWidth: 140, maxWidth: 280 }}>
           <Textfield
             placeholder="Search filters"
             value={search}
@@ -410,7 +555,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             }
           />
         </div>
-        <div style={{ width: 200 }}>
+        <div style={{ flex: '1 1 140px', minWidth: 120, maxWidth: 200 }}>
           <Select
             placeholder="Owner"
             options={ownerOptions}
@@ -419,7 +564,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             isClearable
           />
         </div>
-        <div style={{ width: 200 }}>
+        <div style={{ flex: '1 1 140px', minWidth: 120, maxWidth: 200 }}>
           <Select
             placeholder="Project"
             options={projectOptions}
@@ -428,7 +573,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             isClearable
           />
         </div>
-        <div style={{ width: 200 }}>
+        <div style={{ flex: '1 1 140px', minWidth: 120, maxWidth: 200 }}>
           <Select
             placeholder="Group"
             options={groupOptions}
@@ -437,15 +582,95 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             isClearable
           />
         </div>
+        {(search || ownerFilter || projectFilter || groupFilter) && (
+          <button
+            onClick={() => { setSearch(''); setOwnerFilter(null); setProjectFilter(null); setGroupFilter(null); }}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '0 4px',
+              fontSize: 14,
+              color: token('color.link'),
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}
+          >
+            Clear all
+          </button>
+        )}
+        <button
+          onClick={() => {
+            const rows = visibleFilters.map(f => [
+              `"${(f.name ?? '').replace(/"/g, '""')}"`,
+              `"${(f.description ?? '').replace(/"/g, '""')}"`,
+              `"${(f.jql ?? '').replace(/"/g, '""')}"`,
+              `"${(f.is_shared ? 'Shared' : 'Private')}"`,
+              `"${(f.updated_at ? new Date(f.updated_at).toLocaleDateString() : '')}"`,
+            ].join(','));
+            const csv = ['Name,Description,JQL,Visibility,Updated', ...rows].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'filters.csv'; a.click();
+            URL.revokeObjectURL(url);
+          }}
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: '0 4px',
+            fontSize: 14,
+            color: token('color.text.subtle'),
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+          }}
+        >
+          Export CSV
+        </button>
       </div>
 
       {/* Canonical JiraTable — same table primitive as the project backlog */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 32px' }}>
         {error && (
           <div style={{ padding: '16px 0' }}>
-            <SectionMessage appearance="error" title="Couldn't load filters">
-              Check your connection and refresh the page.
+            <SectionMessage
+              appearance="error"
+              title={String(error).includes('403') || String(error).toLowerCase().includes('permission') ? 'Permission denied' : 'Couldn\'t load filters'}
+            >
+              {String(error).includes('403') || String(error).toLowerCase().includes('permission')
+                ? 'You don\'t have permission to view these filters. Contact your project admin.'
+                : 'Check your connection and refresh the page.'}
             </SectionMessage>
+          </div>
+        )}
+        {/* Bulk-action bar — shows when rows are selected */}
+        {selectedIds.size > 0 && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            padding: '8px 12px',
+            background: token('color.background.selected'),
+            borderRadius: 3,
+            marginBottom: 8,
+            fontSize: 14,
+            color: token('color.text'),
+          }}>
+            <span style={{ fontWeight: 600 }}>{selectedIds.size} selected</span>
+            <Button
+              appearance="subtle"
+              spacing="compact"
+              onClick={() => {
+                if (!window.confirm(`Delete ${selectedIds.size} filter${selectedIds.size > 1 ? 's' : ''}? This cannot be undone.`)) return;
+                setSelectedIds(new Set());
+              }}
+            >
+              <span style={{ color: token('color.text.danger') }}>Delete</span>
+            </Button>
+            <Button appearance="subtle" spacing="compact" onClick={() => setSelectedIds(new Set())}>
+              Deselect all
+            </Button>
           </div>
         )}
         <JiraTable<SavedFilterFull>
@@ -457,6 +682,10 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           sortOrder={sortOrder}
           onSortChange={(k, o) => { setSortKey(k); setSortOrder(o); }}
           isLoading={isLoading}
+          selectable
+          onSelectionChange={setSelectedIds}
+          columnVisibility={columnVisibility}
+          onColumnVisibilityChange={setColumnVisibility}
           density="comfortable"
           ariaLabel="Filters directory"
           showRowCount
@@ -466,8 +695,8 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              padding: '32px',
-              gap: 8,
+              padding: '48px 32px',
+              gap: 12,
               color: token('color.text.subtle'),
             }}>
               <span style={{ fontSize: 16, fontWeight: token('font.weight.medium') }}>
@@ -475,14 +704,31 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                   ? 'No filters match your search'
                   : 'No filters yet'}
               </span>
-              {!search && (
-                <span style={{ fontSize: 13, color: token('color.text.subtlest') }}>
-                  Use the button above, or press N, to build one.
-                </span>
+              {!search && !ownerFilter && !projectFilter && !groupFilter && (
+                <>
+                  <span style={{ fontSize: 14, color: token('color.text.subtlest') }}>
+                    Save a JQL query as a filter to find and reuse it later.
+                  </span>
+                  <Button appearance="primary" onClick={() => navigate(createHref)}>
+                    Create filter
+                  </Button>
+                </>
               )}
             </div>
           }
         />
+        {/* Row count footer — "X of Y filters" */}
+        {!isLoading && visibleFilters.length > 0 && (
+          <div style={{
+            padding: '8px 4px',
+            fontSize: 12,
+            color: token('color.text.subtlest'),
+          }}>
+            {visibleFilters.length === filters.length
+              ? `${filters.length} filter${filters.length !== 1 ? 's' : ''}`
+              : `${visibleFilters.length} of ${filters.length} filter${filters.length !== 1 ? 's' : ''}`}
+          </div>
+        )}
       </div>
     </div>
   );
