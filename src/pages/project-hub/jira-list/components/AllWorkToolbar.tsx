@@ -328,12 +328,9 @@ function distinctOptions(items: WorkItem[], facet: FilterFacet): FacetOption[] {
         break;
       }
       case "assignee": {
-        const id = toLabel(i.assigneeId);
         const nm = toLabel(i.assignee?.name);
-        if (id && nm && !map.has(id)) {
-          // Avatar src is resolved at render time via resolveAvatarUrl(name)
-          // — see CLAUDE.md §19 (no external avatar URLs).
-          map.set(id, { value: id, label: nm });
+        if (nm && !map.has(nm)) {
+          map.set(nm, { value: nm, label: nm });
         }
         break;
       }
@@ -373,13 +370,9 @@ function distinctOptions(items: WorkItem[], facet: FilterFacet): FacetOption[] {
         break;
       }
       case "reporter": {
-        const id = toLabel(i.reporterId);
         const nm = toLabel(i.reporter?.name);
-        if (id && nm && !map.has(id)) {
-          // Same as assignee — resolveAvatarUrl(name) at render time. If no
-          // bundled avatar exists for this name, Atlaskit Avatar falls back
-          // to initials derived from the `name` prop.
-          map.set(id, { value: id, label: nm });
+        if (nm && !map.has(nm)) {
+          map.set(nm, { value: nm, label: nm });
         }
         break;
       }
@@ -407,7 +400,7 @@ export function itemPassesFilters(item: WorkItem, f: FilterState): boolean {
     return false;
   if (f.parent.length > 0 && !f.parent.includes(toLabel(item.parentKey)))
     return false;
-  if (f.assignee.length > 0 && !f.assignee.includes(toLabel(item.assigneeId)))
+  if (f.assignee.length > 0 && !f.assignee.includes(toLabel(item.assignee?.name)))
     return false;
   if (f.workType.length > 0 && !f.workType.includes(toLabel(item.rawType)))
     return false;
@@ -419,7 +412,7 @@ export function itemPassesFilters(item: WorkItem, f: FilterState): boolean {
     return false;
   if (f.priority.length > 0 && !f.priority.includes(toLabel(item.priority)))
     return false;
-  if (f.reporter.length > 0 && !f.reporter.includes(toLabel(item.reporterId)))
+  if (f.reporter.length > 0 && !f.reporter.includes(toLabel(item.reporter?.name)))
     return false;
   if (f.severity.length > 0 && !f.severity.includes(toLabel(item.severity)))
     return false;

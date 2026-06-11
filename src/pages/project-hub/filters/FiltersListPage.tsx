@@ -274,8 +274,8 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   }, [filters, quickTab, currentUserId, search, ownerFilter, projectFilter, groupFilter, sortKey, sortOrder]);
 
   const detailHref = (f: SavedFilterFull) => projectKey
-    ? `/project-hub/${projectKey}/filters/${f.id}`
-    : `/product-hub/filters/${f.id}`;
+    ? `/project-hub/${projectKey}/allwork?filterId=${f.id}`
+    : `/product-hub/allwork?filterId=${f.id}`;
 
   const columns = useMemo<Column<SavedFilterFull>[]>(() => [
     {
