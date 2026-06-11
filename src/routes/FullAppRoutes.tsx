@@ -5,6 +5,11 @@ function IssueRedirectToBrowse() {
   const { issueKey } = useParams();
   return <Navigate to={`/browse/${issueKey ?? ''}`} replace />;
 }
+
+function CreateFilterRedirect() {
+  const { key } = useParams<{ key: string }>();
+  return <Navigate to={key ? `/project-hub/${key}/allwork?mode=create-filter` : '/project-hub'} replace />;
+}
 import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
@@ -51,7 +56,6 @@ const UnifiedBacklogPageLazy = lazy(() => import("../modules/project-work-hub/pa
 const BacklogDetailPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogDetailPage"));
 const AllWorkDetailPageLazy = lazy(() => import("../modules/project-work-hub/pages/AllWorkDetailPage"));
 const FiltersListPageLazy = lazy(() => import("../pages/project-hub/filters/FiltersListPage"));
-const CreateFilterPageLazy = lazy(() => import("../pages/project-hub/filters/CreateFilterPage"));
 const FilterDetailPageLazy = lazy(() => import("../pages/project-hub/filters/FilterDetailPage"));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
@@ -476,7 +480,7 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/cards" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:key/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />
-        <Route path="/product-hub/:key/filters/create" element={<MG k="producthub" t="ProductHub"><S><CreateFilterPageLazy hubType="product" /></S></MG>} />
+        <Route path="/product-hub/:key/filters/create" element={<Navigate to="/product-hub/allwork?mode=create-filter" replace />} />
         {/* Global /product-hub/filters[/create] retired 2026-06-01 — filters are
             per-product. Anyone deep-linking to the old global path lands on the
             products listing. Per-product filters still live at /product-hub/:key/filters. */}
@@ -927,10 +931,10 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/allwork/:issueKey" element={<S><AllWorkDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />
         <Route path="/project-hub/:key/filters" element={<S><FiltersListPageLazy /></S>} />
-        <Route path="/project-hub/:key/filters/create" element={<S><CreateFilterPageLazy hubType="project" /></S>} />
+        <Route path="/project-hub/:key/filters/create" element={<CreateFilterRedirect />} />
         <Route path="/project-hub/:key/filters/:filterId" element={<S><FilterDetailPageLazy /></S>} />
         <Route path="/project-hub/filters" element={<S><FiltersListPageLazy /></S>} />
-        <Route path="/project-hub/filters/create" element={<S><CreateFilterPageLazy hubType="project" /></S>} />
+        <Route path="/project-hub/filters/create" element={<Navigate to="/project-hub" replace />} />
         <Route path="/project-hub/:key/timeline" element={<PHPlaceholder title="Timeline" phase="Phase 3" />} />
         <Route path="/project-hub/:key/releases" element={<PHPlaceholder title="Releases" phase="Phase 3" />} />
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />
