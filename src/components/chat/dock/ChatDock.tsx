@@ -14,8 +14,8 @@
  */
 import React, { useState } from "react";
 import { IconButton } from "@atlaskit/button/new";
-import EditorAddIcon from "@atlaskit/icon/glyph/editor/add";
-import VidShareScreenIcon from "@atlaskit/icon/glyph/vid-share-screen";
+import AddIcon from "@atlaskit/icon/glyph/add";
+import OpenIcon from "@atlaskit/icon/glyph/open";
 import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import CrossIcon from "@atlaskit/icon/glyph/cross";
 import { useConversations } from "@/hooks/chat/useConversations";
@@ -262,7 +262,7 @@ export function ChatDock({
         <div className="cc-dock__actions">
           {dockMode === "messages" && (
             <IconButton
-              icon={EditorAddIcon}
+              icon={AddIcon}
               label="New conversation"
               appearance="subtle"
               spacing="compact"
@@ -270,7 +270,7 @@ export function ChatDock({
             />
           )}
           <IconButton
-            icon={VidShareScreenIcon}
+            icon={OpenIcon}
             label="Pop out"
             appearance="subtle"
             spacing="compact"
