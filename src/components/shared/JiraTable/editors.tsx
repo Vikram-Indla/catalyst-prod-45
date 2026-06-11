@@ -534,6 +534,7 @@ export function makeSummaryInlineEditCell<T>({
       <span
         data-jira-table-editor
         data-jira-cell-editor
+        data-jira-cell-summary
         onClick={(e) => e.stopPropagation()}
         style={{
           display: 'flex',
@@ -542,7 +543,10 @@ export function makeSummaryInlineEditCell<T>({
           width: '100%',
         }}
       >
-        <span style={{ flex: 1, minWidth: 0 }}>
+        <div
+          className="cv-cell-inline-edit-no-label"
+          style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}
+        >
           <InlineEdit<string>
             // Fix #2 (iter-9): Atlaskit InlineEdit defaults to fit-content
             // sizing on its readView container. Without this prop the inner
@@ -558,8 +562,7 @@ export function makeSummaryInlineEditCell<T>({
                 title={summary || undefined}
                 style={{
                   display: 'block',
-                  padding: '2px 6px',
-                  margin: '-2px -6px',
+                  padding: '0 2px',
                   borderRadius: 3,
                   // Jira-parity: summary cell shows text cursor on hover (measured
                   // 2026-05-08 from digital-transformation.atlassian.net BAU list —
@@ -574,7 +577,12 @@ export function makeSummaryInlineEditCell<T>({
                   // 2026-05-08 DOM probe: Jira summary = rgb(80,82,88) = --ds-text-subtle.
                   // Inheriting --ds-text (rgb 41,42,46) from tbody td baseline was wrong.
                   color: 'var(--ds-text-subtle, #505258)',
-                  lineHeight: '20px',
+                  // 2026-06-11: lineHeight 1.4 (was 1) so the descenders of g/y/p/q/j
+                  // are not clipped by the overflow:hidden parent. Combined with
+                  // the .cv-cell-inline-edit-no-label override that zeros the
+                  // Atlaskit 2px transparent border on the readView wrapper, the
+                  // title now sits at the same vertical centre as the icon and key.
+                  lineHeight: 1.4,
                 }}
               >
                 {summary || (
@@ -588,7 +596,7 @@ export function makeSummaryInlineEditCell<T>({
               if (value !== undefined && value !== summary) onChange(row, value);
             }}
           />
-        </span>
+        </div>
         {showHoverActions && (
           <span
             style={{
@@ -599,19 +607,18 @@ export function makeSummaryInlineEditCell<T>({
             }}
           >
             {showOpen && (
-              <Tooltip content="Open work item" position="top">
+              <Tooltip content="Open in side panel" position="top">
                 <button
                   type="button"
                   data-jira-row-hover-action
-                  aria-label="Open work item"
+                  aria-label="Open in side panel"
                   onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
                     onOpenWorkItem!(row);
                   }}
                   style={{
-                    visibility: 'hidden',
-                    display: 'inline-flex',
+                    display: 'none',
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: 24,
@@ -632,7 +639,23 @@ export function makeSummaryInlineEditCell<T>({
                     (e.currentTarget as HTMLElement).style.borderColor = 'transparent';
                   }}
                 >
-                  <AkLinkExternalIcon label="" />
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <line x1="15" y1="3" x2="15" y2="21" />
+                    <line x1="17.5" y1="8" x2="19" y2="8" />
+                    <line x1="17.5" y1="12" x2="19" y2="12" />
+                    <line x1="17.5" y1="16" x2="19" y2="16" />
+                  </svg>
                 </button>
               </Tooltip>
             )}
@@ -648,8 +671,7 @@ export function makeSummaryInlineEditCell<T>({
                     onCreateChild!(row);
                   }}
                   style={{
-                    visibility: 'hidden',
-                    display: 'inline-flex',
+                    display: 'none',
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: 24,
@@ -1106,6 +1128,10 @@ export function makeRowActionsCell<T>({
             style={{
               width: 28,
               height: 28,
+              boxSizing: 'border-box',
+              padding: 0,
+              flex: 'none',
+              alignSelf: 'center',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -1114,10 +1140,10 @@ export function makeRowActionsCell<T>({
               background: 'transparent',
               color: token('color.text.subtlest', '#6B778C'),
               cursor: 'pointer',
-              // Only visible on row hover — the JiraTable row applies
-              // .jira-row-actions-visible on hover via :hover CSS (injected below).
-              opacity: 0,
-              transition: 'opacity 100ms',
+              // Always visible per 2026-06-09 spec (Jira parity — the row
+              // actions trigger no longer requires hover to appear).
+              opacity: 1,
+              transition: 'background 100ms',
             }}
             onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
             onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
@@ -1433,15 +1459,107 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
 }
 
 // Inject the tiny CSS that reveals the ⋯ button when its row is hovered.
-// Idempotent — runs once.
-if (typeof document !== 'undefined' && !document.getElementById('jira-row-actions-css')) {
-  const style = document.createElement('style');
-  style.id = 'jira-row-actions-css';
-  style.textContent = `
+// Always-fresh stylesheet — re-uses the same #jira-row-actions-css element
+// when it already exists so HMR-driven content changes apply on every
+// module reload. (The previous "guard once" pattern stuck the first version
+// of the rules into the DOM and made later edits invisible until a hard
+// browser reload.)
+if (typeof document !== 'undefined') {
+  let styleEl = document.getElementById('jira-row-actions-css') as HTMLStyleElement | null;
+  if (!styleEl) {
+    styleEl = document.createElement('style');
+    styleEl.id = 'jira-row-actions-css';
+    document.head.appendChild(styleEl);
+  }
+  styleEl.textContent = `
     tr:hover .jira-row-actions-trigger,
     .jira-row-actions-trigger[aria-expanded="true"] {
       opacity: 1 !important;
     }
+    /* Type icon in the Work / Key column stays always visible — no hover
+       swap. The sidebar trigger lives on the Summary cell's right-edge
+       hover button only (jira-row-actions-trigger pattern). */
+
+    /* Stacked side-panel mode for CatalystViewBase. When the host wrapper
+       carries [data-cv-stacked-panel="true"]:
+         - body            → flex column, scroll container
+         - splitter        → hidden
+         - left & sidebar  → display: contents (their children become flex
+                             items of body), enabling per-section order
+         - order map       → title (1) → status header (2) → rest of body
+                             (3) → other sidebar fields (4)
+       container-type:normal disables the @container query that would
+       otherwise hide the sidebar at body widths < 440px. */
+    [data-cv-stacked-panel="true"] .cv-drawer-body {
+      display: flex !important;
+      flex-direction: column !important;
+      flex-wrap: nowrap !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      align-items: stretch !important;
+      container-type: normal !important;
+      padding: 0 !important;
+    }
+    [data-cv-stacked-panel="true"] .cv-drawer-splitter {
+      display: none !important;
+    }
+    /* display:contents collapses the column box so its children are now
+       direct flex items of cv-drawer-body. Selectors below still work
+       against the DOM tree, which is unchanged. */
+    [data-cv-stacked-panel="true"] .cv-drawer-left,
+    [data-cv-stacked-panel="true"] .cv-drawer-sidebar {
+      display: contents !important;
+    }
+    /* Default order = 3 for every body section (post-title body content). */
+    [data-cv-stacked-panel="true"] .cv-drawer-left > * {
+      order: 3;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      padding: 0 16px;
+    }
+    /* Title (first DOM child of left) leads the stack. */
+    [data-cv-stacked-panel="true"] .cv-drawer-left > :first-child {
+      order: 1 !important;
+      padding-top: 16px;
+    }
+    /* Status header (sidebar's status pill + improve + discuss row)
+       slots right between title and the rest of the body. */
+    [data-cv-stacked-panel="true"] .cv-drawer-sidebar [data-cv-sidebar-status-header="true"] {
+      order: 2 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 0 12px 0 !important;
+      padding: 0 16px !important;
+      box-sizing: border-box !important;
+    }
+    /* Everything else from the sidebar (status field, sprint/assignee/
+       reporter, timestamps) lands after the body. Use specific
+       padding-left/right (not shorthand) so children with their own inline
+       top/bottom padding (e.g. the Created/Updated block at
+       CatalystSidebarDetails:855 which sets padding-top:12) keep that
+       vertical rhythm but still get the 16px horizontal inset. */
+    [data-cv-stacked-panel="true"] .cv-drawer-sidebar > *:not([data-cv-sidebar-status-header="true"]) {
+      order: 4;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+    /* Add a soft divider above the post-body sidebar group. */
+    [data-cv-stacked-panel="true"] .cv-drawer-sidebar > *:not([data-cv-sidebar-status-header="true"]):first-of-type {
+      border-top: 1px solid var(--ds-border, #DFE1E6);
+      padding-top: 16px;
+      margin-top: 16px;
+    }
+    /* Phase C — hide CatalystViewBase's built-in "Open in full page" button
+       inside the stacked panel: our custom panel header (rendered by
+       BacklogPage above the router) already has a navigate-to-detail
+       trigger (the dynamic type-icon button), so the built-in one is
+       redundant and visually clutters the top bar. */
+    [data-cv-stacked-panel="true"] button[aria-label="Open in full page"] {
+      display: none !important;
+    }
   `;
-  document.head.appendChild(style);
 }

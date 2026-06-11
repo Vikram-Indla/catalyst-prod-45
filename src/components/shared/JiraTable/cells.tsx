@@ -8,18 +8,21 @@
  * here is just the visual representation; the editor is opened by the column's
  * own `onCellEdit` wiring (see JiraTable.tsx).
  */
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Avatar from '@atlaskit/avatar';
-import CommentIcon from '@atlaskit/icon/glyph/comment';
-import DragHandleIcon from '@atlaskit/icon/glyph/drag-handler';
-import MoreIcon from '@atlaskit/icon/glyph/more';
-import { token } from '@atlaskit/tokens';
-import AkChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
-import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import { IssueHoverCard } from '@/components/shared/IssueHoverCard';
-import type { CellProps } from './types';
+import React from "react";
+import ReactDOM from "react-dom";
+import Avatar from "@atlaskit/avatar";
+import CommentIcon from "@atlaskit/icon/glyph/comment";
+import DragHandleIcon from "@atlaskit/icon/glyph/drag-handler";
+import MoreIcon from "@atlaskit/icon/glyph/more";
+import { token } from "@atlaskit/tokens";
+import AkChevronRightIcon from "@atlaskit/icon/glyph/chevron-right";
+import AkChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
+import DropdownMenu, {
+  DropdownItem,
+  DropdownItemGroup,
+} from "@atlaskit/dropdown-menu";
+import { IssueHoverCard } from "@/components/shared/IssueHoverCard";
+import type { CellProps } from "./types";
 
 // ─── Checkbox Cell ─────────────────────────────────────────────────────────
 // Multi-select checkbox. Caller provides isChecked and onChange handlers.
@@ -39,7 +42,7 @@ export function makeCheckboxCell({
         onChange={(e) => onChange(row, e.target.checked)}
         aria-label="Select row"
         style={{
-          cursor: 'pointer',
+          cursor: "pointer",
           width: 16,
           height: 16,
           margin: 0,
@@ -54,7 +57,15 @@ export function makeCheckboxCell({
 export function makeTypeIconCell(getIcon: (row: any) => React.ReactNode) {
   return function TypeIconCell({ row }: CellProps<any>) {
     return (
-      <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20 }}>
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: 20,
+          height: 20,
+        }}
+      >
         {getIcon(row)}
       </span>
     );
@@ -70,13 +81,13 @@ export function makeDragHandleCell(isDragEnabled: () => boolean) {
     return (
       <span
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
           width: 20,
           height: 20,
-          cursor: 'grab',
-          color: token('color.text.subtle', '#42526E'),
+          cursor: "grab",
+          color: token("color.text.subtle", "#42526E"),
         }}
         className="jira-drag-handle"
       >
@@ -109,28 +120,28 @@ export function makeRowMenuCell({
             aria-label="More actions"
             className="jira-row-menu-trigger"
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
               width: 32,
               height: 32,
               padding: 0,
-              border: 'none',
+              border: "none",
               borderRadius: 3,
-              background: 'transparent',
-              color: token('color.text.subtle', '#42526E'),
-              cursor: 'pointer',
+              background: "transparent",
+              color: token("color.text.subtle", "#42526E"),
+              cursor: "pointer",
               opacity: 0,
-              transition: 'opacity 120ms ease, background 100ms ease',
+              transition: "opacity 120ms ease, background 100ms ease",
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLElement).style.background = token(
-                'color.background.neutral.subtle.hovered',
-                '#F4F5F7'
+                "color.background.neutral.subtle.hovered",
+                "#F4F5F7",
               );
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.background = 'transparent';
+              (e.currentTarget as HTMLElement).style.background = "transparent";
             }}
           >
             <MoreIcon label="" size="small" />
@@ -167,7 +178,7 @@ export function makeRowMenuCell({
                 onDelete(row);
               }}
             >
-              <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>
+              <span style={{ color: "var(--ds-text-danger, #AE2A19)" }}>
                 Delete
               </span>
             </DropdownItem>
@@ -197,25 +208,39 @@ export function makeCaretCell({
       <button
         type="button"
         data-jira-table-editor
-        aria-label={expanded ? 'Collapse' : 'Expand'}
-        onClick={(e) => { e.stopPropagation(); toggle(row); }}
+        aria-label={expanded ? "Collapse" : "Expand"}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggle(row);
+        }}
         style={{
           width: 20,
           height: 20,
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          border: 'none',
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          border: "none",
           borderRadius: 3,
-          background: 'transparent',
-          color: token('color.text.subtle', '#42526E'),
-          cursor: 'pointer',
+          background: "transparent",
+          color: token("color.text.subtle", "#42526E"),
+          cursor: "pointer",
           padding: 0,
         }}
-        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
-        onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+        onMouseEnter={(e) =>
+          ((e.currentTarget as HTMLElement).style.background = token(
+            "color.background.neutral.subtle.hovered",
+            "#F4F5F7",
+          ))
+        }
+        onMouseLeave={(e) =>
+          ((e.currentTarget as HTMLElement).style.background = "transparent")
+        }
       >
-        {expanded ? <AkChevronDownIcon label="" size="small" /> : <AkChevronRightIcon label="" size="small" />}
+        {expanded ? (
+          <AkChevronDownIcon label="" size="small" />
+        ) : (
+          <AkChevronRightIcon label="" size="small" />
+        )}
       </button>
     );
   };
@@ -253,6 +278,13 @@ export function makeKeyCell(
   onOpen?: (row: any) => void,
   getHref?: (row: any) => string,
   getIcon?: (row: any) => React.ReactNode,
+  /**
+   * Optional handler invoked when the user clicks the hover-only "open in
+   * side panel" trigger rendered at the end of the cell. When provided,
+   * a sidebar-icon button appears on row hover (and on focus-visible).
+   * Click bubbling is stopped so the row's own onClick doesn't double-fire.
+   */
+  onSidebarClick?: (row: any) => void,
 ) {
   return function KeyCell({ row, isFocused }: CellProps<any>) {
     const key = getKey(row);
@@ -260,37 +292,40 @@ export function makeKeyCell(
     // When focused (detail panel open): block + 100% width so the blue border
     // spans the full column cell width — matching Jira's full-width selection
     // indicator on the open-detail row's key cell.
-    const sharedStyle: React.CSSProperties = isFocused ? {
-      display: 'block',
-      width: '100%',
-      boxSizing: 'border-box',
-      fontFamily: 'inherit',
-      fontWeight: 400,
-      color: token('color.link', '#0C66E4'),
-      fontSize: 14,
-      letterSpacing: 0,
-      whiteSpace: 'nowrap',
-      cursor: 'pointer',
-      textDecoration: 'underline',
-      border: `2px solid ${token('color.border.focused', '#388BFF')}`,
-      borderRadius: 3,
-      padding: '2px 6px',
-    } : {
-      display: 'inline-block',
-      padding: '2px 6px',
-      margin: '-2px -6px',
-      fontFamily: 'inherit',
-      fontWeight: 400,
-      color: token('color.link', '#0C66E4'),
-      fontSize: 14,
-      letterSpacing: 0,
-      whiteSpace: 'nowrap',
-      cursor: 'pointer',
-      textDecoration: 'underline',
-    };
+    const sharedStyle: React.CSSProperties = isFocused
+      ? {
+          display: "block",
+          width: "100%",
+          boxSizing: "border-box",
+          fontFamily: "inherit",
+          fontWeight: 400,
+          color: token("color.link", "#0C66E4"),
+          fontSize: 14,
+          letterSpacing: 0,
+          whiteSpace: "nowrap",
+          cursor: "pointer",
+          textDecoration: "underline",
+          border: `2px solid ${token("color.border.focused", "#388BFF")}`,
+          borderRadius: 3,
+          padding: "2px 6px",
+        }
+      : {
+          display: "inline-flex",
+          alignItems: "center",
+          padding: "0 2px",
+          fontFamily: "inherit",
+          fontWeight: 400,
+          color: token("color.link", "#0C66E4"),
+          fontSize: 14,
+          lineHeight: 1,
+          letterSpacing: 0,
+          whiteSpace: "nowrap",
+          cursor: "pointer",
+          textDecoration: "underline",
+        };
     let keyNode: React.ReactNode;
     if (onOpen) {
-      const href = getHref ? getHref(row) : '#';
+      const href = getHref ? getHref(row) : "#";
       keyNode = (
         <a
           data-jira-table-row-open
@@ -304,25 +339,36 @@ export function makeKeyCell(
           }}
           style={sharedStyle}
         >
-          {key || '—'}
+          {key || "—"}
         </a>
       );
     } else {
       keyNode = (
-        <span
-          data-jira-table-row-open
-          style={sharedStyle}
-        >
-          {key || '—'}
+        <span data-jira-table-row-open style={sharedStyle}>
+          {key || "—"}
         </span>
       );
     }
-    const wrapped = key ? <IssueHoverCard issueKey={key}>{keyNode}</IssueHoverCard> : keyNode;
-    if (icon) {
+    // Type icon only — no sidebar swap. The single sidebar affordance lives
+    // on the Summary cell's right-edge hover button (editors.tsx); per Vikram
+    // we never replace the type icon, which is the row's primary identifier.
+    const iconSlot = icon ? (
+      <span
+        className="jira-row-key-icon-slot"
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </span>
+    ) : null;
+    if (iconSlot) {
       return (
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>{icon}</span>
-          {wrapped}
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          {iconSlot}
+          {keyNode}
         </span>
       );
     }
@@ -348,13 +394,13 @@ export function makeSummaryCell(getSummary: (row: any) => string) {
       <span
         title={summary}
         style={{
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
           flex: 1,
           // 2026-05-08 DOM probe: Jira summary links = rgb(80,82,88) = --ds-text-subtle.
           // Catalyst was inheriting --ds-text (rgb 41,42,46 — near-black). Fixed.
-          color: 'var(--ds-text-subtle, #505258)',
+          color: "var(--ds-text-subtle, #505258)",
         }}
       >
         {summary}
@@ -368,12 +414,12 @@ export function makeSummaryCell(getSummary: (row: any) => string) {
 // below which uses Jira's actual measured colors instead of Atlaskit Lozenge's
 // all-caps bold default.
 export type LozengeAppearance =
-  | 'default'
-  | 'inprogress'
-  | 'success'
-  | 'removed'
-  | 'moved'
-  | 'new';
+  | "default"
+  | "inprogress"
+  | "success"
+  | "removed"
+  | "moved"
+  | "new";
 
 /**
  * StatusPill — manually rendered to match exact Jira list DOM measurements.
@@ -395,14 +441,14 @@ export type LozengeAppearance =
 // already applied to status dropdown dots.
 const LOZENGE_BG: Record<LozengeAppearance, string> = {
   // 2026-05-16 DOM probe corrections:
-  success:    'rgb(179, 223, 114)',   // #B3DF72 — Jira done category (was #94C748 — wrong)
-  inprogress: 'rgb(143, 184, 246)',   // #8FB8F6 — Jira in-progress category (was #669DF1 — wrong)
-  default:    'rgb(221, 222, 225)',   // #DDDEE1 — Jira to-do category
-  moved:      'rgb(243, 214, 100)',
-  removed:    'rgb(221, 222, 225)',   // Treat removed same as default (grey), not red
-  new:        'rgb(184, 172, 246)',
+  success: "rgb(179, 223, 114)", // #B3DF72 — Jira done category (was #94C748 — wrong)
+  inprogress: "rgb(143, 184, 246)", // #8FB8F6 — Jira in-progress category (was #669DF1 — wrong)
+  default: "rgb(221, 222, 225)", // #DDDEE1 — Jira to-do category
+  moved: "rgb(243, 214, 100)",
+  removed: "rgb(221, 222, 225)", // Treat removed same as default (grey), not red
+  new: "rgb(184, 172, 246)",
 };
-const LOZENGE_FG = 'rgb(41, 42, 46)';
+const LOZENGE_FG = "rgb(41, 42, 46)";
 
 export function StatusPill({
   appearance,
@@ -413,26 +459,30 @@ export function StatusPill({
 }) {
   const bg = LOZENGE_BG[appearance] ?? LOZENGE_BG.default;
   return (
-    <span style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      backgroundColor: bg,
-      borderRadius: '3px',
-      padding: '0px 4px',
-      height: '16px',
-      maxWidth: '200px',
-    }}>
-      <span style={{
-        fontSize: '11px',
-        fontWeight: 700,
-        lineHeight: '16px',
-        color: LOZENGE_FG,
-        textTransform: 'uppercase',
-        letterSpacing: '0.06em',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-      }}>
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        backgroundColor: bg,
+        borderRadius: "3px",
+        padding: "0px 4px",
+        height: "16px",
+        maxWidth: "200px",
+      }}
+    >
+      <span
+        style={{
+          fontSize: "11px",
+          fontWeight: 653,
+          lineHeight: "16px",
+          color: LOZENGE_FG,
+          textTransform: "uppercase",
+          letterSpacing: "0.165px",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
         {children}
       </span>
     </span>
@@ -446,7 +496,12 @@ export function makeStatusCell(
 ) {
   return function StatusCell({ row }: CellProps<any>) {
     const status = getStatus(row);
-    if (!status) return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
+    if (!status)
+      return (
+        <span style={{ color: token("color.text.subtlest", "#7A869A") }}>
+          —
+        </span>
+      );
     return (
       <StatusPill appearance={appearanceFor(status)}>
         {labelFor ? labelFor(status) : status}
@@ -482,20 +537,27 @@ export function makeStatusEditCell<T>(opts: {
       if (!open) return;
       const handler = (e: MouseEvent) => {
         if (
-          triggerRef.current && !triggerRef.current.contains(e.target as Node) &&
-          popupRef.current && !popupRef.current.contains(e.target as Node)
-        ) setOpen(false);
+          triggerRef.current &&
+          !triggerRef.current.contains(e.target as Node) &&
+          popupRef.current &&
+          !popupRef.current.contains(e.target as Node)
+        )
+          setOpen(false);
       };
-      document.addEventListener('mousedown', handler);
-      return () => document.removeEventListener('mousedown', handler);
+      document.addEventListener("mousedown", handler);
+      return () => document.removeEventListener("mousedown", handler);
     }, [open]);
 
     const handleOpen = (e: React.MouseEvent) => {
       if (!editable) return;
       e.stopPropagation();
       const rect = triggerRef.current?.getBoundingClientRect();
-      if (rect) setPos({ top: rect.bottom + window.scrollY + 4, left: rect.left + window.scrollX });
-      setOpen(o => !o);
+      if (rect)
+        setPos({
+          top: rect.bottom + window.scrollY + 4,
+          left: rect.left + window.scrollX,
+        });
+      setOpen((o) => !o);
     };
 
     return (
@@ -506,100 +568,160 @@ export function makeStatusEditCell<T>(opts: {
           data-jira-cell-editor
           onClick={handleOpen}
           style={{
-            background: 'transparent', border: 'none', padding: '2px 4px',
-            margin: '-2px -4px', borderRadius: 3,
-            cursor: editable ? 'pointer' : 'default',
-            fontFamily: 'inherit',
-            display: 'inline-flex', alignItems: 'center', gap: 2,
+            background: "transparent",
+            border: "none",
+            padding: "2px 4px",
+            margin: "-2px -4px",
+            borderRadius: 3,
+            cursor: editable ? "pointer" : "default",
+            fontFamily: "inherit",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 2,
           }}
         >
           <StatusPill appearance={opts.appearanceFor(status)}>
-            {status ? (opts.labelFor ? opts.labelFor(status) : status) : '—'}
+            {status ? (opts.labelFor ? opts.labelFor(status) : status) : "—"}
           </StatusPill>
           {editable && (
-            <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden style={{ flexShrink: 0, opacity: 0.55, marginLeft: 1 }}>
-              <path d="M1 2.5L4 5.5L7 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg
+              width="8"
+              height="8"
+              viewBox="0 0 8 8"
+              fill="none"
+              aria-hidden
+              style={{ flexShrink: 0, opacity: 0.55, marginLeft: 1 }}
+            >
+              <path
+                d="M1 2.5L4 5.5L7 2.5"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           )}
         </button>
-        {open && typeof document !== 'undefined' && ReactDOM.createPortal(
-          <div
-            ref={popupRef}
-            style={{
-              position: 'absolute',
-              top: pos.top,
-              left: pos.left,
-              zIndex: 9999,
-              background: token('elevation.surface.overlay', '#FFFFFF'),
-              borderRadius: 4,
-              boxShadow: '0 4px 8px -2px rgba(9,30,66,.25), 0 0 0 1px rgba(9,30,66,.08)',
-              minWidth: 180,
-              maxHeight: 280,
-              overflowY: 'auto',
-              padding: '4px 0',
-            }}
-          >
-            {opts.options.map(s => {
-              const ap = opts.appearanceFor(s);
-              // Jira-parity: dropdown shows a small 8px color dot + plain text
-              // (sentence case, 14px) — NOT the full uppercase StatusPill.
-              // Dot color maps to the same LOZENGE_BG token as the pill bg.
-              // Measured from Jira list status dropdown 2026-05-08.
-              // Inline hex — measured from Jira BAU list DOM 2026-05-07/08.
-              // Do NOT use CSS vars here: the portal renders to document.body
-              // outside any theme-provider scope and vars may not resolve.
-              const dotColors: Record<string, string> = {
-                success:    'rgb(179, 223, 114)',
-                inprogress: 'rgb(143, 184, 246)',
-                default:    'rgb(221, 222, 225)',
-                moved:      'rgb(243, 214, 100)',
-                removed:    'rgb(255, 143, 115)',
-                new:        'rgb(184, 172, 246)',
-              };
-              const dotBg = dotColors[ap] ?? dotColors.default;
-              const isActive = s === status;
-              return (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); opts.onChange(row, s); setOpen(false); }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    width: '100%',
-                    padding: '6px 12px',
-                    border: 'none',
-                    background: isActive ? token('color.background.selected', '#E9F2FF') : 'transparent',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    fontSize: 14,
-                    color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-                  }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = isActive ? token('color.background.selected', '#E9F2FF') : token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = isActive ? token('color.background.selected', '#E9F2FF') : 'transparent'; }}
-                >
-                  {/* 8px color dot — Jira-parity status category indicator */}
-                  <span
-                    aria-hidden
-                    style={{
-                      width: 8, height: 8, borderRadius: '50%',
-                      background: dotBg,
-                      flexShrink: 0,
-                      border: ap === 'default' ? '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' : 'none',
+        {open &&
+          typeof document !== "undefined" &&
+          ReactDOM.createPortal(
+            <div
+              ref={popupRef}
+              style={{
+                position: "absolute",
+                top: pos.top,
+                left: pos.left,
+                zIndex: 9999,
+                background: token("elevation.surface.overlay", "#FFFFFF"),
+                borderRadius: 4,
+                boxShadow:
+                  "0 4px 8px -2px rgba(9,30,66,.25), 0 0 0 1px rgba(9,30,66,.08)",
+                minWidth: 180,
+                maxHeight: 280,
+                overflowY: "auto",
+                padding: "4px 0",
+              }}
+            >
+              {opts.options.map((s) => {
+                const ap = opts.appearanceFor(s);
+                // Jira-parity: dropdown shows a small 8px color dot + plain text
+                // (sentence case, 14px) — NOT the full uppercase StatusPill.
+                // Dot color maps to the same LOZENGE_BG token as the pill bg.
+                // Measured from Jira list status dropdown 2026-05-08.
+                // Inline hex — measured from Jira BAU list DOM 2026-05-07/08.
+                // Do NOT use CSS vars here: the portal renders to document.body
+                // outside any theme-provider scope and vars may not resolve.
+                const dotColors: Record<string, string> = {
+                  success: "rgb(179, 223, 114)",
+                  inprogress: "rgb(143, 184, 246)",
+                  default: "rgb(221, 222, 225)",
+                  moved: "rgb(243, 214, 100)",
+                  removed: "rgb(255, 143, 115)",
+                  new: "rgb(184, 172, 246)",
+                };
+                const dotBg = dotColors[ap] ?? dotColors.default;
+                const isActive = s === status;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      opts.onChange(row, s);
+                      setOpen(false);
                     }}
-                  />
-                  <span style={{ flex: 1 }}>{opts.labelFor ? opts.labelFor(s) : s}</span>
-                  {/* Checkmark on selected item */}
-                  {isActive && (
-                    <span style={{ marginLeft: 4, color: token('color.icon.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>,
-          document.body,
-        )}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      width: "100%",
+                      padding: "6px 12px",
+                      border: "none",
+                      background: isActive
+                        ? token("color.background.selected", "#E9F2FF")
+                        : "transparent",
+                      cursor: "pointer",
+                      textAlign: "left",
+                      fontSize: 14,
+                      color: token(
+                        "color.text",
+                        "var(--cp-text-primary, var(--cp-text-inverse, #172B4D))",
+                      ),
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background =
+                        isActive
+                          ? token("color.background.selected", "#E9F2FF")
+                          : token(
+                              "color.background.neutral.subtle.hovered",
+                              "#F7F8F9",
+                            );
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background =
+                        isActive
+                          ? token("color.background.selected", "#E9F2FF")
+                          : "transparent";
+                    }}
+                  >
+                    {/* 8px color dot — Jira-parity status category indicator */}
+                    <span
+                      aria-hidden
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        background: dotBg,
+                        flexShrink: 0,
+                        border:
+                          ap === "default"
+                            ? "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))"
+                            : "none",
+                      }}
+                    />
+                    <span style={{ flex: 1 }}>
+                      {opts.labelFor ? opts.labelFor(s) : s}
+                    </span>
+                    {/* Checkmark on selected item */}
+                    {isActive && (
+                      <span
+                        style={{
+                          marginLeft: 4,
+                          color: token(
+                            "color.icon.brand",
+                            "var(--cp-primary-60, #0052CC)",
+                          ),
+                        }}
+                      >
+                        ✓
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>,
+            document.body,
+          )}
       </>
     );
   };
@@ -611,26 +733,43 @@ export interface AssigneeCellInput {
   avatarUrl?: string | null;
 }
 
-export function makeAssigneeCell(getAssignee: (row: any) => AssigneeCellInput | null) {
+export function makeAssigneeCell(
+  getAssignee: (row: any) => AssigneeCellInput | null,
+) {
   return function AssigneeCell({ row }: CellProps<any>) {
     const a = getAssignee(row);
     if (!a || !a.name) {
       return (
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
           <Avatar size="small" appearance="circle" />
           <span data-jira-cell-ghost>Unassigned</span>
         </span>
       );
     }
     return (
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
-        <Avatar size="small" name={a.name} src={a.avatarUrl || undefined} appearance="circle" />
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
+          overflow: "hidden",
+        }}
+      >
+        <Avatar
+          size="small"
+          name={a.name}
+          src={a.avatarUrl || undefined}
+          appearance="circle"
+        />
         <span
           style={{
-            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
+            color: token(
+              "color.text",
+              "var(--cp-text-primary, var(--cp-text-inverse, #172B4D))",
+            ),
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
           }}
         >
           {a.name}
@@ -653,10 +792,17 @@ export interface ParentCellInput {
   icon?: React.ReactNode;
 }
 
-export function makeParentCell(getParent: (row: any) => ParentCellInput | null) {
+export function makeParentCell(
+  getParent: (row: any) => ParentCellInput | null,
+) {
   return function ParentCell({ row }: CellProps<any>) {
     const p = getParent(row);
-    if (!p) return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
+    if (!p)
+      return (
+        <span style={{ color: token("color.text.subtlest", "#7A869A") }}>
+          —
+        </span>
+      );
     const display = p.key ? `${p.key} — ${p.label}` : p.label;
     // Measured directly from Jira production DOM 2026-04-18:
     //   bg #227D9B, white text, 2px 4px padding, 3px radius.
@@ -675,29 +821,41 @@ export function makeParentCell(getParent: (row: any) => ParentCellInput | null) 
       //   icon retains native color (e.g. Epic = purple)
       <span
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
+          display: "inline-flex",
+          alignItems: "center",
           gap: 4,
           maxWidth: 260,
-          padding: '2px 6px',
+          padding: "2px 6px",
           borderRadius: 3,
-          background: 'var(--cp-jira-epic-chip-bg)',
-          color: 'var(--cp-jira-epic-chip-fg)',
+          background: "var(--cp-jira-epic-chip-bg)",
+          color: "var(--cp-jira-epic-chip-fg)",
           fontSize: 12,
           fontWeight: 500,
-          lineHeight: '16px',
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
+          lineHeight: "16px",
+          overflow: "hidden",
+          whiteSpace: "nowrap",
         }}
         title={display}
       >
         {p.icon && (
-          <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              flexShrink: 0,
+            }}
+          >
             {p.icon}
           </span>
         )}
         {p.key && <strong style={{ fontWeight: 700 }}>{p.key}</strong>}
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span
+          style={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
           {p.label}
         </span>
       </span>
@@ -716,33 +874,56 @@ export function makeCommentsCell(
 ) {
   return function CommentsCell({ row }: CellProps<any>) {
     const n = getCount(row);
-    const hasCount = typeof n === 'number' && n > 0;
+    const hasCount = typeof n === "number" && n > 0;
     // Jira-parity: both "N comments" and "Add comment" show the chat icon.
     // "Add comment" is always visible (not hover-only) — Jira shows it at rest.
     const content = (
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: token('color.text.subtle', '#42526E') }}>
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 4,
+          color: token("color.text.subtle", "#42526E"),
+        }}
+      >
         {/* Icon wrapper: relative container for the blue dot badge when hasCount */}
-        <span style={{ position: 'relative', display: 'inline-flex', color: token('color.icon.subtle', '#6B778C') }}>
+        <span
+          style={{
+            position: "relative",
+            display: "inline-flex",
+            color: token("color.icon.subtle", "#6B778C"),
+          }}
+        >
           <CommentIcon label="" size="small" />
           {hasCount && (
             <span
               aria-hidden="true"
               style={{
-                position: 'absolute',
+                position: "absolute",
                 top: 1,
                 right: 1,
                 width: 6,
                 height: 6,
-                borderRadius: '50%',
-                backgroundColor: token('color.background.information.bold', '#0C66E4'),
-                border: `1.5px solid ${token('elevation.surface', '#FFFFFF')}`,
-                boxSizing: 'border-box',
+                borderRadius: "50%",
+                backgroundColor: token(
+                  "color.background.information.bold",
+                  "#0C66E4",
+                ),
+                border: `1.5px solid ${token("elevation.surface", "#FFFFFF")}`,
+                boxSizing: "border-box",
               }}
             />
           )}
         </span>
-        {hasCount ? `${n} comment${n === 1 ? '' : 's'}` : (
-          <span data-jira-cell-ghost style={{ color: token('color.text.subtlest', '#6B778C') }}>Add comment</span>
+        {hasCount ? (
+          `${n} comment${n === 1 ? "" : "s"}`
+        ) : (
+          <span
+            data-jira-cell-ghost
+            style={{ color: token("color.text.subtlest", "#6B778C") }}
+          >
+            Add comment
+          </span>
         )}
       </span>
     );
@@ -751,17 +932,20 @@ export function makeCommentsCell(
       <button
         type="button"
         data-jira-cell-editor
-        onClick={(e) => { e.stopPropagation(); onOpen(row); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpen(row);
+        }}
         style={{
-          background: 'transparent',
-          border: 'none',
-          padding: '2px 6px',
-          margin: '-2px -6px',
+          background: "transparent",
+          border: "none",
+          padding: "2px 6px",
+          margin: "-2px -6px",
           borderRadius: 3,
-          cursor: 'pointer',
-          fontFamily: 'inherit',
-          fontSize: 'inherit',
-          textAlign: 'left',
+          cursor: "pointer",
+          fontFamily: "inherit",
+          fontSize: "inherit",
+          textAlign: "left",
         }}
       >
         {content}
@@ -771,20 +955,39 @@ export function makeCommentsCell(
 }
 
 // ─── Priority bars Cell ────────────────────────────────────────────────────
-const PRIORITY_ORDER = ['critical', 'highest', 'high', 'medium', 'low', 'lowest'];
+const PRIORITY_ORDER = [
+  "critical",
+  "highest",
+  "high",
+  "medium",
+  "low",
+  "lowest",
+];
 export function makePriorityCell(getPriority: (row: any) => string | null) {
   return function PriorityCell({ row }: CellProps<any>) {
-    const p = (getPriority(row) || '').toLowerCase();
+    const p = (getPriority(row) || "").toLowerCase();
     const idx = PRIORITY_ORDER.indexOf(p);
     const level = idx >= 0 ? PRIORITY_ORDER.length - idx : 0;
     const color =
-      level >= 4 ? token('color.icon.danger',  '#E5484D') :
-      level >= 3 ? token('color.icon.warning', 'var(--cp-amber, #F59E0B)') :
-      level >= 1 ? token('color.icon.success', '#22C55E') :
-      token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))');
-    const inactive = token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))');
+      level >= 4
+        ? token("color.icon.danger", "#E5484D")
+        : level >= 3
+          ? token("color.icon.warning", "var(--cp-amber, #F59E0B)")
+          : level >= 1
+            ? token("color.icon.success", "#22C55E")
+            : token(
+                "color.border",
+                "var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))",
+              );
+    const inactive = token(
+      "color.border",
+      "var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))",
+    );
     return (
-      <span style={{ display: 'inline-flex', gap: 2 }} title={p || 'No priority'}>
+      <span
+        style={{ display: "inline-flex", gap: 2 }}
+        title={p || "No priority"}
+      >
         {[1, 2, 3, 4].map((i) => (
           <span
             key={i}
@@ -820,25 +1023,36 @@ export function makeDateCell(
   getISO: (row: any) => string | null,
   format: (iso: string) => string = (iso) => {
     const d = new Date(iso);
-    return d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return d.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   },
 ) {
   return function DateCell({ row }: CellProps<any>) {
     const iso = getISO(row);
     if (!iso) {
-      return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
+      return (
+        <span style={{ color: token("color.text.subtlest", "#7A869A") }}>
+          —
+        </span>
+      );
     }
     const display = format(iso);
-    const fullIso = new Date(iso).toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'short' });
+    const fullIso = new Date(iso).toLocaleString("en-GB", {
+      dateStyle: "long",
+      timeStyle: "short",
+    });
     return (
       <span
         title={fullIso}
         style={{
-          color: token('color.text.subtle', '#42526E'),
+          color: token("color.text.subtle", "#42526E"),
           fontSize: 14,
-          lineHeight: '20px',
+          lineHeight: "20px",
           fontWeight: 400,
-          whiteSpace: 'nowrap',
+          whiteSpace: "nowrap",
         }}
       >
         {display}
@@ -855,24 +1069,28 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
   return function LabelsCell({ row }: CellProps<any>) {
     const labels = getLabels(row);
     if (!labels || labels.length === 0) {
-      return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
+      return (
+        <span style={{ color: token("color.text.subtlest", "#7A869A") }}>
+          —
+        </span>
+      );
     }
     return (
-      <span style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 4 }}>
+      <span style={{ display: "inline-flex", flexWrap: "wrap", gap: 4 }}>
         {labels.map((label) => (
           <span
             key={label}
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              padding: '0 4px',
+              display: "inline-flex",
+              alignItems: "center",
+              padding: "0 4px",
               borderRadius: 4,
-              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+              border: `1px solid ${token("color.border", "var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))")}`,
               fontSize: 14,
               fontWeight: 400,
-              lineHeight: '20px',
-              color: token('color.text', '#292A2E'),
-              whiteSpace: 'nowrap',
+              lineHeight: "20px",
+              color: token("color.text", "#292A2E"),
+              whiteSpace: "nowrap",
             }}
           >
             {label}
@@ -887,38 +1105,47 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
 // Renders sprint/release versions as comma-separated plain text. Sprint/release versions are not
 // inline-editable in this column cell — editing happens via the bulk wizard
 // or detail panel. Matches Jira's list column display.
-export function makeSprintReleaseCell(getSprintRelease: (row: any) => string[] | null | undefined) {
+export function makeSprintReleaseCell(
+  getSprintRelease: (row: any) => string[] | null | undefined,
+) {
   return function SprintReleaseCell({ row }: CellProps<any>) {
     const raw = getSprintRelease(row);
     // Normalise: Jira stores sprint_release as JSON array of {id,name,...} objects.
     // Extract .name (or coerce to string) so we never pass an object to React.
     const versions = raw
-      ? (raw as any[]).map(v => (typeof v === 'string' ? v : (v?.name ?? String(v)))).filter(Boolean)
+      ? (raw as any[])
+          .map((v) => (typeof v === "string" ? v : (v?.name ?? String(v))))
+          .filter(Boolean)
       : [];
     if (versions.length === 0) {
-      return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
+      return (
+        <span style={{ color: token("color.text.subtlest", "#7A869A") }}>
+          —
+        </span>
+      );
     }
     // jira-compare 2026-05-20: Live DOM probe confirms sprint-release pill =
     // transparent bg + 0.556px solid rgb(183,185,190) border + 4px radius +
     // 0px 4px padding + 14px/400 text. Matches @atlaskit/tag appearance="default".
     return (
-      <span style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 4 }}>
+      <span style={{ display: "inline-flex", flexWrap: "wrap", gap: 4 }}>
         {versions.map((v) => (
           <span
             key={v}
             style={{
-              display: 'inline-block',
-              border: '0.556px solid var(--ds-border-neutral, rgb(183,185,190))',
+              display: "inline-block",
+              border:
+                "0.556px solid var(--ds-border-neutral, rgb(183,185,190))",
               borderRadius: 4,
-              padding: '0px 4px',
+              padding: "0px 4px",
               fontSize: 14,
               fontWeight: 400,
-              color: token('color.text', '#292A2E'),
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
+              color: token("color.text", "#292A2E"),
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
               maxWidth: 160,
-              lineHeight: '20px',
+              lineHeight: "20px",
             }}
             title={v}
           >

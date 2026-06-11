@@ -67,7 +67,7 @@ export function useCycleActivityFeed(cycleId: string | null, limit: number = 20)
     if (!cycleId) return;
 
     const channel = supabase
-      .channel(`cycle-activity-${cycleId}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`cycle-activity-${cycleId}`)
       .on(
         'postgres_changes',
         {

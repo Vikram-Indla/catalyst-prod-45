@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import Button from "@atlaskit/button/new";
 import AddIcon from "@atlaskit/icon/core/add";
 import { CreateStoryModal } from "@/components/workhub/create-story";
@@ -10,6 +11,11 @@ import { CreateBusinessRequestModal } from "@/components/business-requests/Creat
  *
  * When the user selects "Business Request" in the work type picker,
  * CreateStoryModal hands off to CreateBusinessRequestModal.
+ *
+ * Route-scoped behaviour: on /product-hub/:key/backlog the Work-type
+ * dropdown is restricted to 'Business Request' and pre-selected, so the
+ * modal auto-hands off to CreateBusinessRequestModal on open (BRs live
+ * in business_requests, not ph_issues).
  */
 
 interface CreateDropdownProps {
@@ -19,6 +25,8 @@ interface CreateDropdownProps {
 export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
   const [storyOpen, setStoryOpen] = useState(false);
   const [brOpen, setBrOpen] = useState(false);
+  const { pathname } = useLocation();
+  const isProductHubBacklog = /^\/product-hub\/[^/]+\/backlog/.test(pathname);
 
   return (
     <>
@@ -34,6 +42,8 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
         open={storyOpen}
         onClose={() => setStoryOpen(false)}
         onOpenBusinessRequest={() => setBrOpen(true)}
+        workTypes={isProductHubBacklog ? ['Business Request'] : undefined}
+        defaultWorkType={isProductHubBacklog ? 'Business Request' : 'Story'}
       />
 
       <CreateBusinessRequestModal

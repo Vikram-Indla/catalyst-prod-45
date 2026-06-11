@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import Spinner from '@atlaskit/spinner';
+import Tooltip from '@atlaskit/tooltip';
 import EditorUndoIcon from '@atlaskit/icon/glyph/editor/undo';
 import { useTranslation } from '@/hooks/useTranslation';
 import { containsArabic } from '@/lib/detectArabic';
@@ -99,27 +100,33 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
           </button>
         </span>
       ) : (
-        <button
-          type="button"
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={handleTranslate}
-          style={{
-            background: 'transparent',
-            border: '1px solid var(--ds-border, #DFE1E6)',
-            borderRadius: 3,
-            color: 'var(--ds-text-subtle, #44546F)',
-            cursor: 'pointer',
-            padding: '2px 8px',
-            fontSize: 11,
-            fontFamily: 'inherit',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-          }}
-        >
-          <span style={{ fontSize: 12, opacity: 0.7 }}>🌐</span>
-          Translate to English
-        </button>
+        <Tooltip content="Translate to English" position="top">
+          <button
+            type="button"
+            aria-label="Translate to English"
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={handleTranslate}
+            style={{
+              background: 'transparent',
+              border: '1px solid var(--ds-border, #DFE1E6)',
+              borderRadius: 3,
+              color: 'var(--ds-text-subtle, #44546F)',
+              cursor: 'pointer',
+              padding: '2px 6px',
+              fontSize: 12,
+              fontFamily: 'inherit',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              lineHeight: 1,
+              width: 24,
+              height: 22,
+              flexShrink: 0,
+            }}
+          >
+            <span style={{ fontSize: 13, opacity: 0.8 }} aria-hidden="true">🌐</span>
+          </button>
+        </Tooltip>
       )}
     </span>
   );

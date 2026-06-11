@@ -331,7 +331,7 @@ export function useCycleExecutionItems(cycleId: string, filters?: ExecutionFilte
     
     // Subscribe to tm_cycle_scope changes
     const scopeChannel = supabase
-      .channel(`cycle-scope-${cycleId}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`cycle-scope-${cycleId}`)
       .on(
         'postgres_changes',
         {
@@ -349,7 +349,7 @@ export function useCycleExecutionItems(cycleId: string, filters?: ExecutionFilte
     
     // Subscribe to tm_test_runs changes for this cycle's scope items
     const runsChannel = supabase
-      .channel(`cycle-runs-${cycleId}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`cycle-runs-${cycleId}`)
       .on(
         'postgres_changes',
         {

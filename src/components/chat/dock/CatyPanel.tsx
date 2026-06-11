@@ -15,7 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
-import catalystChatIcon from '@/assets/catalyst-chat-icon.svg';
+import catalystChatIcon from '@/assets/caty-ai-bg.svg';
 import {
   CATY_ASSISTANTS,
   canUseAssistant,

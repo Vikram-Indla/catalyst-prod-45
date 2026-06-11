@@ -468,7 +468,7 @@ function CatalystShellContent() {
   // min-h-0 on the wrapper, the rail's content height (1638px) leaks
   // up the chain and the table column extends with it. Adding backlog
   // to the same code path that allwork uses.
-  const isProjectHubBacklogRoute = /\/project-hub\/[^/]+\/backlog/.test(
+  const isProjectHubBacklogRoute = /\/(project|product)-hub\/[^/]+\/backlog/.test(
     location.pathname,
   );
 
@@ -565,7 +565,7 @@ function CatalystShellContent() {
   // on the detail route restores the height chain end-to-end. List view
   // (/project-hub/:key/allwork without :issueKey) still keeps HubSurface.
   const isSelfFramedRoute =
-    /^\/project-hub\/[^/]+\/backlog/.test(location.pathname) ||
+    /^\/(project|product)-hub\/[^/]+\/backlog/.test(location.pathname) ||
     /^\/project-hub\/[^/]+\/allwork\/[^/]+/.test(location.pathname) ||
     location.pathname.startsWith("/browse/"); // full-screen issue view
 
