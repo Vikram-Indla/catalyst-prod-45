@@ -473,14 +473,8 @@ function ProjectDashboardPageInner() {
   );
 
   return (
-    <>
-      {pKey && <ProjectHeaderChip projectKey={pKey} />}
     <AtlaskitPageShell
-      title={
-        <span style={{ fontSize: 24, fontWeight: 653, letterSpacing: '-0.003em', color: token('color.text', '#292A2E') }}>
-          {(project as any)?.name || pKey || 'Dashboard'}
-        </span>
-      }
+      chromeBand={pKey ? <ProjectHeaderChip projectKey={pKey} /> : null}
       actions={actions}
       testId="project-dashboard-shell"
     >
@@ -561,6 +555,5 @@ function ProjectDashboardPageInner() {
         )}
       </FlagGroup>
     </AtlaskitPageShell>
-    </>
   );
 }

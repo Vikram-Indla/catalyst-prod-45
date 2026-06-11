@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import BoardManagerPage from '@/components/boards/BoardManagerPage';
+import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 
 export default function ProjectBoardManagerPage() {
   const { key } = useParams<{ key: string }>();
@@ -52,11 +53,14 @@ export default function ProjectBoardManagerPage() {
   }
 
   return (
-    <BoardManagerPage
-      projectIdOverride={project.id}
-      basePath={`/project-hub/${key}/boards`}
-      projectName={project.name}
-      projectKey={project.key}
-    />
+    <>
+      {project.key && <ProjectHeaderChip projectKey={project.key} />}
+      <BoardManagerPage
+        projectIdOverride={project.id}
+        basePath={`/project-hub/${key}/boards`}
+        projectName={project.name}
+        projectKey={project.key}
+      />
+    </>
   );
 }
