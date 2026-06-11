@@ -389,6 +389,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 0 0 12px;
+  background: var(--ds-surface-sunken, #F7F8F9);
 }
 
 .cc-dir__section {
@@ -578,6 +579,130 @@
   text-align: left;
 }
 
-.cc-conv-pane__back:hover {
-  background: var(--ds-background-neutral-subtle-hovered, #EBECF0);
+/* ── Collapsible section headers (findings 09-10) ──────────── */
+.cc-dir__section--collapsible {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 12px 12px 4px;
 }
+
+.cc-dir__section-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ds-text-subtlest, #6B778C);
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  text-transform: none;
+}
+
+.cc-dir__section-toggle:hover {
+  color: var(--ds-text-subtle, #44546F);
+}
+
+.cc-dir__section-add {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--ds-text-subtlest, #6B778C);
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.cc-dir__section-add:hover {
+  background: var(--ds-background-neutral-subtle-hovered, #EBECF0);
+  color: var(--ds-text, #172B4D);
+}
+
+/* Unread badge shown on collapsed section header (finding 10) */
+.cc-dir__section-unread {
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--ds-background-danger-bold, #E34935);
+  color: var(--ds-text-inverse, #FFFFFF);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  margin-left: 4px;
+}
+
+/* Section divider (finding 18) */
+.cc-dir__section-divider {
+  height: 1px;
+  background: var(--ds-border, #DFE1E6);
+  margin: 8px 12px 0;
+  opacity: 0.5;
+}
+
+/* Row wrapper for hover-archive affordance (finding 12) */
+.cc-dir__row-wrap {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+.cc-dir__row-wrap .cc-dir__row {
+  flex: 1;
+  padding-right: 36px;
+}
+
+.cc-dir__row-wrap--active .cc-dir__row {
+  background: var(--ds-background-selected, #E9F2FE);
+}
+
+/* Archive hover button (finding 12) */
+.cc-dir__archive-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ds-surface, #FFFFFF);
+  border: 1px solid var(--ds-border, #DFE1E6);
+  border-radius: 4px;
+  color: var(--ds-text-subtlest, #6B778C);
+  cursor: pointer;
+  box-shadow: var(--ds-shadow-raised, 0 1px 2px rgba(9,30,66,0.12));
+}
+
+.cc-dir__archive-btn:hover {
+  background: var(--ds-background-neutral-subtle-hovered, #EBECF0);
+  color: var(--ds-text, #172B4D);
+}
+
+/* Row focus visible (finding 50) */
+.cc-dir__row:focus-visible {
+  outline: 2px solid var(--ds-border-focused, #388BFF);
+  outline-offset: -2px;
+}
+
+/* Error toast (finding 33) */
+.cc-dir__error-toast {
+  margin: 0 12px 8px;
+  padding: 8px 12px;
+  background: var(--ds-background-danger, #FFECEB);
+  border: 1px solid var(--ds-border-danger, #FF8F73);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--ds-text-danger, #AE2A19);
+}
+
+

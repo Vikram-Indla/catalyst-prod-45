@@ -1,5 +1,5 @@
 export type ChatPresence = 'available' | 'busy' | 'away' | 'offline' | 'on_leave';
-export type ChatConversationKind = 'ticket' | 'channel' | 'dm';
+export type ChatConversationKind = 'ticket' | 'channel' | 'dm' | 'group_dm';
 
 export interface ChatConversation {
   id: string;
@@ -10,6 +10,9 @@ export interface ChatConversation {
   projectName: string | null;
   title: string;
   isArchived: boolean;
+  isMuted?: boolean;
+  isStarred?: boolean;
+  isPinned?: boolean;
   lastMessageAt: string | null;
   lastMessagePreview: string | null;
   unreadCount: number;

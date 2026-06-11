@@ -15,8 +15,6 @@
 import React, { useState } from "react";
 import { IconButton } from "@atlaskit/button/new";
 import AddIcon from "@atlaskit/icon/glyph/add";
-import ExportIcon from "@atlaskit/icon/glyph/export";
-import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import CrossIcon from "@atlaskit/icon/glyph/cross";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
@@ -236,7 +234,7 @@ export function ChatDock({
             Messages
             {totalUnread > 0 && (
               <span className="cc-mode-tab__badge" aria-label={`${totalUnread} unread`}>
-                {totalUnread > 9 ? "9+" : totalUnread}
+                {totalUnread > 99 ? "99+" : totalUnread}
               </span>
             )}
           </button>
@@ -258,30 +256,14 @@ export function ChatDock({
           </button>
         </div>
 
-        {/* Divider + action icons */}
+        {/* Divider + action icons — compose + close only (findings 02-03) */}
         <div className="cc-dock__actions">
-          {dockMode === "messages" && (
-            <IconButton
-              icon={AddIcon}
-              label="New conversation"
-              appearance="subtle"
-              spacing="compact"
-              onClick={onFocusDirectory}
-            />
-          )}
           <IconButton
-            icon={ExportIcon}
-            label="Pop out"
+            icon={AddIcon}
+            label="New conversation"
             appearance="subtle"
             spacing="compact"
-            onClick={onPopOut}
-          />
-          <IconButton
-            icon={ChevronDownIcon}
-            label="Minimize"
-            appearance="subtle"
-            spacing="compact"
-            onClick={onToggleCollapsed}
+            onClick={onFocusDirectory}
           />
           <IconButton
             icon={CrossIcon}
