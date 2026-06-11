@@ -17,16 +17,17 @@ import {
   JiraTable,
   makeKeyCell,
   makeSummaryInlineEditCell,
-  makeStatusCell,
-  makeParentCell,
-  makeAssigneeCell,
+  makeStatusEditCell,
+  makeParentEditCell,
+  makeAssigneeEditCell,
   makeDateCell,
+  makeDateEditCell,
   makeRowMenuCell,
   makePriorityEditCell,
 } from '@/components/shared/JiraTable';
-import type { Column, SortOrder } from '@/components/shared/JiraTable';
+import type { Column, SortOrder, LozengeAppearance } from '@/components/shared/JiraTable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { jiraIconType, lozengeAppearance } from '@/components/universal-work-view/uwv.utils';
+import { jiraIconType } from '@/components/universal-work-view/uwv.utils';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { useJqlResults, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
@@ -52,6 +53,24 @@ import FilterIconCore from '@atlaskit/icon/core/filter';
 
 const SUBTLE = token('color.text.subtle', '#505258');
 const FilterIcon = () => <FilterIconCore label="" color={SUBTLE} />;
+
+const ALL_FILTER_STATUSES = [
+  'To Do', 'In Requirements', 'In Design', 'Ready for Development',
+  'In Development', 'Ready for QA', 'In QA', 'Ready for UAT', 'In UAT',
+  'In Production', 'Done', 'Blocked', 'On Hold', 'Closed', 'Cancelled',
+  'Backlog', 'In Progress', 'In Review', 'Ready to Implement',
+  'Beta Ready',
+];
+
+function filterStatusAppearance(status: string | null | undefined): LozengeAppearance {
+  if (!status) return 'default';
+  const s = status.toLowerCase();
+  if (s === 'done' || s === 'closed' || s === 'cancelled') return 'success';
+  if (s.includes('progress') || s.includes('development') || s.includes('qa') || s.includes('uat') || s.includes('review') || s.includes('design') || s.includes('requirements')) return 'inprogress';
+  if (s === 'blocked') return 'removed';
+  if (s === 'on hold') return 'moved';
+  return 'default';
+}
 
 function useProjectFacetItems(projectKey: string | undefined): WorkItem[] {
   const { data = [] } = useQuery<WorkItem[]>({
@@ -137,11 +156,20 @@ export function FilterPreviewPage() {
   const [sortOrder, setSortOrder] = useState<SortOrder>('DESC');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  // Column picker — mirrors BacklogPage's canonial column-visibility state.
-  // Default visible matches BacklogPage DEFAULT_VISIBLE_COLUMNS = ['key','status','parent','assignee'].
+  // Column picker — mirrors BacklogPage's canonical column-visibility state.
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(
-    () => new Set(['key', 'status', 'assignee'])
+    () => new Set(['key', 'status', 'parent', 'assignee'])
   );
+
+  // Column order + widths — localStorage keys scoped to avoid collision with BacklogPage
+  const COL_WIDTHS_KEY = `ph-filter-col-widths-v1:${projectKey}`;
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(
+    () => { try { const r = localStorage.getItem(COL_WIDTHS_KEY); return r ? JSON.parse(r) : {}; } catch { return {}; } }
+  );
+  const [columnOrder, setColumnOrder] = useState<string[] | null>(null);
+
+  // Density state — mirrors BacklogPage (default 'compact')
+  const [density, setDensity] = useState<'compact' | 'comfortable'>('compact');
 
   // Ask Caty inline bar — mirrors BacklogPage's setAskCatyOpen pattern
   const [askCatyOpen, setAskCatyOpen] = useState(false);
@@ -296,13 +324,21 @@ export function FilterPreviewPage() {
         label: 'Parent',
         width: 11,
         sortable: true,
-        defaultVisible: false,
+        defaultVisible: true,
         accessor: (r) => r.parentKey ?? '',
-        cell: makeParentCell((r: JqlResultRow) =>
-          r.parentKey
-            ? { key: r.parentKey, label: r.parentSummary ?? r.parentKey }
-            : null
-        ),
+        cell: makeParentEditCell<JqlResultRow>({
+          getParent: (r) => r.parentKey
+            ? {
+                id: r.parentKey,
+                key: r.parentKey,
+                label: r.parentSummary ?? r.parentKey,
+                icon: <JiraIssueTypeIcon type="Story" size={16} />,
+              }
+            : null,
+          options: [],
+          canEdit: () => false,
+          onChange: () => {},
+        }),
       },
       {
         id: 'status',
@@ -311,10 +347,13 @@ export function FilterPreviewPage() {
         sortable: true,
         defaultVisible: true,
         accessor: (r) => r.status,
-        cell: makeStatusCell(
-          (r: JqlResultRow) => r.status || null,
-          s => lozengeAppearance('', s ?? '')
-        ),
+        cell: makeStatusEditCell<JqlResultRow>({
+          getStatus: (r) => r.status,
+          options: ALL_FILTER_STATUSES,
+          appearanceFor: (s) => filterStatusAppearance(s) as LozengeAppearance,
+          canEdit: () => false,
+          onChange: () => {},
+        }),
       },
       {
         id: 'assignee',
@@ -323,18 +362,21 @@ export function FilterPreviewPage() {
         sortable: true,
         defaultVisible: true,
         accessor: (r) => r.assigneeName ?? '',
-        cell: makeAssigneeCell((r: JqlResultRow) =>
-          r.assigneeName
-            ? { name: r.assigneeName, avatarUrl: resolveAvatarUrl(r.assigneeName) }
-            : null
-        ),
+        cell: makeAssigneeEditCell<JqlResultRow>({
+          getAssignee: (r) => r.assigneeName
+            ? { id: r.assigneeName, name: r.assigneeName, avatarUrl: resolveAvatarUrl(r.assigneeName) }
+            : null,
+          options: [],
+          canEdit: () => false,
+          onChange: () => {},
+        }),
       },
       {
         id: 'priority',
         label: 'Priority',
         width: 6,
         sortable: true,
-        defaultVisible: false,
+        defaultVisible: true,
         accessor: (r) => r.priority ?? '',
         cell: makePriorityEditCell<JqlResultRow>({
           getPriority: (r) => r.priority,
@@ -349,14 +391,18 @@ export function FilterPreviewPage() {
         sortable: true,
         defaultVisible: false,
         accessor: (r) => r.dueDate ?? '',
-        cell: makeDateCell((r: JqlResultRow) => r.dueDate),
+        cell: makeDateEditCell<JqlResultRow>({
+          getDate: (r) => r.dueDate,
+          canEdit: () => false,
+          onChange: () => {},
+        }),
       },
       {
         id: 'created',
         label: 'Created',
         width: 8,
         sortable: true,
-        defaultVisible: false,
+        defaultVisible: true,
         accessor: (r) => r.created ?? '',
         cell: makeDateCell((r: JqlResultRow) => r.created),
       },
@@ -568,15 +614,26 @@ export function FilterPreviewPage() {
             sortOrder={sortOrder}
             onSortChange={(k, o) => { setSortKey(k); setSortOrder(o); }}
             isLoading={isLoading}
-            density="comfortable"
+            density={density}
             ariaLabel="Filter preview"
             rowsPerPage={0}
+            page={1}
             totalRowCount={data?.totalCount}
+            enableVirtualization
+            enableColumnReorder
+            columnOrder={columnOrder ?? undefined}
+            onColumnOrderChange={(next) => setColumnOrder(next)}
+            initialColumnWidths={columnWidths}
+            onColumnWidthsChange={(widths) => {
+              setColumnWidths(widths);
+              try { localStorage.setItem(COL_WIDTHS_KEY, JSON.stringify(widths)); } catch { /* quota */ }
+            }}
             stickyCreateFooter={{ onRefresh: () => {} }}
             columnVisibility={visibleColumns}
             onColumnVisibilityChange={setVisibleColumns}
+            contextMenuActions={[]}
             selectable
-            selectedIds={selectedIds}
+            selection={selectedIds}
             onSelectionChange={setSelectedIds}
             emptyView={
               <div style={{ padding: '32px 24px', textAlign: 'center', color: token('color.text.subtle'), fontSize: 14 }}>
