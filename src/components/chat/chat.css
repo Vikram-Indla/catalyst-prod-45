@@ -43,6 +43,7 @@
   border: 2px solid var(--ds-surface, #FFFFFF);
 }
 .cc-dot--green { background: var(--ds-background-success-bold, #22A06B); }
+.cc-dot--blue { background: var(--ds-background-brand-bold, #0C66E4); }
 .cc-dot--red { background: var(--ds-background-danger-bold, #E34935); }
 /* "Away" — hollow grey ring (Slack/Linear/Teams convention; no amber). 2026-06-11.
    away is the sole consumer of the amber tone (PRESENCE_TONE.away). */

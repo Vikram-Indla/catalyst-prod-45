@@ -52,27 +52,24 @@ export function splitPinnedFavourites(live: ChatConversation[]): {
 }
 
 const PRESENCE_LABEL: Record<ChatPresence, string> = {
-  available: 'Active now',
-  busy: 'Busy',
+  on_set: 'In office',
+  remote: 'Remote',
   away: 'Away',
-  offline: 'Offline',
   on_leave: 'On leave',
 };
 
-const PRESENCE_TONE: Record<ChatPresence, 'green' | 'red' | 'amber' | 'grey'> = {
-  available: 'green',
-  busy: 'red',
-  away: 'amber',
-  offline: 'grey',
+const PRESENCE_TONE: Record<ChatPresence, 'green' | 'blue' | 'amber' | 'grey'> = {
+  on_set: 'green',
+  remote: 'blue',
+  away: 'amber', // renders as a hollow grey ring (see .cc-dot--amber)
   on_leave: 'grey',
 };
 
 const PRESENCE_ORDER: Record<ChatPresence, number> = {
-  available: 0,
-  busy: 1,
+  on_set: 0,
+  remote: 1,
   away: 2,
-  offline: 3,
-  on_leave: 4,
+  on_leave: 3,
 };
 
 const LS_COLLAPSED_KEY = 'catalyst-chat-dir-collapsed';
@@ -843,8 +840,8 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
               const map = idMap?.get(p.id);
               const last = map ? lastSeen?.get(map.profileId) : undefined;
               const lastSeenStr = last ? `Last seen ${relativeShort(last)} ago` : '';
-              const statusLine = p.presence === 'available'
-                ? (p.role ? `${p.role} · Active now` : 'Active now')
+              const statusLine = p.presence === 'on_set'
+                ? (p.role ? `${p.role} · In office` : 'In office')
                 : lastSeenStr || (p.role ? `${p.role} · ${PRESENCE_LABEL[p.presence]}` : PRESENCE_LABEL[p.presence]);
               return (
                 <button

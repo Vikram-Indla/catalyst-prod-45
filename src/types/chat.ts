@@ -1,4 +1,4 @@
-export type ChatPresence = 'available' | 'busy' | 'away' | 'offline' | 'on_leave';
+export type ChatPresence = 'on_set' | 'remote' | 'away' | 'on_leave';
 export type ChatConversationKind = 'ticket' | 'channel' | 'dm' | 'group_dm';
 
 export interface ChatConversation {

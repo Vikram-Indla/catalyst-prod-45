@@ -49,10 +49,9 @@ interface ChatDockProps {
 }
 
 const PRESENCE_DOT: Record<ChatPresence, string> = {
-  available: "var(--ds-icon-success, #22A06B)",
-  busy: "var(--ds-icon-danger, #E34935)",
-  away: "var(--ds-icon-warning, #E2B203)",
-  offline: "var(--ds-icon-disabled, #8590A2)",
+  on_set: "var(--ds-icon-success, #22A06B)",
+  remote: "var(--ds-icon-information, #0C66E4)",
+  away: "var(--ds-icon-disabled, #8590A2)",
   on_leave: "var(--ds-icon-disabled, #8590A2)",
 };
 
@@ -161,7 +160,7 @@ function ConvGlyph({ conversation }: { conversation: ChatConversation }) {
 function tabDotColor(conversation: ChatConversation): string {
   if (conversation.kind === "channel") return "transparent";
   if (conversation.kind === "ticket")
-    return PRESENCE_DOT.available.replace("success", "brand");
+    return PRESENCE_DOT.on_set.replace("success", "brand");
   return "var(--ds-background-brand-bold, #0C66E4)";
 }
 
