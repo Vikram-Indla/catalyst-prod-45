@@ -216,9 +216,11 @@ interface DockDirectoryProps {
   conversations: ChatConversation[];
   activeId?: string;
   onSelectConversation: (id: string) => void;
+  /** Incremented each time the + button is pressed — auto-focuses search input. */
+  focusTick?: number;
 }
 
-export function DockDirectory({ conversations, activeId, onSelectConversation }: DockDirectoryProps) {
+export function DockDirectory({ conversations, activeId, onSelectConversation, focusTick }: DockDirectoryProps) {
   const { user } = useAuth();
   const { role } = useUserRole();
   const isAdmin = role === 'admin';
@@ -235,6 +237,12 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
   const [newGroupDmOpen, setNewGroupDmOpen] = useState(false);
   const [browseChannelsOpen, setBrowseChannelsOpen] = useState(false);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>(loadCollapsed);
+  const searchRef = React.useRef<HTMLInputElement>(null);
+
+  // Focus search input whenever the + button is clicked (focusTick increments).
+  useEffect(() => {
+    if (focusTick && focusTick > 0) searchRef.current?.focus();
+  }, [focusTick]);
 
   const toggleSection = useCallback((key: string) => {
     setCollapsed((prev) => {
@@ -449,6 +457,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation }:
           <line x1="21" y1="21" x2="16.5" y2="16.5" strokeLinecap="round" />
         </svg>
         <input
+          ref={searchRef}
           type="text"
           className="cc-dir__search-input"
           placeholder="Search people, projects, tickets"

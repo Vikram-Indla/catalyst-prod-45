@@ -212,7 +212,7 @@ export function MessageStream({
     el.addEventListener('scroll', check, { passive: true });
     check();
     return () => el.removeEventListener('scroll', check);
-  }, [firstUnreadId, rows]);
+  }, [firstUnreadId]);
 
   const scrollToUnread = useCallback(() => {
     unreadLineRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });

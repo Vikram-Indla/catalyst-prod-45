@@ -62,10 +62,17 @@ export function ReactionPicker({
 
   if (!isOpen) return null;
 
-  // Get trigger position for absolute positioning
+  // Get trigger position — right-anchor so picker stays inside viewport when
+  // triggered from the bottom-right dock. 320px picker width + 8px margin.
   const triggerRect = triggerRef?.current?.getBoundingClientRect();
+  const PICKER_W = 320;
+  const viewW = typeof window !== 'undefined' ? window.innerWidth : 1440;
+  const triggerRight = triggerRect ? triggerRect.right : viewW;
+  // Open to the left if too close to the right edge; otherwise open normally.
+  const wouldOverflow = triggerRight + PICKER_W > viewW - 8;
   const top = triggerRect ? triggerRect.bottom + 8 : 'auto';
-  const left = triggerRect ? triggerRect.left : 'auto';
+  const left = wouldOverflow ? 'auto' : (triggerRect ? triggerRect.left : 'auto');
+  const right = wouldOverflow ? (viewW - triggerRight) : 'auto';
 
   // Filter emojis by search term
   const filteredEmojis = searchTerm.trim()
@@ -84,6 +91,7 @@ export function ReactionPicker({
         position: 'fixed',
         top,
         left,
+        right,
         zIndex: 1000,
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: `1px solid var(--ds-border, #DFE1E6)`,
