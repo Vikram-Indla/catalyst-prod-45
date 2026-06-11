@@ -30,6 +30,8 @@ export interface ConversationHeaderProps {
   onOpenSearch?: () => void;
   currentUserMuted?: boolean;
   currentUserStarred?: boolean;
+  /** Called after archive or leave succeeds — lets dock navigate back to directory. */
+  onBack?: () => void;
 }
 
 const PRESENCE_MAP: Record<string, PresenceColor> = {
@@ -81,7 +83,7 @@ function ConversationMenuItem({
   );
 }
 
-export function ConversationHeader({ conversation, members = [], onAskCaty, onOpenSearch, currentUserMuted = false, currentUserStarred = false }: ConversationHeaderProps) {
+export function ConversationHeader({ conversation, members = [], onAskCaty, onOpenSearch, currentUserMuted = false, currentUserStarred = false, onBack }: ConversationHeaderProps) {
   const [addOpen, setAddOpen] = useState(false);
   const [rosterOpen, setRosterOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -187,49 +189,45 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
 
       <div className="cc-conv-head__spacer" />
 
-      {visible.length ? (
-        <button
-          type="button"
-          className="cc-memberstack"
-          aria-label={`${members.length} members — open roster`}
-          onClick={() => setRosterOpen(true)}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            padding: 0,
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-          }}
-        >
-          {visible.map(m => (
-            <Avatar
-              key={m.id}
-              name={m.name}
-              seed={m.id}
-              color={colorFor(m.id)}
-              presence={PRESENCE_MAP[m.presence] ?? null}
-            />
-          ))}
-          {overflow > 0 ? <div className="cc-memberstack__plus">+{overflow}</div> : null}
-        </button>
-      ) : (
-        <button
-          type="button"
-          aria-label="View members"
-          onClick={() => setRosterOpen(true)}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            padding: '4px 8px',
-            cursor: 'pointer',
-            color: 'var(--ds-text-subtle, #44546F)',
-            fontSize: 12,
-          }}
-        >
-          View members
-        </button>
-      )}
+      {/* Member stack — always a single icon button, no "View members" text fallback (finding 19) */}
+      <button
+        type="button"
+        className="cc-memberstack"
+        aria-label={`${members.length} members — open roster`}
+        onClick={() => setRosterOpen(true)}
+        style={{
+          background: 'transparent',
+          border: 'none',
+          padding: 0,
+          cursor: 'pointer',
+          display: 'inline-flex',
+          alignItems: 'center',
+        }}
+      >
+        {visible.length > 0 ? (
+          <>
+            {visible.map(m => (
+              <Avatar
+                key={m.id}
+                name={m.name}
+                seed={m.id}
+                color={colorFor(m.id)}
+                presence={PRESENCE_MAP[m.presence] ?? null}
+              />
+            ))}
+            {overflow > 0 ? <div className="cc-memberstack__plus">+{overflow}</div> : null}
+          </>
+        ) : (
+          <span className="cc-iconbtn" style={{ display: 'inline-flex', alignItems: 'center', padding: 4 }}>
+            <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </span>
+        )}
+      </button>
 
       {/* Ask Caty REMOVED from header (2026-06-08 design-critique).
           Slack/Jira/ServiceNow have no persistent AI CTA in channel headers.
@@ -253,16 +251,33 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
         </button>
       )}
 
-      {/* Bell — mute toggle shortcut */}
+      {/* Close pane — only in dock context where onBack is wired */}
+      {onBack && (
+        <button
+          type="button"
+          className="cc-iconbtn"
+          aria-label="Close conversation"
+          title="Close"
+          onClick={onBack}
+        >
+          <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      )}
+
+      {/* Bell — filled=active, crossed=muted (finding 22) */}
       <button
         type="button"
         className="cc-iconbtn"
         aria-label={currentUserMuted ? 'Unmute notifications' : 'Mute notifications'}
         title={currentUserMuted ? 'Unmute notifications' : 'Mute notifications'}
         onClick={() => conversation && mute.mutate({ convId: conversation.id, muted: !currentUserMuted })}
-        style={{ color: currentUserMuted ? 'var(--ds-text-subtlest, #6B778C)' : 'inherit', position: 'relative' }}
+        style={{ color: currentUserMuted ? 'var(--ds-text-subtlest, #6B778C)' : 'var(--ds-text, #172B4D)', position: 'relative' }}
       >
         {currentUserMuted ? (
+          /* Crossed-out bell = muted */
           <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2}>
             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
             <path d="M18.63 13A17.89 17.89 0 0 1 18 8" />
@@ -271,9 +286,9 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
             <line x1="1" y1="1" x2="23" y2="23" />
           </svg>
         ) : (
-          <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2}>
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          /* Filled bell = notifications on */
+          <svg viewBox="0 0 24 24" width={16} height={16} fill="currentColor" stroke="none">
+            <path d="M18 8A6 6 0 1 0 6 8c0 7-3 9-3 9h18s-3-2-3-9zM13.73 21a2 2 0 0 1-3.46 0H13.73z" />
           </svg>
         )}
       </button>
@@ -337,39 +352,48 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
                 onClick={() => { setAddOpen(true); setMenuOpen(false); }}
               />
             )}
-            <ConversationMenuItem
-              label="Mark as read"
-              onClick={() => { markRead.mutate(conversation.id); setMenuOpen(false); }}
-            />
+            {/* Mark as read — only when there are unread messages (finding 27) */}
+            {(conversation.unreadCount ?? 0) > 0 && (
+              <ConversationMenuItem
+                label="Mark as read"
+                onClick={() => { markRead.mutate(conversation.id); setMenuOpen(false); }}
+              />
+            )}
             <ConversationMenuItem
               label={currentUserStarred ? 'Unstar conversation' : 'Star conversation'}
               onClick={() => { toggleStar.mutate({ convId: conversation.id, starred: !currentUserStarred }); setMenuOpen(false); }}
             />
-            <ConversationMenuItem
-              label={currentUserMuted ? 'Unmute conversation' : 'Mute conversation'}
-              onClick={() => { mute.mutate({ convId: conversation.id, muted: !currentUserMuted }); setMenuOpen(false); }}
-            />
-            <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
-            <div style={{ padding: '4px 10px', fontSize: 11, color: 'var(--ds-text-subtle, #44546F)', textTransform: 'none' }}>
-              Notify me about
-            </div>
-            <ConversationMenuItem
-              label="All messages"
-              onClick={() => { setNotifPref.mutate({ convId: conversation.id, pref: 'all' }); setMenuOpen(false); }}
-            />
-            <ConversationMenuItem
-              label="Mentions only"
-              onClick={() => { setNotifPref.mutate({ convId: conversation.id, pref: 'mentions' }); setMenuOpen(false); }}
-            />
-            <ConversationMenuItem
-              label="Nothing"
-              onClick={() => { setNotifPref.mutate({ convId: conversation.id, pref: 'none' }); setMenuOpen(false); }}
-            />
+            {/* "Mute conversation" removed — bell icon in header covers it (finding 26) */}
+            {/* Notify sub-group: channels/tickets only; not for DMs (finding 25) */}
+            {!isDm && (
+              <>
+                <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
+                <div style={{ padding: '4px 10px', fontSize: 11, color: 'var(--ds-text-subtle, #44546F)' }}>
+                  Notifications
+                </div>
+                <ConversationMenuItem
+                  label="All messages"
+                  onClick={() => { setNotifPref.mutate({ convId: conversation.id, pref: 'all' }); setMenuOpen(false); }}
+                />
+                <ConversationMenuItem
+                  label="Mentions only"
+                  onClick={() => { setNotifPref.mutate({ convId: conversation.id, pref: 'mentions' }); setMenuOpen(false); }}
+                />
+                <ConversationMenuItem
+                  label="Turn off notifications"
+                  onClick={() => { setNotifPref.mutate({ convId: conversation.id, pref: 'none' }); setMenuOpen(false); }}
+                />
+              </>
+            )}
+            {/* Archive — own section with divider (finding 28) */}
             <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
             {!conversation.isArchived ? (
               <ConversationMenuItem
                 label="Archive conversation"
-                onClick={() => { archive.mutate(conversation.id); setMenuOpen(false); }}
+                onClick={() => {
+                  setMenuOpen(false);
+                  archive.mutate(conversation.id, { onSuccess: () => onBack?.() });
+                }}
               />
             ) : (
               <ConversationMenuItem
@@ -383,7 +407,10 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
                 <ConversationMenuItem
                   label="Leave conversation"
                   danger
-                  onClick={() => { leave.mutate(conversation.id); setMenuOpen(false); }}
+                  onClick={() => {
+                    setMenuOpen(false);
+                    leave.mutate(conversation.id, { onSuccess: () => onBack?.() });
+                  }}
                 />
               </>
             )}

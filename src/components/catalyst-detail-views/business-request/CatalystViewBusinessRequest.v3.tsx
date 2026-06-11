@@ -44,6 +44,7 @@ export default function CatalystViewBusinessRequestV3({
   isOpen, onClose, itemId,
   projectKey,
   panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
+  hideSidebar,
 }: CatalystViewBaseProps) {
   const { request, resolvedId, isLoading, updateField, deleteRequest } =
     useProductHubBusinessRequest({ requestKey: itemId });
@@ -163,6 +164,7 @@ export default function CatalystViewBusinessRequestV3({
         isOpen={isOpen}
         onClose={onClose}
         panelMode={panelMode}
+        hideSidebar={hideSidebar}
         fullPageMode={fullPageMode}
         itemType="Business Request"
         itemKey={request?.request_key ?? null}

@@ -27,6 +27,7 @@ import {
 export default function CatalystViewSubtask({
   isOpen, onClose, itemId, projectId, projectKey,
   onOpenItem, panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
+  hideSidebar,
 }: CatalystViewBaseProps) {
 
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);

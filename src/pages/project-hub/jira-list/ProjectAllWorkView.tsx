@@ -53,15 +53,13 @@ interface Props {
   projectId?: string;
 }
 
-/**
- * Below this width the split region cannot host both the 260px list and a
- * legible Jira-parity detail shell. The real lower bound is higher than the
- * raw article width because CatalystDetailRouter itself contains a left body,
- * a splitter, and a right sidebar. Hide the entire detail panel sooner so it
- * never visually crowds or overlaps the list in responsive preview mode.
- * The breakpoint is the split panel's own width, not the window width.
+/** Split container widths for 3-state responsive layout:
+ *  wide   (≥1120px): list 360px + full detail (body + sidebar)
+ *  medium (≥480px):  list 260px + detail (CatalystViewBase container query hides its sidebar)
+ *  narrow (<480px):  list 100%, detail hidden (click → overlay)
  */
-const SPLIT_BREAKPOINT_PX = 1120;
+const WIDE_BP = 1120;
+const NARROW_BP = 480;
 
 export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   // PERF: useProjectAllWorkItems now returns paginated results with keyset cursor.
@@ -200,14 +198,19 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   const [overlayItemId, setOverlayItemId] = useState<string | null>(null);
 
   const splitRef = useRef<HTMLDivElement>(null);
-  const [isNarrow, setIsNarrow] = useState(false);
+  type PanelLayout = 'wide' | 'medium' | 'narrow';
+  const [panelLayout, setPanelLayout] = useState<PanelLayout>('wide');
+  const isNarrow = panelLayout === 'narrow';
 
   useEffect(() => {
     const el = splitRef.current;
     if (!el || typeof ResizeObserver === 'undefined') return;
     const ro = new ResizeObserver((entries) => {
       const w = entries[0]?.contentRect.width ?? 0;
-      setIsNarrow(w > 0 && w < SPLIT_BREAKPOINT_PX);
+      if (w <= 0) return;
+      if (w < NARROW_BP) setPanelLayout('narrow');
+      else if (w < WIDE_BP) setPanelLayout('medium');
+      else setPanelLayout('wide');
     });
     ro.observe(el);
     return () => ro.disconnect();
@@ -372,11 +375,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
         onFilterOpenChange={setFilterOpen}
         selectedAssignees={toolbarAssignees}
         onAssigneesChange={setToolbarAssignees}
-        onSaveFilter={
-          (isCreateMode || !!urlFilterId)
-            ? () => setSaveModalOpen(true)
-            : undefined
-        }
+        onSaveFilter={() => setSaveModalOpen(true)}
         saveFilterLabel={urlFilterId ? 'Update filter' : 'Save filter'}
       />
 
@@ -400,13 +399,11 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
         />
       )}
 
-      {/* Split region — 3-panel responsive model (corrected 2026-04-20):
-          • Wide   (≥1120px): [Navigator 260px] [Middle flex] [Right sidebar inside detail]
-          • Narrow (<1120px): right sidebar hides (via @container in CatalystViewBase),
-                              middle detail panel hides here, navigator takes full width.
-          • The navigator (left list) is the LAST panel to collapse, matching
-            Jira Cloud's tablet behavior — users still need to browse work items
-            even when there's no room for the detail surface. */}
+      {/* Split region — 3-state responsive model:
+          • wide   (≥1120px): [List 360px] [Detail body + sidebar]
+          • medium (≥480px):  [List 260px] [Detail body only — CatalystViewBase @container hides its sidebar]
+          • narrow (<480px):  [List 100%] — detail hidden; click opens overlay
+          At any viewport, ≥2 panels are visible (list always present). */}
       {/* jira-compare follow-up (2026-05-02): top padding dropped to 0
           so the navigator and right rail "touch the roof" — Jira NIN
           aligns the rail flush against the page-header underline with
@@ -422,7 +419,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
               (slate-100 grey) to white. Vikram probe captured rail bg as
               rgb(241,245,249) which diverges from Jira's white rail. */}
           <div style={{
-            width: isNarrow ? '100%' : 360,
+            width: isNarrow ? '100%' : panelLayout === 'medium' ? 260 : 360,
             flexShrink: 0,
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             borderRight: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
@@ -572,6 +569,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                     panelMode={true}
                     navigationItems={navigationItems}
                     onNavigate={handleNavigate}
+                    hideSidebar={panelLayout === 'medium'}
                   />
                 </Suspense>
               </div>

@@ -14,10 +14,11 @@
  */
 import React, { useState } from "react";
 import { IconButton } from "@atlaskit/button/new";
-import EditorAddIcon from "@atlaskit/icon/glyph/editor/add";
-import ShortcutIcon from "@atlaskit/icon/glyph/shortcut";
+import Tooltip from "@atlaskit/tooltip";
+import AddIcon from "@atlaskit/icon/glyph/add";
 import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import CrossIcon from "@atlaskit/icon/glyph/cross";
+import VidFullScreenOnIcon from "@atlaskit/icon/glyph/vid-full-screen-on";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import catalystChatIcon from "@/assets/caty-ai-bg.svg";
@@ -98,7 +99,7 @@ function ConvGlyph({ conversation }: { conversation: ChatConversation }) {
     alignItems: "center",
     justifyContent: "center",
     color: "var(--ds-text-inverse, #FFFFFF)",
-    fontWeight: 700,
+    fontWeight: 600,
   } as const;
 
   if (conversation.kind === "channel") {
@@ -175,6 +176,9 @@ export function ChatDock({
 }: ChatDockProps) {
   const [dockMode, setDockMode] = useState<DockMode>("messages");
   const [catyView, setCatyView] = useState<CatyView>("floating");
+  // Incremented when + is clicked while directory is already showing — signals
+  // DockDirectory to focus its search input so user can immediately type a name.
+  const [dirFocusTick, setDirFocusTick] = useState(0);
 
   // Collapsed: render only the FAB. No data hook subscription is created here; callers
   // gate realtime on !collapsed. We still need an unread total for the badge — read it
@@ -202,7 +206,7 @@ export function ChatDock({
         aria-label="Open messages"
         onClick={onToggleCollapsed}
       >
-        <img src={catalystChatIcon} alt="" width={56} height={56} />
+        <img src={catalystChatIcon} alt="" width={51} height={51} />
         {totalUnread > 0 && (
           <span className="cc-fab__badge">
             {totalUnread > 99 ? "99+" : totalUnread}
@@ -213,87 +217,117 @@ export function ChatDock({
     );
   }
 
-  const listConversations = (conversations ?? []).filter((c) => !c.isArchived);
+  // Full list passed to DockDirectory so archived section works.
+  // DockDirectory does its own live/archived split internally.
+  const listConversations = conversations ?? [];
 
   return (
     <div
       className={`cc-dock${dockMode === "caty" && catyView === "sidebar" ? " cc-dock--sidebar" : ""}`}
       role="dialog"
-      aria-label={dockMode === "caty" ? "Ask Caty AI" : "Messages"}
+      aria-label={dockMode === "caty" ? "Ask Caty AI" : "Caty Connect"}
     >
       {/* Shared header — mode tabs + shared icons */}
-      <div className="cc-dock__header">
-        {/* Dual-mode tab pills */}
-        <div className="cc-mode-tabs">
+      <div className="cc-dock__header" role="banner">
+        {/* Brand logo + dual-mode underline tabs */}
+        <div className="cc-dock__brand" aria-hidden>
+          <span className="cc-dock__logo-wrap">
+            <img src={catalystChatIcon} alt="" width={26} height={26} className="cc-dock__logo-img" />
+          </span>
+        </div>
+        <div className="cc-mode-tabs" role="tablist" aria-label="Chat modes">
           <button
             type="button"
+            role="tab"
             className={`cc-mode-tab${dockMode === "messages" ? " cc-mode-tab--active" : ""}`}
             onClick={() => setDockMode("messages")}
-            aria-pressed={dockMode === "messages"}
+            aria-selected={dockMode === "messages"}
           >
-            Messages
-            {totalUnread > 0 && dockMode !== "messages" && (
-              <span className="cc-mode-tab__badge">
-                {totalUnread > 9 ? "9+" : totalUnread}
+            Connect
+            {totalUnread > 0 && (
+              <span className="cc-mode-tab__badge" aria-label={`${totalUnread} unread`}>
+                {totalUnread > 99 ? "99+" : totalUnread}
               </span>
             )}
           </button>
           <button
             type="button"
+            role="tab"
             className={`cc-mode-tab${dockMode === "caty" ? " cc-mode-tab--active" : ""}`}
             onClick={() => setDockMode("caty")}
-            aria-pressed={dockMode === "caty"}
+            aria-selected={dockMode === "caty"}
           >
-            <img
-              src={catalystChatIcon}
-              alt=""
-              width={14}
-              height={14}
-              style={{ verticalAlign: "middle", marginRight: 4 }}
-            />
             Ask Caty
           </button>
         </div>
 
-        {/* Shared header icons — context-aware */}
-        {dockMode === "messages" && (
-          <IconButton
-            icon={EditorAddIcon}
-            label="Browse directory"
-            appearance="subtle"
-            spacing="compact"
-            onClick={onFocusDirectory}
-          />
-        )}
-        <IconButton
-          icon={ShortcutIcon}
-          label="Pop out"
-          appearance="subtle"
-          spacing="compact"
-          onClick={onPopOut}
-        />
-        <IconButton
-          icon={ChevronDownIcon}
-          label="Minimize"
-          appearance="subtle"
-          spacing="compact"
-          onClick={onToggleCollapsed}
-        />
-        <IconButton
-          icon={CrossIcon}
-          label="Close"
-          appearance="subtle"
-          spacing="compact"
-          onClick={onToggleCollapsed}
-        />
+        {/* Divider + action icons */}
+        <div className="cc-dock__actions">
+          <Tooltip content="New conversation" position="bottom">
+            <IconButton
+              icon={AddIcon}
+              label="New conversation"
+              appearance="subtle"
+              spacing="compact"
+              onClick={() => {
+                // If a conversation is open, go back to directory.
+                // Either way, signal directory to focus search so user can type a name.
+                onFocusDirectory?.();
+                setDirFocusTick((t) => t + 1);
+              }}
+            />
+          </Tooltip>
+          <Tooltip content="Open full screen" position="bottom">
+            <IconButton
+              icon={VidFullScreenOnIcon}
+              label="Open full screen"
+              appearance="subtle"
+              spacing="compact"
+              onClick={onPopOut}
+            />
+          </Tooltip>
+          <Tooltip content="Minimize" position="bottom">
+            <IconButton
+              icon={ChevronDownIcon}
+              label="Minimize"
+              appearance="subtle"
+              spacing="compact"
+              onClick={onToggleCollapsed}
+            />
+          </Tooltip>
+          <Tooltip content="Close" position="bottom">
+            <IconButton
+              icon={CrossIcon}
+              label="Close"
+              appearance="subtle"
+              spacing="compact"
+              onClick={onToggleCollapsed}
+            />
+          </Tooltip>
+        </div>
       </div>
 
       {/* Messages mode — directory OR conversation pane */}
       {dockMode === "messages" && (
         <>
-          {activeId && byId.get(activeId) ? (
+          {activeId ? (
+            // Render pane immediately when activeId is set, even before the
+            // conversations query refetches (race condition fix). Stub fills
+            // in the title/kind until byId has the real data.
             <DockConversationPane
-              conversation={byId.get(activeId)!}
+              conversation={byId.get(activeId) ?? {
+                id: activeId,
+                kind: "dm",
+                title: "…",
+                isArchived: false,
+                lastMessageAt: null,
+                lastMessagePreview: null,
+                unreadCount: 0,
+                ticketKey: null,
+                ticketType: null,
+                projectKey: null,
+                projectName: null,
+              }}
               onBack={() => onFocusDirectory?.()}
             />
           ) : (
@@ -301,6 +335,7 @@ export function ChatDock({
               conversations={listConversations}
               activeId={activeId}
               onSelectConversation={onSelect}
+              focusTick={dirFocusTick}
             />
           )}
 
@@ -336,10 +371,36 @@ export function ChatDock({
                   <span>
                     {label.length > 12 ? `${label.slice(0, 11)}…` : label}
                   </span>
-                  {/* × close button REMOVED (2026-06-08 design-critique).
-                      Ambiguous on channel pills — read as "leave channel"
-                      when it was just "close tab". Slack/Teams have no
-                      tab-bar close. Tabs auto-clear on dock close. */}
+                  {/* Unread indicator — blue dot when conversation has unread messages and is not active */}
+                  {!isActive && (conv?.unreadCount ?? 0) > 0 && (
+                    <span
+                      aria-label="Unread messages"
+                      style={{
+                        width: 7,
+                        height: 7,
+                        borderRadius: "50%",
+                        background: "var(--ds-background-brand-bold, #0C66E4)",
+                        flexShrink: 0,
+                        marginLeft: 2,
+                      }}
+                    />
+                  )}
+                  {/* × dismiss tab — closes the conversation tab without leaving/archiving */}
+                  <button
+                    type="button"
+                    className="cc-tab__x"
+                    aria-label={`Close ${label} tab`}
+                    title="Close tab"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onClose(id);
+                    }}
+                  >
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+                      <line x1="2" y1="2" x2="8" y2="8" />
+                      <line x1="8" y1="2" x2="2" y2="8" />
+                    </svg>
+                  </button>
                 </div>
               );
             })}

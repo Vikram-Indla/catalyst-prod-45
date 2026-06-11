@@ -80,10 +80,14 @@ function ReactionChip({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showTooltip]);
 
-  // Get chip position for tooltip placement
+  // Get chip position — right-anchor tooltip when near viewport right edge.
   const chipRect = chipRef.current?.getBoundingClientRect();
   const tooltipTop = chipRect ? chipRect.bottom + 8 : 'auto';
-  const tooltipLeft = chipRect ? chipRect.left : 'auto';
+  const viewW = typeof window !== 'undefined' ? window.innerWidth : 1440;
+  const chipRight = chipRect ? chipRect.right : viewW;
+  const tooltipWouldOverflow = chipRight + 200 > viewW - 8;
+  const tooltipLeft = tooltipWouldOverflow ? 'auto' : (chipRect ? chipRect.left : 'auto');
+  const tooltipRight = tooltipWouldOverflow ? (viewW - chipRight) : 'auto';
 
   // Build reactor list for tooltip
   const reactorList = reactors.slice(0, 3).map((r) => r.userName).join(', ');
@@ -148,6 +152,7 @@ function ReactionChip({
             position: 'fixed',
             top: tooltipTop,
             left: tooltipLeft,
+            right: tooltipRight,
             zIndex: 1001,
             background: 'var(--ds-surface-overlay, #FFFFFF)',
             border: `1px solid var(--ds-border, #DFE1E6)`,

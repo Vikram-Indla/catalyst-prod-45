@@ -4,12 +4,12 @@
  * Uses useThreadMessages for the reply list + reply composer.
  */
 import React, { useState } from 'react';
-import Button from '@atlaskit/button/new';
 import { Checkbox } from '@atlaskit/checkbox';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import type { ChatMessage } from '@/types/chat';
 import { useThreadMessages } from '@/hooks/chat/useThreadMessages';
 import { Avatar, initialsOf } from './avatar';
+import { MessageComposer } from './MessageComposer';
 
 export interface ThreadPanelProps {
   conversationId: string;
@@ -29,33 +29,19 @@ export function ThreadPanel({
   onAlsoSendToConversation,
 }: ThreadPanelProps) {
   const { messages, isLoading, sendReply } = useThreadMessages(conversationId, parentMessage.id);
-  const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
   const [alsoSend, setAlsoSend] = useState(false);
-
-  const submit = async () => {
-    const text = draft.trim();
-    if (!text || sending) return;
-    setSending(true);
-    try {
-      await sendReply(text);
-      if (alsoSend && onAlsoSendToConversation) await onAlsoSendToConversation(text);
-      setDraft('');
-      setAlsoSend(false);
-    } finally {
-      setSending(false);
-    }
-  };
 
   return (
     <div
       style={{
-        width: 360,
         borderLeft: '1px solid var(--ds-border, #DFE1E6)',
         background: 'var(--ds-surface, #FFFFFF)',
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
+        flex: 1,
+        minWidth: 0,
       }}
     >
       <div
@@ -126,42 +112,31 @@ export function ThreadPanel({
         ))}
       </div>
 
-      {/* Reply composer */}
-      <div style={{ borderTop: '1px solid var(--ds-border, #DFE1E6)', padding: 12 }}>
-        <textarea
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder="Reply…"
-          rows={2}
-          style={{
-            width: '100%',
-            border: '1px solid var(--ds-border, #DFE1E6)',
-            borderRadius: 4,
-            padding: 8,
-            fontSize: 14,
-            resize: 'none',
-            fontFamily: 'inherit',
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              submit();
-            }
-          }}
-        />
-        <div style={{ display: 'flex', alignItems: 'center', marginTop: 8, gap: 8 }}>
-          {onAlsoSendToConversation && (
+      {/* Reply composer — canonical MessageComposer (same as main conversation) */}
+      <div style={{ borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
+        {onAlsoSendToConversation && (
+          <div style={{ padding: '6px 12px 0' }}>
             <Checkbox
               isChecked={alsoSend}
               onChange={(e) => setAlsoSend(e.currentTarget.checked)}
               label={`Also send to ${conversationTitle ?? 'conversation'}`}
             />
-          )}
-          <div style={{ flex: 1 }} />
-          <Button appearance="primary" isDisabled={!draft.trim() || sending} onClick={submit}>
-            {sending ? 'Sending…' : 'Reply'}
-          </Button>
-        </div>
+          </div>
+        )}
+        <MessageComposer
+          conversationTitle="Reply…"
+          disabled={sending}
+          onSend={async (text) => {
+            if (!text.trim() || sending) return;
+            setSending(true);
+            try {
+              await sendReply(text);
+              if (alsoSend && onAlsoSendToConversation) await onAlsoSendToConversation(text);
+            } finally {
+              setSending(false);
+            }
+          }}
+        />
       </div>
     </div>
   );

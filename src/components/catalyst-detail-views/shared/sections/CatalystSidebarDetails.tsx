@@ -349,7 +349,7 @@ export function CatalystSidebarDetails({
       {(statusPill || improveDropdown) && (
         <div
           data-cv-sidebar-status-header="true"
-          style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'nowrap' }}
+          style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}
         >
           {statusPill}
           {improveDropdown}
@@ -852,7 +852,7 @@ export function CatalystSidebarDetails({
           Configure CTA removed — Catalyst-specific affordance not present in
           Jira's right panel. See CatalystConfigureDrawer for the component if
           re-enabling later. */}
-      <div style={{ marginTop: 'auto', padding: '12px 0 0' }}>
+      <div style={{ marginTop: 16, padding: '12px 0 0' }}>
         {issue?.jira_created_at && (
           <div style={{ marginBottom: 6, fontSize: 14, fontWeight: 400, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}
             title={issue.jira_created_at}>

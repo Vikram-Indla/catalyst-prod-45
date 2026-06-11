@@ -92,6 +92,7 @@ export function AIIntelligenceButton({
         fontSize: 12,
         fontWeight: 600,
         letterSpacing: 'normal',
+        whiteSpace: 'nowrap',
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.6 : 1,
         display: 'inline-flex',
@@ -133,7 +134,7 @@ export function AIIntelligenceButton({
     <div
       style={{
         display: 'inline-flex',
-        padding: 3,
+        padding: 1.5,
         borderRadius: 20,
         background: STATIC_RAINBOW,
       }}

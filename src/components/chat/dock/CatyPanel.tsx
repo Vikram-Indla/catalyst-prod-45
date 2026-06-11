@@ -16,6 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import catalystChatIcon from '@/assets/caty-ai-bg.svg';
+import catyIcon from '@/assets/caty-icon.svg';
 import {
   CATY_ASSISTANTS,
   canUseAssistant,
@@ -26,6 +27,7 @@ import {
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { renderCatyContent } from './caty-render';
 import { useCatyContext } from './useCatyContext';
+import { MessageComposer } from '@/components/chat/main/MessageComposer';
 // ads-scanner:ignore-next-line — caty-panel.css uses ADS tokens only
 import './caty-panel.css';
 
@@ -129,6 +131,17 @@ function HamburgerIcon() {
   );
 }
 
+// Rainbow burger — Catalyst AI brand colors per CLAUDE.md AI CTA carve-out
+function RainbowHamburgerIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <line x1="3" y1="6" x2="21" y2="6" stroke="#FF3CAC" strokeWidth="2.2" strokeLinecap="round" />
+      <line x1="3" y1="12" x2="21" y2="12" stroke="#2B86C5" strokeWidth="2.2" strokeLinecap="round" />
+      <line x1="3" y1="18" x2="21" y2="18" stroke="#22A06B" strokeWidth="2.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function ChevronDownIcon() {
   return (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -214,7 +227,7 @@ function StepIcon({ type }: { type: CatyStep['type'] }) {
 function AssistantIcon({ assistant }: { assistant: CatyAssistant }) {
   if (!assistant.iconType) {
     return (
-      <img src={catalystChatIcon} alt="" width={20} height={20} />
+      <img src={catyIcon} alt="" width={20} height={20} />
     );
   }
   return (
@@ -309,7 +322,6 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
 
   const [activeId, setActiveId] = useState<AssistantId>('general');
   const [messages, setMessages] = useState<CatyMessage[]>([]);
-  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   // Story flow: pending stories from breakdown
@@ -319,7 +331,6 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
   const [epicInput, setEpicInput] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const activeAssistant = CATY_ASSISTANTS.find((a) => a.id === activeId)!;
   const canUse = canUseAssistant(activeAssistant, role, productRoles);
@@ -333,14 +344,6 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-
-  // Auto-resize textarea
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-    const el = e.target;
-    el.style.height = 'auto';
-    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
-  };
 
   const addMessage = useCallback((msg: Omit<CatyMessage, 'id'>) => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -475,38 +478,25 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
     }
   }, [messages, activeId, firstName, activeContext, addMessage, updateMessage]);
 
-  // ── Send handler ─────────────────────────────────────────────────────
-  const handleSend = useCallback(() => {
-    const text = input.trim();
-    if (!text || loading || !canUse) return;
-
-    setInput('');
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-    }
-
+  // ── Send handler (called by MessageComposer.onSend) ─────────────────
+  const handleComposerSend = useCallback((text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || loading || !canUse) return;
     if (activeId === 'story') {
-      const epicKey = extractEpicKey(text);
+      const epicKey = extractEpicKey(trimmed);
       if (epicKey) {
-        runStoryBreakdown(epicKey, text);
+        runStoryBreakdown(epicKey, trimmed);
       } else {
-        addMessage({ role: 'user', content: text });
+        addMessage({ role: 'user', content: trimmed });
         addMessage({
           role: 'assistant',
           content: 'Please include an epic key (e.g. BAU-45) in your message to start the story breakdown.',
         });
       }
     } else {
-      runGeneralChat(text);
+      runGeneralChat(trimmed);
     }
-  }, [input, loading, canUse, activeId, runStoryBreakdown, runGeneralChat, addMessage]);
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
+  }, [loading, canUse, activeId, runStoryBreakdown, runGeneralChat, addMessage]);
 
   const handleSuggestion = (text: string) => {
     if (activeId === 'story') {
@@ -516,8 +506,7 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
         return;
       }
     }
-    setInput(text);
-    textareaRef.current?.focus();
+    handleComposerSend(text);
   };
 
   const handleEpicBreakdown = () => {
@@ -581,7 +570,6 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
 
   const handleNewConversation = () => {
     setMessages([]);
-    setInput('');
     setPendingStories([]);
     setPendingEpicKey('');
     onNewConversation?.();
@@ -626,30 +614,18 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
 
   return (
     <>
-      {/* Title bar: Caty avatar · "Ask Caty" · assistant switcher · context chip */}
+      {/* Title bar: rainbow burger → opens assistant picker · context chip */}
       <div className="cp-sub-header">
         <button
           type="button"
           className="cp-sub-header__history-btn"
-          aria-label="Conversation history"
-          title="Conversation history"
-        >
-          <HamburgerIcon />
-        </button>
-        <button
-          type="button"
-          className="cp-assistant-trigger"
           aria-label="Switch assistant"
           aria-expanded={showPicker}
           aria-haspopup="menu"
+          title="Switch assistant"
           onClick={() => setShowPicker((v) => !v)}
         >
-          <img src={catalystChatIcon} alt="" className="cp-assistant-trigger__avatar" width={20} height={20} />
-          <span className="cp-assistant-trigger__label">Ask Caty</span>
-          {activeAssistant.id !== 'general' && (
-            <span className="cp-assistant-trigger__sub">· {activeAssistant.name}</span>
-          )}
-          <span className="cp-assistant-trigger__chevron"><ChevronDownIcon /></span>
+          <RainbowHamburgerIcon />
         </button>
         {activeContext && (
           <span
@@ -981,38 +957,17 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
         </div>
       )}
 
-      {/* Input area */}
+      {/* Input area — same rich composer used in Connect conversations */}
       {!lockedPanel && (
-        <div className="cp-input-area">
-          <div className="cp-input-box">
-            <textarea
-              ref={textareaRef}
-              className="cp-input-box__textarea"
-              placeholder={
-                activeAssistant.id === 'story'
-                  ? 'Enter an epic key (e.g. BAU-45) or ask a story question…'
-                  : 'Ask Caty, @mention, or /commands'
-              }
-              value={input}
-              rows={1}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              disabled={loading}
-            />
-          </div>
-          <div className="cp-input-toolbar">
-            <span className="cp-input-toolbar__spacer" />
-            <button
-              type="button"
-              className={`cp-send-btn${input.trim() && !loading ? ' cp-send-btn--active' : loading ? ' cp-send-btn--loading' : ''}`}
-              aria-label="Send message"
-              onClick={handleSend}
-              disabled={!input.trim() || loading}
-            >
-              {loading ? <Spinner size="small" /> : <SendIcon />}
-            </button>
-          </div>
-        </div>
+        <MessageComposer
+          conversationTitle={
+            activeAssistant.id === 'story'
+              ? 'Epic key (e.g. BAU-45) or story question'
+              : 'Caty'
+          }
+          disabled={loading || !canUse}
+          onSend={handleComposerSend}
+        />
       )}
 
       {/* Trust footer — always visible (mirrors Rovo "Uses AI. Verify results.") */}

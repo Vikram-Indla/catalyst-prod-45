@@ -139,6 +139,10 @@ export interface CatalystViewBaseLayoutProps {
   isLoading?: boolean;
   /* True when the query finished but returned no record (deleted/invalid issue key) */
   isNotFound?: boolean;
+  /** Force-hide the right sidebar regardless of @container query.
+   *  Used when the parent layout is in medium mode and the detail container
+   *  is too narrow to host both body and sidebar comfortably. */
+  hideSidebar?: boolean;
 }
 
 /* ═══════════════════════════════════════════
@@ -151,7 +155,7 @@ export function CatalystViewBase({
   moreMenuItems,
   onTogglePanelMode, navigationItems, currentItemId, onNavigate,
   leftContent, rightContent,
-  isLoading, isNotFound,
+  isLoading, isNotFound, hideSidebar,
 }: CatalystViewBaseLayoutProps) {
 
   /* ── State ──────────────────────────────── */
@@ -163,7 +167,7 @@ export function CatalystViewBase({
   // (raised from 220 → 260 on 2026-05-19: "Improve Production Incident" button is 236px
   // and was visually clipping at 220px; 260 gives it breathing room without crowding the
   // left content area at typical 1140px AllWork panel widths).
-  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 440 : 480);
+  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 260 : 480);
   const [showCopyFlag, setShowCopyFlag] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [moreAnchor, setMoreAnchor] = useState<DOMRect | null>(null);
@@ -314,7 +318,6 @@ export function CatalystViewBase({
     display: 'flex', flexDirection: 'column',
   } : panelMode ? {
     position: 'relative', width: '100%', height: '100%',
-    display: 'flex', flexDirection: 'column',
   } : {
     position: 'fixed', inset: 0, zIndex: 1000,
     display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
@@ -333,7 +336,7 @@ export function CatalystViewBase({
     width: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
   } : panelMode ? {
-    width: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    width: '100%', minWidth: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
     // 2026-05-24 — anti-dance fix: cv-panel-in slide-in intentionally absent here.
     // The panel is already on-screen; replaying the entrance animation on every
@@ -689,7 +692,7 @@ export function CatalystViewBase({
           <div className="cv-drawer-sidebar" style={{
             width: rightPanelWidth, minWidth: 220, maxWidth: 600,
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflowX: 'hidden',
-            display: 'flex', flexDirection: 'column', padding: '16px 4px 32px 16px',
+            display: hideSidebar ? 'none' : 'flex', flexDirection: 'column', padding: '16px 4px 32px 16px',
             minHeight: 0,
             ...(fullPageMode
               ? { position: 'sticky', top: 0, maxHeight: '100%', overflowY: 'auto', alignSelf: 'flex-start' }

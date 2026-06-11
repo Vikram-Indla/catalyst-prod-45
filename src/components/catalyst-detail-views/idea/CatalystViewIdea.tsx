@@ -138,6 +138,7 @@ function ImpactSlider({
  */
 export default function CatalystViewIdea({
   isOpen, onClose, itemId, onConvert,
+  hideSidebar,
 }: CatalystViewBaseProps) {
   const ideaKey = itemId || null;
   const { data: rawIdea, isLoading } = useIdeaByKey(ideaKey);

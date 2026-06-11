@@ -110,7 +110,11 @@ export function NewGroupDmModal({ isOpen, onClose, onCreated }: NewGroupDmModalP
       setSelected(new Set());
       setQuery('');
     } catch (e: any) {
-      setError(e?.message ?? 'Could not start group DM');
+      const raw: string = e?.message ?? '';
+      const friendly = raw.includes('function') || raw.includes('does not exist') || raw.includes('pg_') || raw.includes('ERROR')
+        ? 'Could not start group DM. Please try again.'
+        : raw || 'Could not start group DM';
+      setError(friendly);
     } finally {
       setSubmitting(false);
     }
@@ -119,7 +123,7 @@ export function NewGroupDmModal({ isOpen, onClose, onCreated }: NewGroupDmModalP
   return (
     <ModalTransition>
       {isOpen && (
-        <Modal onClose={onClose} width="medium">
+        <Modal onClose={onClose} width={360}>
           <ModalHeader>
             <ModalTitle>New group message</ModalTitle>
           </ModalHeader>

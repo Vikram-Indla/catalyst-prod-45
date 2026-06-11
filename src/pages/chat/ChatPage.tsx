@@ -14,7 +14,7 @@ export default function ChatPage() {
 
   return (
     <ChatRealtimeProvider>
-      <div style={{ height: '100%', minHeight: 0, display: 'flex', flex: 1 }}>
+      <div style={{ height: '100%', minHeight: 0, display: 'flex', flex: 1, background: 'var(--ds-surface, #FFFFFF)' }}>
         <ChatMainView
           activeConversationId={activeConversationId}
           onSelectConversation={setActiveConversationId}
