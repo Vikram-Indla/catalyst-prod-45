@@ -11,8 +11,15 @@
  *   correctly.
  *
  * Fallback:
- *   If no roster entry matches, a single-word `@token` still renders as a
- *   mention pill so unknown / stale handles aren't swallowed silently.
+ *   When no roster entry matches we still want to chip multi-word names
+ *   (e.g. Jira-only authors like "@Arslaan Ahmad Malik") instead of
+ *   leaking the trailing words as plain text. The fallback matches the
+ *   `@` token plus up to TWO additional name-shaped words (so 1–3 words
+ *   total, separated by single spaces). Three-word cap covers nearly
+ *   every real human name while keeping the over-eat risk small for
+ *   casual prose like "@John let me know" (worst case: chips three
+ *   words instead of one). Anything after punctuation or a fourth word
+ *   stays as plain text.
  */
 
 export type MentionPart =
@@ -21,7 +28,7 @@ export type MentionPart =
 
 const BOUNDARY_BEFORE = /\s|[(\[<,;:"']/;
 const BOUNDARY_AFTER = /[\s.,;:!?)\]>'"]/;
-const FALLBACK_WORD = /^@[A-Za-z][A-Za-z'.-]*/;
+const FALLBACK_NAME = /^@[A-Za-z][A-Za-z'.-]*(?:\s+[A-Za-z][A-Za-z'.-]*){0,2}/;
 
 /**
  * `roster` is an array of `{ name, userId }` entries. The `name` is the
@@ -99,7 +106,7 @@ export function parseMentions(
         continue;
       }
 
-      const fallback = text.slice(i).match(FALLBACK_WORD);
+      const fallback = text.slice(i).match(FALLBACK_NAME);
       if (fallback) {
         flushText();
         const raw = fallback[0];

@@ -87,9 +87,19 @@ ${comment || "(empty)"}`;
 const SUGGEST_REPLY_SYSTEM =
   "You write professional, concise replies to comments on work items in an enterprise project-management tool. Output plain text only — no markdown, no bullet points, no greetings, no sign-offs. Maximum 3 sentences.";
 
-function buildSuggestReplyPrompt(parentComment: string, issueSummary: string, issueType: string): string {
-  return `Generate a helpful reply to the following comment on a ${issueType || "work item"} titled "${issueSummary || "(untitled)"}".
-
+function buildSuggestReplyPrompt(
+  parentComment: string,
+  issueSummary: string,
+  issueType: string,
+  parentAuthor: string,
+): string {
+  const authorBlock = parentAuthor
+    ? `\nThe comment was written by ${parentAuthor}.\n`
+    : "";
+  const mentionRule = parentAuthor
+    ? `- When it reads naturally (acknowledging the author, addressing a question they raised, agreeing with them, etc.), refer to them as @${parentAuthor} once. Do NOT force a mention — only include it when context calls for it. Never start the reply with "Got it, @${parentAuthor}" or any other formulaic greeting.`
+    : "";
+  return `Generate a helpful reply to the following comment on a ${issueType || "work item"} titled "${issueSummary || "(untitled)"}".${authorBlock}
 COMMENT:
 "${parentComment}"
 
@@ -98,6 +108,7 @@ INSTRUCTIONS:
 - If the comment asks a question, answer it or acknowledge it.
 - If the comment is informational, acknowledge and add value where possible.
 - Stay within the scope of what the comment says — do not invent new information.
+${mentionRule}
 - Plain text only. No markdown. No greeting. No sign-off. Under 3 sentences.
 
 Reply:`;
@@ -131,11 +142,14 @@ serve(async (req) => {
         typeof body?.issue_summary === "string" ? body.issue_summary : "";
       const replyIssueType: string =
         typeof body?.issue_type === "string" ? body.issue_type : "";
+      const parentAuthor: string =
+        typeof body?.parent_author === "string" ? body.parent_author : "";
 
       const userPromptText = buildSuggestReplyPrompt(
         parentComment,
         replyIssueSummary,
         replyIssueType,
+        parentAuthor,
       );
 
       const upstreamAbort = new AbortController();
