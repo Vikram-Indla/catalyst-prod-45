@@ -113,7 +113,13 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
         </div>
 
         <div style={{ display: 'flex', gap: 8 }}>
-          <Button appearance="subtle" onClick={() => navigate(listHref)}>
+          <Button
+            appearance="subtle"
+            onClick={() => {
+              if (effectiveJql.trim() && !window.confirm('Discard unsaved filter?')) return;
+              navigate(listHref);
+            }}
+          >
             Cancel
           </Button>
           <Button
