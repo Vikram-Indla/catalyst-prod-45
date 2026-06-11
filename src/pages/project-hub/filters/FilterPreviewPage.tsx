@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
 import { token } from '@atlaskit/tokens';
@@ -186,8 +186,13 @@ function useLinkedEntities(_filterId: string | null): LinkedFilterEntity[] {
 export function FilterPreviewPage() {
   const { key: projectKey } = useParams<{ key: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const urlFilterId = searchParams.get('filterId');
 
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS);
+  // When opened from a saved filter, this holds the raw saved JQL and name.
+  const [savedFilterJql, setSavedFilterJql] = useState<string | null>(null);
+  const [savedFilterName, setSavedFilterName] = useState<string | null>(null);
   const [openChipKey, setOpenChipKey] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState<string>('updated');
@@ -238,6 +243,34 @@ export function FilterPreviewPage() {
   const facetItems = useProjectFacetItems(projectKey);
   const members = useProjectMembers(projectKey);
 
+  // Load saved filter when navigated from FiltersListPage with ?filterId=
+  const { data: loadedFilter } = useQuery({
+    queryKey: ['ph_saved_filter', urlFilterId],
+    enabled: !!urlFilterId,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from('ph_saved_filters')
+        .select('id, name, jql_query, filter_config')
+        .eq('id', urlFilterId)
+        .maybeSingle();
+      return data ?? null;
+    },
+  });
+
+  // Seed savedFilterId, JQL, and name once the filter row arrives.
+  useEffect(() => {
+    if (!loadedFilter) return;
+    setSavedFilterId(loadedFilter.id);
+    setSavedFilterName(loadedFilter.name ?? null);
+    setSavedFilterJql(loadedFilter.jql_query ?? null);
+    // Restore chip state if filter_config has FilterState shape (workType/status/assignee).
+    const cfg = loadedFilter.filter_config;
+    if (cfg && typeof cfg === 'object' && ('workType' in cfg || 'status' in cfg || 'assignee' in cfg)) {
+      setFilters({ ...EMPTY_FILTERS, ...(cfg as Partial<FilterState>) });
+    }
+  }, [loadedFilter]);
+
   const facetOptions = useMemo(() => {
     const ALL_FACETS = ['workType', 'status', 'assignee', ...MORE_FILTERS_FACETS] as const;
     const out: Record<string, FacetOption[]> = {};
@@ -245,9 +278,12 @@ export function FilterPreviewPage() {
     return out;
   }, [facetItems]);
 
-  // filterStateToJql always produces at least `project = "BAU"` so the table
-  // is never empty by default — same scope as the Project Backlog.
-  const jql = useMemo(() => filterStateToJql(filters, projectKey), [filters, projectKey]);
+  // When a saved filter is loaded via ?filterId=, use its stored JQL directly.
+  // Otherwise derive JQL from the chip state.
+  const jql = useMemo(
+    () => savedFilterJql ?? filterStateToJql(filters, projectKey),
+    [savedFilterJql, filters, projectKey]
+  );
 
   const { data, isLoading, isFetching } = useJqlResults(jql);
 
@@ -273,6 +309,7 @@ export function FilterPreviewPage() {
 
   const updateFacet = (facet: string, next: string[]) => {
     setFilters(prev => ({ ...prev, [facet]: next }));
+    setSavedFilterJql(null); // switch to chip-driven JQL once user modifies
     markDirty();
   };
 
@@ -474,7 +511,7 @@ export function FilterPreviewPage() {
             lineHeight: '24px',
           }}
         >
-          Create filter
+          {savedFilterName ?? 'Create filter'}
         </h1>
       }
     >
