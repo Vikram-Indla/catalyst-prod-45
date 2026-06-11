@@ -55,7 +55,6 @@ import Tooltip from '@atlaskit/tooltip';
 import TextArea from '@atlaskit/textarea';
 import EmojiAddIcon from '@atlaskit/icon/glyph/emoji-add';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
-import { catalystToast } from '@/lib/catalystToast';
 import ForYouRow from './ForYouRow';
 import { SummarizeDigestModal, type DigestMention } from './SummarizeDigestModal';
 import { ForYouEmptyState, GroupHeading, groupByRecency, MentionSparkleArt } from './helpers';
@@ -1844,8 +1843,9 @@ function ForYouReplyTree({
         headers: { 'Content-Type': 'application/json' },
       });
       if (!res.ok || !res.body) {
+        // Inline error — per-reply suggest phase drives the
+        // SuggestReplyTile error state on the nested reply's tile.
         setSuggestPhaseByReply((p) => ({ ...p, [replyId]: 'error' }));
-        catalystToast.error('Could not generate a suggestion. Try again.');
         return;
       }
       const reader = res.body.getReader();
@@ -2199,6 +2199,17 @@ function ForYouCardFooter({
   const [composerKey, setComposerKey] = useState(0);
   const [composerDefault, setComposerDefault] = useState('');
   const [suggestPhase, setSuggestPhase] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
+  // Inline reply feedback — no corner toasts or Atlassian Flags. Success
+  // flashes a brief "Reply sent" indicator inside LeaveAReplyBox for 2s
+  // and then reverts; error keeps the composer open with an inline
+  // error banner so the user can fix and retry without losing context.
+  const [replyJustSent, setReplyJustSent] = useState(false);
+  const [replyError, setReplyError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!replyJustSent) return;
+    const t = window.setTimeout(() => setReplyJustSent(false), 2000);
+    return () => window.clearTimeout(t);
+  }, [replyJustSent]);
 
   // Sync if a refetch surfaces a non-null phCommentId after first paint.
   useEffect(() => {
@@ -2308,8 +2319,10 @@ function ForYouCardFooter({
         signal: controller.signal,
       });
       if (!res.ok || !res.body) {
+        // setSuggestPhase('error') drives the inline error UI on the
+        // LeaveAReplyBox (SuggestReplyTile's error state — "Caty is busy
+        // — please wait a moment and click again"). No corner toast.
         setSuggestPhase('error');
-        catalystToast.error('Could not generate a suggestion. Try again.');
         return;
       }
       const reader = res.body.getReader();
@@ -2375,8 +2388,9 @@ function ForYouCardFooter({
   };
 
   const handleSubmitReply = async (content: string) => {
+    setReplyError(null);
     if (!user?.id) {
-      catalystToast.error('You must be signed in to reply.');
+      setReplyError('You must be signed in to reply.');
       return;
     }
     // Issue UUID lookup — `row.issueId` is set to `issue?.id || issue_key`
@@ -2407,9 +2421,7 @@ function ForYouCardFooter({
       }
     }
     if (!workItemId) {
-      catalystToast.error(
-        'Could not save reply — this issue is not yet synced to Catalyst.',
-      );
+      setReplyError('This issue is not yet synced to Catalyst.');
       return;
     }
     try {
@@ -2421,13 +2433,17 @@ function ForYouCardFooter({
         parent_comment_id: parentId ?? null,
       });
       if (error) throw error;
-      catalystToast.success('Reply added');
+      // Success — close the composer and flash an inline "Reply sent"
+      // indicator in the LeaveAReplyBox for ~2s. No corner notification.
       setComposerOpen(false);
       setComposerDefault('');
+      setReplyJustSent(true);
       queryClient.invalidateQueries({ queryKey: ['fy-reply-tree', workItemId] });
     } catch (err) {
       console.warn('[ForYouCardFooter] reply insert failed', err);
-      catalystToast.error('Could not save reply. Try again.');
+      // Error — keep the composer open with an inline error banner so
+      // the user can correct and retry without losing their typed text.
+      setReplyError('Could not save reply. Try again in a moment.');
     }
   };
 
@@ -2442,7 +2458,8 @@ function ForYouCardFooter({
       author_id: user.id,
       parent_comment_id: parentId,
     });
-    catalystToast.success('Reply added');
+    // Success feedback is the reply itself appearing in the tree via
+    // the query invalidation below — no corner notification.
     queryClient.invalidateQueries({ queryKey: ['fy-reply-tree', issueUuid] });
   };
 
@@ -2483,6 +2500,9 @@ function ForYouCardFooter({
         composerOpen={composerOpen}
         suggestLoading={suggestPhase === 'loading'}
         suggestError={suggestPhase === 'error'}
+        replyJustSent={replyJustSent}
+        replyError={replyError}
+        onDismissError={() => setReplyError(null)}
         onOpen={() => {
           setComposerDefault('');
           setComposerKey((k) => k + 1);
@@ -2529,6 +2549,9 @@ function LeaveAReplyBox({
   composerOpen,
   suggestLoading,
   suggestError,
+  replyJustSent,
+  replyError,
+  onDismissError,
   onOpen,
   onSuggest,
   onCancelSuggest,
@@ -2538,12 +2561,19 @@ function LeaveAReplyBox({
   composerOpen: boolean;
   suggestLoading: boolean;
   suggestError: boolean;
+  /** Brief inline success state — flashes ~2s right after a successful submit. */
+  replyJustSent: boolean;
+  /** Inline error string surfaced when a submit fails. Null when clear. */
+  replyError: string | null;
+  onDismissError: () => void;
   onOpen: () => void;
   onSuggest: () => void;
   onCancelSuggest: () => void;
   editor: React.ReactNode;
 }) {
-  const placeholder = suggestError
+  const placeholder = replyJustSent
+    ? 'Reply sent'
+    : suggestError
     ? 'Could not generate a suggestion. Try again.'
     : 'Leave a reply';
 
@@ -2666,7 +2696,44 @@ function LeaveAReplyBox({
         )}
 
         {composerOpen ? (
-          <div style={{ flex: 1, minWidth: 0 }}>{editor}</div>
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {/* Inline error banner — sits ABOVE the editor when a submit
+                fails so the user can correct and retry without losing
+                context. Dismissable; no corner overlay. */}
+            {replyError && (
+              <div
+                role="alert"
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 8,
+                  padding: '8px 10px',
+                  borderRadius: 4,
+                  background: 'var(--ds-background-danger, #FFEDEB)',
+                  border: '1px solid var(--ds-border-danger, #F2A19A)',
+                  color: 'var(--ds-text-danger, #AE2A19)',
+                  font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+                }}
+              >
+                <span style={{ flex: 1, minWidth: 0 }}>{replyError}</span>
+                <button
+                  type="button"
+                  aria-label="Dismiss error"
+                  onClick={onDismissError}
+                  style={{
+                    all: 'unset',
+                    cursor: 'pointer',
+                    color: 'var(--ds-text-danger, #AE2A19)',
+                    fontWeight: 600,
+                    padding: '0 4px',
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            )}
+            {editor}
+          </div>
         ) : suggestLoading ? (
           // While Caty is generating, the bordered placeholder is replaced
           // by the animated rainbow-frame panel. Hides the Ask Caty button
@@ -2689,21 +2756,46 @@ function LeaveAReplyBox({
               flex: 1,
               minWidth: 0,
               cursor: 'text',
-              border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+              border: `1px solid ${
+                replyJustSent
+                  ? 'var(--ds-border-success, #6A9A7B)'
+                  : token('color.border', 'rgba(11,18,14,0.14)')
+              }`,
               borderRadius: 6,
               padding: '10px 12px',
               background: 'var(--ds-surface, #FFFFFF)',
               display: 'flex',
               flexDirection: 'column',
               gap: 8,
+              transition: 'border-color 240ms ease',
             }}
           >
+            {/* Inline success indicator — green check + "Reply sent" for
+                ~2s after a successful submit, then quietly reverts to the
+                default placeholder. No corner notification, no overlay. */}
             <span
               style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
                 font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                color: token('color.text.subtlest', '#6B778C'),
+                color: replyJustSent
+                  ? 'var(--ds-text-success, #1F845A)'
+                  : token('color.text.subtlest', '#6B778C'),
+                transition: 'color 240ms ease',
               }}
             >
+              {replyJustSent && (
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M3 8l3.5 3.5L13 5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
               {placeholder}
             </span>
             {/* Stop propagation so clicking the Ask Caty button does

@@ -10,7 +10,11 @@ import {
 } from "react";
 import AkFlag, { FlagGroup } from "@atlaskit/flag";
 import InfoIcon from "@atlaskit/icon/core/information-circle";
+import SuccessIcon from "@atlaskit/icon/core/check-circle";
+import WarningIcon from "@atlaskit/icon/core/warning";
+import ErrorIcon from "@atlaskit/icon/core/error";
 import { token } from "@atlaskit/tokens";
+import { useCatalystFlagsStore, type CatalystFlagAppearance } from "@/store/catalystFlagsStore";
 import { consumeLastLoginDisplay } from "@/hooks/useSessionPersistence";
 import { Menu } from "@/lib/atlaskit-icons";
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
@@ -1047,6 +1051,49 @@ function LastLoginFlag() {
   );
 }
 
+/**
+ * CatalystFlagStack — bottom-left Atlassian Flag stack driven by the
+ * useCatalystFlagsStore. Renders nothing while the stack is empty so
+ * the corner stays clear.
+ */
+function CatalystFlagStack() {
+  const flags = useCatalystFlagsStore((s) => s.flags);
+  const dismissFlag = useCatalystFlagsStore((s) => s.dismissFlag);
+  if (flags.length === 0) return null;
+
+  const iconFor = (appearance: CatalystFlagAppearance) => {
+    switch (appearance) {
+      case "success":
+        return <SuccessIcon label="" color={token("color.icon.success", "#1F845A")} />;
+      case "warning":
+        return <WarningIcon label="" color={token("color.icon.warning", "#B38600")} />;
+      case "error":
+        return <ErrorIcon label="" color={token("color.icon.danger", "#AE2A19")} />;
+      case "info":
+      default:
+        return <InfoIcon label="" color={token("color.icon.information", "#0055CC")} />;
+    }
+  };
+
+  return (
+    <div style={{ position: "fixed", bottom: 24, left: 24, zIndex: 9999 }}>
+      <FlagGroup onDismissed={(id) => dismissFlag(String(id))}>
+        {flags.map((f) => (
+          <AkFlag
+            key={f.id}
+            id={f.id}
+            appearance={f.appearance === "success" || f.appearance === "info" ? "info" : f.appearance}
+            icon={iconFor(f.appearance)}
+            title={f.title}
+            description={f.description}
+            actions={f.sticky ? [{ content: "Dismiss", onClick: () => dismissFlag(f.id) }] : undefined}
+          />
+        ))}
+      </FlagGroup>
+    </div>
+  );
+}
+
 export function CatalystShell() {
   const pendingItem = useGlobalSearchStore((s) => s.pendingItem);
   const clearDetail = useGlobalSearchStore((s) => s.clearDetail);
@@ -1054,6 +1101,12 @@ export function CatalystShell() {
   return (
     <CatalystContextProvider>
       <CatalystShellContent />
+      {/* CatalystFlagStack is mounted here intentionally — the store is
+          empty by default so it renders nothing. The dashboard reply
+          flow uses INLINE feedback (no overlay), but other flows that
+          need a true background event signal (sync done, bulk op
+          finished) can still push a Flag without prop-drilling. */}
+      <CatalystFlagStack />
       {/* GlobalSearch is rendered inside CatalystHeader as the anchored search trigger */}
       {/*
        * Global CatalystDetailRouter — modal mode only. Opened from
