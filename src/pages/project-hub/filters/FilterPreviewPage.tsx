@@ -20,9 +20,9 @@ import {
   makeStatusCell,
   makeParentCell,
   makeAssigneeCell,
-  makePriorityCell,
   makeDateCell,
   makeRowMenuCell,
+  makePriorityEditCell,
 } from '@/components/shared/JiraTable';
 import type { Column, SortOrder } from '@/components/shared/JiraTable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -136,6 +136,12 @@ export function FilterPreviewPage() {
   const [sortKey, setSortKey] = useState<string>('updated');
   const [sortOrder, setSortOrder] = useState<SortOrder>('DESC');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  // Column picker — mirrors BacklogPage's canonial column-visibility state.
+  // Default visible matches BacklogPage DEFAULT_VISIBLE_COLUMNS = ['key','status','parent','assignee'].
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(
+    () => new Set(['key', 'status', 'assignee'])
+  );
 
   // Ask Caty inline bar — mirrors BacklogPage's setAskCatyOpen pattern
   const [askCatyOpen, setAskCatyOpen] = useState(false);
@@ -290,7 +296,7 @@ export function FilterPreviewPage() {
         label: 'Parent',
         width: 11,
         sortable: true,
-        defaultVisible: true,
+        defaultVisible: false,
         accessor: (r) => r.parentKey ?? '',
         cell: makeParentCell((r: JqlResultRow) =>
           r.parentKey
@@ -328,9 +334,13 @@ export function FilterPreviewPage() {
         label: 'Priority',
         width: 6,
         sortable: true,
-        defaultVisible: true,
+        defaultVisible: false,
         accessor: (r) => r.priority ?? '',
-        cell: makePriorityCell((r: JqlResultRow) => r.priority),
+        cell: makePriorityEditCell<JqlResultRow>({
+          getPriority: (r) => r.priority,
+          canEdit: () => false,
+          onChange: () => {},
+        }),
       },
       {
         id: 'due_date',
@@ -563,6 +573,8 @@ export function FilterPreviewPage() {
             rowsPerPage={0}
             totalRowCount={data?.totalCount}
             stickyCreateFooter={{ onRefresh: () => {} }}
+            columnVisibility={visibleColumns}
+            onColumnVisibilityChange={setVisibleColumns}
             selectable
             selectedIds={selectedIds}
             onSelectionChange={setSelectedIds}
