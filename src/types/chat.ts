@@ -1,5 +1,5 @@
 export type ChatPresence = 'on_set' | 'remote' | 'away' | 'on_leave';
-export type ChatConversationKind = 'ticket' | 'channel' | 'dm' | 'group_dm';
+export type ChatConversationKind = 'ticket' | 'channel' | 'dm' | 'group_dm' | 'custom_channel';
 
 export interface ChatConversation {
   id: string;
