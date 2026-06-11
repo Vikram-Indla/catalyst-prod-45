@@ -1,12 +1,15 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import AvatarGroup from '@atlaskit/avatar-group';
+import AkFlag, { FlagGroup } from '@atlaskit/flag';
 import AkSearchIcon from '@atlaskit/icon/core/search';
 import AkCloseIcon from '@atlaskit/icon/core/close';
+import AkWarningIcon from '@atlaskit/icon/core/warning';
+import AkInfoIcon from '@atlaskit/icon/core/information';
 import Spinner from '@atlaskit/spinner';
 import { AtlaskitPageShell } from '@/components/ads';
 import {
@@ -46,7 +49,6 @@ import FilterIconCore from '@atlaskit/icon/core/filter';
 const SUBTLE = token('color.text.subtle', '#505258');
 const FilterIcon = () => <FilterIconCore label="" color={SUBTLE} />;
 
-/** Lightweight facet-options query — only the fields needed to build dropdowns. */
 function useProjectFacetItems(projectKey: string | undefined): WorkItem[] {
   const { data = [] } = useQuery<WorkItem[]>({
     queryKey: ['filter-preview-facet-items', projectKey],
@@ -55,59 +57,105 @@ function useProjectFacetItems(projectKey: string | undefined): WorkItem[] {
     queryFn: async () => {
       const { data: rows } = await (supabase as any)
         .from('ph_issues')
-        .select('issue_key, issue_type, status, status_category, assignee_display_name, assignee_account_id, priority, fix_versions, labels, parent_key, parent_summary, sprint_name, resolution, severity')
+        .select(
+          'issue_key, issue_type, status, status_category, assignee_display_name, assignee_account_id, priority, fix_versions, labels, parent_key, parent_summary, sprint_name, resolution, severity'
+        )
         .eq('project_key', projectKey)
+        .is('jira_removed_at', null)
+        .is('deleted_at', null)
         .limit(500);
       if (!rows) return [];
-      return (rows as any[]).map((r: any): WorkItem => ({
-        id: r.issue_key,
-        projectId: projectKey!,
-        parentId: null,
-        parentKey: r.parent_key ?? null,
-        parentSummary: r.parent_summary ?? null,
-        jiraKey: r.issue_key,
-        type: 'task' as any,
-        rawType: r.issue_type ?? null,
-        summary: '',
-        status: 'todo' as any,
-        statusName: r.status ?? '',
-        statusCategory: (r.status_category ?? 'todo') as any,
-        assigneeId: r.assignee_account_id ?? null,
-        assignee: r.assignee_display_name
-          ? { id: r.assignee_account_id ?? '', name: r.assignee_display_name, avatarUrl: null, initials: '', color: '' }
-          : undefined,
-        reporterId: null,
-        priority: (r.priority ?? 'medium') as any,
-        fixVersion: r.fix_versions?.[0] ?? null,
-        sprintRelease: r.fix_versions?.[0] ?? null,
-        sprintName: r.sprint_name ?? null,
-        labels: r.labels ?? [],
-        resolution: r.resolution ?? null,
-        severity: r.severity ?? null,
-        commentsCount: 0,
-        childCount: 0,
-        createdAt: '',
-        updatedAt: '',
-        createdBy: null,
-      } as any));
+      return (rows as any[]).map(
+        (r: any): WorkItem =>
+          ({
+            id: r.issue_key,
+            projectId: projectKey!,
+            parentId: null,
+            parentKey: r.parent_key ?? null,
+            parentSummary: r.parent_summary ?? null,
+            jiraKey: r.issue_key,
+            type: 'task' as any,
+            rawType: r.issue_type ?? null,
+            summary: '',
+            status: 'todo' as any,
+            statusName: r.status ?? '',
+            statusCategory: (r.status_category ?? 'todo') as any,
+            assigneeId: r.assignee_account_id ?? null,
+            assignee: r.assignee_display_name
+              ? { id: r.assignee_account_id ?? '', name: r.assignee_display_name, avatarUrl: null, initials: '', color: '' }
+              : undefined,
+            reporterId: null,
+            priority: (r.priority ?? 'medium') as any,
+            fixVersion: r.fix_versions?.[0] ?? null,
+            sprintRelease: r.fix_versions?.[0] ?? null,
+            sprintName: r.sprint_name ?? null,
+            labels: r.labels ?? [],
+            resolution: r.resolution ?? null,
+            severity: r.severity ?? null,
+            commentsCount: 0,
+            childCount: 0,
+            createdAt: '',
+            updatedAt: '',
+            createdBy: null,
+          } as any)
+      );
     },
   });
   return data;
 }
 
+// ---------------------------------------------------------------------------
+// Linked entities — scaffolded for future Kanban/board/widget wiring.
+// When a saved filter gains dependents (Kanban board, Sprint board, gadget),
+// this hook will return them and the impact Flag will show automatically.
+// ---------------------------------------------------------------------------
+export interface LinkedFilterEntity {
+  type: string;   // e.g. "Kanban board", "Sprint board"
+  name: string;
+  href?: string;
+}
+
+function useLinkedEntities(_filterId: string | null): LinkedFilterEntity[] {
+  // TODO: query ph_filter_dependents (or equivalent) when the schema exists.
+  return [];
+}
+
+// ---------------------------------------------------------------------------
+
 export function FilterPreviewPage() {
   const { key: projectKey } = useParams<{ key: string }>();
   const navigate = useNavigate();
 
-  const [filterName, setFilterName] = useState('Untitled filter');
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS);
   const [openChipKey, setOpenChipKey] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const [saveOpen, setSaveOpen] = useState(false);
   const [sortKey, setSortKey] = useState<string>('updated');
   const [sortOrder, setSortOrder] = useState<SortOrder>('DESC');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
+  // Save state — isDirty gates the Save button; savedFilterId drives override logic
+  const [savedFilterId, setSavedFilterId] = useState<string | null>(null);
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+
+  // Atlaskit Flag notifications
+  const [flags, setFlags] = useState<
+    Array<{ id: string; type: 'override-warning' | 'impact-entities' }>
+  >([]);
+  const flagIdRef = useRef(0);
+  const addFlag = useCallback((type: 'override-warning' | 'impact-entities') => {
+    const id = `flag-${++flagIdRef.current}`;
+    setFlags(prev => [...prev, { id, type }]);
+    if (type !== 'override-warning') {
+      setTimeout(() => setFlags(prev => prev.filter(f => f.id !== id)), 8000);
+    }
+  }, []);
+  const dismissFlag = useCallback(
+    (id: string) => setFlags(prev => prev.filter(f => f.id !== id)),
+    []
+  );
+
+  const linkedEntities = useLinkedEntities(savedFilterId);
   const facetItems = useProjectFacetItems(projectKey);
 
   const facetOptions = useMemo(() => {
@@ -117,10 +165,9 @@ export function FilterPreviewPage() {
     return out;
   }, [facetItems]);
 
-  const jql = useMemo(
-    () => filterStateToJql(filters, projectKey),
-    [filters, projectKey],
-  );
+  // filterStateToJql always produces at least `project = "BAU"` so the table
+  // is never empty by default — same scope as the Project Backlog.
+  const jql = useMemo(() => filterStateToJql(filters, projectKey), [filters, projectKey]);
 
   const { data, isLoading, isFetching } = useJqlResults(jql);
 
@@ -132,7 +179,6 @@ export function FilterPreviewPage() {
       const vb = (b as unknown as Record<string, unknown>)[sortKey] ?? '';
       return va < vb ? -dir : va > vb ? dir : 0;
     });
-    // Client-side search filter
     if (search.trim()) {
       const q = search.toLowerCase();
       return rows.filter(r => r.summary.toLowerCase().includes(q) || r.key.toLowerCase().includes(q));
@@ -143,8 +189,12 @@ export function FilterPreviewPage() {
   const totalCount = totalSelected(filters);
   const moreCount = MORE_FILTERS_FACETS.reduce((n, f) => n + filters[f].length, 0);
 
-  const updateFacet = (facet: string, next: string[]) =>
+  const markDirty = useCallback(() => setIsDirty(true), []);
+
+  const updateFacet = (facet: string, next: string[]) => {
     setFilters(prev => ({ ...prev, [facet]: next }));
+    markDirty();
+  };
 
   const toggleValue = (facet: string, value: string) => {
     const cur = filters[facet as keyof FilterState];
@@ -155,7 +205,6 @@ export function FilterPreviewPage() {
   const openDetail = (key: string) =>
     useGlobalSearchStore.getState().openDetail({ id: key });
 
-  // Derive assignees with resolved avatars for AvatarGroup
   const activeAssignees = useMemo(() => {
     const seen = new Set<string>();
     const out: { id: string; name: string; avatarUrl: string | null }[] = [];
@@ -167,7 +216,36 @@ export function FilterPreviewPage() {
     return out.filter(a => a.avatarUrl);
   }, [items]);
 
-  // Column definitions — mirrors BacklogPage's default visible columns
+  // ── Save handlers ──────────────────────────────────────────────────────────
+
+  const handleSaveClick = () => {
+    if (savedFilterId) {
+      // Filter was previously saved — show override warning first
+      addFlag('override-warning');
+    } else {
+      setSaveOpen(true);
+    }
+  };
+
+  const handleConfirmOverride = useCallback(() => {
+    // User confirmed the override — dismiss the warning flag and open modal
+    setFlags(prev => prev.filter(f => f.type !== 'override-warning'));
+    setSaveOpen(true);
+  }, []);
+
+  const handleSaved = useCallback(
+    (id: string) => {
+      setSaveOpen(false);
+      setSavedFilterId(id);
+      setIsDirty(false);
+      if (linkedEntities.length > 0) addFlag('impact-entities');
+      navigate(`/project-hub/${projectKey}/filters`);
+    },
+    [linkedEntities, addFlag, navigate, projectKey]
+  );
+
+  // ── Column definitions ─────────────────────────────────────────────────────
+
   const columns = useMemo<Column<JqlResultRow>[]>(() => {
     const keyFn = makeKeyCell(
       (r: JqlResultRow) => r.key,
@@ -202,12 +280,8 @@ export function FilterPreviewPage() {
         accessor: (r: JqlResultRow) => r.parentKey ?? '',
         cell: makeParentCell((r: JqlResultRow) =>
           r.parentKey
-            ? {
-                key: r.parentKey,
-                label: r.parentSummary ?? r.parentKey,
-                icon: <JiraIssueTypeIcon type={jiraIconType(r.parentIssueType ?? '')} size={16} />,
-              }
-            : null,
+            ? { key: r.parentKey, label: r.parentSummary ?? r.parentKey }
+            : null
         ),
       },
       {
@@ -218,7 +292,7 @@ export function FilterPreviewPage() {
         accessor: (r: JqlResultRow) => r.status,
         cell: makeStatusCell(
           (r: JqlResultRow) => r.status || null,
-          s => lozengeAppearance('', s ?? ''),
+          s => lozengeAppearance('', s ?? '')
         ),
       },
       {
@@ -230,33 +304,33 @@ export function FilterPreviewPage() {
         cell: makeAssigneeCell((r: JqlResultRow) =>
           r.assigneeName
             ? { name: r.assigneeName, avatarUrl: resolveAvatarUrl(r.assigneeName) }
-            : null,
+            : null
         ),
       },
     ];
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <AtlaskitPageShell
       flush
       chromeBand={
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <h1
-            style={{
-              margin: 0,
-              fontSize: 20,
-              fontWeight: 653,
-              color: token('color.text', '#172B4D'),
-              lineHeight: '24px',
-            }}
-          >
-            {filterName}
-          </h1>
-        </div>
+        <h1
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 653,
+            color: token('color.text', '#172B4D'),
+            lineHeight: '24px',
+          }}
+        >
+          Create filter
+        </h1>
       }
     >
-      {/* Toolbar — mirrors BacklogPage toolbar with filter chips replacing JiraFilterAtlaskit */}
+      {/* Toolbar */}
       <div
         style={{
           display: 'flex',
@@ -270,20 +344,21 @@ export function FilterPreviewPage() {
           overflow: 'visible',
         }}
       >
-        {/* Ask Caty — same position as Backlog */}
         <AIIntelligenceButton
           label="Ask Caty"
           onClick={() => {/* open caty panel */}}
           tooltip="Ask Caty about these results"
         />
 
-        {/* Search */}
         <div style={{ flex: '0 0 auto', width: 240 }}>
           <Textfield
             isCompact
             placeholder="Search list"
             value={search}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setSearch(e.target.value);
+              markDirty();
+            }}
             elemBeforeInput={
               <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
                 <AkSearchIcon label="" size="small" />
@@ -295,12 +370,7 @@ export function FilterPreviewPage() {
                   type="button"
                   aria-label="Clear search"
                   onClick={() => setSearch('')}
-                  style={{
-                    display: 'flex', alignItems: 'center',
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    color: token('color.text.subtlest', '#6B778C'),
-                    padding: '0 8px 0 4px',
-                  }}
+                  style={{ display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', '#6B778C'), padding: '0 8px 0 4px' }}
                 >
                   <AkCloseIcon label="" size="small" />
                 </button>
@@ -309,7 +379,6 @@ export function FilterPreviewPage() {
           />
         </div>
 
-        {/* Filter chips — replace JiraFilterAtlaskit */}
         <FilterChip
           label={FACET_LABELS.workType}
           facet="workType"
@@ -365,6 +434,7 @@ export function FilterPreviewPage() {
                   const next = { ...filters };
                   for (const f of MORE_FILTERS_FACETS) next[f] = [];
                   setFilters(next);
+                  markDirty();
                 }}
                 onClose={() => setOpenChipKey(null)}
               />
@@ -373,12 +443,17 @@ export function FilterPreviewPage() {
         />
 
         {totalCount > 0 && (
-          <Button appearance="subtle" onClick={() => setFilters(EMPTY_FILTERS)}>
+          <Button
+            appearance="subtle"
+            onClick={() => {
+              setFilters(EMPTY_FILTERS);
+              markDirty();
+            }}
+          >
             Clear filters
           </Button>
         )}
 
-        {/* Avatar group */}
         {activeAssignees.length > 0 && (
           <AvatarGroup
             appearance="stack"
@@ -391,31 +466,20 @@ export function FilterPreviewPage() {
 
         <div style={{ flex: 1 }} />
 
-        {/* Item count */}
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', height: 32,
-          padding: '0 12px',
-          color: token('color.text.subtlest', '#626F86'),
-          fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap',
-        }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 8px', color: token('color.text.subtlest', '#626F86'), fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }}>
           {isFetching && <Spinner size="small" />}
-          {!isFetching && data && `${data.totalCount} item${data.totalCount === 1 ? '' : 's'}`}
+          {!isFetching && data != null && `${data.totalCount} item${data.totalCount === 1 ? '' : 's'}`}
         </div>
 
-        {/* Save filter */}
-        <Button appearance="primary" onClick={() => setSaveOpen(true)}>
+        {/* Save button — disabled until user touches any filter or search */}
+        <Button appearance="primary" isDisabled={!isDirty} onClick={handleSaveClick}>
           Save filter
         </Button>
       </div>
 
-      {/* Table — exact same wrapper as BacklogPage */}
+      {/* Table */}
       <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
-        <div style={{
-          flex: 1, minWidth: 0,
-          overflow: 'hidden',
-          display: 'flex', flexDirection: 'column', minHeight: 0,
-          padding: '24px',
-        }}>
+        <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, padding: '24px' }}>
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
             <JiraTable<JqlResultRow>
               columns={columns}
@@ -434,11 +498,8 @@ export function FilterPreviewPage() {
               selectedIds={selectedIds}
               onSelectionChange={setSelectedIds}
               emptyView={
-                <div style={{
-                  padding: '32px 24px', textAlign: 'center',
-                  color: token('color.text.subtle'), fontSize: 14,
-                }}>
-                  No work items match this filter yet. Adjust the criteria above.
+                <div style={{ padding: '32px 24px', textAlign: 'center', color: token('color.text.subtle'), fontSize: 14 }}>
+                  No work items match this filter. Adjust the criteria above.
                 </div>
               }
             />
@@ -446,17 +507,56 @@ export function FilterPreviewPage() {
         </div>
       </div>
 
+      {/* Save modal */}
       {saveOpen && (
         <FilterSaveModal
-          initialName={filterName}
+          filter={savedFilterId ? ({ id: savedFilterId } as any) : undefined}
           initialJql={jql}
+          initialName={savedFilterId ? undefined : 'Untitled filter'}
           onClose={() => setSaveOpen(false)}
-          onSaved={() => {
-            setSaveOpen(false);
-            if (projectKey) navigate(`/project-hub/${projectKey}/filters`);
-          }}
+          onSaved={handleSaved}
         />
       )}
+
+      {/* Atlaskit Flag notifications — override warning + impact alert */}
+      <FlagGroup onDismissed={id => dismissFlag(id as string)}>
+        {flags.map(flag => {
+          if (flag.type === 'override-warning') {
+            return (
+              <AkFlag
+                key={flag.id}
+                id={flag.id}
+                appearance="warning"
+                icon={<AkWarningIcon label="Warning" color={token('color.icon.warning', '#974F0C')} />}
+                title="Override existing filter?"
+                description="You are about to save changes over the existing saved filter. This cannot be undone."
+                actions={[
+                  { content: 'Yes, override', onClick: handleConfirmOverride },
+                  { content: 'Cancel', onClick: () => dismissFlag(flag.id) },
+                ]}
+              />
+            );
+          }
+          if (flag.type === 'impact-entities') {
+            return (
+              <AkFlag
+                key={flag.id}
+                id={flag.id}
+                appearance="info"
+                icon={<AkInfoIcon label="Info" color={token('color.icon.information', '#1868DB')} />}
+                title="Filter saved — linked views updated"
+                description={
+                  linkedEntities.length > 0
+                    ? `This filter is used by: ${linkedEntities.map(e => `${e.type} "${e.name}"`).join(', ')}. Those views will reflect your changes.`
+                    : 'Filter saved successfully.'
+                }
+                actions={[{ content: 'Dismiss', onClick: () => dismissFlag(flag.id) }]}
+              />
+            );
+          }
+          return null;
+        })}
+      </FlagGroup>
     </AtlaskitPageShell>
   );
 }
