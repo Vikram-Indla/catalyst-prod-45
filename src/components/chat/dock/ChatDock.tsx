@@ -20,7 +20,6 @@ import VidFullScreenOnIcon from "@atlaskit/icon/glyph/vid-full-screen-on";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import catalystChatIcon from "@/assets/caty-ai-bg.svg";
-import catyIcon from "@/assets/caty-icon.svg";
 import { CatyPanel } from "./CatyPanel";
 import { DockDirectory } from "./DockDirectory";
 import { DockConversationPane } from "./DockConversationPane";
@@ -226,7 +225,7 @@ export function ChatDock({
         {/* Brand logo + dual-mode underline tabs */}
         <div className="cc-dock__brand" aria-hidden>
           <span className="cc-dock__logo-wrap">
-            <img src="/favicon.svg" alt="" width={28} height={28} className="cc-dock__logo-img" style={{ borderRadius: 7 }} />
+            <img src="/favicon.svg" alt="" width={32} height={32} className="cc-dock__logo-img" style={{ borderRadius: 10 }} />
           </span>
         </div>
         <div className="cc-mode-tabs" role="tablist" aria-label="Chat modes">
@@ -251,13 +250,6 @@ export function ChatDock({
             onClick={() => setDockMode("caty")}
             aria-selected={dockMode === "caty"}
           >
-            <img
-              src={catyIcon}
-              alt=""
-              width={13}
-              height={13}
-              style={{ verticalAlign: "middle" }}
-            />
             Ask Caty
           </button>
         </div>
@@ -268,21 +260,18 @@ export function ChatDock({
             icon={AddIcon}
             label="New conversation"
             appearance="subtle"
-            spacing="compact"
             onClick={onFocusDirectory}
           />
           <IconButton
             icon={VidFullScreenOnIcon}
             label="Open full screen"
             appearance="subtle"
-            spacing="compact"
             onClick={onPopOut}
           />
           <IconButton
             icon={CrossIcon}
             label="Close"
             appearance="subtle"
-            spacing="compact"
             onClick={onToggleCollapsed}
           />
         </div>
