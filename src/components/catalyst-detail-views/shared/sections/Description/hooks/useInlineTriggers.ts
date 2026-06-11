@@ -10,7 +10,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Editor } from '@tiptap/react';
 
-export type TriggerType = 'mention' | 'emoji' | 'slash';
+export type TriggerType = 'mention' | 'emoji' | 'slash' | 'ticket';
 
 export interface InlineTrigger {
   type: TriggerType;
@@ -22,7 +22,7 @@ export interface InlineTrigger {
   coords: { left: number; top: number; bottom: number };
 }
 
-const TRIGGER_REGEX = /(?:^|\s)([@:/])([\w-]{0,40})$/;
+const TRIGGER_REGEX = /(?:^|\s)([@:/#])([\w-]{0,40})$/;
 
 export function useInlineTriggers(editor: Editor | null) {
   const [trigger, setTrigger] = useState<InlineTrigger | null>(null);
@@ -56,7 +56,10 @@ export function useInlineTriggers(editor: Editor | null) {
         return;
       }
       const type: TriggerType =
-        triggerChar === '@' ? 'mention' : triggerChar === ':' ? 'emoji' : 'slash';
+        triggerChar === '@' ? 'mention'
+        : triggerChar === ':' ? 'emoji'
+        : triggerChar === '#' ? 'ticket'
+        : 'slash';
       setTrigger({ type, query, range: { from: triggerFrom, to: from }, coords });
     };
 
