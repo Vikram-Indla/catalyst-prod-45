@@ -15,7 +15,7 @@
 import React, { useState } from "react";
 import { IconButton } from "@atlaskit/button/new";
 import AddIcon from "@atlaskit/icon/glyph/add";
-import OpenIcon from "@atlaskit/icon/glyph/open";
+import ExportIcon from "@atlaskit/icon/glyph/export";
 import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import CrossIcon from "@atlaskit/icon/glyph/cross";
 import { useConversations } from "@/hooks/chat/useConversations";
@@ -270,7 +270,7 @@ export function ChatDock({
             />
           )}
           <IconButton
-            icon={OpenIcon}
+            icon={ExportIcon}
             label="Pop out"
             appearance="subtle"
             spacing="compact"
