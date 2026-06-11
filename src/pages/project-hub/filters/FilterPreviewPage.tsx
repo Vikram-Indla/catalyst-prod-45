@@ -298,7 +298,7 @@ export function FilterPreviewPage() {
       (r: JqlResultRow) => r.key,
       (r: JqlResultRow) => openDetail(r.key),
       undefined,
-      (r: JqlResultRow) => <JiraIssueTypeIcon type={jiraIconType(r.issueType)} size={16} />,
+      (r: JqlResultRow) => r.issueType ? <JiraIssueTypeIcon type={jiraIconType(r.issueType)} size={16} /> : undefined,
     );
     const summaryCellRenderer = makeSummaryInlineEditCell<JqlResultRow>({
       getSummary: (r) => r.summary,

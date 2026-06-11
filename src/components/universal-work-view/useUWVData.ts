@@ -75,7 +75,7 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
           id: r.id,
           key: r.issue_key,
           summary: r.summary ?? '',
-          issueType: r.issue_type ?? 'Story',
+          issueType: r.issue_type ?? null,
           status: r.status ?? '',
           statusCategory: r.status_category ?? '',
           assigneeId: r.assignee_user_id,

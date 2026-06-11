@@ -61,7 +61,7 @@ export interface UWVItem {
   id: string;
   key: string;
   summary: string;
-  issueType: string;
+  issueType: string | null;
   status: string;
   statusCategory: string;
   assigneeId?: string | null;

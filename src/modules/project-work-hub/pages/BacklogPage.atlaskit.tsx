@@ -287,7 +287,7 @@ const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-vie
  *  (Production Incident) are now first-class leaf types alongside 'story'.
  *  The unified Backlog view fetches all three from ph_issues and renders
  *  pill filters for each. */
-export type BacklogType = 'initiative' | 'epic' | 'feature' | 'story' | 'bug' | 'incident';
+export type BacklogType = 'initiative' | 'epic' | 'feature' | 'story' | 'bug' | 'incident' | 'task';
 
 export interface BacklogItem {
   id: string;
@@ -1344,7 +1344,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       out.push({
         id: e.id,
         type: 'epic',
-        issue_type: (e as any).issue_type ?? 'Epic',
+        issue_type: (e as any).issue_type ?? null,
         key: e.epic_key,
         title: e.name,
         status: e.status,
@@ -1395,7 +1395,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         out.push({
           id: ep.id,
           type: 'epic',
-          issue_type: (ep as any).issue_type ?? 'Epic',
+          issue_type: (ep as any).issue_type ?? null,
           key: ep.epic_key,
           title: ep.name,
           status: ep.status ?? null,
@@ -1425,9 +1425,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     // filters and Group-by-Type logic can split them correctly. Anything
     // else (older rows missing issue_type) defaults to 'story' to preserve
     // historical behaviour.
-    const leafTypeFromIssueType = (it: string | null | undefined): 'story' | 'bug' | 'incident' => {
+    const leafTypeFromIssueType = (it: string | null | undefined): 'story' | 'bug' | 'incident' | 'task' => {
       if (it === 'QA Bug') return 'bug';
       if (it === 'Production Incident') return 'incident';
+      if (it === 'Sub-task' || it === 'Backend' || it === 'Frontend' || it === 'Task') return 'task';
       return 'story';
     };
     effectiveStories.forEach((s) => {
@@ -2109,7 +2110,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             issue_key: issueKey,
             project_key: projectKey,
             summary: `Copy of ${r.title}`,
-            issue_type: r.type || 'Story',
+            issue_type: r.issue_type ?? null,
             status: 'To Do',
             priority: r.priority || 'medium',
             source: 'catalyst',
@@ -3045,6 +3046,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     story: items.filter((i) => i.type === 'story').length,
     bug: items.filter((i) => i.type === 'bug').length,
     incident: items.filter((i) => i.type === 'incident').length,
+    task: items.filter((i) => i.type === 'task').length,
   };
 
 

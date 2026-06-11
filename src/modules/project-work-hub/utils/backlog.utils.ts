@@ -223,6 +223,7 @@ const BACKLOG_TYPE_ICON_FALLBACK: Record<string, string> = {
   story: 'Story',
   bug: 'QA Bug',
   incident: 'Production Incident',
+  task: 'Task',
 };
 
 /**

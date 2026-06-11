@@ -149,7 +149,7 @@ export function useEpicBacklog(projectId: string, opts?: { assigneeIds?: string[
         priority: row.priority ?? null,
         parent_key: row.parent_key ?? null,
         parent_summary: row.parent_summary ?? null,
-        issue_type: row.issue_type ?? 'Epic',
+        issue_type: row.issue_type ?? null,
         comment_count: typeof row.comment_count === 'number' ? row.comment_count : null,
         labels: Array.isArray(row.labels)
           ? (row.labels as any[]).map(l => (typeof l === 'string' ? l : (l?.name ?? String(l))))

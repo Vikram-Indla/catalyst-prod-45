@@ -15,7 +15,7 @@ export interface JqlResultRow {
   id: string;
   key: string;
   summary: string;
-  issueType: string;
+  issueType: string | null;
   status: string;
   statusCategory: string;
   projectKey: string;
@@ -77,7 +77,7 @@ export function useJqlResults(jql: string, enabled = true) {
         id: r.id,
         key: r.issue_key,
         summary: r.summary ?? '',
-        issueType: r.issue_type ?? 'Story',
+        issueType: r.issue_type ?? null,
         status: r.status ?? '',
         statusCategory: r.status_category ?? '',
         projectKey: r.project_key ?? '',
