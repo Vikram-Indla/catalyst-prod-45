@@ -342,10 +342,14 @@ export default function RecommendedPanel({
               projectKey: m.projectKey,
               commentBody: m.commentBody,
               commentCreatedAt: m.commentCreatedAt,
-              // Every For You card has a thread to view — the issue's
-              // comments. View thread is the canonical drop-into-comments
-              // affordance, so it's enabled across mentions AND replies.
-              showViewThread: true,
+              // View thread shows only when there's actually a thread to
+              // navigate to: the issue must exist in ph_issues (issueId is
+              // a UUID, not a Jira-key fallback) AND the comment must be
+              // synced (`phCommentId` non-null). Either check missing
+              // means clicking View thread would land on an empty or
+              // un-openable detail surface.
+              showViewThread:
+                UUID_RE_FY.test(m.issueId) && m.phCommentId !== null,
             }))}
             onOpen={resolveSelect}
             onDismiss={handleDismiss}
@@ -378,7 +382,11 @@ export default function RecommendedPanel({
               projectKey: c.projectKey,
               commentBody: c.commentBody,
               commentCreatedAt: c.commentCreatedAt,
-              showViewThread: true,
+              // Same gate as mention rows — hide when the detail surface
+              // can't be opened (issue not in ph_issues) or there's no
+              // comment to land on (phCommentId not synced yet).
+              showViewThread:
+                UUID_RE_FY.test(c.issueId) && c.phCommentId !== null,
             }))}
             onOpen={resolveSelect}
             onDismiss={handleDismiss}
@@ -2805,6 +2813,14 @@ function ViewThreadLink({ onActivate }: { onActivate: () => void }) {
         all: 'unset',
         cursor: 'pointer',
         display: 'inline-block',
+        // ForYouCardFooter wraps its children in a flex column. Flex items
+        // default to align-items: stretch, which stretches inline-block
+        // buttons to the full column width — that made the entire row
+        // clickable instead of just the text. `alignSelf: 'flex-start'`
+        // + `width: 'fit-content'` pins the button's hit area to its
+        // text content only.
+        alignSelf: 'flex-start',
+        width: 'fit-content',
         font: `500 13px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
         color: hover ? hoverColor : idleColor,
         textDecoration: hover ? 'underline' : 'none',
