@@ -697,28 +697,11 @@ export default function KanbanBoardPage() {
     if (dragId || groupBy !== 'none') return;
     const m: ColMap = {};
     KANBAN_COLUMNS.forEach(c => { m[c.id] = []; });
-    // When STATUS_TO_COL_ID is empty (no board_status_mappings configured yet),
-    // route by statusCategory so items appear across the right columns even
-    // before the user goes through Map Statuses.
-    // Also covers filter-backed boards whose JQL selects statuses not present
-    // in the cloned column set (e.g. filter on status="Backlog" on a board
-    // that only has IN_PROGRESS/DONE).
-    const noMappings = STATUS_TO_COL_ID.size === 0;
-    // Pre-compute category→column lookups used when there are no explicit mappings.
-    const todoColId   = noMappings ? KANBAN_COLUMNS.find(c => c.category === 'todo')?.id   : undefined;
-    const doneColId   = noMappings ? KANBAN_COLUMNS.find(c => c.category === 'done')?.id   : undefined;
-    const inProgColId = noMappings ? KANBAN_COLUMNS.find(c => c.category === 'in_progress')?.id : undefined;
+    // Route each issue to its column using board_status_mappings only.
+    // Statuses not present in STATUS_TO_COL_ID (unmapped or zero-issue statuses)
+    // are intentionally dropped — the board only shows statuses with issues.
     filtered.forEach(i => {
-      const c = STATUS_TO_COL_ID.get(i.status.toLowerCase());
-      let targetCol = c;
-      if (!targetCol && noMappings) {
-        const cat = (i.statusCategory ?? '').toLowerCase();
-        if (cat === 'done') targetCol = doneColId;
-        else if (cat === 'in progress' || cat === 'in_progress' || cat === 'inprogress' || cat === 'indeterminate') targetCol = inProgColId;
-        else targetCol = todoColId ?? inProgColId; // 'new'/'todo'/unknown → To Do; fallback to In Progress
-      } else if (!targetCol && isFilterBacked) {
-        targetCol = inProgColId ?? KANBAN_COLUMNS[0]?.id;
-      }
+      const targetCol = STATUS_TO_COL_ID.get(i.status.toLowerCase());
       if (targetCol && m[targetCol]) m[targetCol].push(i.id);
     });
     setColMap(prev => {
