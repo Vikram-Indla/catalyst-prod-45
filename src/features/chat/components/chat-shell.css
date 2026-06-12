@@ -126,15 +126,18 @@
 .c-chat-shell[data-view="activity"] .c-chat-activity { display: grid; }
 .c-chat-shell[data-view="activity"] .c-chat-main    { display: none; }
 
-/* ── Later / People / DMs surfaces (placeholders) ── */
+/* ── Later placeholder ── */
 .c-chat-placeholder {
   display: none;
+  flex-direction: column;
   min-width: 0;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  padding: 32px;
   color: var(--c-chat-text-subtle);
   grid-column: 3;
 }
 .c-chat-shell[data-view="later"]  .c-chat-placeholder[data-surface="later"]  { display: flex; }
-.c-chat-shell[data-view="people"] .c-chat-placeholder[data-surface="people"] { display: flex; }
+.c-chat-shell[data-view="later"]  .c-chat-main                               { display: none; }
 .c-chat-shell[data-view="dms"]    .c-chat-main                               { display: grid; }

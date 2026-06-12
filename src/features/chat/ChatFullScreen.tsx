@@ -48,6 +48,7 @@ function ChatFullScreenInner() {
   const [pendingMessageId, setPendingMessageId] = useState<string | undefined>(undefined);
   const [showNewConvModal, setShowNewConvModal] = useState(false);
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const shell = useShellState();
   const { conversations, isLoading } = useConversations();
   const { name: userName, avatarUrl: userAvatarUrl } = useSelfProfile();
@@ -74,6 +75,47 @@ function ChatFullScreenInner() {
     handleSelectConversation(conversationId);
   };
 
+  const handleStartDM = async (partnerId: string, partnerName: string) => {
+    const uid = user?.id;
+    if (!uid) return;
+
+    // Check for existing DM
+    const { data: myMemberships } = await db
+      .from('chat_conversation_members')
+      .select('conversation_id, chat_conversations:conversation_id(id,kind)')
+      .eq('user_id', uid);
+
+    for (const row of (myMemberships ?? []) as any[]) {
+      const conv = Array.isArray(row.chat_conversations) ? row.chat_conversations[0] : row.chat_conversations;
+      if (!conv || conv.kind !== 'dm') continue;
+      const { data: match } = await db
+        .from('chat_conversation_members')
+        .select('conversation_id')
+        .eq('conversation_id', conv.id)
+        .eq('user_id', partnerId)
+        .maybeSingle();
+      if (match) {
+        queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] });
+        handleSelectConversation(conv.id);
+        return;
+      }
+    }
+
+    // Create new DM
+    const { data: newConv } = await db
+      .from('chat_conversations')
+      .insert({ kind: 'dm', title: partnerName })
+      .select('id')
+      .single();
+    if (!newConv) return;
+    await db.from('chat_conversation_members').insert([
+      { conversation_id: (newConv as any).id, user_id: uid },
+      { conversation_id: (newConv as any).id, user_id: partnerId },
+    ]);
+    queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] });
+    handleSelectConversation((newConv as any).id);
+  };
+
   return (
     <>
     {showNewConvModal && (
@@ -90,6 +132,7 @@ function ChatFullScreenInner() {
       onNewConversation={() => setShowNewConvModal(true)}
       onOpenConversation={handleOpenConversation}
       onUnreadActivity={setUnreadActivity}
+      onStartDM={handleStartDM}
       userName={userName}
       userAvatarUrl={userAvatarUrl}
       unreadDMs={unreadDMs}

@@ -4,6 +4,7 @@ import type { ShellState, ShellActions } from '../hooks/useShellState';
 import { AppRail } from './AppRail';
 import { ConversationSidebar } from './sidebar/ConversationSidebar';
 import { ActivitySurface } from './activity/ActivitySurface';
+import { PeopleSurface } from './people/PeopleSurface';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './chat-shell.css';
 
@@ -23,6 +24,8 @@ interface ChatShellProps {
   onOpenConversation: (conversationId: string, messageId?: string) => void;
   /** Called when the unread activity count changes (to update AppRail badge) */
   onUnreadActivity?: (count: number) => void;
+  /** Called when user initiates a DM from the People surface */
+  onStartDM: (userId: string, userName: string) => void;
   /** Main feed + thread content — injected by ChatFullScreen */
   children?: React.ReactNode;
 }
@@ -39,6 +42,7 @@ export function ChatShell({
   unreadActivity,
   onOpenConversation,
   onUnreadActivity,
+  onStartDM,
   children,
 }: ChatShellProps) {
   const {
@@ -84,19 +88,22 @@ export function ChatShell({
         isActive={activeView === 'activity'}
       />
 
+      {/* Column 3: people surface (shown when activeView === 'people') */}
+      <PeopleSurface onStartDM={onStartDM} />
+
       {/* Columns 3 (+ 4 when docked): feed + thread — provided by parent */}
       {children}
 
-      {/* Placeholder surfaces (shown when data-view matches) */}
+      {/* Later placeholder — bookmark saving requires hover-toolbar + DB (not in scope) */}
       <div className="c-chat-placeholder" data-surface="later" aria-label="Later">
         <span>📌</span>
-        <p>Saved for later</p>
-        <p>Messages you save will appear here.</p>
-      </div>
-      <div className="c-chat-placeholder" data-surface="people" aria-label="People">
-        <span>👥</span>
-        <p>People & groups</p>
-        <p>Browse teammates and start a direct message.</p>
+        <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--c-chat-text)' }}>
+          Saved for later
+        </p>
+        <p style={{ margin: 0, fontSize: 13, textAlign: 'center', maxWidth: 280, color: 'var(--c-chat-text-subtlest)' }}>
+          Hover a message and click <strong>Save</strong> to bookmark it here.
+          Coming soon.
+        </p>
       </div>
     </div>
   );
