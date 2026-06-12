@@ -33,6 +33,34 @@
   border-bottom: 1px solid var(--ds-border, #EBECF0);
 }
 
+.cc-dock__headerwrap--draggable {
+  cursor: grab;
+}
+.cc-dock__headerwrap--draggable:active {
+  cursor: grabbing;
+}
+/* Restore default cursor on interactive descendants so buttons feel normal */
+.cc-dock__headerwrap--draggable button,
+.cc-dock__headerwrap--draggable a,
+.cc-dock__headerwrap--draggable [role="tab"] {
+  cursor: pointer;
+}
+
+/* ── Corner resize handles ───────────────────────────────────────────────── */
+.cc-dock__resize {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  z-index: 10;
+  /* Transparent — cursor is the only affordance (Figma / Slack pattern) */
+  background: transparent;
+  /* Double-click hint via tooltip not needed; cursor change is sufficient */
+}
+.cc-dock__resize--nw { top: 0;    left: 0;    cursor: nw-resize; }
+.cc-dock__resize--ne { top: 0;    right: 0;   cursor: ne-resize; }
+.cc-dock__resize--sw { bottom: 0; left: 0;    cursor: sw-resize; }
+.cc-dock__resize--se { bottom: 0; right: 0;   cursor: se-resize; }
+
 /* Static gradient hairline — Caty AI signifier, NO motion (CLAUDE.md AI-CTA carve-out) */
 .cc-dock__accent {
   height: 3px;
@@ -367,20 +395,27 @@
   flex: 0 0 auto;
 }
 
-/* collapsed launcher FAB — 56px */
+/* collapsed launcher FAB — 56px
+   NOTE: position (top/left) is injected by useDraggableFab as inline style.
+   right/bottom are NOT set here so the spring transition works on a single axis pair. */
 .cc-fab {
   position: fixed;
-  right: 24px;
-  bottom: 24px;
   width: 56px;
   height: 56px;
   background: transparent;
   border: none;
   padding: 0;
-  cursor: pointer;
+  cursor: grab;
   z-index: 600;
   filter: drop-shadow(0 2px 6px rgba(9, 30, 66, 0.28)) drop-shadow(0 1px 3px rgba(9, 30, 66, 0.14));
-  transition: filter 0.15s ease;
+  transition: filter 0.15s ease, transform 0.1s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* While dragging — cursor + tilt toward movement direction */
+.cc-fab--dragging {
+  cursor: grabbing;
 }
 
 .cc-fab:hover {

@@ -5,7 +5,13 @@
  * Dark detail fills use var(--caty-fg) so they adapt if dark mode is ever enabled.
  */
 
-export function CatyFabIcon({ size = 56 }: { size?: number }) {
+export function CatyFabIcon({
+  size = 56,
+  isDragging = false,
+}: {
+  size?: number;
+  isDragging?: boolean;
+}) {
   return (
     <span
       className="cc-fab-icon"
@@ -18,6 +24,7 @@ export function CatyFabIcon({ size = 56 }: { size?: number }) {
         height={size}
         role="img"
         aria-label="Ask Caty"
+        className={isDragging ? 'is-dragging' : undefined}
       >
         <defs>
           {/* ads-scanner:ignore-next-line — Caty brand gradient, no ADS token equivalent */}
@@ -53,6 +60,32 @@ export function CatyFabIcon({ size = 56 }: { size?: number }) {
           svg:active .cf-sleep, svg:active .cf-awake,
           svg.is-excited .cf-sleep, svg.is-excited .cf-awake { opacity: 0 }
           svg:active .cf-excited, svg.is-excited .cf-excited { opacity: 1 }
+
+          /* ── Drag / strangled state ─────────────────────────────────
+             Body squishes sideways (pulled), ears flatten back,
+             tail thrashes, eyes pop open wide.
+             Overrides hover/active states while dragging. */
+          svg.is-dragging .cf {
+            animation: none !important;
+            transform: scaleX(1.35) scaleY(0.72) !important;
+            transition: transform 0.06s ease !important;
+          }
+          svg.is-dragging .cf-ears {
+            transform: scaleY(0.45) rotate(-18deg) !important;
+            transition: transform 0.06s ease !important;
+          }
+          svg.is-dragging .cf-tail {
+            animation: cfTailFlail 0.22s ease-in-out infinite !important;
+            transition: none !important;
+          }
+          svg.is-dragging .cf-sleep { opacity: 0 !important; }
+          svg.is-dragging .cf-awake { opacity: 0 !important; }
+          svg.is-dragging .cf-excited { opacity: 1 !important; }
+          @keyframes cfTailFlail {
+            0%,100% { transform: rotate(35deg); }
+            50%     { transform: rotate(75deg); }
+          }
+
           @media (prefers-reduced-motion: reduce) { .cf { animation: none; transform: scale(1) } }
         `}</style>
 
