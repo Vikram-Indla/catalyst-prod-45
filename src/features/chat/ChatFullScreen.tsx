@@ -14,6 +14,7 @@ import { useConversations } from '@/hooks/chat/useConversations';
 import { ChatShell } from './components/ChatShell';
 import { useShellState } from './hooks/useShellState';
 import { MessageFeed } from './components/feed/MessageFeed';
+import { ThreadPane } from './components/thread/ThreadPane';
 import './tokens.css';
 
 const db = supabase as unknown as { from: (t: string) => any };
@@ -102,13 +103,20 @@ function ChatFullScreenInner() {
                 unreadCount: 0,
               }
             }
-            onOpenThread={_id => {}}
+            onOpenThread={shell.openThread}
           />
         )}
       </main>
 
-      {/* Column 4: thread pane — built in Session 8 */}
-      <div className="c-chat-thread-pane" aria-label="Thread" />
+      {/* Column 4: thread pane */}
+      {shell.threadMessageId && activeConversationId && (
+        <ThreadPane
+          conversationId={activeConversationId}
+          parentMessageId={shell.threadMessageId}
+          threadMode={shell.threadMode}
+          onClose={shell.closeThread}
+        />
+      )}
     </ChatShell>
   );
 }
