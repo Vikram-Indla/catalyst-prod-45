@@ -28,6 +28,7 @@ import {
   STAKEHOLDER_OPTIONS,
   REQUEST_TYPE_OPTIONS,
 } from '@/types/business-request';
+import { ProductReleasePicker } from '@/components/product/ProductReleasePicker';
 import type { BusinessRequest } from '@/types/business-request';
 
 const CATEGORY_OPTIONS = [
@@ -70,9 +71,10 @@ function DetailRow({ label, children }: { label: string; children: ReactNode }) 
 interface Props {
   request: BusinessRequest | null;
   onUpdate: (field: string, value: unknown) => Promise<void> | void;
+  productId?: string | null;
 }
 
-export function BrCenterDetails({ request, onUpdate }: Props) {
+export function BrCenterDetails({ request, onUpdate, productId }: Props) {
   const [collapsed, setCollapsed] = useState(false);
 
   if (!request) return null;
@@ -170,6 +172,15 @@ export function BrCenterDetails({ request, onUpdate }: Props) {
               }
               placeholder="+ Add stakeholder"
               formatCreateLabel={(input: string) => `Add "${input}"`}
+            />
+          </DetailRow>
+
+          <DetailRow label="Release">
+            <ProductReleasePicker
+              inputId="br-center--release"
+              productId={productId ?? (request as any).product_id ?? null}
+              value={(request as any).release_id ?? null}
+              onChange={(releaseId) => void onUpdate('release_id', releaseId)}
             />
           </DetailRow>
 

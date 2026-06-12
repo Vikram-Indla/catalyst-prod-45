@@ -117,7 +117,7 @@ export default function ProductBacklogPage() {
   //                                    value via the adapter; `urgency` column
   //                                    is omitted to avoid two "Priority" rows
   //                                    in the picker)
-  //   Sprint/Iteration → 'sprint_release'
+  //   Release → 'sprint_release'
   //   Assignee    → 'assignee'        (adapter maps Delivery Manager → assignee_name)
   //   Reporter    → 'reporter'        (adapter maps Product Owner → reporter_name)
   //   Labels      → 'labels'
@@ -130,7 +130,7 @@ export default function ProductBacklogPage() {
       'status',          // modal: Status
       'parent',          // modal: Parent
       'priority',        // modal: Priority
-      'sprint_release',  // modal: Sprint/Iteration
+      'sprint_release',  // modal: Release
       'assignee',        // modal: Assignee
       'reporter',        // modal: Reporter
       'labels',          // modal: Labels

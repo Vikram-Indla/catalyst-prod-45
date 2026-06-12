@@ -132,7 +132,8 @@ export interface BusinessRequest {
   urgency: string | null;                // Priority
   project_manager_user_id: string | null; // Delivery Manager
   po_user_id: string | null;             // Product Owner
-  planned_quarter: string[] | null;      // Planned release
+  planned_quarter: string[] | null;      // Planned release (legacy quarter buckets)
+  release_id: string | null;             // FK → product_releases.id
   end_date: string | null;               // Target date
 }
 
@@ -150,6 +151,7 @@ export const createBusinessRequestSchema = z.object({
   project_manager_user_id: z.string().uuid().nullable().optional(),
   po_user_id: z.string().uuid().nullable().optional(),
   planned_quarter: z.array(z.string()).nullable().optional(),
+  release_id: z.string().uuid().nullable().optional(),
   end_date: z.string().nullable().optional(),
   product_id: z.string().uuid().nullable().optional(),
 });

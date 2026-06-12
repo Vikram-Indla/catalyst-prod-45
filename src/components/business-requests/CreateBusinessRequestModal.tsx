@@ -95,6 +95,7 @@ import { CATALYST_PRIORITIES } from '@/lib/catalyst-priority';
 // mode because the modal owns the Create / Cancel footer. ──────────
 import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
 import { tiptapToAdf } from '@/components/catalyst-detail-views/shared/sections/Description/utils/tiptapToAdf';
+import { ProductReleasePicker } from '@/components/product/ProductReleasePicker';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Option type (identical to CreateStoryModal)
@@ -216,6 +217,7 @@ interface FormState {
   po_user_id: string;
   stakeholders: string[];
   planned_quarter: string;
+  release_id: string | null;
   end_date: string;
   targeted_feature: boolean;
   attachments: File[];
@@ -225,7 +227,7 @@ const INITIAL: FormState = {
   title: '', descriptionAdf: null, description: '',
   process_step: 'new_request', request_type: '', urgency: '', category: '',
   theme: '', project_manager_user_id: '', po_user_id: '', stakeholders: [],
-  planned_quarter: '', end_date: '', targeted_feature: false, attachments: [],
+  planned_quarter: '', release_id: null, end_date: '', targeted_feature: false, attachments: [],
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -590,6 +592,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
         po_user_id: form.po_user_id || null,
         stakeholders: form.stakeholders,
         planned_quarter: form.planned_quarter ? [form.planned_quarter] : null,
+        release_id: form.release_id || null,
         end_date: form.end_date || null,
         impl_target_end_date: form.end_date || null,
         targeted_feature: form.targeted_feature,
@@ -866,16 +869,14 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
                 )}
               </Field>
 
-              {/* ── Planned release — @atlaskit/select ───────────────────── */}
-              <Field name="planned_quarter" label="Planned release">
-                {({ fieldProps }) => (
-                  <Select
-                    {...(fieldProps as any)}
-                    inputId="br-release"
-                    options={releaseOptions}
-                    value={releaseOptions.find(r => r.value === form.planned_quarter) ?? null}
-                    onChange={(opt: any) => set('planned_quarter', opt?.value ?? '')}
-                    isClearable
+              {/* ── Release — ProductReleasePicker (inline create) ────────── */}
+              <Field name="release_id" label="Release">
+                {() => (
+                  <ProductReleasePicker
+                    inputId="br-create-release"
+                    productId={productId ?? null}
+                    value={form.release_id}
+                    onChange={(id) => set('release_id', id)}
                     placeholder="Link to a release"
                   />
                 )}
