@@ -100,14 +100,23 @@ export function classifyType(issueType?: string | null): UWVBacklogType {
   return 'other';
 }
 
-/** Map UWV issueType to the canonical JiraIssueTypeIcon's `type` prop. */
-export function jiraIconType(
-  issueType?: string | null,
-): 'Epic' | 'Story' | 'Feature' | 'Task' | 'Bug' | 'Sub-task' {
+/** Map UWV issueType to the canonical JiraIssueTypeIcon's `type` prop.
+ *  Pass through known Jira types directly so Frontend/Backend/Sub-task/
+ *  Integration etc. render their correct icons instead of falling back to Story. */
+export function jiraIconType(issueType?: string | null): string {
+  // Direct passthrough for every type the icon registry handles — prevents
+  // lossy classify→fallback from collapsing Frontend/Backend/Sub-task to Story.
+  const REGISTRY = [
+    'Epic', 'Story', 'Feature', 'Task', 'Sub-task', 'QA Bug', 'Defect',
+    'Production Incident', 'Change Request', 'Business Request', 'Business Gap',
+    'Backend', 'Frontend', 'Integration', 'Idea',
+  ];
+  if (issueType && REGISTRY.includes(issueType)) return issueType;
+
   const k = classifyType(issueType);
   if (k === 'epic') return 'Epic';
   if (k === 'feature') return 'Feature';
-  if (k === 'bug') return 'Bug';
+  if (k === 'bug') return 'QA Bug';
   if (k === 'task') return 'Task';
   return 'Story';
 }

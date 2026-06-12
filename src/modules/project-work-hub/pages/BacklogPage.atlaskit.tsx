@@ -322,6 +322,10 @@ export interface BacklogItem {
   labels: string[] | null;
   sprint_release: string[] | null;
   rank_order: number | null;
+  /** Raw Jira issue_type string (e.g. 'Frontend', 'Sub-task', 'Backend', 'Story').
+   *  Preserved so getIcon can render the precise icon — leafTypeFromIssueType
+   *  collapses Frontend/Sub-task/Backend into 'story' which loses icon fidelity. */
+  issue_type?: string | null;
   // 2026-06-01 — Business Request adapter fields (always null on Jira rows).
   // Surface only via the product backlog (ProductBacklogPage's adapter sets
   // allowedColumnIds to expose them).
@@ -1431,6 +1435,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       out.push({
         id: s.id,
         type: leafTypeFromIssueType((s as any).issue_type),
+        issue_type: (s as any).issue_type ?? null,
         key: s.story_key,
         title: s.title,
         status: s.status,
@@ -2250,7 +2255,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             bug: 'QA Bug',
             incident: 'Production Incident',
           };
-          return <JiraIssueTypeIcon type={typeMap[it.type as Exclude<BacklogType, 'initiative'>]} size={16} />;
+          // Use raw Jira issue_type when available — it preserves 'Frontend',
+          // 'Sub-task', 'Backend' etc. that leafTypeFromIssueType collapses to 'story'.
+          const rawIssueType = (it as any).issue_type as string | null | undefined;
+          const iconType = rawIssueType ?? typeMap[it.type as Exclude<BacklogType, 'initiative'>];
+          return <JiraIssueTypeIcon type={iconType} size={16} />;
         },
         // 5th arg — onSidebarClick: shows a hover-only sidebar icon in the
         // Key cell. Click opens the right-side detail panel (same handler
