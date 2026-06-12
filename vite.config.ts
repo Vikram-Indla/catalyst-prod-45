@@ -831,8 +831,9 @@ export default defineConfig(({ mode, command }) => {
       transformMixedEsModules: true,
     },
 
-    // 🔥 TEMP DEBUG (for your demo — helps identify issue)
-    minify: false,
+    esbuild: {
+      drop: ['console'],
+    },
   },
 };
 });
