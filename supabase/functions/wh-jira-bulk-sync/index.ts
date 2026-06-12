@@ -351,53 +351,78 @@ Deno.serve(async (req) => {
       upsertedCount += chunk.length
     }
 
-    // ── PARENT PULL-THROUGH (2026-06-12) ─────────────────────────────────────────
-    // Rule: when a 2026 issue references a pre-2026 parent (via fields.parent
-    // OR via issuelinks resolved by resolveParentFromLinks), fetch that parent
-    // from Jira and upsert as a reference row in ph_issues — even though the
-    // parent would normally fail the 2026 date gate.
-    // This ensures the UI (Backlog parent column, icon rendering) can resolve
-    // the parent's issue_type and summary without manual DB inserts.
+    // ── PARENT GAP FILL (2026-06-12, revised) ────────────────────────────────────
+    // After the main upsert, query ph_issues directly to find parent_keys that are
+    // referenced by synced issues but have NO corresponding row. This catches ALL
+    // missing parents regardless of cause:
+    //   - pre-2026 parents (fail date gate so never in main sync)
+    //   - 2026 parents that fell off pagination (Jira page fetch error → loop exits early)
+    //   - restricted Jira issues (returned 0 from JQL, logged as unfetchable)
     //
-    // CRITICAL: pulled-through keys are added to pulledThroughKeys so the
-    // hard-delete step below does NOT remove them — they are intentional
-    // reference rows, not stale data to be pruned.
+    // CRITICAL: gap-filled keys are added to pulledThroughKeys BEFORE hard-delete
+    // runs, so they are protected from deletion.
     const pulledThroughKeys = new Set<string>()
     {
-      const syncedIssueKeys = new Set(rows.map((r: any) => r.issue_key))
-      const referencedParentKeys: string[] = [...new Set(
-        allIssues
-          .map((issue: any) => issue.fields?.parent?.key || resolveParentFromLinks(issue))
-          .filter((k: any): k is string => !!k && !syncedIssueKeys.has(k))
-      )]
+      // Step 1: find all parent_keys referenced in ph_issues (post main-upsert state)
+      // Paginate to bypass Supabase's default 1000-row limit — there are 1663+ rows with parent_key
+      const allParentKeyCollected: string[] = []
+      {
+        let pgOffset = 0
+        const pgSize = 1000
+        while (true) {
+          const { data: pageRows } = await supabase
+            .from('ph_issues')
+            .select('parent_key')
+            .in('project_key', projectsToSync)
+            .not('parent_key', 'is', null)
+            .range(pgOffset, pgOffset + pgSize - 1)
+          if (!pageRows || pageRows.length === 0) break
+          pageRows.forEach((r: any) => { if (r.parent_key) allParentKeyCollected.push(r.parent_key) })
+          if (pageRows.length < pgSize) break
+          pgOffset += pgSize
+        }
+      }
+      const allReferencedParents = [...new Set(allParentKeyCollected)]
+      console.log(`[parent-gapfill] ${allParentKeyCollected.length} child rows with parent_key → ${allReferencedParents.length} unique parent keys`)
 
-      if (referencedParentKeys.length > 0) {
-        // ALL referenced parents are protected from hard-delete, regardless of whether
-        // they are already in DB or need to be fetched now.
-        referencedParentKeys.forEach((k: string) => pulledThroughKeys.add(k))
-
-        const { data: existingParents } = await supabase
+      if (allReferencedParents.length > 0) {
+        // Step 2: find which of those parents have NO row in ph_issues
+        const { data: existingParentRows } = await supabase
           .from('ph_issues')
           .select('issue_key')
-          .in('issue_key', referencedParentKeys)
-        const alreadyInDb = new Set((existingParents || []).map((r: any) => r.issue_key))
-        const missingParentKeys = referencedParentKeys.filter((k: string) => !alreadyInDb.has(k))
+          .in('issue_key', allReferencedParents)
+        const existingParentKeySet = new Set((existingParentRows || []).map((r: any) => r.issue_key as string))
+        const missingParentKeys = allReferencedParents.filter((k: string) => !existingParentKeySet.has(k))
+
+        // Protect ALL referenced parents from hard-delete (even those already in DB)
+        allReferencedParents.forEach((k: string) => pulledThroughKeys.add(k))
 
         if (missingParentKeys.length > 0) {
-          console.log(`[parent-pullthrough] Fetching ${missingParentKeys.length} pre-2026 parent(s): ${missingParentKeys.join(', ')}`)
-          const parentJql = `issue in (${missingParentKeys.join(',')})`
-          const parentRes = await fetch(searchUrl, {
-            method: 'POST',
-            headers: postHeaders,
-            body: JSON.stringify({
-              jql: parentJql,
-              fields: ['summary', 'status', 'issuetype', 'assignee', 'reporter', 'priority', 'parent', 'created', 'updated', 'fixVersions', 'labels', 'duedate'],
-              maxResults: missingParentKeys.length + 5,
-            }),
-          })
-          if (parentRes.ok) {
+          console.log(`[parent-gapfill] ${missingParentKeys.length} missing parent(s): ${missingParentKeys.join(', ')}`)
+          // Fetch in chunks of 50 to avoid JQL length limits
+          for (let ci = 0; ci < missingParentKeys.length; ci += 50) {
+            const chunk = missingParentKeys.slice(ci, ci + 50)
+            const parentJql = `issue in (${chunk.join(',')})`
+            const parentRes = await fetch(searchUrl, {
+              method: 'POST',
+              headers: postHeaders,
+              body: JSON.stringify({
+                jql: parentJql,
+                fields: ['summary', 'status', 'issuetype', 'assignee', 'reporter', 'priority', 'parent', 'created', 'updated', 'fixVersions', 'labels', 'duedate'],
+                maxResults: chunk.length + 5,
+              }),
+            })
+            if (!parentRes.ok) {
+              console.error(`[parent-gapfill] Jira fetch failed for chunk: ${parentRes.status}`)
+              continue
+            }
             const parentData = await parentRes.json()
             const parentIssues = Array.isArray(parentData.issues) ? parentData.issues : []
+            const fetchedFromJira = new Set(parentIssues.map((i: any) => i.key))
+            const restrictedKeys = chunk.filter((k: string) => !fetchedFromJira.has(k))
+            if (restrictedKeys.length > 0) {
+              console.log(`[parent-gapfill] ${restrictedKeys.length} key(s) inaccessible in Jira (restricted/deleted): ${restrictedKeys.join(', ')}`)
+            }
             const parentRows = parentIssues.map((issue: any) => ({
               issue_key: issue.key,
               project_key: issue.key.split('-')[0],
@@ -435,17 +460,16 @@ Deno.serve(async (req) => {
             if (parentRows.length > 0) {
               const { error: parentErr } = await supabase.from('ph_issues').upsert(parentRows, { onConflict: 'issue_key' })
               if (parentErr) {
-                console.error(`[parent-pullthrough] Upsert error: ${parentErr.message}`)
+                console.error(`[parent-gapfill] Upsert error: ${parentErr.message}`)
               } else {
-                console.log(`[parent-pullthrough] Upserted ${parentRows.length} pre-2026 parent row(s)`)
+                console.log(`[parent-gapfill] Upserted ${parentRows.length} gap-fill row(s)`)
                 upsertedCount += parentRows.length
-                // Register pulled-through keys so hard-delete does NOT prune them
                 parentRows.forEach((r: any) => pulledThroughKeys.add(r.issue_key))
               }
             }
-          } else {
-            console.error(`[parent-pullthrough] Jira fetch failed: ${parentRes.status}`)
           }
+        } else {
+          console.log(`[parent-gapfill] All ${allReferencedParents.length} parent(s) already in DB — no gap fill needed`)
         }
       }
     }
