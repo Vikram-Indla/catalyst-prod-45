@@ -55,9 +55,13 @@ function ChatFullScreenInner() {
 
   const handleSelectConversation = (id: string) => {
     setActiveConversationId(id);
-    if (shell.activeView === 'activity' || shell.activeView === 'later' || shell.activeView === 'people') {
+    if (shell.activeView !== 'chat') {
       shell.setActiveView('chat');
     }
+  };
+
+  const handleOpenConversation = (conversationId: string, _messageId?: string) => {
+    handleSelectConversation(conversationId);
   };
 
   return (
@@ -66,6 +70,7 @@ function ChatFullScreenInner() {
       conversations={conversations}
       activeConversationId={activeConversationId}
       onSelectConversation={handleSelectConversation}
+      onOpenConversation={handleOpenConversation}
       userName={userName}
       userAvatarUrl={userAvatarUrl}
       unreadDMs={unreadDMs}

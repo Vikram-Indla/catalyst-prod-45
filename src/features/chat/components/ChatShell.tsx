@@ -3,6 +3,7 @@ import type { ChatConversation } from '@/types/chat';
 import type { ShellState, ShellActions } from '../hooks/useShellState';
 import { AppRail } from './AppRail';
 import { ConversationSidebar } from './sidebar/ConversationSidebar';
+import { ActivitySurface } from './activity/ActivitySurface';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './chat-shell.css';
 
@@ -18,6 +19,8 @@ interface ChatShellProps {
   unreadDMs: number;
   /** Unread activity count for rail badge */
   unreadActivity: number;
+  /** Called when user clicks an activity item — navigates to the conversation */
+  onOpenConversation: (conversationId: string, messageId?: string) => void;
   /** Main feed + thread content — injected by ChatFullScreen */
   children?: React.ReactNode;
 }
@@ -32,6 +35,7 @@ export function ChatShell({
   userAvatarUrl,
   unreadDMs,
   unreadActivity,
+  onOpenConversation,
   children,
 }: ChatShellProps) {
   const {
@@ -69,16 +73,11 @@ export function ChatShell({
         isCollapsed={sidebarCollapsed}
       />
 
+      {/* Column 3: activity surface (shown when activeView === 'activity') */}
+      <ActivitySurface onOpenConversation={onOpenConversation} />
+
       {/* Columns 3 (+ 4 when docked): feed + thread — provided by parent */}
       {children}
-
-      {/* Placeholder surfaces for future views */}
-      <div className="c-chat-placeholder" data-surface="later" aria-label="Later">
-        Coming soon
-      </div>
-      <div className="c-chat-placeholder" data-surface="people" aria-label="People">
-        Coming soon
-      </div>
     </div>
   );
 }
