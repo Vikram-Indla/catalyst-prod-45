@@ -98,6 +98,10 @@ async function fetchActivity(userId: string): Promise<ActivityItem[]> {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
+export function getRelativeTimeForTest(iso: string): string {
+  return getRelativeTime(iso);
+}
+
 function getRelativeTime(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
   const diffMin = Math.floor(diffMs / 60_000);

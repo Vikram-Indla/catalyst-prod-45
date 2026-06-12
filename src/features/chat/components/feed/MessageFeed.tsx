@@ -43,6 +43,10 @@ function getTimeLabel(iso: string): string {
   return new Date(iso).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 }
 
+export function buildGroupsForTest(messages: ChatMessage[], unreadCount: number): MsgGroup[] {
+  return buildGroups(messages, unreadCount);
+}
+
 function buildGroups(messages: ChatMessage[], unreadCount: number): MsgGroup[] {
   const groups: MsgGroup[] = [];
   let currentDayStr = '';
