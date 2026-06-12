@@ -86,6 +86,73 @@ function buildGroups(messages: ChatMessage[], unreadCount: number): MsgGroup[] {
   return groups;
 }
 
+// ── InlineEditField ────────────────────────────────────────────────────────
+
+function InlineEditField({
+  initialText,
+  onSave,
+  onCancel,
+}: {
+  initialText: string;
+  onSave: (text: string) => void;
+  onCancel: () => void;
+}) {
+  const [text, setText] = useState(initialText);
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.focus();
+    el.setSelectionRange(el.value.length, el.value.length);
+  }, []);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        const trimmed = text.trim();
+        if (trimmed) onSave(trimmed);
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onCancel();
+      }
+    },
+    [text, onSave, onCancel],
+  );
+
+  const trimmed = text.trim();
+  const unchanged = trimmed === initialText.trim();
+
+  return (
+    <div className="c-msg__edit">
+      <textarea
+        ref={ref}
+        className="c-msg__edit-input"
+        value={text}
+        onChange={e => setText(e.target.value)}
+        onKeyDown={handleKeyDown}
+        rows={2}
+        aria-label="Edit message"
+      />
+      <div className="c-msg__edit-actions">
+        <span className="c-msg__edit-hint">escape to cancel · enter to save</span>
+        <button className="c-msg__edit-cancel" onClick={onCancel}>
+          Cancel
+        </button>
+        <button
+          className="c-msg__edit-save"
+          disabled={!trimmed || unchanged}
+          onClick={() => { if (trimmed && !unchanged) onSave(trimmed); }}
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Sub-components ─────────────────────────────────────────────────────────
 
 function FeedSkeleton() {
@@ -136,23 +203,30 @@ function UnreadDivider({ count }: { count: number }) {
 function MsgGroupBlock({
   group,
   currentUserId,
+  editingMessageId,
   onToggleReaction,
   onOpenThread,
   onEditMessage,
   onDeleteMessage,
+  onSaveEdit,
+  onCancelEdit,
 }: {
   group: MsgGroup;
   currentUserId: string | null;
+  editingMessageId: string | null;
   onToggleReaction: (msgId: string, emoji: string) => void;
   onOpenThread: (msgId: string) => void;
   onEditMessage: (msgId: string) => void;
   onDeleteMessage: (msgId: string) => void;
+  onSaveEdit: (msgId: string, newText: string) => void;
+  onCancelEdit: () => void;
 }) {
   return (
     <div className="c-msg-group" role="group" aria-label={`Messages from ${group.authorName}`}>
       {group.messages.map((msg, idx) => {
         const isFull = idx === 0;
         const isOwn = currentUserId !== null && msg.authorId === currentUserId;
+        const isEditing = editingMessageId === msg.id;
         return (
           <div
             key={msg.id}
@@ -194,11 +268,17 @@ function MsgGroupBlock({
                 <p className="c-msg__text c-msg__text--deleted">
                   This message was deleted.
                 </p>
+              ) : isEditing ? (
+                <InlineEditField
+                  initialText={msg.bodyText ?? ''}
+                  onSave={newText => onSaveEdit(msg.id, newText)}
+                  onCancel={onCancelEdit}
+                />
               ) : (
                 <p className="c-msg__text">{msg.bodyText}</p>
               )}
 
-              {msg.editedAt && !msg.deletedAt && (
+              {msg.editedAt && !msg.deletedAt && !isEditing && (
                 <span className="c-msg__edited">(edited)</span>
               )}
 
@@ -233,8 +313,8 @@ function MsgGroupBlock({
               )}
             </div>
 
-            {/* Hover toolbar */}
-            {!msg.deletedAt && (
+            {/* Hover toolbar — hidden while editing */}
+            {!msg.deletedAt && !isEditing && (
               <HoverToolbar
                 messageId={msg.id}
                 isOwn={isOwn}
@@ -355,14 +435,17 @@ interface Props {
   conversationId: string;
   conversation: ChatConversation;
   onOpenThread: (messageId: string) => void;
+  /** When set, scroll to and briefly highlight this message after load */
+  initialMessageId?: string;
 }
 
-export function MessageFeed({ conversationId, conversation, onOpenThread }: Props) {
+export function MessageFeed({ conversationId, conversation, onOpenThread, initialMessageId }: Props) {
   const { messages, isLoading, hasMore, loadMore, sendMessage, editMessage, deleteMessage, toggleReaction, currentUserId } =
     useMessages(conversationId);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [atBottom, setAtBottom] = useState(true);
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const prevCountRef = useRef(0);
 
   // Auto-scroll to bottom when new messages arrive and user is at bottom
@@ -376,13 +459,25 @@ export function MessageFeed({ conversationId, conversation, onOpenThread }: Prop
     }
   }, [messages.length, atBottom]);
 
-  // Scroll to bottom on conversation switch
+  // Scroll to bottom on conversation switch; clear edit state
   useEffect(() => {
     prevCountRef.current = 0;
     setAtBottom(true);
+    setEditingMessageId(null);
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [conversationId]);
+
+  // Scroll to and highlight a specific message (e.g. from activity surface navigation)
+  useEffect(() => {
+    if (!initialMessageId || isLoading) return;
+    const el = scrollRef.current?.querySelector(`[data-message-id="${initialMessageId}"]`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    (el as HTMLElement).style.background = 'var(--c-chat-accent-subtle)';
+    const t = setTimeout(() => { (el as HTMLElement).style.background = ''; }, 2000);
+    return () => clearTimeout(t);
+  }, [initialMessageId, isLoading]);
 
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -399,6 +494,15 @@ export function MessageFeed({ conversationId, conversation, onOpenThread }: Prop
     if (!el) return;
     el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
     setAtBottom(true);
+  }, []);
+
+  const handleSaveEdit = useCallback(async (msgId: string, newText: string) => {
+    await editMessage(msgId, newText);
+    setEditingMessageId(null);
+  }, [editMessage]);
+
+  const handleCancelEdit = useCallback(() => {
+    setEditingMessageId(null);
   }, []);
 
   const groups = buildGroups(
@@ -438,10 +542,13 @@ export function MessageFeed({ conversationId, conversation, onOpenThread }: Prop
             <MsgGroupBlock
               group={group}
               currentUserId={currentUserId}
+              editingMessageId={editingMessageId}
               onToggleReaction={toggleReaction}
               onOpenThread={onOpenThread}
-              onEditMessage={editMessage}
+              onEditMessage={setEditingMessageId}
               onDeleteMessage={deleteMessage}
+              onSaveEdit={handleSaveEdit}
+              onCancelEdit={handleCancelEdit}
             />
           </React.Fragment>
         ))}

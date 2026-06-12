@@ -526,6 +526,87 @@
   color: var(--c-chat-text-subtlest);
 }
 
+/* ── Inline edit ── */
+.c-msg__edit {
+  margin-top: 4px;
+}
+
+.c-msg__edit-input {
+  width: 100%;
+  border: 1px solid var(--c-chat-focus);
+  border-radius: 4px;
+  background: var(--c-chat-surface);
+  resize: none;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--c-chat-text);
+  padding: 8px 12px;
+  min-height: 40px;
+  max-height: 120px;
+  overflow-y: auto;
+  outline: none;
+  font-family: var(--ds-font-family-body, 'Atlassian Sans', ui-sans-serif, system-ui, sans-serif);
+  box-sizing: border-box;
+}
+
+.c-msg__edit-input:focus {
+  border-color: var(--c-chat-focus);
+  box-shadow: 0 0 0 2px var(--c-chat-accent-subtle);
+}
+
+.c-msg__edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.c-msg__edit-hint {
+  flex: 1;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--c-chat-text-subtlest);
+}
+
+.c-msg__edit-cancel {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 4px;
+  border: 1px solid var(--c-chat-border);
+  background: transparent;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--c-chat-text-subtle);
+  cursor: pointer;
+  transition: background 80ms ease;
+}
+
+.c-msg__edit-cancel:hover {
+  background: var(--c-chat-hover-bg);
+}
+
+.c-msg__edit-save {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 4px;
+  border: none;
+  background: var(--c-chat-accent);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ds-text-inverse);
+  cursor: pointer;
+  transition: filter 80ms ease;
+}
+
+.c-msg__edit-save:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.c-msg__edit-save:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .c-skel-avatar,
   .c-skel-line { animation: none; }
