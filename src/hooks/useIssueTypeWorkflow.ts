@@ -148,6 +148,13 @@ export function useIssueTypeWorkflow(
         ? workflow?.statuses.find((s) => s.name === currentStatus)?.id
         : null;
 
+      // Current status exists but isn't in this workflow (e.g. a Jira status not yet
+      // synced to ph_workflow_statuses) → open model: all statuses available.
+      // This must come BEFORE wildcard collection — global wildcard transitions would
+      // otherwise create a non-empty `available` set and suppress the open-model fallback,
+      // causing only their targets to show (regression: only "On Hold" appeared).
+      if (currentStatus && currentId === undefined) return allStatusNames;
+
       // Collect: wildcard transitions (from_status_id IS NULL) + from-current transitions
       const available = new Set<string>();
       const wildcard = transitionMap['__any__'];
@@ -161,7 +168,7 @@ export function useIssueTypeWorkflow(
         available.add(currentStatus);
       }
 
-      // If nothing resolved (e.g. status not in workflow), return all
+      // If nothing resolved (e.g. no transitions from initial status), return all
       if (available.size === 0) return allStatusNames;
 
       // Return in workflow order
