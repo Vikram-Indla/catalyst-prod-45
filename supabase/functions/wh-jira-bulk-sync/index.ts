@@ -374,7 +374,7 @@ Deno.serve(async (req) => {
         while (true) {
           const { data: pageRows } = await supabase
             .from('ph_issues')
-            .select('parent_key')
+            .select('issue_key, parent_key')   // issue_key must be in SELECT for ORDER BY to be valid in PostgREST
             .in('project_key', projectsToSync)
             .not('parent_key', 'is', null)
             .order('issue_key')
@@ -458,7 +458,7 @@ Deno.serve(async (req) => {
               comments: [],
               changelog: [],
               raw_json: null,
-              source: 'jira',
+              source: 'jira_parent_ref',
             }))
             if (parentRows.length > 0) {
               const { error: parentErr } = await supabase.from('ph_issues').upsert(parentRows, { onConflict: 'issue_key' })
