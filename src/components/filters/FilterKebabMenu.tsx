@@ -122,7 +122,10 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
         projectKey: projectKey ?? null,
         sourceBoardId: boards[0]?.id ?? null,
         name: kanbanName.trim(),
-        visibility: isPrivate ? 'private' : 'project',
+        // Filter boards have project_id=null, so 'project' visibility (which gates on
+        // project_members join) would never resolve correctly. Use 'shared' instead —
+        // can_view_board's filter-visibility clause handles actual access.
+        visibility: isPrivate ? 'private' : 'shared',
       });
       setKanbanError(null);
       setCreateKanbanOpen(false);
