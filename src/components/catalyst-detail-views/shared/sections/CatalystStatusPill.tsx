@@ -82,19 +82,23 @@ type Appearance = 'success' | 'inprogress' | 'moved' | 'removed' | 'new' | 'defa
 
 function getPillBg(appearance: Appearance): string {
   switch (appearance) {
-    case 'success':    return token('color.background.success.bold', '#1F845A');
-    case 'inprogress': return token('color.background.information.bold', '#0C66E4');
-    case 'moved':      return token('color.background.warning.bold', '#E2B203');
-    case 'new':        return token('color.background.discovery.bold', '#8270DB');
+    case 'success':    return token('color.background.success', '#DCFFF1');
+    case 'inprogress': return token('color.background.information', '#E9F2FF');
+    case 'moved':      return token('color.background.warning', '#FFF7D6');
+    case 'new':        return token('color.background.discovery', '#F3F0FF');
     case 'removed':
-    default:           return token('color.background.neutral.bold', '#626F86');
+    default:           return token('color.background.neutral', '#F1F2F4');
   }
 }
 
 function getPillFg(appearance: Appearance): string {
   switch (appearance) {
-    case 'moved': return token('color.text.inverse', '#FFFFFF');
-    default:      return token('color.text.inverse', '#FFFFFF');
+    case 'success':    return token('color.text.success', '#216E4E');
+    case 'inprogress': return token('color.text.information', '#0055CC');
+    case 'moved':      return token('color.text.warning', '#7F5F01');
+    case 'new':        return token('color.text.discovery', '#5E4DB2');
+    case 'removed':
+    default:           return token('color.text', '#172B4D');
   }
 }
 
