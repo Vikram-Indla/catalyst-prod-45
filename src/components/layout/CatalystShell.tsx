@@ -259,6 +259,8 @@ function useIsDarkTheme(): boolean {
 // shell now renders the same zero-width placeholder used for the
 // intermediate state, so the layout stays stable.
 
+const ChatDockMountLazy = lazy(() => import("@/components/chat/ChatDockMount"));
+
 function CatalystShellContent() {
   // Dev-only instrumentation: prove shell doesn't remount on program navigation
   if (import.meta.env.DEV) {
@@ -989,6 +991,16 @@ function CatalystShellContent() {
         >
           <Suspense fallback={null}>{renderSidebar()}</Suspense>
         </GlobalMobileDrawer>
+      )}
+
+      {/* Always-on chat dock — available on every authenticated page (mounted
+          here in the shell, not in FullAppRoutes which only serves catch-all
+          routes). Hidden on the full-page /chat surface. Collapsed by default
+          (no realtime subscriptions until opened). */}
+      {!location.pathname.startsWith("/chat") && (
+        <Suspense fallback={null}>
+          <ChatDockMountLazy />
+        </Suspense>
       )}
     </div>
   );

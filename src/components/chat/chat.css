@@ -339,6 +339,25 @@
 .cc-caty-btn__inner svg { width: 14px; height: 14px; }
 .cc-caty-btn.is-sm .cc-caty-btn__inner { height: 26px; }
 
+/* Suggest reply — subtle AI affordance in the composer (NOT the Ask Caty rainbow). */
+.cc-suggest-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 3px;
+  border: 1px solid var(--ds-border, #DFE1E6);
+  background: var(--ds-background-neutral-subtle, #F7F8F9);
+  color: var(--ds-text-subtle, #44546F);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.cc-suggest-btn:hover { background: var(--ds-background-neutral, #F1F2F4); }
+.cc-suggest-btn svg { width: 14px; height: 14px; }
+
 .cc-conv-stream { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 8px 0; }
 .cc-divider { display: flex; align-items: center; gap: 12px; padding: 12px 24px; }
 .cc-divider__rule { flex: 1; height: 1px; background: var(--ds-border, #DFE1E6); }
