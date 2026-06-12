@@ -714,7 +714,7 @@ export default function KanbanBoardPage() {
       if (!targetCol && noMappings) {
         const cat = (i.statusCategory ?? '').toLowerCase();
         if (cat === 'done') targetCol = doneColId;
-        else if (cat === 'indeterminate' || cat === 'in_progress' || cat === 'inprogress') targetCol = inProgColId;
+        else if (cat === 'in progress' || cat === 'in_progress' || cat === 'inprogress' || cat === 'indeterminate') targetCol = inProgColId;
         else targetCol = todoColId ?? inProgColId; // 'new'/'todo'/unknown → To Do; fallback to In Progress
       } else if (!targetCol && isFilterBacked) {
         targetCol = inProgColId ?? KANBAN_COLUMNS[0]?.id;
