@@ -44,6 +44,49 @@ function pickConversation(
   return Array.isArray(row) ? row[0] ?? null : row;
 }
 
+interface DmMemberRow {
+  conversation_id: string;
+  user_id: string;
+  profiles: { full_name: string | null } | { full_name: string | null }[] | null;
+}
+
+function pickProfileName(
+  p: DmMemberRow['profiles'],
+): string | null {
+  if (!p) return null;
+  const row = Array.isArray(p) ? p[0] ?? null : p;
+  return row?.full_name ?? null;
+}
+
+/**
+ * For DM conversations, derive a display title from the OTHER member's profile
+ * name (DMs are stored with title=null). Batched: one query across all dm ids,
+ * excluding the current user, mapping the first other member's full_name.
+ */
+async function fetchDmTitles(
+  dmIds: string[],
+  userId: string,
+): Promise<Map<string, string>> {
+  const titles = new Map<string, string>();
+  if (dmIds.length === 0) return titles;
+  try {
+    const { data, error } = await db
+      .from('chat_conversation_members')
+      .select('conversation_id, user_id, profiles:user_id ( full_name )')
+      .in('conversation_id', dmIds)
+      .neq('user_id', userId);
+    if (error || !data) return titles;
+    for (const m of data as DmMemberRow[]) {
+      if (titles.has(m.conversation_id)) continue; // first other member wins
+      const name = pickProfileName(m.profiles);
+      if (name) titles.set(m.conversation_id, name);
+    }
+  } catch {
+    // leave empty — DMs fall back to their stored title
+  }
+  return titles;
+}
+
 async function fetchConversations(userId: string): Promise<ChatConversation[]> {
   try {
     const { data: members, error } = await db
@@ -132,6 +175,18 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
         return mapped;
       }),
     );
+
+    // Resolve DM display titles from the other member's profile name (DMs are
+    // stored with title=null and otherwise render blank).
+    const dmIds = conversations.filter((c) => c.kind === 'dm').map((c) => c.id);
+    if (dmIds.length > 0) {
+      const dmTitles = await fetchDmTitles(dmIds, userId);
+      for (const c of conversations) {
+        if (c.kind === 'dm' && !c.title) {
+          c.title = dmTitles.get(c.id) ?? c.title;
+        }
+      }
+    }
 
     conversations.sort((a, b) => {
       const ta = a.lastMessageAt ? Date.parse(a.lastMessageAt) : 0;
