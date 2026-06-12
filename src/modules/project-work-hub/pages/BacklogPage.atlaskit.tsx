@@ -1360,6 +1360,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         jira_created_at?: string | null;
       } | null | undefined;
       if (ep && !epicSeen.has(ep.id)) {
+        const parentIssueType = (ep as any).issue_type as string | null;
+        // Only synthesize container rows for Epic/Feature parents. Story/Task/
+        // Sub-task parents (e.g. BAU-4490–4498) must NOT become fake Epic rows —
+        // they are already leaf Story rows and synthesizing them adds duplicate
+        // top-level entries with wrong purple-lightning icons.
+        if (parentIssueType && parentIssueType !== 'Epic' && parentIssueType !== 'Feature') {
+          // non-Epic/Feature parent — skip synthesis, do NOT add to epicSeen
+          // so we don't suppress a later legitimate synthesis for the same key
+        } else {
         epicSeen.add(ep.id);
         // Synthesized epics don't carry parent_key on the BacklogStory.feature
         // shape; when/if BAU epics ever gain a parent_key pointing at an
@@ -1367,7 +1376,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         // handles the linkage. For now synthesized epics float at the top.
         out.push({
           id: ep.id,
-          type: 'epic',
+          type: parentIssueType === 'Feature' ? 'feature' : 'epic',
           key: ep.epic_key,
           title: ep.name,
           status: ep.status ?? null,
@@ -1388,6 +1397,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           sprint_release: null,
           rank_order: null,
         });
+        } // end else (Epic/Feature synthesis)
       }
     });
 
