@@ -13,6 +13,7 @@ import { ChatRealtimeProvider } from '@/hooks/chat/ChatRealtimeProvider';
 import { useConversations } from '@/hooks/chat/useConversations';
 import { ChatShell } from './components/ChatShell';
 import { useShellState } from './hooks/useShellState';
+import { MessageFeed } from './components/feed/MessageFeed';
 import './tokens.css';
 
 const db = supabase as unknown as { from: (t: string) => any };
@@ -69,63 +70,40 @@ function ChatFullScreenInner() {
       unreadDMs={unreadDMs}
       unreadActivity={unreadActivity}
     >
-      {/* Column 3: main conversation feed — built in Session 7 */}
+      {/* Column 3: main conversation feed */}
       <main
         className="c-chat-main"
         aria-label="Conversation"
         style={isLoading ? { opacity: 0.6 } : undefined}
       >
         {!activeConversationId ? (
-          <div
-            style={{
-              gridColumn: '1 / -1',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              color: 'var(--c-chat-text-subtle)',
-              padding: '24px',
-            }}
-          >
-            <div
-              style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '12px',
-                background: 'var(--c-chat-surface-sunken)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                // ads-scanner:ignore-next-line -- placeholder; replaced Session 7
-                fontSize: '22px',
-              }}
-              aria-hidden="true"
-            >
-              💬
-            </div>
-            <p style={{ fontSize: '16px', fontWeight: 600, color: 'var(--c-chat-text)' }}>
-              Select a conversation
-            </p>
-            {/* ads-scanner:ignore-next-line -- placeholder; replaced Session 7 */}
-            <p style={{ fontSize: '13px', maxWidth: '340px', textAlign: 'center' }}>
+          <div className="c-feed__welcome">
+            <div className="c-feed__welcome__icon" aria-hidden="true">💬</div>
+            <p className="c-feed__welcome__title">Select a conversation</p>
+            <p className="c-feed__welcome__sub">
               Choose from the sidebar to start messaging, or create a new conversation.
             </p>
           </div>
         ) : (
-          <div
-            style={{
-              gridColumn: '1 / -1',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--c-chat-text-subtle)',
-              // ads-scanner:ignore-next-line -- placeholder; replaced Session 7
-              fontSize: '14px',
-            }}
-          >
-            Message feed — Session 7
-          </div>
+          <MessageFeed
+            conversationId={activeConversationId}
+            conversation={
+              conversations.find(c => c.id === activeConversationId) ?? {
+                id: activeConversationId,
+                kind: 'channel' as const,
+                ticketKey: null,
+                ticketType: null,
+                projectKey: null,
+                projectName: null,
+                title: 'Conversation',
+                isArchived: false,
+                lastMessageAt: null,
+                lastMessagePreview: null,
+                unreadCount: 0,
+              }
+            }
+            onOpenThread={_id => {}}
+          />
         )}
       </main>
 
