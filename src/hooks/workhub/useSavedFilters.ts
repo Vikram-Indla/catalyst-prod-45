@@ -422,6 +422,40 @@ export function useBoardsForProject(projectKey: string | undefined) {
 }
 
 /**
+ * Dedup lookup for the filter→Kanban vertical.
+ *
+ * A board counts as a duplicate only when it is backed by the SAME source
+ * filter AND owned by the SAME user (agreed policy: dedup on (owner, filter_id)).
+ * Soft-deleted boards (deleted_at set) are ignored. Returns the existing
+ * board { id, name } if one is found, otherwise null — the create flow uses
+ * this to offer "Open existing" instead of creating a second board.
+ */
+export function useExistingBoardForFilter(
+  filterId: string | undefined,
+  userId: string | null | undefined,
+) {
+  return useQuery({
+    queryKey: ['existing-board-for-filter', filterId, userId],
+    queryFn: async (): Promise<BoardOption | null> => {
+      if (!filterId || !userId) return null;
+      const { data, error } = await (supabase as any)
+        .from('boards')
+        .select('id, name')
+        .eq('filter_id', filterId)
+        .eq('created_by', userId)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true })
+        .limit(1);
+      if (error) throw new Error(error.message);
+      const row = (data ?? [])[0];
+      return row ? ({ id: row.id, name: row.name } as BoardOption) : null;
+    },
+    enabled: !!filterId && !!userId,
+    staleTime: 60_000,
+  });
+}
+
+/**
  * Associate (or disassociate) a saved filter with a kanban board.
  *
  * On link:   sets boards.filter_id = filterId and adds boardId to
