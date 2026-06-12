@@ -9,14 +9,11 @@
  * NOT @atlaskit/dropdown-menu — trigger render prop injects styles
  * that override pill colors.
  *
- * This version mirrors BrStatusSection.tsx exactly:
- * - triggerRef on the button
- * - getBoundingClientRect() anchor computed on open
- * - createPortal to document.body with position:fixed + zIndex:9999
- * - Custom dropdown items with inline styles (no Atlaskit rendering issues)
- * - click-outside + Escape close handlers
+ * Keyboard nav: ArrowDown/Up/Home/End + Enter/Space to select + Escape to close.
+ * Focus returns to trigger on close. menu items use role="menuitemradio".
+ * Colors from ADS subtle-tier tokens (dark-mode safe).
  */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
@@ -32,13 +29,13 @@ import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
  * SECTION 1: STYLE INJECTION (module-level, runs once)
  * ═══════════════════════════════════════════════════════════════════════════ */
 
-const PILL_CLASS = 'csp-v4-pill';
+const PILL_CLASS = 'csp-v7-pill';
 
 if (typeof document !== 'undefined') {
-  const existingStyle = document.getElementById('csp-v4-pill-styles');
+  const existingStyle = document.getElementById('csp-v7-pill-styles');
   if (!existingStyle) {
     const style = document.createElement('style');
-    style.id = 'csp-v4-pill-styles';
+    style.id = 'csp-v7-pill-styles';
     style.textContent = `
       .${PILL_CLASS} {
         display: inline-flex;
@@ -56,6 +53,8 @@ if (typeof document !== 'undefined') {
         text-transform: none;
         outline: none;
         transition: filter 0.15s ease;
+        background: var(--csp-bg);
+        color: var(--csp-fg);
       }
       .${PILL_CLASS}:hover,
       .${PILL_CLASS}[aria-expanded="true"] {
@@ -66,24 +65,60 @@ if (typeof document !== 'undefined') {
           0 0 0 2px var(--ds-surface, #FFFFFF),
           0 0 0 4px var(--ds-border-focused, #388BFF);
       }
+      [data-csp-item]:focus {
+        outline: none;
+        background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06)) !important;
+      }
     `;
     document.head.appendChild(style);
   }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * SECTION 2: COLOR TOKEN SYSTEM
+ * SECTION 2: ADS SUBTLE-TIER COLOR SYSTEM (dark-mode safe)
  * ═══════════════════════════════════════════════════════════════════════════ */
 
-// Jira-actual header pill colors (DOM-probed 2026-05-05, mirrored from BrStatusSection)
-const PILL_BG: Record<string, string> = {
-  success:    'rgb(148, 199, 72)',
-  inprogress: 'rgb(143, 184, 246)',
-  moved:      'rgb(243, 214, 100)',
-  removed:    'rgb(221, 222, 225)',
-  new:        'rgb(184, 172, 246)',
-  default:    'rgb(221, 222, 225)',
-};
+type Appearance = 'success' | 'inprogress' | 'moved' | 'removed' | 'new' | 'default';
+
+function getPillBg(appearance: Appearance): string {
+  switch (appearance) {
+    case 'success':    return token('color.background.success.bold', '#1F845A');
+    case 'inprogress': return token('color.background.information.bold', '#0C66E4');
+    case 'moved':      return token('color.background.warning.bold', '#E2B203');
+    case 'new':        return token('color.background.discovery.bold', '#8270DB');
+    case 'removed':
+    default:           return token('color.background.neutral.bold', '#626F86');
+  }
+}
+
+function getPillFg(appearance: Appearance): string {
+  switch (appearance) {
+    case 'moved': return token('color.text.inverse', '#FFFFFF');
+    default:      return token('color.text.inverse', '#FFFFFF');
+  }
+}
+
+function getDropdownBg(appearance: Appearance): string {
+  switch (appearance) {
+    case 'success':    return token('color.background.success', '#DCFFF1');
+    case 'inprogress': return token('color.background.information', '#E9F2FF');
+    case 'moved':      return token('color.background.warning', '#FFF7D6');
+    case 'new':        return token('color.background.discovery', '#F3F0FF');
+    case 'removed':
+    default:           return token('color.background.neutral', '#F1F2F4');
+  }
+}
+
+function getDropdownFg(appearance: Appearance): string {
+  switch (appearance) {
+    case 'success':    return token('color.text.success', '#216E4E');
+    case 'inprogress': return token('color.text.information', '#0055CC');
+    case 'moved':      return token('color.text.warning', '#7F5F01');
+    case 'new':        return token('color.text.discovery', '#5E4DB2');
+    case 'removed':
+    default:           return token('color.text', '#172B4D');
+  }
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * SECTION 3: COMPONENT
@@ -106,6 +141,7 @@ export function CatalystStatusPill({
   const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
   const [workflowViewerOpen, setWorkflowViewerOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   // Workflow-driven statuses from admin/workflows (ph_workflow_* tables)
   const {
@@ -118,30 +154,85 @@ export function CatalystStatusPill({
   const activeGroups = hasConfig ? workflowGroups : STATUS_OPTION_GROUPS;
 
   const display    = status || 'Backlog';
-  const appearance = statusToLozenge(display, statusCategory) as string;
-  const headerBg   = PILL_BG[appearance] ?? PILL_BG.default;
+  const appearance = statusToLozenge(display, statusCategory) as Appearance;
 
-  // Close on click-outside
+  const pillBg = getPillBg(appearance);
+  const pillFg = getPillFg(appearance);
+
+  // ── Helpers ────────────────────────────────────────────────────────────
+
+  const getMenuItems = useCallback((): HTMLElement[] => {
+    if (!menuRef.current) return [];
+    return Array.from(menuRef.current.querySelectorAll<HTMLElement>('[data-csp-item]'));
+  }, []);
+
+  const close = useCallback((returnFocus = true) => {
+    setIsOpen(false);
+    if (returnFocus) {
+      requestAnimationFrame(() => triggerRef.current?.focus());
+    }
+  }, []);
+
+  // ── Click-outside + keyboard handlers ──────────────────────────────────
+
   useEffect(() => {
     if (!isOpen) return;
-    const h = (e: MouseEvent) => {
+
+    const onMousedown = (e: MouseEvent) => {
       const t = e.target as Node;
       if (triggerRef.current?.contains(t)) return;
-      const pop = document.querySelector('[data-testid="catalyst-status-pill-popover"]');
-      if (pop?.contains(t)) return;
-      setIsOpen(false);
+      if (menuRef.current?.contains(t)) return;
+      close(false);
     };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, [isOpen]);
 
-  // Close on Escape
+    const onKeydown = (e: KeyboardEvent) => {
+      const items = getMenuItems();
+      const focused = document.activeElement as HTMLElement;
+      const idx = items.indexOf(focused);
+
+      switch (e.key) {
+        case 'Escape':
+          e.preventDefault();
+          close(true);
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          items[idx < items.length - 1 ? idx + 1 : 0]?.focus();
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          items[idx > 0 ? idx - 1 : items.length - 1]?.focus();
+          break;
+        case 'Home':
+          e.preventDefault();
+          items[0]?.focus();
+          break;
+        case 'End':
+          e.preventDefault();
+          items[items.length - 1]?.focus();
+          break;
+      }
+    };
+
+    document.addEventListener('mousedown', onMousedown);
+    document.addEventListener('keydown', onKeydown, true);
+    return () => {
+      document.removeEventListener('mousedown', onMousedown);
+      document.removeEventListener('keydown', onKeydown, true);
+    };
+  }, [isOpen, close, getMenuItems]);
+
+  // Focus first item when menu opens
   useEffect(() => {
     if (!isOpen) return;
-    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsOpen(false); };
-    window.addEventListener('keydown', h);
-    return () => window.removeEventListener('keydown', h);
-  }, [isOpen]);
+    requestAnimationFrame(() => {
+      const items = getMenuItems();
+      const selected = items.find((el) => el.getAttribute('aria-checked') === 'true');
+      (selected ?? items[0])?.focus();
+    });
+  }, [isOpen, getMenuItems]);
+
+  // ── Toggle ──────────────────────────────────────────────────────────────
 
   const toggle = () => {
     if (!isOpen && triggerRef.current) {
@@ -151,10 +242,15 @@ export function CatalystStatusPill({
     setIsOpen((o) => !o);
   };
 
-  const handleStatusSelect = (newStatus: string) => {
+  // ── Pick handler ────────────────────────────────────────────────────────
+
+  const pick = (newStatus: string) => {
     onStatusChange?.(newStatus);
     setIsOpen(false);
+    requestAnimationFrame(() => triggerRef.current?.focus());
   };
+
+  // ── Render ──────────────────────────────────────────────────────────────
 
   return (
     <>
@@ -167,23 +263,24 @@ export function CatalystStatusPill({
         aria-expanded={isOpen}
         aria-haspopup="menu"
         onClick={toggle}
-        style={{
-          background: headerBg,
-          color: 'rgb(41, 42, 46)',
-        }}
+        style={
+          { '--csp-bg': pillBg, '--csp-fg': pillFg } as React.CSSProperties
+        }
       >
         {display}
         <ChevronDownIcon
           size="small"
           label=""
-          primaryColor="rgb(41, 42, 46)"
+          primaryColor={pillFg}
         />
       </button>
 
       {isOpen && anchor && typeof document !== 'undefined' && createPortal(
         <div
+          ref={menuRef}
           data-testid="catalyst-status-pill-popover"
           role="menu"
+          aria-label="Change status"
           style={{
             position: 'fixed',
             top: anchor.top,
@@ -194,8 +291,11 @@ export function CatalystStatusPill({
             overflowY: 'auto',
             background: token('elevation.surface.overlay', '#FFFFFF'),
             border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            borderRadius: 6,
-            boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
+            borderRadius: 4,
+            boxShadow: token(
+              'elevation.shadow.overlay' as Parameters<typeof token>[0],
+              '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+            ),
             padding: '4px 0',
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
@@ -224,16 +324,35 @@ export function CatalystStatusPill({
                     {group.groupLabel}
                   </div>
                   {visibleStatuses.map((st) => {
-                    const a = statusToLozenge(st, group.category) as string;
-                    const bg = PILL_BG[a] ?? PILL_BG.default;
+                    const a = statusToLozenge(st, group.category) as Appearance;
+                    const bg = getDropdownBg(a);
+                    const fg = getDropdownFg(a);
                     const isSelected = display === st;
                     return (
                       <button
                         key={st}
                         type="button"
-                        role="menuitem"
+                        role="menuitemradio"
+                        aria-checked={isSelected}
+                        data-csp-item
+                        tabIndex={-1}
                         data-testid={`catalyst-status-option-${st}`}
-                        onClick={() => handleStatusSelect(st)}
+                        onClick={() => pick(st)}
+                        onFocus={(e) => {
+                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.background = isSelected
+                            ? token('color.background.selected', '#E9F2FF')
+                            : 'transparent';
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
+                        }}
+                        onMouseLeave={(e) => {
+                          const isFocused = e.currentTarget === document.activeElement;
+                          if (!isSelected && !isFocused) e.currentTarget.style.background = 'transparent';
+                        }}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -247,14 +366,7 @@ export function CatalystStatusPill({
                           border: 'none',
                           cursor: 'pointer',
                           fontFamily: 'inherit',
-                        }}
-                        onMouseEnter={(e) => {
-                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = isSelected
-                            ? token('color.background.selected', '#E9F2FF')
-                            : 'transparent';
+                          outline: 'none',
                         }}
                       >
                         <span
@@ -269,7 +381,7 @@ export function CatalystStatusPill({
                             textTransform: 'uppercase',
                             letterSpacing: '0.06em',
                             background: bg,
-                            color: 'rgb(41, 42, 46)',
+                            color: fg,
                           }}
                         >
                           {st}
@@ -292,10 +404,18 @@ export function CatalystStatusPill({
           <button
             type="button"
             role="menuitem"
+            data-csp-item
+            tabIndex={-1}
             data-testid="catalyst-status-view-workflow"
             onClick={() => {
               setIsOpen(false);
               setWorkflowViewerOpen(true);
+            }}
+            onFocus={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+            onBlur={(e) => { e.currentTarget.style.background = 'transparent'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+            onMouseLeave={(e) => {
+              if (e.currentTarget !== document.activeElement) e.currentTarget.style.background = 'transparent';
             }}
             style={{
               display: 'flex',
@@ -310,9 +430,8 @@ export function CatalystStatusPill({
               fontFamily: 'inherit',
               fontSize: 14,
               color: token('color.text', '#172B4D'),
+              outline: 'none',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
             <RetryIcon size="small" label="" primaryColor={token('color.icon.subtle', '#626F86')} />
             View workflow
@@ -322,8 +441,16 @@ export function CatalystStatusPill({
           <button
             type="button"
             role="menuitem"
+            data-csp-item
+            tabIndex={-1}
             data-testid="catalyst-status-explain-workflow"
-            onClick={() => setIsOpen(false)}
+            onClick={() => close(true)}
+            onFocus={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+            onBlur={(e) => { e.currentTarget.style.background = 'transparent'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+            onMouseLeave={(e) => {
+              if (e.currentTarget !== document.activeElement) e.currentTarget.style.background = 'transparent';
+            }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -337,9 +464,8 @@ export function CatalystStatusPill({
               fontFamily: 'inherit',
               fontSize: 14,
               color: token('color.text', '#172B4D'),
+              outline: 'none',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
             <QuestionCircleIcon size="small" label="" primaryColor={token('color.icon.subtle', '#626F86')} />
             Explain workflow
