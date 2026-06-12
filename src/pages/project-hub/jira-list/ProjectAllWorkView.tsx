@@ -313,7 +313,11 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
           name + Add people / meatball / share / automation / feedback /
           fullscreen actions. The previous solo h2 was a Catalyst-only
           divergence with no parity reference on the Jira side. */}
-      <ProjectHeaderChip projectKey={projectKey} />
+      {/* paddingLeft:24 matches the chromeBand slot padding in AtlaskitPageShell
+          so the chip icon+label aligns with backlog/filters/boards (x=244). */}
+      <div style={{ paddingLeft: 24 }}>
+        <ProjectHeaderChip projectKey={projectKey} />
+      </div>
       {/* Filter context banner — shown when viewing a saved filter or in create-filter mode.
           Matches Jira's "Filter by: [name]" breadcrumb strip above the issue list. */}
       {(activeFilter || isCreateMode) && (
