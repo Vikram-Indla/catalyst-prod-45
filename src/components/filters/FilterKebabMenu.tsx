@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Button from '@atlaskit/button/new';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import { MoreHorizontal } from '@/lib/atlaskit-icons';
@@ -31,6 +31,8 @@ interface FilterKebabMenuProps {
 }
 
 export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [editOpen, setEditOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -39,23 +41,21 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const [boardName, setBoardName] = useState('');
   const [boardType, setBoardType] = useState<{ label: string; value: string }>({ label: 'Kanban', value: 'kanban' });
   const [creatingBoard, setCreatingBoard] = useState(false);
-  // Filter→Kanban (ENABLE_FILTER_TO_KANBAN) — guided create flow.
   const [createKanbanOpen, setCreateKanbanOpen] = useState(false);
   const [kanbanName, setKanbanName] = useState('');
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const { key: projectKey } = useParams<{ key: string }>();
 
-  const copyFilter       = useCopyFilter();
-  const updateFilter     = useUpdateSavedFilter();
-  const deleteFilter     = useDeleteSavedFilter();
-  const boardLink        = useToggleFilterBoardLink();
-  const subscribeFilter  = useToggleFilterSubscription();
+  const copyFilter      = useCopyFilter();
+  const updateFilter    = useUpdateSavedFilter();
+  const deleteFilter    = useDeleteSavedFilter();
+  const boardLink       = useToggleFilterBoardLink();
+  const subscribeFilter = useToggleFilterSubscription();
   const { data: boards = [] } = useBoardsForProject(projectKey);
 
-  // Filter→Kanban: dedup (open an existing board for this filter+owner instead
-  // of creating a second), the project's primary board to clone columns from,
-  // and the canonical create service. All inert when the flag is off.
   const createKanban = useCreateKanbanFromFilter();
   const existingBoard = useExistingBoardForFilter(
     ENABLE_FILTER_TO_KANBAN ? filter.id : undefined,
@@ -77,12 +77,40 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const isSubscribed = currentUserId ? (filter.subscriber_ids ?? []).includes(currentUserId) : false;
   const isPrivate = filter.viewers_config?.type === 'private';
 
+  const openMenu = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    const rect = triggerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setMenuPos({ top: rect.bottom + 4, left: rect.right });
+    setMenuOpen(true);
+  }, []);
+
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+  // Close on outside click or Escape — capture phase so modal Escape doesn't bleed
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onMouseDown = (e: MouseEvent) => {
+      if (
+        !menuRef.current?.contains(e.target as Node) &&
+        !triggerRef.current?.contains(e.target as Node)
+      ) closeMenu();
+    };
+    const onKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); closeMenu(); } };
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => {
+      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('keydown', onKeyDown, true);
+    };
+  }, [menuOpen, closeMenu]);
+
   function handleToggleVisibility() {
     const next = isPrivate
       ? { is_shared: true,  viewers_config: { type: 'org' as const } }
       : { is_shared: false, viewers_config: { type: 'private' as const } };
-
     updateFilter.mutate({ id: filter.id, updates: next as any });
+    closeMenu();
   }
 
   async function handleCreateKanban() {
@@ -90,7 +118,7 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
       const boardId = await createKanban.mutateAsync({
         filter,
         projectId,
-        sourceBoardId: boards[0]?.id ?? null, // project's existing board → column template
+        sourceBoardId: boards[0]?.id ?? null,
         name: kanbanName.trim(),
         visibility: isPrivate ? 'private' : 'project',
       });
@@ -101,128 +129,147 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
     }
   }
 
+  function menuItem(label: React.ReactNode, onClick: () => void, disabled = false) {
+    return (
+      <button
+        key={typeof label === 'string' ? label : undefined}
+        type="button"
+        disabled={disabled}
+        onClick={(e) => { e.stopPropagation(); if (!disabled) { onClick(); closeMenu(); } }}
+        style={{
+          display: 'block',
+          width: '100%',
+          padding: '6px 16px',
+          background: 'none',
+          border: 'none',
+          textAlign: 'left',
+          fontSize: 14,
+          color: disabled ? token('color.text.disabled', '#8993A4') : token('color.text', '#172B4D'),
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          whiteSpace: 'nowrap',
+        }}
+        onMouseEnter={e => { if (!disabled) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
+      >
+        {label}
+      </button>
+    );
+  }
+
+  const divider = <div style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '4px 0' }} />;
+
   return (
     <>
-      <DropdownMenu
-        placement="bottom-end"
-        trigger={({ triggerRef, ...triggerProps }) => (
-          <button
-            {...triggerProps}
-            ref={triggerRef}
-            type="button"
-            aria-label="Filter actions"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 32,
-              height: 32,
-              padding: 0,
-              border: 'none',
-              borderRadius: 3,
-              background: 'transparent',
-              color: token('color.icon.subtle', '#44546F'),
-              cursor: 'pointer',
-            }}
-          >
-            <MoreHorizontal size="small" />
-          </button>
-        )}
+      {/* Trigger — self-rolled because @atlaskit/dropdown-menu uses @atlaskit/popup which
+          has the empty-portal/wrong-position bug inside JiraTable's overflow:hidden container */}
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-label="Filter actions"
+        aria-expanded={menuOpen}
+        onClick={openMenu}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 32,
+          height: 32,
+          padding: 0,
+          border: 'none',
+          borderRadius: 3,
+          background: 'transparent',
+          color: token('color.icon.subtle', '#44546F'),
+          cursor: 'pointer',
+        }}
       >
-        <DropdownItemGroup>
-          {isOwner && (
-            <DropdownItem onClick={() => setEditOpen(true)}>
-              Edit filter
-            </DropdownItem>
-          )}
-          <DropdownItem onClick={() => copyFilter.mutate(filter)}>
-            Copy filter
-          </DropdownItem>
-          <DropdownItem
-            onClick={() => {
-              const base = window.location.origin;
-              const path = projectKey
-                ? `/project-hub/${projectKey}/filters/${filter.id}`
-                : `/product-hub/filters/${filter.id}`;
-              navigator.clipboard.writeText(base + path).catch(() => {});
-            }}
-          >
-            Copy link
-          </DropdownItem>
-          <DropdownItem
-            onClick={() => subscribeFilter.mutate({ filterId: filter.id, currentSubscriberIds: filter.subscriber_ids ?? [], userId: currentUserId ?? '' })}
-            isDisabled={!currentUserId}
-          >
-            {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
-          </DropdownItem>
-          {isOwner && (
-            <DropdownItem onClick={handleToggleVisibility}>
-              {isPrivate ? 'Share with organisation' : 'Make private'}
-            </DropdownItem>
-          )}
-          <DropdownItem onClick={() => setHistoryOpen(true)}>
-            View version history
-          </DropdownItem>
-            {isOwner && (
-            <DropdownItem onClick={() => setTransferOpen(true)}>
-              Change owner
-            </DropdownItem>
-          )}
-        </DropdownItemGroup>
+        <MoreHorizontal size="small" />
+      </button>
 
-        {isOwner && (
-          <DropdownItemGroup>
-            {ENABLE_FILTER_TO_KANBAN ? (
-              <DropdownItem
-                onClick={() => {
-                  // Dedup: if a board already exists for this filter+owner, open it.
-                  if (existingBoard.data) {
-                    if (projectKey) navigate(`/project-hub/${projectKey}/boards/${existingBoard.data.id}`);
-                    return;
-                  }
-                  setKanbanName(`${filter.name} board`);
-                  setCreateKanbanOpen(true);
-                }}
-              >
-                {existingBoard.data ? 'Open Kanban' : 'Create Kanban from filter'}
-              </DropdownItem>
-            ) : (
-              <DropdownItem onClick={() => { setBoardName(`${filter.name} board`); setCreateBoardOpen(true); }}>
-                Create board from filter
-              </DropdownItem>
-            )}
-          </DropdownItemGroup>
-        )}
-
-        {/* Board link items — one per board (O10) */}
-        {boards.length > 0 && isOwner && (
-          <DropdownItemGroup>
-            {boards.map(board => {
-              const isLinked = filter.used_by_board_ids.includes(board.id);
-              return (
-                <DropdownItem
-                  key={board.id}
-                  onClick={() => boardLink.mutate({
-                    filterId: filter.id,
-                    boardId: board.id,
-                    currentUsedByBoardIds: filter.used_by_board_ids,
-                    link: !isLinked,
-                  })}
-                >
-                  {isLinked ? '✓ ' : ''}{board.name} board
-                </DropdownItem>
-              );
-            })}
-          </DropdownItemGroup>
-        )}
-        <DropdownItemGroup>
-          {isOwner && (
-            <DropdownItem onClick={() => setDeleteOpen(true)}>
-              <span style={{ color: token('color.text.danger') }}>Delete</span>
-            </DropdownItem>
+      {menuOpen && createPortal(
+        <div
+          ref={menuRef}
+          data-filter-kebab-portal="true"
+          style={{
+            position: 'fixed',
+            top: menuPos.top,
+            left: menuPos.left,
+            transform: 'translateX(-100%)',
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            borderRadius: 4,
+            boxShadow: token('elevation.shadow.overlay', '0 4px 8px rgba(9,30,66,0.25)'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            zIndex: 9999,
+            minWidth: 180,
+            padding: '4px 0',
+          }}
+        >
+          {isOwner && menuItem('Edit filter', () => setEditOpen(true))}
+          {menuItem('Copy filter', () => copyFilter.mutate(filter))}
+          {menuItem('Copy link', () => {
+            const base = window.location.origin;
+            const path = projectKey
+              ? `/project-hub/${projectKey}/filters/${filter.id}`
+              : `/product-hub/filters/${filter.id}`;
+            navigator.clipboard.writeText(base + path).catch(() => {});
+          })}
+          {menuItem(
+            isSubscribed ? 'Unsubscribe' : 'Subscribe',
+            () => subscribeFilter.mutate({ filterId: filter.id, currentSubscriberIds: filter.subscriber_ids ?? [], userId: currentUserId ?? '' }),
+            !currentUserId,
           )}
-        </DropdownItemGroup>
-      </DropdownMenu>
+          {isOwner && menuItem(isPrivate ? 'Share with organisation' : 'Make private', handleToggleVisibility)}
+          {menuItem('View version history', () => setHistoryOpen(true))}
+          {isOwner && menuItem('Change owner', () => setTransferOpen(true))}
+
+          {isOwner && (
+            <>
+              {divider}
+              {ENABLE_FILTER_TO_KANBAN
+                ? menuItem(
+                    existingBoard.data ? 'Open Kanban' : 'Create Kanban from filter',
+                    () => {
+                      if (existingBoard.data) {
+                        if (projectKey) navigate(`/project-hub/${projectKey}/boards/${existingBoard.data.id}`);
+                        return;
+                      }
+                      setKanbanName(`${filter.name} board`);
+                      setCreateKanbanOpen(true);
+                    },
+                  )
+                : menuItem('Create board from filter', () => { setBoardName(`${filter.name} board`); setCreateBoardOpen(true); })
+              }
+            </>
+          )}
+
+          {boards.length > 0 && isOwner && (
+            <>
+              {divider}
+              {boards.map(board => {
+                const isLinked = filter.used_by_board_ids.includes(board.id);
+                return (
+                  <React.Fragment key={board.id}>
+                    {menuItem(
+                      `${isLinked ? '✓ ' : ''}${board.name} board`,
+                      () => boardLink.mutate({ filterId: filter.id, boardId: board.id, currentUsedByBoardIds: filter.used_by_board_ids, link: !isLinked }),
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </>
+          )}
+
+          {isOwner && (
+            <>
+              {divider}
+              {menuItem(
+                <span style={{ color: token('color.text.danger', '#AE2A19') }}>Delete</span>,
+                () => setDeleteOpen(true),
+              )}
+            </>
+          )}
+        </div>,
+        document.body,
+      )}
 
       {editOpen && (
         <FilterSaveModal
@@ -365,7 +412,6 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
         )}
       </ModalTransition>
 
-      {/* Filter→Kanban (ENABLE_FILTER_TO_KANBAN) — guided create flow. */}
       <ModalTransition>
         {createKanbanOpen && (
           <ModalDialog onClose={() => setCreateKanbanOpen(false)} width="small">
