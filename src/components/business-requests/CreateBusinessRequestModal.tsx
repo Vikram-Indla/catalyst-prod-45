@@ -70,7 +70,6 @@ import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import DropdownMenu, { DropdownItemGroup, DropdownItem } from '@atlaskit/dropdown-menu';
-import Lozenge from '@atlaskit/lozenge';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 
 import { useQuery } from '@tanstack/react-query';
@@ -198,6 +197,8 @@ export interface CreateBusinessRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
   productId?: string;
+  /** Called when user switches to a different work type — passes the selected type string. */
+  onWorkTypeChange?: (type: string) => void;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -372,11 +373,43 @@ function MoreActionsButton() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// StatusChip — @atlaskit/dropdown-menu + Lozenge (portal-rendered, z-index safe)
+// StatusChip — @atlaskit/dropdown-menu + inline ADS-token spans (sentence-case, no uppercase)
 // ─────────────────────────────────────────────────────────────────────────────
 
 type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new';
 
+const STATUS_BG: Record<string, string> = {
+  success:    'var(--ds-background-success, #DCFFF1)',
+  inprogress: 'var(--ds-background-information, #E9F2FF)',
+  moved:      'var(--ds-background-warning, #FFF7D6)',
+  removed:    'var(--ds-background-danger, #FFEBE6)',
+  new:        'var(--ds-background-discovery, #F3F0FF)',
+  default:    'var(--ds-background-neutral, #F4F5F7)',
+};
+const STATUS_COLOR: Record<string, string> = {
+  success:    'var(--ds-text-success, #216E4E)',
+  inprogress: 'var(--ds-text-information, #0055CC)',
+  moved:      'var(--ds-text-warning, #974F0C)',
+  removed:    'var(--ds-text-danger, #AE2A19)',
+  new:        'var(--ds-text-discovery, #5E4DB2)',
+  default:    'var(--ds-text-subtle, #626F86)',
+};
+
+function StatusSpan({ appearance, label }: { appearance: LozengeAppearance; label: string }) {
+  const bg = STATUS_BG[appearance] ?? STATUS_BG.default;
+  const color = STATUS_COLOR[appearance] ?? STATUS_COLOR.default;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center',
+      height: 20, padding: '0 7px', borderRadius: 3,
+      fontSize: 11, fontWeight: 500,
+      textTransform: 'none', letterSpacing: 'normal',
+      background: bg, color,
+    }}>
+      {label}
+    </span>
+  );
+}
 
 function BRStatusChip({ status, onChange }: { status: string; onChange: (s: string) => void }) {
   const { data: steps = [], isLoading } = useActiveDemandProcessSteps();
@@ -408,9 +441,10 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
             outline: 'none',
           }}
         >
-          <Lozenge appearance={currentStep ? stepToLozengeAppearance(currentStep) : 'default'} isBold>
-            {current.label}
-          </Lozenge>
+          <StatusSpan
+            appearance={currentStep ? stepToLozengeAppearance(currentStep) : 'default'}
+            label={current.label}
+          />
           <ChevronDownIcon label="" size="small" />
         </button>
       )}
@@ -427,9 +461,10 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
             isSelected={status === opt.value}
             onClick={() => onChange(opt.value)}
           >
-            <Lozenge appearance={opt.step ? stepToLozengeAppearance(opt.step) : 'default'} isBold>
-              {opt.label}
-            </Lozenge>
+            <StatusSpan
+              appearance={opt.step ? stepToLozengeAppearance(opt.step) : 'default'}
+              label={opt.label}
+            />
           </DropdownItem>
         ))}
       </DropdownItemGroup>
@@ -533,7 +568,7 @@ function TranslateButton({ loading, label, onClick }: { loading: boolean; label:
 // MAIN
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function CreateBusinessRequestModal({ isOpen, onClose, productId }: CreateBusinessRequestModalProps) {
+export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkTypeChange }: CreateBusinessRequestModalProps) {
   const createMutation = useCreateBusinessRequest();
   const { data: profiles = [] } = useProfiles();
   const { data: releaseOptions = [] } = useReleases();
@@ -667,6 +702,36 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
             </Box>
 
             <Box xcss={fieldGroupStyles}>
+
+              {/* ── Work type — always visible so user can switch without closing ── */}
+              {onWorkTypeChange && (
+                <Field name="workType" label="Work type" isRequired>
+                  {({ fieldProps: { id } }) => (
+                    <Select
+                      inputId={id}
+                      options={[
+                        { value: 'Story', label: 'Story' },
+                        { value: 'Epic', label: 'Epic' },
+                        { value: 'Feature', label: 'Feature' },
+                        { value: 'Business Request', label: 'Business Request' },
+                        { value: 'Business Gap', label: 'Business Gap' },
+                        { value: 'QA Bug', label: 'QA Bug' },
+                        { value: 'Production Incident', label: 'Production Incident' },
+                        { value: 'Change Request', label: 'Change Request' },
+                      ]}
+                      value={{ value: 'Business Request', label: 'Business Request' }}
+                      onChange={(opt) => {
+                        const selected = (opt as { value: string } | null)?.value;
+                        if (selected && selected !== 'Business Request') {
+                          handleClose();
+                          onWorkTypeChange(selected);
+                        }
+                      }}
+                      isSearchable={false}
+                    />
+                  )}
+                </Field>
+              )}
 
               {/* ── 2026-06-01: Single English title field — Arabic title
                   deprecated. The bilingual TitleTranslateWrapper pattern
@@ -878,6 +943,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
                     value={form.release_id}
                     onChange={(id) => set('release_id', id)}
                     placeholder="Link to a release"
+                    appearance="default"
                   />
                 )}
               </Field>
@@ -924,7 +990,6 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
 
           {/* ── Footer ─────────────────────────────────────────────────────── */}
           <ModalFooter>
-            <Box xcss={footerLeftStyles} />
             <Box xcss={footerRightStyles}>
               <Button appearance="subtle" onClick={handleClose} isDisabled={isSubmitting}>Cancel</Button>
               <Button appearance="primary" isLoading={isSubmitting} onClick={handleCreate}>Create</Button>
