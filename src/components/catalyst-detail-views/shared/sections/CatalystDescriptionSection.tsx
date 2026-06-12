@@ -544,25 +544,14 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       background: var(--ds-surface-sunken, #F4F5F7) !important;
     }
 
-    /* 2026-05-21 — @-mention chip styling.
-       Jira's mention chips are blue/informational. Atlaskit's default
-       node-spec writes inline grey neutral tokens (--ds-background-neutral
-       + --ds-text-subtle) directly to span[data-mention-id]'s style attr;
-       inline style beats class-based CSS, so we use !important to lift
-       the chip into the ADS information palette. Tokens used:
-         background: --ds-background-information (light blue surface)
-         color:      --ds-text-information       (Jira link blue)
-       Both round-trip light/dark themes via ADS, so this is theme-safe. */
-    span[data-mention-id] {
-      background: var(--ds-background-information, #DEEBFF) !important;
-      color: var(--ds-text-information, #1868DB) !important;
-      border-radius: 3px !important;
-      padding: 0 4px !important;
-      font-weight: 500 !important;
-    }
-    span[data-mention-id]:hover {
-      background: var(--ds-background-information-hovered, #CCE0FF) !important;
-    }
+    /* @-mention chip styling now lives EXCLUSIVELY in
+       shared/rich-text/mentions/mentionStyles.ts (the canonical
+       contract: 9999px pill, gray for other / brand-bold blue for
+       current user, painted via data-mention-self attribute). The
+       local block here used border-radius 3px + blue background and
+       was loaded later in cascade order, so it silently flattened the
+       canonical pill into a near-square chip everywhere a detail view
+       had been mounted. Deleted on 2026-06-11. */
 
     .fabric-editor-typeahead,
     [class*="fabric-editor-typeahead"],

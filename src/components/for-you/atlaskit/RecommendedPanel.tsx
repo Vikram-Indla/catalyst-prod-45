@@ -55,7 +55,6 @@ import Tooltip from '@atlaskit/tooltip';
 import TextArea from '@atlaskit/textarea';
 import EmojiAddIcon from '@atlaskit/icon/glyph/emoji-add';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
-import { catalystToast } from '@/lib/catalystToast';
 import ForYouRow from './ForYouRow';
 import { SummarizeDigestModal, type DigestMention } from './SummarizeDigestModal';
 import { ForYouEmptyState, GroupHeading, groupByRecency, MentionSparkleArt } from './helpers';
@@ -65,9 +64,19 @@ import { renderContent as renderCommentContent } from '@/components/catalyst-ds/
 import { Comment } from '@/components/catalyst-ds/comments/Comment';
 import { CommentToolbar } from '@/components/catalyst-ds/comments/CommentToolbar';
 import { CommentEditor } from '@/components/catalyst-ds/comments/CommentEditor';
-import { CommentNode, TRUNK_X, LINE_COLOR, LINE_WIDTH } from '@/components/catalyst-ds/comments/CommentNode';
+import {
+  CommentNode,
+  TRUNK_X,
+  LINE_COLOR,
+  LINE_WIDTH,
+  BRANCH_WIDTH,
+  BRANCH_HEIGHT,
+  REPLY_INDENT,
+} from '@/components/catalyst-ds/comments/CommentNode';
 import type { CdsComment, CdsCommentReaction, CdsUser } from '@/components/catalyst-ds/types';
 import { useAuth } from '@/hooks/useAuth';
+import { useChatPeople } from '@/hooks/chat/useChatPeople';
+import { parseMentions, type MentionRosterEntry } from '@/lib/mentions/parseMentions';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLayoutEffect } from 'react';
 import { resolveAvatarUrl } from '@/lib/avatars';
@@ -77,6 +86,8 @@ import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { fetchFunction } from '@/integrations/supabase/functionsRouter';
 import { supabase } from '@/integrations/supabase/client';
 import type { WorkItem, RecommendedMention, RecommendedComment, TabType } from '@/hooks/useForYouData';
+import catyAiBg from '@/assets/caty-ai-bg.svg';
+import '@/pages/project-hub/jira-list/components/ask-caty-input.css';
 
 interface RecommendedPanelProps {
   items: WorkItem[];
@@ -330,6 +341,14 @@ export default function RecommendedPanel({
               projectKey: m.projectKey,
               commentBody: m.commentBody,
               commentCreatedAt: m.commentCreatedAt,
+              // View thread shows only when there's actually a thread to
+              // navigate to: the issue must exist in ph_issues (issueId is
+              // a UUID, not a Jira-key fallback) AND the comment must be
+              // synced (`phCommentId` non-null). Either check missing
+              // means clicking View thread would land on an empty or
+              // un-openable detail surface.
+              showViewThread:
+                UUID_RE_FY.test(m.issueId) && m.phCommentId !== null,
             }))}
             onOpen={resolveSelect}
             onDismiss={handleDismiss}
@@ -362,7 +381,11 @@ export default function RecommendedPanel({
               projectKey: c.projectKey,
               commentBody: c.commentBody,
               commentCreatedAt: c.commentCreatedAt,
-              showViewThread: true,
+              // Same gate as mention rows — hide when the detail surface
+              // can't be opened (issue not in ph_issues) or there's no
+              // comment to land on (phCommentId not synced yet).
+              showViewThread:
+                UUID_RE_FY.test(c.issueId) && c.phCommentId !== null,
             }))}
             onOpen={resolveSelect}
             onDismiss={handleDismiss}
@@ -628,6 +651,29 @@ function FeedCard({
 }) {
   const [hover, setHover] = React.useState(false);
   const [dismissFocused, setDismissFocused] = React.useState(false);
+  // Roster + viewer identity feed the canonical mention parser so the
+  // comment body renders `@vikram indla`, `@Maria Garcia Lopez`, and the
+  // current user's own name as a single canonical mention chip — same
+  // contract as Description and Comments.
+  const { user } = useAuth();
+  const currentUserId = user?.id ?? null;
+  const { groups: peopleGroups } = useChatPeople();
+  const roster = React.useMemo<MentionRosterEntry[]>(() => {
+    // Base roster — the Catalyst people directory (resource_inventory
+    // with a profile_id). Plus the parent comment author, ALWAYS
+    // included so multi-word Jira-only authors like "Imran Aslam"
+    // longest-match as one pill even when they have no Catalyst
+    // profile row. parseMentions dedupes by lowercased name so adding
+    // the author here is a no-op when they already appear in the
+    // directory.
+    const base = peopleGroups.flatMap((g) =>
+      g.people.map((p) => ({ name: p.name, userId: p.profileId })),
+    );
+    if (row.authorName) {
+      base.push({ name: row.authorName, userId: null });
+    }
+    return base;
+  }, [peopleGroups, row.authorName]);
   // Per-card "Ask Caty" summarize button REMOVED 2026-05-31 — duplicated the
   // panel-header digest CTA at the wrong granularity level. Users get one
   // canonical AI affordance per section ("Ask Caty — summarize N") that
@@ -755,26 +801,8 @@ function FeedCard({
           <span title={absolute}>{relative}</span>
         </div>
 
-        {/* G-02: View thread — Jira parity, "Reply to comments" rows only.
-            DOM probe 2026-05-29: BUTTON element, 13px/500/link-blue, below the meta row. */}
-        {row.showViewThread && (
-          <button
-            type="button"
-            onClick={onOpen}
-            style={{
-              all: 'unset',
-              cursor: 'pointer',
-              display: 'inline-block',
-              fontSize: 13,
-              fontWeight: 500,
-              lineHeight: '16px',
-              color: token('color.link', '#1868DB'),
-              paddingBlockStart: 2,
-            }}
-          >
-            View thread
-          </button>
-        )}
+        {/* "View thread" link moved into ForYouCardFooter (above the
+            reactions toolbar, Phase 1 dashboard layout). */}
 
         {/* Comment body — left accent bar separates "what was said" from card chrome.
             borderLeft uses color.link token (same blue as @mention chips). */}
@@ -793,14 +821,14 @@ function FeedCard({
               wordBreak: 'break-word',
             }}
           >
-            {renderCommentContent(row.commentBody)}
+            {renderCommentContent(row.commentBody, { roster, currentUserId })}
           </div>
         </div>
 
-        {/* Footer zone — border-top groups reactions + composer into one visual block. */}
+        {/* Footer zone — Phase 1 dashboard layout: NO top divider.
+            The "View thread" link inside ForYouCardFooter sits in the
+            space the divider previously occupied. */}
         <div style={{
-          borderTop: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
-          paddingTop: 8,
           marginBlockStart: 8,
           display: 'flex',
           flexDirection: 'column',
@@ -1326,6 +1354,10 @@ const ASK_CATY_RAINBOW = `conic-gradient(
 )`;
 
 function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loading'; onSuggest: () => void }) {
+  // Hover state drives `filter: brightness(1.08)` on the rainbow wrapper
+  // — the ADS-canonical hover affordance allowed by the CLAUDE.md
+  // ENTERPRISE UI GUARDRAIL carve-out (2026-05-31). No motion, no
+  // animation, no rotation — the gradient stays static.
   const [hover, setHover] = useState(false);
   return (
     <div
@@ -1336,16 +1368,8 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
         flexDirection: 'column',
         alignItems: 'flex-start',
         gap: 6,
-        padding: 8,
-        borderRadius: 3,
-        background: hover
-          ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.04)')
-          : 'transparent',
-        transition: 'background-color 120ms ease',
         alignSelf: 'flex-start',
       }}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
     >
       {phase === 'error' && (
         // Inline error state — visible explanation when Gemini is rate-limited
@@ -1372,13 +1396,18 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
         </div>
       )}
       {/* Static rainbow border wrapper — AI affordance signifier.
-          See CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (2026-05-31). */}
+          See CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (2026-05-31).
+          Hover affordance: `filter: brightness(1.08)` only — no motion. */}
       <div
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
         style={{
           display: 'inline-flex',
           padding: 3,
           borderRadius: 20,
           background: ASK_CATY_RAINBOW,
+          filter: hover && phase !== 'loading' ? 'brightness(1.08)' : 'none',
+          transition: 'filter 120ms ease',
         }}
       >
         <button
@@ -1814,8 +1843,9 @@ function ForYouReplyTree({
         headers: { 'Content-Type': 'application/json' },
       });
       if (!res.ok || !res.body) {
+        // Inline error — per-reply suggest phase drives the
+        // SuggestReplyTile error state on the nested reply's tile.
         setSuggestPhaseByReply((p) => ({ ...p, [replyId]: 'error' }));
-        catalystToast.error('Could not generate a suggestion. Try again.');
         return;
       }
       const reader = res.body.getReader();
@@ -2159,11 +2189,27 @@ function ForYouCardFooter({
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const mentionableUsers = useMentionableUsersFY();
+  // Catalyst people directory (resource_inventory with profile_id) —
+  // used as additional roster signal alongside `mentionableUsers` so
+  // multi-word names that exist in either source resolve to a single
+  // pill via parseMentions's longest-match.
+  const { groups: peopleGroupsForFooter } = useChatPeople();
   const [resolvedId, setResolvedId] = useState<string | null>(row.phCommentId);
   const [composerOpen, setComposerOpen] = useState(false);
   const [composerKey, setComposerKey] = useState(0);
   const [composerDefault, setComposerDefault] = useState('');
   const [suggestPhase, setSuggestPhase] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
+  // Inline reply feedback — no corner toasts or Atlassian Flags. Success
+  // flashes a brief "Reply sent" indicator inside LeaveAReplyBox for 2s
+  // and then reverts; error keeps the composer open with an inline
+  // error banner so the user can fix and retry without losing context.
+  const [replyJustSent, setReplyJustSent] = useState(false);
+  const [replyError, setReplyError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!replyJustSent) return;
+    const t = window.setTimeout(() => setReplyJustSent(false), 2000);
+    return () => window.clearTimeout(t);
+  }, [replyJustSent]);
 
   // Sync if a refetch surfaces a non-null phCommentId after first paint.
   useEffect(() => {
@@ -2243,23 +2289,40 @@ function ForYouCardFooter({
       }
     : undefined;
 
+  // AbortController for the active Ask Caty stream — lets the user
+  // cancel mid-stream from the CatyGeneratingPanel. The ref is set the
+  // moment the request starts and cleared when it finishes / aborts.
+  const suggestAbortRef = useRef<AbortController | null>(null);
+
+  const handleCancelSuggest = useCallback(() => {
+    suggestAbortRef.current?.abort();
+    suggestAbortRef.current = null;
+    setSuggestPhase('idle');
+  }, []);
+
   const handleSuggestReply = async () => {
     if (suggestPhase === 'loading') return;
     setSuggestPhase('loading');
+    const controller = new AbortController();
+    suggestAbortRef.current = controller;
     try {
       const res = await fetchFunction('ai-improve-comment', {
         method: 'POST',
         body: JSON.stringify({
           improve_type: 'suggest_reply',
           parent_comment: row.commentBody,
+          parent_author: row.authorName,
           issue_summary: row.issueSummary,
           issue_type: row.issueType,
         }),
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
       });
       if (!res.ok || !res.body) {
+        // setSuggestPhase('error') drives the inline error UI on the
+        // LeaveAReplyBox (SuggestReplyTile's error state — "Caty is busy
+        // — please wait a moment and click again"). No corner toast.
         setSuggestPhase('error');
-        catalystToast.error('Could not generate a suggestion. Try again.');
         return;
       }
       const reader = res.body.getReader();
@@ -2282,31 +2345,106 @@ function ForYouCardFooter({
         }
       }
       if (accum.length > 0) {
-        setComposerDefault(accum);
+        // Convert plain-text @Name tokens into structured ADF mention
+        // nodes so the editor renders them as pills instead of raw text.
+        // CommentEditor.toInitialContent detects ADF via looksLikeAdf
+        // (JSON-stringified doc with type:'doc') and parses it directly,
+        // skipping markdownToAdf which would emit plain text nodes.
+        //
+        // Roster combines THREE sources so multi-word names always
+        // longest-match (avoids the "first-word-only pill" regression):
+        //   1. mentionableUsers — APPROVED profiles
+        //   2. peopleGroupsForFooter — resource_inventory directory
+        //   3. row.authorName — the parent comment's author, ALWAYS
+        //      included so Jira-only authors like "Imran Aslam" who
+        //      have no Catalyst row still resolve as a single pill.
+        const mentionRoster: MentionRosterEntry[] = [
+          ...mentionableUsers.map((u) => ({ name: u.name, userId: u.id })),
+          ...peopleGroupsForFooter.flatMap((g) =>
+            g.people.map((p) => ({ name: p.name, userId: p.profileId })),
+          ),
+        ];
+        if (row.authorName) {
+          mentionRoster.push({ name: row.authorName, userId: null });
+        }
+        const adfDoc = aiTextToAdfWithMentions(accum, mentionRoster);
+        setComposerDefault(JSON.stringify(adfDoc));
         setComposerKey((k) => k + 1);
         setComposerOpen(true);
         setSuggestPhase('done');
       } else {
         setSuggestPhase('error');
       }
-    } catch {
+    } catch (err) {
+      // AbortError is the user clicking Cancel — keep state at 'idle'
+      // (already set by handleCancelSuggest) and stay silent.
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       setSuggestPhase('error');
+    } finally {
+      if (suggestAbortRef.current === controller) {
+        suggestAbortRef.current = null;
+      }
     }
   };
 
   const handleSubmitReply = async (content: string) => {
-    if (!user?.id || !issueUuid) return;
-    const parentId = await ensurePhComment();
-    await supabase.from('ph_comments').insert({
-      work_item_id: issueUuid,
-      body: content,
-      author_id: user.id,
-      parent_comment_id: parentId ?? null,
-    });
-    catalystToast.success('Reply added');
-    setComposerOpen(false);
-    setComposerDefault('');
-    queryClient.invalidateQueries({ queryKey: ['fy-reply-tree', issueUuid] });
+    setReplyError(null);
+    if (!user?.id) {
+      setReplyError('You must be signed in to reply.');
+      return;
+    }
+    // Issue UUID lookup — `row.issueId` is set to `issue?.id || issue_key`
+    // upstream, so for issues we haven't fully cached in ph_issues yet it
+    // arrives as a Jira key like "BAU-1234". The previous code returned
+    // silently when that happened, leaving the Save button looking
+    // broken. Resolve the UUID by issue_key here as a fallback before we
+    // bail.
+    let workItemId = issueUuid;
+    if (!workItemId && row.issueKey) {
+      try {
+        const { data } = await (supabase as unknown as {
+          from: (t: string) => {
+            select: (s: string) => {
+              eq: (k: string, v: string) => {
+                maybeSingle: () => Promise<{ data: { id: string } | null }>;
+              };
+            };
+          };
+        })
+          .from('ph_issues')
+          .select('id')
+          .eq('issue_key', row.issueKey)
+          .maybeSingle();
+        if (data?.id) workItemId = data.id;
+      } catch {
+        /* fall through to the visible error below */
+      }
+    }
+    if (!workItemId) {
+      setReplyError('This issue is not yet synced to Catalyst.');
+      return;
+    }
+    try {
+      const parentId = await ensurePhComment();
+      const { error } = await supabase.from('ph_comments').insert({
+        work_item_id: workItemId,
+        body: content,
+        author_id: user.id,
+        parent_comment_id: parentId ?? null,
+      });
+      if (error) throw error;
+      // Success — close the composer and flash an inline "Reply sent"
+      // indicator in the LeaveAReplyBox for ~2s. No corner notification.
+      setComposerOpen(false);
+      setComposerDefault('');
+      setReplyJustSent(true);
+      queryClient.invalidateQueries({ queryKey: ['fy-reply-tree', workItemId] });
+    } catch (err) {
+      console.warn('[ForYouCardFooter] reply insert failed', err);
+      // Error — keep the composer open with an inline error banner so
+      // the user can correct and retry without losing their typed text.
+      setReplyError('Could not save reply. Try again in a moment.');
+    }
   };
 
   // Used by ForYouReplyTree when the user replies to a nested reply.
@@ -2320,28 +2458,59 @@ function ForYouCardFooter({
       author_id: user.id,
       parent_comment_id: parentId,
     });
-    catalystToast.success('Reply added');
+    // Success feedback is the reply itself appearing in the tree via
+    // the query invalidation below — no corner notification.
     queryClient.invalidateQueries({ queryKey: ['fy-reply-tree', issueUuid] });
   };
 
+  // Phase 1 dashboard layout:
+  //   • "View thread" link sits above the reactions toolbar — only when
+  //     the row actually carries a thread to view. Clickable placeholder;
+  //     the trigger is wired in a later phase.
+  //   • CommentToolbar shows reactions only — Reply icon and ⋯ More menu
+  //     are intentionally hidden by NOT passing `onReply` / `onCopyLink`.
+  //   • Nested reply tree (<ForYouReplyTree>) is NOT rendered on the
+  //     dashboard. The "Leave a reply" rest-state box replaces both the
+  //     standalone SuggestReplyTile and the reply list.
   return (
     <>
+      {row.showViewThread && (
+        <ViewThreadLink
+          onActivate={() => {
+            // Drop the viewer directly onto the Comments tab of the
+            // issue's detail view, rendered as the right-side panel
+            // (same affordance the project-hub backlog uses) — not the
+            // default centred modal.
+            useGlobalSearchStore.getState().setFocusSection('comments');
+            useGlobalSearchStore.getState().openDetail({
+              id: row.issueKey,
+              itemType: row.issueType,
+              projectKey: row.projectKey,
+              panelMode: true,
+            });
+          }}
+        />
+      )}
       <CommentToolbar
         reactions={cdsReactions}
         onToggleReaction={handleToggleReaction}
-        onReply={() => {
+      />
+      <LeaveAReplyBox
+        currentUser={currentUser}
+        composerOpen={composerOpen}
+        suggestLoading={suggestPhase === 'loading'}
+        suggestError={suggestPhase === 'error'}
+        replyJustSent={replyJustSent}
+        replyError={replyError}
+        onDismissError={() => setReplyError(null)}
+        onOpen={() => {
           setComposerDefault('');
           setComposerKey((k) => k + 1);
           setComposerOpen(true);
         }}
-        onCopyLink={() => {
-          const url = new URL(window.location.origin + `/browse/${row.issueKey}`);
-          if (row.commentId) url.searchParams.set('comment', row.commentId);
-          void navigator.clipboard?.writeText(url.toString());
-        }}
-      />
-      {composerOpen && (
-        <div style={{ marginBlockStart: 4 }}>
+        onSuggest={handleSuggestReply}
+        onCancelSuggest={handleCancelSuggest}
+        editor={
           <CommentEditor
             key={composerKey}
             currentUser={currentUser}
@@ -2358,40 +2527,523 @@ function ForYouCardFooter({
               issueSummary: row.issueSummary,
             }}
           />
-        </div>
-      )}
-      {/* Ask Caty — suggest a reply. ALWAYS visible under the toolbar
-          (matching the legacy ReplyComposer behavior). Clicking it
-          triggers handleSuggestReply which opens the composer
-          pre-filled with the AI-generated suggestion. */}
-      {suggestPhase !== 'loading' && (
-        <SuggestReplyTile
-          phase={suggestPhase === 'error' ? 'error' : 'idle'}
-          onSuggest={handleSuggestReply}
-        />
-      )}
-      {suggestPhase === 'loading' && (
-        <div
-          style={{
-            marginBlockStart: 8,
-            marginInlineStart: 34,
-            font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-            color: token('color.text.subtle', '#505258'),
-          }}
-        >
-          Ask Caty…
-        </div>
-      )}
-      {/* Nested reply tree — every descendant of this top-level
-          comment in ph_comments. Renders the curved trunk + Bezier
-          branches via CommentNode (Jira parity). */}
-      <ForYouReplyTree
-        parentResolvedId={resolvedId}
-        issueUuid={issueUuid}
-        ensurePhComment={ensurePhComment}
-        onSubmitReplyTo={handleSubmitReplyTo}
+        }
       />
     </>
+  );
+}
+
+/**
+ * LeaveAReplyBox — rest-state composer surface used on the For You
+ * dashboard. Renders a tree-line connector + current-user avatar + a
+ * bordered "Leave a reply" container with the Ask Caty button inside it.
+ *
+ * Click anywhere in the container (except the Ask Caty button) → opens
+ * the real CommentEditor in place. Click Ask Caty → triggers the AI
+ * suggestion stream (handled by the parent). When `composerOpen` is
+ * true the bordered placeholder is swapped for the `editor` slot so the
+ * tree-line + avatar layout stays put — no jump.
+ */
+function LeaveAReplyBox({
+  currentUser,
+  composerOpen,
+  suggestLoading,
+  suggestError,
+  replyJustSent,
+  replyError,
+  onDismissError,
+  onOpen,
+  onSuggest,
+  onCancelSuggest,
+  editor,
+}: {
+  currentUser?: CdsUser;
+  composerOpen: boolean;
+  suggestLoading: boolean;
+  suggestError: boolean;
+  /** Brief inline success state — flashes ~2s right after a successful submit. */
+  replyJustSent: boolean;
+  /** Inline error string surfaced when a submit fails. Null when clear. */
+  replyError: string | null;
+  onDismissError: () => void;
+  onOpen: () => void;
+  onSuggest: () => void;
+  onCancelSuggest: () => void;
+  editor: React.ReactNode;
+}) {
+  const placeholder = replyJustSent
+    ? 'Reply sent'
+    : suggestError
+    ? 'Could not generate a suggestion. Try again.'
+    : 'Leave a reply';
+
+  // Trunk anchoring — same pattern ForYouReplyTree uses so the vertical
+  // line emerges from BELOW the FeedCard's parent avatar (in the outer
+  // flex column), passes DOWN through the comment body / reactions /
+  // "View thread" link, and curves into the reply avatar here.
+  //   • marginLeft shifts this container so its `left: TRUNK_X` aligns
+  //     with the parent avatar's horizontal CENTER.
+  //   • trunkTop is a NEGATIVE offset measured up from this container's
+  //     top to the parent avatar's bottom — that's how high the trunk
+  //     extends above us into the parent's body area.
+  // Both are measured at runtime because neither the FeedCard padding
+  // nor the avatar's box are stable enough to hard-code.
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [marginLeft, setMarginLeft] = useState(0);
+  const [trunkTop, setTrunkTop] = useState(0);
+
+  useLayoutEffect(() => {
+    const wrapper = containerRef.current;
+    if (!wrapper) return;
+    const update = () => {
+      const parent = wrapper.parentElement;
+      const feedCard = wrapper.closest('[data-fy-feedcard]');
+      const avatar = feedCard?.querySelector('[data-fy-avatar]') as HTMLElement | null;
+      if (!parent || !avatar) return;
+
+      const aRect = avatar.getBoundingClientRect();
+      const pRect = parent.getBoundingClientRect();
+      const avatarCenterX = aRect.left + aRect.width / 2;
+      setMarginLeft(avatarCenterX - pRect.left - TRUNK_X);
+
+      const wRect = wrapper.getBoundingClientRect();
+      const upDistance = wRect.top - aRect.bottom;
+      setTrunkTop(-Math.max(0, upDistance));
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(wrapper);
+    const feedCard = wrapper.closest('[data-fy-feedcard]');
+    if (feedCard) ro.observe(feedCard);
+    window.addEventListener('resize', update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', update);
+    };
+  }, [composerOpen, suggestLoading, suggestError]);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        position: 'relative',
+        paddingLeft: REPLY_INDENT,
+        marginBlockStart: 8,
+        marginLeft,
+      }}
+    >
+      {/* Vertical trunk — extends UP from our top (top: trunkTop, a
+          negative value) so it visually emerges from BELOW the parent
+          FeedCard's avatar and passes through the comment body / view
+          thread / reactions area. */}
+      <span
+        aria-hidden
+        style={{
+          position: 'absolute',
+          left: TRUNK_X,
+          top: trunkTop,
+          height: -trunkTop,
+          width: 0,
+          borderLeft: `${LINE_WIDTH}px solid ${LINE_COLOR}`,
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Curved branch — picks up where the trunk ends (top: 0) and
+          curves into the current-user avatar at its VERTICAL MIDDLE.
+          CommentNode's BRANCH_HEIGHT (24) was tuned for a 24px avatar
+          inside a padded row landing at y=24; here the avatar is the
+          first flex child (no top padding) and Atlaskit's `medium`
+          size is 32px, so the true vertical middle sits at y=16. */}
+      {(() => {
+        const branchEndY = 16;
+        return (
+          <svg
+            aria-hidden
+            width={BRANCH_WIDTH}
+            height={branchEndY}
+            viewBox={`0 0 ${BRANCH_WIDTH} ${branchEndY}`}
+            style={{
+              position: 'absolute',
+              left: TRUNK_X,
+              top: 0,
+              overflow: 'visible',
+              pointerEvents: 'none',
+            }}
+          >
+            <path
+              d={`M 0 0 Q 0 ${branchEndY} ${BRANCH_WIDTH} ${branchEndY}`}
+              fill="none"
+              stroke={LINE_COLOR}
+              strokeWidth={LINE_WIDTH}
+            />
+          </svg>
+        );
+      })()}
+
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+        {/* Avatar rendered ONLY in the rest state — CommentEditor draws
+            its own author avatar, so showing one here too would stack
+            two side-by-side when the editor opens. */}
+        {!composerOpen && (
+          <span style={{ flexShrink: 0, marginInlineStart: -16 }}>
+            <Avatar
+              size="medium"
+              name={currentUser?.name ?? 'You'}
+              src={currentUser?.avatarUrl}
+            />
+          </span>
+        )}
+
+        {composerOpen ? (
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {/* Inline error banner — sits ABOVE the editor when a submit
+                fails so the user can correct and retry without losing
+                context. Dismissable; no corner overlay. */}
+            {replyError && (
+              <div
+                role="alert"
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 8,
+                  padding: '8px 10px',
+                  borderRadius: 4,
+                  background: 'var(--ds-background-danger, #FFEDEB)',
+                  border: '1px solid var(--ds-border-danger, #F2A19A)',
+                  color: 'var(--ds-text-danger, #AE2A19)',
+                  font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+                }}
+              >
+                <span style={{ flex: 1, minWidth: 0 }}>{replyError}</span>
+                <button
+                  type="button"
+                  aria-label="Dismiss error"
+                  onClick={onDismissError}
+                  style={{
+                    all: 'unset',
+                    cursor: 'pointer',
+                    color: 'var(--ds-text-danger, #AE2A19)',
+                    fontWeight: 600,
+                    padding: '0 4px',
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            )}
+            {editor}
+          </div>
+        ) : suggestLoading ? (
+          // While Caty is generating, the bordered placeholder is replaced
+          // by the animated rainbow-frame panel. Hides the Ask Caty button
+          // so the user can't fire the request multiple times in parallel.
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <CatyGeneratingPanel onCancel={onCancelSuggest} />
+          </div>
+        ) : (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={onOpen}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onOpen();
+              }
+            }}
+            style={{
+              flex: 1,
+              minWidth: 0,
+              cursor: 'text',
+              border: `1px solid ${
+                replyJustSent
+                  ? 'var(--ds-border-success, #6A9A7B)'
+                  : token('color.border', 'rgba(11,18,14,0.14)')
+              }`,
+              borderRadius: 6,
+              padding: '10px 12px',
+              background: 'var(--ds-surface, #FFFFFF)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+              transition: 'border-color 240ms ease',
+            }}
+          >
+            {/* Inline success indicator — green check + "Reply sent" for
+                ~2s after a successful submit, then quietly reverts to the
+                default placeholder. No corner notification, no overlay. */}
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+                color: replyJustSent
+                  ? 'var(--ds-text-success, #1F845A)'
+                  : token('color.text.subtlest', '#6B778C'),
+                transition: 'color 240ms ease',
+              }}
+            >
+              {replyJustSent && (
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M3 8l3.5 3.5L13 5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
+              {placeholder}
+            </span>
+            {/* Stop propagation so clicking the Ask Caty button does
+                NOT also trigger the outer "open editor" handler on the
+                bordered box. */}
+            <span onClick={(e) => e.stopPropagation()}>
+              <SuggestReplyTile
+                phase={suggestError ? 'error' : 'idle'}
+                onSuggest={onSuggest}
+              />
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Convert the AI's plain-text reply into an ADF doc that includes
+ * structured mention nodes for every roster-matched `@Name`. The
+ * CommentEditor's `toInitialContent` detects ADF input (JSON with
+ * `type: 'doc'`) and loads it verbatim, so mentions arrive as proper
+ * pills instead of plain `@Imran Aslam` text.
+ *
+ * Roster-aware longest-match (via parseMentions) so multi-word names
+ * like "@Maria Garcia Lopez" land as a single mention, and unknown
+ * `@handles` fall back to plain text rather than empty-id mentions.
+ */
+function aiTextToAdfWithMentions(
+  text: string,
+  roster: readonly MentionRosterEntry[],
+): unknown {
+  const lines = text.trim().split('\n');
+  const paragraphs: unknown[] = [];
+  let inline: unknown[] = [];
+
+  const flushParagraph = () => {
+    if (inline.length > 0) {
+      paragraphs.push({ type: 'paragraph', content: inline });
+      inline = [];
+    }
+  };
+
+  for (const line of lines) {
+    if (!line.trim()) {
+      flushParagraph();
+      continue;
+    }
+    if (inline.length > 0) inline.push({ type: 'hardBreak' });
+    for (const part of parseMentions(line, roster)) {
+      if (part.type === 'mention') {
+        // The ADF→Tiptap adapter in this repo copies `attrs.text` into
+        // the Tiptap node's `label`, and Mention.ts's `renderHTML`
+        // always prepends `@`. So we store `text` WITHOUT the `@` —
+        // emitting `@Name` would render as `@@Name`.
+        //
+        // We emit the mention node UNCONDITIONALLY (even when `userId`
+        // is null — e.g. Jira-only authors without a Catalyst profile)
+        // so the chip still paints as a pill. The canonical mentionStyles
+        // CSS keys on attribute PRESENCE (`span[data-mention-id]`),
+        // not value; an empty id still triggers the gray pill. Only the
+        // self-paint (brand-bold blue) requires a real id match.
+        const name = part.name.replace(/^@/, '');
+        inline.push({
+          type: 'mention',
+          attrs: {
+            id: part.userId ?? '',
+            text: name,
+            userType: 'DEFAULT',
+          },
+        });
+      } else if (part.value) {
+        inline.push({ type: 'text', text: part.value });
+      }
+    }
+  }
+  flushParagraph();
+
+  if (paragraphs.length === 0) paragraphs.push({ type: 'paragraph' });
+  return { type: 'doc', version: 1, content: paragraphs };
+}
+
+/**
+ * ViewThreadLink — small blue link rendered above the reactions toolbar
+ * on every For You card.
+ *
+ *   • Idle:  link-blue, no underline.
+ *   • Hover: text-information-bold (darker blue) + matching underline.
+ *
+ * No layout shift on hover — the underline appears via `text-decoration`
+ * on the same line so neighbouring elements don't move.
+ */
+function ViewThreadLink({ onActivate }: { onActivate: () => void }) {
+  const [hover, setHover] = useState(false);
+  const idleColor = token('color.link', '#1868DB');
+  const hoverColor = token('color.text.information.bolder', '#0055CC');
+  return (
+    <button
+      type="button"
+      onClick={onActivate}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onFocus={() => setHover(true)}
+      onBlur={() => setHover(false)}
+      style={{
+        all: 'unset',
+        cursor: 'pointer',
+        display: 'inline-block',
+        // ForYouCardFooter wraps its children in a flex column. Flex items
+        // default to align-items: stretch, which stretches inline-block
+        // buttons to the full column width — that made the entire row
+        // clickable instead of just the text. `alignSelf: 'flex-start'`
+        // + `width: 'fit-content'` pins the button's hit area to its
+        // text content only.
+        alignSelf: 'flex-start',
+        width: 'fit-content',
+        font: `500 13px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+        color: hover ? hoverColor : idleColor,
+        textDecoration: hover ? 'underline' : 'none',
+        textDecorationColor: hover ? hoverColor : 'transparent',
+        textUnderlineOffset: 2,
+        transition: 'color 120ms ease',
+      }}
+    >
+      View thread
+    </button>
+  );
+}
+
+/**
+ * CatyGeneratingPanel — loading-state UI shown while Ask Caty streams a
+ * reply suggestion. Reuses the `ask-caty-frame` rotating rainbow CSS so
+ * the border anti-rotates while the request is in flight (matches Jira's
+ * Rovo "Generating" panel).
+ *
+ *   ┌── animated rainbow border ──┐
+ *   │ … Generating         Cancel │
+ *   │ ─────────────────────────── │
+ *   │                  [icon] Caty│
+ *   └─────────────────────────────┘
+ *
+ * Cancel triggers an `AbortController.abort()` on the parent — the
+ * request bails immediately and the rest-state box reappears.
+ */
+function CatyGeneratingPanel({ onCancel }: { onCancel: () => void }) {
+  return (
+    <div className="ask-caty-frame is-loading" style={{ borderRadius: 6 }}>
+      {/* Three-dot bounce keyframes scoped to this panel so the dots
+          travel up/down independently with a 160ms stagger. */}
+      <style>{`
+        @keyframes cgp-dot-bounce {
+          0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+          40% { transform: translateY(-3px); opacity: 1; }
+        }
+        .cgp-dots { display: inline-flex; align-items: center; gap: 3px; }
+        .cgp-dot {
+          width: 4px;
+          height: 4px;
+          border-radius: 50%;
+          background: var(--ds-text-information, #1868DB);
+          animation: cgp-dot-bounce 1.2s ease-in-out infinite;
+        }
+        .cgp-dot:nth-child(2) { animation-delay: 0.16s; }
+        .cgp-dot:nth-child(3) { animation-delay: 0.32s; }
+      `}</style>
+
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          background: 'var(--ds-surface, #FFFFFF)',
+          borderRadius: 4.5,
+          padding: '12px 14px',
+        }}
+      >
+        {/* Top section — minHeight reserves at least 3 text rows of
+            breathing room (3 × 20px line-height = 60px) so the panel
+            never feels cramped while the model streams in. Mirrors the
+            Rovo "Generating" panel layout in Jira's For You. */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 60,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span className="cgp-dots" aria-hidden="true">
+              <span className="cgp-dot" />
+              <span className="cgp-dot" />
+              <span className="cgp-dot" />
+            </span>
+            <span
+              style={{
+                font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+                color: token('color.text.subtle', '#44546F'),
+              }}
+            >
+              Generating
+            </span>
+            <span style={{ flex: 1 }} />
+            <button
+              type="button"
+              onClick={onCancel}
+              style={{
+                all: 'unset',
+                cursor: 'pointer',
+                font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+                color: token('color.text', '#172B4D'),
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div
+          style={{
+            height: 1,
+            background: 'var(--ds-border, #DFE1E6)',
+            margin: '10px 0',
+          }}
+        />
+
+        {/* Bottom row: spacer + Caty label + Caty icon */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ flex: 1 }} />
+          <span
+            style={{
+              font: `400 13px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+              color: token('color.text.subtle', '#44546F'),
+            }}
+          >
+            Caty
+          </span>
+          <img
+            src={catyAiBg}
+            alt=""
+            aria-hidden="true"
+            width={16}
+            height={16}
+            style={{ display: 'block', borderRadius: 3 }}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -2751,192 +3403,13 @@ function HeadlineIssueTitle({
   );
 }
 
-// ─── Comment body rendering (Jira @-chip parity) ────────────────────────────
-
-/**
- * Render a comment body with @-mention pills. Two matchers run per line:
- *
- *   (1) CC detector — `\bcc:` / `\bCC:` appearing ANYWHERE in the line (not
- *       just at line start). Every token after `cc:` is rendered as a
- *       MentionChip, with "@" prepended when the raw text lacks it. This
- *       mirrors Jira's behavior: the ADF stores mentions as `[~accountid:…]`
- *       or prefixed displayName, but our `adfToPlainText` flattener in the
- *       edge-function drops the leading "@". Rendering cc-list tokens as
- *       pills unconditionally restores visual parity without a backfill.
- *
- *   (2) Default fallback — explicit `@Name` tokens elsewhere in the text
- *       become pills; everything else renders as plain text.
- *
- * Also strips Jira's legacy bracketed `[~accountid:xyz]` form which the
- * sync layer may still leave behind on old comments.
- *
- * CC matcher uses a word-boundary `\bcc\s*:` so it catches cases where `cc:`
- * follows punctuation with no space (e.g. `"Supported Service'.cc: vikram"`).
- */
-function renderCommentWithMentions(body: string): React.ReactNode {
-  if (!body) return null;
-
-  // Strip ADF mention placeholders (e.g. "[~accountid:abc123]") the sync
-  // layer may still leave behind on old comments.
-  // Also collapse runs of 2+ blank lines into a single newline — the Jira ADF
-  // plaintext flattener leaves double-newlines between paragraphs which balloon
-  // card height without adding information.
-  const deAdf = body
-    .replace(/\[~[^\]]+\]/g, '')
-    .replace(/\n{2,}/g, '\n')
-    .trim();
-  if (!deAdf) return null;
-
-  // Pre-processor — normalize CC/@-mention variants left by the adfToPlainText
-  // flattener in wh-jira-bulk-sync, which drops the `@` marker on the name
-  // and the newline between `cc:` and the name in inconsistent ways.
-  //
-  // Observed patterns (DOM probe of Catalyst For You, 2026-04-24):
-  //   Pattern A (SIMP-1699):  "…services sectionCC\nvikram indla"
-  //                            (no space before CC, no colon after it,
-  //                             name on the next line, lowercase name)
-  //   Pattern B (SIMP-1706):  "…Service'.cc: \nvikram indla"
-  //                            (punctuation→cc, colon present, trailing space
-  //                             before newline, lowercase name)
-  //
-  // Target canonical form (what the cc: branch below expects on one line):
-  //   "…prefix cc: @vikram indla"
-  //
-  // Two passes, both safe on bodies that already use the canonical form:
-  //   (a) Insert a space before a smushed "CC"/"Cc" so "sectionCC" becomes
-  //       "section CC" — required so pass (b)'s `\b` anchor sees CC as a
-  //       standalone token.
-  //   (b) Collapse any "cc" / "Cc" / "CC" followed by an OPTIONAL colon,
-  //       any amount of whitespace including a newline, and the rest of
-  //       the next line, into "cc: @<rest-of-line>". Capturing to `[^\n]+`
-  //       (rather than a fixed token count) lets lowercase names, multi-
-  //       word names, and "A and B" lists all survive — the downstream
-  //       ccMatch splits on commas / semicolons / " and ".
-  const cleaned = deAdf
-    .replace(/([a-z0-9])(CC|Cc)\b/g, '$1 $2')
-    .replace(/\b(?:CC|Cc|cc)\s*:?\s*\n+\s*([^\n]+)/g, (_, names: string) => {
-      const trimmed = names.trim();
-      return `cc: ${trimmed.startsWith('@') ? trimmed : '@' + trimmed}`;
-    });
-
-  const lines = cleaned.split(/\n/);
-
-  // Detect trailing pure-@mention lines — lines whose ENTIRE content is a
-  // single @Name token (common Jira pattern: each CC'd person on their own line).
-  // Collapse 1+ consecutive trailing mention-only lines into one compact inline
-  // "cc: @A  @B  @C" row so they don't each consume a full block line and inflate
-  // card height. A line qualifies when, after trimming, it starts with "@" and
-  // contains no message text before the "@".
-  const isMentionOnly = (line: string) => /^\s*@\S/.test(line) && !/\bcc\s*:/i.test(line);
-
-  let tailStart = lines.length;
-  for (let i = lines.length - 1; i >= 0; i--) {
-    if (isMentionOnly(lines[i])) tailStart = i;
-    else break;
-  }
-
-  const bodyLines = lines.slice(0, tailStart);
-  const trailingMentions = lines.slice(tailStart);
-
-  const renderBodyLine = (line: string, lineIdx: number): React.ReactNode => {
-    // cc: detector — find the FIRST "cc:" / "CC:" with a word-boundary.
-    const ccMatch = line.match(/^(.*?)\b(cc|CC)\s*:\s*(.*)$/);
-    if (ccMatch && ccMatch[3]) {
-      const [, preText, ccLiteral, namesPart] = ccMatch;
-      const nameTokens = namesPart
-        .split(/\s*[,;]\s*|\s+and\s+/)
-        .map(s => s.trim())
-        .filter(Boolean);
-      return (
-        <React.Fragment key={`l${lineIdx}`}>
-          {lineIdx > 0 ? '\n' : null}
-          {preText ? renderInlineAtMentions(preText) : null}
-          <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', marginInlineEnd: 4 }}>CC</span>
-          {nameTokens.map((tok, j) => {
-            const normalized = tok.startsWith('@') ? tok : `@${tok}`;
-            return (
-              <React.Fragment key={`cc-${lineIdx}-${j}`}>
-                {j > 0 ? '  ' : null}
-                <MentionChip label={normalized} />
-              </React.Fragment>
-            );
-          })}
-        </React.Fragment>
-      );
-    }
-    return (
-      <React.Fragment key={`l${lineIdx}`}>
-        {lineIdx > 0 ? '\n' : null}
-        {renderInlineAtMentions(line)}
-      </React.Fragment>
-    );
-  };
-
-  const bodyNodes = bodyLines.map((line, i) => renderBodyLine(line, i));
-
-  if (trailingMentions.length === 0) return bodyNodes;
-
-  // Build the collapsed inline cc row from all trailing mention lines.
-  const mentionLabels = trailingMentions.map(l => {
-    const t = l.trim();
-    return t.startsWith('@') ? t : `@${t}`;
-  });
-
-  const ccRow = (
-    <React.Fragment key="trailing-cc">
-      {bodyLines.length > 0 ? '\n' : null}
-      <span style={{
-        color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
-        fontSize: 11,
-        fontWeight: 700,
-        letterSpacing: '0.05em',
-        marginInlineEnd: 4,
-      }}>CC</span>
-      {mentionLabels.map((chip, i) => (
-        <React.Fragment key={`tc-${i}`}>
-          {i > 0 ? '  ' : null}
-          <MentionChip label={chip} />
-        </React.Fragment>
-      ))}
-    </React.Fragment>
-  );
-
-  return [...bodyNodes, ccRow];
-}
-
-/**
- * Split a run of text on explicit `@Name` tokens, returning an array of
- * <MentionChip> + plain-text React nodes. Used for any text that isn't in a
- * `cc:` block.
- */
-function renderInlineAtMentions(text: string): React.ReactNode[] {
-  const parts = text.split(/(@[A-Za-z][A-Za-z'.-]*(?:\s+[A-Za-z][A-Za-z'.-]*)?)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith('@')) {
-      return <MentionChip key={`m${i}`} label={part} />;
-    }
-    return <React.Fragment key={`t${i}`}>{part}</React.Fragment>;
-  });
-}
-
-function MentionChip({ label }: { label: string }) {
-  return (
-    <span
-      style={{
-        display: 'inline-block',
-        padding: '2px 8px',
-        borderRadius: 20,
-        background: 'var(--ds-background-information, #DEEBFF)',
-        border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
-        color: token('color.link', '#0052CC'),
-        font: `500 13px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {label}
-    </span>
-  );
-}
+// ─── Comment body rendering ─────────────────────────────────────────────────
+// Comment bodies are rendered via the shared `renderContent()` from
+// catalyst-ds/comments/Comment.tsx, fed with the live people roster + the
+// viewer's profile id. That delegates @mention parsing to parseMentions
+// (longest-match against the roster) and emits the canonical
+// <CatalystMention> chip — same DOM contract as Description / Comments.
+// No bespoke regex / MentionChip lives in this file any more.
 
 // ─── Utilities ──────────────────────────────────────────────────────────────
 
