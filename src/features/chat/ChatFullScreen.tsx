@@ -43,6 +43,8 @@ function useSelfProfile(): { name: string; avatarUrl: string | null } {
 
 function ChatFullScreenInner() {
   const [activeConversationId, setActiveConversationId] = useState<string | undefined>(undefined);
+  const [unreadActivity, setUnreadActivity] = useState(0);
+  const [pendingMessageId, setPendingMessageId] = useState<string | undefined>(undefined);
   const shell = useShellState();
   const { conversations, isLoading } = useConversations();
   const { name: userName, avatarUrl: userAvatarUrl } = useSelfProfile();
@@ -51,8 +53,6 @@ function ChatFullScreenInner() {
     .filter(c => (c.kind === 'dm' || c.kind === 'group_dm') && c.unreadCount > 0)
     .reduce((sum, c) => sum + c.unreadCount, 0);
 
-  const unreadActivity = 0;
-
   const handleSelectConversation = (id: string) => {
     setActiveConversationId(id);
     if (shell.activeView !== 'chat') {
@@ -60,8 +60,9 @@ function ChatFullScreenInner() {
     }
   };
 
-  const handleOpenConversation = (conversationId: string, _messageId?: string) => {
+  const handleOpenConversation = (conversationId: string, messageId?: string) => {
     handleSelectConversation(conversationId);
+    setPendingMessageId(messageId);
   };
 
   return (
@@ -71,6 +72,7 @@ function ChatFullScreenInner() {
       activeConversationId={activeConversationId}
       onSelectConversation={handleSelectConversation}
       onOpenConversation={handleOpenConversation}
+      onUnreadActivity={setUnreadActivity}
       userName={userName}
       userAvatarUrl={userAvatarUrl}
       unreadDMs={unreadDMs}
@@ -93,6 +95,7 @@ function ChatFullScreenInner() {
         ) : (
           <MessageFeed
             conversationId={activeConversationId}
+            initialMessageId={pendingMessageId}
             conversation={
               conversations.find(c => c.id === activeConversationId) ?? {
                 id: activeConversationId,

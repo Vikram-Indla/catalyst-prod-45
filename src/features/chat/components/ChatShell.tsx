@@ -21,6 +21,8 @@ interface ChatShellProps {
   unreadActivity: number;
   /** Called when user clicks an activity item — navigates to the conversation */
   onOpenConversation: (conversationId: string, messageId?: string) => void;
+  /** Called when the unread activity count changes (to update AppRail badge) */
+  onUnreadActivity?: (count: number) => void;
   /** Main feed + thread content — injected by ChatFullScreen */
   children?: React.ReactNode;
 }
@@ -36,6 +38,7 @@ export function ChatShell({
   unreadDMs,
   unreadActivity,
   onOpenConversation,
+  onUnreadActivity,
   children,
 }: ChatShellProps) {
   const {
@@ -75,7 +78,7 @@ export function ChatShell({
       />
 
       {/* Column 3: activity surface (shown when activeView === 'activity') */}
-      <ActivitySurface onOpenConversation={onOpenConversation} />
+      <ActivitySurface onOpenConversation={onOpenConversation} onUnreadCount={onUnreadActivity} />
 
       {/* Columns 3 (+ 4 when docked): feed + thread — provided by parent */}
       {children}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,9 +28,20 @@ const db = supabase as unknown as { from: (t: string) => any };
 
 async function fetchActivity(userId: string): Promise<ActivityItem[]> {
   try {
-    // Fetch messages that mention the user (body_text contains @userId or author name)
-    // We approximate "mentions" as messages where body_text includes the user's name
-    // and messages that are replies to user's messages
+    const items: ActivityItem[] = [];
+
+    // ── Resolve self name for mention detection ────────────────────────────
+    let selfName = '';
+    {
+      const { data } = await db
+        .from('profiles')
+        .select('full_name')
+        .eq('id', userId)
+        .maybeSingle();
+      selfName = (data as any)?.full_name ?? '';
+    }
+
+    // ── 1. Replies to user's messages ──────────────────────────────────────
     const { data: replyRows } = await db
       .from('chat_messages')
       .select(`
@@ -41,42 +52,114 @@ async function fetchActivity(userId: string): Promise<ActivityItem[]> {
       .eq('parent.author_id', userId)
       .neq('author_id', userId)
       .order('created_at', { ascending: false })
-      .limit(50);
+      .limit(30);
 
-    const items: ActivityItem[] = [];
+    // ── 2. Mentions via @name in body_text ────────────────────────────────
+    const mentionRows: any[] = [];
+    if (selfName) {
+      const { data } = await db
+        .from('chat_messages')
+        .select('id, body_text, created_at, author_id, conversation_id')
+        .ilike('body_text', `%@${selfName}%`)
+        .neq('author_id', userId)
+        .is('parent_id', null)
+        .order('created_at', { ascending: false })
+        .limit(30);
+      if (data) mentionRows.push(...(data as any[]));
+    }
 
+    // ── 3. Reactions on user's own messages ────────────────────────────────
+    const reactionItems: Array<{
+      reactorId: string;
+      emoji: string;
+      messageId: string;
+      bodyText: string;
+      conversationId: string;
+      createdAt: string;
+    }> = [];
+    {
+      const { data: ownMsgs } = await db
+        .from('chat_messages')
+        .select('id, body_text, conversation_id, created_at')
+        .eq('author_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      if (ownMsgs && (ownMsgs as any[]).length > 0) {
+        const ownIds = (ownMsgs as any[]).map((m: any) => m.id);
+        const ownMsgMap = new Map<string, any>();
+        for (const m of ownMsgs as any[]) ownMsgMap.set(m.id, m);
+
+        const { data: rrows } = await db
+          .from('chat_message_reactions')
+          .select('message_id, emoji, user_id')
+          .in('message_id', ownIds)
+          .neq('user_id', userId);
+
+        if (rrows) {
+          for (const r of rrows as any[]) {
+            const msg = ownMsgMap.get(r.message_id);
+            if (msg) {
+              reactionItems.push({
+                reactorId: r.user_id,
+                emoji: r.emoji,
+                messageId: r.message_id,
+                bodyText: msg.body_text ?? '',
+                conversationId: msg.conversation_id,
+                createdAt: msg.created_at,
+              });
+            }
+          }
+        }
+      }
+    }
+
+    // ── Batch-resolve authors and conversations ────────────────────────────
+    const allAuthorIds = new Set<string>();
+    const allConvIds = new Set<string>();
+
+    for (const r of (replyRows ?? []) as any[]) {
+      allAuthorIds.add(r.author_id);
+      allConvIds.add(r.conversation_id);
+    }
+    for (const r of mentionRows) {
+      allAuthorIds.add(r.author_id);
+      allConvIds.add(r.conversation_id);
+    }
+    for (const ri of reactionItems) {
+      allAuthorIds.add(ri.reactorId);
+      allConvIds.add(ri.conversationId);
+    }
+
+    const authorsById = new Map<string, { full_name: string | null; avatar_url: string | null }>();
+    const convsById = new Map<string, { title: string }>();
+
+    if (allAuthorIds.size > 0) {
+      const { data: authors } = await db
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .in('id', Array.from(allAuthorIds));
+      if (authors) {
+        for (const a of authors as any[]) authorsById.set(a.id, a);
+      }
+    }
+    if (allConvIds.size > 0) {
+      const { data: convs } = await db
+        .from('chat_conversations')
+        .select('id, title')
+        .in('id', Array.from(allConvIds));
+      if (convs) {
+        for (const c of convs as any[]) convsById.set(c.id, c);
+      }
+    }
+
+    // ── Build reply items ──────────────────────────────────────────────────
     if (replyRows) {
-      const authorIds = Array.from(new Set((replyRows as any[]).map((r: any) => r.author_id)));
-      const convIds = Array.from(new Set((replyRows as any[]).map((r: any) => r.conversation_id)));
-
-      let authorsById = new Map<string, { full_name: string | null; avatar_url: string | null }>();
-      let convsById = new Map<string, { title: string }>();
-
-      if (authorIds.length > 0) {
-        const { data: authors } = await db
-          .from('profiles')
-          .select('id, full_name, avatar_url')
-          .in('id', authorIds);
-        if (authors) {
-          for (const a of authors as any[]) authorsById.set(a.id, a);
-        }
-      }
-
-      if (convIds.length > 0) {
-        const { data: convs } = await db
-          .from('chat_conversations')
-          .select('id, title')
-          .in('id', convIds);
-        if (convs) {
-          for (const c of convs as any[]) convsById.set(c.id, c);
-        }
-      }
-
-      for (const r of (replyRows as any[])) {
+      for (const r of replyRows as any[]) {
         const author = authorsById.get(r.author_id);
         const conv = convsById.get(r.conversation_id);
         items.push({
-          id: r.id,
+          id: `reply-${r.id}`,
           kind: 'reply',
           actorName: author?.full_name ?? 'Someone',
           actorAvatarUrl: author?.avatar_url ?? null,
@@ -88,6 +171,42 @@ async function fetchActivity(userId: string): Promise<ActivityItem[]> {
           isRead: false,
         });
       }
+    }
+
+    // ── Build mention items ────────────────────────────────────────────────
+    for (const r of mentionRows) {
+      const author = authorsById.get(r.author_id);
+      const conv = convsById.get(r.conversation_id);
+      items.push({
+        id: `mention-${r.id}`,
+        kind: 'mention',
+        actorName: author?.full_name ?? 'Someone',
+        actorAvatarUrl: author?.avatar_url ?? null,
+        conversationTitle: conv?.title ?? 'a conversation',
+        conversationId: r.conversation_id,
+        messageId: r.id,
+        preview: r.body_text ?? '',
+        createdAt: r.created_at,
+        isRead: false,
+      });
+    }
+
+    // ── Build reaction items ───────────────────────────────────────────────
+    for (const ri of reactionItems) {
+      const actor = authorsById.get(ri.reactorId);
+      const conv = convsById.get(ri.conversationId);
+      items.push({
+        id: `reaction-${ri.reactorId}-${ri.emoji}-${ri.messageId}`,
+        kind: 'reaction',
+        actorName: actor?.full_name ?? 'Someone',
+        actorAvatarUrl: actor?.avatar_url ?? null,
+        conversationTitle: conv?.title ?? 'a conversation',
+        conversationId: ri.conversationId,
+        messageId: ri.messageId,
+        preview: ri.bodyText,
+        createdAt: ri.createdAt,
+        isRead: false,
+      });
     }
 
     return items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -138,9 +257,11 @@ const TABS: { id: ActivityKind; label: string }[] = [
 
 interface Props {
   onOpenConversation: (conversationId: string, messageId?: string) => void;
+  /** Called whenever the unread count changes (for AppRail badge) */
+  onUnreadCount?: (count: number) => void;
 }
 
-export function ActivitySurface({ onOpenConversation }: Props) {
+export function ActivitySurface({ onOpenConversation, onUnreadCount }: Props) {
   const { user } = useAuth();
   const [tab, setTab] = useState<ActivityKind>('all');
 
@@ -150,6 +271,13 @@ export function ActivitySurface({ onOpenConversation }: Props) {
     enabled: !!user?.id,
     staleTime: 30_000,
   });
+
+  // Bubble unread count up to AppRail badge
+  useEffect(() => {
+    if (!onUnreadCount) return;
+    const unread = items.filter(i => !i.isRead).length;
+    onUnreadCount(unread);
+  }, [items, onUnreadCount]);
 
   const filtered = tab === 'all' ? items : items.filter(i => i.kind === tab);
 
