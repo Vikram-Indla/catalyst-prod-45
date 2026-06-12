@@ -140,6 +140,7 @@ import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKe
 import { jiraSyncService } from '@/services/jira-sync.service';
 import { JiraFilterAtlaskit, emptyFilterValue } from '@/components/shared/JiraFilterAtlaskit';
 import { useFiltersForProject, useRecordFilterUsage } from '@/hooks/workhub/useSavedFilters';
+import { isFilterRelevantToBacklog, type BacklogFilterScopeInput } from './backlogFilterScope';
 import { jqlToJiraFilterValue } from '@/lib/jql/jqlToJiraFilterValue';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { basicToJql } from '@/lib/filters/basicToJql';
@@ -7641,7 +7642,23 @@ interface BacklogSavedFiltersDropdownProps {
 
 function BacklogSavedFiltersDropdown({ projectKey, onApply }: BacklogSavedFiltersDropdownProps) {
   const { data: filters = [] } = useFiltersForProject(projectKey, 'project');
-  const jqlFilters = filters.filter(f => f.jql_query);
+
+  // getSession() reads local storage (no network) so the id resolves before the
+  // first dropdown open — mirrors FiltersListPage's pattern.
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user?.id) setCurrentUserId(session.user.id);
+    });
+  }, []);
+
+  // Scope to BAU-relevant + mine + starred (Vikram-approved 2026-06-12) so the
+  // dropdown stops dumping every org-visible filter (the old flat 129 list).
+  const jqlFilters = filters.filter(
+    f =>
+      f.jql_query &&
+      isFilterRelevantToBacklog(f as unknown as BacklogFilterScopeInput, projectKey, currentUserId),
+  );
 
   if (jqlFilters.length === 0) return null;
 

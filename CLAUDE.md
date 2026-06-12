@@ -979,7 +979,164 @@ Ready for next step when you confirm.
 
 **Why:** Clean slate migration. Old Lovable data (pre-2026) is discarded intentionally. Only live 2026+ Jira data flows into the new project. This prevents stale/test data from polluting the new schema.
 
+**Exception — Parent Pull-Through (added 2026-06-12):** When a 2026 issue references a pre-2026 parent via `fields.parent.key` (e.g. a 2026 Sub-task whose parent Story was created in 2025), the parent MUST be fetched from Jira and upserted into `ph_issues` as a reference row — even though it would fail the date gate. This is required so the UI can render the parent's `issue_type` icon and `summary` in the Parent column. Implementation: `wh-jira-sync` and `wh-jira-bulk-sync` both run a parent pull-through step after the main 2026-filtered upsert. The pull-through uses a JQL `issue in (BAU-xxx, ...)` call with no date filter. Parent rows are marked **`source: 'jira_parent_ref'`** and have `description_adf: null` (reference-only, not full sync). The 2026 guard on the MAIN issue stream is NOT changed — only parent references are exempted.
+
 **Severity:** P0 — data integrity gate. Missing this filter allows pre-2026 cruft to land in production.
+
+---
+
+## 🗄️ PH_ISSUES TRIGGER CHAIN — THREE LAYERS (P0, Non-Negotiable — 2026-06-12)
+
+**Every INSERT or UPDATE on `ph_issues` passes through THREE sequential DB triggers. ALL three must allow a row for it to land. Failing any one silently drops the row with no error surfaced to the edge function — `upsert()` returns `{ error: null }` while the row never appears.**
+
+### The three triggers (fire in this order on INSERT)
+
+| Trigger | Function | What it enforces | Added |
+|---|---|---|---|
+| 1 | `guard_2026_ph_issues()` | Blocks pre-2026 `jira_created_at` rows. Exempts `source='jira_parent_ref'` and soft-delete UPDATEs. | 2026-05-xx |
+| 2 | `validate_ph_issues_source()` | Allows only `source IN ('catalyst','jira','jira_parent_ref')`. RAISES if unknown value. | 2026-05-xx |
+| 3 | `guard_ph_issues_no_delete()` | Blocks physical DELETE — requires soft-delete via `jira_removed_at`. Override: `SET app.force_jira_cleanup = true`. | 2026-05-xx |
+
+### The silent-failure trap
+
+`supabase.from('ph_issues').upsert(rows)` returns `{ error: null }` even when:
+- Trigger 1 returns `NULL` (row silently cancelled — not an error, PostgREST never sees it)
+- Trigger 2 raises an exception (PostgREST catches it and returns an HTTP 500 — but only if unhandled; if the edge function has a try/catch, the exception becomes `error.message`)
+
+**Do NOT treat `error: null` as proof the row landed. After any upsert, always do a follow-up SELECT to confirm row count.**
+
+### Debugging the chain
+
+```sql
+-- 1. Verify all three functions exist and their current logic
+SELECT proname, pg_get_functiondef(oid)
+FROM pg_proc
+WHERE proname IN ('guard_2026_ph_issues','validate_ph_issues_source','guard_ph_issues_no_delete');
+
+-- 2. Check all triggers on ph_issues
+SELECT tgname, tgenabled, proname
+FROM pg_trigger t JOIN pg_proc p ON p.oid = t.tgfoid
+WHERE tgrelid = 'ph_issues'::regclass AND NOT tgisinternal;
+
+-- 3. Direct INSERT smoke test (use force-cleanup to delete after)
+INSERT INTO ph_issues (issue_key, project_key, summary, jira_created_at, source)
+VALUES ('__TEST__', 'TEST', 'smoke', '2020-01-01'::timestamptz, 'jira_parent_ref');
+SELECT issue_key, source FROM ph_issues WHERE issue_key = '__TEST__';
+SET app.force_jira_cleanup = true;
+DELETE FROM ph_issues WHERE issue_key = '__TEST__';
+```
+
+If the INSERT returns no row in the SELECT → trigger 1 blocked it (date gate, source not exempted).
+If it raises `Invalid source value: X` → trigger 2 blocked it (add value to allowlist).
+If DELETE raises `Physical deletion blocked` → trigger 3 (use `force_jira_cleanup`).
+
+### When adding a new `source` value to ph_issues
+
+1. Update `validate_ph_issues_source()` to include the new value
+2. If the new source can have pre-2026 `jira_created_at`, add an exemption to `guard_2026_ph_issues()` before the date check
+3. Write a migration file to `supabase/migrations/` for both functions
+4. Apply via `apply_migration` MCP
+5. Smoke-test with the direct INSERT above before running any edge function
+
+**Severity:** P0 — silent upsert failure is the #1 cause of "data not appearing" bugs in Catalyst sync. The trigger chain took 7 debug sessions to fully map (2026-06-12). Never assume a successful upsert response means the row is in the table.
+
+---
+
+## 🗺️ JIRA WORK ITEM HIERARCHY — CANONICAL MAP (P0 Reference — 2026-06-12)
+
+**This map governs: what rows are pulled into `ph_issues`, what `parent_key` links are valid, what icons render, and what the parent pull-through must fetch. Any sync code, UI component, or migration that touches parent/child relationships MUST be consistent with this map.**
+
+### Hierarchy tree — canonical (verified by Vikram 2026-06-12)
+
+```
+Business Request  ← ROOT (ProductHub, business_requests table, NOT ph_issues)
+  │
+  └─ Epic  (parent → Business Request OR standalone)
+       │
+       ├─ Feature  (parent → Epic ONLY; acts like mini-Epic; children = Stories)
+       │    └─ Story  (parent → Epic OR Feature)
+       │         └─ [subtask-family: see below]
+       │
+       ├─ Story  (parent → Epic OR Feature)
+       │    └─ [subtask-family]
+       │
+       ├─ Task  (parent → Story / Epic / Feature)
+       │    └─ [subtask-family]
+       │
+       ├─ QA Bug / Defect  (parent → Story / Epic / Feature)
+       ├─ Change Request   (parent → Story / Epic / Business Request)
+       ├─ Production Incident  (parent → Business Request / Epic / Feature)
+       ├─ Business Gap     (parent → Business Request / Epic / Feature)
+       └─ Idea             (no parent)
+
+Subtask family — sit under Epic / Story / Task (NOT Feature):
+  Sub-task · Backend · Frontend · Integration · API Requirement · BRD Task · Figma
+```
+
+### What `parent_key` means per type — authoritative table
+
+| Child type | Allowed `parent_key` types | Notes |
+|---|---|---|
+| Epic | Business Request (or null) | BR is in business_requests table, not ph_issues |
+| Feature | Epic only | Feature = mini-Epic; never standalone |
+| Story | Epic OR Feature | Can skip Feature level |
+| Task | Story / Epic / Feature | Any work level |
+| QA Bug / Defect | Story / Epic / Feature | |
+| Change Request | Story / Epic / Business Request | Primary level = Story; can escalate to Epic or BR |
+| Production Incident | Business Request / Epic / Feature | NOT Story |
+| Business Gap | Business Request / Epic / Feature | NOT Story |
+| Sub-task | Story only | |
+| Backend / Frontend / Integration / API Requirement | Epic / Story / Task | NOT Feature |
+| Idea | none | Standalone |
+| Business Request | none | Root of entire hierarchy |
+
+### Pull-through rule (applies to ALL above)
+
+**Any 2026 issue whose `parent_key` resolves to a pre-2026 issue → that parent MUST be gap-filled into `ph_issues` with `source='jira_parent_ref'`.**
+
+This applies regardless of parent type. An Epic created in 2023 that contains 2026 Stories still needs to land in `ph_issues` so:
+- The Parent column in JiraTable shows `[Epic icon] BAU-1234 Epic title`
+- `useParentIssueTypes` can return the correct type for icon rendering
+- Breadcrumb navigation works
+
+### Issue links (NOT `parent_key`)
+
+Jira also has `issuelinks` (Blocks, Relates to, Duplicates, etc.) — these are stored in `raw_json.fields.issuelinks` and displayed in `LinkedWorkItemsSection`. They are NOT `parent_key`. The parent pull-through applies ONLY to `fields.parent.key` (the structural hierarchy), NOT to issue links.
+
+**Never confuse `parent_key` (hierarchy) with `issuelinks` (cross-references).** They are separate data models:
+- `parent_key` → stored in `ph_issues.parent_key` column → drives Parent column + hierarchy tree
+- `issuelinks` → kept in `raw_json` → drives LinkedWorkItemsSection only
+
+### `useParentIssueTypes` contract
+
+```typescript
+// Returns Map<issue_key, issue_type>
+// If key absent from map → parent not in ph_issues → render NO icon (silence beats a lie)
+// Never: type || 'Epic' or type || 'Story' — that's a typed domain fallback (banned, CLAUDE.md zero-assumption)
+```
+
+If `useParentIssueTypes` returns empty for a key, the correct response is: run gap-fill (trigger `wh-jira-bulk-sync` full mode), then re-check. Do NOT paper over with a fallback type string.
+
+### Sync coverage check
+
+After any full sync, run this query to confirm 0 missing parents:
+
+```sql
+SELECT count(*) AS missing_parents
+FROM (
+  SELECT DISTINCT parent_key
+  FROM ph_issues
+  WHERE parent_key IS NOT NULL
+    AND project_key IN ('BAU','MWR','ICP','IRP','IN','INV','IP','TAH')
+) ref
+WHERE NOT EXISTS (
+  SELECT 1 FROM ph_issues p2 WHERE p2.issue_key = ref.parent_key
+);
+-- Expected: 0 (or a tiny number of genuinely deleted Jira issues)
+-- If > 0: run wh-jira-bulk-sync full mode, then re-check
+```
+
+**Severity:** P0 — wrong parent map → wrong icons → user sees incorrect type labels across entire backlog, all-work, and detail views.
 
 ---
 
