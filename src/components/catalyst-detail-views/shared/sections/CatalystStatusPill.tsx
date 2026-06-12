@@ -90,23 +90,6 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
 
   const display = status || 'Backlog';
 
-  const lozengeKey: 'default' | 'inprogress' | 'success' = (() => {
-    const k = statusToLozenge(display, statusCategory);
-    return k === 'inprogress' ? 'inprogress' : k === 'success' ? 'success' : 'default';
-  })();
-
-  const LOZENGE_BG = {
-    default:    'var(--ds-background-neutral, #F4F5F7)',
-    inprogress: 'var(--ds-background-information, #E9F2FF)',
-    success:    'var(--ds-background-success, #DCFFF1)',
-  } as const;
-
-  const LOZENGE_COLOR = {
-    default:    'var(--ds-text-subtle, #626F86)',
-    inprogress: 'var(--ds-text-information, #0055CC)',
-    success:    'var(--ds-text-success, #216E4E)',
-  } as const;
-
   return (
     <>
       {/* 2026-05-29: button is a transparent click-target; Lozenge isBold
@@ -122,43 +105,45 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          maxWidth: 200,
-          overflow: 'hidden',
           padding: 0,
           border: 'none',
           background: 'transparent',
           cursor: 'pointer',
           fontFamily: 'inherit',
-          outline: 'none',
           transition: 'filter 0.1s',
         }}
         onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.88)'; }}
         onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
-        onFocus={(e) => {
-          if (e.currentTarget.matches(':focus-visible')) {
-            e.currentTarget.style.outline = '2px solid var(--ds-border-focused, #388BFF)';
-            e.currentTarget.style.outlineOffset = '1px';
-          }
-        }}
-        onBlur={(e) => { e.currentTarget.style.outline = 'none'; }}
       >
-        {/* Lozenge — ADS spec: 20px/12px/2px 4px/radius 4; 3 categories only */}
+        {/* Header pill — Jira-probed: 32px/14px/500/padding 0 10px/rgb(148,199,72) success */}
         <span style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: 4,
-          height: 20,
-          padding: '2px 4px',
-          borderRadius: 4,
-          fontSize: 12,
+          height: 32,
+          lineHeight: '32px',
+          padding: '0 10px',
+          borderRadius: 3,
+          fontSize: 14,
           fontWeight: 500,
           textTransform: 'none',
           letterSpacing: 'normal',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          background: LOZENGE_BG[lozengeKey],
-          color: LOZENGE_COLOR[lozengeKey],
+          background: ({
+            success:    'var(--ds-background-success, #DCFFF1)',
+            inprogress: 'var(--ds-background-information, #E9F2FF)',
+            moved:      'var(--ds-background-warning, #FFF7D6)',
+            removed:    'var(--ds-background-danger, #FFEBE6)',
+            new:        'var(--ds-background-discovery, #F3F0FF)',
+            default:    'var(--ds-background-neutral, #F4F5F7)',
+          } as Record<string, string>)[statusToLozenge(display, statusCategory)] ?? 'var(--ds-background-neutral, #F4F5F7)',
+          color: ({
+            success:    'var(--ds-text-success, #216E4E)',
+            inprogress: 'var(--ds-text-information, #0055CC)',
+            moved:      'var(--ds-text-warning, #974F0C)',
+            removed:    'var(--ds-text-danger, #AE2A19)',
+            new:        'var(--ds-text-discovery, #5E4DB2)',
+            default:    'var(--ds-text-subtle, #626F86)',
+          } as Record<string, string>)[statusToLozenge(display, statusCategory)] ?? 'var(--ds-text-subtle, #626F86)',
         }}>
           {display}
           <ChevronDownIcon size="small" label="" />
@@ -256,14 +241,22 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
                           display: 'inline-flex',
                           alignItems: 'center',
                           height: 20,
-                          padding: '2px 4px',
-                          borderRadius: 4,
-                          fontSize: 12,
+                          padding: '0 7px',
+                          borderRadius: 3,
+                          fontSize: 11,
                           fontWeight: 500,
                           textTransform: 'none',
                           letterSpacing: 'normal',
-                          background: LOZENGE_BG[groupAppearance],
-                          color: LOZENGE_COLOR[groupAppearance],
+                          background: ({
+                            success:    'var(--ds-background-success, #DCFFF1)',
+                            inprogress: 'var(--ds-background-information, #E9F2FF)',
+                            default:    'var(--ds-background-neutral, #F4F5F7)',
+                          } as Record<string, string>)[groupAppearance] ?? 'var(--ds-background-neutral, #F4F5F7)',
+                          color: ({
+                            success:    'var(--ds-text-success, #216E4E)',
+                            inprogress: 'var(--ds-text-information, #0055CC)',
+                            default:    'var(--ds-text-subtle, #626F86)',
+                          } as Record<string, string>)[groupAppearance] ?? 'var(--ds-text-subtle, #626F86)',
                         }}>
                           {st}
                         </span>
