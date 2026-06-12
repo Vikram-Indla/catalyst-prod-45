@@ -379,21 +379,22 @@ function MoreActionsButton() {
 
 type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new';
 
+// Canonical colors — probed from Catalyst Storybook Pages/Business Request (2026-06-12)
 const STATUS_BG: Record<string, string> = {
-  success:    'var(--ds-background-success, #DCFFF1)',
-  inprogress: 'var(--ds-background-information, #E9F2FF)',
-  moved:      'var(--ds-background-warning, #FFF7D6)',
-  removed:    'var(--ds-background-danger, #FFEBE6)',
-  new:        'var(--ds-background-discovery, #F3F0FF)',
-  default:    '#F4F5F7',
+  success:    '#94C748',
+  inprogress: '#8FB8F6',
+  default:    '#DDDEE1',
+  moved:      '#DDDEE1',
+  removed:    '#DDDEE1',
+  new:        '#DDDEE1',
 };
 const STATUS_COLOR: Record<string, string> = {
-  success:    'var(--ds-text-success, #216E4E)',
-  inprogress: 'var(--ds-text-information, #0055CC)',
-  moved:      'var(--ds-text-warning, #974F0C)',
-  removed:    'var(--ds-text-danger, #AE2A19)',
-  new:        'var(--ds-text-discovery, #5E4DB2)',
-  default:    'var(--ds-text-subtle, #626F86)',
+  success:    '#292A2E',
+  inprogress: '#292A2E',
+  default:    '#292A2E',
+  moved:      '#292A2E',
+  removed:    '#292A2E',
+  new:        '#292A2E',
 };
 
 function StatusSpan({ appearance, label }: { appearance: LozengeAppearance; label: string }) {
@@ -403,7 +404,7 @@ function StatusSpan({ appearance, label }: { appearance: LozengeAppearance; labe
     <span style={{
       display: 'inline-flex', alignItems: 'center',
       height: 20, padding: '0 7px', borderRadius: 3,
-      fontSize: 11, fontWeight: 500,
+      fontSize: 11, fontWeight: 700,
       textTransform: 'none', letterSpacing: 'normal',
       background: bg, color,
     }}>
