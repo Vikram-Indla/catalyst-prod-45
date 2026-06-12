@@ -460,7 +460,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                       .eq('id', filter.id);
                     setCreateBoardOpen(false);
                     if (projectKey && board?.id) {
-                      navigate(`/project-hub/${projectKey}/board/${board.id}`);
+                      navigate(`/project-hub/${projectKey}/boards/${board.id}`);
                     }
                   } catch (e: any) {
                     console.error('Failed to create board:', e);
