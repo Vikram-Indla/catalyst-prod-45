@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { useQuery } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
 import Button from '@atlaskit/button/new';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
@@ -76,19 +75,7 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
     ENABLE_FILTER_TO_ROADMAP ? filter.id : undefined,
     currentUserId,
   );
-  const { data: projectId = null } = useQuery({
-    queryKey: ['ph-project-id', projectKey],
-    queryFn: async () => {
-      if (!projectKey) return null;
-      const { data } = await supabase
-        .from('ph_projects').select('id').eq('key', projectKey.toUpperCase()).maybeSingle();
-      return (data as any)?.id ?? null;
-    },
-    enabled: ENABLE_FILTER_TO_KANBAN && !!projectKey,
-    staleTime: 300_000,
-  });
-
-  const isOwner = filter.user_id === currentUserId || filter.owner_id === currentUserId;
+const isOwner = filter.user_id === currentUserId || filter.owner_id === currentUserId;
   const isSubscribed = currentUserId ? (filter.subscriber_ids ?? []).includes(currentUserId) : false;
   const isPrivate = filter.viewers_config?.type === 'private';
 
