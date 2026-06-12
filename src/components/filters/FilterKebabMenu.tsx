@@ -58,6 +58,19 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
 
   const { key: projectKey } = useParams<{ key: string }>();
 
+  // Detect if the filter's JQL is scoped to a different project than the URL project.
+  // Pattern: `project = FOO` or `project in (FOO, BAR)` — extract the first project key.
+  const jqlProjectKey = (() => {
+    const jql = filter.jql_query ?? '';
+    const m = jql.match(/\bproject\s*=\s*["']?([A-Z][A-Z0-9_-]+)["']?/i)
+           ?? jql.match(/\bproject\s+in\s*\(\s*["']?([A-Z][A-Z0-9_-]+)["']?/i);
+    return m ? m[1].toUpperCase() : null;
+  })();
+  const filterProjectMismatch =
+    jqlProjectKey !== null &&
+    projectKey !== undefined &&
+    jqlProjectKey !== projectKey.toUpperCase();
+
   const copyFilter      = useCopyFilter();
   const updateFilter    = useUpdateSavedFilter();
   const deleteFilter    = useDeleteSavedFilter();
@@ -560,14 +573,22 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                     placeholder="e.g. Q2 delivery board"
                   />
                 </div>
-                <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
-                  Cards come live from <strong>{filter.name}</strong>.{' '}
+                <p style={{ margin: 0, fontSize: 12, color: token(‘color.text.subtlest’) }}>
+                  Cards come live from <strong>{filter.name}</strong>.{‘ ‘}
                   {boards.length > 0
-                    ? 'Columns are inherited from this project’s board.'
-                    : 'No existing board found — the board will start with default columns (To Do, In Progress, Done). You can customise them after creation.'
-                  }{' '}
+                    ? ‘Columns are inherited from this project’s board.’
+                    : ‘No existing board found — the board will start with default columns (To Do, In Progress, Done). You can customise them after creation.’
+                  }{‘ ‘}
                   Access follows the filter &mdash; anyone who can see the filter can see this board.
                 </p>
+                {filterProjectMismatch && (
+                  <p style={{ margin: 0, fontSize: 12, color: token(‘color.text.warning’, ‘#974F0C’), background: token(‘color.background.warning’, ‘#FFF7D6’), borderRadius: 4, padding: ‘8px 12px’ }}>
+                    This filter is scoped to project <strong>{jqlProjectKey}</strong> but you&rsquo;re
+                    in <strong>{projectKey?.toUpperCase()}</strong>. The board will use{‘ ‘}
+                    <strong>{projectKey?.toUpperCase()}</strong> columns — cards from{‘ ‘}
+                    <strong>{jqlProjectKey}</strong> statuses may not map correctly.
+                  </p>
+                )}
                 {kanbanError && (
                   <p style={{ margin: 0, fontSize: 13, color: token('color.text.danger', '#AE2A19') }}>
                     {kanbanError}
