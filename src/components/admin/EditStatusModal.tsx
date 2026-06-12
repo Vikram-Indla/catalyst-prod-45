@@ -48,8 +48,12 @@ interface EditStatusModalProps {
     name: string;
     category: StatusCategory;
     color: string;
+    position: number;
+    isDefault: boolean;
     typeAssignments: string[];
   }) => void;
+  /** When provided, shows a Delete button in the footer (edit mode only) */
+  onDelete?: () => void;
   isSaving?: boolean;
 }
 
@@ -87,6 +91,7 @@ export function EditStatusModal({
   allStatuses,
   consumers,
   onSave,
+  onDelete,
   isSaving = false,
 }: EditStatusModalProps) {
   const isCreate = !status;
@@ -95,6 +100,8 @@ export function EditStatusModal({
   const [category, setCategory] = useState<StatusCategory>('todo');
   const [color, setColor] = useState(STATUS_CATEGORY_COLORS.todo);
   const [hexInput, setHexInput] = useState(STATUS_CATEGORY_COLORS.todo);
+  const [position, setPosition] = useState(0);
+  const [isDefault, setIsDefault] = useState(false);
   const [typeAssignments, setTypeAssignments] = useState<string[]>([]);
   const [nameError, setNameError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState(0);
@@ -106,12 +113,16 @@ export function EditStatusModal({
       setCategory(status.category as StatusCategory);
       setColor(status.color);
       setHexInput(status.color);
+      setPosition(status.position);
+      setIsDefault(status.is_default);
       setTypeAssignments(status.work_item_types);
     } else {
       setName('');
       setCategory('todo');
       setColor(STATUS_CATEGORY_COLORS.todo);
       setHexInput(STATUS_CATEGORY_COLORS.todo);
+      setPosition(0);
+      setIsDefault(false);
       setTypeAssignments([]);
     }
     setNameError(null);
@@ -167,7 +178,7 @@ export function EditStatusModal({
       setSelectedTab(0);
       return;
     }
-    onSave({ name: name.trim(), category, color, typeAssignments });
+    onSave({ name: name.trim(), category, color, position, isDefault, typeAssignments });
   }
 
   const canSave = name.trim() && !nameError;
@@ -328,6 +339,33 @@ export function EditStatusModal({
                       </div>
                     )}
                   </Field>
+
+                  {/* Position */}
+                  <Field name="status-position" label="Position">
+                    {() => (
+                      <>
+                        <Textfield
+                          name="status-position"
+                          type="number"
+                          value={String(position)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            const n = parseInt(e.target.value, 10);
+                            setPosition(isNaN(n) ? 0 : Math.max(0, n));
+                          }}
+                          width="80px"
+                        />
+                        <HelperMessage>Controls sort order within this category. Lower = first.</HelperMessage>
+                      </>
+                    )}
+                  </Field>
+
+                  {/* Default */}
+                  <Checkbox
+                    label="Set as default status for this category"
+                    isChecked={isDefault}
+                    onChange={(e) => setIsDefault(e.target.checked)}
+                    name="status-is-default"
+                  />
                 </div>
               </TabPanel>
 
@@ -399,17 +437,39 @@ export function EditStatusModal({
           </ModalBody>
 
           <ModalFooter>
-            <Button appearance="subtle" onClick={onClose} isDisabled={isSaving}>
-              Cancel
-            </Button>
-            <Button
-              appearance="primary"
-              onClick={handleSave}
-              isLoading={isSaving}
-              isDisabled={!canSave || isSaving}
-            >
-              {isCreate ? 'Create status' : 'Save'}
-            </Button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <div>
+                {!isCreate && onDelete && (
+                  <Tooltip
+                    content={consumers.length > 0 ? 'Cannot delete — this status has active consumers.' : undefined}
+                  >
+                    {(tooltipProps) => (
+                      <Button
+                        {...tooltipProps}
+                        appearance="danger"
+                        onClick={onDelete}
+                        isDisabled={isSaving || consumers.length > 0}
+                      >
+                        Delete
+                      </Button>
+                    )}
+                  </Tooltip>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <Button appearance="subtle" onClick={onClose} isDisabled={isSaving}>
+                  Cancel
+                </Button>
+                <Button
+                  appearance="primary"
+                  onClick={handleSave}
+                  isLoading={isSaving}
+                  isDisabled={!canSave || isSaving}
+                >
+                  {isCreate ? 'Create status' : 'Save'}
+                </Button>
+              </div>
+            </div>
           </ModalFooter>
         </Modal>
       )}
