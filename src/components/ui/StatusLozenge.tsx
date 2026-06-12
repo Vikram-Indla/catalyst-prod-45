@@ -2,9 +2,15 @@ import React from "react";
 import { toStatusCategory } from "@/components/ads";
 
 const PILL_BG: Record<string, string> = {
-  todo:       'rgb(221, 222, 225)',
-  inProgress: 'rgb(143, 184, 246)',
-  done:       'rgb(179, 223, 114)',
+  todo:       'var(--ds-background-neutral, #DCDFE4)',
+  inProgress: 'var(--ds-background-information, #E9F2FF)',
+  done:       'var(--ds-background-success, #DCFFF1)',
+};
+
+const PILL_COLOR: Record<string, string> = {
+  todo:       'var(--ds-text-subtle, #42526E)',
+  inProgress: 'var(--ds-text-information, #0055CC)',
+  done:       'var(--ds-text-success, #216E4E)',
 };
 
 function getDisplayName(status: string): string {
@@ -35,22 +41,23 @@ export function StatusLozenge({ status }: { status: string }) {
   const category = toStatusCategory(status);
   const label = getDisplayName(status);
   const bg = PILL_BG[category] ?? PILL_BG.todo;
+  const color = PILL_COLOR[category] ?? PILL_COLOR.todo;
   return (
     <span style={{
       display: 'inline-flex',
       alignItems: 'center',
       backgroundColor: bg,
-      borderRadius: '3px',
-      padding: '0 7px',
+      borderRadius: '4px',
+      padding: '2px 4px',
       height: '20px',
     }}>
       <span style={{
-        fontSize: '11px',
-        fontWeight: 700,
+        fontSize: '12px',
+        fontWeight: 500,
         lineHeight: '20px',
-        color: 'rgb(41, 42, 46)',
-        textTransform: 'uppercase',
-        letterSpacing: '0.06em',
+        color,
+        textTransform: 'none',
+        letterSpacing: 'normal',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
