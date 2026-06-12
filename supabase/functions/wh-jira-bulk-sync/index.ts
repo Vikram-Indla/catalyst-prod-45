@@ -352,11 +352,17 @@ Deno.serve(async (req) => {
     }
 
     // ── PARENT PULL-THROUGH (2026-06-12) ─────────────────────────────────────────
-    // Rule: when a 2026 issue references a pre-2026 parent (via fields.parent),
-    // fetch that parent from Jira and upsert as a reference row in ph_issues —
-    // even though the parent would normally fail the 2026 date gate.
+    // Rule: when a 2026 issue references a pre-2026 parent (via fields.parent
+    // OR via issuelinks resolved by resolveParentFromLinks), fetch that parent
+    // from Jira and upsert as a reference row in ph_issues — even though the
+    // parent would normally fail the 2026 date gate.
     // This ensures the UI (Backlog parent column, icon rendering) can resolve
     // the parent's issue_type and summary without manual DB inserts.
+    //
+    // CRITICAL: pulled-through keys are added to pulledThroughKeys so the
+    // hard-delete step below does NOT remove them — they are intentional
+    // reference rows, not stale data to be pruned.
+    const pulledThroughKeys = new Set<string>()
     {
       const syncedIssueKeys = new Set(rows.map((r: any) => r.issue_key))
       const referencedParentKeys: string[] = [...new Set(
@@ -366,6 +372,10 @@ Deno.serve(async (req) => {
       )]
 
       if (referencedParentKeys.length > 0) {
+        // ALL referenced parents are protected from hard-delete, regardless of whether
+        // they are already in DB or need to be fetched now.
+        referencedParentKeys.forEach((k: string) => pulledThroughKeys.add(k))
+
         const { data: existingParents } = await supabase
           .from('ph_issues')
           .select('issue_key')
@@ -429,6 +439,8 @@ Deno.serve(async (req) => {
               } else {
                 console.log(`[parent-pullthrough] Upserted ${parentRows.length} pre-2026 parent row(s)`)
                 upsertedCount += parentRows.length
+                // Register pulled-through keys so hard-delete does NOT prune them
+                parentRows.forEach((r: any) => pulledThroughKeys.add(r.issue_key))
               }
             }
           } else {
@@ -613,7 +625,8 @@ Deno.serve(async (req) => {
     }
 
     // 8. HARD DELETE — Remove issues not in the fetched set for synced projects
-    const fetchedKeys = new Set(rows.map(r => r.issue_key))
+    // pulledThroughKeys contains pre-2026 parent reference rows — protect them from deletion
+    const fetchedKeys = new Set([...rows.map(r => r.issue_key), ...pulledThroughKeys])
     let pruned = 0
 
     if (syncType === 'full' && projectsToSync.length > 0 && !hadSearchErrors) {
