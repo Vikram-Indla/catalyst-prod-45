@@ -1,317 +1,300 @@
 /**
  * CANONICAL — Header status pill for all CatalystView* components.
- * Change here → updates all 7 work item types (everything except Story,
- * which has its own equivalent in StoryDetailModal:1162+).
+ * Change here → updates all 7 work item types.
  *
- * Apr 28, 2026 (jira-compare cycle 4 — Phase B B1):
- *   Jira renders an editable status pill at top-right of the H1 in
- *   every issue detail surface (probed live on BAU-5711, BAU-5470,
- *   BAU-4517 — `[data-testid="issue.views.issue-base.foundation.status.status-field-wrapper"]`).
- *   Catalyst's CatalystView* surfaces showed the title with NO visible
- *   status near it — users had to scroll to the right sidebar to see
- *   what state the work item was in. This component renders the
- *   Atlaskit Lozenge (same colour-mapping as the table cell + sidebar
- *   pill via `statusToLozenge`) right under the title, with a
- *   click-to-open picker that fires the supplied `onStatusChange`.
+ * Positioning: createPortal to document.body with getBoundingClientRect —
+ * avoids Popper.js/fixed-position failure inside overflow:hidden ancestors
+ * (cv-drawer-sidebar has overflow:hidden auto + position:sticky).
  *
- *   Picker uses `createPortal`-to-body for the dropdown popover (same
- *   workaround as DangerConfirmModal / Improve dialogs — the
- *   `@atlaskit/dropdown-menu` portal-empty bug bites here too).
+ * Data: useWorkflow(issueType) → only available transitions from current state
+ * shown (Jira-parity verb→lozenge). Falls back to STATUS_OPTION_GROUPS when
+ * no workflow mapped for this issue type.
  */
-
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
-import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import Lozenge from '@atlaskit/lozenge';
+import { useWorkflow } from '@/lib/workflows/WorkflowProvider';
+import type { Transition } from '@/lib/workflows/types';
+import { JiraStatusLozenge } from '@/components/workflow/JiraStatusLozenge';
+import { WorkflowViewerModal } from './WorkflowViewerModal';
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
-import { WorkflowViewerModal } from './WorkflowViewerModal';
 
-/**
- * 2026-05-29 — ADS spec implementation.
- *   CatalystStatusPill now uses @atlaskit/lozenge isBold appearance, delegating
- *   all colour logic to ADS design tokens (--ds-background-*-bold, --ds-text-inverse).
- *   The previous hand-rolled statusBg() using Jira-probed hex values is removed;
- *   the ADS token system handles light + dark theme correctly out of the box.
- */
+const HEADER_BG: Record<string, string> = {
+  success:    token('color.background.success.bold',     '#1F845A'),
+  inprogress: token('color.background.information.bold', '#0C66E4'),
+  moved:      token('color.background.warning.bold',     '#CF9F02'),
+  removed:    token('color.background.danger.bold',      '#CA3521'),
+  default:    token('color.background.neutral.bold',     '#44546F'),
+  new:        token('color.background.neutral.bold',     '#44546F'),
+};
+const HEADER_TEXT: Record<string, string> = {
+  success:    token('color.text.inverse',         '#FFFFFF'),
+  inprogress: token('color.text.inverse',         '#FFFFFF'),
+  moved:      token('color.text.warning.inverse', '#1D2125'),
+  removed:    token('color.text.inverse',         '#FFFFFF'),
+  default:    token('color.text.inverse',         '#FFFFFF'),
+  new:        token('color.text.inverse',         '#FFFFFF'),
+};
+
+function groupCategoryToAppearance(cat: string): 'default' | 'inprogress' | 'success' {
+  if (cat === 'done') return 'success';
+  if (cat === 'in_progress') return 'inprogress';
+  return 'default';
+}
 
 interface CatalystStatusPillProps {
-  /** Current status name (e.g. "To Do", "In Progress", "Ready for QA"). */
   status?: string | null;
-  /** Jira workflow statusCategory key — drives the Atlaskit Lozenge
-   *  appearance per Jira NIN parity. When omitted, statusToLozenge
-   *  falls back to name-based mapping (less accurate). */
   statusCategory?: string | null;
-  /** Called when the user picks a different status from the dropdown. */
   onStatusChange?: (newStatus: string) => void;
-  /** Issue type — used to look up the workflow for "View workflow". */
   issueType?: string | null;
 }
 
-export function CatalystStatusPill({ status, statusCategory, onStatusChange, issueType }: CatalystStatusPillProps) {
+export function CatalystStatusPill({
+  status,
+  statusCategory,
+  onStatusChange,
+  issueType,
+}: CatalystStatusPillProps) {
   const [open, setOpen] = useState(false);
-  const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
   const [workflowViewerOpen, setWorkflowViewerOpen] = useState(false);
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
-
-  // Close on click outside.
-  useEffect(() => {
-    if (!open) return;
-    const h = (e: MouseEvent) => {
-      const target = e.target as Node;
-      if (triggerRef.current?.contains(target)) return;
-      // Allow clicks inside the portal popover.
-      const popover = document.querySelector('[data-testid="catalyst-status-pill-popover"]');
-      if (popover && popover.contains(target)) return;
-      setOpen(false);
-    };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, [open]);
-
-  // Esc to close.
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
-
-  const toggle = () => {
-    if (!triggerRef.current) return;
-    if (open) {
-      setOpen(false);
-      return;
-    }
-    const r = triggerRef.current.getBoundingClientRect();
-    setAnchor({ top: r.bottom + 4, left: r.left });
-    setOpen(true);
-  };
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const display = status || 'Backlog';
+  const appearance = statusToLozenge(display, statusCategory) as string;
+  const bg = HEADER_BG[appearance] ?? HEADER_BG.default;
+  const fg = HEADER_TEXT[appearance] ?? HEADER_TEXT.default;
+
+  const workflow = useWorkflow(issueType ?? '');
+  const currentState = useMemo(() => {
+    if (!workflow) return undefined;
+    return (
+      workflow.states.find(s => s.name.toLowerCase() === display.toLowerCase()) ??
+      workflow.states.find(s => s.id === display.toLowerCase().replace(/[^a-z0-9]+/g, '_')) ??
+      workflow.states.find(s => s.id === workflow.initialStateId)
+    );
+  }, [workflow, display]);
+
+  const availableTransitions = useMemo((): Transition[] => {
+    if (!workflow || !currentState) return [];
+    const explicit = workflow.transitions.filter(t => t.from === currentState.id);
+    const implicit: Transition[] = [];
+    const allAnyToThis = workflow.states.every(s => s.anyToThis);
+    if (allAnyToThis || currentState.anyFromThis) {
+      workflow.states.forEach(target => {
+        if (target.id === currentState.id) return;
+        if (explicit.some(e => e.to === target.id)) return;
+        implicit.push({ from: currentState.id, to: target.id, verb: target.name });
+      });
+    }
+    return [...explicit, ...implicit];
+  }, [workflow, currentState]);
+
+  const openMenu = useCallback(() => {
+    const r = triggerRef.current?.getBoundingClientRect();
+    if (!r) return;
+    setPos({ top: r.bottom + 4, left: r.left });
+    setOpen(true);
+  }, []);
+
+  const closeMenu = useCallback(() => setOpen(false), []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (
+        !menuRef.current?.contains(e.target as Node) &&
+        !triggerRef.current?.contains(e.target as Node)
+      ) closeMenu();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); closeMenu(); }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [open, closeMenu]);
+
+  const handleWorkflowTransition = useCallback((transition: Transition) => {
+    if (!workflow) return;
+    const target = workflow.states.find(s => s.id === transition.to);
+    if (!target) return;
+    onStatusChange?.(target.name);
+    closeMenu();
+  }, [workflow, onStatusChange, closeMenu]);
+
+  const handleFallbackSelect = useCallback((st: string) => {
+    onStatusChange?.(st);
+    closeMenu();
+  }, [onStatusChange, closeMenu]);
+
+  const menuContent = workflow && currentState ? (
+    availableTransitions.length === 0 ? (
+      <div style={{ padding: '8px 12px', fontSize: 13, color: token('color.text.subtlest', '#626F86') }}>
+        No transitions available
+      </div>
+    ) : (
+      <>
+        {availableTransitions.map(tr => {
+          const target = workflow.states.find(s => s.id === tr.to);
+          if (!target) return null;
+          return (
+            <button
+              key={`${tr.from}->${tr.to}`}
+              type="button"
+              onClick={() => handleWorkflowTransition(tr)}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr auto auto',
+                alignItems: 'center',
+                gap: 12,
+                width: '100%',
+                padding: '7px 12px',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+                textAlign: 'left',
+                minWidth: 220,
+                font: 'inherit',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+            >
+              <span style={{ fontSize: 14, color: token('color.text', '#172B4D') }}>{tr.verb}</span>
+              <span aria-hidden style={{ fontSize: 12, color: token('color.text.subtlest', '#8590A2') }}>→</span>
+              <JiraStatusLozenge category={target.category} name={target.name} />
+            </button>
+          );
+        })}
+      </>
+    )
+  ) : (
+    STATUS_OPTION_GROUPS.map(group => (
+      <div key={group.category}>
+        <div style={{
+          padding: '6px 12px 2px',
+          fontSize: 11,
+          fontWeight: 600,
+          color: token('color.text.subtlest', '#626F86'),
+          textTransform: 'uppercase' as const,
+          letterSpacing: '0.04em',
+        }}>
+          {group.groupLabel}
+        </div>
+        {group.statuses.map(st => (
+          <button
+            key={st}
+            type="button"
+            onClick={() => handleFallbackSelect(st)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              width: '100%',
+              padding: '5px 12px',
+              border: 'none',
+              background: display === st ? token('color.background.selected', '#E9F2FE') : 'transparent',
+              cursor: 'pointer',
+              font: 'inherit',
+            }}
+            onMouseEnter={e => { if (display !== st) (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+            onMouseLeave={e => { if (display !== st) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+          >
+            <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+              <Lozenge appearance={groupCategoryToAppearance(group.category)} isBold>{st}</Lozenge>
+            </span>
+          </button>
+        ))}
+      </div>
+    ))
+  );
 
   return (
     <>
-      {/* 2026-05-29: button is a transparent click-target; Lozenge isBold
-          provides all visual styling via ADS --ds-background-*-bold tokens. */}
       <button
         ref={triggerRef}
         type="button"
-        onClick={toggle}
+        data-testid="catalyst-status-pill-trigger"
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label="Change status"
-        data-testid="catalyst-status-pill-trigger"
+        onClick={open ? closeMenu : openMenu}
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          padding: 0,
-          border: 'none',
-          background: 'transparent',
-          cursor: 'pointer',
-          fontFamily: 'inherit',
-          transition: 'filter 0.1s',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.88)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
-      >
-        {/* Header pill — Jira-probed: 32px/14px/500/padding 0 10px/rgb(148,199,72) success */}
-        <span style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: 4,
           height: 32,
-          lineHeight: '32px',
           padding: '0 10px',
           borderRadius: 3,
+          border: 'none',
+          cursor: 'pointer',
+          background: bg,
+          color: fg,
           fontSize: 14,
           fontWeight: 500,
-          textTransform: 'none',
-          letterSpacing: 'normal',
-          background: ({
-            success:    'var(--ds-background-success, #DCFFF1)',
-            inprogress: 'var(--ds-background-information, #E9F2FF)',
-            moved:      'var(--ds-background-warning, #FFF7D6)',
-            removed:    'var(--ds-background-danger, #FFEBE6)',
-            new:        'var(--ds-background-discovery, #F3F0FF)',
-            default:    'var(--ds-background-neutral, #F4F5F7)',
-          } as Record<string, string>)[statusToLozenge(display, statusCategory)] ?? 'var(--ds-background-neutral, #F4F5F7)',
-          color: ({
-            success:    'var(--ds-text-success, #216E4E)',
-            inprogress: 'var(--ds-text-information, #0055CC)',
-            moved:      'var(--ds-text-warning, #974F0C)',
-            removed:    'var(--ds-text-danger, #AE2A19)',
-            new:        'var(--ds-text-discovery, #5E4DB2)',
-            default:    'var(--ds-text-subtle, #626F86)',
-          } as Record<string, string>)[statusToLozenge(display, statusCategory)] ?? 'var(--ds-text-subtle, #626F86)',
-        }}>
-          {display}
-          <ChevronDownIcon size="small" label="" />
-        </span>
+          fontFamily: 'inherit',
+          transition: 'opacity 0.1s',
+        }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.85'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
+      >
+        {display}
+        <span aria-hidden style={{ fontSize: 10, opacity: 0.8 }}>▾</span>
       </button>
 
-      {open && anchor && typeof document !== 'undefined' &&
-        createPortal(
-          <div
-            data-testid="catalyst-status-pill-popover"
-            className="cv-status-listbox"
-            role="menu"
-            style={{
-              position: 'fixed',
-              top: anchor.top,
-              left: anchor.left,
-              minWidth: 220,
-              maxHeight: 360,
-              overflowY: 'auto',
-              background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-              borderRadius: 6,
-              boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
-              padding: '4px 0',
-              zIndex: 9999,
-            }}
-          >
-            {STATUS_OPTION_GROUPS.map((group) => {
-              /* jira-compare 2026-05-05 — Fix: dropdown lozenge appearance must
-                 use the GROUP category (todo/in_progress/done), NOT the status
-                 name lookup. Using statusToLozenge(name) caused "In Requirements"
-                 and "In Design" (which are in the TO DO group) to render as bold
-                 blue because they were individually mapped to 'inprogress' in the
-                 name table. The group.category is the correct source of truth here —
-                 it matches Jira's status-picker where colour = workflow category. */
-              const groupAppearance: 'default' | 'inprogress' | 'success' =
-                group.category === 'done'
-                  ? 'success'
-                  : group.category === 'in_progress'
-                  ? 'inprogress'
-                  : 'default';
+      {open && createPortal(
+        <div
+          ref={menuRef}
+          data-catalyst-status-portal="true"
+          style={{
+            position: 'fixed',
+            top: pos.top,
+            left: pos.left,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            borderRadius: 4,
+            boxShadow: token('elevation.shadow.overlay', '0 4px 8px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            zIndex: 9999,
+            minWidth: 220,
+            padding: '4px 0',
+            maxHeight: 400,
+            overflowY: 'auto',
+          }}
+        >
+          {menuContent}
+          <div style={{ borderTop: `1px solid ${token('color.border', '#DFE1E6')}`, marginTop: 4, paddingTop: 4 }}>
+            <button
+              type="button"
+              onClick={() => { setWorkflowViewerOpen(true); closeMenu(); }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                width: '100%',
+                padding: '7px 12px',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+                font: 'inherit',
+                fontSize: 14,
+                color: token('color.text', '#172B4D'),
+                textAlign: 'left',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+            >
+              View workflow
+            </button>
+          </div>
+        </div>,
+        document.body,
+      )}
 
-              return (
-                <div key={group.category}>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: token('color.text.subtle', '#6B6E76'),
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                      padding: '8px 12px 4px',
-                      marginTop: 4,
-                    }}
-                  >
-                    {group.groupLabel}
-                  </div>
-                  {group.statuses.map((st) => {
-                    const isActive = display === st;
-                    return (
-                      <button
-                        key={st}
-                        type="button"
-                        role="menuitem"
-                        onClick={() => {
-                          if (onStatusChange) onStatusChange(st);
-                          setOpen(false);
-                        }}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          width: '100%',
-                          height: 36,
-                          padding: '0 12px',
-                          background: isActive
-                            ? token('color.background.selected', '#E9F2FF')
-                            : 'transparent',
-                          border: 'none',
-                          cursor: 'pointer',
-                          fontFamily: 'inherit',
-                          fontSize: 14,
-                          color: token('color.text', '#292A2E'),
-                          textAlign: 'left',
-                        }}
-                        onMouseEnter={(e) => {
-                          if (!isActive) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!isActive) e.currentTarget.style.background = 'transparent';
-                        }}
-                      >
-                        {/* Dropdown pill — Jira-probed colors, sentence-case, no uppercase */}
-                        <span style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          height: 20,
-                          padding: '0 7px',
-                          borderRadius: 3,
-                          fontSize: 11,
-                          fontWeight: 500,
-                          textTransform: 'none',
-                          letterSpacing: 'normal',
-                          background: ({
-                            success:    'var(--ds-background-success, #DCFFF1)',
-                            inprogress: 'var(--ds-background-information, #E9F2FF)',
-                            default:    'var(--ds-background-neutral, #F4F5F7)',
-                          } as Record<string, string>)[groupAppearance] ?? 'var(--ds-background-neutral, #F4F5F7)',
-                          color: ({
-                            success:    'var(--ds-text-success, #216E4E)',
-                            inprogress: 'var(--ds-text-information, #0055CC)',
-                            default:    'var(--ds-text-subtle, #626F86)',
-                          } as Record<string, string>)[groupAppearance] ?? 'var(--ds-text-subtle, #626F86)',
-                        }}>
-                          {st}
-                        </span>
-                        {isActive && (
-                          <span style={{ fontSize: 12, color: token('color.text.brand', '#0C66E4'), fontWeight: 600 }}>
-                            ✓
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              );
-            })}
-            {/* jira-compare 2026-05-04 — "View workflow" / "Explain workflow" footer
-                matches Jira's status picker footer (probed BAU-5609). Stubs for now;
-                clicking either opens a toast until workflow viewer is built. */}
-            <div style={{
-              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-              padding: '4px 0',
-              marginTop: 4,
-            }}>
-              {[
-                { label: 'View workflow',    icon: '⟳' },
-                { label: 'Explain workflow', icon: '✦' },
-              ].map(({ label, icon }) => (
-                <button
-                  key={label}
-                  type="button"
-                  role="menuitem"
-                  onClick={() => {
-                    setOpen(false);
-                    if (label === 'View workflow') setWorkflowViewerOpen(true);
-                  }}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    width: '100%', height: 36, padding: '0 12px',
-                    background: 'transparent', border: 'none',
-                    cursor: 'pointer', fontFamily: 'inherit',
-                    fontSize: 14, color: token('color.text', '#292A2E'),
-                    textAlign: 'left',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                >
-                  <span style={{ fontSize: 12, color: token('color.text.subtle', '#505258') }}>{icon}</span>
-                  <span>{label}</span>
-                </button>
-              ))}
-            </div>
-          </div>,
-          document.body,
-        )}
-
-      {/* View workflow modal — wired to /admin/workflow definitions via WorkflowProvider */}
       <WorkflowViewerModal
         isOpen={workflowViewerOpen}
         onClose={() => setWorkflowViewerOpen(false)}
@@ -321,3 +304,5 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
     </>
   );
 }
+
+export default CatalystStatusPill;
