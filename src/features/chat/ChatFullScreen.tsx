@@ -51,11 +51,6 @@ function ChatFullScreenInner() {
   const { user } = useAuth();
   const shell = useShellState();
   const { conversations, isLoading } = useConversations();
-  const { name: userName, avatarUrl: userAvatarUrl } = useSelfProfile();
-
-  const unreadDMs = conversations
-    .filter(c => (c.kind === 'dm' || c.kind === 'group_dm') && c.unreadCount > 0)
-    .reduce((sum, c) => sum + c.unreadCount, 0);
 
   const handleSelectConversation = (id: string) => {
     setActiveConversationId(id);
@@ -133,10 +128,6 @@ function ChatFullScreenInner() {
       onOpenConversation={handleOpenConversation}
       onUnreadActivity={setUnreadActivity}
       onStartDM={handleStartDM}
-      userName={userName}
-      userAvatarUrl={userAvatarUrl}
-      unreadDMs={unreadDMs}
-      unreadActivity={unreadActivity}
     >
       {/* Column 3: main conversation feed */}
       <main

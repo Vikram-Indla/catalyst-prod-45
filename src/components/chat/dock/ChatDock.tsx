@@ -29,6 +29,8 @@ import { DockConversationPane } from "./DockConversationPane";
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
 
+const FAB_SIZE = 64;
+
 type DockMode = "messages" | "caty";
 type CatyView = "floating" | "sidebar";
 
@@ -211,7 +213,7 @@ export function ChatDock({
         onPointerMove={dragHandlers.onPointerMove}
         onPointerUp={dragHandlers.onPointerUp}
       >
-        <CatyFabIcon size={56} isDragging={isDragging} />
+        <CatyFabIcon size={FAB_SIZE} isDragging={isDragging} />
         {totalUnread > 0 && (
           <span
             className="cc-fab__badge"

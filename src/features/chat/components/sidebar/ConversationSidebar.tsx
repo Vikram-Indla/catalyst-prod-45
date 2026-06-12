@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { ChatConversation } from '@/types/chat';
 import type { ChatView } from '../../hooks/useShellState';
+import { CatyFabIcon } from '@/components/chat/dock/CatyFabIcon';
 import { ConversationRow } from './ConversationRow';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './conversation-row.css';
@@ -15,20 +16,19 @@ interface ConversationSidebarProps {
   onToggleCollapse: () => void;
   isCollapsed: boolean;
   activeView: ChatView;
+  onNavigate: (view: ChatView) => void;
 }
 
 interface SectionConfig {
   id: string;
   label: string;
-  kinds: ChatConversation['kind'][];
-  archivedOnly?: boolean;
 }
 
 const SECTIONS: SectionConfig[] = [
-  { id: 'tickets',  label: 'Projects',        kinds: ['ticket'] },
-  { id: 'channels', label: 'Channels',         kinds: ['channel', 'custom_channel'] },
-  { id: 'dms',      label: 'Direct Messages',  kinds: ['dm', 'group_dm'] },
-  { id: 'archived', label: 'Archived',         kinds: ['ticket','channel','custom_channel','dm','group_dm'], archivedOnly: true },
+  { id: 'projects',  label: 'Projects' },
+  { id: 'channels',  label: 'Channels' },
+  { id: 'dms',       label: 'Direct Messages' },
+  { id: 'archived',  label: 'Archived' },
 ];
 
 const ChevronIcon = () => (
@@ -69,7 +69,7 @@ function SectionHeader({
       onClick={onToggle}
       aria-expanded={expanded}
     >
-      <span className={`c-sb-section__chev`}>
+      <span className="c-sb-section__chev">
         <ChevronIcon />
       </span>
       <span className="c-sb-section__lbl">{label}</span>
@@ -86,9 +86,10 @@ export function ConversationSidebar({
   onToggleCollapse,
   isCollapsed,
   activeView,
+  onNavigate,
 }: ConversationSidebarProps) {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    tickets: true,
+    projects: true,
     channels: true,
     dms: true,
     archived: false,
@@ -98,9 +99,17 @@ export function ConversationSidebar({
     const active = conversations.filter(c => !c.isArchived);
     const archived = conversations.filter(c => c.isArchived);
     return {
-      tickets:  active.filter(c => c.kind === 'ticket'),
-      channels: active.filter(c => c.kind === 'channel' || c.kind === 'custom_channel'),
-      dms:      active.filter(c => c.kind === 'dm' || c.kind === 'group_dm'),
+      // Project conversations: ticket threads + project-linked channels
+      projects: active.filter(c =>
+        c.kind === 'ticket' ||
+        (c.kind === 'channel' && !!c.projectKey)
+      ),
+      // Channels: custom channels + unlinked channels
+      channels: active.filter(c =>
+        c.kind === 'custom_channel' ||
+        (c.kind === 'channel' && !c.projectKey)
+      ),
+      dms: active.filter(c => c.kind === 'dm' || c.kind === 'group_dm'),
       archived,
     };
   }, [conversations]);
@@ -115,14 +124,21 @@ export function ConversationSidebar({
   const visibleSections = isDmsView
     ? SECTIONS.filter(s => s.id === 'dms')
     : SECTIONS;
-  const sidebarTitle = isDmsView ? 'Direct Messages' : 'Conversations';
 
   return (
-    <aside className="c-chat-sidebar" aria-label={sidebarTitle}>
+    <aside className="c-chat-sidebar" aria-label="Chat">
       {/* Header */}
       <div className="c-sb-head">
         {!isCollapsed && (
-          <h1 className="c-sb-head__title">{sidebarTitle}</h1>
+          <div className="c-sb-head__brand">
+            <CatyFabIcon size={28} />
+            <span className="c-sb-head__title">Chat</span>
+          </div>
+        )}
+        {isCollapsed && (
+          <div className="c-sb-head__brand c-sb-head__brand--collapsed">
+            <CatyFabIcon size={28} />
+          </div>
         )}
         <div className="c-sb-head__actions">
           {!isCollapsed && onNewConversation && (

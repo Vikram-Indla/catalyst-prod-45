@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { chatRealtime } from '@/lib/chat/ChatRealtimeManager';
 import { MessageComposer } from '@/components/chat/main/MessageComposer';
+import { MessageText } from '../feed/MessageText';
 import type { ChatMessage, ChatReaction } from '@/types/chat';
 import type { ThreadMode } from '../../hooks/useShellState';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
@@ -242,7 +243,7 @@ function MsgRow({
         {msg.deletedAt ? (
           <p className="c-msg__text c-msg__text--deleted">This message was deleted.</p>
         ) : (
-          <p className="c-msg__text">{msg.bodyText}</p>
+          <MessageText className="c-msg__text" text={msg.bodyText ?? ''} />
         )}
 
         {msg.editedAt && !msg.deletedAt && (

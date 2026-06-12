@@ -1,7 +1,6 @@
 import React from 'react';
 import type { ChatConversation } from '@/types/chat';
 import type { ShellState, ShellActions } from '../hooks/useShellState';
-import { AppRail } from './AppRail';
 import { ConversationSidebar } from './sidebar/ConversationSidebar';
 import { ActivitySurface } from './activity/ActivitySurface';
 import { PeopleSurface } from './people/PeopleSurface';
@@ -14,15 +13,9 @@ interface ChatShellProps {
   activeConversationId: string | undefined;
   onSelectConversation: (id: string) => void;
   onNewConversation?: () => void;
-  userName: string;
-  userAvatarUrl: string | null;
-  /** Unread DM count for rail badge */
-  unreadDMs: number;
-  /** Unread activity count for rail badge */
-  unreadActivity: number;
   /** Called when user clicks an activity item — navigates to the conversation */
   onOpenConversation: (conversationId: string, messageId?: string) => void;
-  /** Called when the unread activity count changes (to update AppRail badge) */
+  /** Called when the unread activity count changes */
   onUnreadActivity?: (count: number) => void;
   /** Called when user initiates a DM from the People surface */
   onStartDM: (userId: string, userName: string) => void;
@@ -36,10 +29,6 @@ export function ChatShell({
   activeConversationId,
   onSelectConversation,
   onNewConversation,
-  userName,
-  userAvatarUrl,
-  unreadDMs,
-  unreadActivity,
   onOpenConversation,
   onUnreadActivity,
   onStartDM,
@@ -60,17 +49,7 @@ export function ChatShell({
       data-thread-mode={threadMode}
       data-view={activeView}
     >
-      {/* Column 1: App rail */}
-      <AppRail
-        activeView={activeView}
-        onNavigate={setActiveView}
-        unreadDMs={unreadDMs}
-        unreadActivity={unreadActivity}
-        userName={userName}
-        userAvatarUrl={userAvatarUrl}
-      />
-
-      {/* Column 2: Conversation sidebar */}
+      {/* Column 1: Conversation sidebar */}
       <ConversationSidebar
         conversations={conversations}
         activeConversationId={activeConversationId}
@@ -79,19 +58,20 @@ export function ChatShell({
         onToggleCollapse={toggleSidebar}
         isCollapsed={sidebarCollapsed}
         activeView={activeView}
+        onNavigate={setActiveView}
       />
 
-      {/* Column 3: activity surface (shown when activeView === 'activity') */}
+      {/* Column 2: activity surface (shown when activeView === 'activity') */}
       <ActivitySurface
         onOpenConversation={onOpenConversation}
         onUnreadCount={onUnreadActivity}
         isActive={activeView === 'activity'}
       />
 
-      {/* Column 3: people surface (shown when activeView === 'people') */}
+      {/* Column 2: people surface (shown when activeView === 'people') */}
       <PeopleSurface onStartDM={onStartDM} />
 
-      {/* Columns 3 (+ 4 when docked): feed + thread — provided by parent */}
+      {/* Columns 2 (+ 3 when docked): feed + thread — provided by parent */}
       {children}
 
       {/* Later placeholder — bookmark saving requires hover-toolbar + DB (not in scope) */}

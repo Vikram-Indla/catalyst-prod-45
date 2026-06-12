@@ -22,15 +22,26 @@
   gap: 8px;
 }
 
+.c-sb-head__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.c-sb-head__brand--collapsed {
+  justify-content: center;
+}
+
 .c-sb-head__title {
-  font-size: 20px;
-  line-height: 28px;
-  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--c-chat-text);
-  flex: 1;
   margin: 0;
 }
 

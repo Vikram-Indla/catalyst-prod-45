@@ -55,16 +55,14 @@ export function CatyFabIcon({ size = 56, isDragging = false }: { size?: number; 
           svg.is-excited .cf-sleep, svg.is-excited .cf-awake { opacity: 0 }
           svg:active .cf-excited, svg.is-excited .cf-excited { opacity: 1 }
           @media (prefers-reduced-motion: reduce) { .cf { animation: none; transform: scale(1) } }
-          svg.is-dragging .cf { animation: none; transform: scaleX(1.35) scaleY(0.72);
-            transition: transform .1s ease }
           svg.is-dragging .cf-ears { transform: scaleY(0.45) }
-          svg.is-dragging .cf-tail { animation: cfTailFlail .35s ease-in-out infinite alternate }
-          @keyframes cfTailFlail { from { transform: rotate(-30deg) } to { transform: rotate(30deg) } }
+          svg.is-dragging .cf-tail { animation: cfTailFlail .25s ease-in-out infinite alternate }
+          @keyframes cfTailFlail { from { transform: rotate(-50deg) } to { transform: rotate(50deg) } }
           svg.is-dragging .cf-sleep, svg.is-dragging .cf-awake { opacity: 0 }
           svg.is-dragging .cf-excited { opacity: 1 }
         `}</style>
 
-        <g className="cf">
+        <g className="cf" transform="scale(1.1)" style={{ transformOrigin: '256px 256px' }}>
           <path
             className="cf-tail"
             d="M404 392 Q462 392 456 336"
@@ -78,9 +76,10 @@ export function CatyFabIcon({ size = 56, isDragging = false }: { size?: number; 
             fill="url(#askdg)"
           />
           <text
-            x="350" y="293"
+            x="350"
+            y="293"
             textAnchor="middle"
-            fontFamily="'Atlassian Sans', system-ui, sans-serif"
+            fontFamily="'Sora', 'Atlassian Sans', system-ui, sans-serif"
             fontSize="84"
             fontWeight="800"
             fontStyle="italic"
@@ -113,21 +112,21 @@ export function CatyFabIcon({ size = 56, isDragging = false }: { size?: number; 
           </g>
           {/* Eyes — awake */}
           <g className="cf-eyes cf-awake" opacity="0">
-            <circle cx="322" cy="150" r="20" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #23222B)" strokeWidth="4.5" />
-            <circle cx="374" cy="150" r="20" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #23222B)" strokeWidth="4.5" />
-            <circle cx="324" cy="153" r="8.5" fill="var(--caty-fg, #23222B)" />
-            <circle cx="376" cy="153" r="8.5" fill="var(--caty-fg, #23222B)" />
-            <circle cx="320" cy="147" r="3.2" fill="var(--ds-surface, #FFFFFF)" />
-            <circle cx="372" cy="147" r="3.2" fill="var(--ds-surface, #FFFFFF)" />
+            <circle cx="322" cy="150" r="24" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #23222B)" strokeWidth="4.5" />
+            <circle cx="374" cy="150" r="24" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #23222B)" strokeWidth="4.5" />
+            <circle cx="324" cy="153" r="10" fill="var(--caty-fg, #23222B)" />
+            <circle cx="376" cy="153" r="10" fill="var(--caty-fg, #23222B)" />
+            <circle cx="320" cy="147" r="4" fill="var(--ds-surface, #FFFFFF)" />
+            <circle cx="372" cy="147" r="4" fill="var(--ds-surface, #FFFFFF)" />
           </g>
           {/* Eyes — excited */}
           <g className="cf-eyes cf-excited" opacity="0">
-            <circle cx="319" cy="151" r="26" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #23222B)" strokeWidth="5" />
-            <circle cx="377" cy="151" r="26" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #23222B)" strokeWidth="5" />
-            <circle cx="323" cy="158" r="13.5" fill="var(--caty-fg, #23222B)" />
-            <circle cx="381" cy="158" r="13.5" fill="var(--caty-fg, #23222B)" />
-            <circle cx="316" cy="145" r="4.5" fill="var(--ds-surface, #FFFFFF)" />
-            <circle cx="374" cy="145" r="4.5" fill="var(--ds-surface, #FFFFFF)" />
+            <circle cx="319" cy="151" r="31" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #23222B)" strokeWidth="5" />
+            <circle cx="377" cy="151" r="31" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #23222B)" strokeWidth="5" />
+            <circle cx="323" cy="158" r="16" fill="var(--caty-fg, #23222B)" />
+            <circle cx="381" cy="158" r="16" fill="var(--caty-fg, #23222B)" />
+            <circle cx="316" cy="145" r="5" fill="var(--ds-surface, #FFFFFF)" />
+            <circle cx="374" cy="145" r="5" fill="var(--ds-surface, #FFFFFF)" />
           </g>
         </g>
       </svg>

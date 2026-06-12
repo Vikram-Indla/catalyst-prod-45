@@ -27,15 +27,42 @@ const HashIcon = () => (
   </svg>
 );
 
+// ads-scanner:ignore-next-line — project avatar colors are functional brand identifiers, not surface tokens
+const PROJECT_COLORS = ['#0052CC', '#FF5630', '#36B37E', '#FF8B00', '#6554C0', '#00B8D9', '#172B4D'];
+
+function ProjectAvatar({ projectKey }: { projectKey: string }) {
+  const initials = projectKey.substring(0, 2).toUpperCase();
+  const colorIdx = (projectKey.charCodeAt(0) + (projectKey.charCodeAt(1) || 0)) % PROJECT_COLORS.length;
+  return (
+    <span
+      aria-hidden="true"
+      style={{
+        display: 'inline-flex',
+        width: 16,
+        height: 16,
+        borderRadius: 3,
+        background: PROJECT_COLORS[colorIdx],
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 8,
+        fontWeight: 700,
+        color: '#FFFFFF',
+        flexShrink: 0,
+        letterSpacing: 0,
+      }}
+    >
+      {initials}
+    </span>
+  );
+}
+
 interface ConversationRowProps {
   conversation: ChatConversation;
   isActive: boolean;
   onSelect: (id: string) => void;
   onMute?: (id: string) => void;
   onMore?: (id: string) => void;
-  /** Online presence for DM conversations */
   isOnline?: boolean;
-  /** Display avatar for the other party (DM / group DM) */
   otherPartyName?: string;
   otherPartyAvatarUrl?: string | null;
 }
@@ -65,8 +92,11 @@ export function ConversationRow({
   otherPartyAvatarUrl,
 }: ConversationRowProps) {
   const isDM = conv.kind === 'dm' || conv.kind === 'group_dm';
-  const isChannel = conv.kind === 'channel' || conv.kind === 'custom_channel';
   const isTicket = conv.kind === 'ticket';
+  // Project-linked channel — show project avatar
+  const isProjectChannel = conv.kind === 'channel' && !!conv.projectKey;
+  // Custom channel or unlinked channel — show hash
+  const isCustomChannel = conv.kind === 'custom_channel' || (conv.kind === 'channel' && !conv.projectKey);
   const hasUnread = conv.unreadCount > 0;
 
   return (
@@ -82,7 +112,7 @@ export function ConversationRow({
       data-unread-count={hasUnread ? (conv.unreadCount > 99 ? '99+' : String(conv.unreadCount)) : ''}
     >
       {/* Icon / avatar slot */}
-      <div className={`c-sb-row__icon${isChannel ? ' c-sb-row__icon--hash' : ''}`}>
+      <div className={`c-sb-row__icon${isCustomChannel ? ' c-sb-row__icon--hash' : ''}`}>
         {isDM && (
           <div style={{ position: 'relative' }}>
             <Avatar
@@ -95,11 +125,17 @@ export function ConversationRow({
             )}
           </div>
         )}
-        {isChannel && <HashIcon />}
+        {isCustomChannel && <HashIcon />}
+        {isProjectChannel && conv.projectKey && (
+          <ProjectAvatar projectKey={conv.projectKey} />
+        )}
         {isTicket && conv.ticketType && (
           <JiraIssueTypeIcon type={conv.ticketType} size={16} />
         )}
-        {isTicket && !conv.ticketType && <HashIcon />}
+        {isTicket && !conv.ticketType && conv.projectKey && (
+          <ProjectAvatar projectKey={conv.projectKey} />
+        )}
+        {isTicket && !conv.ticketType && !conv.projectKey && <HashIcon />}
       </div>
 
       {/* Title + preview */}

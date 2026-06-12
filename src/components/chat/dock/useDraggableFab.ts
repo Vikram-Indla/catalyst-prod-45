@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-const FAB_SIZE = 56;
+const FAB_SIZE = 77;
 const EDGE = 24;
-const RETURN_MS = 2 * 60 * 1000;
+const RETURN_MS = 5 * 60 * 1000;
 const SNAP_EASING = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
+const STORAGE_KEY = 'catalyst-fab-position';
 
 export { SNAP_EASING };
 
@@ -12,6 +13,43 @@ function defaultPos() {
     x: window.innerWidth - FAB_SIZE - EDGE,
     y: window.innerHeight - FAB_SIZE - EDGE,
   };
+}
+
+function loadPos() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) {
+      if (import.meta.env.DEV) console.debug('[useDraggableFab] no saved pos, using default');
+      return defaultPos();
+    }
+    const pos = JSON.parse(saved);
+    const isValid =
+      typeof pos.x === 'number' &&
+      typeof pos.y === 'number' &&
+      pos.x >= 0 &&
+      pos.x <= window.innerWidth - FAB_SIZE &&
+      pos.y >= 0 &&
+      pos.y <= window.innerHeight - FAB_SIZE;
+
+    if (isValid) {
+      if (import.meta.env.DEV) console.debug('[useDraggableFab] loaded saved pos', pos);
+      return pos;
+    } else {
+      if (import.meta.env.DEV) console.debug('[useDraggableFab] saved pos out of bounds, using default', pos);
+    }
+  } catch (err) {
+    console.error('[useDraggableFab] localStorage load failed:', err);
+  }
+  return defaultPos();
+}
+
+function savePos(pos: { x: number; y: number }) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(pos));
+    if (import.meta.env.DEV) console.debug('[useDraggableFab] saved pos', pos);
+  } catch (err) {
+    console.error('[useDraggableFab] localStorage save failed:', err);
+  }
 }
 
 function snapCorner(x: number, y: number) {
@@ -33,7 +71,10 @@ export function useDraggableFab() {
   const didMove = useRef(false);
   const returnTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  useEffect(() => { livePos.current = pos; }, [pos]);
+  useEffect(() => {
+    livePos.current = pos;
+    savePos(pos);
+  }, [pos]);
 
   const scheduleReturn = useCallback(() => {
     clearTimeout(returnTimer.current);
@@ -74,9 +115,6 @@ export function useDraggableFab() {
     setIsDragging(false);
     const moved = didMove.current;
     if (moved) {
-      setIsSnapping(true);
-      setPos(snapCorner(livePos.current.x, livePos.current.y));
-      setTimeout(() => setIsSnapping(false), 500);
       scheduleReturn();
     }
     return moved; // caller can use this to suppress click

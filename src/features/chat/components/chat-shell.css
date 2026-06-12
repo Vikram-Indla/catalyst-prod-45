@@ -5,7 +5,6 @@
   min-height: 0;
   background: var(--c-chat-surface);
   grid-template-columns:
-    var(--c-chat-app-rail-w)
     var(--c-chat-sidebar-w-expanded)
     minmax(0, 1fr)
     0;
@@ -15,7 +14,6 @@
 /* Collapsed sidebar */
 .c-chat-shell[data-sidebar-collapsed="true"] {
   grid-template-columns:
-    var(--c-chat-app-rail-w)
     var(--c-chat-sidebar-w-collapsed)
     minmax(0, 1fr)
     0;
@@ -24,28 +22,24 @@
 /* Thread modes — docked variants */
 .c-chat-shell[data-thread-mode="docked-md"] {
   grid-template-columns:
-    var(--c-chat-app-rail-w)
     var(--c-chat-sidebar-w-expanded)
     minmax(0, 1fr)
     var(--c-chat-thread-w-md);
 }
 .c-chat-shell[data-thread-mode="docked-md"][data-sidebar-collapsed="true"] {
   grid-template-columns:
-    var(--c-chat-app-rail-w)
     var(--c-chat-sidebar-w-collapsed)
     minmax(0, 1fr)
     var(--c-chat-thread-w-md);
 }
 .c-chat-shell[data-thread-mode="docked-lg"] {
   grid-template-columns:
-    var(--c-chat-app-rail-w)
     var(--c-chat-sidebar-w-expanded)
     minmax(0, 1fr)
     var(--c-chat-thread-w-lg);
 }
 .c-chat-shell[data-thread-mode="docked-lg"][data-sidebar-collapsed="true"] {
   grid-template-columns:
-    var(--c-chat-app-rail-w)
     var(--c-chat-sidebar-w-collapsed)
     minmax(0, 1fr)
     var(--c-chat-thread-w-lg);
@@ -57,14 +51,12 @@
 @media (max-width: 1023px) {
   .c-chat-shell {
     grid-template-columns:
-      var(--c-chat-app-rail-w)
       0
       minmax(0, 1fr)
       0;
   }
   .c-chat-shell[data-sidebar-collapsed="false"] {
     grid-template-columns:
-      var(--c-chat-app-rail-w)
       var(--c-chat-sidebar-w-expanded)
       minmax(0, 1fr)
       0;
@@ -122,7 +114,7 @@
     var(--c-chat-header-h)
     var(--c-chat-tabs-h)
     minmax(0, 1fr);
-  grid-column: 3;
+  grid-column: 2;
 }
 .c-chat-shell[data-view="activity"] .c-chat-activity { display: grid; }
 .c-chat-shell[data-view="activity"] .c-chat-main    { display: none; }
@@ -137,7 +129,7 @@
   gap: 8px;
   padding: 32px;
   color: var(--c-chat-text-subtle);
-  grid-column: 3;
+  grid-column: 2;
 }
 .c-chat-shell[data-view="later"]  .c-chat-placeholder[data-surface="later"]  { display: flex; }
 .c-chat-shell[data-view="later"]  .c-chat-main                               { display: none; }

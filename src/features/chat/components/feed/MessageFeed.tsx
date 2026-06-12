@@ -5,6 +5,7 @@ import type { ChatConversation, ChatMessage } from '@/types/chat';
 import { useMessages } from '@/hooks/chat/useMessages';
 import { MessageComposer } from '@/components/chat/main/MessageComposer';
 import { HoverToolbar } from './HoverToolbar';
+import { MessageText } from './MessageText';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './feed.css';
 
@@ -276,7 +277,7 @@ function MsgGroupBlock({
                   onCancel={onCancelEdit}
                 />
               ) : (
-                <p className="c-msg__text">{msg.bodyText}</p>
+                <MessageText className="c-msg__text" text={msg.bodyText ?? ''} />
               )}
 
               {msg.editedAt && !msg.deletedAt && !isEditing && (
