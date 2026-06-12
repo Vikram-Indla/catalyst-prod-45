@@ -30,22 +30,19 @@ import {
   ChevronDown,
   Minus,
   Plus,
-  Download,
-  Focus,
   RefreshCw,
   Link2,
-  MoreHorizontal,
   Maximize2,
+  X,
 } from '@/lib/atlaskit-icons';
 import { IconButton as AkIconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
+import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
+import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box';
 import { Heading, SectionMessage } from '@/components/ads';
 import { useWidgetEditState } from './widget-edit-context';
-import { downloadWidgetAsPdf } from '@/lib/widget-pdf';
-import { downloadWidgetAsCsv } from '@/lib/widget-csv';
 
 /** Jira-parity highlight colors for the gadget top border bar. */
 // 2026-06-09 Spec parity — ADS B400 #0052CC for the blue accent (was
@@ -136,7 +133,6 @@ export default function WidgetWrapper({
 }: WidgetWrapperProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
-  const [isExporting, setIsExporting] = useState(false);
   const [headerHovered, setHeaderHovered] = useState(false);
   const editState = useWidgetEditState();
   const isEditing = editState.isEditing;
@@ -148,6 +144,9 @@ export default function WidgetWrapper({
     | ((sourceId: string, targetId: string, edge: 'before' | 'after') => void)
     | undefined;
   const onCollapseDraft = editState.onCollapseDraft;
+  const onRemoveWidget = (editState as any).onRemoveWidget as (() => void) | undefined;
+  const visibleCount = (editState as any).visibleCount as number | undefined;
+  const isLastVisible = (visibleCount ?? 2) <= 1;
   // Solo / focus mode — transient, lives on the grid context.
   const soloWidgetId = (editState as any).soloWidgetId as string | null | undefined;
   const onSolo = (editState as any).onSolo as ((id: string | null) => void) | undefined;
@@ -157,7 +156,7 @@ export default function WidgetWrapper({
   // pragmatic-drag-and-drop wiring with closest-edge drop indicator
   const [closestEdge, setClosestEdge] = useState<Edge | null>(null);
   useEffect(() => {
-    if (!isEditing || !widgetId || !cardRef.current) return;
+    if (!widgetId || !cardRef.current || !reorderRaw) return;
     const el = cardRef.current;
     return combine(
       draggable({
@@ -171,7 +170,7 @@ export default function WidgetWrapper({
         getData: ({ input, element }) =>
           attachClosestEdge(
             { widgetId, kind: 'dashboard-widget' },
-            { input, element, allowedEdges: ['left', 'right'] },
+            { input, element, allowedEdges: ['top', 'bottom'] },
           ),
         getIsSticky: () => true,
         onDragEnter: (args) => setClosestEdge(extractClosestEdge(args.self.data)),
@@ -183,7 +182,7 @@ export default function WidgetWrapper({
           const edge = extractClosestEdge(self.data);
           setClosestEdge(null);
           if (!sourceId || !targetId || sourceId === targetId) return;
-          const side: 'before' | 'after' = edge === 'right' ? 'after' : 'before';
+          const side: 'before' | 'after' = edge === 'bottom' ? 'after' : 'before';
           reorderRaw?.(sourceId, targetId, side);
         },
       }),
@@ -254,7 +253,7 @@ export default function WidgetWrapper({
         borderRadius: token('border.radius.200', '8px'),
         outline: isEditing ? `1px dashed ${token('color.border.brand', '#0C66E4')}` : 'none',
         outlineOffset: isEditing ? '-1px' : '0',
-        cursor: isEditing ? 'grab' : 'default',
+        cursor: reorderRaw ? 'grab' : 'default',
         transition: 'box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1), max-width 200ms cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
@@ -292,7 +291,7 @@ export default function WidgetWrapper({
       >
         {/* LEFT — drag handle (edit mode) + headerIcon + title block */}
         <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left' }}>
-          {isEditing && (
+          {reorderRaw && (
             <span
               aria-label="Drag widget"
               title="Drag to reorder"
@@ -443,48 +442,26 @@ export default function WidgetWrapper({
               </span>
             )}
           </Tooltip>
-          {isEditing && (
-            <DropdownMenu
-              trigger={({ triggerRef, ...triggerProps }) => (
-                <AkIconButton
-                  ref={triggerRef}
-                  {...triggerProps}
-                  label={`More actions for ${title} gadget`}
-                  icon={() => <MoreHorizontal size={16} />}
-                  appearance="subtle"
-                  spacing="compact"
-                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                />
-              )}
-            >
-              <DropdownItemGroup>
-                <DropdownItem onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                }}>Copy link</DropdownItem>
-              </DropdownItemGroup>
-              <DropdownItemGroup>
-                <DropdownItem onClick={async () => {
-                  if (!bodyRef.current) return;
-                  setIsExporting(true);
-                  try {
-                    await downloadWidgetAsPdf(bodyRef.current, { title, subtitle });
-                  } catch (err) {
-                    console.error('[WidgetWrapper] PDF export failed', err);
-                  } finally {
-                    setIsExporting(false);
-                  }
-                }}>Download as PDF</DropdownItem>
-                <DropdownItem onClick={() => {
-                  if (!bodyRef.current) return;
-                  const ok = downloadWidgetAsCsv(bodyRef.current, { title, subtitle });
-                  if (!ok) {
-                    console.warn('[WidgetWrapper] CSV export skipped — no <table> in widget body');
-                  }
-                }}>Download as CSV</DropdownItem>
-              </DropdownItemGroup>
-            </DropdownMenu>
-          )}
           {headerBadges}
+          {isEditing && onRemoveWidget && (
+            <Tooltip content={isLastVisible ? 'At least one gadget is required' : 'Remove gadget'} position="top">
+              {(tp) => (
+                <span {...tp} style={{ display: 'inline-flex' }}>
+                  <AkIconButton
+                    label="Remove gadget"
+                    icon={() => <X size={14} />}
+                    appearance="subtle"
+                    spacing="compact"
+                    isDisabled={isLastVisible}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRemoveWidget();
+                    }}
+                  />
+                </span>
+              )}
+            </Tooltip>
+          )}
         </div>
       </div>
 
@@ -555,7 +532,7 @@ export default function WidgetWrapper({
           <span>Last refreshed {lastRefreshed ? formatTimeAgo(lastRefreshed) : 'just now'}</span>
         </div>
       )}
-      {isEditing && closestEdge && <DropIndicator edge={closestEdge} gap="8px" />}
+      {closestEdge && <DropIndicator edge={closestEdge} gap="8px" />}
     </div>
   );
 }

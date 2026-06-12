@@ -30,8 +30,10 @@ interface DashboardWidgetGridProps {
   isEditing?: boolean;
   draftWidgets?: ResolvedWidget[];
   onReorder?: (sourceId: string, targetId: string, edge: 'before' | 'after') => void;
+  onReorderDirect?: (sourceId: string, targetId: string, edge: 'before' | 'after') => void;
   onResize?: (widgetId: string, direction: 'wider' | 'narrower') => void;
   onToggleCollapse?: (widgetId: string) => void;
+  onRemoveWidget?: (widgetId: string) => void;
 }
 
 export interface DashboardWidgetConfig {
@@ -287,8 +289,10 @@ export default function DashboardWidgetGrid({
   isEditing,
   draftWidgets,
   onReorder,
+  onReorderDirect,
   onResize,
   onToggleCollapse,
+  onRemoveWidget,
 }: DashboardWidgetGridProps) {
   const { widgets: persistedWidgets, toggleCollapse: persistedToggleCollapse } =
     useDashboardWidgetConfig(projectId);
@@ -303,11 +307,18 @@ export default function DashboardWidgetGrid({
   // WidgetWrapper unsets it.
   const [soloWidgetId, setSoloWidgetId] = useState<string | null>(null);
 
+  // Drag is ONLY active in edit mode. Non-edit drag was removed so layout
+  // changes require an explicit edit→Done cycle for persistence.
+  const activeReorder = isEditing ? onReorder : undefined;
+
   const editCtxValue: GridEditContextValue = {
     isEditing: !!isEditing,
+    isDraggable: !!activeReorder,
     onResize,
-    onReorder,
+    onReorder: activeReorder,
     onToggleCollapseDraft: isEditing ? onToggleCollapse : undefined,
+    onRemoveWidget: isEditing ? onRemoveWidget : undefined,
+    visibleCount: visibleWidgets.length,
     soloWidgetId,
     onSolo: setSoloWidgetId,
   };
@@ -375,9 +386,11 @@ export default function DashboardWidgetGrid({
           maxWidth: '100%',
         }}
       >
-        {visibleWidgets.map((w) => {
+        {visibleWidgets.map((w, idx) => {
           const span = effectiveSpan(w);
           const WidgetComponent = w.component;
+          // First visible widget is always expanded (Vikram directive).
+          const isCollapsed = idx === 0 ? false : w.collapsed;
           return (
             <div
               key={w.id}
@@ -400,7 +413,7 @@ export default function DashboardWidgetGrid({
                 <WidgetComponent
                   projectId={projectId}
                   projectKey={projectKey}
-                  collapsed={w.collapsed}
+                  collapsed={isCollapsed}
                   onToggleCollapse={() => collapseHandler?.(w.id)}
                 />
               </WidgetIdContext.Provider>

@@ -11,7 +11,7 @@ import React, { useMemo, useState } from 'react';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
-import { Flag, FlagGroup } from '@atlaskit/flag';
+import Flag, { FlagGroup } from '@atlaskit/flag';
 import SuccessIcon from '@atlaskit/icon/glyph/check-circle';
 import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import { useAuth } from '@/hooks/useAuth';

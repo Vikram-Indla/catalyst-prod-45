@@ -86,11 +86,14 @@ const root = createRoot(el);
 import("./App")
   .then((mod) => {
     const App = mod.default;
-    root.render(
+    const appEl = import.meta.env.DEV ? (
       <React.StrictMode>
         <App />
       </React.StrictMode>
+    ) : (
+      <App />
     );
+    root.render(appEl);
     // Layer 3 — idle-prefetch the Atlaskit view chunks after first paint.
     // Does NOT run on boot (would slow the critical path); waits for
     // requestIdleCallback so the user's first Epic-open is instant.
