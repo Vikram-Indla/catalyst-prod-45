@@ -54,6 +54,7 @@ const UnifiedBacklogPageLazy = lazy(() => import("../modules/project-work-hub/pa
 const BacklogDetailPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogDetailPage"));
 const AllWorkDetailPageLazy = lazy(() => import("../modules/project-work-hub/pages/AllWorkDetailPage"));
 const FiltersListPageLazy = lazy(() => import("../pages/project-hub/filters/FiltersListPage"));
+const RoadmapsListPageLazy = lazy(() => import("../pages/project-hub/roadmaps/RoadmapsListPage"));
 const FilterDetailPageLazy = lazy(() => import("../pages/project-hub/filters/FilterDetailPage"));
 const FilterPreviewPageLazy = lazy(() => import("../pages/project-hub/filters/FilterPreviewPage").then(m => ({ default: m.FilterPreviewPage })));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
@@ -906,10 +907,11 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/issue/:issueKey" element={<IssueRedirectToBrowse />} />
         <Route path="/project-hub/:key/board" element={<S><ProjectBoardPageLazy /></S>} />
         <Route path="/project-hub/:key/boards" element={<S><ProjectBoardManagerPageLazy /></S>} />
-        <Route path="/project-hub/:key/boards/map-statuses" element={<S><MapStatusesPageLazy /></S>} />
+        <Route path="/project-hub/:key/boards/:boardId/map-statuses" element={<S><MapStatusesPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardId/settings" element={<S><ProjectBoardSettingsPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardId/settings/:section" element={<S><ProjectBoardSettingsPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardId" element={<S><KanbanBoardPageLazy /></S>} />
+        <Route path="/project-hub/:key/roadmaps" element={<S><RoadmapsListPageLazy /></S>} />
         <Route path="/project-hub/:key/roadmaps/:id" element={<S><FilterRoadmapPageLazy /></S>} />
         <Route path="/project-hub/:key/roadmap-showcase" element={<S><RoadmapShowcasePageLazy /></S>} />
         <Route path="/project-hub/:key/list" element={<S><ProjectJiraLayoutLazy /></S>} />
