@@ -1,14 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { IconButton } from '@atlaskit/button/new';
 import CommentAddIcon from '@atlaskit/icon/core/comment-add';
 import EditIcon from '@atlaskit/icon/core/edit';
 import ShowMoreHorizontalIcon from '@atlaskit/icon/core/show-more-horizontal';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './hover-toolbar.css';
-
-// ── Emoji data ─────────────────────────────────────────────────────────────
-
-const QUICK_EMOJIS = ['👍', '❤️', '😄', '🎉', '👀'];
 
 const ALL_EMOJIS = [
   '👍','👎','❤️','😄','😂','🥲','😊','🙏','👏','🔥',
@@ -193,7 +190,7 @@ export function HoverToolbar({
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const emojiTriggerRef = useRef<HTMLButtonElement>(null);
-  const moreTriggerRef = useRef<HTMLButtonElement>(null);
+  const moreTriggerRef = useRef<HTMLDivElement>(null);
 
   const isPinned = emojiOpen || moreOpen;
 
@@ -212,20 +209,8 @@ export function HoverToolbar({
       className={`c-hover-tb${isPinned ? ' c-hover-tb--pinned' : ''}`}
       role="toolbar"
       aria-label="Message actions"
+      onClick={e => e.stopPropagation()}
     >
-      {/* Quick reactions */}
-      {QUICK_EMOJIS.map(emoji => (
-        <button
-          key={emoji}
-          className="c-hover-tb__btn"
-          onClick={() => onToggleReaction(emoji)}
-          aria-label={`React with ${emoji}`}
-          title={`React with ${emoji}`}
-        >
-          {emoji}
-        </button>
-      ))}
-
       {/* Emoji picker toggle */}
       <button
         ref={emojiTriggerRef}
@@ -235,32 +220,29 @@ export function HoverToolbar({
         aria-expanded={emojiOpen}
         title="More reactions"
       >
-        +
+        😊
       </button>
 
       <div className="c-hover-tb__divider" aria-hidden="true" />
 
       {/* Reply in thread */}
-      <button
-        className="c-hover-tb__btn"
+      <IconButton
+        icon={CommentAddIcon}
+        label="Reply in thread"
+        appearance="subtle"
         onClick={onOpenThread}
-        aria-label="Reply in thread"
-        title="Reply in thread"
-      >
-        <CommentAddIcon label="" LEGACY_size="small" />
-      </button>
+      />
 
       {/* More actions */}
-      <button
-        ref={moreTriggerRef}
-        className={`c-hover-tb__btn${moreOpen ? ' c-hover-tb__btn--active' : ''}`}
-        onClick={handleMoreTrigger}
-        aria-label="More actions"
-        aria-expanded={moreOpen}
-        title="More actions"
-      >
-        <ShowMoreHorizontalIcon label="" LEGACY_size="small" />
-      </button>
+      <div ref={moreTriggerRef} style={{ display: 'inline-flex' }}>
+        <IconButton
+          icon={ShowMoreHorizontalIcon}
+          label="More actions"
+          appearance="subtle"
+          onClick={handleMoreTrigger}
+          isSelected={moreOpen}
+        />
+      </div>
 
       {/* Portals */}
       {emojiOpen && emojiTriggerRef.current && (

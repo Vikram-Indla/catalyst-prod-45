@@ -65,6 +65,48 @@
 }
 .c-sb-head__btn:hover { background: var(--c-chat-hover-bg); }
 
+/* ── Nav tabs: Home / Activity / People ── */
+.c-sb-nav {
+  display: flex;
+  gap: 2px;
+  padding: 6px 8px 4px;
+  border-bottom: 1px solid var(--c-chat-border);
+  flex: none;
+}
+
+.c-sb-nav__btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 4px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--c-chat-text-subtle);
+  font-size: 11px;
+  line-height: 14px;
+  font-family: var(--ds-font-family-body, 'Atlassian Sans', ui-sans-serif, system-ui, sans-serif);
+  font-weight: 500;
+  transition: background 80ms ease, color 80ms ease;
+}
+
+.c-sb-nav__btn:hover {
+  background: var(--c-chat-hover-bg);
+  color: var(--c-chat-text);
+}
+
+.c-sb-nav__btn--active {
+  color: var(--c-chat-accent);
+  background: var(--c-chat-accent-subtle);
+}
+
+.c-sb-nav__btn--active:hover {
+  background: var(--c-chat-accent-subtle);
+}
+
 /* ── Scrollable content ── */
 .c-sb-scroll {
   flex: 1;

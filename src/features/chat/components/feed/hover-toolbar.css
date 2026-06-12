@@ -2,7 +2,7 @@
 .c-hover-tb {
   position: absolute;
   top: -16px;
-  right: 8px;
+  right: 0;
   display: none;
   align-items: center;
   gap: 4px;

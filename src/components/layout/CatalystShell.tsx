@@ -646,11 +646,9 @@ function CatalystShellContent() {
 
   // Determine sidebar based on workspaceType (single source of truth)
   const renderSidebar = () => {
-    // Chat: show HomeSidebar so the top-nav chevron controls the Catalyst
-    // nav hierarchy on /chat. ConversationSidebar (inside ChatShell) remains
-    // as the secondary chat-specific sidebar.
+    // Chat has its own self-contained sidebar (ConversationSidebar) — no shell sidebar here.
     if (location.pathname.startsWith("/chat")) {
-      return <HomeSidebar expanded={true} onToggle={cycleSidebarState} />;
+      return null;
     }
     // C1 · Home (/) gets the personal command center rail. The previous
     // implementation fell through the workspaceType switch to `default:

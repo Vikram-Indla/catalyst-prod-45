@@ -71,22 +71,12 @@ export function CatyFabIcon({ size = 56, isDragging = false }: { size?: number; 
             strokeWidth="26"
             strokeLinecap="round"
           />
-          <path
-            d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z"
-            fill="url(#askdg)"
-          />
-          <text
-            x="350"
-            y="293"
-            textAnchor="middle"
-            fontFamily="'Sora', 'Atlassian Sans', system-ui, sans-serif"
-            fontSize="84"
-            fontWeight="800"
-            fontStyle="italic"
-            fill="var(--caty-fg, #23222B)"
-          >
-            ask
-          </text>
+          {/* Sitting cat body — torso, neck, head, front paws */}
+          <ellipse cx="290" cy="360" rx="112" ry="96" fill="url(#askdg)" />
+          <rect x="272" y="252" width="110" height="52" rx="16" fill="url(#askdg)" />
+          <circle cx="342" cy="165" r="98" fill="url(#askdg)" />
+          <ellipse cx="220" cy="448" rx="52" ry="22" fill="url(#askdg)" />
+          <ellipse cx="350" cy="452" rx="52" ry="22" fill="url(#askdg)" />
           <g className="cf-ears">
             <path d="M270 100 Q300 26 322 100 Z" fill="url(#askdg)" />
             <path d="M358 100 Q388 24 408 100 Z" fill="url(#askdg)" />

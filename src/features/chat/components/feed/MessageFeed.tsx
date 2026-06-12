@@ -224,7 +224,13 @@ function MsgGroupBlock({
   onCancelEdit: () => void;
 }) {
   return (
-    <div className="c-msg-group" role="group" aria-label={`Messages from ${group.authorName}`}>
+    <div
+      className="c-msg-group"
+      role="group"
+      aria-label={`Messages from ${group.authorName}`}
+      onClick={() => onOpenThread(group.messages[0].id)}
+      style={{ cursor: 'pointer' }}
+    >
       {group.messages.map((msg, idx) => {
         const isFull = idx === 0;
         const isOwn = currentUserId !== null && msg.authorId === currentUserId;
@@ -271,11 +277,13 @@ function MsgGroupBlock({
                   This message was deleted.
                 </p>
               ) : isEditing ? (
-                <InlineEditField
-                  initialText={msg.bodyText ?? ''}
-                  onSave={newText => onSaveEdit(msg.id, newText)}
-                  onCancel={onCancelEdit}
-                />
+                <div onClick={e => e.stopPropagation()}>
+                  <InlineEditField
+                    initialText={msg.bodyText ?? ''}
+                    onSave={newText => onSaveEdit(msg.id, newText)}
+                    onCancel={onCancelEdit}
+                  />
+                </div>
               ) : (
                 <MessageText className="c-msg__text" text={msg.bodyText ?? ''} />
               )}
@@ -286,7 +294,7 @@ function MsgGroupBlock({
 
               {/* Reactions */}
               {msg.reactions.length > 0 && (
-                <div className="c-msg__reactions">
+                <div className="c-msg__reactions" onClick={e => e.stopPropagation()}>
                   {msg.reactions.map(r => (
                     <button
                       key={r.emoji}
@@ -306,7 +314,7 @@ function MsgGroupBlock({
               {msg.replyCount > 0 && (
                 <button
                   className="c-reply-chip"
-                  onClick={() => onOpenThread(msg.id)}
+                  onClick={e => { e.stopPropagation(); onOpenThread(msg.id); }}
                   aria-label={`${msg.replyCount} ${msg.replyCount === 1 ? 'reply' : 'replies'}`}
                 >
                   <span className="c-reply-chip__count">{msg.replyCount}</span>

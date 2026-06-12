@@ -36,6 +36,25 @@ const ChevronIcon = () => (
     <path d="M6 9l6 6 6-6"/>
   </svg>
 );
+const HomeNavIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+    <polyline points="9 22 9 12 15 12 15 22"/>
+  </svg>
+);
+const ActivityNavIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+  </svg>
+);
+const PeopleNavIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+    <circle cx="9" cy="7" r="4"/>
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+  </svg>
+);
 const PlusIcon = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
     <path d="M12 5v14M5 12h14"/>
@@ -161,6 +180,42 @@ export function ConversationSidebar({
           </button>
         </div>
       </div>
+
+      {/* Nav tabs: Home / Activity / People */}
+      {!isCollapsed && (
+        <div className="c-sb-nav" role="tablist" aria-label="Chat navigation">
+          <button
+            className={`c-sb-nav__btn${activeView === 'chat' ? ' c-sb-nav__btn--active' : ''}`}
+            role="tab"
+            aria-selected={activeView === 'chat'}
+            onClick={() => onNavigate('chat')}
+            title="Home"
+          >
+            <HomeNavIcon />
+            <span>Home</span>
+          </button>
+          <button
+            className={`c-sb-nav__btn${activeView === 'activity' ? ' c-sb-nav__btn--active' : ''}`}
+            role="tab"
+            aria-selected={activeView === 'activity'}
+            onClick={() => onNavigate('activity')}
+            title="Activity"
+          >
+            <ActivityNavIcon />
+            <span>Activity</span>
+          </button>
+          <button
+            className={`c-sb-nav__btn${activeView === 'people' ? ' c-sb-nav__btn--active' : ''}`}
+            role="tab"
+            aria-selected={activeView === 'people'}
+            onClick={() => onNavigate('people')}
+            title="People"
+          >
+            <PeopleNavIcon />
+            <span>People</span>
+          </button>
+        </div>
+      )}
 
       {/* Scrollable conversation list */}
       <nav className="c-sb-scroll" aria-label="Conversation list">

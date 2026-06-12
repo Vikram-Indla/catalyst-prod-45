@@ -1,6 +1,7 @@
 import React from 'react';
 import { Avatar } from '@/components/ads/Avatar';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import type { ChatConversation } from '@/types/chat';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './conversation-row.css';
@@ -26,35 +27,6 @@ const HashIcon = () => (
     <line x1="16" y1="3" x2="14" y2="21"/>
   </svg>
 );
-
-// ads-scanner:ignore-next-line — project avatar colors are functional brand identifiers, not surface tokens
-const PROJECT_COLORS = ['#0052CC', '#FF5630', '#36B37E', '#FF8B00', '#6554C0', '#00B8D9', '#172B4D'];
-
-function ProjectAvatar({ projectKey }: { projectKey: string }) {
-  const initials = projectKey.substring(0, 2).toUpperCase();
-  const colorIdx = (projectKey.charCodeAt(0) + (projectKey.charCodeAt(1) || 0)) % PROJECT_COLORS.length;
-  return (
-    <span
-      aria-hidden="true"
-      style={{
-        display: 'inline-flex',
-        width: 16,
-        height: 16,
-        borderRadius: 3,
-        background: PROJECT_COLORS[colorIdx],
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: 8,
-        fontWeight: 700,
-        color: '#FFFFFF',
-        flexShrink: 0,
-        letterSpacing: 0,
-      }}
-    >
-      {initials}
-    </span>
-  );
-}
 
 interface ConversationRowProps {
   conversation: ChatConversation;
@@ -127,13 +99,13 @@ export function ConversationRow({
         )}
         {isCustomChannel && <HashIcon />}
         {isProjectChannel && conv.projectKey && (
-          <ProjectAvatar projectKey={conv.projectKey} />
+          <ProjectIcon projectKey={conv.projectKey} size="xsmall" />
         )}
         {isTicket && conv.ticketType && (
           <JiraIssueTypeIcon type={conv.ticketType} size={16} />
         )}
         {isTicket && !conv.ticketType && conv.projectKey && (
-          <ProjectAvatar projectKey={conv.projectKey} />
+          <ProjectIcon projectKey={conv.projectKey} size="xsmall" />
         )}
         {isTicket && !conv.ticketType && !conv.projectKey && <HashIcon />}
       </div>
