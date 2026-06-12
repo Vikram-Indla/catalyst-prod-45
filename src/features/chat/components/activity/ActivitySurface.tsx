@@ -1,9 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './activity.css';
+
+// ── localStorage mark-as-read ──────────────────────────────────────────────
+
+function seenKey(uid: string) { return `c-chat-activity-seen:${uid}`; }
+
+function loadSeenAt(uid: string): Date | null {
+  try {
+    const v = localStorage.getItem(seenKey(uid));
+    return v ? new Date(v) : null;
+  } catch { return null; }
+}
+
+function saveSeenAt(uid: string, ts: Date): void {
+  try { localStorage.setItem(seenKey(uid), ts.toISOString()); } catch {}
+}
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -259,11 +274,27 @@ interface Props {
   onOpenConversation: (conversationId: string, messageId?: string) => void;
   /** Called whenever the unread count changes (for AppRail badge) */
   onUnreadCount?: (count: number) => void;
+  /** True when the Activity view is currently shown — triggers mark-all-read */
+  isActive?: boolean;
 }
 
-export function ActivitySurface({ onOpenConversation, onUnreadCount }: Props) {
+export function ActivitySurface({ onOpenConversation, onUnreadCount, isActive = false }: Props) {
   const { user } = useAuth();
   const [tab, setTab] = useState<ActivityKind>('all');
+  const [seenAt, setSeenAt] = useState<Date | null>(null);
+
+  // Init seenAt from localStorage once user is known
+  useEffect(() => {
+    if (user?.id) setSeenAt(loadSeenAt(user.id));
+  }, [user?.id]);
+
+  // Mark all read when the activity surface becomes visible
+  useEffect(() => {
+    if (!isActive || !user?.id) return;
+    const now = new Date();
+    saveSeenAt(user.id, now);
+    setSeenAt(now);
+  }, [isActive, user?.id]);
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ['chat', 'activity', user?.id],
@@ -272,14 +303,22 @@ export function ActivitySurface({ onOpenConversation, onUnreadCount }: Props) {
     staleTime: 30_000,
   });
 
+  // Apply read state based on seenAt timestamp
+  const enrichedItems = useMemo(
+    () => items.map(item => ({
+      ...item,
+      isRead: seenAt !== null && new Date(item.createdAt) <= seenAt,
+    })),
+    [items, seenAt],
+  );
+
   // Bubble unread count up to AppRail badge
   useEffect(() => {
     if (!onUnreadCount) return;
-    const unread = items.filter(i => !i.isRead).length;
-    onUnreadCount(unread);
-  }, [items, onUnreadCount]);
+    onUnreadCount(enrichedItems.filter(i => !i.isRead).length);
+  }, [enrichedItems, onUnreadCount]);
 
-  const filtered = tab === 'all' ? items : items.filter(i => i.kind === tab);
+  const filtered = tab === 'all' ? enrichedItems : enrichedItems.filter(i => i.kind === tab);
 
   return (
     <div className="c-chat-activity c-activity" aria-label="Activity">

@@ -78,7 +78,11 @@ export function ChatShell({
       />
 
       {/* Column 3: activity surface (shown when activeView === 'activity') */}
-      <ActivitySurface onOpenConversation={onOpenConversation} onUnreadCount={onUnreadActivity} />
+      <ActivitySurface
+        onOpenConversation={onOpenConversation}
+        onUnreadCount={onUnreadActivity}
+        isActive={activeView === 'activity'}
+      />
 
       {/* Columns 3 (+ 4 when docked): feed + thread — provided by parent */}
       {children}
