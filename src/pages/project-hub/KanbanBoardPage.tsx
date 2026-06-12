@@ -305,7 +305,6 @@ export default function KanbanBoardPage() {
   const { KANBAN_COLUMNS, STATUS_TO_COL_ID, COL_PRIMARY_STATUS, COLUMN_ID_SET } = useMemo(() => {
     if (dynamicBoardData?.columns?.length) {
       const cols: KanbanColumnDef[] = dynamicBoardData.columns
-        .filter((c: any) => !c.is_backlog)
         .map((c: any) => {
           // Build status list from mappings or status_ids
           const mappedStatuses = dynamicBoardData.mappings
@@ -315,13 +314,12 @@ export default function KanbanBoardPage() {
           // Fallback to status_ids if no mappings
           let statuses = mappedStatuses.length > 0 ? mappedStatuses : [];
           if (statuses.length === 0 && c.status_ids?.length) {
-            // status_ids are UUIDs, we need names — use mappings data
             statuses = dynamicBoardData.mappings
               .filter((m: any) => c.status_ids.includes(m.status_id))
               .map((m: any) => m.status_name);
           }
 
-          const category: 'todo' | 'in_progress' | 'done' = c.is_done ? 'done' : 'in_progress';
+          const category: 'todo' | 'in_progress' | 'done' = c.is_done ? 'done' : c.is_backlog ? 'todo' : 'in_progress';
           return {
             id: c.id,
             name: c.name.toUpperCase(),
@@ -706,18 +704,20 @@ export default function KanbanBoardPage() {
     // in the cloned column set (e.g. filter on status="Backlog" on a board
     // that only has IN_PROGRESS/DONE).
     const noMappings = STATUS_TO_COL_ID.size === 0;
-    const doneColId = noMappings
-      ? KANBAN_COLUMNS.find(c => c.category === 'done')?.id
-      : undefined;
-    const defaultColId = noMappings || isFilterBacked ? KANBAN_COLUMNS[0]?.id : undefined;
+    // Pre-compute category→column lookups used when there are no explicit mappings.
+    const todoColId   = noMappings ? KANBAN_COLUMNS.find(c => c.category === 'todo')?.id   : undefined;
+    const doneColId   = noMappings ? KANBAN_COLUMNS.find(c => c.category === 'done')?.id   : undefined;
+    const inProgColId = noMappings ? KANBAN_COLUMNS.find(c => c.category === 'in_progress')?.id : undefined;
     filtered.forEach(i => {
       const c = STATUS_TO_COL_ID.get(i.status.toLowerCase());
       let targetCol = c;
       if (!targetCol && noMappings) {
         const cat = (i.statusCategory ?? '').toLowerCase();
-        targetCol = (cat === 'done' && doneColId) ? doneColId : defaultColId;
+        if (cat === 'done') targetCol = doneColId;
+        else if (cat === 'indeterminate' || cat === 'in_progress' || cat === 'inprogress') targetCol = inProgColId;
+        else targetCol = todoColId ?? inProgColId; // 'new'/'todo'/unknown → To Do; fallback to In Progress
       } else if (!targetCol && isFilterBacked) {
-        targetCol = defaultColId;
+        targetCol = inProgColId ?? KANBAN_COLUMNS[0]?.id;
       }
       if (targetCol && m[targetCol]) m[targetCol].push(i.id);
     });
