@@ -185,11 +185,13 @@ export default function KanbanBoardPage() {
 
   /* ═══ BOARDS LIST (multi-board support) ═══ */
 
-  // FIX: was gated on projMeta?.id (enabled: !!projMeta?.id), forcing a 2-hop
-  // waterfall: projMeta→boards. Now uses a PostgREST inner-join on key so
-  // both projMeta and project-boards queries fire in parallel on mount.
-  const { data: projectBoards = [], refetch: refetchBoards } = useQuery({
-    queryKey: ['project-boards', key],
+  // Two parallel queries — merged into projectBoards:
+  //   1. Project boards: boards with project_id matching ph_projects (inner join on key).
+  //   2. Filter boards: boards with jira_project_key matching key AND filter_id IS NOT NULL.
+  //      These have project_id = null (FK to legacy projects table) so the inner join
+  //      in query 1 drops them — they need a separate fetch by jira_project_key.
+  const { data: _projectNativeBoards = [], refetch: _refetchNative } = useQuery({
+    queryKey: ['project-boards-native', key],
     queryFn: async () => {
       if (!key) return [];
       const { data } = await supabase
@@ -205,6 +207,37 @@ export default function KanbanBoardPage() {
     enabled: !!key,
     staleTime: 60_000,
   });
+
+  const { data: _filterBoards = [] } = useQuery({
+    queryKey: ['project-boards-filter', key],
+    queryFn: async () => {
+      if (!key || !ENABLE_FILTER_TO_KANBAN) return [];
+      const { data } = await (supabase as any)
+        .from('boards')
+        .select('id, name, sort_order')
+        .eq('jira_project_key', key.toUpperCase())
+        .not('filter_id', 'is', null)
+        .is('deleted_at', null)
+        .order('sort_order');
+      return (data ?? []).map((b: any) => ({
+        id: b.id, name: b.name, sort_order: b.sort_order,
+      })) as { id: string; name: string; sort_order: number }[];
+    },
+    enabled: !!key,
+    staleTime: 60_000,
+  });
+
+  // Merged list — native boards first, then filter boards (deduplicated by id).
+  const projectBoards = useMemo(() => {
+    const seen = new Set<string>();
+    return [..._projectNativeBoards, ..._filterBoards].filter(b => {
+      if (seen.has(b.id)) return false;
+      seen.add(b.id);
+      return true;
+    });
+  }, [_projectNativeBoards, _filterBoards]);
+
+  const refetchBoards = _refetchNative;
 
   // Keep activeBoardId in sync: default to first board when list loads,
   // but only when no board was specified via the URL :boardId param.
