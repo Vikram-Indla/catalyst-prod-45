@@ -28,13 +28,11 @@
 import {
   useState,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useCallback,
   useRef,
   type ReactNode,
 } from 'react';
-import ReactDOM from 'react-dom';
 // @atlaskit/modal-dialog uses @atlaskit/portal which renders empty in this
 // Vite build. Using direct-render replacements that bypass the portal layer.
 import {
@@ -55,7 +53,6 @@ import { Checkbox } from '@atlaskit/checkbox';
 import Avatar from '@atlaskit/avatar';
 import Button, { IconButton } from '@atlaskit/button/new';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import Lozenge from '@atlaskit/lozenge';
 import { Box, Stack, Inline, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
@@ -63,6 +60,7 @@ import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
+import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 
 import './create-story.css';
 
@@ -89,6 +87,7 @@ import {
   useCreateStoryMutation,
   useWorkflowStatuses,
 } from './useCreateStory';
+import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Public API (callers' contract — DO NOT CHANGE)
@@ -172,9 +171,9 @@ export const PARENT_TYPE_RULES: Record<string, string[]> = {
 // INITIAL_STATUS_BY_TYPE removed 2026-05-09 (Bucket B): canonical initial
 // status comes from DB (useWorkflowStatuses.is_initial); hard fallback is 'To Do'.
 const DEFAULT_STATUS_OPTIONS = [
-  { value: 'To Do', label: 'To Do' },
-  { value: 'In Progress', label: 'In Progress' },
-  { value: 'Done', label: 'Done' },
+  { value: 'To Do', label: 'To Do', color_category: 'todo' },
+  { value: 'In Progress', label: 'In Progress', color_category: 'in_progress' },
+  { value: 'Done', label: 'Done', color_category: 'done' },
 ];
 
 // Lozenge appearance buckets — Atlaskit gives us 5 named appearances and we
@@ -186,15 +185,11 @@ const DEFAULT_STATUS_OPTIONS = [
 export function statusAppearanceForTest(
   status: string,
 ): 'default' | 'inprogress' | 'success' {
-  const s = status.toLowerCase();
-  if (s === 'done' || s === 'closed' || s === 'resolved') return 'success';
-  if (s.startsWith('in ') || s === 'in progress' || s.includes('progress') || s.includes('review')) {
-    return 'inprogress';
-  }
+  const a = statusToLozenge(status);
+  if (a === 'success') return 'success';
+  if (a === 'inprogress') return 'inprogress';
   return 'default';
 }
-// Internal alias — keeps call sites unchanged.
-const statusAppearance = statusAppearanceForTest;
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -403,36 +398,34 @@ export function CreateStoryModal({
 
   const [workType, setWorkType] = useState<string>(defaultWorkType);
   const [createAnother, setCreateAnother] = useState(false);
-  // Status portal-dropdown — replaces @atlaskit/dropdown-menu (which routes
-  // through @atlaskit/portal and renders at 0,0 inside this modal's
-  // non-portaled build, per the comment at the top of the file).
-  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
-  const [statusMenuAnchor, setStatusMenuAnchor] = useState<{ top: number; left: number; width: number } | null>(null);
-  const statusTriggerRef = useRef<HTMLButtonElement>(null);
-  const statusMenuRef = useRef<HTMLDivElement>(null);
   // Incremented each time the form is reset — forces EpicDescriptionEditor to remount with empty content.
   const [editorKey, setEditorKey] = useState(0);
 
-  // Dynamic workflow statuses from catalyst_workflow_schemes/_statuses.
-  // Falls back to DEFAULT_STATUS_OPTIONS when DB returns no rows
-  // (e.g. unmapped work types like Feature / API Requirement).
-  const { data: workflowStatuses = [], isLoading: statusesLoading } =
+  // Primary: admin/workflows (ph_workflow_* tables) — shared canonical source.
+  const {
+    initialStatus: phInitialStatus,
+    isLoading: phStatusesLoading,
+    hasConfig: phHasConfig,
+  } = useIssueTypeWorkflow(workType);
+
+  // Secondary fallback: catalyst_workflow_schemes/_statuses (legacy per-type config).
+  const { data: workflowStatuses = [], isLoading: legacyStatusesLoading } =
     useWorkflowStatuses(workType, form.projectId);
 
   const dbStatusOptions = useMemo(
-    () => workflowStatuses.map((s) => ({ value: s.value, label: s.label })),
+    () => workflowStatuses.map((s) => ({ value: s.value, label: s.label, color_category: s.color_category })),
     [workflowStatuses],
   );
-  // DB-first: canonical statuses from catalyst_workflow_schemes.
-  // Falls back to DEFAULT_STATUS_OPTIONS only when the DB returns nothing
-  // (e.g. work type not yet configured in catalyst_workflow_schemes).
   const resolvedStatusOptions =
     dbStatusOptions.length > 0 ? dbStatusOptions : DEFAULT_STATUS_OPTIONS;
 
-  const dbInitialStatus = useMemo(
+  // Initial status: ph_workflow_* first, legacy catalyst_workflow_* fallback, then 'To Do'
+  const legacyInitialStatus = useMemo(
     () => workflowStatuses.find((s) => s.is_initial)?.value,
     [workflowStatuses],
   );
+  const dbInitialStatus = phHasConfig ? phInitialStatus : legacyInitialStatus;
+  const statusesLoading = phHasConfig ? phStatusesLoading : legacyStatusesLoading;
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -504,89 +497,6 @@ export function CreateStoryModal({
     [effectiveWorkTypes],
   );
 
-  // ── Status pill colors (token-mapped to status category) ────────────────
-  // Maps the 3-bucket statusAppearance (success/inprogress/default) to ADS
-  // background + text tokens so each status renders as a colored lozenge in
-  // BOTH the trigger button and the dropdown options.
-  const getStatusPillColors = useCallback((label: string): { background: string; color: string } => {
-    const appearance = statusAppearance(label);
-    if (appearance === 'success') {
-      return {
-        background: token('color.background.success', '#DCFFF1'),
-        color: token('color.text.success', '#216E4E'),
-      };
-    }
-    if (appearance === 'inprogress') {
-      return {
-        background: token('color.background.information', '#E9F2FF'),
-        color: token('color.text.information', '#0055CC'),
-      };
-    }
-    return {
-      background: token('color.background.neutral', '#DCDFE4'),
-      color: token('color.text', '#172B4D'),
-    };
-  }, []);
-  const StatusPill = useCallback(({ label }: { label: string }) => {
-    const c = getStatusPillColors(label);
-    return (
-      <span
-        style={{
-          display: 'inline-block',
-          padding: '2px 6px',
-          borderRadius: 3,
-          fontSize: 11,
-          fontWeight: 500,
-          textTransform: 'none' as const,
-          letterSpacing: 'normal',
-          lineHeight: '14px',
-          background: c.background,
-          color: c.color,
-        }}
-      >
-        {label}
-      </span>
-    );
-  }, [getStatusPillColors]);
-
-  // ── Status portal-dropdown wiring ───────────────────────────────────────
-  // Anchor recomputed on open AND on every scroll/resize so the menu glides
-  // with the trigger when the user scrolls the modal body.
-  const repositionStatusMenu = useCallback(() => {
-    if (!statusTriggerRef.current) return;
-    const r = statusTriggerRef.current.getBoundingClientRect();
-    setStatusMenuAnchor({ top: r.bottom + 4, left: r.left, width: r.width });
-  }, []);
-  useLayoutEffect(() => {
-    if (!statusMenuOpen) return;
-    repositionStatusMenu();
-  }, [statusMenuOpen, repositionStatusMenu]);
-  useEffect(() => {
-    if (!statusMenuOpen) return;
-    // capture-phase scroll so we catch nested scroll containers (the modal body).
-    window.addEventListener('scroll', repositionStatusMenu, true);
-    window.addEventListener('resize', repositionStatusMenu);
-    return () => {
-      window.removeEventListener('scroll', repositionStatusMenu, true);
-      window.removeEventListener('resize', repositionStatusMenu);
-    };
-  }, [statusMenuOpen, repositionStatusMenu]);
-  useEffect(() => {
-    if (!statusMenuOpen) return;
-    const onDoc = (e: MouseEvent) => {
-      const t = e.target as Node;
-      if (statusTriggerRef.current?.contains(t)) return;
-      if (statusMenuRef.current?.contains(t)) return;
-      setStatusMenuOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setStatusMenuOpen(false); };
-    document.addEventListener('mousedown', onDoc);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onDoc);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [statusMenuOpen]);
 
   const priorityOptions: IconOption[] = useMemo(
     () =>
@@ -851,111 +761,55 @@ export function CreateStoryModal({
                 </Field>
               )}
 
-              {/* ── Status — clickable dropdown button (Jira-parity, 2026-05-09).
-                  Jira DOM probe: BUTTON bg=rgba(5,21,36,0.06) br=3px fw=500 cursor=pointer.
-                  Opens workflow status options from resolvedStatusOptions.
-                  Helper text: "This is the initial status upon creation" (Jira-canonical). */}
+              {/* ── Status — read-only initial status badge (Jira Create parity).
+                   Jira's Create dialog shows status as a non-interactive lozenge;
+                   status changes happen via workflow transitions after creation. */}
               <Field name="status" label="Status">
-                {() => (
-                  <>
-                    <div style={{ display: 'block', marginTop: 4 }}>
-                      <button
-                        ref={statusTriggerRef}
-                        type="button"
-                        aria-haspopup="listbox"
-                        aria-expanded={statusMenuOpen}
-                        onClick={() => setStatusMenuOpen((v) => !v)}
-                        style={{
+                {() => {
+                  const appearance = statusToLozenge(form.status || 'To Do');
+                  const bgMap: Record<string, string> = {
+                    success:    'var(--ds-background-success, #DCFFF1)',
+                    inprogress: 'var(--ds-background-information, #E9F2FF)',
+                    moved:      'var(--ds-background-warning, #FFF7D6)',
+                    removed:    'var(--ds-background-danger, #FFEBE6)',
+                    new:        'var(--ds-background-discovery, #F3F0FF)',
+                    default:    'var(--ds-background-neutral, #F4F5F7)',
+                  };
+                  const colorMap: Record<string, string> = {
+                    success:    'var(--ds-text-success, #216E4E)',
+                    inprogress: 'var(--ds-text-information, #0055CC)',
+                    moved:      'var(--ds-text-warning, #974F0C)',
+                    removed:    'var(--ds-text-danger, #AE2A19)',
+                    new:        'var(--ds-text-discovery, #5E4DB2)',
+                    default:    'var(--ds-text-subtle, #626F86)',
+                  };
+                  return (
+                    <>
+                      <div style={{ display: 'block', marginTop: 4 }}>
+                        <span style={{
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: 6,
-                          background: 'transparent',
-                          border: 'none',
+                          height: 24,
+                          padding: '0 8px',
                           borderRadius: 3,
-                          padding: '4px 6px 4px 0',
-                          cursor: 'pointer',
-                          color: token('color.text.subtle', '#42526E'),
-                        }}
-                      >
-                        <StatusPill label={form.status || 'To Do'} />
-                        <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true" style={{ flexShrink: 0 }}>
-                          <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </button>
-                    </div>
-                    {statusMenuOpen && statusMenuAnchor && ReactDOM.createPortal(
-                      <div
-                        ref={statusMenuRef}
-                        role="listbox"
-                        aria-label="Select status"
-                        style={{
-                          position: 'fixed',
-                          top: statusMenuAnchor.top,
-                          left: statusMenuAnchor.left,
-                          minWidth: Math.max(160, statusMenuAnchor.width),
-                          maxHeight: '50vh',
-                          overflowY: 'auto',
-                          background: token('elevation.surface.overlay', '#FFFFFF'),
-                          border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                          borderRadius: 4,
-                          boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
-                          padding: '4px 0',
-                          zIndex: 9999,
-                          fontFamily: 'inherit',
-                          fontSize: 14,
-                        }}
-                      >
-                        {resolvedStatusOptions.map((opt) => {
-                          const selected = form.status === opt.value;
-                          return (
-                            <button
-                              key={opt.value}
-                              type="button"
-                              role="option"
-                              aria-selected={selected}
-                              onClick={() => {
-                                updateField('status', opt.value);
-                                setStatusMenuOpen(false);
-                                statusTriggerRef.current?.focus();
-                              }}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 8,
-                                width: '100%',
-                                padding: '8px 12px',
-                                border: 'none',
-                                outline: 'none',
-                                background: 'transparent',
-                                color: token('color.text', '#292A2E'),
-                                fontSize: 14,
-                                fontWeight: 400,
-                                fontFamily: 'inherit',
-                                textAlign: 'left',
-                                cursor: 'pointer',
-                              }}
-                              onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
-                              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                            >
-                              <StatusPill label={opt.label} />
-                              {selected && (
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 'auto', color: token('color.text.brand', '#0C66E4') }} aria-hidden="true">
-                                  <polyline points="20 6 9 17 4 12" />
-                                </svg>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>,
-                      document.body,
-                    )}
-                    <Box xcss={statusHelperStyles}>
-                      <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
-                        This is the initial status upon creation
-                      </span>
-                    </Box>
-                  </>
-                )}
+                          fontSize: 12,
+                          fontWeight: 500,
+                          textTransform: 'none',
+                          letterSpacing: 'normal',
+                          background: bgMap[appearance] ?? bgMap.default,
+                          color: colorMap[appearance] ?? colorMap.default,
+                        }}>
+                          {form.status || 'To Do'}
+                        </span>
+                      </div>
+                      <Box xcss={statusHelperStyles}>
+                        <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
+                          This is the initial status upon creation
+                        </span>
+                      </Box>
+                    </>
+                  );
+                }}
               </Field>
 
               {/* ── Summary — required, with RTL auto-detect + CATY translate ── */}

@@ -2,47 +2,92 @@
  * CANONICAL — Header status pill for all CatalystView* components.
  * Change here → updates all 7 work item types.
  *
- * Positioning: createPortal to document.body with getBoundingClientRect —
- * avoids Popper.js/fixed-position failure inside overflow:hidden ancestors
- * (cv-drawer-sidebar has overflow:hidden auto + position:sticky).
+ * Architecture: createPortal + getBoundingClientRect anchor
+ * ──────────────────────────────────────────────────────────
+ * NOT @atlaskit/popup — Popper.js cannot find the trigger inside
+ * cv-drawer-sidebar's overflow/transform context → popup lands at (0,0).
+ * NOT @atlaskit/dropdown-menu — trigger render prop injects styles
+ * that override pill colors.
  *
- * Data: useWorkflow(issueType) → only available transitions from current state
- * shown (Jira-parity verb→lozenge). Falls back to STATUS_OPTION_GROUPS when
- * no workflow mapped for this issue type.
+ * This version mirrors BrStatusSection.tsx exactly:
+ * - triggerRef on the button
+ * - getBoundingClientRect() anchor computed on open
+ * - createPortal to document.body with position:fixed + zIndex:9999
+ * - Custom dropdown items with inline styles (no Atlaskit rendering issues)
+ * - click-outside + Escape close handlers
  */
-import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
-import Lozenge from '@atlaskit/lozenge';
-import { useWorkflow } from '@/lib/workflows/WorkflowProvider';
-import type { Transition } from '@/lib/workflows/types';
-import { JiraStatusLozenge } from '@/components/workflow/JiraStatusLozenge';
-import { WorkflowViewerModal } from './WorkflowViewerModal';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import RetryIcon from '@atlaskit/icon/glyph/retry';
+import QuestionCircleIcon from '@atlaskit/icon/glyph/question-circle';
+
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
+import { WorkflowViewerModal } from './WorkflowViewerModal';
+import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 
-const HEADER_BG: Record<string, string> = {
-  success:    token('color.background.success.bold',     '#1F845A'),
-  inprogress: token('color.background.information.bold', '#0C66E4'),
-  moved:      token('color.background.warning.bold',     '#CF9F02'),
-  removed:    token('color.background.danger.bold',      '#CA3521'),
-  default:    token('color.background.neutral.bold',     '#44546F'),
-  new:        token('color.background.neutral.bold',     '#44546F'),
-};
-const HEADER_TEXT: Record<string, string> = {
-  success:    token('color.text.inverse',         '#FFFFFF'),
-  inprogress: token('color.text.inverse',         '#FFFFFF'),
-  moved:      token('color.text.warning.inverse', '#1D2125'),
-  removed:    token('color.text.inverse',         '#FFFFFF'),
-  default:    token('color.text.inverse',         '#FFFFFF'),
-  new:        token('color.text.inverse',         '#FFFFFF'),
-};
+/* ═══════════════════════════════════════════════════════════════════════════
+ * SECTION 1: STYLE INJECTION (module-level, runs once)
+ * ═══════════════════════════════════════════════════════════════════════════ */
 
-function groupCategoryToAppearance(cat: string): 'default' | 'inprogress' | 'success' {
-  if (cat === 'done') return 'success';
-  if (cat === 'in_progress') return 'inprogress';
-  return 'default';
+const PILL_CLASS = 'csp-v4-pill';
+
+if (typeof document !== 'undefined') {
+  const existingStyle = document.getElementById('csp-v4-pill-styles');
+  if (!existingStyle) {
+    const style = document.createElement('style');
+    style.id = 'csp-v4-pill-styles';
+    style.textContent = `
+      .${PILL_CLASS} {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        height: 32px;
+        padding: 0 8px;
+        border-radius: 3px;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: normal;
+        text-transform: none;
+        outline: none;
+        transition: filter 0.15s ease;
+      }
+      .${PILL_CLASS}:hover,
+      .${PILL_CLASS}[aria-expanded="true"] {
+        filter: brightness(0.92);
+      }
+      .${PILL_CLASS}:focus-visible {
+        box-shadow:
+          0 0 0 2px var(--ds-surface, #FFFFFF),
+          0 0 0 4px var(--ds-border-focused, #388BFF);
+      }
+    `;
+    document.head.appendChild(style);
+  }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * SECTION 2: COLOR TOKEN SYSTEM
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+// Jira-actual header pill colors (DOM-probed 2026-05-05, mirrored from BrStatusSection)
+const PILL_BG: Record<string, string> = {
+  success:    'rgb(148, 199, 72)',
+  inprogress: 'rgb(143, 184, 246)',
+  moved:      'rgb(243, 214, 100)',
+  removed:    'rgb(221, 222, 225)',
+  new:        'rgb(184, 172, 246)',
+  default:    'rgb(221, 222, 225)',
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * SECTION 3: COMPONENT
+ * ═══════════════════════════════════════════════════════════════════════════ */
 
 interface CatalystStatusPillProps {
   status?: string | null;
@@ -57,240 +102,248 @@ export function CatalystStatusPill({
   onStatusChange,
   issueType,
 }: CatalystStatusPillProps) {
-  const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const [isOpen, setIsOpen] = useState(false);
+  const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
   const [workflowViewerOpen, setWorkflowViewerOpen] = useState(false);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
 
-  const display = status || 'Backlog';
+  // Workflow-driven statuses from admin/workflows (ph_workflow_* tables)
+  const {
+    statusGroups: workflowGroups,
+    getAvailableStatuses,
+    hasConfig,
+  } = useIssueTypeWorkflow(issueType);
+
+  // Fall back to static list when no workflow is configured for this type
+  const activeGroups = hasConfig ? workflowGroups : STATUS_OPTION_GROUPS;
+
+  const display    = status || 'Backlog';
   const appearance = statusToLozenge(display, statusCategory) as string;
-  const bg = HEADER_BG[appearance] ?? HEADER_BG.default;
-  const fg = HEADER_TEXT[appearance] ?? HEADER_TEXT.default;
+  const headerBg   = PILL_BG[appearance] ?? PILL_BG.default;
 
-  const workflow = useWorkflow(issueType ?? '');
-  const currentState = useMemo(() => {
-    if (!workflow) return undefined;
-    return (
-      workflow.states.find(s => s.name.toLowerCase() === display.toLowerCase()) ??
-      workflow.states.find(s => s.id === display.toLowerCase().replace(/[^a-z0-9]+/g, '_')) ??
-      workflow.states.find(s => s.id === workflow.initialStateId)
-    );
-  }, [workflow, display]);
-
-  const availableTransitions = useMemo((): Transition[] => {
-    if (!workflow || !currentState) return [];
-    const explicit = workflow.transitions.filter(t => t.from === currentState.id);
-    const implicit: Transition[] = [];
-    const allAnyToThis = workflow.states.every(s => s.anyToThis);
-    if (allAnyToThis || currentState.anyFromThis) {
-      workflow.states.forEach(target => {
-        if (target.id === currentState.id) return;
-        if (explicit.some(e => e.to === target.id)) return;
-        implicit.push({ from: currentState.id, to: target.id, verb: target.name });
-      });
-    }
-    return [...explicit, ...implicit];
-  }, [workflow, currentState]);
-
-  const openMenu = useCallback(() => {
-    const r = triggerRef.current?.getBoundingClientRect();
-    if (!r) return;
-    setPos({ top: r.bottom + 4, left: r.left });
-    setOpen(true);
-  }, []);
-
-  const closeMenu = useCallback(() => setOpen(false), []);
-
+  // Close on click-outside
   useEffect(() => {
-    if (!open) return;
-    const onDown = (e: MouseEvent) => {
-      if (
-        !menuRef.current?.contains(e.target as Node) &&
-        !triggerRef.current?.contains(e.target as Node)
-      ) closeMenu();
+    if (!isOpen) return;
+    const h = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (triggerRef.current?.contains(t)) return;
+      const pop = document.querySelector('[data-testid="catalyst-status-pill-popover"]');
+      if (pop?.contains(t)) return;
+      setIsOpen(false);
     };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { e.stopPropagation(); closeMenu(); }
-    };
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('keydown', onKey, true);
-    return () => {
-      document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('keydown', onKey, true);
-    };
-  }, [open, closeMenu]);
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [isOpen]);
 
-  const handleWorkflowTransition = useCallback((transition: Transition) => {
-    if (!workflow) return;
-    const target = workflow.states.find(s => s.id === transition.to);
-    if (!target) return;
-    onStatusChange?.(target.name);
-    closeMenu();
-  }, [workflow, onStatusChange, closeMenu]);
+  // Close on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsOpen(false); };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, [isOpen]);
 
-  const handleFallbackSelect = useCallback((st: string) => {
-    onStatusChange?.(st);
-    closeMenu();
-  }, [onStatusChange, closeMenu]);
+  const toggle = () => {
+    if (!isOpen && triggerRef.current) {
+      const r = triggerRef.current.getBoundingClientRect();
+      setAnchor({ top: r.bottom + 4, left: r.left });
+    }
+    setIsOpen((o) => !o);
+  };
 
-  const menuContent = workflow && currentState ? (
-    availableTransitions.length === 0 ? (
-      <div style={{ padding: '8px 12px', fontSize: 13, color: token('color.text.subtlest', '#626F86') }}>
-        No transitions available
-      </div>
-    ) : (
-      <>
-        {availableTransitions.map(tr => {
-          const target = workflow.states.find(s => s.id === tr.to);
-          if (!target) return null;
-          return (
-            <button
-              key={`${tr.from}->${tr.to}`}
-              type="button"
-              onClick={() => handleWorkflowTransition(tr)}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr auto auto',
-                alignItems: 'center',
-                gap: 12,
-                width: '100%',
-                padding: '7px 12px',
-                border: 'none',
-                background: 'transparent',
-                cursor: 'pointer',
-                textAlign: 'left',
-                minWidth: 220,
-                font: 'inherit',
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
-            >
-              <span style={{ fontSize: 14, color: token('color.text', '#172B4D') }}>{tr.verb}</span>
-              <span aria-hidden style={{ fontSize: 12, color: token('color.text.subtlest', '#8590A2') }}>→</span>
-              <JiraStatusLozenge category={target.category} name={target.name} />
-            </button>
-          );
-        })}
-      </>
-    )
-  ) : (
-    STATUS_OPTION_GROUPS.map(group => (
-      <div key={group.category}>
-        <div style={{
-          padding: '6px 12px 2px',
-          fontSize: 11,
-          fontWeight: 600,
-          color: token('color.text.subtlest', '#626F86'),
-          textTransform: 'uppercase' as const,
-          letterSpacing: '0.04em',
-        }}>
-          {group.groupLabel}
-        </div>
-        {group.statuses.map(st => (
-          <button
-            key={st}
-            type="button"
-            onClick={() => handleFallbackSelect(st)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              width: '100%',
-              padding: '5px 12px',
-              border: 'none',
-              background: display === st ? token('color.background.selected', '#E9F2FE') : 'transparent',
-              cursor: 'pointer',
-              font: 'inherit',
-            }}
-            onMouseEnter={e => { if (display !== st) (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
-            onMouseLeave={e => { if (display !== st) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
-          >
-            <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-              <Lozenge appearance={groupCategoryToAppearance(group.category)} isBold>{st}</Lozenge>
-            </span>
-          </button>
-        ))}
-      </div>
-    ))
-  );
+  const handleStatusSelect = (newStatus: string) => {
+    onStatusChange?.(newStatus);
+    setIsOpen(false);
+  };
 
   return (
     <>
       <button
         ref={triggerRef}
         type="button"
+        className={PILL_CLASS}
         data-testid="catalyst-status-pill-trigger"
+        aria-label={`Status: ${display}. Click to change.`}
+        aria-expanded={isOpen}
         aria-haspopup="menu"
-        aria-expanded={open}
-        onClick={open ? closeMenu : openMenu}
+        onClick={toggle}
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 4,
-          height: 32,
-          padding: '0 10px',
-          borderRadius: 3,
-          border: 'none',
-          cursor: 'pointer',
-          background: bg,
-          color: fg,
-          fontSize: 14,
-          fontWeight: 500,
-          fontFamily: 'inherit',
-          transition: 'opacity 0.1s',
+          background: headerBg,
+          color: 'rgb(41, 42, 46)',
         }}
-        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.85'; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
       >
         {display}
-        <span aria-hidden style={{ fontSize: 10, opacity: 0.8 }}>▾</span>
+        <ChevronDownIcon
+          size="small"
+          label=""
+          primaryColor="rgb(41, 42, 46)"
+        />
       </button>
 
-      {open && createPortal(
+      {isOpen && anchor && typeof document !== 'undefined' && createPortal(
         <div
-          ref={menuRef}
-          data-catalyst-status-portal="true"
+          data-testid="catalyst-status-pill-popover"
+          role="menu"
           style={{
             position: 'fixed',
-            top: pos.top,
-            left: pos.left,
-            background: token('elevation.surface.overlay', '#FFFFFF'),
-            borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 4px 8px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            zIndex: 9999,
-            minWidth: 220,
-            padding: '4px 0',
-            maxHeight: 400,
+            top: anchor.top,
+            left: anchor.left,
+            minWidth: 200,
+            maxWidth: 280,
+            maxHeight: 360,
             overflowY: 'auto',
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRadius: 6,
+            boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
+            padding: '4px 0',
+            zIndex: 9999,
+            fontFamily: 'var(--cp-font-body)',
           }}
         >
-          {menuContent}
-          <div style={{ borderTop: `1px solid ${token('color.border', '#DFE1E6')}`, marginTop: 4, paddingTop: 4 }}>
-            <button
-              type="button"
-              onClick={() => { setWorkflowViewerOpen(true); closeMenu(); }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                width: '100%',
-                padding: '7px 12px',
-                border: 'none',
-                background: 'transparent',
-                cursor: 'pointer',
-                font: 'inherit',
-                fontSize: 14,
-                color: token('color.text', '#172B4D'),
-                textAlign: 'left',
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
-            >
-              View workflow
-            </button>
-          </div>
+          {/* Status groups — driven by admin/workflows config, falls back to static list */}
+          {(() => {
+            const available = new Set(hasConfig ? getAvailableStatuses(status) : null);
+            return activeGroups.map((group) => {
+              const visibleStatuses = hasConfig
+                ? group.statuses.filter((st) => available.has(st))
+                : group.statuses;
+              if (visibleStatuses.length === 0) return null;
+              return (
+                <div key={group.category}>
+                  <div
+                    style={{
+                      padding: '8px 12px 4px',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: token('color.text.subtlest', '#8590A2'),
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                    }}
+                  >
+                    {group.groupLabel}
+                  </div>
+                  {visibleStatuses.map((st) => {
+                    const a = statusToLozenge(st, group.category) as string;
+                    const bg = PILL_BG[a] ?? PILL_BG.default;
+                    const isSelected = display === st;
+                    return (
+                      <button
+                        key={st}
+                        type="button"
+                        role="menuitem"
+                        data-testid={`catalyst-status-option-${st}`}
+                        onClick={() => handleStatusSelect(st)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          width: '100%',
+                          height: 36,
+                          padding: '0 12px',
+                          background: isSelected
+                            ? token('color.background.selected', '#E9F2FF')
+                            : 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = isSelected
+                            ? token('color.background.selected', '#E9F2FF')
+                            : 'transparent';
+                        }}
+                      >
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            height: 20,
+                            padding: '0 7px',
+                            borderRadius: 3,
+                            fontSize: 11,
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.06em',
+                            background: bg,
+                            color: 'rgb(41, 42, 46)',
+                          }}
+                        >
+                          {st}
+                        </span>
+                        {isSelected && (
+                          <span style={{ fontSize: 12, color: token('color.text.brand', '#0C66E4'), fontWeight: 600 }}>✓</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              );
+            });
+          })()}
+
+          {/* Separator */}
+          <div style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '4px 0' }} />
+
+          {/* View workflow */}
+          <button
+            type="button"
+            role="menuitem"
+            data-testid="catalyst-status-view-workflow"
+            onClick={() => {
+              setIsOpen(false);
+              setWorkflowViewerOpen(true);
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              width: '100%',
+              height: 36,
+              padding: '0 12px',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              fontSize: 14,
+              color: token('color.text', '#172B4D'),
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            <RetryIcon size="small" label="" primaryColor={token('color.icon.subtle', '#626F86')} />
+            View workflow
+          </button>
+
+          {/* Explain workflow */}
+          <button
+            type="button"
+            role="menuitem"
+            data-testid="catalyst-status-explain-workflow"
+            onClick={() => setIsOpen(false)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              width: '100%',
+              height: 36,
+              padding: '0 12px',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              fontSize: 14,
+              color: token('color.text', '#172B4D'),
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            <QuestionCircleIcon size="small" label="" primaryColor={token('color.icon.subtle', '#626F86')} />
+            Explain workflow
+          </button>
         </div>,
         document.body,
       )}
