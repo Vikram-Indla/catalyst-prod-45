@@ -701,7 +701,12 @@ export default function KanbanBoardPage() {
     KANBAN_COLUMNS.forEach(c => { m[c.id] = []; });
     filtered.forEach(i => {
       const c = STATUS_TO_COL_ID.get(i.status.toLowerCase());
-      if (c && m[c]) m[c].push(i.id);
+      // For filter-backed boards the JQL may select items whose status doesn't
+      // match any cloned column (e.g. a filter for status="Backlog" on a board
+      // that only has IN_PROGRESS/DONE columns). Fall back to the first column so
+      // items are always visible; the column header still shows the real status.
+      const targetCol = c ?? (isFilterBacked ? KANBAN_COLUMNS[0]?.id : undefined);
+      if (targetCol && m[targetCol]) m[targetCol].push(i.id);
     });
     setColMap(prev => {
       // Only update if changed to prevent infinite loop
