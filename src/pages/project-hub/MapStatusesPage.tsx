@@ -402,7 +402,7 @@ function DeleteConfirm({
 
 /* ═══ MAIN PAGE ═══ */
 export default function MapStatusesPage() {
-  const { key } = useParams<{ key: string }>();
+  const { key, boardId } = useParams<{ key: string; boardId: string }>();
   const navigate = useNavigate();
   const { isDark } = useTheme();
   const tk = isDark ? KANBAN_TOKENS.dark : KANBAN_TOKENS.light;
@@ -411,10 +411,11 @@ export default function MapStatusesPage() {
     draft, countsMap, loading, saving, saveError, hasChanges,
     moveStatus, reorderColumns, addColumn, renameColumn, deleteColumn,
     save, cancel,
-  } = useMapStatuses(key);
+  } = useMapStatuses(key, boardId);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const [dragStatusId, setDragStatusId] = useState<string | null>(null);
+  const [dragColumnId, setDragColumnId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<DraftColumn | null>(null);
 
   // Unsaved changes guard
@@ -429,7 +430,7 @@ export default function MapStatusesPage() {
     if (hasChanges) {
       if (!window.confirm('You have unsaved changes. Discard them?')) return;
     }
-    navigate(`/project-hub/${key}/boards`);
+    navigate(boardId ? `/project-hub/${key}/boards/${boardId}` : `/project-hub/${key}/boards`);
   }, [hasChanges, navigate, key]);
 
   // DnD handlers
@@ -449,13 +450,16 @@ export default function MapStatusesPage() {
 
   const onDragStart = useCallback((e: DragStartEvent) => {
     const id = String(e.active.id);
-    if (!id.startsWith('col-')) {
+    if (id.startsWith('col-')) {
+      setDragColumnId(id.replace('col-', ''));
+    } else {
       setDragStatusId(id);
     }
   }, []);
 
   const onDragEnd = useCallback((e: DragEndEvent) => {
     setDragStatusId(null);
+    setDragColumnId(null);
     if (!e.over || !draft) return;
 
     const activeId = String(e.active.id);
@@ -534,6 +538,8 @@ export default function MapStatusesPage() {
   }, [draft, moveStatus]);
 
   const dragMapping = dragStatusId ? draft?.mappings.find(m => m.statusId === dragStatusId) : null;
+  const dragColumn = dragColumnId ? draft?.columns.find(c => c.id === dragColumnId) : null;
+  const dragColMappings = dragColumn ? draft?.mappings.filter(m => m.bucketType === 'column' && m.columnId === dragColumn.id) ?? [] : [];
 
   if (loading) {
     return (
@@ -666,7 +672,19 @@ export default function MapStatusesPage() {
           </div>
 
           <DragOverlay dropAnimation={null}>
-            {dragMapping ? <OverlayPill name={dragMapping.statusName} tk={tk} /> : null}
+            {dragMapping ? (
+              <OverlayPill name={dragMapping.statusName} tk={tk} />
+            ) : dragColumn ? (
+              <ColumnCard
+                column={dragColumn}
+                mappings={dragColMappings}
+                countsMap={countsMap}
+                tk={tk}
+                onRename={() => {}}
+                onDelete={() => {}}
+                isDragOverlay
+              />
+            ) : null}
           </DragOverlay>
         </DndContext>
       </div>

@@ -3,6 +3,7 @@ import CloseIcon from '@atlaskit/icon/core/close';
 import { useNavigate } from 'react-router-dom';
 import { useCreateBoard } from '@/hooks/useBoardMutations';
 import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
+import { seedBoardStatusMappings } from '@/hooks/workhub/useCreateKanbanFromFilter';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Props {
@@ -48,6 +49,9 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
       boardType: 'kanban',
       filterId,
     });
+    if (result.boardId && projectKey) {
+      await seedBoardStatusMappings(result.boardId, projectKey, supabase);
+    }
     onClose();
     if (result.boardId) {
       if (onCreated) {

@@ -26,3 +26,5 @@ export { CommentsSection } from './CommentsSection';
 export { AttachmentsSection } from './AttachmentsSection';
 export { UnifiedAuditHistoryTab } from './UnifiedAuditHistoryTab';
 export { UnifiedLinksTab } from './UnifiedLinksTab';
+export { CatalystListPageLayout, CatalystQuickTabBar, CatalystListToolbar, CatalystBulkActionBar, PermissionList } from './CatalystListPage';
+export type { QuickTab, ToolbarFilter, ToolbarFilterOption, BulkAction, PermissionEntry } from './CatalystListPage';

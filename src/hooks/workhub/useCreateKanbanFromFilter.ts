@@ -113,6 +113,84 @@ async function cloneBoardColumns(sourceBoardId: string, targetBoardId: string): 
   }
 }
 
+/**
+ * Seed one board_column + one board_status_mappings row per active Jira status.
+ *
+ * Replaces the 3 generic columns seeded by create_board (To Do / In Progress /
+ * Done) with N columns — one per distinct status that has ≥1 issue in the
+ * project. Statuses with zero issues are never in ph_issues so are never seeded.
+ *
+ * Column order: To Do statuses → In Progress statuses → Done statuses.
+ * is_backlog=true for To Do statuses, is_done=true for Done statuses.
+ *
+ * status_id uses crypto.randomUUID() — the FK to catalyst_workflow_statuses
+ * was dropped in migration 20260612131000 because Jira status names are not a
+ * subset of that table.
+ */
+export async function seedBoardStatusMappings(
+  boardId: string,
+  projectKey: string,
+  sb: typeof supabase,
+): Promise<void> {
+  // 1. Distinct statuses for this project (only statuses with ≥1 issue appear)
+  const { data: rows } = await (sb as any)
+    .from('ph_issues')
+    .select('status, status_category')
+    .eq('project_key', projectKey.toUpperCase())
+    .not('status', 'is', null);
+
+  if (!rows?.length) return;
+
+  // Deduplicate: first occurrence wins; preserve category for ordering
+  const seen = new Map<string, string>(); // status_name → status_category
+  for (const r of rows) {
+    if (r.status && !seen.has(r.status)) seen.set(r.status, r.status_category ?? '');
+  }
+
+  // Sort: To Do → In Progress → Done
+  const categoryOrder: Record<string, number> = { 'To Do': 0, 'In Progress': 1, 'Done': 2 };
+  const sorted = Array.from(seen.entries()).sort(([, a], [, b]) => {
+    return (categoryOrder[a] ?? 1) - (categoryOrder[b] ?? 1);
+  });
+
+  // 2. Replace the 3 default columns with one column per status
+  await (sb as any).from('board_columns').delete().eq('board_id', boardId);
+
+  const columnInserts = sorted.map(([statusName, statusCategory], idx) => ({
+    board_id:   boardId,
+    name:       statusName,
+    position:   idx,
+    status_ids: [],
+    is_backlog: statusCategory === 'To Do',
+    is_done:    statusCategory === 'Done',
+  }));
+
+  const { data: newCols } = await (sb as any)
+    .from('board_columns')
+    .insert(columnInserts)
+    .select('id, position');
+
+  if (!newCols?.length) return;
+
+  // 3. 1:1 mapping: each status → its own column
+  const colByPosition = new Map<number, string>(
+    (newCols as any[]).map((c: any) => [c.position, c.id]),
+  );
+
+  const mappings = sorted.map(([statusName], idx) => ({
+    board_id:    boardId,
+    status_id:   crypto.randomUUID(),
+    status_name: statusName,
+    bucket_type: 'column',
+    column_id:   colByPosition.get(idx) ?? null,
+    order_index: idx,
+  }));
+
+  if (mappings.length) {
+    await (sb as any).from('board_status_mappings').insert(mappings);
+  }
+}
+
 export interface CreateKanbanFromFilterArgs {
   filter: SavedFilterFull;
   /** Jira project key (e.g. 'BAU'). Used to populate boards.jira_project_key so
@@ -156,7 +234,10 @@ export function useCreateKanbanFromFilter() {
         .eq('id', boardId);
       if (linkErr) throw new Error(linkErr.message);
 
-      // 4. Back-link on the saved filter.
+      // 4. Seed status mappings so all project statuses route to the correct column.
+      if (projectKey) await seedBoardStatusMappings(boardId, projectKey, supabase);
+
+      // 6. Back-link on the saved filter.
       const nextBoardIds = [...(filter.used_by_board_ids ?? []), boardId];
       await (supabase as any)
         .from('ph_saved_filters').update({ used_by_board_ids: nextBoardIds }).eq('id', filter.id);

@@ -3,6 +3,8 @@ export type FieldType = 'string' | 'user' | 'date' | 'array' | 'number';
 export interface FieldDef {
   /** Supabase column name in ph_issues */
   column: string;
+  /** For user-type fields: the account_id column to use when the value looks like a Jira account ID */
+  accountIdColumn?: string;
   type: FieldType;
   operators: string[];
   /** Human-readable label shown in autocomplete */
@@ -18,8 +20,8 @@ export const JQL_FIELD_MAP: Record<string, FieldDef> = {
   project:     { column: 'project_key',           type: 'string', operators: [...STRING_OPS],  label: 'Project' },
   issuetype:   { column: 'issue_type',             type: 'string', operators: [...STRING_OPS],  label: 'Issue type' },
   status:      { column: 'status',                 type: 'string', operators: [...STRING_OPS],  label: 'Status' },
-  assignee:    { column: 'assignee_display_name',  type: 'user',   operators: [...STRING_OPS],  label: 'Assignee' },
-  reporter:    { column: 'reporter_display_name',  type: 'user',   operators: [...STRING_OPS],  label: 'Reporter' },
+  assignee:    { column: 'assignee_display_name', accountIdColumn: 'assignee_account_id', type: 'user', operators: [...STRING_OPS], label: 'Assignee' },
+  reporter:    { column: 'reporter_display_name', accountIdColumn: 'reporter_account_id', type: 'user', operators: [...STRING_OPS], label: 'Reporter' },
   priority:    { column: 'priority',               type: 'string', operators: [...COMPARE_OPS], label: 'Priority' },
   created:     { column: 'jira_created_at',        type: 'date',   operators: [...DATE_OPS],    label: 'Created' },
   updated:     { column: 'jira_updated_at',        type: 'date',   operators: [...DATE_OPS],    label: 'Updated' },

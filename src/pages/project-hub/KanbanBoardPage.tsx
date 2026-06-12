@@ -305,7 +305,6 @@ export default function KanbanBoardPage() {
   const { KANBAN_COLUMNS, STATUS_TO_COL_ID, COL_PRIMARY_STATUS, COLUMN_ID_SET } = useMemo(() => {
     if (dynamicBoardData?.columns?.length) {
       const cols: KanbanColumnDef[] = dynamicBoardData.columns
-        .filter((c: any) => !c.is_backlog)
         .map((c: any) => {
           // Build status list from mappings or status_ids
           const mappedStatuses = dynamicBoardData.mappings
@@ -315,13 +314,12 @@ export default function KanbanBoardPage() {
           // Fallback to status_ids if no mappings
           let statuses = mappedStatuses.length > 0 ? mappedStatuses : [];
           if (statuses.length === 0 && c.status_ids?.length) {
-            // status_ids are UUIDs, we need names — use mappings data
             statuses = dynamicBoardData.mappings
               .filter((m: any) => c.status_ids.includes(m.status_id))
               .map((m: any) => m.status_name);
           }
 
-          const category: 'todo' | 'in_progress' | 'done' = c.is_done ? 'done' : 'in_progress';
+          const category: 'todo' | 'in_progress' | 'done' = c.is_done ? 'done' : c.is_backlog ? 'todo' : 'in_progress';
           return {
             id: c.id,
             name: c.name.toUpperCase(),
@@ -600,7 +598,7 @@ export default function KanbanBoardPage() {
     // When the advanced filter specifies types explicitly, honour those exactly.
     const allowedTypes: Set<string> = advancedFilters.issueTypes.length > 0
       ? new Set(advancedFilters.issueTypes)
-      : groupBy === 'none' ? KANBAN_STORY_TYPES : KANBAN_BOARD_TYPES;
+      : (isFilterBacked || groupBy !== 'none') ? KANBAN_BOARD_TYPES : KANBAN_STORY_TYPES;
     let issues = rawIssues.filter(i => allowedTypes.has(i.issueType));
     if (debSearch.trim()) {
       const q = debSearch.trim().toLowerCase();
@@ -699,9 +697,12 @@ export default function KanbanBoardPage() {
     if (dragId || groupBy !== 'none') return;
     const m: ColMap = {};
     KANBAN_COLUMNS.forEach(c => { m[c.id] = []; });
+    // Route each issue to its column using board_status_mappings only.
+    // Statuses not present in STATUS_TO_COL_ID (unmapped or zero-issue statuses)
+    // are intentionally dropped — the board only shows statuses with issues.
     filtered.forEach(i => {
-      const c = STATUS_TO_COL_ID.get(i.status.toLowerCase());
-      if (c && m[c]) m[c].push(i.id);
+      const targetCol = STATUS_TO_COL_ID.get(i.status.toLowerCase());
+      if (targetCol && m[targetCol]) m[targetCol].push(i.id);
     });
     setColMap(prev => {
       // Only update if changed to prevent infinite loop
@@ -1418,7 +1419,7 @@ export default function KanbanBoardPage() {
         enableDensity={ENABLE_KANBAN_V2}
         density={density}
         onDensityChange={onDensityChange}
-        mapStatusesPath={`/project-hub/${key}/boards/map-statuses`}
+        mapStatusesPath={resolvedBoardId ? `/project-hub/${key}/boards/${resolvedBoardId}/map-statuses` : undefined}
         projectKey={key ?? ''}
         canArchive={canArchive}
         showArchived={showArchived}

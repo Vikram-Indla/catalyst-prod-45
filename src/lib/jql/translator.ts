@@ -22,6 +22,20 @@ const OPERATOR_TO_METHOD: Record<string, FilterMethod> = {
   'is not': 'not_is',
 };
 
+/**
+ * Returns true when a JQL user-field value looks like a raw Jira account ID
+ * rather than a human display name.
+ *
+ * Jira has two account ID formats:
+ *   Old: 24-char lowercase hex  e.g. "5be3fef965364b69de240fe8"
+ *   New: digits:uuid            e.g. "557058:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+ */
+function isJiraAccountId(value: string): boolean {
+  if (/^[a-f0-9]{20,}$/.test(value)) return true;
+  if (/^\d+:[a-f0-9-]{30,}$/.test(value)) return true;
+  return false;
+}
+
 function resolveValue(raw: string): string {
   // Functions
   if (raw === 'currentUser()') return '__currentUser__';
@@ -89,13 +103,25 @@ export function translate(jql: string): JqlFilter[] {
 
     // Value list (in / not in)
     if (valTok.type === 'value-list') {
-      filters.push({ method, column: fieldDef.column, value: valTok.value as string[] });
+      const vals = valTok.value as string[];
+      // For user fields: if every value in the list looks like an account ID, use the account_id column
+      const column =
+        fieldDef.type === 'user' && fieldDef.accountIdColumn && vals.every(isJiraAccountId)
+          ? fieldDef.accountIdColumn
+          : fieldDef.column;
+      filters.push({ method, column, value: vals });
       continue;
     }
 
     // Single value (function, value, direction treated as plain value)
     const raw = valTok.value as string;
-    filters.push({ method, column: fieldDef.column, value: resolveValue(raw) });
+    const resolved = resolveValue(raw);
+    // For user fields: if the resolved value looks like an account ID, use the account_id column
+    const column =
+      fieldDef.type === 'user' && fieldDef.accountIdColumn && isJiraAccountId(resolved)
+        ? fieldDef.accountIdColumn
+        : fieldDef.column;
+    filters.push({ method, column, value: resolved });
   }
 
   return filters;

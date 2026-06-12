@@ -1,16 +1,24 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import { Search, Plus, Star, MoreHorizontal } from '@/lib/atlaskit-icons';
+import { Plus, Star, MoreHorizontal } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
+import Button from '@atlaskit/button/new';
+import AkAvatar from '@atlaskit/avatar';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Select from '@atlaskit/select';
+import Textfield from '@atlaskit/textfield';
 import { useBoards } from '@/hooks/useBoards';
 import { useDeleteBoard, useMoveBoard, useCopyBoard, useToggleBoardStar } from '@/hooks/useBoardMutations';
 import { useProjects } from '@/hooks/useProjectHub';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
+import {
+  CatalystListPageLayout,
+  type ToolbarFilter,
+} from '@/components/shared/CatalystListPage';
+import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 import CreateBoardModal from './CreateBoardModal';
-import Spinner from '@atlaskit/spinner';
 import type { BoardListItem } from '@/types/board';
 
 interface BoardManagerPageProps {
@@ -27,7 +35,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
   const projectId = projectIdOverride || paramProjectId;
   const boardBasePath = basePath || `/projects/${projectId}/boards`;
   const navigate = useNavigate();
-  const { data: boards = [], isLoading, error } = useBoards(projectId);
+  const { data: boards = [], isLoading, error } = useBoards(projectId, projectKey);
   const deleteBoard = useDeleteBoard();
   const moveBoard = useMoveBoard();
   const copyBoard = useCopyBoard();
@@ -37,7 +45,6 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
   const [spaceFilter, setSpaceFilter] = useState<string | null>(null);
   const [userFilter, setUserFilter] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
-  const [searchFocused, setSearchFocused] = useState(false);
   const [moveTarget, setMoveTarget] = useState<BoardListItem | null>(null);
   const [copyTarget, setCopyTarget] = useState<BoardListItem | null>(null);
 
@@ -141,15 +148,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
           display: 'flex', alignItems: 'center', gap: 8,
           fontSize: 14, color: 'var(--ds-text, #172B4D)',
         }}>
-          <span style={{
-            width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
-            background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
-            color: 'var(--ds-text-accent-blue, #0055CC)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 11, fontWeight: 600,
-          }}>
-            {row.leadName[0]?.toUpperCase()}
-          </span>
+          <AkAvatar name={row.leadName} size="xsmall" />
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {row.leadName}
           </span>
@@ -192,150 +191,106 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
       alwaysVisible: true,
       accessor: () => null,
       cell: ({ row }) => (
-        <BoardRowMenu
-          board={row}
-          onEditSettings={() => navigate(projectKey ? `/project-hub/${projectKey}/boards/${row.id}/settings` : `${boardBasePath}/${row.id}/settings`)}
-          onDelete={() => handleDelete(row)}
-          onMove={() => setMoveTarget(row)}
-          onCopy={() => setCopyTarget(row)}
-        />
+        <span onClick={e => e.stopPropagation()}>
+          <BoardRowMenu
+            board={row}
+            onEditSettings={() => navigate(projectKey ? `/project-hub/${projectKey}/boards/${row.id}/settings` : `${boardBasePath}/${row.id}/settings`)}
+            onDelete={() => handleDelete(row)}
+            onMove={() => setMoveTarget(row)}
+            onCopy={() => setCopyTarget(row)}
+            onDuplicate={() => {
+              if (!projectId) return;
+              copyBoard.mutate({ boardId: row.id, toProjectId: row.projectId ?? projectId, newName: `Copy of ${row.name}` });
+            }}
+          />
+        </span>
       ),
     },
-  ], [locationLabel, locationInitial, handleDelete, projectId, toggleStar]);
+  ], [locationLabel, locationInitial, handleDelete, projectId, toggleStar, navigate, boardBasePath, projectKey, copyBoard, setMoveTarget, setCopyTarget]);
+
+  const spaceFilterOptions = useMemo(() =>
+    spaceOptions.map(s => ({ label: s, value: s })), [spaceOptions]);
+  const userFilterOptions = useMemo(() =>
+    userOptions.map(u => ({ label: u, value: u })), [userOptions]);
+
+  const toolbarFilters = useMemo<ToolbarFilter[]>(() => [
+    {
+      id: 'space',
+      placeholder: 'Space',
+      options: spaceFilterOptions,
+      value: spaceFilter ? { label: spaceFilter, value: spaceFilter } : null,
+      onChange: v => setSpaceFilter(v ? v.value : null),
+    },
+    {
+      id: 'user',
+      placeholder: 'User',
+      options: userFilterOptions,
+      value: userFilter ? { label: userFilter, value: userFilter } : null,
+      onChange: v => setUserFilter(v ? v.value : null),
+    },
+  ], [spaceFilterOptions, userFilterOptions, spaceFilter, userFilter]);
+
+  const createCta = useMemo(() => (
+    <Button
+      appearance="primary"
+      iconBefore={() => <Plus size="small" />}
+      onClick={() => setCreateOpen(true)}
+    >
+      Create board
+    </Button>
+  ), []);
+
+  const footerText = !isLoading && filtered.length > 0
+    ? (filtered.length === boards.length
+        ? `${boards.length} board${boards.length !== 1 ? 's' : ''}`
+        : `${filtered.length} of ${boards.length} board${boards.length !== 1 ? 's' : ''}`)
+    : undefined;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--ds-surface, #FFFFFF)' }}>
+    <>
+    <CatalystListPageLayout
+      chromeBand={projectKey ? <ProjectHeaderChip projectKey={projectKey} /> : undefined}
+      tabBarActions={createCta}
+      search={search}
+      searchPlaceholder="Search boards"
+      onSearchChange={setSearch}
+      toolbarFilters={toolbarFilters}
+      hasActiveFilters={!!(search || spaceFilter || userFilter)}
+      onClearAllFilters={() => { setSearch(''); setSpaceFilter(null); setUserFilter(null); }}
+      footer={footerText}
+    >
       {error && (
-        <div style={{ background: 'var(--ds-background-danger-subtle, #FEF2F2)', color: 'var(--ds-text-danger, #AE2A19)', padding: '8px 24px', fontSize: 12, borderBottom: '1px solid var(--ds-border-danger, #FECACA)' }}>
-          Board query error: {(error as Error).message}
+        <div style={{ padding: '8px 0' }}>
+          <span style={{ fontSize: 12, color: token('color.text.danger', '#AE2A19') }}>
+            Board query error: {(error as Error).message}
+          </span>
         </div>
       )}
-      {/* Header */}
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', borderBottom: '1px solid var(--ds-border, #DFE1E6)', flexShrink: 0 }}>
-        <div style={{ padding: '16px 24px 12px' }}>
-          {/* Title row — h1 left, Create board right (Jira pattern) */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
-              Boards
-            </h1>
-            <button onClick={() => setCreateOpen(true)} style={{
-              display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
-              background: 'var(--ds-background-brand-bold, #0052CC)', border: '2px solid transparent',
-              borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 500,
-              color: 'var(--ds-text-inverse, #FFFFFF)',
-            }}>
-              <Plus size={14} strokeWidth={2.5} /> Create board
-            </button>
-          </div>
-          {/* Toolbar — search + Space dropdown + User dropdown */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {/* Search */}
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 8, height: 32, padding: '0 8px',
-              background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-              border: `2px solid ${searchFocused ? 'var(--ds-border-focused, #388BFF)' : 'var(--ds-border, #DFE1E6)'}`,
-              borderRadius: 3, width: 200, transition: 'border-color 150ms',
-            }}>
-              <Search size={13} color="var(--ds-text-subtlest, #6B778C)" />
-              <input
-                value={search} onChange={e => setSearch(e.target.value)}
-                onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)}
-                placeholder="Search boards…" aria-label="Search boards"
-                style={{
-                  border: 'none', outline: 'none', background: 'transparent', flex: 1,
-                  fontSize: 14, color: 'var(--ds-text, #172B4D)',
-                }}
-              />
-            </div>
-            {/* Space dropdown */}
-            <DropdownMenu
-              trigger={({ triggerRef, ...triggerProps }) => (
-                <button
-                  {...triggerProps}
-                  ref={triggerRef as React.Ref<HTMLButtonElement>}
-                  type="button"
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 4, height: 32,
-                    background: spaceFilter ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-background-neutral, #F1F2F4)',
-                    border: `2px solid ${spaceFilter ? 'var(--ds-border-selected, #388BFF)' : 'transparent'}`,
-                    borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 400,
-                    padding: '0 12px',
-                    color: spaceFilter ? 'var(--ds-link, #0052CC)' : 'var(--ds-text, #172B4D)',
-                  }}
-                >
-                  Space {spaceFilter ? `· ${spaceFilter.slice(0, 8)}` : ''}
-                </button>
-              )}
-            >
-              <DropdownItemGroup>
-                <DropdownItem onClick={() => setSpaceFilter(null)}>All spaces</DropdownItem>
-                {spaceOptions.map(s => (
-                  <DropdownItem key={s} onClick={() => setSpaceFilter(s)}>
-                    {s}
-                  </DropdownItem>
-                ))}
-              </DropdownItemGroup>
-            </DropdownMenu>
-            {/* User dropdown */}
-            <DropdownMenu
-              trigger={({ triggerRef, ...triggerProps }) => (
-                <button
-                  {...triggerProps}
-                  ref={triggerRef as React.Ref<HTMLButtonElement>}
-                  type="button"
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 4, height: 32,
-                    background: userFilter ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-background-neutral, #F1F2F4)',
-                    border: `2px solid ${userFilter ? 'var(--ds-border-selected, #388BFF)' : 'transparent'}`,
-                    borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 400,
-                    color: userFilter ? 'var(--ds-link, #0052CC)' : 'var(--ds-text, #172B4D)',
-                  }}
-                >
-                  User {userFilter ? `· ${userFilter.split(' ')[0]}` : ''}
-                </button>
-              )}
-            >
-              <DropdownItemGroup>
-                <DropdownItem onClick={() => setUserFilter(null)}>All users</DropdownItem>
-                {userOptions.map(u => (
-                  <DropdownItem key={u} onClick={() => setUserFilter(u)}>
-                    {u}
-                  </DropdownItem>
-                ))}
-              </DropdownItemGroup>
-            </DropdownMenu>
-          </div>
-        </div>
-      </div>
-
-      {/* Body — JiraTable */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
-        {isLoading ? (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200 }}>
-            <Spinner size="large" />
-          </div>
-        ) : filtered.length === 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 200, gap: 8 }}>
-            <span style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)' }}>
-              {search ? `No boards match "${search}"` : 'No boards yet'}
+      <JiraTable<BoardListItem>
+        data={filtered}
+        columns={columns}
+        getRowId={(b) => b.id}
+        onRowClick={(b) => navigate(`${boardBasePath}/${b.id}`)}
+        isLoading={isLoading}
+        density="comfortable"
+        ariaLabel="Boards directory"
+        emptyView={
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            padding: '48px 32px', gap: 12, color: token('color.text.subtle'),
+          }}>
+            <span style={{ fontSize: 16, fontWeight: token('font.weight.medium') }}>
+              {search || spaceFilter || userFilter ? 'No boards match your search' : 'No boards yet'}
             </span>
-            <button onClick={() => setCreateOpen(true)} style={{
-              display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
-              background: 'var(--ds-background-brand-bold, #0052CC)', border: 'none',
-              borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 500, color: 'var(--ds-text-inverse, #FFFFFF)',
-            }}>
-              <Plus size={14} strokeWidth={2.5} /> Create board
-            </button>
+            {!search && !spaceFilter && !userFilter && (
+              <Button appearance="primary" onClick={() => setCreateOpen(true)}>
+                Create board
+              </Button>
+            )}
           </div>
-        ) : (
-          <JiraTable
-            data={filtered}
-            columns={columns}
-            getRowId={(b) => b.id}
-            onRowClick={(b) => navigate(`${boardBasePath}/${b.id}`)}
-          />
-        )}
-      </div>
+        }
+      />
+    </CatalystListPageLayout>
 
       {createOpen && (
         <CreateBoardModal projectId={projectId!} basePath={boardBasePath} onClose={() => setCreateOpen(false)} />
@@ -365,7 +320,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
           onClose={() => setCopyTarget(null)}
         />
       )}
-    </div>
+    </>
   );
 }
 
@@ -373,12 +328,13 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
 // Uses the same portal pattern as cells.tsx makeStatusEditCellAkPopup:
 // position:absolute + window.scrollY offset instead of Popper position:fixed,
 // which avoids the overflow:clip containing-block bug in this page's layout.
-function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy }: {
+function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy, onDuplicate }: {
   board: BoardListItem;
   onEditSettings: () => void;
   onDelete: () => void;
   onMove: () => void;
   onCopy: () => void;
+  onDuplicate: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
@@ -437,6 +393,7 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy }: {
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLElement).style.background = 'transparent';
+          if (!open) (e.currentTarget as HTMLElement).style.opacity = '0';
         }}
       >
         <MoreHorizontal size={16} />
@@ -460,7 +417,8 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy }: {
         >
           {/* Standard actions */}
           {[
-            { label: 'Edit settings', cb: onEditSettings },
+            { label: 'Edit board settings', cb: onEditSettings },
+            { label: 'Duplicate board', cb: onDuplicate },
             { label: 'Move to project…', cb: onMove },
             { label: 'Copy board…', cb: onCopy },
           ].map(({ label, cb }) => (
@@ -506,29 +464,9 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy }: {
   );
 }
 
-// ─── Shared dialog chrome ────────────────────────────────────────────────────
-function DialogOverlay({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
-  return (
-    <div
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-      style={{
-        position: 'fixed', inset: 0, zIndex: 1000,
-        background: 'var(--ds-blanket, rgba(9,30,66,0.54))',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}
-    >
-      <div style={{
-        background: 'var(--ds-surface-overlay, #FFFFFF)', borderRadius: 4,
-        padding: 24, minWidth: 360, maxWidth: 480, width: '100%',
-        boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9,30,66,0.24))',
-      }}>
-        {children}
-      </div>
-    </div>
-  );
-}
-
 // ─── Move board dialog ───────────────────────────────────────────────────────
+type ProjectOption = { label: string; value: string };
+
 function MoveBoardDialog({ board, projects, currentProjectId, onConfirm, onClose }: {
   board: BoardListItem;
   projects: Array<{ id: string; name: string; project_key: string }>;
@@ -536,50 +474,36 @@ function MoveBoardDialog({ board, projects, currentProjectId, onConfirm, onClose
   onConfirm: (toProjectId: string) => void;
   onClose: () => void;
 }) {
-  const [selected, setSelected] = React.useState('');
-  const eligible = projects.filter(p => p.id !== currentProjectId);
+  const [selected, setSelected] = React.useState<ProjectOption | null>(null);
+  const options: ProjectOption[] = projects
+    .filter(p => p.id !== currentProjectId)
+    .map(p => ({ label: `${p.name} (${p.project_key})`, value: p.id }));
   return (
-    <DialogOverlay onClose={onClose}>
-      <h2 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
-        Move "{board.name}"
-      </h2>
-      <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text-subtle, #42526E)' }}>
-        Select the destination project.
-      </p>
-      <select
-        value={selected}
-        onChange={e => setSelected(e.target.value)}
-        style={{
-          width: '100%', height: 32, padding: '0 8px', boxSizing: 'border-box',
-          border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-          fontSize: 14, color: 'var(--ds-text, #172B4D)',
-          background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-          outline: 'none', marginBottom: 16,
-        }}
-      >
-        <option value="">— Choose project —</option>
-        {eligible.map(p => (
-          <option key={p.id} value={p.id}>{p.name} ({p.project_key})</option>
-        ))}
-      </select>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-        <button onClick={onClose} style={{
-          height: 32, padding: '0 12px', border: '2px solid var(--ds-border, #DFE1E6)',
-          borderRadius: 3, background: 'transparent', cursor: 'pointer',
-          fontSize: 14, color: 'var(--ds-text, #172B4D)',
-        }}>
-          Cancel
-        </button>
-        <button onClick={() => selected && onConfirm(selected)} disabled={!selected} style={{
-          height: 32, padding: '0 12px', border: '2px solid transparent',
-          borderRadius: 3, cursor: selected ? 'pointer' : 'not-allowed',
-          fontSize: 14, fontWeight: 500, color: 'var(--ds-text-inverse, #FFFFFF)',
-          background: selected ? 'var(--ds-background-brand-bold, #0052CC)' : 'var(--ds-background-disabled, #091E420F)',
-        }}>
+    <ModalDialog onClose={onClose} width="small">
+      <ModalHeader>
+        <ModalTitle>Move board</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <p style={{ fontSize: 14, color: token('color.text.subtle', '#42526E'), marginBottom: 12 }}>
+          Move <strong>{board.name}</strong> to a different project.
+        </p>
+        <Select<ProjectOption>
+          options={options}
+          value={selected}
+          onChange={opt => setSelected(opt as ProjectOption | null)}
+          placeholder="Select destination project…"
+          isSearchable
+          menuPortalTarget={document.body}
+          styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+        />
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+        <Button appearance="primary" isDisabled={!selected} onClick={() => selected && onConfirm(selected.value)}>
           Move
-        </button>
-      </div>
-    </DialogOverlay>
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
   );
 }
 
@@ -591,66 +515,49 @@ function CopyBoardDialog({ board, projects, currentProjectId, onConfirm, onClose
   onConfirm: (toProjectId: string, newName: string) => void;
   onClose: () => void;
 }) {
-  const [selected, setSelected] = React.useState(currentProjectId);
+  const [selected, setSelected] = React.useState<ProjectOption | null>(
+    (() => {
+      const cur = projects.find(p => p.id === currentProjectId);
+      return cur ? { label: `${cur.name} (${cur.project_key})`, value: cur.id } : null;
+    })()
+  );
   const [name, setName] = React.useState(`Copy of ${board.name}`);
+  const options: ProjectOption[] = projects.map(p => ({ label: `${p.name} (${p.project_key})`, value: p.id }));
   const valid = !!selected && name.trim().length > 0;
   return (
-    <DialogOverlay onClose={onClose}>
-      <h2 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
-        Copy "{board.name}"
-      </h2>
-      <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text-subtle, #42526E)' }}>
-        Creates a new board with the same configuration. Issues are not copied.
-      </p>
-      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 4 }}>
-        Board name
-      </label>
-      <input
-        value={name}
-        onChange={e => setName(e.target.value)}
-        style={{
-          width: '100%', height: 32, padding: '0 8px', boxSizing: 'border-box',
-          border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-          fontSize: 14, color: 'var(--ds-text, #172B4D)',
-          background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-          outline: 'none', marginBottom: 12,
-        }}
-      />
-      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 4 }}>
-        Destination project
-      </label>
-      <select
-        value={selected}
-        onChange={e => setSelected(e.target.value)}
-        style={{
-          width: '100%', height: 32, padding: '0 8px', boxSizing: 'border-box',
-          border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-          fontSize: 14, color: 'var(--ds-text, #172B4D)',
-          background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-          outline: 'none', marginBottom: 16,
-        }}
-      >
-        {projects.map(p => (
-          <option key={p.id} value={p.id}>{p.name} ({p.project_key})</option>
-        ))}
-      </select>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-        <button onClick={onClose} style={{
-          height: 32, padding: '0 12px', border: '2px solid var(--ds-border, #DFE1E6)',
-          borderRadius: 3, background: 'transparent', cursor: 'pointer',
-          fontSize: 14, color: 'var(--ds-text, #172B4D)',
-        }}>
-          Cancel
-        </button>
-        <button onClick={() => valid && onConfirm(selected, name.trim())} disabled={!valid} style={{
-          height: 32, padding: '0 12px', border: '2px solid transparent',
-          borderRadius: 3, cursor: valid ? 'pointer' : 'not-allowed',
-          fontSize: 14, fontWeight: 500, color: 'var(--ds-text-inverse, #FFFFFF)',
-          background: valid ? 'var(--ds-background-brand-bold, #0052CC)' : 'var(--ds-background-disabled, #091E420F)',
-        }}>
+    <ModalDialog onClose={onClose} width="small">
+      <ModalHeader>
+        <ModalTitle>Copy board</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <p style={{ fontSize: 14, color: token('color.text.subtle', '#42526E'), marginBottom: 16 }}>
+          Creates a new board with the same configuration. Issues are not copied.
+        </p>
+        <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', '#172B4D'), marginBottom: 4 }}>
+          Board name
+        </label>
+        <div style={{ marginBottom: 16 }}>
+          <Textfield value={name} onChange={e => setName((e.target as HTMLInputElement).value)} />
+        </div>
+        <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', '#172B4D'), marginBottom: 4 }}>
+          Destination project
+        </label>
+        <Select<ProjectOption>
+          options={options}
+          value={selected}
+          onChange={opt => setSelected(opt as ProjectOption | null)}
+          placeholder="Select project…"
+          isSearchable
+          menuPortalTarget={document.body}
+          styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+        />
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+        <Button appearance="primary" isDisabled={!valid} onClick={() => valid && onConfirm(selected!.value, name.trim())}>
           Copy
-        </button>
-      </div>
-    </DialogOverlay>
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
   );
 }

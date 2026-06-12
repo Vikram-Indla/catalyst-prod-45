@@ -45,12 +45,12 @@ export interface StatusCount {
   count: number;
 }
 
-export function useMapStatuses(projectKey: string | undefined) {
+export function useMapStatuses(projectKey: string | undefined, boardId?: string) {
   const qc = useQueryClient();
   const [draft, setDraft] = useState<DraftState | null>(null);
   const initialRef = useRef<DraftState | null>(null);
 
-  // 1. Get project ID
+  // project ID only needed when no boardId is provided (fallback path)
   const { data: projectId } = useQuery({
     queryKey: ['project-id-for-map', projectKey],
     queryFn: async () => {
@@ -62,7 +62,7 @@ export function useMapStatuses(projectKey: string | undefined) {
         .maybeSingle();
       return data?.id ?? null;
     },
-    enabled: !!projectKey,
+    enabled: !!projectKey && !boardId,
     staleTime: 300_000,
   });
 
@@ -97,39 +97,54 @@ export function useMapStatuses(projectKey: string | undefined) {
     staleTime: 300_000,
   });
 
-  // 3. Get board + columns for this project (do NOT auto-create — RLS may block inserts)
+  // 3. Get board + columns — use boardId from URL directly when available
+  const resolvedBoardId = boardId ?? null;
   const { data: boardData, isLoading: boardLoading } = useQuery({
-    queryKey: ['board-columns-for-map', projectId],
+    queryKey: ['board-columns-for-map', resolvedBoardId ?? projectId],
     queryFn: async () => {
+      // Path A: boardId supplied via URL (always prefer this)
+      if (resolvedBoardId) {
+        const [{ data: cols }, { data: mappings }] = await Promise.all([
+          supabase
+            .from('board_columns')
+            .select('id, name, position, status_ids, is_backlog, is_done')
+            .eq('board_id', resolvedBoardId)
+            .order('position'),
+          supabase
+            .from('board_status_mappings')
+            .select('*')
+            .eq('board_id', resolvedBoardId)
+            .order('order_index'),
+        ]);
+        return { boardId: resolvedBoardId, columns: cols ?? [], mappings: mappings ?? [] };
+      }
+
+      // Path B: fallback — find board by project_id (legacy, only when no boardId in URL)
       if (!projectId) return { boardId: null, columns: [], mappings: [] };
-      // Find the board for this project
       const { data: boards } = await supabase
         .from('boards')
         .select('id')
         .eq('project_id', projectId)
         .is('deleted_at', null)
         .limit(1);
-      const boardId = boards?.[0]?.id ?? null;
+      const foundBoardId = boards?.[0]?.id ?? null;
+      if (!foundBoardId) return { boardId: null, columns: [], mappings: [] };
 
-      if (!boardId) {
-        return { boardId: null, columns: [], mappings: [] };
-      }
-
-      // Get columns
-      const { data: cols } = await supabase
-        .from('board_columns')
-        .select('id, name, position, status_ids, is_backlog, is_done')
-        .eq('board_id', boardId)
-        .order('position');
-      // Get existing mappings
-      const { data: mappings } = await supabase
-        .from('board_status_mappings')
-        .select('*')
-        .eq('board_id', boardId)
-        .order('order_index');
-      return { boardId, columns: cols ?? [], mappings: mappings ?? [] };
+      const [{ data: cols }, { data: mappings }] = await Promise.all([
+        supabase
+          .from('board_columns')
+          .select('id, name, position, status_ids, is_backlog, is_done')
+          .eq('board_id', foundBoardId)
+          .order('position'),
+        supabase
+          .from('board_status_mappings')
+          .select('*')
+          .eq('board_id', foundBoardId)
+          .order('order_index'),
+      ]);
+      return { boardId: foundBoardId, columns: cols ?? [], mappings: mappings ?? [] };
     },
-    enabled: !!projectId,
+    enabled: !!(resolvedBoardId || projectId),
     staleTime: 60_000,
   });
 
@@ -372,14 +387,17 @@ export function useMapStatuses(projectKey: string | undefined) {
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const save = useCallback(async () => {
-    if (!draft || !projectId) return;
+    if (!draft) return;
+    // When boardId is supplied via URL, we don't need projectId (board already exists)
+    const resolvedExistingBoardId = boardData?.boardId ?? resolvedBoardId;
+    if (!resolvedExistingBoardId && !projectId) return;
     setSaving(true);
     setSaveError(null);
 
     try {
-      let boardId = boardData?.boardId ?? null;
+      let boardId = boardData?.boardId ?? resolvedBoardId ?? null;
 
-      // Create board on-the-fly if none exists
+      // Create board on-the-fly if none exists (only when no boardId from URL or DB)
       if (!boardId) {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error('Not authenticated');
@@ -399,42 +417,38 @@ export function useMapStatuses(projectKey: string | undefined) {
       }
 
       const activeCols = draft.columns.filter(c => !c.isDeleted);
-
-      // 1. Delete removed columns
       const deletedCols = draft.columns.filter(c => c.isDeleted && !c.isNew);
-      for (const col of deletedCols) {
-        await supabase.from('board_columns').delete().eq('id', col.id);
-      }
-
-      // 2. Create new columns
       const newCols = activeCols.filter(c => c.isNew);
-      const colIdMap = new Map<string, string>(); // temp-id -> real-id
-      for (const col of newCols) {
-        const { data } = await supabase
-          .from('board_columns')
-          .insert({
-            board_id: boardId,
-            name: col.name,
-            position: col.position,
-            status_ids: [],
-            is_backlog: false,
-            is_done: false,
-          })
-          .select('id')
-          .single();
-        if (data) colIdMap.set(col.id, data.id);
-      }
-
-      // 3. Update existing columns (name + position)
       const existingCols = activeCols.filter(c => !c.isNew);
-      for (const col of existingCols) {
-        await supabase
-          .from('board_columns')
-          .update({ name: col.name, position: col.position })
-          .eq('id', col.id);
-      }
 
-      // 4. Build status_ids per column from mappings
+      // Round-trip 1 (parallel): delete removed columns + bulk-insert new columns
+      const colIdMap = new Map<string, string>();
+      await Promise.all([
+        // Delete all removed columns in one IN query
+        deletedCols.length > 0
+          ? supabase.from('board_columns').delete().in('id', deletedCols.map(c => c.id))
+          : Promise.resolve(),
+        // Bulk-insert new columns and map temp-id → real-id
+        newCols.length > 0
+          ? supabase
+              .from('board_columns')
+              .insert(newCols.map(col => ({
+                board_id: boardId,
+                name: col.name,
+                position: col.position,
+                status_ids: [],
+                is_backlog: false,
+                is_done: false,
+              })))
+              .select('id, name')
+              .then(({ data }) => {
+                // Match returned rows back to temp cols by insertion order
+                data?.forEach((row, i) => colIdMap.set(newCols[i].id, row.id));
+              })
+          : Promise.resolve(),
+      ]);
+
+      // Build status_ids per column (must happen after colIdMap is populated)
       const colStatusIds = new Map<string, string[]>();
       for (const m of draft.mappings) {
         if (m.bucketType === 'column' && m.columnId) {
@@ -443,30 +457,8 @@ export function useMapStatuses(projectKey: string | undefined) {
           colStatusIds.get(realColId)!.push(m.statusId);
         }
       }
-      // Update each column's status_ids
-      for (const [colId, sids] of colStatusIds) {
-        await supabase
-          .from('board_columns')
-          .update({ status_ids: sids })
-          .eq('id', colId);
-      }
-      // Clear status_ids for columns with no mappings
-      for (const col of activeCols) {
-        const realId = colIdMap.get(col.id) ?? col.id;
-        if (!colStatusIds.has(realId)) {
-          await supabase
-            .from('board_columns')
-            .update({ status_ids: [] })
-            .eq('id', realId);
-        }
-      }
 
-      // 5. Persist board_status_mappings — delete all and re-insert
-      await supabase
-        .from('board_status_mappings')
-        .delete()
-        .eq('board_id', boardId);
-
+      // Round-trip 2 (parallel): update existing columns + replace board_status_mappings
       const mappingRows = draft.mappings.map((m, i) => ({
         board_id: boardId,
         status_id: m.statusId,
@@ -478,36 +470,54 @@ export function useMapStatuses(projectKey: string | undefined) {
         order_index: i,
       }));
 
-      if (mappingRows.length > 0) {
-        await supabase
+      await Promise.all([
+        // Upsert all active columns (name + position + status_ids) in one bulk call
+        activeCols.length > 0
+          ? supabase.from('board_columns').upsert(
+              activeCols.map(col => {
+                const realId = colIdMap.get(col.id) ?? col.id;
+                return {
+                  id: realId,
+                  board_id: boardId,
+                  name: col.name,
+                  position: col.position,
+                  status_ids: colStatusIds.get(realId) ?? [],
+                  is_backlog: false,
+                  is_done: false,
+                };
+              }),
+              { onConflict: 'id' }
+            )
+          : Promise.resolve(),
+        // Delete-then-insert board_status_mappings (must be serial, but run alongside column upsert)
+        supabase
           .from('board_status_mappings')
-          .insert(mappingRows);
-      }
+          .delete()
+          .eq('board_id', boardId)
+          .then(() =>
+            mappingRows.length > 0
+              ? supabase.from('board_status_mappings').insert(mappingRows)
+              : Promise.resolve()
+          ),
+      ]);
 
-      // 6. Invalidate kanban queries so board refreshes
+      // Invalidate kanban queries so board refreshes — key must match KanbanBoardPage
       qc.invalidateQueries({ queryKey: ['board-columns-for-map'] });
-      qc.invalidateQueries({ queryKey: ['kanban-board'] });
-      qc.invalidateQueries({ queryKey: ['kanban'] });
+      qc.invalidateQueries({ queryKey: ['kanban-board-columns', boardId] });
+      qc.invalidateQueries({ queryKey: ['kanban-issues'] });
 
-      // Update initial ref to current draft
-      initialRef.current = JSON.parse(JSON.stringify(draft));
-      // Update draft with real IDs
-      setDraft(prev => {
-        if (!prev) return prev;
-        return {
-          columns: prev.columns
-            .filter(c => !c.isDeleted)
-            .map(c => ({
-              ...c,
-              id: colIdMap.get(c.id) ?? c.id,
-              isNew: false,
-            })),
-          mappings: prev.mappings.map(m => ({
-            ...m,
-            columnId: m.columnId ? (colIdMap.get(m.columnId) ?? m.columnId) : null,
-          })),
-        };
-      });
+      // Build the post-save draft in one place so initialRef and state are identical
+      const savedDraft: DraftState = {
+        columns: draft.columns
+          .filter(c => !c.isDeleted)
+          .map(c => ({ ...c, id: colIdMap.get(c.id) ?? c.id, isNew: false })),
+        mappings: draft.mappings.map(m => ({
+          ...m,
+          columnId: m.columnId ? (colIdMap.get(m.columnId) ?? m.columnId) : null,
+        })),
+      };
+      initialRef.current = JSON.parse(JSON.stringify(savedDraft));
+      setDraft(savedDraft);
     } catch (err: any) {
       setSaveError(err.message ?? 'Save failed');
     } finally {
