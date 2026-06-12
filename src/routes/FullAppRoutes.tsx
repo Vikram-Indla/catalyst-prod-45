@@ -131,7 +131,6 @@ const WikiAnalyticsPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wi
 const WikiTemplatesPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiTemplatesPage")) : () => <FeatureComingSoon title="Wiki" />;
 const WikiKnowledgeGraphPage = (ENABLE_AI && ENABLE_WIKI) ? lazy(() => import("../modules-dormant/wiki/WikiKnowledgeGraphPage")) : () => <FeatureComingSoon title="Knowledge Graph" />;
 
-const CatyFabPlaceholderLazy = ENABLE_AI ? lazy(() => import("../components/caty/CatyFabPlaceholder").then(m => ({ default: m.CatyFabPlaceholder }))) : () => null;
 const QAAssistantFabLazy = ENABLE_AI ? lazy(() => import("../components/testhub-ai").then(m => ({ default: m.QAAssistantFab }))) : () => null;
 const KnowledgeAssistFabLazy = ENABLE_AI ? lazy(() => import("../components/kb/KAFab").then(m => ({ default: m.KAFab }))) : () => null;
 
@@ -384,13 +383,6 @@ function NavigateAdminResourceId() {
 function LegacyBacklogRedirect() {
   const { key } = useParams<{ key: string }>();
   return <Navigate to={`/project-hub/${key}/backlog`} replace />;
-}
-
-function CatyWidgetRouteGuard() {
-  const location = useLocation();
-  const showCaty = location.pathname.startsWith('/planhub/capacity') || location.pathname.startsWith('/strategyhub/capacity') || location.pathname.startsWith('/enterprise/capacity');
-  if (!showCaty) return null;
-  return <Suspense fallback={null}><CatyFabPlaceholderLazy /></Suspense>;
 }
 
 function QAAssistantRouteGuard() {
@@ -940,7 +932,6 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/sprint-predictor" element={<PHPlaceholder title="Sprint Predictor" phase="Phase 5" />} />
         <Route path="/project-hub/:key/risk-scanner" element={<PHPlaceholder title="Risk Scanner" phase="Phase 5" />} />
       </Routes>
-      <CatyWidgetRouteGuard />
       <QAAssistantRouteGuard />
       <KnowledgeAssistFabRouteGuard />
       <ChatDockRouteGuard />

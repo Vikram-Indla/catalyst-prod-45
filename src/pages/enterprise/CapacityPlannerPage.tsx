@@ -1183,8 +1183,6 @@ export default function CapacityPlannerPage() {
           );
         })()}
 
-        {/* FAB removed - using CatyFabPlaceholder from App.tsx for unified CATY AI experience */}
-
         {/* Presentation Mode Fullscreen Overlay */}
         {presentationMode && (
           <CapacityPresentationShell
