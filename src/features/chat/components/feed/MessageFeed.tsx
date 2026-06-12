@@ -3,6 +3,7 @@ import Avatar from '@atlaskit/avatar';
 import ArrowDownIcon from '@atlaskit/icon/core/arrow-down';
 import type { ChatConversation, ChatMessage } from '@/types/chat';
 import { useMessages } from '@/hooks/chat/useMessages';
+import { MessageComposer } from '@/components/chat/main/MessageComposer';
 import { HoverToolbar } from './HoverToolbar';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './feed.css';
@@ -351,84 +352,6 @@ function FeedHeader({ conversation }: { conversation: ChatConversation }) {
   );
 }
 
-// ── Composer ───────────────────────────────────────────────────────────────
-
-function draftKey(conversationId: string) {
-  return `c-chat-draft:${conversationId}`;
-}
-
-function Composer({
-  onSend,
-  conversationTitle,
-  conversationId,
-}: {
-  onSend: (text: string) => void;
-  conversationTitle: string;
-  conversationId: string;
-}) {
-  const [draft, setDraft] = useState(() => {
-    try { return localStorage.getItem(draftKey(conversationId)) ?? ''; } catch { return ''; }
-  });
-
-  // Restore draft when switching conversations
-  useEffect(() => {
-    try { setDraft(localStorage.getItem(draftKey(conversationId)) ?? ''); } catch { setDraft(''); }
-  }, [conversationId]);
-
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const text = e.target.value;
-    setDraft(text);
-    try {
-      if (text) localStorage.setItem(draftKey(conversationId), text);
-      else localStorage.removeItem(draftKey(conversationId));
-    } catch { /* storage full or unavailable */ }
-  }, [conversationId]);
-
-  const submit = useCallback(() => {
-    const trimmed = draft.trim();
-    if (!trimmed) return;
-    onSend(trimmed);
-    setDraft('');
-    try { localStorage.removeItem(draftKey(conversationId)); } catch { /* ignore */ }
-  }, [draft, onSend, conversationId]);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        submit();
-      }
-    },
-    [submit],
-  );
-
-  return (
-    <div className="c-composer">
-      <div className="c-composer__box">
-        <textarea
-          className="c-composer__input"
-          placeholder={`Message ${conversationTitle}`}
-          value={draft}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          rows={1}
-          aria-label={`Message ${conversationTitle}`}
-        />
-        <div className="c-composer__toolbar">
-          <button
-            className="c-composer__send"
-            disabled={!draft.trim()}
-            onClick={submit}
-            aria-label="Send message"
-          >
-            <ArrowDownIcon label="" LEGACY_size="small" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ── Main export ────────────────────────────────────────────────────────────
 
 interface Props {
@@ -561,7 +484,13 @@ export function MessageFeed({ conversationId, conversation, onOpenThread, initia
         </button>
       )}
 
-      <Composer onSend={sendMessage} conversationTitle={conversation.title} conversationId={conversationId} />
+      <div className="c-composer">
+        <MessageComposer
+          onSend={sendMessage}
+          conversationTitle={conversation.title}
+          conversationId={conversationId}
+        />
+      </div>
     </div>
   );
 }

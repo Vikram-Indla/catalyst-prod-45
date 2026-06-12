@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Avatar from '@atlaskit/avatar';
-import ArrowDownIcon from '@atlaskit/icon/core/arrow-down';
 import CrossIcon from '@atlaskit/icon/core/close';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { chatRealtime } from '@/lib/chat/ChatRealtimeManager';
+import { MessageComposer } from '@/components/chat/main/MessageComposer';
 import type { ChatMessage, ChatReaction } from '@/types/chat';
 import type { ThreadMode } from '../../hooks/useShellState';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
@@ -270,52 +270,6 @@ function MsgRow({
   );
 }
 
-// ── ThreadComposer ─────────────────────────────────────────────────────────
-
-function ThreadComposer({ onSend }: { onSend: (text: string) => void }) {
-  const [draft, setDraft] = useState('');
-
-  const submit = useCallback(() => {
-    const t = draft.trim();
-    if (!t) return;
-    onSend(t);
-    setDraft('');
-  }, [draft, onSend]);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); }
-    },
-    [submit],
-  );
-
-  return (
-    <div className="c-thread__composer">
-      <div className="c-composer__box">
-        <textarea
-          className="c-composer__input"
-          placeholder="Reply in thread…"
-          value={draft}
-          onChange={e => setDraft(e.target.value)}
-          onKeyDown={handleKeyDown}
-          rows={1}
-          aria-label="Reply in thread"
-        />
-        <div className="c-composer__toolbar">
-          <button
-            className="c-composer__send"
-            disabled={!draft.trim()}
-            onClick={submit}
-            aria-label="Send reply"
-          >
-            <ArrowDownIcon label="" LEGACY_size="small" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ── ThreadPane ─────────────────────────────────────────────────────────────
 
 interface Props {
@@ -446,7 +400,14 @@ export function ThreadPane({ conversationId, parentMessageId, threadMode, onClos
           )}
         </div>
 
-        <ThreadComposer onSend={sendReply} />
+        <div className="c-thread__composer">
+          <MessageComposer
+            onSend={sendReply}
+            conversationTitle="thread"
+            conversationId={`${conversationId}:thread:${parentMessageId}`}
+            minHeight={60}
+          />
+        </div>
       </div>
     </>
   );

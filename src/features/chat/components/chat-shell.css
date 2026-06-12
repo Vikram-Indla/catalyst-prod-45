@@ -82,6 +82,7 @@
 /* ── Main conversation area ── */
 .c-chat-main {
   min-width: 0;
+  overflow: hidden;
   display: grid;
   grid-template-rows:
     var(--c-chat-header-h)
