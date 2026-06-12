@@ -169,7 +169,7 @@
   align-items: center;
   justify-content: flex-end;
   padding-top: 0;
-  padding-right: 4px;
+  padding-inline-end: 4px;
 }
 
 .c-msg__compact-ts {
@@ -413,6 +413,39 @@
 
 .c-feed__jump:hover {
   filter: brightness(1.08);
+}
+
+/* ── Typing indicator ── */
+.c-feed__typing {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 24px;
+  min-height: 22px;
+}
+.c-feed__typing__dots {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+.c-feed__typing__dots span {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--c-chat-text-subtlest);
+  animation: c-typing-bounce 1.2s infinite ease-in-out;
+}
+.c-feed__typing__dots span:nth-child(2) { animation-delay: 0.2s; }
+.c-feed__typing__dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes c-typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30%            { transform: translateY(-4px); }
+}
+.c-feed__typing__label {
+  font-size: 12px;
+  color: var(--c-chat-text-subtle);
 }
 
 /* ── Composer ── */

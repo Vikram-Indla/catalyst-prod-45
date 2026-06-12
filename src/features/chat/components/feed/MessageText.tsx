@@ -29,7 +29,7 @@ export function MessageText({ text, className }: MessageTextProps) {
   const typeMap = useIssueTypeMap(keys);
 
   if (keys.length === 0) {
-    return <p className={className}>{text}</p>;
+    return <p className={className} dir="auto">{text}</p>;
   }
 
   const parts: React.ReactNode[] = [];
@@ -60,5 +60,5 @@ export function MessageText({ text, className }: MessageTextProps) {
     parts.push(text.slice(lastIndex));
   }
 
-  return <p className={className}>{parts}</p>;
+  return <p className={className} dir="auto">{parts}</p>;
 }

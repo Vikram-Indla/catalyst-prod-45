@@ -1,10 +1,25 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import type { ChatConversation } from '@/types/chat';
 import { ConversationRow } from './ConversationRow';
+import { useChatSearch } from '@/hooks/chat/useChatSearch';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './conversation-row.css';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './conversation-sidebar.css';
+
+const SearchIcon = () => (
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/>
+  </svg>
+);
+const CloseIcon = () => (
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <path d="M18 6L6 18M6 6l12 12"/>
+  </svg>
+);
 
 interface ConversationSidebarProps {
   conversations: ChatConversation[];
@@ -15,9 +30,52 @@ interface ConversationSidebarProps {
   isCollapsed: boolean;
 }
 
+// ── DM presence: single batched query for online status ───────────────────
+
+function useDMPresence(dmConvIds: string[]): Map<string, boolean> {
+  const { user } = useAuth();
+  const myId = user?.id ?? null;
+  const key = dmConvIds.slice().sort().join(',');
+  const { data } = useQuery({
+    queryKey: ['chat', 'dm-presence', key],
+    enabled: dmConvIds.length > 0 && !!myId,
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    queryFn: async () => {
+      const { data: rows } = await (supabase as any)
+        .from('chat_presence')
+        .select('conversation_id, user_id, status')
+        .in('conversation_id', dmConvIds)
+        .neq('user_id', myId)
+        .eq('status', 'online');
+      const map = new Map<string, boolean>();
+      for (const r of rows ?? []) map.set(r.conversation_id, true);
+      return map;
+    },
+  });
+  return data ?? new Map<string, boolean>();
+}
+
 interface SectionConfig {
   id: string;
   label: string;
+}
+
+export function groupConversationsForTest(conversations: ChatConversation[]) {
+  const active = conversations.filter(c => !c.isArchived);
+  const archived = conversations.filter(c => c.isArchived);
+  return {
+    projects: active.filter(c =>
+      c.kind === 'ticket' ||
+      (c.kind === 'channel' && !!c.projectKey)
+    ),
+    channels: active.filter(c =>
+      c.kind === 'custom_channel' ||
+      (c.kind === 'channel' && !c.projectKey)
+    ),
+    dms: active.filter(c => c.kind === 'dm' || c.kind === 'group_dm'),
+    archived,
+  };
 }
 
 const SECTIONS: SectionConfig[] = [
@@ -88,6 +146,24 @@ export function ConversationSidebar({
     dms: true,
     archived: false,
   });
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const { hits, isLoading: isSearching, isEnabled: searchActive } = useChatSearch(searchQuery, 'all', 20);
+
+  const dmConvIds = useMemo(
+    () => conversations.filter(c => c.kind === 'dm' || c.kind === 'group_dm').map(c => c.id),
+    [conversations],
+  );
+  const dmOnline = useDMPresence(dmConvIds);
+
+  const clearSearch = useCallback(() => setSearchQuery(''), []);
+
+  // Build a map of conversationId → ChatConversation for quick lookup in search results
+  const convById = useMemo(() => {
+    const m = new Map<string, ChatConversation>();
+    for (const c of conversations) m.set(c.id, c);
+    return m;
+  }, [conversations]);
 
   const grouped = useMemo(() => {
     const active = conversations.filter(c => !c.isArchived);
@@ -141,32 +217,96 @@ export function ConversationSidebar({
         </div>
       </div>
 
+      {/* Search input — hidden when collapsed */}
+      {!isCollapsed && (
+        <div className="c-sb-search">
+          <span className="c-sb-search__icon" aria-hidden="true"><SearchIcon /></span>
+          <input
+            className="c-sb-search__input"
+            type="search"
+            placeholder="Search conversations…"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            aria-label="Search conversations"
+          />
+          {searchQuery && (
+            <button className="c-sb-search__clear" onClick={clearSearch} aria-label="Clear search">
+              <CloseIcon />
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Scrollable conversation list */}
       <nav className="c-sb-scroll" aria-label="Conversation list">
-        {SECTIONS.map(section => {
-          const items = sectionData[section.id] ?? [];
-          if (items.length === 0) return null;
-          const isExpanded = expandedSections[section.id] ?? true;
-
-          return (
-            <div key={section.id} className="c-sb-section">
-              <SectionHeader
-                label={section.label}
-                count={items.filter(c => c.unreadCount > 0).length}
-                expanded={isExpanded}
-                onToggle={() => toggleSection(section.id)}
-              />
-              {isExpanded && items.map(conv => (
-                <ConversationRow
-                  key={conv.id}
-                  conversation={conv}
-                  isActive={conv.id === activeConversationId}
-                  onSelect={onSelectConversation}
-                />
-              ))}
+        {searchActive ? (
+          /* ── Search results ── */
+          isSearching ? (
+            <div className="c-sb-search-status">Searching…</div>
+          ) : hits.length === 0 ? (
+            <div className="c-sb-search-status">No results for "{searchQuery}"</div>
+          ) : (
+            <div className="c-sb-section">
+              <div className="c-sb-section__head c-sb-section__head--plain">
+                Results
+              </div>
+              {hits.map(hit => {
+                const conv = hit.conversationId ? convById.get(hit.conversationId) : undefined;
+                return (
+                  <button
+                    key={`${hit.resultType}-${hit.id}`}
+                    className={`c-sb-search-hit${conv && conv.id === activeConversationId ? ' c-sb-search-hit--active' : ''}`}
+                    onClick={() => {
+                      clearSearch();
+                      if (conv) onSelectConversation(conv.id);
+                      else if (hit.conversationId) onSelectConversation(hit.conversationId);
+                    }}
+                    title={hit.subtitle ?? hit.title}
+                  >
+                    <span className="c-sb-search-hit__type">{hit.resultType[0].toUpperCase()}</span>
+                    <span className="c-sb-search-hit__body">
+                      <span className="c-sb-search-hit__title">{hit.title}</span>
+                      {hit.subtitle && (
+                        <span className="c-sb-search-hit__sub">{hit.subtitle}</span>
+                      )}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
-          );
-        })}
+          )
+        ) : (
+          /* ── Normal sections ── */
+          SECTIONS.map(section => {
+            const items = sectionData[section.id] ?? [];
+            if (items.length === 0) return null;
+            const isExpanded = expandedSections[section.id] ?? true;
+
+            return (
+              <div key={section.id} className="c-sb-section">
+                <SectionHeader
+                  label={section.label}
+                  count={items.filter(c => c.unreadCount > 0).length}
+                  expanded={isExpanded}
+                  onToggle={() => toggleSection(section.id)}
+                />
+                {isExpanded && items.map(conv => (
+                  <ConversationRow
+                    key={conv.id}
+                    conversation={conv}
+                    isActive={conv.id === activeConversationId}
+                    onSelect={onSelectConversation}
+                    isOnline={
+                      (conv.kind === 'dm' || conv.kind === 'group_dm')
+                        ? (dmOnline.get(conv.id) ?? false)
+                        : undefined
+                    }
+                  />
+                ))}
+              </div>
+            );
+          })
+        )}
       </nav>
     </aside>
   );

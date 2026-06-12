@@ -190,3 +190,17 @@
 .c-thread .c-msg-group:first-child .c-msg--full:first-child {
   margin-top: 0;
 }
+
+/* ── Also-send-to-channel checkbox ── */
+.c-thread__also-in-channel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px 2px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--c-chat-text-subtle);
+  user-select: none;
+}
+.c-thread__also-in-channel input { cursor: pointer; }
+.c-thread__also-in-channel:hover { color: var(--c-chat-text); }

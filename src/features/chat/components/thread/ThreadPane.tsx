@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Avatar from '@atlaskit/avatar';
 import CrossIcon from '@atlaskit/icon/core/close';
@@ -104,6 +104,8 @@ async function fetchThread(
         deletedAt: m.deleted_at ?? null,
         reactions: reactions.get(m.id) ?? [],
         replyCount: 0,
+        lastReplyAt: null,
+        isAlsoInChannel: false,
       };
     };
 
@@ -139,15 +141,25 @@ function useThread(conversationId: string, parentId: string) {
   }, [conversationId, parentId, queryClient]);
 
   const sendReply = useCallback(
-    async (text: string) => {
+    async (text: string, opts?: { alsoInChannel?: boolean }) => {
       if (!myId || !text.trim()) return;
       try {
+        const trimmed = text.trim();
         await db.from('chat_messages').insert({
           conversation_id: conversationId,
           parent_id: parentId,
           author_id: myId,
-          body_text: text.trim(),
+          body_text: trimmed,
         });
+        if (opts?.alsoInChannel) {
+          await db.from('chat_messages').insert({
+            conversation_id: conversationId,
+            parent_id: null,
+            author_id: myId,
+            body_text: trimmed,
+            is_also_in_channel: true,
+          });
+        }
         await queryClient.invalidateQueries({ queryKey: ['chat', 'thread', conversationId, parentId] });
         await queryClient.invalidateQueries({ queryKey: ['chat', 'messages', conversationId] });
       } catch {
@@ -280,12 +292,59 @@ interface Props {
   onClose: () => void;
 }
 
+const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export function ThreadPane({ conversationId, parentMessageId, threadMode, onClose }: Props) {
   const { parent, replies, isLoading, sendReply, toggleReaction, currentUserId } =
     useThread(conversationId, parentMessageId);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const paneRef = useRef<HTMLDivElement>(null);
+  const prevFocusRef = useRef<HTMLElement | null>(null);
   const prevCountRef = useRef(0);
+  const [alsoInChannel, setAlsoInChannel] = useState(false);
+
+  const isOverlay = threadMode === 'overlay';
+
+  // Focus trap for overlay mode
+  useEffect(() => {
+    if (!isOverlay) return;
+    const pane = paneRef.current;
+    if (!pane) return;
+
+    prevFocusRef.current = document.activeElement as HTMLElement;
+
+    const focusable = pane.querySelectorAll<HTMLElement>(FOCUSABLE);
+    if (focusable.length > 0) focusable[0].focus();
+
+    const handler = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const els = Array.from(pane.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+        el => el.offsetParent !== null,
+      );
+      if (els.length === 0) return;
+      const first = els[0];
+      const last = els[els.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handler, true);
+    return () => {
+      document.removeEventListener('keydown', handler, true);
+      const prev = prevFocusRef.current;
+      if (prev && document.contains(prev)) prev.focus();
+    };
+  }, [isOverlay]);
 
   // Auto-scroll when new replies arrive
   useEffect(() => {
@@ -306,8 +365,6 @@ export function ThreadPane({ conversationId, parentMessageId, threadMode, onClos
   // Group replies by author continuity
   const replyGroups = groupReplies(replies);
 
-  const isOverlay = threadMode === 'overlay';
-
   return (
     <>
       {isOverlay && (
@@ -320,6 +377,7 @@ export function ThreadPane({ conversationId, parentMessageId, threadMode, onClos
       )}
 
       <div
+        ref={paneRef}
         className="c-chat-thread-pane c-thread"
         data-mode={isOverlay ? 'overlay' : undefined}
         role="complementary"
@@ -402,8 +460,16 @@ export function ThreadPane({ conversationId, parentMessageId, threadMode, onClos
         </div>
 
         <div className="c-thread__composer">
+          <label className="c-thread__also-in-channel">
+            <input
+              type="checkbox"
+              checked={alsoInChannel}
+              onChange={e => setAlsoInChannel(e.target.checked)}
+            />
+            <span>Also send to channel</span>
+          </label>
           <MessageComposer
-            onSend={sendReply}
+            onSend={async (text, opts) => sendReply(text, { alsoInChannel })}
             conversationTitle="thread"
             conversationId={`${conversationId}:thread:${parentMessageId}`}
             minHeight={60}

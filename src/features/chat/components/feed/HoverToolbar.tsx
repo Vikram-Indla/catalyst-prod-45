@@ -7,13 +7,24 @@ import ShowMoreHorizontalIcon from '@atlaskit/icon/core/show-more-horizontal';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './hover-toolbar.css';
 
-const ALL_EMOJIS = [
-  '👍','👎','❤️','😄','😂','🥲','😊','🙏','👏','🔥',
-  '🎉','✅','🚀','💯','🤔','😮','😢','😡','🤣','😍',
-  '🙌','💪','👀','✨','💡','⚡','🎯','📌','🔑','💎',
-  '🌟','⭐','💫','🌈','🍎','🍕','☕','🎸','🏆','🎮',
-  '💻','📱','🔧','📊','📝','📅','🔒','🌍','🤝','🎁',
+const EMOJI_ENTRIES: [string, string][] = [
+  ['👍','thumbs up like yes'],['👎','thumbs down no dislike'],['❤️','heart love red'],
+  ['😄','smile happy grin'],['😂','laugh cry tears joy'],['🥲','smile tear happy sad'],
+  ['😊','smile happy blush'],['🙏','pray thanks hands'],['👏','clap applause'],['🔥','fire hot'],
+  ['🎉','party celebrate tada'],['✅','check done yes tick'],['🚀','rocket launch ship'],
+  ['💯','hundred percent perfect'],['🤔','think hmm question'],['😮','wow surprised'],
+  ['😢','sad cry tear'],['😡','angry mad rage'],['🤣','rofl laugh rolling'],['😍','love eyes heart'],
+  ['🙌','hands raised celebrate'],['💪','muscle strong flex'],['👀','eyes look watch'],
+  ['✨','sparkle stars shine'],['💡','idea bulb light'],['⚡','lightning bolt fast'],
+  ['🎯','target bullseye goal'],['📌','pin pinned bookmark'],['🔑','key lock'],['💎','diamond gem'],
+  ['🌟','star gold shine'],['⭐','star'],['💫','dizzy star sparkle'],['🌈','rainbow color'],
+  ['🍎','apple red fruit'],['🍕','pizza food'],['☕','coffee hot drink'],['🎸','guitar music'],
+  ['🏆','trophy win award'],['🎮','gaming controller play'],['💻','laptop computer'],
+  ['📱','phone mobile'],['🔧','wrench tool fix'],['📊','chart graph data'],
+  ['📝','memo note write'],['📅','calendar date'],['🔒','lock security'],
+  ['🌍','earth world globe'],['🤝','handshake deal'],['🎁','gift present'],
 ];
+const ALL_EMOJIS = EMOJI_ENTRIES.map(([e]) => e);
 
 // ── Emoji picker portal ─────────────────────────────────────────────────────
 
@@ -29,12 +40,9 @@ function EmojiPicker({
   const [query, setQuery] = useState('');
   const ref = useRef<HTMLDivElement>(null);
 
-  const emojis = query.trim()
-    ? ALL_EMOJIS.filter(e => {
-        // Basic text match — works for ASCII descriptions embedded in emoji names isn't available,
-        // so filter by position in list as fallback (keep all when query non-empty but no match logic)
-        return true; // simple: show all; user sees what they see
-      })
+  const q = query.trim().toLowerCase();
+  const emojis = q
+    ? EMOJI_ENTRIES.filter(([, names]) => names.includes(q)).map(([e]) => e)
     : ALL_EMOJIS;
 
   // Position: prefer above anchor, fallback below

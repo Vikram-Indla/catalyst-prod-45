@@ -18,14 +18,14 @@
   --c-chat-tabs-h: 44px;
   --c-chat-page-pad-x: 24px;
   --c-chat-page-pad-y: 16px;
-  --c-chat-list-row-h: 52px;
+  --c-chat-list-row-h: 56px;
   --c-chat-avatar: 36px;
   --c-chat-thread-avatar: 32px;
   --c-chat-inline-chip-h: 22px;
   --c-chat-reaction-pill-h: 24px;
   --c-chat-hover-toolbar-h: 32px;
   /* ads-scanner:ignore-next-line — V3 prototype token, intentional value */
-  --c-chat-group-gap-y: 10px;
+  --c-chat-group-gap-y: 12px;
   /* ads-scanner:ignore-next-line — V3 prototype token, intentional value */
   --c-chat-intra-group-gap-y: 2px;
   --c-chat-focus-ring-w: 2px;
