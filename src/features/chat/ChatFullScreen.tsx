@@ -6,7 +6,7 @@
  * Callers: src/pages/chat/ChatPage.tsx only.
  */
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { ChatRealtimeProvider } from '@/hooks/chat/ChatRealtimeProvider';
@@ -15,6 +15,7 @@ import { ChatShell } from './components/ChatShell';
 import { useShellState } from './hooks/useShellState';
 import { MessageFeed } from './components/feed/MessageFeed';
 import { ThreadPane } from './components/thread/ThreadPane';
+import { NewConversationModal } from './components/NewConversationModal';
 import './tokens.css';
 
 const db = supabase as unknown as { from: (t: string) => any };
@@ -45,6 +46,8 @@ function ChatFullScreenInner() {
   const [activeConversationId, setActiveConversationId] = useState<string | undefined>(undefined);
   const [unreadActivity, setUnreadActivity] = useState(0);
   const [pendingMessageId, setPendingMessageId] = useState<string | undefined>(undefined);
+  const [showNewConvModal, setShowNewConvModal] = useState(false);
+  const queryClient = useQueryClient();
   const shell = useShellState();
   const { conversations, isLoading } = useConversations();
   const { name: userName, avatarUrl: userAvatarUrl } = useSelfProfile();
@@ -65,12 +68,26 @@ function ChatFullScreenInner() {
     setPendingMessageId(messageId);
   };
 
+  const handleConversationCreated = (conversationId: string) => {
+    setShowNewConvModal(false);
+    queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] });
+    handleSelectConversation(conversationId);
+  };
+
   return (
+    <>
+    {showNewConvModal && (
+      <NewConversationModal
+        onClose={() => setShowNewConvModal(false)}
+        onCreated={handleConversationCreated}
+      />
+    )}
     <ChatShell
       shell={shell}
       conversations={conversations}
       activeConversationId={activeConversationId}
       onSelectConversation={handleSelectConversation}
+      onNewConversation={() => setShowNewConvModal(true)}
       onOpenConversation={handleOpenConversation}
       onUnreadActivity={setUnreadActivity}
       userName={userName}
@@ -126,6 +143,7 @@ function ChatFullScreenInner() {
         />
       )}
     </ChatShell>
+    </>
   );
 }
 
