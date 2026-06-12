@@ -371,6 +371,7 @@ export default function WorkflowAdminPage() {
                         projectKey={projectKey}
                         workItemType={type as WorkItemType}
                         allRegistryStatuses={statuses}
+                        onFeedback={(type, title, description) => addFlag(type, title, description)}
                       />
                     )}
                   </TabPanel>

@@ -3,6 +3,7 @@ import Button from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
 import Tooltip from '@atlaskit/tooltip';
 import Spinner from '@atlaskit/spinner';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import type { TypeStatus, Transition } from '@/hooks/useTypeWorkflow';
 import {
   useTypeWorkflow,
@@ -11,6 +12,8 @@ import {
   useSetInitialStatus,
   useAddTransition,
   useDeleteTransition,
+  useCopyTypeWorkflow,
+  WORK_ITEM_TYPES,
   type WorkItemType,
 } from '@/hooks/useTypeWorkflow';
 import type { WorkflowStatusWithTypes } from '@/hooks/useWorkflowStatuses';
@@ -763,12 +766,14 @@ interface WorkflowTypePanelProps {
   projectKey: string;
   workItemType: WorkItemType;
   allRegistryStatuses: WorkflowStatusWithTypes[];
+  onFeedback?: (type: 'success' | 'error', title: string, description?: string) => void;
 }
 
 export function WorkflowTypePanel({
   projectKey,
   workItemType,
   allRegistryStatuses,
+  onFeedback,
 }: WorkflowTypePanelProps) {
   const { data, isLoading, error } = useTypeWorkflow(projectKey, workItemType);
   const addTypeStatus = useAddTypeStatus(projectKey, workItemType);
@@ -776,6 +781,7 @@ export function WorkflowTypePanel({
   const setInitialStatus = useSetInitialStatus(projectKey, workItemType);
   const addTransition = useAddTransition(projectKey, workItemType);
   const deleteTransition = useDeleteTransition(projectKey, workItemType);
+  const copyWorkflow = useCopyTypeWorkflow(projectKey, workItemType);
 
   const [wfMode, setWfMode] = useState<'editor' | 'diagram'>('editor');
   const [showAddStatus, setShowAddStatus] = useState(false);
@@ -933,35 +939,59 @@ export function WorkflowTypePanel({
         </span>
         <span style={{ flex: 1 }} />
         <ModeToggle mode={wfMode} onChange={setWfMode} />
-        <button
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            height: 32,
-            padding: '0 10px',
-            border: '1px solid var(--ds-border, #DFE1E6)',
-            borderRadius: 3,
-            fontSize: 14,
-            fontWeight: 500,
-            background: 'transparent',
-            color: 'var(--ds-text, #292A2E)',
-            cursor: 'pointer',
-            transition: 'background 120ms ease',
-          }}
-          onMouseEnter={(e) =>
-            ((e.currentTarget as HTMLButtonElement).style.background =
-              'var(--ds-background-neutral, #F1F2F4)')
-          }
-          onMouseLeave={(e) =>
-            ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')
-          }
-          onClick={() => {}}
-          title="Copy statuses and transitions from another work item type"
+        <DropdownMenu
+          trigger={({ triggerRef, ...triggerProps }) => (
+            <button
+              ref={triggerRef}
+              {...triggerProps}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                height: 32,
+                padding: '0 10px',
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                borderRadius: 3,
+                fontSize: 14,
+                fontWeight: 500,
+                background: 'transparent',
+                color: copyWorkflow.isPending ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, #292A2E)',
+                cursor: copyWorkflow.isPending ? 'not-allowed' : 'pointer',
+                transition: 'background 120ms ease',
+              }}
+              disabled={copyWorkflow.isPending}
+              title="Copy statuses and transitions from another work item type"
+            >
+              {copyWorkflow.isPending ? <Spinner size="small" /> : <CopyIcon />}
+              Copy workflow from…
+            </button>
+          )}
+          placement="bottom-end"
         >
-          <CopyIcon />
-          Copy workflow from…
-        </button>
+          <DropdownItemGroup title="Copy from">
+            {WORK_ITEM_TYPES.filter((t) => t !== workItemType).map((fromType) => (
+              <DropdownItem
+                key={fromType}
+                onClick={() => {
+                  copyWorkflow.mutate(fromType, {
+                    onSuccess: ({ addedStatuses, addedTransitions }) => {
+                      onFeedback?.(
+                        'success',
+                        `Copied from ${fromType}`,
+                        `Added ${addedStatuses} status${addedStatuses !== 1 ? 'es' : ''} and ${addedTransitions} transition${addedTransitions !== 1 ? 's' : ''}.`
+                      );
+                    },
+                    onError: (err: unknown) => {
+                      onFeedback?.('error', 'Copy failed', (err as Error)?.message);
+                    },
+                  });
+                }}
+              >
+                {fromType}
+              </DropdownItem>
+            ))}
+          </DropdownItemGroup>
+        </DropdownMenu>
       </div>
 
       {/* ── diagram placeholder ─────────────────────────────────────────── */}
