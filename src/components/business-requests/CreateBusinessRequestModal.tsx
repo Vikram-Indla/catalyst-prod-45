@@ -77,7 +77,8 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { flag } from '@/components/shared/JiraTable/flags';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { TitleTranslateWrapper } from '@/components/shared/title-translate/TitleTranslateWrapper';
-import { useActiveDemandProcessSteps, stepToLozengeAppearance } from '@/hooks/useDemandProcessSteps';
+import { useCatalystWorkflow } from '@/hooks/useCatalystWorkflow';
+import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import {
   CATEGORY_OPTIONS,
   THEME_OPTIONS,
@@ -163,16 +164,6 @@ const THEME_SELECT_OPTIONS = THEME_OPTIONS.map(t => ({ value: t.value, label: t.
 const TYPE_SELECT_OPTIONS = REQUEST_TYPE_OPTIONS.map(t => ({ value: t.value, label: t.label }));
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Status lozenge appearance — 3-colour guardrail (CLAUDE.md §5)
-// Maps admin workflow category → lozenge appearance.
-// ─────────────────────────────────────────────────────────────────────────────
-function brStatusAppearance(category: 'todo' | 'in_progress' | 'done' | undefined) {
-  if (category === 'done') return 'success';
-  if (category === 'in_progress') return 'inprogress';
-  return 'default';
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // xcss token styles (zero inline colour props)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -226,7 +217,7 @@ interface FormState {
 
 const INITIAL: FormState = {
   title: '', descriptionAdf: null, description: '',
-  process_step: 'new_request', request_type: '', urgency: '', category: '',
+  process_step: '', request_type: '', urgency: '', category: '',
   theme: '', project_manager_user_id: '', po_user_id: '', stakeholders: [],
   planned_quarter: '', release_id: null, end_date: '', targeted_feature: false, attachments: [],
 };
@@ -552,15 +543,15 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
     return () => document.removeEventListener('mousedown', handler);
   }, [statusMenuOpen]);
 
-  // Seed initial status from /admin/workflows (Business Request scheme)
-  const { data: brSteps = [] } = useActiveDemandProcessSteps();
+  // Canonical workflow statuses — same source as BrStatusSection
+  const { statuses: brStatuses, initialStatus: brInitialStatus } = useCatalystWorkflow('Business Request');
   useEffect(() => {
-    if (!brSteps.length) return;
-    const validValues = brSteps.map(s => s.value);
-    if (!validValues.includes(form.process_step)) {
-      setForm(prev => ({ ...prev, process_step: brSteps[0].value }));
+    if (!brStatuses.length) return;
+    const validSlugs = brStatuses.map(s => s.slug);
+    if (!form.process_step || !validSlugs.includes(form.process_step)) {
+      setForm(prev => ({ ...prev, process_step: brInitialStatus?.slug ?? brStatuses[0].slug }));
     }
-  }, [brSteps, form.process_step]);
+  }, [brStatuses, brInitialStatus, form.process_step]);
 
   const set = useCallback(<K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -762,11 +753,11 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
                         }}
                       >
                         {(() => {
-                          const step = brSteps.find(s => s.value === form.process_step);
+                          const status = brStatuses.find(s => s.slug === form.process_step);
                           return (
                             <StatusSpan
-                              appearance={step ? stepToLozengeAppearance(step) : 'default'}
-                              label={step?.label ?? form.process_step ?? 'New'}
+                              appearance={status ? statusToLozenge(status.name, status.category) : 'default'}
+                              label={status?.name ?? form.process_step ?? 'New'}
                             />
                           );
                         })()}
@@ -797,15 +788,15 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
                           fontSize: 14,
                         }}
                       >
-                        {brSteps.map((step) => {
-                          const selected = form.process_step === step.value;
+                        {brStatuses.map((status) => {
+                          const selected = form.process_step === status.slug;
                           return (
                             <button
-                              key={step.value}
+                              key={status.slug}
                               type="button"
                               role="option"
                               aria-selected={selected}
-                              onClick={() => { set('process_step', step.value); setStatusMenuOpen(false); statusTriggerRef.current?.focus(); }}
+                              onClick={() => { set('process_step', status.slug); setStatusMenuOpen(false); statusTriggerRef.current?.focus(); }}
                               style={{
                                 display: 'flex', alignItems: 'center', gap: 8,
                                 width: '100%', padding: '8px 12px',
@@ -818,7 +809,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
                               onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
                               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                             >
-                              <StatusSpan appearance={stepToLozengeAppearance(step)} label={step.label} />
+                              <StatusSpan appearance={statusToLozenge(status.name, status.category)} label={status.name} />
                               {selected && (
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 'auto', color: token('color.text.brand', '#0C66E4') }} aria-hidden="true">
                                   <polyline points="20 6 9 17 4 12" />
