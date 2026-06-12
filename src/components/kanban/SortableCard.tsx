@@ -37,9 +37,10 @@ interface SortableCardProps {
   onLinked?: () => void;
   visibleFields?: VisibleFields;
   cardColorMode?: CardColorMode;
+  subtasks?: import('./kanban-types').BoardIssue[];
 }
 
-export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields, cardColorMode }: SortableCardProps) {
+export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields, cardColorMode, subtasks }: SortableCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -164,6 +165,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
         onMoved={onMoved}
         onLinked={onLinked}
         visibleFields={visibleFields}
+        subtasks={subtasks}
       />
     </div>
     {/* Jira-parity right-click context menu (swimlane mode) */}

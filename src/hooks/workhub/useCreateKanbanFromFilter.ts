@@ -246,6 +246,7 @@ export function useCreateKanbanFromFilter() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['filters'] });
+      qc.invalidateQueries({ queryKey: ['boards'] });
       qc.invalidateQueries({ queryKey: ['project-boards'] });
       qc.invalidateQueries({ queryKey: ['project-boards-native'] });
       qc.invalidateQueries({ queryKey: ['project-boards-filter'] });

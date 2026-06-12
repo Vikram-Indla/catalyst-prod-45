@@ -9,7 +9,6 @@ import AvatarGroup from '@atlaskit/avatar-group';
 import AkFlag, { FlagGroup } from '@atlaskit/flag';
 import AkSearchIcon from '@atlaskit/icon/core/search';
 import AkCloseIcon from '@atlaskit/icon/core/close';
-import AkWarningIcon from '@atlaskit/icon/core/warning';
 import AkInfoIcon from '@atlaskit/icon/core/information';
 import Spinner from '@atlaskit/spinner';
 import { AtlaskitPageShell } from '@/components/ads';
@@ -34,6 +33,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { jiraIconType } from '@/components/universal-work-view/uwv.utils';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
+import { useUpdateSavedFilter } from '@/hooks/workhub/useSavedFilters';
 import { useJqlResults, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
 import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
@@ -43,6 +43,7 @@ import {
   FilterChip,
   FilterTriggerAndPopup,
   type FilterState,
+  type FilterFacet,
   EMPTY_FILTERS,
   FACET_LABELS,
   MORE_FILTERS_FACETS,
@@ -75,6 +76,46 @@ function filterStatusAppearance(status: string | null | undefined): LozengeAppea
   if (s === 'blocked') return 'removed';
   if (s === 'on hold') return 'moved';
   return 'default';
+}
+
+// Reverse of filterStateToJql — parses the predictable JQL we generate back into
+// chip-level FilterState so saved filters restore their UI selections on load.
+// Only handles the exact format filterStateToJql outputs; arbitrary JQL is ignored.
+const JQL_FIELD_TO_FACET: Record<string, FilterFacet> = {
+  assignee:    'assignee',
+  reporter:    'reporter',
+  status:      'status',
+  priority:    'priority',
+  issuetype:   'workType',
+  labels:      'labels',
+  fixVersion:  'sprintReleases',
+  parent:      'parent',
+  resolution:  'resolution',
+  sprint:      'sprint',
+  storyPoints: 'storyPoints',
+  'cf[10125]': 'severity',
+};
+
+function jqlToFilterState(jql: string): Partial<FilterState> {
+  const result: Partial<FilterState> = {};
+  // Match: field in ("a", "b") — multi-value
+  const inRe = /(\S+)\s+in\s+\(([^)]+)\)/g;
+  // Match: field = "a" — single-value (skip project clause)
+  const eqRe = /(\S+)\s+=\s+"([^"]+)"/g;
+  let m: RegExpExecArray | null;
+  while ((m = inRe.exec(jql)) !== null) {
+    const facet = JQL_FIELD_TO_FACET[m[1]];
+    if (!facet) continue;
+    const vals = [...m[2].matchAll(/"([^"]+)"/g)].map(v => v[1]);
+    if (vals.length) result[facet] = vals;
+  }
+  while ((m = eqRe.exec(jql)) !== null) {
+    if (m[1] === 'project') continue;
+    const facet = JQL_FIELD_TO_FACET[m[1]];
+    if (!facet || result[facet]) continue; // skip if already set by IN clause
+    result[facet] = [m[2]];
+  }
+  return result;
 }
 
 // Mirrors AllWorkToolbar's TOOLBAR_FACET_TYPES exactly — same type filter drives
@@ -225,14 +266,17 @@ export function FilterPreviewPage() {
   // Save state — isDirty gates the Save button; savedFilterId drives override logic
   const [savedFilterId, setSavedFilterId] = useState<string | null>(null);
   const [saveOpen, setSaveOpen] = useState(false);
+  const [saveAsOpen, setSaveAsOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
+
+  const updateFilter = useUpdateSavedFilter();
 
   // Atlaskit Flag notifications
   const [flags, setFlags] = useState<
-    Array<{ id: string; type: 'override-warning' | 'impact-entities' }>
+    Array<{ id: string; type: 'save-success' | 'impact-entities' }>
   >([]);
   const flagIdRef = useRef(0);
-  const addFlag = useCallback((type: 'override-warning' | 'impact-entities') => {
+  const addFlag = useCallback((type: 'save-success' | 'impact-entities') => {
     const id = `flag-${++flagIdRef.current}`;
     setFlags(prev => [...prev, { id, type }]);
     if (type !== 'override-warning') {
@@ -269,10 +313,16 @@ export function FilterPreviewPage() {
     setSavedFilterId(loadedFilter.id);
     setSavedFilterName(loadedFilter.name ?? null);
     setSavedFilterJql(loadedFilter.jql_query ?? null);
-    // Restore chip state if filter_config has FilterState shape (workType/status/assignee).
     const cfg = loadedFilter.filter_config;
+    // Prefer filter_config when it has FilterState shape (chips already stored).
     if (cfg && typeof cfg === 'object' && ('workType' in cfg || 'status' in cfg || 'assignee' in cfg)) {
       setFilters({ ...EMPTY_FILTERS, ...(cfg as Partial<FilterState>) });
+    } else if (loadedFilter.jql_query) {
+      // Legacy filters stored only jql_query — parse it back into chip state.
+      const parsed = jqlToFilterState(loadedFilter.jql_query);
+      if (Object.keys(parsed).length > 0) {
+        setFilters({ ...EMPTY_FILTERS, ...parsed });
+      }
     }
   }, [loadedFilter]);
 
@@ -335,20 +385,27 @@ export function FilterPreviewPage() {
 
   // ── Save handlers ──────────────────────────────────────────────────────────
 
+  // Jira "Save" behavior: update JQL in-place, no dialog.
+  // Also persist filter_config as the current chip state so the next
+  // load can restore chips without re-parsing JQL.
   const handleSaveClick = () => {
     if (savedFilterId) {
-      // Filter was previously saved — show override warning first
-      addFlag('override-warning');
+      updateFilter.mutate(
+        {
+          id: savedFilterId,
+          updates: { jql_query: jql.trim() || null, filter_config: filters },
+        },
+        {
+          onSuccess: () => {
+            setIsDirty(false);
+            addFlag('save-success');
+          },
+        }
+      );
     } else {
       setSaveOpen(true);
     }
   };
-
-  const handleConfirmOverride = useCallback(() => {
-    // User confirmed the override — dismiss the warning flag and open modal
-    setFlags(prev => prev.filter(f => f.type !== 'override-warning'));
-    setSaveOpen(true);
-  }, []);
 
   const handleSaved = useCallback(
     (id: string) => {
@@ -730,8 +787,19 @@ export function FilterPreviewPage() {
           {!isFetching && data != null && `${data.totalCount} item${data.totalCount === 1 ? '' : 's'}`}
         </div>
 
-        {/* Save button — disabled until user touches any filter or search */}
-        <Button appearance="primary" isDisabled={!isDirty} onClick={handleSaveClick}>
+        {/* Save as — only shown when editing an existing filter (Jira parity) */}
+        {savedFilterId && (
+          <Button appearance="subtle" onClick={() => setSaveAsOpen(true)}>
+            Save as
+          </Button>
+        )}
+        {/* Save — disabled until user touches any filter or search */}
+        <Button
+          appearance="primary"
+          isDisabled={!isDirty}
+          isLoading={updateFilter.isPending}
+          onClick={handleSaveClick}
+        >
           Save filter
         </Button>
       </div>
@@ -778,13 +846,22 @@ export function FilterPreviewPage() {
         </div>
       </div>
 
-      {/* Save modal */}
+      {/* New filter save modal — only shown when no existing filter is loaded */}
       {saveOpen && (
         <FilterSaveModal
-          filter={savedFilterId ? ({ id: savedFilterId } as any) : undefined}
           initialJql={jql}
-          initialName={savedFilterId ? undefined : 'Untitled filter'}
+          initialName="Untitled filter"
           onClose={() => setSaveOpen(false)}
+          onSaved={handleSaved}
+        />
+      )}
+
+      {/* Save as modal — creates a new filter from the current JQL (Jira parity) */}
+      {saveAsOpen && (
+        <FilterSaveModal
+          initialJql={jql}
+          initialName={savedFilterName ? `${savedFilterName} (copy)` : 'Untitled filter'}
+          onClose={() => setSaveAsOpen(false)}
           onSaved={handleSaved}
         />
       )}
@@ -792,19 +869,16 @@ export function FilterPreviewPage() {
       {/* Atlaskit Flag notifications — override warning + impact alert */}
       <FlagGroup onDismissed={id => dismissFlag(id as string)}>
         {flags.map(flag => {
-          if (flag.type === 'override-warning') {
+          if (flag.type === 'save-success') {
             return (
               <AkFlag
                 key={flag.id}
                 id={flag.id}
-                appearance="warning"
-                icon={<AkWarningIcon label="Warning" color={token('color.icon.warning', '#974F0C')} />}
-                title="Override existing filter?"
-                description="You are about to save changes over the existing saved filter. This cannot be undone."
-                actions={[
-                  { content: 'Yes, override', onClick: handleConfirmOverride },
-                  { content: 'Cancel', onClick: () => dismissFlag(flag.id) },
-                ]}
+                appearance="success"
+                icon={<AkInfoIcon label="Saved" color={token('color.icon.success', '#22A06B')} />}
+                title="Filter saved"
+                description="Your changes have been saved."
+                actions={[{ content: 'Dismiss', onClick: () => dismissFlag(flag.id) }]}
               />
             );
           }

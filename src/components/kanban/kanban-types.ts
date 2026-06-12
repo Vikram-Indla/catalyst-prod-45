@@ -39,6 +39,7 @@ export type GroupByMode = 'none' | 'assignee' | 'epic' | 'feature' | 'priority' 
 export const BOARD_SUBTASK_TYPES = new Set([
   'Sub-task', 'sub-task', 'subtask',
   'Backend', 'Frontend', 'Integration', 'Figma', 'Entity Figma',
+  'API Requirement', 'BRD Task',
 ]);
 
 /**

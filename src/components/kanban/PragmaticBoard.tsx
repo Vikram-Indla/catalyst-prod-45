@@ -93,6 +93,11 @@ interface CardActions {
    * Ideas, etc.) supply this via the canonical BoardAdapter.
    */
   resolveIcon?: (issue: BoardIssue) => ReactNode | null;
+  /**
+   * Map of parent issueKey → subtask-family BoardIssue[]. When provided,
+   * each card renders a SubtaskStrip showing hover-card chips for its children.
+   */
+  subtasksByParentKey?: Map<string, BoardIssue[]>;
 }
 
 /* ═════════════════════════════════════════════════════════════════════════
@@ -119,6 +124,10 @@ interface PragmaticCardProps extends CardActions {
 const PragmaticCard = memo(function PragmaticCard({
   issue, colId, avatarUrl, onClick, d, tk, isSelected, isFocused, avatarsByName, cardColorMode, ...actions
 }: PragmaticCardProps) {
+  // Resolve subtasks for this card before spreading actions into WorkItemCard.
+  // subtasksByParentKey must not be forwarded raw (WorkItemCard expects BoardIssue[]).
+  const { subtasksByParentKey, ...workItemActions } = actions as typeof actions & { subtasksByParentKey?: Map<string, BoardIssue[]> };
+  const cardSubtasks = subtasksByParentKey?.get(issue.issueKey) ?? [];
   const ref = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [closestEdge, setClosestEdge] = useState<Edge | null>(null);
@@ -246,9 +255,10 @@ const PragmaticCard = memo(function PragmaticCard({
           d={d}
           tk={tk}
           isSelected={isSelected}
-          {...actions}
+          {...workItemActions}
           onOpenDetail={onClick}
           avatarsByName={avatarsByName}
+          subtasks={cardSubtasks}
         />
       </div>
       {closestEdge && <DropIndicator edge={closestEdge} gap={d.cardGap} />}
