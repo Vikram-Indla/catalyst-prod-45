@@ -3,6 +3,7 @@ import Avatar from '@atlaskit/avatar';
 import ArrowDownIcon from '@atlaskit/icon/core/arrow-down';
 import type { ChatConversation, ChatMessage } from '@/types/chat';
 import { useMessages } from '@/hooks/chat/useMessages';
+import { HoverToolbar } from './HoverToolbar';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './feed.css';
 
@@ -133,18 +134,21 @@ function MsgGroupBlock({
   currentUserId,
   onToggleReaction,
   onOpenThread,
-  unreadCount,
+  onEditMessage,
+  onDeleteMessage,
 }: {
   group: MsgGroup;
   currentUserId: string | null;
   onToggleReaction: (msgId: string, emoji: string) => void;
   onOpenThread: (msgId: string) => void;
-  unreadCount: number;
+  onEditMessage: (msgId: string) => void;
+  onDeleteMessage: (msgId: string) => void;
 }) {
   return (
     <div className="c-msg-group" role="group" aria-label={`Messages from ${group.authorName}`}>
       {group.messages.map((msg, idx) => {
         const isFull = idx === 0;
+        const isOwn = currentUserId !== null && msg.authorId === currentUserId;
         return (
           <div
             key={msg.id}
@@ -224,6 +228,18 @@ function MsgGroupBlock({
                 </button>
               )}
             </div>
+
+            {/* Hover toolbar */}
+            {!msg.deletedAt && (
+              <HoverToolbar
+                messageId={msg.id}
+                isOwn={isOwn}
+                onToggleReaction={emoji => onToggleReaction(msg.id, emoji)}
+                onOpenThread={() => onOpenThread(msg.id)}
+                onEditMessage={() => onEditMessage(msg.id)}
+                onDeleteMessage={() => onDeleteMessage(msg.id)}
+              />
+            )}
           </div>
         );
       })}
@@ -315,7 +331,7 @@ interface Props {
 }
 
 export function MessageFeed({ conversationId, conversation, onOpenThread }: Props) {
-  const { messages, isLoading, hasMore, loadMore, sendMessage, toggleReaction, currentUserId } =
+  const { messages, isLoading, hasMore, loadMore, sendMessage, editMessage, deleteMessage, toggleReaction, currentUserId } =
     useMessages(conversationId);
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -397,7 +413,8 @@ export function MessageFeed({ conversationId, conversation, onOpenThread }: Prop
               currentUserId={currentUserId}
               onToggleReaction={toggleReaction}
               onOpenThread={onOpenThread}
-              unreadCount={conversation.unreadCount}
+              onEditMessage={editMessage}
+              onDeleteMessage={deleteMessage}
             />
           </React.Fragment>
         ))}
