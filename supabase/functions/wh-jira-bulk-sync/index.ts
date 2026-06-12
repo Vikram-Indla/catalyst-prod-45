@@ -329,7 +329,7 @@ Deno.serve(async (req) => {
         description_text: descText,
         comments,
         changelog: [],
-        raw_json: issue,
+        raw_json: null,
       }
     })
     // ── 2026 GUARDRAIL — only sync items created or updated in 2026+ ──
@@ -350,6 +350,94 @@ Deno.serve(async (req) => {
       if (error) throw error
       upsertedCount += chunk.length
     }
+
+    // ── PARENT PULL-THROUGH (2026-06-12) ─────────────────────────────────────────
+    // Rule: when a 2026 issue references a pre-2026 parent (via fields.parent),
+    // fetch that parent from Jira and upsert as a reference row in ph_issues —
+    // even though the parent would normally fail the 2026 date gate.
+    // This ensures the UI (Backlog parent column, icon rendering) can resolve
+    // the parent's issue_type and summary without manual DB inserts.
+    {
+      const syncedIssueKeys = new Set(rows.map((r: any) => r.issue_key))
+      const referencedParentKeys: string[] = [...new Set(
+        allIssues
+          .map((issue: any) => issue.fields?.parent?.key || resolveParentFromLinks(issue))
+          .filter((k: any): k is string => !!k && !syncedIssueKeys.has(k))
+      )]
+
+      if (referencedParentKeys.length > 0) {
+        const { data: existingParents } = await supabase
+          .from('ph_issues')
+          .select('issue_key')
+          .in('issue_key', referencedParentKeys)
+        const alreadyInDb = new Set((existingParents || []).map((r: any) => r.issue_key))
+        const missingParentKeys = referencedParentKeys.filter((k: string) => !alreadyInDb.has(k))
+
+        if (missingParentKeys.length > 0) {
+          console.log(`[parent-pullthrough] Fetching ${missingParentKeys.length} pre-2026 parent(s): ${missingParentKeys.join(', ')}`)
+          const parentJql = `issue in (${missingParentKeys.join(',')})`
+          const parentRes = await fetch(searchUrl, {
+            method: 'POST',
+            headers: postHeaders,
+            body: JSON.stringify({
+              jql: parentJql,
+              fields: ['summary', 'status', 'issuetype', 'assignee', 'reporter', 'priority', 'parent', 'created', 'updated', 'fixVersions', 'labels', 'duedate'],
+              maxResults: missingParentKeys.length + 5,
+            }),
+          })
+          if (parentRes.ok) {
+            const parentData = await parentRes.json()
+            const parentIssues = Array.isArray(parentData.issues) ? parentData.issues : []
+            const parentRows = parentIssues.map((issue: any) => ({
+              issue_key: issue.key,
+              project_key: issue.key.split('-')[0],
+              project_name: projectNameLookup[issue.key.split('-')[0]] || null,
+              issue_type: issue.fields.issuetype?.name || 'Task',
+              summary: issue.fields.summary || '',
+              status: issue.fields.status?.name || 'To Do',
+              status_category: issue.fields.status?.statusCategory?.name || mapStatusCategory(issue.fields.status?.name || 'To Do'),
+              assignee_account_id: issue.fields.assignee?.accountId || null,
+              assignee_display_name: issue.fields.assignee?.displayName || null,
+              reporter_account_id: issue.fields.reporter?.accountId || null,
+              reporter_display_name: issue.fields.reporter?.displayName || null,
+              parent_key: issue.fields.parent?.key || null,
+              parent_summary: issue.fields.parent?.fields?.summary || null,
+              hierarchy_level: getHierarchyLevel(issue.fields.issuetype?.name || 'Task'),
+              sprint_release: (issue.fields.fixVersions || []).map((v: any) => ({ id: v.id, name: v.name, releaseDate: v.releaseDate })),
+              due_date: issue.fields.duedate || null,
+              labels: issue.fields.labels || [],
+              components: [],
+              priority: issue.fields.priority?.name || null,
+              story_points: null,
+              sprint_name: null,
+              resolution: null,
+              jira_created_at: issue.fields.created,
+              jira_updated_at: issue.fields.updated,
+              synced_at: new Date().toISOString(),
+              type_icon_url: issue.fields.issuetype?.iconUrl || null,
+              description_adf: null,
+              description_text: null,
+              comments: [],
+              changelog: [],
+              raw_json: null,
+              source: 'jira',
+            }))
+            if (parentRows.length > 0) {
+              const { error: parentErr } = await supabase.from('ph_issues').upsert(parentRows, { onConflict: 'issue_key' })
+              if (parentErr) {
+                console.error(`[parent-pullthrough] Upsert error: ${parentErr.message}`)
+              } else {
+                console.log(`[parent-pullthrough] Upserted ${parentRows.length} pre-2026 parent row(s)`)
+                upsertedCount += parentRows.length
+              }
+            }
+          } else {
+            console.error(`[parent-pullthrough] Jira fetch failed: ${parentRes.status}`)
+          }
+        }
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────────────────
 
     // 7b. Extract and upsert attachments
     const attachmentRows: any[] = []
