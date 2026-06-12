@@ -363,6 +363,7 @@ function MoreActionsButton() {
         />
       )}
       placement="bottom-end"
+      shouldRenderToParent
     >
       <DropdownItemGroup>
         <DropdownItem>Give feedback</DropdownItem>
@@ -423,7 +424,7 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
   return (
     <DropdownMenu
       placement="bottom-start"
-      shouldRenderToParent={false}
+      shouldRenderToParent
       trigger={({ triggerRef, ...triggerProps }) => (
         <button
           {...triggerProps}
