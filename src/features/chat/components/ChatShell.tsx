@@ -71,6 +71,7 @@ export function ChatShell({
         onNewConversation={onNewConversation}
         onToggleCollapse={toggleSidebar}
         isCollapsed={sidebarCollapsed}
+        activeView={activeView}
       />
 
       {/* Column 3: activity surface (shown when activeView === 'activity') */}
@@ -78,6 +79,18 @@ export function ChatShell({
 
       {/* Columns 3 (+ 4 when docked): feed + thread — provided by parent */}
       {children}
+
+      {/* Placeholder surfaces (shown when data-view matches) */}
+      <div className="c-chat-placeholder" data-surface="later" aria-label="Later">
+        <span>📌</span>
+        <p>Saved for later</p>
+        <p>Messages you save will appear here.</p>
+      </div>
+      <div className="c-chat-placeholder" data-surface="people" aria-label="People">
+        <span>👥</span>
+        <p>People & groups</p>
+        <p>Browse teammates and start a direct message.</p>
+      </div>
     </div>
   );
 }

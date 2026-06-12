@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { ChatConversation } from '@/types/chat';
+import type { ChatView } from '../../hooks/useShellState';
 import { ConversationRow } from './ConversationRow';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './conversation-row.css';
@@ -13,6 +14,7 @@ interface ConversationSidebarProps {
   onNewConversation?: () => void;
   onToggleCollapse: () => void;
   isCollapsed: boolean;
+  activeView: ChatView;
 }
 
 interface SectionConfig {
@@ -83,6 +85,7 @@ export function ConversationSidebar({
   onNewConversation,
   onToggleCollapse,
   isCollapsed,
+  activeView,
 }: ConversationSidebarProps) {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     tickets: true,
@@ -108,12 +111,18 @@ export function ConversationSidebar({
 
   const sectionData: Record<string, ChatConversation[]> = grouped;
 
+  const isDmsView = activeView === 'dms';
+  const visibleSections = isDmsView
+    ? SECTIONS.filter(s => s.id === 'dms')
+    : SECTIONS;
+  const sidebarTitle = isDmsView ? 'Direct Messages' : 'Conversations';
+
   return (
-    <aside className="c-chat-sidebar" aria-label="Conversations">
+    <aside className="c-chat-sidebar" aria-label={sidebarTitle}>
       {/* Header */}
       <div className="c-sb-head">
         {!isCollapsed && (
-          <h1 className="c-sb-head__title">Conversations</h1>
+          <h1 className="c-sb-head__title">{sidebarTitle}</h1>
         )}
         <div className="c-sb-head__actions">
           {!isCollapsed && onNewConversation && (
@@ -139,7 +148,7 @@ export function ConversationSidebar({
 
       {/* Scrollable conversation list */}
       <nav className="c-sb-scroll" aria-label="Conversation list">
-        {SECTIONS.map(section => {
+        {visibleSections.map(section => {
           const items = sectionData[section.id] ?? [];
           if (items.length === 0) return null;
           const isExpanded = expandedSections[section.id] ?? true;
