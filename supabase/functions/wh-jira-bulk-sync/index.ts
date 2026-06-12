@@ -364,7 +364,9 @@ Deno.serve(async (req) => {
     const pulledThroughKeys = new Set<string>()
     {
       // Step 1: find all parent_keys referenced in ph_issues (post main-upsert state)
-      // Paginate to bypass Supabase's default 1000-row limit — there are 1663+ rows with parent_key
+      // Paginate to bypass Supabase's default 1000-row limit — there are 1663+ rows with parent_key.
+      // CRITICAL: must use .order('issue_key') for stable OFFSET pagination — without ORDER BY,
+      // PostgreSQL's non-deterministic scan causes duplicate and missing rows across pages.
       const allParentKeyCollected: string[] = []
       {
         let pgOffset = 0
@@ -375,6 +377,7 @@ Deno.serve(async (req) => {
             .select('parent_key')
             .in('project_key', projectsToSync)
             .not('parent_key', 'is', null)
+            .order('issue_key')
             .range(pgOffset, pgOffset + pgSize - 1)
           if (!pageRows || pageRows.length === 0) break
           pageRows.forEach((r: any) => { if (r.parent_key) allParentKeyCollected.push(r.parent_key) })
@@ -655,14 +658,28 @@ Deno.serve(async (req) => {
 
     if (syncType === 'full' && projectsToSync.length > 0 && !hadSearchErrors) {
       for (const projectKey of projectsToSync) {
-        const { data: existingIssues } = await supabase
-          .from('ph_issues')
-          .select('issue_key')
-          .eq('project_key', projectKey)
+        // Paginate with stable ORDER BY — without it, OFFSET scan is non-deterministic
+        // and may silently skip rows, causing gap-filled parents to be incorrectly deleted.
+        const allExistingKeys: string[] = []
+        {
+          let pgOffset = 0
+          const pgSize = 1000
+          while (true) {
+            const { data: pageRows } = await supabase
+              .from('ph_issues')
+              .select('issue_key')
+              .eq('project_key', projectKey)
+              .order('issue_key')
+              .range(pgOffset, pgOffset + pgSize - 1)
+            if (!pageRows || pageRows.length === 0) break
+            pageRows.forEach((r: any) => { if (r.issue_key) allExistingKeys.push(r.issue_key) })
+            if (pageRows.length < pgSize) break
+            pgOffset += pgSize
+          }
+        }
 
-        if (existingIssues && existingIssues.length > 0) {
-          const toDelete = existingIssues
-            .map((i: any) => i.issue_key)
+        if (allExistingKeys.length > 0) {
+          const toDelete = allExistingKeys
             .filter((k: string) => !fetchedKeys.has(k))
 
           if (toDelete.length > 0) {
