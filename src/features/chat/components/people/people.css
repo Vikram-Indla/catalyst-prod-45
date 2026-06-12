@@ -4,7 +4,7 @@
   flex-direction: column;
   min-height: 0;
   background: var(--c-chat-surface);
-  grid-column: 2;
+  grid-column: 3;
   overflow: hidden;
 }
 

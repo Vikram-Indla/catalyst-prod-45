@@ -1,7 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import type { ChatConversation } from '@/types/chat';
-import type { ChatView } from '../../hooks/useShellState';
-import { CatyFabIcon } from '@/components/chat/dock/CatyFabIcon';
 import { ConversationRow } from './ConversationRow';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './conversation-row.css';
@@ -15,8 +13,6 @@ interface ConversationSidebarProps {
   onNewConversation?: () => void;
   onToggleCollapse: () => void;
   isCollapsed: boolean;
-  activeView: ChatView;
-  onNavigate: (view: ChatView) => void;
 }
 
 interface SectionConfig {
@@ -34,25 +30,6 @@ const SECTIONS: SectionConfig[] = [
 const ChevronIcon = () => (
   <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
     <path d="M6 9l6 6 6-6"/>
-  </svg>
-);
-const HomeNavIcon = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-    <polyline points="9 22 9 12 15 12 15 22"/>
-  </svg>
-);
-const ActivityNavIcon = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-  </svg>
-);
-const PeopleNavIcon = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-    <circle cx="9" cy="7" r="4"/>
-    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
   </svg>
 );
 const PlusIcon = () => (
@@ -104,8 +81,6 @@ export function ConversationSidebar({
   onNewConversation,
   onToggleCollapse,
   isCollapsed,
-  activeView,
-  onNavigate,
 }: ConversationSidebarProps) {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     projects: true,
@@ -118,12 +93,10 @@ export function ConversationSidebar({
     const active = conversations.filter(c => !c.isArchived);
     const archived = conversations.filter(c => c.isArchived);
     return {
-      // Project conversations: ticket threads + project-linked channels
       projects: active.filter(c =>
         c.kind === 'ticket' ||
         (c.kind === 'channel' && !!c.projectKey)
       ),
-      // Channels: custom channels + unlinked channels
       channels: active.filter(c =>
         c.kind === 'custom_channel' ||
         (c.kind === 'channel' && !c.projectKey)
@@ -139,25 +112,12 @@ export function ConversationSidebar({
 
   const sectionData: Record<string, ChatConversation[]> = grouped;
 
-  const isDmsView = activeView === 'dms';
-  const visibleSections = isDmsView
-    ? SECTIONS.filter(s => s.id === 'dms')
-    : SECTIONS;
-
   return (
-    <aside className="c-chat-sidebar" aria-label="Chat">
+    <aside className="c-chat-sidebar" aria-label="Conversations">
       {/* Header */}
       <div className="c-sb-head">
         {!isCollapsed && (
-          <div className="c-sb-head__brand">
-            <CatyFabIcon size={28} />
-            <span className="c-sb-head__title">Chat</span>
-          </div>
-        )}
-        {isCollapsed && (
-          <div className="c-sb-head__brand c-sb-head__brand--collapsed">
-            <CatyFabIcon size={28} />
-          </div>
+          <h1 className="c-sb-head__title">Conversations</h1>
         )}
         <div className="c-sb-head__actions">
           {!isCollapsed && onNewConversation && (
@@ -181,45 +141,9 @@ export function ConversationSidebar({
         </div>
       </div>
 
-      {/* Nav tabs: Home / Activity / People */}
-      {!isCollapsed && (
-        <div className="c-sb-nav" role="tablist" aria-label="Chat navigation">
-          <button
-            className={`c-sb-nav__btn${activeView === 'chat' ? ' c-sb-nav__btn--active' : ''}`}
-            role="tab"
-            aria-selected={activeView === 'chat'}
-            onClick={() => onNavigate('chat')}
-            title="Home"
-          >
-            <HomeNavIcon />
-            <span>Home</span>
-          </button>
-          <button
-            className={`c-sb-nav__btn${activeView === 'activity' ? ' c-sb-nav__btn--active' : ''}`}
-            role="tab"
-            aria-selected={activeView === 'activity'}
-            onClick={() => onNavigate('activity')}
-            title="Activity"
-          >
-            <ActivityNavIcon />
-            <span>Activity</span>
-          </button>
-          <button
-            className={`c-sb-nav__btn${activeView === 'people' ? ' c-sb-nav__btn--active' : ''}`}
-            role="tab"
-            aria-selected={activeView === 'people'}
-            onClick={() => onNavigate('people')}
-            title="People"
-          >
-            <PeopleNavIcon />
-            <span>People</span>
-          </button>
-        </div>
-      )}
-
       {/* Scrollable conversation list */}
       <nav className="c-sb-scroll" aria-label="Conversation list">
-        {visibleSections.map(section => {
+        {SECTIONS.map(section => {
           const items = sectionData[section.id] ?? [];
           if (items.length === 0) return null;
           const isExpanded = expandedSections[section.id] ?? true;

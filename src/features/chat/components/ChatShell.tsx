@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { ChatConversation } from '@/types/chat';
 import type { ShellState, ShellActions } from '../hooks/useShellState';
+import { AppRail } from './AppRail';
 import { ConversationSidebar } from './sidebar/ConversationSidebar';
 import { ActivitySurface } from './activity/ActivitySurface';
 import { PeopleSurface } from './people/PeopleSurface';
@@ -13,13 +14,12 @@ interface ChatShellProps {
   activeConversationId: string | undefined;
   onSelectConversation: (id: string) => void;
   onNewConversation?: () => void;
-  /** Called when user clicks an activity item — navigates to the conversation */
   onOpenConversation: (conversationId: string, messageId?: string) => void;
-  /** Called when the unread activity count changes */
   onUnreadActivity?: (count: number) => void;
-  /** Called when user initiates a DM from the People surface */
   onStartDM: (userId: string, userName: string) => void;
-  /** Main feed + thread content — injected by ChatFullScreen */
+  unreadActivity: number;
+  userName: string;
+  userAvatarUrl: string | null;
   children?: React.ReactNode;
 }
 
@@ -32,6 +32,9 @@ export function ChatShell({
   onOpenConversation,
   onUnreadActivity,
   onStartDM,
+  unreadActivity,
+  userName,
+  userAvatarUrl,
   children,
 }: ChatShellProps) {
   const {
@@ -42,6 +45,11 @@ export function ChatShell({
     setActiveView,
   } = shell;
 
+  const unreadDMs = useMemo(
+    () => conversations.filter(c => (c.kind === 'dm' || c.kind === 'group_dm') && c.unreadCount > 0).length,
+    [conversations],
+  );
+
   return (
     <div
       className="c-chat-shell"
@@ -49,7 +57,17 @@ export function ChatShell({
       data-thread-mode={threadMode}
       data-view={activeView}
     >
-      {/* Column 1: Conversation sidebar */}
+      {/* Column 1: App rail — nav between views */}
+      <AppRail
+        activeView={activeView}
+        onNavigate={setActiveView}
+        unreadDMs={unreadDMs}
+        unreadActivity={unreadActivity}
+        userName={userName}
+        userAvatarUrl={userAvatarUrl}
+      />
+
+      {/* Column 2: Conversation sidebar */}
       <ConversationSidebar
         conversations={conversations}
         activeConversationId={activeConversationId}
@@ -57,24 +75,22 @@ export function ChatShell({
         onNewConversation={onNewConversation}
         onToggleCollapse={toggleSidebar}
         isCollapsed={sidebarCollapsed}
-        activeView={activeView}
-        onNavigate={setActiveView}
       />
 
-      {/* Column 2: activity surface (shown when activeView === 'activity') */}
+      {/* Column 3: activity surface (shown when activeView === 'activity') */}
       <ActivitySurface
         onOpenConversation={onOpenConversation}
         onUnreadCount={onUnreadActivity}
         isActive={activeView === 'activity'}
       />
 
-      {/* Column 2: people surface (shown when activeView === 'people') */}
+      {/* Column 3: people surface (shown when activeView === 'people') */}
       <PeopleSurface onStartDM={onStartDM} />
 
-      {/* Columns 2 (+ 3 when docked): feed + thread — provided by parent */}
+      {/* Columns 3 (+ 4 when docked): feed + thread — provided by parent */}
       {children}
 
-      {/* Later placeholder — bookmark saving requires hover-toolbar + DB (not in scope) */}
+      {/* Later placeholder */}
       <div className="c-chat-placeholder" data-surface="later" aria-label="Later">
         <span>📌</span>
         <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--c-chat-text)' }}>

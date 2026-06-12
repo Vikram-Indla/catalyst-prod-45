@@ -7,7 +7,7 @@
  */
 :root {
   /* ── Dimensions ── */
-  --c-chat-app-rail-w: 0px;
+  --c-chat-app-rail-w: 72px;
   --c-chat-sidebar-w-expanded: 220px;
   --c-chat-sidebar-w-collapsed: 56px;
   --c-chat-sidebar-transition-duration: 180ms;
