@@ -598,7 +598,7 @@ export default function KanbanBoardPage() {
     // When the advanced filter specifies types explicitly, honour those exactly.
     const allowedTypes: Set<string> = advancedFilters.issueTypes.length > 0
       ? new Set(advancedFilters.issueTypes)
-      : groupBy === 'none' ? KANBAN_STORY_TYPES : KANBAN_BOARD_TYPES;
+      : (isFilterBacked || groupBy !== 'none') ? KANBAN_BOARD_TYPES : KANBAN_STORY_TYPES;
     let issues = rawIssues.filter(i => allowedTypes.has(i.issueType));
     if (debSearch.trim()) {
       const q = debSearch.trim().toLowerCase();
