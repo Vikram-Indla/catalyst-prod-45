@@ -384,7 +384,7 @@ const STATUS_BG: Record<string, string> = {
   moved:      'var(--ds-background-warning, #FFF7D6)',
   removed:    'var(--ds-background-danger, #FFEBE6)',
   new:        'var(--ds-background-discovery, #F3F0FF)',
-  default:    'var(--ds-background-neutral, #F4F5F7)',
+  default:    '#F4F5F7',
 };
 const STATUS_COLOR: Record<string, string> = {
   success:    'var(--ds-text-success, #216E4E)',
@@ -707,26 +707,27 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
               {onWorkTypeChange && (
                 <Field name="workType" label="Work type" isRequired>
                   {({ fieldProps: { id } }) => (
-                    <Select
+                    <Select<IconOption>
                       inputId={id}
                       options={[
-                        { value: 'Story', label: 'Story' },
-                        { value: 'Epic', label: 'Epic' },
-                        { value: 'Feature', label: 'Feature' },
-                        { value: 'Business Request', label: 'Business Request' },
-                        { value: 'Business Gap', label: 'Business Gap' },
-                        { value: 'QA Bug', label: 'QA Bug' },
-                        { value: 'Production Incident', label: 'Production Incident' },
-                        { value: 'Change Request', label: 'Change Request' },
+                        { value: 'Story', label: 'Story', icon: <WorkItemTypeIcon type="Story" size={16} label="" /> },
+                        { value: 'Epic', label: 'Epic', icon: <WorkItemTypeIcon type="Epic" size={16} label="" /> },
+                        { value: 'Feature', label: 'Feature', icon: <WorkItemTypeIcon type="Feature" size={16} label="" /> },
+                        { value: 'Business Request', label: 'Business Request', icon: <WorkItemTypeIcon type="Business Request" size={16} label="" /> },
+                        { value: 'Business Gap', label: 'Business Gap', icon: <WorkItemTypeIcon type="Business Gap" size={16} label="" /> },
+                        { value: 'QA Bug', label: 'QA Bug', icon: <WorkItemTypeIcon type="QA Bug" size={16} label="" /> },
+                        { value: 'Production Incident', label: 'Production Incident', icon: <WorkItemTypeIcon type="Production Incident" size={16} label="" /> },
+                        { value: 'Change Request', label: 'Change Request', icon: <WorkItemTypeIcon type="Change Request" size={16} label="" /> },
                       ]}
-                      value={{ value: 'Business Request', label: 'Business Request' }}
+                      value={{ value: 'Business Request', label: 'Business Request', icon: <WorkItemTypeIcon type="Business Request" size={16} label="" /> }}
                       onChange={(opt) => {
-                        const selected = (opt as { value: string } | null)?.value;
+                        const selected = (opt as IconOption | null)?.value;
                         if (selected && selected !== 'Business Request') {
                           handleClose();
                           onWorkTypeChange(selected);
                         }
                       }}
+                      formatOptionLabel={formatIconOption}
                       isSearchable={false}
                     />
                   )}
