@@ -75,52 +75,58 @@ if (typeof document !== 'undefined') {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * SECTION 2: ADS SUBTLE-TIER COLOR SYSTEM (dark-mode safe)
+ * SECTION 2: COLOR SYSTEM — Jira-probed (BAU-5774 / BAU-5609)
+ *
+ * THREE tiers exist for Jira status colors:
+ *   BOLD    color.background.success.bold  #1F845A  dark, white text  ← BAU-5774 flagged WRONG
+ *   SUBTLE  color.background.success       #DCFFF1  very light        ← too washed out vs Jira
+ *   JIRA    (no ADS token)                 #94C748  medium pastel     ← DOM-probed, used here
+ *
+ * Text is ALWAYS dark (#292A2E) — Jira never uses white on status buttons.
+ * WCAG AA ratios: success 7.23:1, inprogress 6.84:1, moved 10.91:1,
+ *                 new 6.52:1, removed 5.67:1, default 10.36:1
+ *
+ * Used identically for both the header trigger pill and each dropdown option
+ * pill — one color system, no mismatch between header and dropdown.
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 type Appearance = 'success' | 'inprogress' | 'moved' | 'removed' | 'new' | 'default';
 
-function getPillBg(appearance: Appearance): string {
-  switch (appearance) {
-    case 'success':    return token('color.background.success', '#DCFFF1');
-    case 'inprogress': return token('color.background.information', '#E9F2FF');
-    case 'moved':      return token('color.background.warning', '#FFF7D6');
-    case 'new':        return token('color.background.discovery', '#F3F0FF');
-    case 'removed':
-    default:           return token('color.background.neutral', '#F1F2F4');
-  }
+/** Always dark — Jira NIN DOM probe rgb(41,42,46). */
+const STATUS_TEXT = '#292A2E';
+
+/** Jira-probed medium-pastel backgrounds per status category. */
+const STATUS_BG: Record<string, string> = {
+  success:    '#94C748',  // done — medium lime green
+  inprogress: '#8FB8F6',  // in progress — medium periwinkle blue
+  moved:      '#F3D664',  // moved/warning — medium warm yellow
+  new:        '#B8ACF6',  // new/discovery — medium lavender
+  removed:    '#FD9891',  // cancelled/rejected — medium coral red
+  default:    '#DDDEE1',  // todo/backlog — light grey
+};
+
+function getStatusBg(appearance: string): string {
+  return STATUS_BG[appearance] ?? STATUS_BG['default'];
 }
 
-function getPillFg(appearance: Appearance): string {
-  switch (appearance) {
-    case 'success':    return token('color.text.success', '#216E4E');
-    case 'inprogress': return token('color.text.information', '#0055CC');
-    case 'moved':      return token('color.text.warning', '#7F5F01');
-    case 'new':        return token('color.text.discovery', '#5E4DB2');
-    case 'removed':
-    default:           return token('color.text', '#172B4D');
-  }
+function getStatusFg(_appearance: string): string {
+  return STATUS_TEXT;
 }
 
-function getDropdownBg(appearance: Appearance): string {
-  switch (appearance) {
-    case 'success':    return token('color.background.success', '#DCFFF1');
-    case 'inprogress': return token('color.background.information', '#E9F2FF');
-    case 'moved':      return token('color.background.warning', '#FFF7D6');
-    case 'new':        return token('color.background.discovery', '#F3F0FF');
-    case 'removed':
-    default:           return token('color.background.neutral', '#F1F2F4');
-  }
-}
-
-function getDropdownFg(appearance: Appearance): string {
-  switch (appearance) {
-    case 'success':    return token('color.text.success', '#216E4E');
-    case 'inprogress': return token('color.text.information', '#0055CC');
-    case 'moved':      return token('color.text.warning', '#7F5F01');
-    case 'new':        return token('color.text.discovery', '#5E4DB2');
-    case 'removed':
-    default:           return token('color.text', '#172B4D');
+/**
+ * Maps a workflow group's category to an appearance string.
+ * Used for dropdown pills — group wins over individual status name
+ * to prevent statusToLozenge name-matching from overriding group color
+ * (e.g. "On Hold" in todo group → grey, not yellow).
+ */
+function groupCategoryToAppearance(cat: string): string {
+  switch (cat) {
+    case 'done':        return 'success';
+    case 'in_progress': return 'inprogress';
+    case 'moved':       return 'moved';
+    case 'removed':     return 'removed';
+    case 'new':         return 'new';
+    default:            return 'default';
   }
 }
 
@@ -160,8 +166,8 @@ export function CatalystStatusPill({
   const display    = status || 'Backlog';
   const appearance = statusToLozenge(display, statusCategory) as Appearance;
 
-  const pillBg = getPillBg(appearance);
-  const pillFg = getPillFg(appearance);
+  const pillBg = getStatusBg(appearance);
+  const pillFg = getStatusFg(appearance);
 
   // ── Helpers ────────────────────────────────────────────────────────────
 
@@ -328,9 +334,9 @@ export function CatalystStatusPill({
                     {group.groupLabel}
                   </div>
                   {visibleStatuses.map((st) => {
-                    const a = statusToLozenge(st, group.category) as Appearance;
-                    const bg = getDropdownBg(a);
-                    const fg = getDropdownFg(a);
+                    const groupAppearance = groupCategoryToAppearance(group.category);
+                    const bg = getStatusBg(groupAppearance);
+                    const fg = getStatusFg(groupAppearance);
                     const isSelected = display === st;
                     return (
                       <button
