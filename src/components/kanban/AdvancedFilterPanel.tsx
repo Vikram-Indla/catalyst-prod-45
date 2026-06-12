@@ -1,6 +1,6 @@
 /**
  * AdvancedFilterPanel — Board-level advanced filter triggered from ••• menu.
- * Filters: Sprint/Release, Issue Type, Status, Created Date, Assignee
+ * Filters: Sprint/Iteration, Issue Type, Status, Created Date, Assignee
  * Wires into the real Kanban board dataset via callback.
  */
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
@@ -230,7 +230,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
       {/* Filter sections */}
       <div style={{ padding: '8px 0' }}>
         <MultiSelectFilterSection
-          label="Sprint/Release"
+          label="Sprint/Iteration"
           options={sprintReleaseOptions}
           selected={filters.sprintReleases}
           onChange={v => update({ sprintReleases: v })}

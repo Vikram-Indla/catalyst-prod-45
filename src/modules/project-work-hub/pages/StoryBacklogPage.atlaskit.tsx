@@ -379,7 +379,7 @@ export default function AtlaskitStoryBacklogPage({
       src = src.filter(s => s.jira_created_at && new Date(s.jira_created_at).getTime() <= t1);
     }
 
-    // Sprint/Releases (mapped to parent epic id in this data)
+    // Sprint/Iterations (mapped to parent epic id in this data)
     if (f.sprintReleases.length) {
       const sel = new Set(f.sprintReleases);
       src = src.filter(s => s.feature?.epic && sel.has(s.feature.epic.id));

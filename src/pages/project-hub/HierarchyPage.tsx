@@ -534,7 +534,7 @@ export default function HierarchyPage() {
               )}
             </div>
 
-            {/* Release (Sprint/Release) */}
+            {/* Release (Sprint/Iteration) */}
             <div style={{ position: 'relative' }}>
               <FilterTrigger label="Release" values={filters.sprints}
                 onClear={() => setFilters(f => ({ ...f, sprints: [] }))}

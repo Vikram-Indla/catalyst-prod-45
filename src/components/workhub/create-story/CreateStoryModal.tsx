@@ -1107,8 +1107,8 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── Sprint/Release ────────────────────────────────────── */}
-              <Field name="sprintRelease" label="Sprint/Release">
+              {/* ── Sprint/Iteration ────────────────────────────────────── */}
+              <Field name="sprintRelease" label="Sprint/Iteration">
                 {({ fieldProps }) => (
                   <Select<IconOption>
                     {...fieldProps}

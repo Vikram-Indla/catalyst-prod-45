@@ -153,7 +153,7 @@ function TypeSelector({
   );
 }
 
-// ─── Sprint/Release cell ──────────────────────────────────
+// ─── Sprint/Iteration cell ──────────────────────────────────
 function sprintReleaseNames(raw: unknown): string[] {
   if (!raw) return [];
   // Stored as Json on ph_issues. Tolerate: string[], { name: string }[], comma-separated string.

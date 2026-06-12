@@ -169,7 +169,7 @@ export function CatalystDefectKeyRows({
       )}
 
       {/* "Fix in" removed 2026-05-02 per Vikram — duplicates the right-rail
-          Sprint/Release field. Jira does not surface a separate "Fix in"
+          Sprint/Iteration field. Jira does not surface a separate "Fix in"
           row; sprintRelease is the canonical source. */}
 
       {hasRootCause && (

@@ -6099,7 +6099,7 @@ table th[class*="css-"] {
   background-color: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7)) !important;
 }
 
-/* ─── Sprint/Release pill styling (right rail) ────────────────────────────────
+/* ─── Sprint/Iteration pill styling (right rail) ────────────────────────────────
    Jira renders sprint/releases as bordered secondary pills with 1px border,
    subtle background, and text padding. Applied to @atlaskit/select MultiValue
    components in the CatalystSidebarDetails right rail.

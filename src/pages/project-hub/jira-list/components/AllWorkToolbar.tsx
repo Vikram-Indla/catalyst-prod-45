@@ -18,7 +18,7 @@
  * `issue-navigator.ui.refinement-bar.*`):
  *   container: flex · gap 8 · pad 8 12 · border-bottom 1px DFE1E6
  *   filter popup: 600w × 489h · left rail 140w · facet role=tab
- *   facet order: Sprint/Release, Parent, Assignee, Work type, Labels,
+ *   facet order: Sprint/Iteration, Parent, Assignee, Work type, Labels,
  *                Status, Priority, Reporter
  *
  * Filter selections forward via the typed FilterState prop so the parent
@@ -214,7 +214,7 @@ export const MORE_FILTERS_FACETS: FilterFacet[] = [
 ];
 
 export const FACET_LABELS: Record<FilterFacet, string> = {
-  sprintReleases: "Sprint/Release",
+  sprintReleases: "Sprint/Iteration",
   parent: "Parent",
   assignee: "Assignee",
   workType: "Work type",
@@ -1871,7 +1871,7 @@ export function AllWorkToolbar({
       />
 
       {/* More filters → opens the multi-facet popup with the 5 remaining facets
-          (Sprint/Release, Parent, Labels, Priority, Reporter). Reuses
+          (Sprint/Iteration, Parent, Labels, Priority, Reporter). Reuses
           FilterTriggerAndPopup from Round 6 — left-rail tabs + right-pane
           value picker pattern. Atlaskit primitive: @atlaskit/popup behaviour
           replicated manually (see Round 6 root-cause comment). */}

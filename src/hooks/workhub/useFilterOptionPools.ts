@@ -112,7 +112,7 @@ export function useFilterOptionPools(projectKey?: string): FilterOptionPools {
         return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
       });
 
-      // ── Sprint/Releases ──────────────────────────────────────────────────────
+      // ── Sprint/Iterations ──────────────────────────────────────────────────────
       const fvSet = new Set<string>();
       for (const r of rows) {
         const fv = r.sprint_release;

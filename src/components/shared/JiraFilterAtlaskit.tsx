@@ -21,7 +21,7 @@
  *
  *   Created              [From] → [To]
  *
- *   Sprint/Release       [pill] [pill] + ...
+ *   Sprint/Iteration       [pill] [pill] + ...
  *
  *   Labels               [pill] [pill] [pill] + ...
  *
@@ -447,8 +447,8 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
             />
           </Section>
 
-          {/* Sprint/Release — plain pill chips */}
-          <Section label="Sprint/Release">
+          {/* Sprint/Iteration — plain pill chips */}
+          <Section label="Sprint/Iteration">
             <PillChipGrid
               options={sprintReleases}
               selected={value.sprintReleases}
@@ -750,7 +750,7 @@ function WorkTypeChipGrid({
   );
 }
 
-// ─── PillChipGrid — plain text pills (Sprint/Release, Labels) ───────────────
+// ─── PillChipGrid — plain text pills (Sprint/Iteration, Labels) ───────────────
 
 function PillChipGrid({
   options,

@@ -65,7 +65,7 @@ export function SchedulingRules() {
 
   const priorities = [
     { label: '1st Priority: Issue Due Date', desc: 'uses the explicit dueDate field from Jira' },
-    { label: '2nd Priority: Sprint/Release Date', desc: 'uses version.releaseDate (earliest if multiple)' },
+    { label: '2nd Priority: Sprint/Iteration Date', desc: 'uses version.releaseDate (earliest if multiple)' },
     { label: '3rd Priority: Parent Inheritance', desc: "walks up the hierarchy to inherit parent's effective due" },
   ]
 
@@ -123,11 +123,11 @@ export function SchedulingRules() {
       {/* Card 2: Multi-SprintRelease Strategy */}
       <div style={cardStyle}>
         <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: '0 0 14px' }}>
-          Multi-Sprint/Release Strategy
+          Multi-Sprint/Iteration Strategy
         </h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <label style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', width: 260 }}>
-            When an issue has multiple Sprint/Releases, use:
+            When an issue has multiple Sprint/Iterations, use:
           </label>
           <select
             value={multiVersionStrategy}
@@ -167,7 +167,7 @@ export function SchedulingRules() {
                 Version Name Parsing
               </p>
               <p style={{ fontSize: 11, color: '#92400E', margin: 0, lineHeight: 1.6 }}>
-                When a Sprint/Release has no releaseDate, Catalyst attempts to extract a date from the version name:
+                When a Sprint/Iteration has no releaseDate, Catalyst attempts to extract a date from the version name:
               </p>
               <div style={{ marginTop: 8, fontSize: 11, color: '#92400E', lineHeight: 2 }}>
                 <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '1px 5px', borderRadius: 2 }}>2026 02</code>

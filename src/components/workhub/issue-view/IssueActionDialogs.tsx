@@ -434,7 +434,7 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
     { name: 'Priority', current: item?.priority, result: 'Kept' },
     { name: 'Assignee', current: item?.assignee_display_name, result: 'Kept' },
     { name: 'Labels', current: item?.labels ? '(has labels)' : '—', result: destProject === projectKey ? 'Kept' : 'Dropped' },
-    { name: 'Sprint/Release', current: item?.sprint_release ? '(has versions)' : '—', result: destProject === projectKey ? 'Kept' : 'Dropped' },
+    { name: 'Sprint/Iteration', current: item?.sprint_release ? '(has versions)' : '—', result: destProject === projectKey ? 'Kept' : 'Dropped' },
     { name: 'Parent', current: item?.parent_key ?? '—', result: destProject === projectKey ? 'Kept' : 'Dropped' },
   ];
 

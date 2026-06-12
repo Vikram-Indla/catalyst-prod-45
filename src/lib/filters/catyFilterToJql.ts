@@ -64,7 +64,7 @@ export function catyFilterToJql(filter: CatyFilter | null): string {
       : `labels in (${qq(filter.labels)})`);
   }
 
-  // Sprint/Releases
+  // Sprint/Iterations
   if (filter.sprint_release?.length) {
     clauses.push(filter.sprint_release.length === 1
       ? `fixVersion = ${qq(filter.sprint_release)}`

@@ -1,7 +1,7 @@
 /**
  * IssueContentView — Jira-parity single issue view:
  * Left side: breadcrumb, title, actions, key details, description, subtasks, linked work, activity
- * Right side: collapsible Details sidebar (Assignee, Priority, Reporter, Labels, Sprint/Release, MDT Ref)
+ * Right side: collapsible Details sidebar (Assignee, Priority, Reporter, Labels, Sprint/Iteration, MDT Ref)
  * Implements recommendations #11-16, #17, #19-26, #28-30
  */
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
@@ -264,7 +264,7 @@ export function IssueContentView({
 
   const totalChildren = childItems.length || (item?.child_count ?? 0);
 
-  // Sprint/Release — editable dropdown pulling all releases
+  // Sprint/Iteration — editable dropdown pulling all releases
   const { unreleased: unreleasedVersions, released: releasedVersions, isLoading: versionsLoading } = useSprintReleases(projectKey || null);
   const [showSprintReleaseDropdown, setShowSprintReleaseDropdown] = useState(false);
   const [sprintReleaseSearch, setSprintReleaseSearch] = useState('');
@@ -861,9 +861,9 @@ export function IssueContentView({
           </div>
           {!collapsed.details && (
             <div>
-              {/* Sprint/Release — Jira-parity editable dropdown */}
+              {/* Sprint/Iteration — Jira-parity editable dropdown */}
               <div style={{ marginBottom: 16, position: 'relative' }} ref={sprintReleaseDropdownRef}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 4 }}>Sprint/Release</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 4 }}>Sprint/Iteration</div>
                 <div
                   onClick={() => setShowSprintReleaseDropdown(!showSprintReleaseDropdown)}
                   style={{

@@ -355,7 +355,7 @@ function EpicDescriptionSection({ issue }: { issue: PhIssue }) {
     version: '2.0.0',
     file_path: 'src/components/catalyst-detail-views/shared/CatalystSidebarDetails.tsx',
     jsdoc_excerpt:
-      'Right rail of every detail view. Renders Assignee, Reporter, Priority (Epic only), Labels (Task+Story only), Sprint/Release (all except Feature), Due date (Backend/Incident/CR). Schema-gated per Jira screen scheme.',
+      'Right rail of every detail view. Renders Assignee, Reporter, Priority (Epic only), Labels (Task+Story only), Sprint/Iteration (all except Feature), Due date (Backend/Incident/CR). Schema-gated per Jira screen scheme.',
     dark_light_supported: true,
     tags: ['detail', 'rail', 'schema-gated'],
   },

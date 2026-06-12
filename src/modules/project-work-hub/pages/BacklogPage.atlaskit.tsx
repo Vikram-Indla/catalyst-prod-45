@@ -561,7 +561,7 @@ export default function NativeBacklogPage() {
   //   Status         → 'status'
   //   Parent         → 'parent'
   //   Priority       → 'priority'
-  //   Sprint/Release → 'sprint_release'
+  //   Sprint/Iteration → 'sprint_release'
   //   Assignee       → 'assignee'
   //   Reporter       → 'reporter'
   //   Labels         → 'labels'
@@ -575,7 +575,7 @@ export default function NativeBacklogPage() {
         'status',          // modal: Status
         'parent',          // modal: Parent
         'priority',        // modal: Priority
-        'sprint_release',  // modal: Sprint/Release
+        'sprint_release',  // modal: Sprint/Iteration
         'assignee',        // modal: Assignee
         'reporter',        // modal: Reporter
         'labels',          // modal: Labels
@@ -1584,7 +1584,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       if (f.assignees.length && (!it.assignee_name || !f.assignees.includes(it.assignee_name))) return false;
       // Reporter filter — sourced from ph_issues.reporter_display_name
       if (f.reporter.length && (!it.reporter_name || !f.reporter.includes(it.reporter_name))) return false;
-      // Sprint/Release filter (parent epic maps to a "sprint/release" in this view)
+      // Sprint/Iteration filter (parent epic maps to a "sprint/release" in this view)
       if (f.sprintReleases.length && (!it.parent_id || !f.sprintReleases.includes(it.parent_id))) return false;
       // Updated date range
       if (f.updated.from && (!it.updated_at || it.updated_at < f.updated.from)) return false;
@@ -2444,7 +2444,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     },
     {
       id: 'sprint_release',
-      label: 'Sprint/Release',
+      label: 'Sprint/Iteration',
       // 2026-05-16: Jira DOM probe = 220px. width:18 = 216px (≈220px).
       // Prior width:10 (120px) clipped version names badly.
       width: 18,

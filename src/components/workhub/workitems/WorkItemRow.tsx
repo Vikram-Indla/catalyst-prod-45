@@ -109,7 +109,7 @@ export function WorkItemRow({
         <StatusLozenge status={item.status} />
       </div>
 
-      {/* 5b. Sprint/Release */}
+      {/* 5b. Sprint/Iteration */}
       <div className="flex items-center min-w-0">
         {Array.isArray(item.sprint_release) && item.sprint_release.length > 0 ? (
           <span
