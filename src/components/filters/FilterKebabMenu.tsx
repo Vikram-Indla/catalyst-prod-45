@@ -561,9 +561,12 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                   />
                 </div>
                 <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
-                  Cards come live from <strong>{filter.name}</strong>. Columns are inherited from this
-                  project&rsquo;s board. Access follows the filter &mdash; anyone who can see the filter can
-                  see this board.
+                  Cards come live from <strong>{filter.name}</strong>.{' '}
+                  {boards.length > 0
+                    ? 'Columns are inherited from this project’s board.'
+                    : 'No existing board found — the board will start with default columns (To Do, In Progress, Done). You can customise them after creation.'
+                  }{' '}
+                  Access follows the filter &mdash; anyone who can see the filter can see this board.
                 </p>
                 {kanbanError && (
                   <p style={{ margin: 0, fontSize: 13, color: token('color.text.danger', '#AE2A19') }}>
