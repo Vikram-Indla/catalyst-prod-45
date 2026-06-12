@@ -14,19 +14,23 @@ import { createClient } from '@supabase/supabase-js';
 /**
  * Database Layer Tests — RPCs and RLS
  *
- * These tests require a live Supabase connection
- * Run against a test project (not production)
+ * These tests require a live Supabase connection.
+ * Skipped automatically when SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY are unset.
+ * Run against a test project (not production).
  */
 
-describe('Presence RPC Functions', () => {
+const hasSupabaseCreds =
+  !!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+describe.skipIf(!hasSupabaseCreds)('Presence RPC Functions', () => {
   let supabase: any;
   let testConversationId: string;
   let testUserId: string;
 
   beforeEach(async () => {
     supabase = createClient(
-      process.env.SUPABASE_URL || '',
-      process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
     // Setup: Create a test conversation and user
