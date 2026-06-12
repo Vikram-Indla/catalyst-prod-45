@@ -37,12 +37,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
-type ParentSource =
-  | 'epic'
-  | 'business_request'
-  | 'story'
-  | 'story_epic_feature'
-  | 'story_epic_feature_br';
+import type { ParentSource } from '@/components/catalyst-detail-views/shared/parent-rules';
 
 interface AddParentPickerProps {
   /** Current issue key (e.g. "BAU-5364") */
@@ -89,7 +84,11 @@ export function AddParentPicker({
   const isEpicOnly = parentSource === 'epic';
   const isMultiNoBR = parentSource === 'story_epic_feature';
   const isMultiWithBR = parentSource === 'story_epic_feature_br';
-  const isMulti = isMultiNoBR || isMultiWithBR;
+  // br_epic_feature: BR + Epic + Feature — Production Incident, Business Gap (NOT Story)
+  const isBrEpicFeature = parentSource === 'br_epic_feature';
+  // story_epic_br: Story + Epic + BR — Change Request (NOT Feature)
+  const isStoryEpicBr = parentSource === 'story_epic_br';
+  const isMulti = isMultiNoBR || isMultiWithBR || isBrEpicFeature || isStoryEpicBr;
 
   // Single-type sources use specific nouns; multi-type sources use a generic
   // "parent" label so the picker header reads as "Recent parents" / "View all
@@ -111,29 +110,39 @@ export function AddParentPicker({
   // Business Requests live in ph_issues with issue_type = 'Business Request'
   // (e.g. MDT-740, MDT-693) in the MDT (ProductHub backlog) project.
   const BR_TYPES = ['Business Request', 'business request'];
-  // 'epic' source is tight — Story / Feature can only be parented by an Epic
-  // (not another Feature). Feature variants are exposed to callers only via
-  // the multi sources ('story_epic_feature', 'story_epic_feature_br').
   const EPIC_TYPES = ['Epic', 'epic'];
   const STORY_TYPES = ['Story', 'story', 'Improvement', 'improvement'];
-  // Multi-source pickers surface Story + Epic + Feature parents.
   const STORY_EPIC_FEATURE_TYPES = [
     'Story', 'story', 'Improvement', 'improvement',
     'Epic', 'epic',
     'Feature', 'feature', 'New Feature', 'new feature',
   ];
+  // br_epic_feature: Epic + Feature only (the non-BR half); BRs fetched separately.
+  const BR_EPIC_FEATURE_NOTYPES = [
+    'Epic', 'epic',
+    'Feature', 'feature', 'New Feature', 'new feature',
+  ];
+  // story_epic_br: Story + Epic only (the non-BR half); BRs fetched separately.
+  const STORY_EPIC_BR_NOTYPES = [
+    'Story', 'story', 'Improvement', 'improvement',
+    'Epic', 'epic',
+  ];
 
   // Business Requests live in the MDT project (ProductHub backlog).
-  // Epics/Stories scope to the current project; BRs are cross-project (always MDT).
   const BR_PROJECT_KEYS = ['MDT'];
 
-  // Resolve allowed issue types for the current source. For the mixed
-  // Incident picker ('story_epic_feature_br'), `typesForSource` is used only
-  // to scope the non-BR half of the query; BRs are fetched separately below.
+  // Resolve allowed issue types for the non-BR half of each source.
+  // For sources that include BRs, typesForSource scopes the ph_issues query;
+  // BRs are fetched in a parallel query and merged.
   const typesForSource = isBR ? BR_TYPES
     : isStory ? STORY_TYPES
+    : isBrEpicFeature ? BR_EPIC_FEATURE_NOTYPES
+    : isStoryEpicBr ? STORY_EPIC_BR_NOTYPES
     : isMulti ? STORY_EPIC_FEATURE_TYPES
     : EPIC_TYPES;
+
+  // Whether this source includes a separate BR fetch
+  const needsBRFetch = isMultiWithBR || isBrEpicFeature || isStoryEpicBr;
 
   // Recent candidates (shown on first open)
   const { data: recentCandidates = [] } = useQuery({
@@ -141,7 +150,7 @@ export function AddParentPicker({
     enabled: isBR ? true : !!projectKey,
     queryFn: async (): Promise<CandidateRow[]> => {
       // Mixed scope: non-BR parents from current project + BR parents from MDT.
-      if (isMultiWithBR) {
+      if (needsBRFetch) {
         const [nonBr, br] = await Promise.all([
           supabase.from('ph_issues')
             .select('id, issue_key, summary, issue_type, status, status_category')

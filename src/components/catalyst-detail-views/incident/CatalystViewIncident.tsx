@@ -122,9 +122,9 @@ export default function CatalystViewIncident({
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
       parentKey={issue?.parent_key} parentType="Business Request"
       onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
-      /* Canonical Add-parent (Catalyst rule): Production Incident → Story / Epic / Feature /
-         Business Request parent (only Incident + Epic can parent to a BR). */
-      parentSource="story_epic_feature_br"
+      /* Canonical Add-parent (Catalyst rule): Production Incident → Business Request / Epic / Feature.
+         NOT Story — confirmed Vikram 2026-06-12. */
+      parentSource="br_epic_feature"
       onParentChange={async (newKey) => {
         await mutations.updateField.mutateAsync({
           field: 'parent_key', value: newKey, oldValue: issue?.parent_key ?? null,

@@ -189,3 +189,143 @@ export function isSubtaskFamily(issueType: string): boolean {
   const t = (issueType || '').toLowerCase().trim();
   return SUBTASK_FAMILY_TYPES.some(f => f.toLowerCase() === t);
 }
+
+/**
+ * Canonical Jira type names for the subtask family (no lowercase variants).
+ * Used in ALLOWED_CHILD_TYPES and type pickers.
+ */
+export const SUBTASK_FAMILY_CANONICAL_TYPES = [
+  'Sub-task',
+  'Backend',
+  'Frontend',
+  'Figma',
+  'Integration',
+  'API Requirement',
+] as const;
+
+/**
+ * ALLOWED_CHILD_TYPES — Inverse of parent link rules.
+ *
+ * Given a parent issue type, returns the canonical set of child types that
+ * can be created under it. Used by SubtasksPanel, inline create, and Kanban
+ * child pickers. Every surface that controls "what can I create under X"
+ * MUST derive from this map — never hardcode type lists.
+ *
+ * Canonical rule summary (confirmed Vikram 2026-06-12):
+ *   Business Request → [Epic]
+ *   Epic → [Feature, Story, Task, QA Bug, Change Request, Production Incident,
+ *           Business Gap, + subtask family]
+ *   Feature → [Story]
+ *   Story / Task / QA Bug / Change Request / Production Incident → [subtask family]
+ *   Business Gap / subtask family / Idea → []  (leaf — no children)
+ */
+export const ALLOWED_CHILD_TYPES: Record<string, string[]> = {
+  'Business Request': ['Epic'],
+
+  'Epic': [
+    'Feature',
+    'Story',
+    'Task',
+    'QA Bug',
+    'Change Request',
+    'Production Incident',
+    'Business Gap',
+    ...SUBTASK_FAMILY_CANONICAL_TYPES,
+  ],
+
+  // Feature is a mini-Epic; its children are Stories only.
+  'Feature': ['Story'],
+  'New Feature': ['Story'],
+
+  // Story-level types → subtask family
+  'Story': [...SUBTASK_FAMILY_CANONICAL_TYPES],
+  'Improvement': [...SUBTASK_FAMILY_CANONICAL_TYPES],
+  'Task': [...SUBTASK_FAMILY_CANONICAL_TYPES],
+  'QA Bug': [...SUBTASK_FAMILY_CANONICAL_TYPES],
+  'Change Request': [...SUBTASK_FAMILY_CANONICAL_TYPES],
+  'Production Incident': [...SUBTASK_FAMILY_CANONICAL_TYPES],
+
+  // Leaf types — no children allowed
+  'Business Gap': [],
+  'Sub-task': [],
+  'Backend': [],
+  'Frontend': [],
+  'Figma': [],
+  'Integration': [],
+  'API Requirement': [],
+  'BRD Task': [],
+  'Idea': [],
+};
+
+/**
+ * getAllowedChildTypes — case-insensitive lookup into ALLOWED_CHILD_TYPES.
+ * Returns [] for unknown types (safe default — no creation permitted).
+ */
+export function getAllowedChildTypes(parentType: string | null | undefined): string[] {
+  if (!parentType) return [];
+  const key = Object.keys(ALLOWED_CHILD_TYPES).find(
+    k => k.toLowerCase() === parentType.trim().toLowerCase(),
+  );
+  return key ? ALLOWED_CHILD_TYPES[key] : [];
+}
+
+/**
+ * CANONICAL ParentSource VALUES — used by AddParentPicker and CatalystViewBase.
+ *
+ * Each variant controls which issue types appear in the parent picker:
+ *   'epic'               → Epic only (Feature, Story parents)
+ *   'business_request'   → Business Request only (Epic parents)
+ *   'story'              → Story only (subtask-family parents)
+ *   'story_epic_feature' → Story / Epic / Feature (Task, QA Bug parents)
+ *   'br_epic_feature'    → Business Request / Epic / Feature
+ *                          (Production Incident, Business Gap parents — NOT Story)
+ *   'story_epic_br'      → Story / Epic / Business Request
+ *                          (Change Request parents — NOT Feature)
+ *   'story_epic_feature_br' → Story / Epic / Feature / Business Request (legacy)
+ */
+export type ParentSource =
+  | 'epic'
+  | 'business_request'
+  | 'story'
+  | 'story_epic_feature'
+  | 'br_epic_feature'
+  | 'story_epic_br'
+  | 'story_epic_feature_br';
+
+/**
+ * getParentSourceForType — maps a Jira issue_type string to the correct
+ * ParentSource for AddParentPicker. Use when the caller only knows the type.
+ */
+export function getParentSourceForType(issueType: string | undefined): ParentSource {
+  switch ((issueType ?? '').toLowerCase().trim()) {
+    case 'epic':
+      return 'business_request';
+    case 'feature':
+    case 'new feature':
+      return 'epic';
+    case 'story':
+    case 'improvement':
+      return 'epic';
+    case 'task':
+    case 'qa bug':
+    case 'bug':
+    case 'defect':
+      return 'story_epic_feature';
+    case 'production incident':
+    case 'business gap':
+      return 'br_epic_feature';
+    case 'change request':
+      return 'story_epic_br';
+    case 'sub-task':
+    case 'subtask':
+    case 'backend':
+    case 'frontend':
+    case 'figma':
+    case 'integration':
+    case 'api requirement':
+    case 'brd task':
+      return 'story';
+    default:
+      return 'epic';
+  }
+}

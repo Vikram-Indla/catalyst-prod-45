@@ -1,65 +1,12 @@
 /**
- * Parent → allowed-child-type rules.
+ * Parent → allowed-child-type rules for SubtasksPanel.
  *
- * Mirrors Jira's creation rules so an Epic can no longer create a Sub-task
- * from our inline "+" / ⇧C flow. Called by SubtasksPanel before the TypeSelector
- * is rendered.
- *
- * Source: Jira Cloud documentation, confirmed by reviewer feedback on the
- * Epic → Sub-task business-rule failure seen in BAU-4771 screenshots.
+ * CANONICAL SOURCE: all rules derive from parent-rules.ts (confirmed Vikram 2026-06-12).
+ * Do NOT add hardcoded type arrays here — extend parent-rules.ts instead.
  */
+import { getAllowedChildTypes } from '@/components/catalyst-detail-views/shared/parent-rules';
 
-const ALL_TYPES = [
-  'Epic',
-  'Story',
-  'Feature',
-  'New Feature',
-  'Task',
-  'Improvement',
-  'Bug',
-  'QA Bug',
-  'Business Request',
-  'Business Gap',
-  'Incident',
-  'Production Incident',
-  'Problem',
-  'Change Request',
-  'Question',
-  'Issue',
-  'Sub-task',
-  'Backend',
-  'Frontend',
-  'Figma',
-  'Integration',
-  'API Requirement',
-] as const;
-
-export type WorkItemType = typeof ALL_TYPES[number];
-
-const SUBTASK_FAMILY: WorkItemType[] = [
-  'Sub-task',
-  'Backend',
-  'Frontend',
-  'Figma',
-  'Integration',
-  'API Requirement',
-];
-
-const STORY_LEVEL: WorkItemType[] = [
-  'Story',
-  'Feature',
-  'New Feature',
-  'Task',
-  'Improvement',
-  'Bug',
-  'QA Bug',
-];
-
-const EPIC_CHILDREN: WorkItemType[] = STORY_LEVEL;
-
-const BR_CHILDREN: WorkItemType[] = ['Story', 'Task', 'Feature', 'New Feature'];
-
-const INCIDENT_CHILDREN: WorkItemType[] = ['Task', ...SUBTASK_FAMILY];
+export type WorkItemType = string;
 
 /**
  * Return the ordered list of allowed child issue types for a given parent type.
@@ -67,21 +14,7 @@ const INCIDENT_CHILDREN: WorkItemType[] = ['Task', ...SUBTASK_FAMILY];
  * The first element (if any) is the sensible default selection.
  */
 export function allowedChildTypes(parentType: string | null | undefined): WorkItemType[] {
-  const p = (parentType ?? '').trim().toLowerCase();
-  if (!p) return STORY_LEVEL.concat(SUBTASK_FAMILY); // unknown parent — permissive
-
-  if (p === 'epic') return EPIC_CHILDREN;
-  if (p === 'business request' || p === 'business gap') return BR_CHILDREN;
-  if (p.includes('incident') || p === 'problem') return INCIDENT_CHILDREN;
-
-  // Sub-task family → no further children (Jira blocks this)
-  if (SUBTASK_FAMILY.some(t => t.toLowerCase() === p)) return [];
-
-  // Story / Task / Bug / Feature / Improvement → sub-task family
-  if (STORY_LEVEL.some(t => t.toLowerCase() === p)) return SUBTASK_FAMILY;
-
-  // Fallback — treat unknown story-level as story-level
-  return SUBTASK_FAMILY;
+  return getAllowedChildTypes(parentType);
 }
 
 /**
@@ -90,7 +23,9 @@ export function allowedChildTypes(parentType: string | null | undefined): WorkIt
  */
 export function panelTitleFor(parentType: string | null | undefined): string {
   const p = (parentType ?? '').trim().toLowerCase();
-  if (p === 'epic') return 'Child work items';
+  if (p === 'epic' || p === 'feature' || p === 'new feature' || p === 'business request') {
+    return 'Child work items';
+  }
   return 'Subtasks';
 }
 

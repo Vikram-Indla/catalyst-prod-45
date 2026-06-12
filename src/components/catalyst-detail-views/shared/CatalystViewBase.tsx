@@ -115,12 +115,13 @@ export interface CatalystViewBaseLayoutProps {
    * (see parent-rules.ts for canonical mapping):
    *   Story / Feature             → 'epic'
    *   Epic                        → 'business_request'
-   *   Subtask                     → 'story'
+   *   Subtask family              → 'story'
    *   Defect / Task               → 'story_epic_feature'
-   *   Production Incident         → 'story_epic_feature_br'
+   *   Production Incident / BG    → 'br_epic_feature'
+   *   Change Request              → 'story_epic_br'
    */
   onParentChange?: (newParentKey: string | null) => Promise<void> | void;
-  parentSource?: 'epic' | 'business_request' | 'story' | 'story_epic_feature' | 'story_epic_feature_br';
+  parentSource?: 'epic' | 'business_request' | 'story' | 'story_epic_feature' | 'br_epic_feature' | 'story_epic_br' | 'story_epic_feature_br';
 
   /* Actions */
   moreMenuItems?: { label: string; onClick: () => void; danger?: boolean }[];
