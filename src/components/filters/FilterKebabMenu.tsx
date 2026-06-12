@@ -573,19 +573,19 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                     placeholder="e.g. Q2 delivery board"
                   />
                 </div>
-                <p style={{ margin: 0, fontSize: 12, color: token(‘color.text.subtlest’) }}>
-                  Cards come live from <strong>{filter.name}</strong>.{‘ ‘}
+                <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
+                  Cards come live from <strong>{filter.name}</strong>.{' '}
                   {boards.length > 0
-                    ? ‘Columns are inherited from this project’s board.’
-                    : ‘No existing board found — the board will start with default columns (To Do, In Progress, Done). You can customise them after creation.’
-                  }{‘ ‘}
+                    ? "Columns are inherited from this project's board."
+                    : 'No existing board found — the board will start with default columns (To Do, In Progress, Done). You can customise them after creation.'
+                  }{' '}
                   Access follows the filter &mdash; anyone who can see the filter can see this board.
                 </p>
                 {filterProjectMismatch && (
-                  <p style={{ margin: 0, fontSize: 12, color: token(‘color.text.warning’, ‘#974F0C’), background: token(‘color.background.warning’, ‘#FFF7D6’), borderRadius: 4, padding: ‘8px 12px’ }}>
+                  <p style={{ margin: 0, fontSize: 12, color: token('color.text.warning', '#974F0C'), background: token('color.background.warning', '#FFF7D6'), borderRadius: 4, padding: '8px 12px' }}>
                     This filter is scoped to project <strong>{jqlProjectKey}</strong> but you&rsquo;re
-                    in <strong>{projectKey?.toUpperCase()}</strong>. The board will use{‘ ‘}
-                    <strong>{projectKey?.toUpperCase()}</strong> columns — cards from{‘ ‘}
+                    in <strong>{projectKey?.toUpperCase()}</strong>. The board will use{' '}
+                    <strong>{projectKey?.toUpperCase()}</strong> columns — cards from{' '}
                     <strong>{jqlProjectKey}</strong> statuses may not map correctly.
                   </p>
                 )}
