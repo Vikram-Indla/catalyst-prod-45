@@ -41,6 +41,7 @@ import SearchIcon from '@atlaskit/icon/core/search';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import SettingsIcon from '@atlaskit/icon/core/settings';
 import LocationIcon from '@atlaskit/icon/core/location';
+import EditIcon from '@atlaskit/icon/core/edit';
 import FilterIcon from '@atlaskit/icon/core/filter';
 import ArchiveBoxIcon from '@atlaskit/icon/core/archive-box';
 import VideoIcon from '@atlaskit/icon/core/video';
@@ -168,6 +169,9 @@ export interface KanbanToolbarProps<TGroupBy extends string = string> {
   showArchived?: boolean;
   onShowArchivedChange?: Dispatch<SetStateAction<boolean>>;
 
+  /* Rename board */
+  onRenameBoard?: () => void;
+
   /* Standup modal */
   onStartStandup?: () => void;
 
@@ -198,6 +202,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
   mapStatusesPath,
   projectKey,
   canArchive, showArchived, onShowArchivedChange,
+  onRenameBoard,
   onStartStandup,
   quickFilters, onQuickFiltersChange, enabledQuickFilters,
 }: KanbanToolbarProps<TGroupBy>) {
@@ -408,6 +413,13 @@ export function KanbanToolbar<TGroupBy extends string = string>({
             <div style={{ padding: '6px 16px 4px', fontSize: 11, fontWeight: 600, color: tk.textMuted, letterSpacing: '0.04em' }}>
               Board options
             </div>
+            {onRenameBoard && (
+              <BoardMenuItem
+                icon={<EditIcon label="" size="small" primaryColor={tk.textSecondary} />}
+                label="Rename board"
+                onClick={() => { onShowBoardMenuChange(false); onRenameBoard(); }}
+              />
+            )}
             {mapStatusesPath && (
               <BoardMenuItem
                 icon={<LocationIcon label="" size="small" primaryColor={tk.textSecondary} />}

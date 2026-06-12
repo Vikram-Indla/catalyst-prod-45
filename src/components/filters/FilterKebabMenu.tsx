@@ -8,8 +8,7 @@ import {
   useCopyFilter,
   useUpdateSavedFilter,
   useDeleteSavedFilter,
-  useBoardsForProject,
-  useToggleFilterBoardLink,
+
   useToggleFilterSubscription,
   useExistingBoardForFilter,
   type SavedFilterFull,
@@ -37,6 +36,8 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [editOpen, setEditOpen] = useState(false);
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [renameValue, setRenameValue] = useState('');
   const [historyOpen, setHistoryOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
@@ -74,9 +75,7 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const copyFilter      = useCopyFilter();
   const updateFilter    = useUpdateSavedFilter();
   const deleteFilter    = useDeleteSavedFilter();
-  const boardLink       = useToggleFilterBoardLink();
   const subscribeFilter = useToggleFilterSubscription();
-  const { data: boards = [] } = useBoardsForProject(projectKey);
 
   const createKanban = useCreateKanbanFromFilter();
   const existingBoard = useExistingBoardForFilter(
@@ -248,11 +247,12 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
         >
           {isOwner && menuItem('Edit filter', () => setEditOpen(true))}
           {menuItem('Copy filter', () => copyFilter.mutate(filter))}
+          {isOwner && menuItem('Rename', () => { setRenameValue(filter.name); setRenameOpen(true); })}
           {menuItem('Copy link', () => {
             const base = window.location.origin;
             const path = projectKey
-              ? `/project-hub/${projectKey}/filters/${filter.id}`
-              : `/product-hub/filters/${filter.id}`;
+              ? `/project-hub/${projectKey}/filters/create?filterId=${filter.id}`
+              : `/product-hub/allwork?filterId=${filter.id}`;
             navigator.clipboard.writeText(base + path).catch(() => {});
           })}
           {menuItem(
@@ -313,28 +313,6 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             </>
           )}
 
-          {/* Legacy link-a-board section: native project boards only.
-              When ENABLE_FILTER_TO_KANBAN is on, filter-backed boards have their
-              own "Open Kanban" entry above — exclude them here to avoid a duplicate
-              toggle-link entry with the wrong handler. */}
-          {boards.filter(b => !ENABLE_FILTER_TO_KANBAN || !filter.used_by_board_ids.includes(b.id)).length > 0 && isOwner && (
-            <>
-              {divider}
-              {boards
-                .filter(b => !ENABLE_FILTER_TO_KANBAN || !filter.used_by_board_ids.includes(b.id))
-                .map(board => {
-                  const isLinked = filter.used_by_board_ids.includes(board.id);
-                  return (
-                    <React.Fragment key={board.id}>
-                      {menuItem(
-                        `${isLinked ? '✓ ' : ''}${board.name}`,
-                        () => boardLink.mutate({ filterId: filter.id, boardId: board.id, currentUsedByBoardIds: filter.used_by_board_ids, link: !isLinked }),
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-            </>
-          )}
 
           {isOwner && (
             <>
@@ -364,6 +342,44 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
           onClose={() => setHistoryOpen(false)}
         />
       )}
+
+      <ModalTransition>
+        {renameOpen && (
+          <ModalDialog onClose={() => setRenameOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle>Rename filter</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <Textfield
+                autoFocus
+                value={renameValue}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRenameValue(e.target.value)}
+                onKeyDown={(e: React.KeyboardEvent) => {
+                  if (e.key === 'Enter' && renameValue.trim() && renameValue.trim() !== filter.name) {
+                    updateFilter.mutate({ id: filter.id, updates: { name: renameValue.trim() } as any });
+                    setRenameOpen(false);
+                  }
+                }}
+                placeholder="Filter name"
+              />
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setRenameOpen(false)}>Cancel</Button>
+              <Button
+                appearance="primary"
+                isDisabled={!renameValue.trim() || renameValue.trim() === filter.name}
+                isLoading={updateFilter.isPending}
+                onClick={() => {
+                  updateFilter.mutate({ id: filter.id, updates: { name: renameValue.trim() } as any });
+                  setRenameOpen(false);
+                }}
+              >
+                Rename
+              </Button>
+            </ModalFooter>
+          </ModalDialog>
+        )}
+      </ModalTransition>
 
       <ModalTransition>
         {deleteOpen && (

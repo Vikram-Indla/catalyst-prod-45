@@ -119,7 +119,7 @@ function RoadmapKebabMenu({ row, currentUserId, projectKey, onDeleted }: Roadmap
       .eq('id', row.id);
     setRenaming(false);
     setRenameOpen(false);
-    queryClient.invalidateQueries({ queryKey: ['roadmaps', projectKey] });
+    queryClient.invalidateQueries({ queryKey: ['roadmaps-list'] });
   };
 
   const handleDelete = async () => {
