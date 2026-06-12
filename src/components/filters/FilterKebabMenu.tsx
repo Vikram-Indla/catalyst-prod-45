@@ -267,17 +267,25 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
           {ENABLE_FILTER_TO_KANBAN && (
             <>
               {divider}
-              {menuItem(
-                existingBoard.data ? 'Open Kanban' : 'Create Kanban from filter',
-                () => {
-                  if (existingBoard.data) {
-                    if (projectKey) navigate(`/project-hub/${projectKey}/boards/${existingBoard.data.id}`);
-                    return;
-                  }
-                  setKanbanName(`${filter.name} board`);
-                  setCreateKanbanOpen(true);
-                },
-              )}
+              {(() => {
+                // Use filter.used_by_board_ids[0] as primary signal — it's on the filter
+                // object already (no async fetch). Fall back to existingBoard.data.id
+                // (the dedup query) once it resolves.
+                const linkedBoardId =
+                  existingBoard.data?.id ??
+                  (filter.used_by_board_ids?.length ? filter.used_by_board_ids[0] : null);
+                return menuItem(
+                  linkedBoardId ? 'Open Kanban' : 'Create Kanban from filter',
+                  () => {
+                    if (linkedBoardId) {
+                      if (projectKey) navigate(`/project-hub/${projectKey}/boards/${linkedBoardId}`);
+                      return;
+                    }
+                    setKanbanName(`${filter.name} board`);
+                    setCreateKanbanOpen(true);
+                  },
+                );
+              })()}
             </>
           )}
 
@@ -305,20 +313,26 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             </>
           )}
 
-          {boards.length > 0 && isOwner && (
+          {/* Legacy link-a-board section: native project boards only.
+              When ENABLE_FILTER_TO_KANBAN is on, filter-backed boards have their
+              own "Open Kanban" entry above — exclude them here to avoid a duplicate
+              toggle-link entry with the wrong handler. */}
+          {boards.filter(b => !ENABLE_FILTER_TO_KANBAN || !filter.used_by_board_ids.includes(b.id)).length > 0 && isOwner && (
             <>
               {divider}
-              {boards.map(board => {
-                const isLinked = filter.used_by_board_ids.includes(board.id);
-                return (
-                  <React.Fragment key={board.id}>
-                    {menuItem(
-                      `${isLinked ? '✓ ' : ''}${board.name} board`,
-                      () => boardLink.mutate({ filterId: filter.id, boardId: board.id, currentUsedByBoardIds: filter.used_by_board_ids, link: !isLinked }),
-                    )}
-                  </React.Fragment>
-                );
-              })}
+              {boards
+                .filter(b => !ENABLE_FILTER_TO_KANBAN || !filter.used_by_board_ids.includes(b.id))
+                .map(board => {
+                  const isLinked = filter.used_by_board_ids.includes(board.id);
+                  return (
+                    <React.Fragment key={board.id}>
+                      {menuItem(
+                        `${isLinked ? '✓ ' : ''}${board.name}`,
+                        () => boardLink.mutate({ filterId: filter.id, boardId: board.id, currentUsedByBoardIds: filter.used_by_board_ids, link: !isLinked }),
+                      )}
+                    </React.Fragment>
+                  );
+                })}
             </>
           )}
 

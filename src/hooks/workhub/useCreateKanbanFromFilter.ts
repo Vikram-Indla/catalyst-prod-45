@@ -115,7 +115,9 @@ async function cloneBoardColumns(sourceBoardId: string, targetBoardId: string): 
 
 export interface CreateKanbanFromFilterArgs {
   filter: SavedFilterFull;
-  projectId: string | null;
+  /** Jira project key (e.g. 'BAU'). Used to populate boards.jira_project_key so
+   *  the board appears in the project's board switcher. NOT the legacy projects UUID. */
+  projectKey: string | null;
   /** The project's primary board to clone columns from (may be null → defaults). */
   sourceBoardId: string | null;
   name: string;
@@ -125,12 +127,17 @@ export interface CreateKanbanFromFilterArgs {
 export function useCreateKanbanFromFilter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ filter, projectId, sourceBoardId, name, visibility }: CreateKanbanFromFilterArgs) => {
+    mutationFn: async ({ filter, projectKey, sourceBoardId, name, visibility }: CreateKanbanFromFilterArgs) => {
       // 1. Canonical board creation (board + default columns + quick filters + admin member).
+      //    p_project_id is always null for filter boards — filter boards are not tied to the
+      //    legacy `projects` table (only to `ph_projects` via jira_project_key set in step 3).
+      const { data: authData } = await supabase.auth.getUser();
+      const uid = authData?.user?.id ?? null;
       const { data: newBoardId, error: rpcErr } = await (supabase as any).rpc('create_board', {
         p_name: name,
-        p_project_id: projectId,
+        p_project_id: null,
         p_visibility: visibility,
+        p_user_id: uid,
         p_board_type: 'kanban',
         p_board_query: filter.jql_query ?? null,
       });
@@ -140,9 +147,13 @@ export function useCreateKanbanFromFilter() {
       // 2. Inherit the project's configured columns.
       if (sourceBoardId) await cloneBoardColumns(sourceBoardId, boardId);
 
-      // 3. Link the board to its source filter (drives the filter-backed issue source).
+      // 3. Link the board to its source filter and project key.
+      //    filter_id → drives issue source (KanbanBoardPage resolves JQL from this).
+      //    jira_project_key → makes the board appear in the project's board switcher.
       const { error: linkErr } = await (supabase as any)
-        .from('boards').update({ filter_id: filter.id }).eq('id', boardId);
+        .from('boards')
+        .update({ filter_id: filter.id, jira_project_key: projectKey ? projectKey.toUpperCase() : null })
+        .eq('id', boardId);
       if (linkErr) throw new Error(linkErr.message);
 
       // 4. Back-link on the saved filter.
@@ -155,6 +166,8 @@ export function useCreateKanbanFromFilter() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['filters'] });
       qc.invalidateQueries({ queryKey: ['project-boards'] });
+      qc.invalidateQueries({ queryKey: ['project-boards-native'] });
+      qc.invalidateQueries({ queryKey: ['project-boards-filter'] });
       qc.invalidateQueries({ queryKey: ['existing-board-for-filter'] });
     },
   });
