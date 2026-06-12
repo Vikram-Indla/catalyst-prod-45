@@ -22,6 +22,7 @@ import VidFullScreenOnIcon from "@atlaskit/icon/glyph/vid-full-screen-on";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import { CatyFabIcon } from "./CatyFabIcon";
+import { useDraggableFab } from "./useDraggableFab";
 import { CatyPanel } from "./CatyPanel";
 import { DockDirectory } from "./DockDirectory";
 import { DockConversationPane } from "./DockConversationPane";
@@ -175,9 +176,9 @@ export function ChatDock({
 }: ChatDockProps) {
   const [dockMode, setDockMode] = useState<DockMode>("messages");
   const [catyView, setCatyView] = useState<CatyView>("floating");
-  // Incremented when + is clicked while directory is already showing — signals
-  // DockDirectory to focus its search input so user can immediately type a name.
   const [dirFocusTick, setDirFocusTick] = useState(0);
+
+  const { pos, isDragging, isSnapping, handlers: dragHandlers } = useDraggableFab();
 
   // Collapsed: render only the FAB. No data hook subscription is created here; callers
   // gate realtime on !collapsed. We still need an unread total for the badge — read it
@@ -201,11 +202,16 @@ export function ChatDock({
     return (
       <button
         type="button"
-        className="cc-fab"
+        className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}`}
+        style={{ top: pos.y, left: pos.x }}
         aria-label="Open messages"
         onClick={onToggleCollapsed}
+        onClickCapture={dragHandlers.onClickCapture}
+        onPointerDown={dragHandlers.onPointerDown}
+        onPointerMove={dragHandlers.onPointerMove}
+        onPointerUp={dragHandlers.onPointerUp}
       >
-        <CatyFabIcon size={56} />
+        <CatyFabIcon size={56} isDragging={isDragging} />
         {totalUnread > 0 && (
           <span
             className="cc-fab__badge"

@@ -5,7 +5,7 @@
  * Dark detail fills use var(--caty-fg) so they adapt if dark mode is ever enabled.
  */
 
-export function CatyFabIcon({ size = 56 }: { size?: number }) {
+export function CatyFabIcon({ size = 56, isDragging = false }: { size?: number; isDragging?: boolean }) {
   return (
     <span
       className="cc-fab-icon"
@@ -18,6 +18,7 @@ export function CatyFabIcon({ size = 56 }: { size?: number }) {
         height={size}
         role="img"
         aria-label="Ask Caty"
+        className={isDragging ? 'is-dragging' : undefined}
       >
         <defs>
           {/* ads-scanner:ignore-next-line — Caty brand gradient, no ADS token equivalent */}
@@ -54,6 +55,13 @@ export function CatyFabIcon({ size = 56 }: { size?: number }) {
           svg.is-excited .cf-sleep, svg.is-excited .cf-awake { opacity: 0 }
           svg:active .cf-excited, svg.is-excited .cf-excited { opacity: 1 }
           @media (prefers-reduced-motion: reduce) { .cf { animation: none; transform: scale(1) } }
+          svg.is-dragging .cf { animation: none; transform: scaleX(1.35) scaleY(0.72);
+            transition: transform .1s ease }
+          svg.is-dragging .cf-ears { transform: scaleY(0.45) }
+          svg.is-dragging .cf-tail { animation: cfTailFlail .35s ease-in-out infinite alternate }
+          @keyframes cfTailFlail { from { transform: rotate(-30deg) } to { transform: rotate(30deg) } }
+          svg.is-dragging .cf-sleep, svg.is-dragging .cf-awake { opacity: 0 }
+          svg.is-dragging .cf-excited { opacity: 1 }
         `}</style>
 
         <g className="cf">
