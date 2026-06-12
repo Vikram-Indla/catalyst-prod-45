@@ -699,13 +699,16 @@ export default function KanbanBoardPage() {
     if (dragId || groupBy !== 'none') return;
     const m: ColMap = {};
     KANBAN_COLUMNS.forEach(c => { m[c.id] = []; });
+    // When STATUS_TO_COL_ID is completely empty (board has no status mappings
+    // configured yet), fall back to the first column for ALL items so the board
+    // is useful before the user goes through the Map Statuses workflow.
+    // Also applies to filter-backed boards whose JQL selects statuses that don't
+    // match any cloned column (e.g. filter on status="Backlog" but board only
+    // has IN_PROGRESS/DONE).
+    const noMappings = STATUS_TO_COL_ID.size === 0;
     filtered.forEach(i => {
       const c = STATUS_TO_COL_ID.get(i.status.toLowerCase());
-      // For filter-backed boards the JQL may select items whose status doesn't
-      // match any cloned column (e.g. a filter for status="Backlog" on a board
-      // that only has IN_PROGRESS/DONE columns). Fall back to the first column so
-      // items are always visible; the column header still shows the real status.
-      const targetCol = c ?? (isFilterBacked ? KANBAN_COLUMNS[0]?.id : undefined);
+      const targetCol = c ?? (noMappings || isFilterBacked ? KANBAN_COLUMNS[0]?.id : undefined);
       if (targetCol && m[targetCol]) m[targetCol].push(i.id);
     });
     setColMap(prev => {
