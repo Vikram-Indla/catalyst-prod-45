@@ -1,0 +1,78 @@
+/* ── App Rail ── */
+.c-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  gap: 4px;
+  border-right: 1px solid var(--c-chat-border);
+  background: var(--c-chat-surface);
+  overflow: hidden;
+}
+
+.c-rail__logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--c-chat-accent);
+  color: var(--ds-text-inverse);
+  font-weight: 700;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  flex: none;
+}
+
+.c-rail__btn {
+  width: 56px;
+  padding: 8px 0;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--c-chat-text-subtle);
+  position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.c-rail__btn:hover {
+  background: var(--c-chat-hover-bg);
+}
+
+.c-rail__btn[aria-current="page"] {
+  color: var(--c-chat-accent);
+  background: var(--c-chat-selected-bg);
+}
+
+.c-rail__btn__label {
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 500;
+}
+
+.c-rail__badge {
+  position: absolute;
+  top: 0;
+  right: 6px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--c-chat-badge);
+  color: var(--ds-text-inverse);
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 700;
+  padding: 0 4px;
+  border: 1px solid var(--c-chat-surface);
+  text-align: center;
+}
+
+.c-rail__avatar-wrap {
+  margin-top: auto;
+  padding-bottom: 8px;
+}
