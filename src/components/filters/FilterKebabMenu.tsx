@@ -16,7 +16,11 @@ import {
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
 import { useCreateKanbanFromFilter } from '@/hooks/workhub/useCreateKanbanFromFilter';
-import { ENABLE_FILTER_TO_KANBAN } from '@/lib/featureFlags';
+import { ENABLE_FILTER_TO_KANBAN, ENABLE_FILTER_TO_ROADMAP } from '@/lib/featureFlags';
+import {
+  useExistingRoadmapForFilter,
+  useCreateRoadmapFromFilter,
+} from '@/hooks/workhub/useFilterDerivedViews';
 import { useParams, useNavigate } from 'react-router-dom';
 import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
@@ -43,6 +47,12 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const [creatingBoard, setCreatingBoard] = useState(false);
   const [createKanbanOpen, setCreateKanbanOpen] = useState(false);
   const [kanbanName, setKanbanName] = useState('');
+  const [kanbanError, setKanbanError] = useState<string | null>(null);
+  const [createRoadmapOpen, setCreateRoadmapOpen] = useState(false);
+  const [roadmapName, setRoadmapName] = useState('');
+  const [roadmapDateField, setRoadmapDateField] = useState<{ label: string; value: string }>({ label: 'Due date', value: 'due_date' });
+  const [roadmapLaneBy, setRoadmapLaneBy] = useState<{ label: string; value: string }>({ label: 'Status', value: 'status' });
+  const [roadmapError, setRoadmapError] = useState<string | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -59,6 +69,11 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const createKanban = useCreateKanbanFromFilter();
   const existingBoard = useExistingBoardForFilter(
     ENABLE_FILTER_TO_KANBAN ? filter.id : undefined,
+    currentUserId,
+  );
+  const createRoadmap  = useCreateRoadmapFromFilter();
+  const existingRoadmap = useExistingRoadmapForFilter(
+    ENABLE_FILTER_TO_ROADMAP ? filter.id : undefined,
     currentUserId,
   );
   const { data: projectId = null } = useQuery({
@@ -117,15 +132,40 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
     try {
       const boardId = await createKanban.mutateAsync({
         filter,
-        projectId,
+        projectKey: projectKey ?? null,
         sourceBoardId: boards[0]?.id ?? null,
         name: kanbanName.trim(),
         visibility: isPrivate ? 'private' : 'project',
       });
+      setKanbanError(null);
       setCreateKanbanOpen(false);
       if (projectKey && boardId) navigate(`/project-hub/${projectKey}/boards/${boardId}`);
     } catch (e: any) {
       console.error('Failed to create Kanban from filter:', e);
+      setKanbanError(e?.message ?? 'Something went wrong creating the board.');
+    }
+  }
+
+  async function handleCreateRoadmap() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    try {
+      const viewId = await createRoadmap.mutateAsync({
+        filterId: filter.id,
+        title: roadmapName.trim(),
+        ownerId: user.id,
+        config: {
+          date_field: roadmapDateField.value as 'due_date' | 'created' | 'updated',
+          lane_by: roadmapLaneBy.value as 'status' | 'assignee' | 'issueType' | 'projectKey',
+        },
+        visibility: isPrivate ? 'private' : 'org',
+      });
+      setRoadmapError(null);
+      setCreateRoadmapOpen(false);
+      if (projectKey && viewId) navigate(`/project-hub/${projectKey}/roadmaps/${viewId}`);
+    } catch (e: any) {
+      console.error('Failed to create roadmap from filter:', e);
+      setRoadmapError(e?.message ?? 'Something went wrong creating the roadmap.');
     }
   }
 
@@ -139,7 +179,7 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
         style={{
           display: 'block',
           width: '100%',
-          padding: '6px 16px',
+          padding: '8px 16px',
           background: 'none',
           border: 'none',
           textAlign: 'left',
@@ -221,23 +261,44 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
           {menuItem('View version history', () => setHistoryOpen(true))}
           {isOwner && menuItem('Change owner', () => setTransferOpen(true))}
 
-          {isOwner && (
+          {ENABLE_FILTER_TO_KANBAN && (
             <>
               {divider}
-              {ENABLE_FILTER_TO_KANBAN
-                ? menuItem(
-                    existingBoard.data ? 'Open Kanban' : 'Create Kanban from filter',
-                    () => {
-                      if (existingBoard.data) {
-                        if (projectKey) navigate(`/project-hub/${projectKey}/boards/${existingBoard.data.id}`);
-                        return;
-                      }
-                      setKanbanName(`${filter.name} board`);
-                      setCreateKanbanOpen(true);
-                    },
-                  )
-                : menuItem('Create board from filter', () => { setBoardName(`${filter.name} board`); setCreateBoardOpen(true); })
-              }
+              {menuItem(
+                existingBoard.data ? 'Open Kanban' : 'Create Kanban from filter',
+                () => {
+                  if (existingBoard.data) {
+                    if (projectKey) navigate(`/project-hub/${projectKey}/boards/${existingBoard.data.id}`);
+                    return;
+                  }
+                  setKanbanName(`${filter.name} board`);
+                  setCreateKanbanOpen(true);
+                },
+              )}
+            </>
+          )}
+
+          {ENABLE_FILTER_TO_ROADMAP && (
+            <>
+              {divider}
+              {menuItem(
+                existingRoadmap.data ? 'Open roadmap' : 'Create roadmap from filter',
+                () => {
+                  if (existingRoadmap.data) {
+                    if (projectKey) navigate(`/project-hub/${projectKey}/roadmaps/${existingRoadmap.data.id}`);
+                    return;
+                  }
+                  setRoadmapName(`${filter.name} roadmap`);
+                  setCreateRoadmapOpen(true);
+                },
+              )}
+            </>
+          )}
+
+          {!ENABLE_FILTER_TO_KANBAN && isOwner && (
+            <>
+              {divider}
+              {menuItem('Create board from filter', () => { setBoardName(`${filter.name} board`); setCreateBoardOpen(true); })}
             </>
           )}
 
@@ -413,6 +474,84 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
       </ModalTransition>
 
       <ModalTransition>
+        {createRoadmapOpen && (
+          <ModalDialog onClose={() => setCreateRoadmapOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle>Create roadmap from filter</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                    Roadmap name
+                  </label>
+                  <Textfield
+                    autoFocus
+                    value={roadmapName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRoadmapName(e.target.value)}
+                    placeholder="e.g. Q3 delivery roadmap"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                    Date field
+                  </label>
+                  <Select
+                    options={[
+                      { label: 'Due date',     value: 'due_date' },
+                      { label: 'Created date', value: 'created'  },
+                      { label: 'Updated date', value: 'updated'  },
+                    ]}
+                    value={roadmapDateField}
+                    onChange={(opt: any) => opt && setRoadmapDateField(opt)}
+                    menuPosition="fixed"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                    Group lanes by
+                  </label>
+                  <Select
+                    options={[
+                      { label: 'Status',     value: 'status'     },
+                      { label: 'Assignee',   value: 'assignee'   },
+                      { label: 'Issue type', value: 'issueType'  },
+                      { label: 'Project',    value: 'projectKey' },
+                    ]}
+                    value={roadmapLaneBy}
+                    onChange={(opt: any) => opt && setRoadmapLaneBy(opt)}
+                    menuPosition="fixed"
+                  />
+                </div>
+                <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
+                  Issues come live from <strong>{filter.name}</strong>. Items without a date go into an
+                  Unscheduled group. Access follows the filter visibility.
+                </p>
+                {roadmapError && (
+                  <p style={{ margin: 0, fontSize: 13, color: token('color.text.danger', '#AE2A19') }}>
+                    {roadmapError}
+                  </p>
+                )}
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setCreateRoadmapOpen(false)} isDisabled={createRoadmap.isPending}>
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                isDisabled={!roadmapName.trim() || createRoadmap.isPending}
+                isLoading={createRoadmap.isPending}
+                onClick={handleCreateRoadmap}
+              >
+                Create roadmap
+              </Button>
+            </ModalFooter>
+          </ModalDialog>
+        )}
+      </ModalTransition>
+
+      <ModalTransition>
         {createKanbanOpen && (
           <ModalDialog onClose={() => setCreateKanbanOpen(false)} width="small">
             <ModalHeader>
@@ -436,6 +575,11 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
                   project&rsquo;s board. Access follows the filter &mdash; anyone who can see the filter can
                   see this board.
                 </p>
+                {kanbanError && (
+                  <p style={{ margin: 0, fontSize: 13, color: token('color.text.danger', '#AE2A19') }}>
+                    {kanbanError}
+                  </p>
+                )}
               </div>
             </ModalBody>
             <ModalFooter>

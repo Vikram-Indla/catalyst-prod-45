@@ -40,3 +40,15 @@ export const ENABLE_KANBAN_V2 = import.meta.env.VITE_ENABLE_KANBAN_V2 === 'true'
  * Out of scope (this feature): ProductHub/IncidentHub/TaskHub.
  */
 export const ENABLE_FILTER_TO_KANBAN = import.meta.env.VITE_ENABLE_FILTER_TO_KANBAN === 'true';
+
+/**
+ * Convert filter → Roadmap — Filters-as-reusable-views vertical (feature 2).
+ * Defaults to FALSE: off everywhere until the vertical ships.
+ * Set VITE_ENABLE_FILTER_TO_ROADMAP=true to expose the "Create Roadmap from
+ * filter" action in the filter kebab and the filter_derived_views-backed roadmap.
+ * When off, FilterKebabMenu renders unchanged.
+ *
+ * Surface: /project-hub/:key filters + /project-hub/:key/roadmaps/:id.
+ * Out of scope (this feature): ProductHub/IncidentHub/TaskHub.
+ */
+export const ENABLE_FILTER_TO_ROADMAP = import.meta.env.VITE_ENABLE_FILTER_TO_ROADMAP === 'true';

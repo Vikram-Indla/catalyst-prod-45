@@ -72,7 +72,7 @@ import type { GroupByOption } from '@/components/shared/GroupByPopover';
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
 export default function KanbanBoardPage() {
-  const { key } = useParams<{ key: string }>();
+  const { key, boardId: urlBoardId } = useParams<{ key: string; boardId?: string }>();
   const { isDark } = useTheme();
   const tk = isDark ? KANBAN_TOKENS.dark : KANBAN_TOKENS.light;
   const avatarsByName = useProfileAvatarsByName();
@@ -112,7 +112,7 @@ export default function KanbanBoardPage() {
   const [collapsedSwimlanes, setCollapsedSwimlanes] = useState<Set<string>>(new Set());
   const [showStandup, setShowStandup] = useState(false);
   const [standupAssignee, setStandupAssignee] = useState<string | null>(null);
-  const [activeBoardId, setActiveBoardId] = useState<string | null>(null);
+  const [activeBoardId, setActiveBoardId] = useState<string | null>(urlBoardId ?? null);
   const [showBoardSwitcher, setShowBoardSwitcher] = useState(false);
   const [showCreateBoard, setShowCreateBoard] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
@@ -206,12 +206,13 @@ export default function KanbanBoardPage() {
     staleTime: 60_000,
   });
 
-  // Keep activeBoardId in sync: default to first board when list loads
+  // Keep activeBoardId in sync: default to first board when list loads,
+  // but only when no board was specified via the URL :boardId param.
   useEffect(() => {
-    if (projectBoards.length > 0 && !activeBoardId) {
+    if (projectBoards.length > 0 && !activeBoardId && !urlBoardId) {
       setActiveBoardId(projectBoards[0].id);
     }
-  }, [projectBoards, activeBoardId]);
+  }, [projectBoards, activeBoardId, urlBoardId]);
 
   /* ═══ DYNAMIC BOARD COLUMNS FROM DB ═══ */
 
