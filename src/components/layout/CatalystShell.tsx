@@ -259,8 +259,6 @@ function useIsDarkTheme(): boolean {
 // shell now renders the same zero-width placeholder used for the
 // intermediate state, so the layout stays stable.
 
-const ChatDockMountLazy = lazy(() => import("@/components/chat/ChatDockMount"));
-
 function CatalystShellContent() {
   // Dev-only instrumentation: prove shell doesn't remount on program navigation
   if (import.meta.env.DEV) {
@@ -480,6 +478,10 @@ function CatalystShellContent() {
 
   // Check if on full-screen issue view (/browse/:issueKey)
   const isIssueFullPageRoute = location.pathname.startsWith("/browse/");
+
+  // Chat owns its own grid layout (c-chat-shell) and must NOT be inside
+  // a scroll container — same fullpage flex chain as allwork/backlog.
+  const isChatRoute = location.pathname.startsWith("/chat");
 
   // Parse issue key from /issue/:issueKey for tab-title binding
   const fullPageIssueKey = isIssueFullPageRoute
@@ -949,10 +951,10 @@ function CatalystShellContent() {
             <AnnouncementBanner />
           </Suspense>
           <div
-            className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden"}`}
+            className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute || isChatRoute ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden"}`}
           >
             <div
-              className={`w-full max-w-full ${isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute ? "flex-1 min-h-0 flex flex-col overflow-hidden" : ""}`}
+              className={`w-full max-w-full ${isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute || isChatRoute ? "flex-1 min-h-0 flex flex-col overflow-hidden" : ""}`}
             >
               {shouldWrapHubSurface ? (
                 /* jira-compare 2026-05-05 cycle 2 — D-4 fix · drop the LEFT
@@ -997,11 +999,6 @@ function CatalystShellContent() {
           here in the shell, not in FullAppRoutes which only serves catch-all
           routes). Hidden on the full-page /chat surface. Collapsed by default
           (no realtime subscriptions until opened). */}
-      {!location.pathname.startsWith("/chat") && (
-        <Suspense fallback={null}>
-          <ChatDockMountLazy />
-        </Suspense>
-      )}
     </div>
   );
 }
