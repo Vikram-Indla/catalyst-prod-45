@@ -13,8 +13,6 @@
  * IconButton. Colors via var(--ds-*) tokens. Avatars are colored-initials circles (never <img>).
  */
 import React, { useState } from "react";
-import { useDockInteraction } from "./useDockInteraction";
-import { useDraggableFab } from "./useDraggableFab";
 import { IconButton } from "@atlaskit/button/new";
 import Tooltip from "@atlaskit/tooltip";
 import AddIcon from "@atlaskit/icon/glyph/add";
@@ -175,22 +173,11 @@ export function ChatDock({
   onFocusDirectory,
   onPopOut,
 }: ChatDockProps) {
-  const { dockStyle, dragHandleProps, resizeHandleProps } = useDockInteraction();
   const [dockMode, setDockMode] = useState<DockMode>("messages");
   const [catyView, setCatyView] = useState<CatyView>("floating");
   // Incremented when + is clicked while directory is already showing — signals
   // DockDirectory to focus its search input so user can immediately type a name.
   const [dirFocusTick, setDirFocusTick] = useState(0);
-
-  // Draggable FAB — corner-snap + 2-min auto-return + strangled stretch animation
-  const {
-    fabStyle,
-    isDragging: fabDragging,
-    dragVelocity,
-    onPointerDown: fabPointerDown,
-    onPointerMove: fabPointerMove,
-    onPointerUp: fabPointerUp,
-  } = useDraggableFab();
 
   // Collapsed: render only the FAB. No data hook subscription is created here; callers
   // gate realtime on !collapsed. We still need an unread total for the badge — read it
@@ -210,27 +197,15 @@ export function ChatDock({
     [conversations],
   );
 
-  // Directional tilt while dragging — leans toward movement direction, max ±20°
-  const dragRotate = fabDragging
-    ? Math.max(-20, Math.min(20, dragVelocity[0] * 1.8))
-    : 0;
-
   if (collapsed) {
     return (
       <button
         type="button"
-        className={`cc-fab${fabDragging ? ' cc-fab--dragging' : ''}`}
+        className="cc-fab"
         aria-label="Open messages"
-        style={{
-          ...fabStyle,
-          transform: fabDragging ? `rotate(${dragRotate}deg) scale(1.06)` : undefined,
-        }}
-        onClick={fabDragging ? undefined : onToggleCollapsed}
-        onPointerDown={fabPointerDown}
-        onPointerMove={fabPointerMove}
-        onPointerUp={fabPointerUp}
+        onClick={onToggleCollapsed}
       >
-        <CatyFabIcon size={56} isDragging={fabDragging} />
+        <CatyFabIcon size={56} />
         {totalUnread > 0 && (
           <span
             className="cc-fab__badge"
@@ -253,11 +228,9 @@ export function ChatDock({
       className={`cc-dock${dockMode === "caty" && catyView === "sidebar" ? " cc-dock--sidebar" : ""}`}
       role="dialog"
       aria-label={dockMode === "caty" ? "Assistant" : "CATY"}
-      style={dockStyle}
     >
       {/* Shared header — Option C: AI-forward two-row title bar */}
-      {/* dragHandleProps: pointer-capture drag; excludes button/tab clicks automatically */}
-      <div className="cc-dock__headerwrap cc-dock__headerwrap--draggable" role="banner" {...dragHandleProps}>
+      <div className="cc-dock__headerwrap" role="banner">
         {/* Static gradient hairline — Caty AI signifier (no motion, CLAUDE.md AI-CTA carve-out) */}
         <div className="cc-dock__accent" aria-hidden />
 
@@ -493,12 +466,6 @@ export function ChatDock({
           <CatyPanel viewMode={catyView} onViewModeChange={setCatyView} />
         </div>
       )}
-
-      {/* Corner resize handles — double-click any corner to reset to default size */}
-      <div className="cc-dock__resize cc-dock__resize--nw" aria-hidden {...resizeHandleProps('nw')} />
-      <div className="cc-dock__resize cc-dock__resize--ne" aria-hidden {...resizeHandleProps('ne')} />
-      <div className="cc-dock__resize cc-dock__resize--sw" aria-hidden {...resizeHandleProps('sw')} />
-      <div className="cc-dock__resize cc-dock__resize--se" aria-hidden {...resizeHandleProps('se')} />
     </div>
   );
 }
