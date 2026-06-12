@@ -46,6 +46,7 @@ import {
   type ChangeEvent,
   type ReactNode,
 } from 'react';
+import ReactDOM from 'react-dom';
 import {
   ModalDialog,
   ModalBody,
@@ -70,15 +71,14 @@ import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import DropdownMenu, { DropdownItemGroup, DropdownItem } from '@atlaskit/dropdown-menu';
-import Lozenge from '@atlaskit/lozenge';
-import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { flag } from '@/components/shared/JiraTable/flags';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { TitleTranslateWrapper } from '@/components/shared/title-translate/TitleTranslateWrapper';
-import { useActiveDemandProcessSteps, stepToLozengeAppearance } from '@/hooks/useDemandProcessSteps';
+import { useCatalystWorkflow } from '@/hooks/useCatalystWorkflow';
+import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import {
   CATEGORY_OPTIONS,
   THEME_OPTIONS,
@@ -95,6 +95,7 @@ import { CATALYST_PRIORITIES } from '@/lib/catalyst-priority';
 // mode because the modal owns the Create / Cancel footer. ──────────
 import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
 import { tiptapToAdf } from '@/components/catalyst-detail-views/shared/sections/Description/utils/tiptapToAdf';
+import { ProductReleasePicker } from '@/components/product/ProductReleasePicker';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Option type (identical to CreateStoryModal)
@@ -163,16 +164,6 @@ const THEME_SELECT_OPTIONS = THEME_OPTIONS.map(t => ({ value: t.value, label: t.
 const TYPE_SELECT_OPTIONS = REQUEST_TYPE_OPTIONS.map(t => ({ value: t.value, label: t.label }));
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Status lozenge appearance — 3-colour guardrail (CLAUDE.md §5)
-// Maps admin workflow category → lozenge appearance.
-// ─────────────────────────────────────────────────────────────────────────────
-function brStatusAppearance(category: 'todo' | 'in_progress' | 'done' | undefined) {
-  if (category === 'done') return 'success';
-  if (category === 'in_progress') return 'inprogress';
-  return 'default';
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // xcss token styles (zero inline colour props)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -197,6 +188,8 @@ export interface CreateBusinessRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
   productId?: string;
+  /** Called when user switches to a different work type — passes the selected type string. */
+  onWorkTypeChange?: (type: string) => void;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -216,6 +209,7 @@ interface FormState {
   po_user_id: string;
   stakeholders: string[];
   planned_quarter: string;
+  release_id: string | null;
   end_date: string;
   targeted_feature: boolean;
   attachments: File[];
@@ -223,9 +217,9 @@ interface FormState {
 
 const INITIAL: FormState = {
   title: '', descriptionAdf: null, description: '',
-  process_step: 'new_request', request_type: '', urgency: '', category: '',
+  process_step: '', request_type: '', urgency: '', category: '',
   theme: '', project_manager_user_id: '', po_user_id: '', stakeholders: [],
-  planned_quarter: '', end_date: '', targeted_feature: false, attachments: [],
+  planned_quarter: '', release_id: null, end_date: '', targeted_feature: false, attachments: [],
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -360,6 +354,7 @@ function MoreActionsButton() {
         />
       )}
       placement="bottom-end"
+      shouldRenderToParent
     >
       <DropdownItemGroup>
         <DropdownItem>Give feedback</DropdownItem>
@@ -370,68 +365,42 @@ function MoreActionsButton() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// StatusChip — @atlaskit/dropdown-menu + Lozenge (portal-rendered, z-index safe)
+// StatusChip — @atlaskit/dropdown-menu + inline ADS-token spans (sentence-case, no uppercase)
 // ─────────────────────────────────────────────────────────────────────────────
 
 type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new';
 
+// Canonical colors — probed from Catalyst Storybook Pages/Business Request (2026-06-12)
+const STATUS_BG: Record<string, string> = {
+  success:    '#94C748',
+  inprogress: '#8FB8F6',
+  default:    '#DDDEE1',
+  moved:      '#DDDEE1',
+  removed:    '#DDDEE1',
+  new:        '#DDDEE1',
+};
+const STATUS_COLOR: Record<string, string> = {
+  success:    '#292A2E',
+  inprogress: '#292A2E',
+  default:    '#292A2E',
+  moved:      '#292A2E',
+  removed:    '#292A2E',
+  new:        '#292A2E',
+};
 
-function BRStatusChip({ status, onChange }: { status: string; onChange: (s: string) => void }) {
-  const { data: steps = [], isLoading } = useActiveDemandProcessSteps();
-  const options = steps.map(s => ({ value: s.value, label: s.label, step: s }));
-
-  const currentStep = steps.find(s => s.value === status);
-  const current =
-    options.find(o => o.value === status) ??
-    options[0] ?? { value: '', label: isLoading ? 'Loading…' : 'No status', step: undefined };
-
+function StatusSpan({ appearance, label }: { appearance: LozengeAppearance; label: string }) {
+  const bg = STATUS_BG[appearance] ?? STATUS_BG.default;
+  const color = STATUS_COLOR[appearance] ?? STATUS_COLOR.default;
   return (
-    <DropdownMenu
-      placement="bottom-start"
-      shouldRenderToParent={false}
-      trigger={({ triggerRef, ...triggerProps }) => (
-        <button
-          {...triggerProps}
-          ref={triggerRef as React.Ref<HTMLButtonElement>}
-          type="button"
-          aria-label={`${current.label} — Change status`}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            padding: 0,
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            outline: 'none',
-          }}
-        >
-          <Lozenge appearance={currentStep ? stepToLozengeAppearance(currentStep) : 'default'} isBold>
-            {current.label}
-          </Lozenge>
-          <ChevronDownIcon label="" size="small" />
-        </button>
-      )}
-    >
-      <DropdownItemGroup title="Change status">
-        {options.length === 0 && (
-          <div style={{ padding: '8px 12px', fontSize: 12, color: token('color.text.subtlest', '#8590A2') }}>
-            {isLoading ? 'Loading…' : 'No statuses configured'}
-          </div>
-        )}
-        {options.map(opt => (
-          <DropdownItem
-            key={opt.value}
-            isSelected={status === opt.value}
-            onClick={() => onChange(opt.value)}
-          >
-            <Lozenge appearance={opt.step ? stepToLozengeAppearance(opt.step) : 'default'} isBold>
-              {opt.label}
-            </Lozenge>
-          </DropdownItem>
-        ))}
-      </DropdownItemGroup>
-    </DropdownMenu>
+    <span style={{
+      display: 'inline-flex', alignItems: 'center',
+      height: 20, padding: '0 7px', borderRadius: 3,
+      fontSize: 11, fontWeight: 700,
+      textTransform: 'none', letterSpacing: 'normal',
+      background: bg, color,
+    }}>
+      {label}
+    </span>
   );
 }
 
@@ -531,7 +500,7 @@ function TranslateButton({ loading, label, onClick }: { loading: boolean; label:
 // MAIN
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function CreateBusinessRequestModal({ isOpen, onClose, productId }: CreateBusinessRequestModalProps) {
+export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkTypeChange }: CreateBusinessRequestModalProps) {
   const createMutation = useCreateBusinessRequest();
   const { data: profiles = [] } = useProfiles();
   const { data: releaseOptions = [] } = useReleases();
@@ -542,15 +511,47 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
   const [formError, setFormError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  // Seed initial status from /admin/workflows (Business Request scheme)
-  const { data: brSteps = [] } = useActiveDemandProcessSteps();
+  // Status portal-dropdown — mirrors CreateStoryModal pattern exactly
+  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
+  const [statusMenuAnchor, setStatusMenuAnchor] = useState<{ top: number; left: number; width: number } | null>(null);
+  const statusTriggerRef = useRef<HTMLButtonElement>(null);
+  const statusMenuRef = useRef<HTMLDivElement>(null);
+  const repositionStatusMenu = useCallback(() => {
+    if (!statusTriggerRef.current) return;
+    const r = statusTriggerRef.current.getBoundingClientRect();
+    setStatusMenuAnchor({ top: r.bottom + 4, left: r.left, width: r.width });
+  }, []);
   useEffect(() => {
-    if (!brSteps.length) return;
-    const validValues = brSteps.map(s => s.value);
-    if (!validValues.includes(form.process_step)) {
-      setForm(prev => ({ ...prev, process_step: brSteps[0].value }));
+    if (!statusMenuOpen) return;
+    repositionStatusMenu();
+  }, [statusMenuOpen, repositionStatusMenu]);
+  useEffect(() => {
+    if (!statusMenuOpen) return;
+    window.addEventListener('scroll', repositionStatusMenu, true);
+    window.addEventListener('resize', repositionStatusMenu);
+    return () => { window.removeEventListener('scroll', repositionStatusMenu, true); window.removeEventListener('resize', repositionStatusMenu); };
+  }, [statusMenuOpen, repositionStatusMenu]);
+  useEffect(() => {
+    if (!statusMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (statusTriggerRef.current?.contains(t)) return;
+      if (statusMenuRef.current?.contains(t)) return;
+      setStatusMenuOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [statusMenuOpen]);
+
+  // Canonical workflow statuses — same source as BrStatusSection
+  const { statuses: brStatuses, initialStatus: brInitialStatus } = useCatalystWorkflow('Business Request');
+  useEffect(() => {
+    if (!brStatuses.length) return;
+    const validSlugs = brStatuses.map(s => s.slug);
+    if (!form.process_step || !validSlugs.includes(form.process_step)) {
+      setForm(prev => ({ ...prev, process_step: brInitialStatus?.slug ?? brStatuses[0].slug }));
     }
-  }, [brSteps, form.process_step]);
+  }, [brStatuses, brInitialStatus, form.process_step]);
 
   const set = useCallback(<K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -590,6 +591,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
         po_user_id: form.po_user_id || null,
         stakeholders: form.stakeholders,
         planned_quarter: form.planned_quarter ? [form.planned_quarter] : null,
+        release_id: form.release_id || null,
         end_date: form.end_date || null,
         impl_target_end_date: form.end_date || null,
         targeted_feature: form.targeted_feature,
@@ -665,6 +667,37 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
 
             <Box xcss={fieldGroupStyles}>
 
+              {/* ── Work type — always visible so user can switch without closing ── */}
+              {onWorkTypeChange && (
+                <Field name="workType" label="Work type" isRequired>
+                  {({ fieldProps: { id } }) => (
+                    <Select<IconOption>
+                      inputId={id}
+                      options={[
+                        { value: 'Story', label: 'Story', icon: <WorkItemTypeIcon type="Story" size={16} label="" /> },
+                        { value: 'Epic', label: 'Epic', icon: <WorkItemTypeIcon type="Epic" size={16} label="" /> },
+                        { value: 'Feature', label: 'Feature', icon: <WorkItemTypeIcon type="Feature" size={16} label="" /> },
+                        { value: 'Business Request', label: 'Business Request', icon: <WorkItemTypeIcon type="Business Request" size={16} label="" /> },
+                        { value: 'Business Gap', label: 'Business Gap', icon: <WorkItemTypeIcon type="Business Gap" size={16} label="" /> },
+                        { value: 'QA Bug', label: 'QA Bug', icon: <WorkItemTypeIcon type="QA Bug" size={16} label="" /> },
+                        { value: 'Production Incident', label: 'Production Incident', icon: <WorkItemTypeIcon type="Production Incident" size={16} label="" /> },
+                        { value: 'Change Request', label: 'Change Request', icon: <WorkItemTypeIcon type="Change Request" size={16} label="" /> },
+                      ]}
+                      value={{ value: 'Business Request', label: 'Business Request', icon: <WorkItemTypeIcon type="Business Request" size={16} label="" /> }}
+                      onChange={(opt) => {
+                        const selected = (opt as IconOption | null)?.value;
+                        if (selected && selected !== 'Business Request') {
+                          handleClose();
+                          onWorkTypeChange(selected);
+                        }
+                      }}
+                      formatOptionLabel={formatIconOption}
+                      isSearchable={false}
+                    />
+                  )}
+                </Field>
+              )}
+
               {/* ── 2026-06-01: Single English title field — Arabic title
                   deprecated. The bilingual TitleTranslateWrapper pattern
                   collapsed when arabic_title was dropped from the DB. */}
@@ -701,13 +734,93 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
                 )}
               </Field>
 
-              <Box xcss={dividerStyles} />
-
-              {/* ── Status — @atlaskit/form Field + BRStatusChip ─────── */}
+              {/* ── Status — portal dropdown, mirrors CreateStoryModal ── */}
               <Field name="status" label="Status">
                 {() => (
                   <>
-                    <BRStatusChip status={form.process_step} onChange={s => set('process_step', s)} />
+                    <div style={{ display: 'block', marginTop: 4 }}>
+                      <button
+                        ref={statusTriggerRef}
+                        type="button"
+                        aria-haspopup="listbox"
+                        aria-expanded={statusMenuOpen}
+                        onClick={() => setStatusMenuOpen((v) => !v)}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 6,
+                          background: 'transparent', border: 'none', borderRadius: 3,
+                          padding: '4px 6px 4px 0', cursor: 'pointer',
+                          color: token('color.text.subtle', '#42526E'),
+                        }}
+                      >
+                        {(() => {
+                          const status = brStatuses.find(s => s.slug === form.process_step);
+                          return (
+                            <StatusSpan
+                              appearance={status ? statusToLozenge(status.name, status.category) : 'default'}
+                              label={status?.name ?? form.process_step ?? 'New'}
+                            />
+                          );
+                        })()}
+                        <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true" style={{ flexShrink: 0 }}>
+                          <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    </div>
+                    {statusMenuOpen && statusMenuAnchor && ReactDOM.createPortal(
+                      <div
+                        ref={statusMenuRef}
+                        role="listbox"
+                        aria-label="Select status"
+                        style={{
+                          position: 'fixed',
+                          top: statusMenuAnchor.top,
+                          left: statusMenuAnchor.left,
+                          minWidth: Math.max(160, statusMenuAnchor.width),
+                          maxHeight: '50vh',
+                          overflowY: 'auto',
+                          background: token('elevation.surface.overlay', '#FFFFFF'),
+                          border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                          borderRadius: 4,
+                          boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+                          padding: '4px 0',
+                          zIndex: 9999,
+                          fontFamily: 'inherit',
+                          fontSize: 14,
+                        }}
+                      >
+                        {brStatuses.map((status) => {
+                          const selected = form.process_step === status.slug;
+                          return (
+                            <button
+                              key={status.slug}
+                              type="button"
+                              role="option"
+                              aria-selected={selected}
+                              onClick={() => { set('process_step', status.slug); setStatusMenuOpen(false); statusTriggerRef.current?.focus(); }}
+                              style={{
+                                display: 'flex', alignItems: 'center', gap: 8,
+                                width: '100%', padding: '8px 12px',
+                                border: 'none', outline: 'none',
+                                background: 'transparent',
+                                color: token('color.text', '#292A2E'),
+                                fontSize: 14, fontWeight: 400,
+                                fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer',
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                            >
+                              <StatusSpan appearance={statusToLozenge(status.name, status.category)} label={status.name} />
+                              {selected && (
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 'auto', color: token('color.text.brand', '#0C66E4') }} aria-hidden="true">
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>,
+                      document.body,
+                    )}
                     <HelperMessage>This is the initial status upon creation</HelperMessage>
                   </>
                 )}
@@ -866,17 +979,16 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
                 )}
               </Field>
 
-              {/* ── Planned release — @atlaskit/select ───────────────────── */}
-              <Field name="planned_quarter" label="Planned release">
-                {({ fieldProps }) => (
-                  <Select
-                    {...(fieldProps as any)}
-                    inputId="br-release"
-                    options={releaseOptions}
-                    value={releaseOptions.find(r => r.value === form.planned_quarter) ?? null}
-                    onChange={(opt: any) => set('planned_quarter', opt?.value ?? '')}
-                    isClearable
+              {/* ── Release — ProductReleasePicker (inline create) ────────── */}
+              <Field name="release_id" label="Release">
+                {() => (
+                  <ProductReleasePicker
+                    inputId="br-create-release"
+                    productId={productId ?? null}
+                    value={form.release_id}
+                    onChange={(id) => set('release_id', id)}
                     placeholder="Link to a release"
+                    appearance="default"
                   />
                 )}
               </Field>
@@ -923,7 +1035,6 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId }: Creat
 
           {/* ── Footer ─────────────────────────────────────────────────────── */}
           <ModalFooter>
-            <Box xcss={footerLeftStyles} />
             <Box xcss={footerRightStyles}>
               <Button appearance="subtle" onClick={handleClose} isDisabled={isSubmitting}>Cancel</Button>
               <Button appearance="primary" isLoading={isSubmitting} onClick={handleCreate}>Create</Button>

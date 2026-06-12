@@ -188,10 +188,7 @@ export function statusAppearanceForTest(
 ): 'default' | 'inprogress' | 'success' {
   const s = status.toLowerCase();
   if (s === 'done' || s === 'closed' || s === 'resolved') return 'success';
-  if (
-    s.startsWith('in ') &&
-    s !== 'in requirements' /* requirements treated as backlog */
-  ) {
+  if (s.startsWith('in ') || s === 'in progress' || s.includes('progress') || s.includes('review')) {
     return 'inprogress';
   }
   return 'default';
@@ -539,9 +536,9 @@ export function CreateStoryModal({
           padding: '2px 6px',
           borderRadius: 3,
           fontSize: 11,
-          fontWeight: 700,
-          textTransform: 'uppercase' as const,
-          letterSpacing: '0.3px',
+          fontWeight: 500,
+          textTransform: 'none' as const,
+          letterSpacing: 'normal',
           lineHeight: '14px',
           background: c.background,
           color: c.color,
@@ -1107,8 +1104,8 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── Sprint/Release ────────────────────────────────────── */}
-              <Field name="sprintRelease" label="Sprint/Release">
+              {/* ── Sprint/Iteration ────────────────────────────────────── */}
+              <Field name="sprintRelease" label="Sprint/Iteration">
                 {({ fieldProps }) => (
                   <Select<IconOption>
                     {...fieldProps}

@@ -15,6 +15,8 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
+import { AtlaskitPageShell } from '@/components/ads';
+import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
@@ -462,47 +464,18 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   ], [currentUserId, projectKey, starFilter]);
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      background: token('elevation.surface'),
-      color: token('color.text'),
-    }}>
-      {/* Page header — Jira directory: title left, single CTA right, no subtitle */}
+    <AtlaskitPageShell
+      flush
+      chromeBand={
+        projectKey
+          ? <ProjectHeaderChip projectKey={projectKey} />
+          : null
+      }
+    >
+      {/* Quick-tab bar: All / My filters / Starred + Create filter CTA */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '24px 24px 16px',
-        flexShrink: 0,
-      }}>
-        <h1 style={{
-          margin: 0,
-          fontSize: 24,
-          fontWeight: 653,
-          color: token('color.text'),
-          lineHeight: '28px',
-        }}>
-          Filters
-        </h1>
-        <Tooltip content="Create filter (N)">
-          {(tooltipProps) => (
-            <Button
-              {...tooltipProps}
-              appearance="primary"
-              iconBefore={() => <Plus size="small" />}
-              onClick={() => navigate(createHref)}
-            >
-              Create filter
-            </Button>
-          )}
-        </Tooltip>
-      </div>
-
-      {/* Quick-tab bar: All / My filters / Starred */}
-      <div style={{
-        display: 'flex',
         gap: 0,
         padding: '0 24px',
         borderBottom: `1px solid ${token('color.border')}`,
@@ -532,6 +505,20 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             </button>
           );
         })}
+        <div style={{ marginLeft: 'auto', paddingRight: 0 }}>
+          <Tooltip content="Create filter (N)">
+            {(tooltipProps) => (
+              <Button
+                {...tooltipProps}
+                appearance="primary"
+                iconBefore={() => <Plus size="small" />}
+                onClick={() => navigate(createHref)}
+              >
+                Create filter
+              </Button>
+            )}
+          </Tooltip>
+        </div>
       </div>
 
       {/* Toolbar — Search filters + Owner / Project / Group (Jira-exact) */}
@@ -730,6 +717,6 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           </div>
         )}
       </div>
-    </div>
+    </AtlaskitPageShell>
   );
 }

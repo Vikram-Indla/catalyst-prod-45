@@ -1101,7 +1101,7 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
   };
 }
 
-// ─── Sprint/Release Cell ─────────────────────────────────────────────────────────
+// ─── Sprint/Iteration Cell ─────────────────────────────────────────────────────────
 // Renders sprint/release versions as comma-separated plain text. Sprint/release versions are not
 // inline-editable in this column cell — editing happens via the bulk wizard
 // or detail panel. Matches Jira's list column display.

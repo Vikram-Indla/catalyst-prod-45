@@ -8,7 +8,7 @@
  *   - EditableLabels (add/remove labels with suggestions)
  *   - EditableSprintRelease (multi-select with unreleased/released groups)
  *
- * Renders: Status dropdown → Details header → Assignee → "Assign to me" → {children} → Priority → Reporter → Labels → Sprint/Release → Timestamps
+ * Renders: Status dropdown → Details header → Assignee → "Assign to me" → {children} → Priority → Reporter → Labels → Sprint/Iteration → Timestamps
  *
  * GUARDRAIL: Story Points are BANNED platform-wide (see Catalyst spec). Do NOT re-add.
  *
@@ -37,7 +37,7 @@ import { CatalystConfigureDrawer, loadPinnedFields, PINNABLE_FIELDS } from './Ca
  *
  * jira-compare 2026-05-16 (corrected): Jira right rail uses a STACKED (column)
  * layout — label above, value below. Fresh DOM probe of BAU-1919 right rail:
- *   "Sprint/Release" label y=192, "None" value y=221 — same x=1394 → stacked
+ *   "Sprint/Iteration" label y=192, "None" value y=221 — same x=1394 → stacked
  *   "Assignee" label y=263, avatar+name y=293 — same x=1395 → stacked
  *   Label: 14px/500/rgb(80,82,88), Value: 14px/400/rgb(41,42,46)
  *   Row vertical span ~71px (8px top pad + label + ~8px gap + value + 8px bottom pad)
@@ -359,7 +359,7 @@ export function CatalystSidebarDetails({
       {SHOW_RAIL_STATUS && (workflow && currentWorkflowState ? (
         <div style={{ marginBottom: 14 }}>
           {/* jira-compare A2 (2026-04-28): label every right-rail field for
-              consistency with Sprint/Release / Assignee / Reporter / Labels. */}
+              consistency with Sprint/Iteration / Assignee / Reporter / Labels. */}
           <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #505258)', marginBottom: 4 }}>Status</div>
           <StatusTransitionDropdown
             issueType={issue?.issue_type ?? 'Defect'}
@@ -536,7 +536,7 @@ export function CatalystSidebarDetails({
                 </FieldRow>
               );
               if (fieldId === 'sprintRelease' && issue?.issue_type !== 'Feature') return (
-                <FieldRow key={fieldId} label="Sprint/Release" alignBlock="start">
+                <FieldRow key={fieldId} label="Sprint/Iteration" alignBlock="start">
                   {issue && (
                     <EditableSprintRelease
                       issueId={issue.id}
@@ -578,14 +578,14 @@ export function CatalystSidebarDetails({
 
         {!detailsCollapsed && <div style={{ padding: '0' }}>
 
-          {/* ── Sprint/Release ────
+          {/* ── Sprint/Iteration ────
               jira-compare 2026-05-10 Fix E-2: Epic RESTORED — Lane B probe of Epic
               scheme (type 10000) confirms sprintRelease IS in the scheme. Prior exclusion
               was based on a BAU-5419 Lane A re-probe that misread the context items.
               Vikram approved 2026-05-10.
               Feature EXCLUDED: sprintRelease NOT in Feature scheme (type 10173). */}
           {issue?.issue_type !== 'Feature' && (
-            <FieldRow label="Sprint/Release" alignBlock="start">
+            <FieldRow label="Sprint/Iteration" alignBlock="start">
               {issue && (
                 <EditableSprintRelease
                   issueId={issue.id}

@@ -1,0 +1,143 @@
+/* ── Chat shell: CSS grid orchestrator ── */
+.c-chat-shell {
+  display: grid;
+  height: 100%;
+  min-height: 0;
+  background: var(--c-chat-surface);
+  grid-template-columns:
+    var(--c-chat-app-rail-w)
+    var(--c-chat-sidebar-w-expanded)
+    minmax(0, 1fr)
+    0;
+  grid-template-rows: 1fr;
+}
+
+/* Collapsed sidebar */
+.c-chat-shell[data-sidebar-collapsed="true"] {
+  grid-template-columns:
+    var(--c-chat-app-rail-w)
+    var(--c-chat-sidebar-w-collapsed)
+    minmax(0, 1fr)
+    0;
+}
+
+/* Thread modes — docked variants */
+.c-chat-shell[data-thread-mode="docked-md"] {
+  grid-template-columns:
+    var(--c-chat-app-rail-w)
+    var(--c-chat-sidebar-w-expanded)
+    minmax(0, 1fr)
+    var(--c-chat-thread-w-md);
+}
+.c-chat-shell[data-thread-mode="docked-md"][data-sidebar-collapsed="true"] {
+  grid-template-columns:
+    var(--c-chat-app-rail-w)
+    var(--c-chat-sidebar-w-collapsed)
+    minmax(0, 1fr)
+    var(--c-chat-thread-w-md);
+}
+.c-chat-shell[data-thread-mode="docked-lg"] {
+  grid-template-columns:
+    var(--c-chat-app-rail-w)
+    var(--c-chat-sidebar-w-expanded)
+    minmax(0, 1fr)
+    var(--c-chat-thread-w-lg);
+}
+.c-chat-shell[data-thread-mode="docked-lg"][data-sidebar-collapsed="true"] {
+  grid-template-columns:
+    var(--c-chat-app-rail-w)
+    var(--c-chat-sidebar-w-collapsed)
+    minmax(0, 1fr)
+    var(--c-chat-thread-w-lg);
+}
+
+/* ── Responsive overrides ── */
+
+/* 768–1023px: sidebar becomes overlay drawer */
+@media (max-width: 1023px) {
+  .c-chat-shell {
+    grid-template-columns:
+      var(--c-chat-app-rail-w)
+      0
+      minmax(0, 1fr)
+      0;
+  }
+  .c-chat-shell[data-sidebar-collapsed="false"] {
+    grid-template-columns:
+      var(--c-chat-app-rail-w)
+      var(--c-chat-sidebar-w-expanded)
+      minmax(0, 1fr)
+      0;
+  }
+}
+
+/* < 768px: bottom rail, no sidebar column */
+@media (max-width: 767px) {
+  .c-chat-shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 56px;
+  }
+}
+
+/* ── Main conversation area ── */
+.c-chat-main {
+  min-width: 0;
+  display: grid;
+  grid-template-rows:
+    var(--c-chat-header-h)
+    var(--c-chat-tabs-h)
+    minmax(0, 1fr)
+    auto
+    auto;
+  background: var(--c-chat-surface);
+}
+
+/* ── Thread pane ── */
+.c-chat-thread-pane {
+  min-width: 0;
+  border-left: 1px solid var(--c-chat-border);
+  background: var(--c-chat-surface-raised);
+  display: none;
+  flex-direction: column;
+}
+.c-chat-shell[data-thread-mode="docked-md"] .c-chat-thread-pane,
+.c-chat-shell[data-thread-mode="docked-lg"] .c-chat-thread-pane {
+  display: flex;
+}
+.c-chat-thread-pane[data-mode="overlay"] {
+  display: flex;
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(400px, 92vw);
+  z-index: 40;
+  box-shadow: 0 0 0 1px var(--c-chat-border), 0 8px 24px var(--ds-shadow-overlay);
+}
+
+/* ── Activity surface (toggled by data-view) ── */
+.c-chat-activity {
+  display: none;
+  min-width: 0;
+  grid-template-rows:
+    var(--c-chat-header-h)
+    var(--c-chat-tabs-h)
+    minmax(0, 1fr);
+  grid-column: 3;
+}
+.c-chat-shell[data-view="activity"] .c-chat-activity { display: grid; }
+.c-chat-shell[data-view="activity"] .c-chat-main    { display: none; }
+
+/* ── Later placeholder ── */
+.c-chat-placeholder {
+  display: none;
+  flex-direction: column;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px;
+  color: var(--c-chat-text-subtle);
+  grid-column: 3;
+}
+.c-chat-shell[data-view="later"]  .c-chat-placeholder[data-surface="later"]  { display: flex; }
+.c-chat-shell[data-view="later"]  .c-chat-main                               { display: none; }
+.c-chat-shell[data-view="dms"]    .c-chat-main                               { display: grid; }

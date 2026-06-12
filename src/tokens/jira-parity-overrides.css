@@ -88,7 +88,7 @@
   /* JIRA-PARITY: probed 2026-05-07 BAU issue header — text color, actual=#292A2E / fontWeight 500 */
   --cp-jira-header-status-fg: #292A2E;
 
-  /* ─── Sprint/Release pill (right rail) ─────────────────────────────────────
+  /* ─── Sprint/Iteration pill (right rail) ─────────────────────────────────────
    * Jira renders sprint/releases as bordered secondary pills in the right rail.
    * Styling: border 1px, border-radius 3px, padding 4px 6px, subtle bg.
    * ─────────────────────────────────────────────────────────────────────── */

@@ -1,5 +1,5 @@
 /**
- * Sprint/Release Picker Component
+ * Sprint/Iteration Picker Component
  * Multi-select dropdown for linking issues to versions
  */
 

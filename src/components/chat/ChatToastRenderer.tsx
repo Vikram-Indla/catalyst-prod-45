@@ -9,7 +9,7 @@
  * - warning: amber caution icon + auto-dismiss
  */
 import React, { useCallback } from 'react';
-import { Flag, FlagGroup } from '@atlaskit/flag';
+import Flag, { FlagGroup } from '@atlaskit/flag';
 import SuccessIcon from '@atlaskit/icon/glyph/check-circle';
 import ErrorIcon from '@atlaskit/icon/glyph/error';
 import InfoIcon from '@atlaskit/icon/glyph/info';

@@ -1,5 +1,11 @@
 /* Catalyst Chat dock — token-only styles. No bare hex outside var() fallbacks, no animations. */
 
+/* CatyFabIcon colour vars — Catalyst is a light-theme app, cat stays dark */
+:root {
+  --caty-fg: #2A2832;
+  --caty-bg: #F6F4EF;
+}
+
 .cc-dock {
   position: fixed;
   right: 24px;
@@ -17,16 +23,76 @@
   font-family: inherit;
 }
 
-.cc-dock__header {
-  height: 56px;
+/* Option C two-row title bar */
+.cc-dock__headerwrap {
   flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-surface, #FFFFFF);
   /* ads-scanner:ignore-next-line */
   border-bottom: 1px solid var(--ds-border, #EBECF0);
+}
+
+/* Static gradient hairline — Caty AI signifier, NO motion (CLAUDE.md AI-CTA carve-out) */
+.cc-dock__accent {
+  height: 3px;
+  flex: 0 0 auto;
+  /* ads-scanner:ignore-next-line — Caty brand AI gradient (no ADS token equivalent) */
+  background: linear-gradient(90deg, #F79357 0%, #F53F68 45%, #B41572 75%, #CC1E9A 100%);
+}
+
+.cc-dock__titlebar {
+  height: 52px;
+  flex: 0 0 auto;
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  gap: 11px;
   padding: 0 8px 0 12px;
-  gap: 0;
-  background: var(--ds-surface, #FFFFFF);
+}
+
+/* Badge holding caty-ai-bg.svg (self-contained dark-bg icon — no extra bg needed) */
+.cc-dock__badge {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+}
+
+.cc-dock__title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  flex: 1;
+  min-width: 0;
+}
+
+.cc-dock__wordmark {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ds-text, #172B4D);
+}
+
+.cc-dock__status {
+  font-size: 11px;
+  color: var(--ds-text-success, #216E4E);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cc-dock__status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ds-icon-success, #22A06B);
+  flex-shrink: 0;
 }
 
 /* Brand logo squircle — left edge of header */
@@ -55,27 +121,23 @@
   transform: scale(0.8);
 }
 
-/* Action icon group — divider on left, icons on right */
+/* Action icon group — right edge of the title bar */
 .cc-dock__actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 2px;
   flex: 0 0 auto;
-  /* ads-scanner:ignore-next-line */
-  border-left: 1px solid var(--ds-border, #EBECF0);
-  margin-left: 4px;
-  padding-left: 8px;
-  transform: scale(0.7);
-  transform-origin: center right;
+  margin-left: auto;
 }
 
-/* Dual-mode underline tabs — enterprise pattern (Slack/Jira nav style) */
+/* Dual-mode underline tabs — row 2 of the header (Slack/Jira nav style) */
 .cc-mode-tabs {
-  flex: 1;
+  flex: 0 0 auto;
   display: flex;
   align-items: stretch;
   gap: 0;
   min-width: 0;
+  padding: 0 12px;
 }
 
 .cc-mode-tab {
@@ -84,11 +146,11 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  height: 56px;
+  height: 40px;
   border: none;
   border-bottom: 2px solid transparent;
   background: transparent;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--ds-text-subtle, #44546F);
   cursor: pointer;
@@ -278,12 +340,12 @@
   padding: 0;
   opacity: 0;
   transition: opacity 0.1s;
-  margin-left: 2px;
+  margin-left: 4px;
   border-radius: 3px;
 }
 .cc-tab:hover .cc-tab__x,
 .cc-tab--active .cc-tab__x {
-  opacity: 0.6;
+  opacity: 0.75;
 }
 .cc-tab__x:hover {
   opacity: 1 !important;
@@ -305,13 +367,13 @@
   flex: 0 0 auto;
 }
 
-/* collapsed launcher FAB — 51px (3× the 17px reduced size) */
+/* collapsed launcher FAB — 56px */
 .cc-fab {
   position: fixed;
   right: 24px;
   bottom: 24px;
-  width: 51px;
-  height: 51px;
+  width: 56px;
+  height: 56px;
   background: transparent;
   border: none;
   padding: 0;
@@ -331,7 +393,7 @@
 
 .cc-fab__badge {
   position: absolute;
-  top: -6px;
+  bottom: -6px;
   right: -6px;
   min-width: 20px;
   height: 20px;
@@ -728,6 +790,120 @@
 
 .cc-dir__archive-btn:hover {
   background: var(--ds-background-neutral-subtle-hovered, #EBECF0);
+  color: var(--ds-text, #172B4D);
+}
+
+/* Row hover action cluster — pin / favourite / archive */
+.cc-dir__row-actions {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.cc-dir__rowact {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ds-surface, #FFFFFF);
+  border: 1px solid var(--ds-border, #DFE1E6);
+  border-radius: 4px;
+  color: var(--ds-text-subtlest, #6B778C);
+  cursor: pointer;
+  box-shadow: var(--ds-shadow-raised, 0 1px 2px rgba(9, 30, 66, 0.12));
+}
+
+.cc-dir__rowact:hover {
+  background: var(--ds-background-neutral-subtle-hovered, #EBECF0);
+  color: var(--ds-text, #172B4D);
+}
+
+.cc-dir__rowact--on {
+  color: var(--ds-text-brand, #0C66E4);
+  border-color: var(--ds-border-brand, #0C66E4);
+}
+
+.cc-dir__rowact--star-on {
+  color: var(--ds-icon-warning, #E2B203);
+}
+
+/* Caty suggestion cards — rolling nudges */
+.cc-dir__caty {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 4px 8px;
+  padding: 8px;
+  border-radius: 6px;
+  background: var(--ds-surface, #FFFFFF);
+  /* ads-scanner:ignore-next-line */
+  border: 1px solid var(--ds-border, #DFE1E6);
+  /* ads-scanner:ignore-next-line — Caty brand accent (pink), no ADS token equivalent */
+  border-left: 2px solid #F53F68;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.cc-dir__caty:hover {
+  background: var(--ds-background-neutral-subtle-hovered, #EBECF0);
+}
+
+.cc-dir__caty-mark {
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: block;
+}
+
+.cc-dir__caty-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cc-dir__caty-text {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ds-text, #172B4D);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cc-dir__caty-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cc-dir__caty-signal {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ds-text-subtle, #42526E);
+}
+
+.cc-dir__caty-x {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--ds-text-subtlest, #6B778C);
+  cursor: pointer;
+  padding: 0;
+  border-radius: 3px;
+  transition: color 0.1s;
+}
+
+.cc-dir__caty-x:hover {
   color: var(--ds-text, #172B4D);
 }
 

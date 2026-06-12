@@ -1,0 +1,84 @@
+/**
+ * Catalyst Chat — token contract
+ * Imported EXACTLY ONCE: from ChatFullScreen.tsx
+ *
+ * All --c-chat-* properties resolve through ADS var(--ds-*) tokens.
+ * No hex values live here — ADS CDN provides all --ds-* fallbacks.
+ */
+:root {
+  /* ── Dimensions ── */
+  --c-chat-app-rail-w: 72px;
+  --c-chat-sidebar-w-expanded: 220px;
+  --c-chat-sidebar-w-collapsed: 56px;
+  --c-chat-sidebar-transition-duration: 180ms;
+  --c-chat-sidebar-transition-easing: ease;
+  --c-chat-thread-w-lg: 400px;
+  --c-chat-thread-w-md: 360px;
+  --c-chat-header-h: 64px;
+  --c-chat-tabs-h: 44px;
+  --c-chat-page-pad-x: 24px;
+  --c-chat-page-pad-y: 16px;
+  --c-chat-list-row-h: 52px;
+  --c-chat-avatar: 36px;
+  --c-chat-thread-avatar: 32px;
+  --c-chat-inline-chip-h: 22px;
+  --c-chat-reaction-pill-h: 24px;
+  --c-chat-hover-toolbar-h: 32px;
+  /* ads-scanner:ignore-next-line — V3 prototype token, intentional value */
+  --c-chat-group-gap-y: 10px;
+  /* ads-scanner:ignore-next-line — V3 prototype token, intentional value */
+  --c-chat-intra-group-gap-y: 2px;
+  --c-chat-focus-ring-w: 2px;
+
+  /* ── Surface & text (ADS-mapped, no fallback hex needed — ADS CDN provides them) ── */
+  --c-chat-surface: var(--ds-surface);
+  --c-chat-surface-raised: var(--ds-surface-overlay);
+  --c-chat-surface-sunken: var(--ds-surface-sunken);
+  --c-chat-border: var(--ds-border);
+  --c-chat-text: var(--ds-text);
+  --c-chat-text-subtle: var(--ds-text-subtle);
+  --c-chat-text-subtlest: var(--ds-text-subtlest);
+
+  /* ── Interactive states ── */
+  --c-chat-hover-bg: var(--ds-background-neutral-subtle-hovered);
+  --c-chat-pressed-bg: var(--ds-background-neutral-hovered);
+  --c-chat-selected-bg: var(--ds-background-selected);
+
+  /* ── Brand ── */
+  --c-chat-accent: var(--ds-link);
+  --c-chat-accent-hover: var(--ds-link-pressed);
+  --c-chat-accent-subtle: var(--ds-background-information);
+
+  /* ── Status indicators ── */
+  --c-chat-unread: var(--ds-background-danger-bold);
+  --c-chat-focus: var(--ds-border-focused);
+  --c-chat-badge: var(--ds-background-danger-bold);
+  --c-chat-success: var(--ds-icon-success);
+
+  /* ── Alert surfaces ── */
+  --c-chat-warning-bg: var(--ds-background-warning);
+  --c-chat-warning-border: var(--ds-border-warning);
+  --c-chat-danger-bg: var(--ds-background-danger);
+}
+
+/* Global focus ring within the chat shell */
+.c-chat-shell button:focus-visible,
+.c-chat-shell a:focus-visible,
+.c-chat-shell [tabindex]:focus-visible,
+.c-chat-shell input:focus-visible {
+  outline: var(--c-chat-focus-ring-w) solid var(--c-chat-focus);
+  outline-offset: 1px;
+  border-radius: 4px;
+}
+
+/* Scrollbar styling within the chat shell */
+.c-chat-shell ::-webkit-scrollbar { width: 8px; height: 8px; }
+.c-chat-shell ::-webkit-scrollbar-thumb {
+  background: var(--ds-background-neutral-hovered);
+  border-radius: 4px;
+}
+.c-chat-shell ::-webkit-scrollbar-track { background: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  .c-chat-shell * { animation: none !important; transition: none !important; }
+}

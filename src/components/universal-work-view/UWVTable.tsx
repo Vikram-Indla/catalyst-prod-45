@@ -110,13 +110,31 @@ export function UWVTable({
     return out;
   }, [items, expandedIds, childrenByParentKey]);
 
+  // Precomputed N-level depth map (key → depth). Walks parent chain recursively
+  // so Epic=0, Story=1, Sub-task/Backend/Frontend=2 all render correct indent.
+  const depthByKey = useMemo(() => {
+    const byKey = new Map(items.map((i) => [i.key, i]));
+    const m = new Map<string, number>();
+    const getDepth = (key: string, seen = new Set<string>()): number => {
+      if (m.has(key)) return m.get(key)!;
+      if (seen.has(key)) return 0; // cycle guard
+      seen.add(key);
+      const item = byKey.get(key);
+      if (!item?.parentKey || !byKey.has(item.parentKey)) {
+        m.set(key, 0);
+        return 0;
+      }
+      const d = 1 + getDepth(item.parentKey, seen);
+      m.set(key, d);
+      return d;
+    };
+    for (const item of items) getDepth(item.key);
+    return m;
+  }, [items]);
+
   const getRowDepth = useCallback(
-    (row: UWVItem) => {
-      // Two-level: anything with a parent in-set sits at depth 1.
-      if (!row.parentKey) return 0;
-      return items.some((i) => i.key === row.parentKey) ? 1 : 0;
-    },
-    [items],
+    (row: UWVItem) => depthByKey.get(row.key) ?? 0,
+    [depthByKey],
   );
 
   // ─── Group buckets ──────────────────────────────────────────────────────
@@ -168,7 +186,7 @@ export function UWVTable({
           (r: UWVItem) => r.key,
           undefined,
           undefined,
-          (r: UWVItem) => <JiraIssueTypeIcon type={jiraIconType(r.issueType)} size={16} />,
+          (r: UWVItem) => r.issueType ? <JiraIssueTypeIcon type={jiraIconType(r.issueType)} size={16} /> : undefined,
         ),
       },
       {

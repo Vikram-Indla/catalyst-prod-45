@@ -129,14 +129,21 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
           textTransform: 'none',
           letterSpacing: 'normal',
           background: ({
-            success:    'rgb(148, 199, 72)',
-            inprogress: 'rgb(143, 184, 246)',
-            moved:      'rgb(243, 214, 100)',
-            removed:    'rgb(221, 222, 225)',
-            new:        'rgb(184, 172, 246)',
-            default:    'rgb(221, 222, 225)',
-          } as Record<string, string>)[statusToLozenge(display, statusCategory)] ?? 'rgb(221, 222, 225)',
-          color: 'rgb(41, 42, 46)',
+            success:    'var(--ds-background-success, #DCFFF1)',
+            inprogress: 'var(--ds-background-information, #E9F2FF)',
+            moved:      'var(--ds-background-warning, #FFF7D6)',
+            removed:    'var(--ds-background-danger, #FFEBE6)',
+            new:        'var(--ds-background-discovery, #F3F0FF)',
+            default:    'var(--ds-background-neutral, #F4F5F7)',
+          } as Record<string, string>)[statusToLozenge(display, statusCategory)] ?? 'var(--ds-background-neutral, #F4F5F7)',
+          color: ({
+            success:    'var(--ds-text-success, #216E4E)',
+            inprogress: 'var(--ds-text-information, #0055CC)',
+            moved:      'var(--ds-text-warning, #974F0C)',
+            removed:    'var(--ds-text-danger, #AE2A19)',
+            new:        'var(--ds-text-discovery, #5E4DB2)',
+            default:    'var(--ds-text-subtle, #626F86)',
+          } as Record<string, string>)[statusToLozenge(display, statusCategory)] ?? 'var(--ds-text-subtle, #626F86)',
         }}>
           {display}
           <ChevronDownIcon size="small" label="" />
@@ -237,15 +244,19 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
                           padding: '0 7px',
                           borderRadius: 3,
                           fontSize: 11,
-                          fontWeight: 700,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.06em',
+                          fontWeight: 500,
+                          textTransform: 'none',
+                          letterSpacing: 'normal',
                           background: ({
-                            success:    'rgb(148, 199, 72)',
-                            inprogress: 'rgb(143, 184, 246)',
-                            default:    'rgb(221, 222, 225)',
-                          } as Record<string, string>)[groupAppearance] ?? 'rgb(221, 222, 225)',
-                          color: 'rgb(41, 42, 46)',
+                            success:    'var(--ds-background-success, #DCFFF1)',
+                            inprogress: 'var(--ds-background-information, #E9F2FF)',
+                            default:    'var(--ds-background-neutral, #F4F5F7)',
+                          } as Record<string, string>)[groupAppearance] ?? 'var(--ds-background-neutral, #F4F5F7)',
+                          color: ({
+                            success:    'var(--ds-text-success, #216E4E)',
+                            inprogress: 'var(--ds-text-information, #0055CC)',
+                            default:    'var(--ds-text-subtle, #626F86)',
+                          } as Record<string, string>)[groupAppearance] ?? 'var(--ds-text-subtle, #626F86)',
                         }}>
                           {st}
                         </span>

@@ -129,32 +129,30 @@ describe('aggregateReactions', () => {
 });
 
 describe('groupPeopleByPresence', () => {
-  it('orders groups available, busy, away, offline, on_leave', () => {
+  it('orders groups on_set, remote, away, on_leave', () => {
     const people: ChatPerson[] = [
-      { id: 'p1', name: 'Offline One', role: null, avatarUrl: null, presence: 'offline', presenceNote: null },
+      { id: 'p1', name: 'Away One', role: null, avatarUrl: null, presence: 'away', presenceNote: null },
       { id: 'p2', name: 'On Leave', role: null, avatarUrl: null, presence: 'on_leave', presenceNote: null },
-      { id: 'p3', name: 'Available One', role: null, avatarUrl: null, presence: 'available', presenceNote: null },
-      { id: 'p4', name: 'Away One', role: null, avatarUrl: null, presence: 'away', presenceNote: null },
-      { id: 'p5', name: 'Busy One', role: null, avatarUrl: null, presence: 'busy', presenceNote: null },
+      { id: 'p3', name: 'In Office One', role: null, avatarUrl: null, presence: 'on_set', presenceNote: null },
+      { id: 'p4', name: 'Remote One', role: null, avatarUrl: null, presence: 'remote', presenceNote: null },
     ];
 
     const groups = groupPeopleByPresence(people);
 
     expect(groups.map((g) => g.presence)).toEqual([
-      'available',
-      'busy',
+      'on_set',
+      'remote',
       'away',
-      'offline',
       'on_leave',
     ]);
   });
 
   it('omits presence groups that have no people', () => {
     const people: ChatPerson[] = [
-      { id: 'p1', name: 'Busy One', role: null, avatarUrl: null, presence: 'busy', presenceNote: null },
+      { id: 'p1', name: 'Remote One', role: null, avatarUrl: null, presence: 'remote', presenceNote: null },
     ];
     const groups = groupPeopleByPresence(people);
-    expect(groups.map((g) => g.presence)).toEqual(['busy']);
+    expect(groups.map((g) => g.presence)).toEqual(['remote']);
   });
 });
 

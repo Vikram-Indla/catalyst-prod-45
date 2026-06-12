@@ -39,6 +39,7 @@ import { useInlineTriggers } from './hooks/useInlineTriggers';
 import { EditorView } from './_components/EditorView/EditorView';
 import { Toolbar } from './_components/Toolbar/Toolbar';
 import { MentionPicker } from './_components/MentionPicker/MentionPicker';
+import { TicketPicker } from './_components/TicketPicker/TicketPicker';
 import { EmojiPicker } from './_components/EmojiPicker/EmojiPicker';
 import { SlashMenu } from './_components/SlashMenu/SlashMenu';
 import { ViewMoreModal } from './_components/SlashMenu/ViewMoreModal';
@@ -524,6 +525,16 @@ export function RichTextEditor({
             dismissTrigger();
             setViewMoreOpen(true);
           }}
+          onDismiss={dismissTrigger}
+        />
+      )}
+      {trigger?.type === 'ticket' && (
+        <TicketPicker
+          query={trigger.query}
+          coords={trigger.coords}
+          onSelect={(issue) =>
+            commitTrigger(issue.issue_key + ' ')
+          }
           onDismiss={dismissTrigger}
         />
       )}

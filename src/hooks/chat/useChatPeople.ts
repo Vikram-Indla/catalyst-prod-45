@@ -17,7 +17,7 @@ import type { ChatPeopleGroup, ChatPerson, ChatPresence } from '@/types/chat';
 
 const db = supabase as unknown as { from: (table: string) => any };
 
-const PRESENCE_ORDER: ChatPresence[] = ['available', 'busy', 'away', 'offline', 'on_leave'];
+const PRESENCE_ORDER: ChatPresence[] = ['on_set', 'remote', 'away', 'on_leave'];
 const VALID_PRESENCE = new Set<ChatPresence>(PRESENCE_ORDER);
 
 interface ResourceRow {
@@ -32,12 +32,12 @@ interface ResourceRow {
 interface PresenceRow {
   user_id: string;
   state: string | null;
-  note?: string | null;
+  location?: string | null;
 }
 
 function normalizePresence(state: string | null | undefined): ChatPresence {
   if (state && VALID_PRESENCE.has(state as ChatPresence)) return state as ChatPresence;
-  return 'offline';
+  return 'away';
 }
 
 async function fetchPeople(): Promise<ChatPeopleGroup[]> {
@@ -61,7 +61,7 @@ async function fetchPeople(): Promise<ChatPeopleGroup[]> {
       try {
         const { data: presence } = await db
           .from('user_presence')
-          .select('user_id, state')
+          .select('user_id, state, location')
           .in('user_id', profileIds);
         if (presence) {
           for (const p of presence as PresenceRow[]) presenceByProfile.set(p.user_id, p);
@@ -80,7 +80,7 @@ async function fetchPeople(): Promise<ChatPeopleGroup[]> {
         role: r.role_code ?? null,
         avatarUrl: resolveAvatarUrl(r.name),
         presence: normalizePresence(pres?.state),
-        presenceNote: pres?.note ?? null,
+        presenceNote: pres?.location ?? null,
       };
     });
 

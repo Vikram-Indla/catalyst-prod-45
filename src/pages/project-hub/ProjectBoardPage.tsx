@@ -3,9 +3,8 @@
  * Uses real data from ph_sdlc_issues, ph_sdlc_releases, ph_boards
  */
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { AtlaskitPageShell } from '@/components/ads';
 import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
-import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 import { useParams } from 'react-router-dom';
 import {
   Columns3, Kanban, GanttChart,
@@ -94,8 +93,6 @@ export default function ProjectBoardPage() {
     return () => document.removeEventListener('mousedown', handler);
   }, [openFilter]);
 
-  const projectName = key?.toUpperCase() ?? 'AI GOVERNANCE';
-
   const statCards = [
     { label: 'Total Issues', value: stats.total, icon: BarChart3, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', accent: '' },
     { label: 'Completed', value: stats.completed, icon: CheckCircle2, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DCFCE7)', accent: '' },
@@ -113,15 +110,11 @@ export default function ProjectBoardPage() {
   const hasActiveFilters = !!(filterType || filterStatus || filterPriority || filterSource);
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', padding: '0' }}>
-      {/* jira-compare catalog item 1 cascade (2026-05-02): canonical
-          project chip mounts above the page header on every project-
-          scoped surface (Project Work, Backlog, Board, Kanban). */}
-      {key && <ProjectHeaderChip projectKey={key} />}
-      {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
-      <div style={{ padding: '20px 24px 16px' }}>
-      {/* ─── PAGE HEADER ─── */}
-      <CatalystPageHeader title={projectName} />
+    <AtlaskitPageShell
+      flush
+      chromeBand={key ? <ProjectHeaderChip projectKey={key} /> : null}
+    >
+      <div style={{ padding: '0 24px 16px' }}>
 
       {/* ─── STAT CARDS ─── */}
       <div
@@ -393,7 +386,7 @@ export default function ProjectBoardPage() {
         }}
       />
       </div>
-    </div>
+    </AtlaskitPageShell>
   );
 }
 

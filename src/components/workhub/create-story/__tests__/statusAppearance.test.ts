@@ -17,7 +17,7 @@ describe('statusAppearance', () => {
     ['In Review',    'inprogress'],
     ['To Do',        'default'],
     ['Open',         'default'],
-    ['In Requirements', 'default'],  // "in " prefix but requirements → default
+    ['In Requirements', 'inprogress'],  // "in " prefix → inprogress (workflow state)
     ['Submitted',    'default'],
     ['Backlog',      'default'],
   ] as const)('"%s" → "%s"', (status, expected) => {

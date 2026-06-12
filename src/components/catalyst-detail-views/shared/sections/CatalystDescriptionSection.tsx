@@ -360,7 +360,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     { unicode-bidi: plaintext; }
 
     /* jira-compare 2026-05-05 — Dark-theme leak fix (v2):
-       The ~4px black bar before "None" in sidebar selects (Sprint/Release,
+       The ~4px black bar before "None" in sidebar selects (Sprint/Iteration,
        Labels, Assignee, etc.) is caused by the Emotion CSS-in-JS class
        (e.g. css-bxfvr9) on the react-select __input-container div setting
        a near-black background. The container itself is the source, not the

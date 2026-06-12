@@ -550,9 +550,9 @@ export function BasicFilterBar({
               )}
             </MoreSection>
 
-            {/* Sprint/Release */}
+            {/* Sprint/Iteration */}
             {sprintReleases.length > 0 && (
-              <MoreSection label="Sprint/Release">
+              <MoreSection label="Sprint/Iteration">
                 {sprintReleases.map(fv => (
                   <CheckRow
                     key={fv.id}

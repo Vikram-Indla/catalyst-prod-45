@@ -130,7 +130,7 @@ export function SyncConfigPanel() {
 
   const issueTypeOptions: MultiSelectOption[] = issueTypes.map(t => ({ value: t, label: t }));
 
-  // Sprint/Releases grouped by project
+  // Sprint/Iterations grouped by project
   const sprintReleasesByProject = useMemo(() => {
     const map: Record<string, MultiSelectOption[]> = {};
     sprintReleasesRaw.forEach(v => {
@@ -472,7 +472,7 @@ export function SyncConfigPanel() {
                           </p>
                         </div>
 
-                        {/* Sprint/Releases */}
+                        {/* Sprint/Iterations */}
                         <div style={{ overflow: 'visible' }}>
                           <MultiSelectDropdown
                             label={`Releases for ${pk}`}

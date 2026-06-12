@@ -69,12 +69,12 @@ export function WorkItemVersionsSection({
 
   return (
     <div className="space-y-4">
-      {/* Sprint/Release */}
+      {/* Sprint/Iteration */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm font-medium text-foreground">
             <Wrench className="h-4 w-4 text-brand-primary" />
-            Sprint/Release
+            Sprint/Iteration
           </div>
           {!readOnly && !addingFix && (
             <Button

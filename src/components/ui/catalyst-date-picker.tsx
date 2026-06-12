@@ -23,26 +23,42 @@ function CatalystDatePicker({
   minDate,
   maxDate,
 }: CatalystDatePickerProps) {
-  const selectedDate = React.useMemo(() => {
-    if (!value) return undefined;
-    if (value instanceof Date) return value;
-    const parsed = new Date(value);
-    return isNaN(parsed.getTime()) ? undefined : parsed;
+  // @atlaskit/DatePicker expects value as ISO date string ("YYYY-MM-DD"), not a Date object
+  const selectedValue = React.useMemo(() => {
+    if (!value) return '';
+    if (value instanceof Date) {
+      return isNaN(value.getTime()) ? '' : value.toISOString().split('T')[0];
+    }
+    return value;
   }, [value]);
 
-  const handleChange = (date: any) => {
-    if (date) {
-      onChange(date as Date);
+  const minDateStr = React.useMemo(() => {
+    if (!minDate) return undefined;
+    return isNaN(minDate.getTime()) ? undefined : minDate.toISOString().split('T')[0];
+  }, [minDate]);
+
+  const maxDateStr = React.useMemo(() => {
+    if (!maxDate) return undefined;
+    return isNaN(maxDate.getTime()) ? undefined : maxDate.toISOString().split('T')[0];
+  }, [maxDate]);
+
+  // Atlaskit onChange emits an ISO date string; convert to Date for callers expecting Date
+  const handleChange = (isoString: string) => {
+    if (isoString) {
+      const parsed = new Date(isoString);
+      onChange(isNaN(parsed.getTime()) ? null : parsed);
+    } else {
+      onChange(null);
     }
   };
 
   return (
     <DatePicker
-      value={selectedDate}
+      value={selectedValue}
       onChange={handleChange}
       isDisabled={disabled}
-      minDate={minDate}
-      maxDate={maxDate}
+      minDate={minDateStr}
+      maxDate={maxDateStr}
       locale="en-US"
       placeholder={placeholder}
     />

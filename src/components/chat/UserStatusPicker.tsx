@@ -21,11 +21,11 @@ import Textfield from '@atlaskit/textfield';
 import { useUserStatus } from '@/hooks/chat/useUserStatus';
 
 const PRESET_EMOJIS = [
-  { emoji: '🟢', label: 'Available' },
+  { emoji: '🟢', label: 'In office' },
+  { emoji: '🔵', label: 'Remote' },
   { emoji: '🟡', label: 'Away' },
-  { emoji: '🔴', label: 'Do not disturb' },
-  { emoji: '⚪️', label: 'Offline' },
-  { emoji: '🟣', label: 'Custom' },
+  { emoji: '🟣', label: 'On leave' },
+  { emoji: '⚪️', label: 'Custom' },
 ];
 
 const EXPIRATION_OPTIONS = [

@@ -25,7 +25,7 @@ export const JQL_FIELD_MAP: Record<string, FieldDef> = {
   updated:     { column: 'jira_updated_at',        type: 'date',   operators: [...DATE_OPS],    label: 'Updated' },
   duedate:     { column: 'due_date',               type: 'date',   operators: [...DATE_OPS],    label: 'Due date' },
   labels:      { column: 'labels',                 type: 'array',  operators: [...ARRAY_OPS],   label: 'Labels' },
-  fixVersion:  { column: 'sprint_release',          type: 'array',  operators: [...ARRAY_OPS],   label: 'Sprint/Release' },
+  fixVersion:  { column: 'sprint_release',          type: 'array',  operators: [...ARRAY_OPS],   label: 'Sprint/Iteration' },
   sprint:      { column: 'sprint_name',            type: 'string', operators: [...STRING_OPS],  label: 'Sprint' },
   resolution:  { column: 'resolution',             type: 'string', operators: [...STRING_OPS],  label: 'Resolution' },
 };

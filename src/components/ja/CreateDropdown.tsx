@@ -25,6 +25,7 @@ interface CreateDropdownProps {
 export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
   const [storyOpen, setStoryOpen] = useState(false);
   const [brOpen, setBrOpen] = useState(false);
+  const [pendingWorkType, setPendingWorkType] = useState<string | undefined>(undefined);
   const { pathname } = useLocation();
   const isProductHubBacklog = /^\/product-hub\/[^/]+\/backlog/.test(pathname);
 
@@ -40,15 +41,16 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
 
       <CreateStoryModal
         open={storyOpen}
-        onClose={() => setStoryOpen(false)}
-        onOpenBusinessRequest={() => setBrOpen(true)}
+        onClose={() => { setStoryOpen(false); setPendingWorkType(undefined); }}
+        onOpenBusinessRequest={() => { setStoryOpen(false); setBrOpen(true); }}
         workTypes={isProductHubBacklog ? ['Business Request'] : undefined}
-        defaultWorkType={isProductHubBacklog ? 'Business Request' : 'Story'}
+        defaultWorkType={pendingWorkType ?? (isProductHubBacklog ? 'Business Request' : 'Story')}
       />
 
       <CreateBusinessRequestModal
         isOpen={brOpen}
         onClose={() => setBrOpen(false)}
+        onWorkTypeChange={(type) => { setBrOpen(false); setPendingWorkType(type); setStoryOpen(true); }}
       />
     </>
   );

@@ -95,6 +95,7 @@ function renderPlain(text: string, keyPrefix: string, issueRefs?: IssueRefMap): 
           issueKey={seg.value}
           issueType={ref.issueType}
           summary={ref.summary}
+          statusCategory={ref.statusCategory ?? undefined}
         />
       );
     }

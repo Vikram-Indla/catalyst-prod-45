@@ -39,7 +39,7 @@ export function usePresenceHeartbeat() {
     if (!uid) return;
 
     const idle = Date.now() - lastActivityRef.current > IDLE_MS;
-    const autoState: PresenceState = idle ? 'away' : 'available';
+    const autoState: PresenceState = idle ? 'away' : 'on_set';
     const state = override ?? autoState;
 
     await supabase.from('user_presence').upsert(

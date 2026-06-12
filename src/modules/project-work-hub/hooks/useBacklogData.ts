@@ -149,7 +149,7 @@ export function useEpicBacklog(projectId: string, opts?: { assigneeIds?: string[
         priority: row.priority ?? null,
         parent_key: row.parent_key ?? null,
         parent_summary: row.parent_summary ?? null,
-        issue_type: row.issue_type ?? 'Epic',
+        issue_type: row.issue_type ?? null,
         comment_count: typeof row.comment_count === 'number' ? row.comment_count : null,
         labels: Array.isArray(row.labels)
           ? (row.labels as any[]).map(l => (typeof l === 'string' ? l : (l?.name ?? String(l))))
@@ -200,8 +200,8 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
   // leaf rows in the backlog. BAU has no 'Business Request' rows, so this
   // filter extension is a no-op for normal project-hub usage.
   const issueTypeFilter = forceProjectKey
-    ? ['Story', 'Backend', 'Frontend', 'Sub-task', 'Feature', 'Business Request']
-    : ['Story', 'Backend', 'Frontend', 'Sub-task', 'Feature'];
+    ? ['Story', 'Backend', 'Frontend', 'Sub-task', 'Feature', 'QA Bug', 'Production Incident', 'Business Request']
+    : ['Story', 'Backend', 'Frontend', 'Sub-task', 'Feature', 'QA Bug', 'Production Incident'];
 
   return useQuery({
     queryKey: hasAssigneeOverride
@@ -210,22 +210,33 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
     queryFn: async (): Promise<BacklogStory[]> => {
       if (!hasAssigneeOverride && !projectKey) return [];
       const SELECT = 'issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source, issue_type, labels, sprint_release, sort_order';
-      let query = supabase
-        .from('ph_issues')
-        .select(SELECT)
-        .in('issue_type', issueTypeFilter)
-        .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
-        .is('jira_removed_at', null)
-        .is('archived_at', null);
-      if (hasAssigneeOverride) {
-        query = (query as any).in('assignee_account_id', assigneeIds);
-      } else {
-        query = (query as any).eq('project_key', projectKey!);
+      const buildQuery = () => {
+        let q = supabase
+          .from('ph_issues')
+          .select(SELECT)
+          .in('issue_type', issueTypeFilter)
+          .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
+          .is('jira_removed_at', null)
+          .is('archived_at', null);
+        q = hasAssigneeOverride
+          ? (q as any).in('assignee_account_id', assigneeIds)
+          : (q as any).eq('project_key', projectKey!);
+        return (q as any).order('sort_order', { ascending: true, nullsFirst: false });
+      };
+      // Paginate in 1000-row pages. PostgREST caps a single response at its
+      // db-max-rows (1000 here) regardless of .limit(), so adding QA Bug +
+      // Production Incident (which pushed BAU past ~1k rows) silently truncated
+      // leaf rows — dropping Sub-task/Frontend children and breaking nesting.
+      // Fetch every page until a short page signals the end.
+      const PAGE = 1000;
+      const jiraRows: any[] = [];
+      for (let from = 0; from < 20000; from += PAGE) {
+        const { data, error } = await buildQuery().range(from, from + PAGE - 1);
+        if (error) throw error;
+        const batch = data || [];
+        jiraRows.push(...batch);
+        if (batch.length < PAGE) break;
       }
-      const { data, error } = await (query as any).order('sort_order', { ascending: true, nullsFirst: false });
-      if (error) throw error;
-
-      const jiraRows = data || [];
       const catRows: any[] = [];  // F-iter9: legacy catalyst_issues fetch removed (table consolidated into ph_issues with source='catalyst')
 
       // Resolve parent epic keys to get epic info for ParentEpicChip AND

@@ -198,6 +198,75 @@ export function getPriorityLabel(priority: string | null): string {
   return priority.charAt(0).toUpperCase() + priority.slice(1);
 }
 
+/**
+ * Whether a parent resolved from a story's `feature.epic` should be
+ * synthesized as a top-level Epic row.
+ *
+ * RCA 2026-06-11: useStoryBacklog fetches Sub-task / Frontend / Backend issue
+ * types whose parents are Stories/Features (not Epics). Those parents leak
+ * into `epicMap`, and the synth-epic loop used to convert ANY parent into a
+ * `type:'epic'` row — producing a phantom Epic twin of a Story. The twin
+ * collided by id with the real leaf Story and flipped Story↔Epic depending on
+ * the ancestor's expand/collapse state. Only genuine Epics may be synthesized.
+ */
+export function shouldSynthesizeEpicRow(
+  ep: { issue_type?: string | null } | null | undefined,
+): boolean {
+  return !!ep && ep.issue_type === 'Epic';
+}
+
+/** BacklogType → canonical icon-registry name, used only when a row carries
+ *  no raw issue_type (synthetic rows). Covers every non-initiative type. */
+const BACKLOG_TYPE_ICON_FALLBACK: Record<string, string> = {
+  epic: 'Epic',
+  feature: 'Feature',
+  story: 'Story',
+  bug: 'QA Bug',
+  incident: 'Production Incident',
+  task: 'Task',
+};
+
+/**
+ * Resolve the Key-cell type-icon string for a backlog row. Prefers the row's
+ * TRUE Jira `issue_type` (so Sub-task/Backend/Frontend/Feature render their own
+ * glyph instead of collapsing to the Story bookmark). Falls back to the coarse
+ * BacklogType only for synthetic rows that carry no issue_type — never a
+ * fabricated 'Story' default (CLAUDE.md zero-assumption 2026-06-11).
+ */
+export function keyCellIconType(
+  it: { issue_type?: string | null; type: string },
+): string {
+  return it.issue_type || BACKLOG_TYPE_ICON_FALLBACK[it.type] || it.type;
+}
+
+/**
+ * Depth-first flatten of a tree into a visible-row list.
+ *
+ * Walks each root, emits a node when `matches(node)`, then recurses into its
+ * children only when `isExpanded(node.id)`. Handles ARBITRARY depth, dedups by
+ * id, and is cycle-safe. Replaces the two-level flatten whose missing recursion
+ * leaked grandchildren to the top level (RCA 2026-06-11).
+ */
+export function flattenTree<T extends { id: string }>(
+  roots: T[],
+  childrenOf: Map<string, T[]>,
+  isExpanded: (id: string) => boolean,
+  matches: (node: T) => boolean,
+): T[] {
+  const out: T[] = [];
+  const seen = new Set<string>();
+  const walk = (node: T) => {
+    if (seen.has(node.id)) return; // cycle / duplicate guard
+    seen.add(node.id);
+    if (matches(node)) out.push(node);
+    if (isExpanded(node.id)) {
+      for (const child of childrenOf.get(node.id) ?? []) walk(child);
+    }
+  };
+  roots.forEach(walk);
+  return out;
+}
+
 export function getPriorityColor(priority: string | null): string {
   switch (priority?.toLowerCase()) {
     case 'critical':

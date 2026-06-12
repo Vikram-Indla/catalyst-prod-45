@@ -508,7 +508,7 @@ export default function KanbanBoardPage() {
     { key: 'epic' as GroupByMode, label: 'Epic', icon: 'parent' },
     { key: 'feature' as GroupByMode, label: 'Feature', icon: 'parent' },
     { key: 'priority' as GroupByMode, label: 'Priority', icon: 'priority' },
-    { key: 'sprintRelease' as GroupByMode, label: 'Sprint/Release' },
+    { key: 'sprintRelease' as GroupByMode, label: 'Sprint/Iteration' },
   ], []);
 
   // Current user for "Assigned to me"

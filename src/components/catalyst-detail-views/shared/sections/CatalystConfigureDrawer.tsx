@@ -27,7 +27,7 @@ export const PINNABLE_FIELDS: PinnableField[] = [
   { id: 'reporter',    label: 'Reporter' },
   { id: 'priority',    label: 'Priority', hiddenFor: ['Sub-task', 'Defect', 'Production Incident'] },
   { id: 'labels',      label: 'Labels' },
-  { id: 'sprintRelease', label: 'Sprint/Release', hiddenFor: ['Epic'] },
+  { id: 'sprintRelease', label: 'Sprint/Iteration', hiddenFor: ['Epic'] },
 ];
 
 // ── Persistence helpers ───────────────────────────────────────────────────────

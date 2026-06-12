@@ -227,8 +227,8 @@ export function DetailsPanel({ issue, users, onFieldChange }: DetailsPanelProps)
           </FieldRow>
         )}
 
-        {/* Sprint/Release */}
-        <FieldRow label="Sprint/Release" icon={<Package className="h-4 w-4" />}>
+        {/* Sprint/Iteration */}
+        <FieldRow label="Sprint/Iteration" icon={<Package className="h-4 w-4" />}>
           <div className="flex flex-wrap gap-1">
             {issue.sprintReleases && issue.sprintReleases.length > 0 ? (
               issue.sprintReleases.map((version) => (

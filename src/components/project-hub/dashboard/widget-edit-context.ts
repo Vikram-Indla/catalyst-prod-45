@@ -19,9 +19,14 @@ export const WidgetIdContext = createContext<WidgetIdContextValue | null>(null);
 
 interface GridEditContextValue {
   isEditing: boolean;
+  isDraggable?: boolean;
   onResize?: (widgetId: string, direction: 'wider' | 'narrower') => void;
   onReorder?: (sourceId: string, targetId: string, edge: 'before' | 'after') => void;
   onToggleCollapseDraft?: (widgetId: string) => void;
+  /** Remove a widget from the visible layout (edit mode only). */
+  onRemoveWidget?: (widgetId: string) => void;
+  /** Number of currently visible widgets — used to disable the last remove button. */
+  visibleCount?: number;
   /**
    * Solo / focus mode — transient. When set, only that widget renders;
    * every other widget unmounts via `display: none` (preserving query
@@ -63,6 +68,9 @@ export function useWidgetEditState() {
     onCollapseDraft: grid.onToggleCollapseDraft
       ? () => grid.onToggleCollapseDraft!(id.widgetId)
       : undefined,
+    // Bound remove — calls parent with this widget's id.
+    onRemoveWidget: grid.onRemoveWidget ? () => grid.onRemoveWidget!(id.widgetId) : undefined,
+    visibleCount: grid.visibleCount,
     // Raw (page-level): pragmatic-DnD's dropTarget runs on the TARGET widget,
     // and the source is whichever widget was dragged. The WidgetWrapper needs
     // to call onReorder(sourceId, thisWidgetId, edge) — neither argument is

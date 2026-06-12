@@ -54,7 +54,7 @@ const ALL_COLUMNS = [
   { id: 'storyPoints', label: 'Story Points', width: 100 },
   { id: 'labels', label: 'Labels', width: 150 },
   { id: 'components', label: 'Components', width: 150 },
-  { id: 'sprintReleases', label: 'Sprint/Release', width: 150 },
+  { id: 'sprintReleases', label: 'Sprint/Iteration', width: 150 },
   { id: 'sprint', label: 'Sprint', width: 120 },
   { id: 'epic', label: 'Epic', width: 150 },
 ];

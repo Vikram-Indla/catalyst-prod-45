@@ -1595,7 +1595,7 @@ export function EditableSprintReleases({
             fontSize: 11,
           }),
           // jira-compare 2026-05-20: Live DOM probe of digital-transformation.atlassian.net
-          // confirms Sprint/Release chip = transparent bg + 0.556px solid rgb(183,185,190) border
+          // confirms Sprint/Iteration chip = transparent bg + 0.556px solid rgb(183,185,190) border
           // + borderRadius 4px + padding 0px 4px + 14px/400 text.
           // Uses @atlaskit/tag "appearance=default" pattern — not a lozenge fill.
           multiValue: (base) => ({

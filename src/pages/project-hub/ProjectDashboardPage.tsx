@@ -16,13 +16,12 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { flag } from '@/components/shared/JiraTable/flags';
-import { Plus, LayoutGrid, RotateCcw, Tv, TvMinimal, Star, StarOff, RefreshCw, MoreHorizontal, Link2, Edit as EditIcon } from '@/lib/atlaskit-icons';
+import { MoreHorizontal, Edit as EditIcon, Maximize2, Minimize2 } from '@/lib/atlaskit-icons';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { token } from '@atlaskit/tokens';
-import AkButton, { IconButton as AkIconButton } from '@atlaskit/button/new';
-import Tooltip from '@atlaskit/tooltip';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import { IconButton as AkIconButton } from '@atlaskit/button/new';
 
 import { supabase } from '@/integrations/supabase/client';
 import { AtlaskitPageShell, Button, Flag, FlagGroup, SectionMessage } from '@/components/ads';
@@ -34,22 +33,19 @@ import WidgetGalleryModal from '@/components/project-hub/dashboard/WidgetGallery
 import { nextSpan, type WidgetSpan } from '@/components/project-hub/dashboard/widget-registry';
 import { DashboardFilterProvider } from '@/contexts/DashboardFilterContext';
 import { useDashboardRealtime } from '@/hooks/useDashboardRealtime';
+import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 
 
-// 2026-06-09 Vikram RCA — Atlaskit DropdownMenu was painting popup at (0,0)
-// because @atlaskit/popup's Popper boundary detection misfires inside
-// AtlaskitPageShell's flex header. Self-rolled position:absolute portal-free
-// dropdown anchored to the trigger ref — mirrors Session 3 LayoutDropdown fix.
-function KebabMenu({
-  onTV,
-  presentation,
-  onAddGadget,
+// Self-rolled dropdown for edit mode actions — avoids @atlaskit/popup (0,0) bug
+// in AtlaskitPageShell flex headers.
+function EditKebabMenu({
+  onCancel,
   onReset,
+  onManageGadgets,
 }: {
-  onTV: () => void;
-  presentation: boolean;
-  onAddGadget: () => void;
+  onCancel: () => void;
   onReset: () => void;
+  onManageGadgets: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -87,30 +83,28 @@ function KebabMenu({
   return (
     <div ref={ref} style={{ position: 'relative', display: 'inline-flex' }}>
       <AkIconButton
-        label="More dashboard actions"
+        label="More edit actions"
         icon={() => <MoreHorizontal size={16} />}
         appearance="subtle"
         spacing="compact"
         onClick={() => setOpen((o) => !o)}
       />
       {open && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 'calc(100% + 4px)',
-            right: 0,
-            zIndex: 400,
-            background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
-            minWidth: 220,
-            padding: '4px 0',
-          }}
-        >
-          {item(presentation ? 'Exit TV mode' : 'TV mode', onTV)}
-          {item('Add gadget', onAddGadget)}
+        <div style={{
+          position: 'absolute',
+          top: 'calc(100% + 4px)',
+          right: 0,
+          zIndex: 400,
+          background: token('elevation.surface.overlay', '#FFFFFF'),
+          border: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderRadius: 4,
+          boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
+          minWidth: 200,
+          padding: '4px 0',
+        }}>
+          {item('Add / remove gadgets', onManageGadgets)}
           {item('Reset to defaults', onReset)}
+          {item('Cancel editing', onCancel)}
         </div>
       )}
     </div>
@@ -127,12 +121,11 @@ export default function ProjectDashboardPage() {
 
 function ProjectDashboardPageInner() {
   const { key } = useParams<{ key: string }>();
-  const queryClient = useQueryClient();
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
   const [draft, setDraft] = useState<ResolvedWidget[] | null>(null);
   const [savedFlag, setSavedFlag] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
 
   // 2026-06-09 Vikram RCA — @atlaskit/flag has NO autoDismiss prop.
   // Without an explicit timer, "Layout saved" persists forever until
@@ -143,33 +136,15 @@ function ProjectDashboardPageInner() {
     return () => window.clearTimeout(t);
   }, [savedFlag]);
 
-  // Presentation / TV mode — toggles a data attr on <html>.
-  // CSS in index.css scales typography 1.45× when active so the dashboard
-  // reads cleanly on big screens (wall-mounted TVs, projectors).
-  // Persisted to localStorage so kiosks survive reloads.
-  const [presentation, setPresentation] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return window.localStorage.getItem('catalyst-presentation') === 'true';
-  });
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-    if (presentation) {
-      document.documentElement.setAttribute('data-presentation', 'true');
-      window.localStorage.setItem('catalyst-presentation', 'true');
-    } else {
-      document.documentElement.removeAttribute('data-presentation');
-      window.localStorage.removeItem('catalyst-presentation');
-    }
-  }, [presentation]);
-
-  useEffect(() => {
-    if (!isEditing) return;
+useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { setDraft(null); setIsEditing(false); }
+      if (e.key !== 'Escape') return;
+      if (isFullScreen) { setIsFullScreen(false); return; }
+      if (isEditing) { setDraft(null); setIsEditing(false); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [isEditing]);
+  }, [isEditing, isFullScreen]);
 
   const { data: project, isLoading } = useQuery({
     queryKey: ['ph-project-dashboard-v5', key],
@@ -219,16 +194,14 @@ function ProjectDashboardPageInner() {
 
   // ---- Edit-mode helpers ----
   const enterEditMode = () => {
-    // Snapshot the current persisted layout into the draft so subsequent
-    // edits don't mutate the query cache.
     setDraft(persistedWidgets.map((w) => ({ ...w })));
     setIsEditing(true);
-    setGalleryOpen(true); // D16 — auto-open gallery when entering edit mode
   };
 
   const cancelEdit = () => {
     setDraft(null);
     setIsEditing(false);
+    setGalleryOpen(false);
   };
 
   const saveEdit = async () => {
@@ -237,6 +210,7 @@ function ProjectDashboardPageInner() {
     }
     setDraft(null);
     setIsEditing(false);
+    setGalleryOpen(false);
     setSavedFlag(true);
   };
 
@@ -358,38 +332,49 @@ function ProjectDashboardPageInner() {
     [isEditing, draft, persistedWidgets],
   );
 
-  const handleRefreshAll = () => {
-    queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-    queryClient.invalidateQueries({ queryKey: ['ph-project-dashboard-v5'] });
+  // Non-edit-mode reorder: compute new order from persistedWidgets and immediately persist.
+  const reorderAndSave = (sourceId: string, targetId: string, edge: 'before' | 'after') => {
+    const visible = persistedWidgets.filter((w) => w.visible).sort((a, b) => a.position - b.position);
+    const without = visible.filter((w) => w.id !== sourceId);
+    const targetIdx = without.findIndex((w) => w.id === targetId);
+    if (targetIdx === -1) return;
+    const insertAt = edge === 'before' ? targetIdx : targetIdx + 1;
+    const source = visible.find((w) => w.id === sourceId);
+    if (!source) return;
+    const reordered = [...without.slice(0, insertAt), source, ...without.slice(insertAt)];
+    const posById = new Map(reordered.map((w, i) => [w.id, i]));
+    const newLayout = persistedWidgets.map((w) =>
+      w.visible ? { ...w, position: posById.get(w.id) ?? w.position } : w,
+    );
+    persistDraft(newLayout);
   };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
+  // Elevated button style — matches ADS elevation.shadow.raised token.
+  // Used for the Edit and Full Screen CTAs so they have visual lift above
+  // the flat shell background (appearance="subtle" is dead-flat).
+  const elevatedBtnStyle: React.CSSProperties = {
+    background: token('elevation.surface.raised', '#FFFFFF'),
+    boxShadow: token(
+      'elevation.shadow.raised',
+      '0 1px 1px rgba(9,30,66,0.13), 0 0 1px rgba(9,30,66,0.21)',
+    ),
+    border: `1px solid ${token('color.border', '#DFE1E6')}`,
+    borderRadius: 3,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 4,
+    padding: '0 8px',
+    height: 32,
+    fontSize: 14,
+    fontWeight: 500,
+    color: token('color.text', '#172B4D'),
+    cursor: 'pointer',
+    whiteSpace: 'nowrap' as const,
+    fontFamily: 'inherit',
   };
 
   const actions = isEditing ? (
     <>
-      <Tooltip content={isFavorite ? 'Remove from favorites' : 'Add to favorites'} position="bottom">
-        {(tp) => (
-          <span {...tp} style={{ display: 'inline-flex' }}>
-            <AkIconButton
-              label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-              icon={() => isFavorite ? <Star size={16} style={{ color: '#FFAB00' }} /> : <StarOff size={16} />}
-              appearance="subtle"
-              spacing="compact"
-              onClick={() => setIsFavorite((f) => !f)}
-            />
-          </span>
-        )}
-      </Tooltip>
-      <Button
-        appearance="subtle"
-        spacing="compact"
-        onClick={() => setGalleryOpen(true)}
-        testId="dashboard-add-widget"
-      >
-        Add gadget
-      </Button>
       <Button
         appearance="primary"
         spacing="compact"
@@ -398,87 +383,120 @@ function ProjectDashboardPageInner() {
       >
         Done
       </Button>
-      <DropdownMenu
-        trigger={({ triggerRef, ...triggerProps }) => (
-          <AkIconButton
-            ref={triggerRef}
-            {...triggerProps}
-            label="More actions"
-            icon={() => <MoreHorizontal size={16} />}
-            appearance="subtle"
-            spacing="compact"
-          />
-        )}
-      >
-        <DropdownItemGroup>
-          <DropdownItem onClick={cancelEdit}>Cancel editing</DropdownItem>
-          <DropdownItem onClick={resetLayout}>Reset to defaults</DropdownItem>
-        </DropdownItemGroup>
-      </DropdownMenu>
+      <EditKebabMenu
+        onCancel={cancelEdit}
+        onReset={resetLayout}
+        onManageGadgets={() => setGalleryOpen(true)}
+      />
     </>
   ) : (
     <>
-      <Tooltip content={isFavorite ? 'Remove from favorites' : 'Add to favorites'} position="bottom">
-        {(tp) => (
-          <span {...tp} style={{ display: 'inline-flex' }}>
-            <AkIconButton
-              label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-              icon={() => isFavorite ? <Star size={16} style={{ color: '#FFAB00' }} /> : <StarOff size={16} />}
-              appearance="subtle"
-              spacing="compact"
-              onClick={() => setIsFavorite((f) => !f)}
-            />
-          </span>
-        )}
-      </Tooltip>
-      <Tooltip content="Copy dashboard link" position="bottom">
-        {(tp) => (
-          <span {...tp} style={{ display: 'inline-flex' }}>
-            <AkIconButton
-              label="Copy dashboard link"
-              icon={() => <Link2 size={16} />}
-              appearance="subtle"
-              spacing="compact"
-              onClick={handleCopyLink}
-            />
-          </span>
-        )}
-      </Tooltip>
-      <Button
-        appearance="subtle"
-        spacing="compact"
-        iconBefore={<RefreshCw size={13} />}
-        onClick={handleRefreshAll}
-        testId="dashboard-refresh"
+      <button
+        type="button"
+        style={elevatedBtnStyle}
+        onClick={() => setIsFullScreen(true)}
+        data-testid="dashboard-fullscreen"
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'); }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface.raised', '#FFFFFF'); }}
       >
-        Refresh
-      </Button>
-      <Button
-        appearance="subtle"
-        spacing="compact"
-        iconBefore={<EditIcon size={13} />}
+        <Maximize2 size={13} />
+        Full screen
+      </button>
+      <button
+        type="button"
+        style={elevatedBtnStyle}
         onClick={enterEditMode}
-        testId="dashboard-edit-layout"
+        data-testid="dashboard-edit-layout"
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'); }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface.raised', '#FFFFFF'); }}
       >
+        <EditIcon size={13} />
         Edit
-      </Button>
-      <KebabMenu
-        onTV={() => setPresentation((p) => !p)}
-        presentation={presentation}
-        onAddGadget={() => setGalleryOpen(true)}
-        onReset={resetLayout}
-      />
+      </button>
     </>
   );
 
+  // Full screen overlay — position: fixed covers all chrome (left nav,
+  // project header, sidebars). ESC or Cancel button exits.
+  if (isFullScreen) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 9999,
+          background: token('elevation.surface', '#FFFFFF'),
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
+        data-testid="dashboard-fullscreen-overlay"
+      >
+        {/* Full screen top bar */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '8px 16px',
+            borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+            flexShrink: 0,
+            background: token('elevation.surface', '#FFFFFF'),
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <ProjectIcon
+              size="small"
+              projectKey={pKey}
+              avatarUrl={(project as any)?.avatar_url ?? null}
+              iconName={(project as any)?.icon ?? 'mountain'}
+              color={(project as any)?.color ?? '#2563EB'}
+              name={(project as any)?.name ?? pKey}
+            />
+            <span style={{ fontSize: 16, fontWeight: 500, color: token('color.text', '#172B4D'), fontFamily: "'Atlassian Sans', -apple-system, sans-serif" }}>
+              {(project as any)?.name ?? pKey} — Dashboard
+            </span>
+          </div>
+          <button
+            type="button"
+            style={{
+              ...elevatedBtnStyle,
+              color: token('color.text', '#172B4D'),
+            }}
+            onClick={() => setIsFullScreen(false)}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'); }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface.raised', '#FFFFFF'); }}
+          >
+            <Minimize2 size={13} />
+            Exit full screen
+          </button>
+        </div>
+
+        {/* Dashboard content in full screen */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
+          <DashboardWidgetGrid
+            projectId={projectId || pKey}
+            projectKey={pKey}
+            isEditing={false}
+            onToggleCollapse={toggleCollapse}
+            onRemoveWidget={toggleVisibility}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <AtlaskitPageShell
-      title={
-        <span style={{ fontSize: 24, fontWeight: 653, letterSpacing: '-0.003em', color: token('color.text', '#292A2E') }}>
-          {(project as any)?.name || pKey || 'Dashboard'}
-        </span>
-      }
-      actions={actions}
+      flush
+      chromeBand={pKey ? (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <ProjectHeaderChip projectKey={pKey} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingRight: 24 }}>
+            {actions}
+          </div>
+        </div>
+      ) : null}
       testId="project-dashboard-shell"
     >
       <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
@@ -530,8 +548,10 @@ function ProjectDashboardPageInner() {
                 isEditing={isEditing}
                 draftWidgets={draft ?? undefined}
                 onReorder={reorder}
+                onReorderDirect={reorderAndSave}
                 onResize={resize}
                 onToggleCollapse={toggleCollapse}
+                onRemoveWidget={toggleVisibility}
               />
             </div>
           )}

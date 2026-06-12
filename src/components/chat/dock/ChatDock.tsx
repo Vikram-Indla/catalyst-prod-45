@@ -21,7 +21,7 @@ import CrossIcon from "@atlaskit/icon/glyph/cross";
 import VidFullScreenOnIcon from "@atlaskit/icon/glyph/vid-full-screen-on";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
-import catalystChatIcon from "@/assets/caty-ai-bg.svg";
+import { CatyFabIcon } from "./CatyFabIcon";
 import { CatyPanel } from "./CatyPanel";
 import { DockDirectory } from "./DockDirectory";
 import { DockConversationPane } from "./DockConversationPane";
@@ -48,10 +48,9 @@ interface ChatDockProps {
 }
 
 const PRESENCE_DOT: Record<ChatPresence, string> = {
-  available: "var(--ds-icon-success, #22A06B)",
-  busy: "var(--ds-icon-danger, #E34935)",
-  away: "var(--ds-icon-warning, #E2B203)",
-  offline: "var(--ds-icon-disabled, #8590A2)",
+  on_set: "var(--ds-icon-success, #22A06B)",
+  remote: "var(--ds-icon-information, #0C66E4)",
+  away: "var(--ds-icon-disabled, #8590A2)",
   on_leave: "var(--ds-icon-disabled, #8590A2)",
 };
 
@@ -160,7 +159,7 @@ function ConvGlyph({ conversation }: { conversation: ChatConversation }) {
 function tabDotColor(conversation: ChatConversation): string {
   if (conversation.kind === "channel") return "transparent";
   if (conversation.kind === "ticket")
-    return PRESENCE_DOT.available.replace("success", "brand");
+    return PRESENCE_DOT.on_set.replace("success", "brand");
   return "var(--ds-background-brand-bold, #0C66E4)";
 }
 
@@ -206,9 +205,12 @@ export function ChatDock({
         aria-label="Open messages"
         onClick={onToggleCollapsed}
       >
-        <img src={catalystChatIcon} alt="" width={51} height={51} />
+        <CatyFabIcon size={56} />
         {totalUnread > 0 && (
-          <span className="cc-fab__badge">
+          <span
+            className="cc-fab__badge"
+            aria-label={`${totalUnread > 99 ? "99+" : totalUnread} unread messages`}
+          >
             {totalUnread > 99 ? "99+" : totalUnread}
           </span>
         )}
@@ -225,16 +227,83 @@ export function ChatDock({
     <div
       className={`cc-dock${dockMode === "caty" && catyView === "sidebar" ? " cc-dock--sidebar" : ""}`}
       role="dialog"
-      aria-label={dockMode === "caty" ? "Ask Caty AI" : "Caty Connect"}
+      aria-label={dockMode === "caty" ? "Assistant" : "CATY"}
     >
-      {/* Shared header — mode tabs + shared icons */}
-      <div className="cc-dock__header" role="banner">
-        {/* Brand logo + dual-mode underline tabs */}
-        <div className="cc-dock__brand" aria-hidden>
-          <span className="cc-dock__logo-wrap">
-            <img src={catalystChatIcon} alt="" width={26} height={26} className="cc-dock__logo-img" />
+      {/* Shared header — Option C: AI-forward two-row title bar */}
+      <div className="cc-dock__headerwrap" role="banner">
+        {/* Static gradient hairline — Caty AI signifier (no motion, CLAUDE.md AI-CTA carve-out) */}
+        <div className="cc-dock__accent" aria-hidden />
+
+        {/* Row 1 — brand identity + live status + action icons */}
+        <div className="cc-dock__titlebar">
+          <span className="cc-dock__badge" aria-hidden>
+            {/* caty-ai.svg — gradient C mark */}
+            <svg width="34" height="34" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <defs>
+                {/* ads-scanner:ignore-next-line — Caty brand gradient, no ADS token equivalent */}
+                <linearGradient id="cai-hdr" x1="256.269" y1="93.9727" x2="256.269" y2="417.5" gradientUnits="userSpaceOnUse">
+                  {/* ads-scanner:ignore-next-line */}
+                  <stop stopColor="#F79357"/>
+                  {/* ads-scanner:ignore-next-line */}
+                  <stop offset="0.5" stopColor="#F53F68"/>
+                  {/* ads-scanner:ignore-next-line */}
+                  <stop offset="0.75" stopColor="#B41572"/>
+                  {/* ads-scanner:ignore-next-line */}
+                  <stop offset="1" stopColor="#CC1E9A"/>
+                </linearGradient>
+              </defs>
+              <path d="M421.802 200.296V93.9727H259.279L233.457 127.389L210.674 93.9727H154.474C39.037 223.991 106.375 363.832 154.474 417.5H421.802V309.658H279.025L236.495 374.971C170.878 271.685 209.155 173.969 236.495 138.021L279.025 200.296H421.802Z" fill="url(#cai-hdr)"/>
+            </svg>
           </span>
+          <div className="cc-dock__title">
+            <span className="cc-dock__wordmark">CATY</span>
+          </div>
+          <div className="cc-dock__actions">
+            <Tooltip content="New conversation" position="bottom">
+              <IconButton
+                icon={AddIcon}
+                label="New conversation"
+                appearance="subtle"
+                spacing="compact"
+                onClick={() => {
+                  // If a conversation is open, go back to directory.
+                  // Either way, signal directory to focus search so user can type a name.
+                  onFocusDirectory?.();
+                  setDirFocusTick((t) => t + 1);
+                }}
+              />
+            </Tooltip>
+            <Tooltip content="Open full screen" position="bottom">
+              <IconButton
+                icon={VidFullScreenOnIcon}
+                label="Open full screen"
+                appearance="subtle"
+                spacing="compact"
+                onClick={onPopOut}
+              />
+            </Tooltip>
+            <Tooltip content="Minimize" position="bottom">
+              <IconButton
+                icon={ChevronDownIcon}
+                label="Minimize"
+                appearance="subtle"
+                spacing="compact"
+                onClick={onToggleCollapsed}
+              />
+            </Tooltip>
+            <Tooltip content="Close" position="bottom">
+              <IconButton
+                icon={CrossIcon}
+                label="Close"
+                appearance="subtle"
+                spacing="compact"
+                onClick={onToggleCollapsed}
+              />
+            </Tooltip>
+          </div>
         </div>
+
+        {/* Row 2 — dual-mode underline tabs */}
         <div className="cc-mode-tabs" role="tablist" aria-label="Chat modes">
           <button
             type="button"
@@ -243,7 +312,7 @@ export function ChatDock({
             onClick={() => setDockMode("messages")}
             aria-selected={dockMode === "messages"}
           >
-            Connect
+            Messages
             {totalUnread > 0 && (
               <span className="cc-mode-tab__badge" aria-label={`${totalUnread} unread`}>
                 {totalUnread > 99 ? "99+" : totalUnread}
@@ -257,53 +326,8 @@ export function ChatDock({
             onClick={() => setDockMode("caty")}
             aria-selected={dockMode === "caty"}
           >
-            Ask Caty
+            Assistant
           </button>
-        </div>
-
-        {/* Divider + action icons */}
-        <div className="cc-dock__actions">
-          <Tooltip content="New conversation" position="bottom">
-            <IconButton
-              icon={AddIcon}
-              label="New conversation"
-              appearance="subtle"
-              spacing="compact"
-              onClick={() => {
-                // If a conversation is open, go back to directory.
-                // Either way, signal directory to focus search so user can type a name.
-                onFocusDirectory?.();
-                setDirFocusTick((t) => t + 1);
-              }}
-            />
-          </Tooltip>
-          <Tooltip content="Open full screen" position="bottom">
-            <IconButton
-              icon={VidFullScreenOnIcon}
-              label="Open full screen"
-              appearance="subtle"
-              spacing="compact"
-              onClick={onPopOut}
-            />
-          </Tooltip>
-          <Tooltip content="Minimize" position="bottom">
-            <IconButton
-              icon={ChevronDownIcon}
-              label="Minimize"
-              appearance="subtle"
-              spacing="compact"
-              onClick={onToggleCollapsed}
-            />
-          </Tooltip>
-          <Tooltip content="Close" position="bottom">
-            <IconButton
-              icon={CrossIcon}
-              label="Close"
-              appearance="subtle"
-              spacing="compact"
-              onClick={onToggleCollapsed}
-            />
-          </Tooltip>
         </div>
       </div>
 
@@ -381,7 +405,7 @@ export function ChatDock({
                         borderRadius: "50%",
                         background: "var(--ds-background-brand-bold, #0C66E4)",
                         flexShrink: 0,
-                        marginLeft: 2,
+                        marginLeft: 4,
                       }}
                     />
                   )}

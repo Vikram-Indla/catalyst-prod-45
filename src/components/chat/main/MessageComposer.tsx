@@ -22,6 +22,8 @@ export interface MessageComposerProps {
   onAskCaty?: () => void;
   /** Last message id created by onSend (passed back so attachments can bind). */
   lastSentMessageId?: string | null;
+  /** Min height of the editor body in px. Defaults to 80. Pass smaller value in compact contexts (e.g. chat dock). */
+  minHeight?: number;
 }
 
 export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerProps>(
@@ -32,6 +34,7 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
       disabled,
       onSend,
       lastSentMessageId,
+      minHeight = 80,
     }: MessageComposerProps,
     _ref,
   ) {
@@ -126,7 +129,7 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
           placeholder={placeholder}
           saveLabel="Send"
           isSaving={sending || uploading || disabled}
-          minHeight={80}
+          minHeight={minHeight}
         />
       </div>
     );

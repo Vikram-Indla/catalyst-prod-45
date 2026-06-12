@@ -114,7 +114,7 @@ export default function CatalystViewBusinessRequestV3({
       <>
         <BrTitleSection request={request} onUpdate={updateField} />
         <CatalystQuickActions />
-        <BrCenterDetails request={request} onUpdate={updateField} />
+        <BrCenterDetails request={request} onUpdate={updateField} productId={request?.product_id ?? null} />
         <BrDescriptionSection request={request} onUpdate={updateField} />
         {!isNewlyCreated && <BrAttachmentsSection request={request} />}
         {!isNewlyCreated && <BrLinkedItemsSection request={request} />}

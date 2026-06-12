@@ -277,9 +277,9 @@ export function SyncLogs() {
               accentColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"
             />
 
-            {/* Sprint/Releases */}
+            {/* Sprint/Iterations */}
             <MultiSelectDropdown
-              label="Sprint/Release"
+              label="Sprint/Iteration"
               options={versionOptions}
               selected={selectedVersions}
               onChange={setSelectedVersions}

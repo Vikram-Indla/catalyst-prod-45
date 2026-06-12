@@ -35,10 +35,9 @@ export interface ConversationHeaderProps {
 }
 
 const PRESENCE_MAP: Record<string, PresenceColor> = {
-  available: 'green',
-  busy: 'red',
+  on_set: 'green',
+  remote: 'blue',
   away: 'amber',
-  offline: 'grey',
   on_leave: 'grey',
 };
 

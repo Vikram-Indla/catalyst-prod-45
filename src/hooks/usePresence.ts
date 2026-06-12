@@ -3,9 +3,11 @@ import { supabase } from '@/integrations/supabase/client';
 import type { PresenceState } from '@/lib/presence';
 
 interface SetPresenceArgs {
-  state: Exclude<PresenceState, 'offline' | 'on_leave'>;
+  state: Exclude<PresenceState, 'on_leave'>;
   /** Duration the manual override lasts (ms). Defaults to 4 h. */
   durationMs?: number;
+  /** Coarse location string, only meaningful for 'remote'. Cleared otherwise. */
+  location?: string | null;
 }
 
 /**
@@ -25,14 +27,14 @@ export function usePresence() {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: async ({ state, durationMs = 4 * 60 * 60 * 1000 }: SetPresenceArgs) => {
+    mutationFn: async ({ state, durationMs = 4 * 60 * 60 * 1000, location }: SetPresenceArgs) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const now = new Date();
-      const manual_until = state === 'busy'
+      const manual_until = state === 'remote'
         ? new Date(now.getTime() + durationMs).toISOString()
-        : null;   // available/away: clear manual override
+        : null;   // on_set/away: clear manual override
 
       const { error } = await supabase.from('user_presence').upsert(
         {
@@ -41,6 +43,8 @@ export function usePresence() {
           last_seen_at: now.toISOString(),
           manual_until,
           updated_at:   now.toISOString(),
+          // location only applies to 'remote'; clear it for any other state.
+          location:     state === 'remote' ? (location ?? null) : null,
         },
         { onConflict: 'user_id', ignoreDuplicates: false }
       );

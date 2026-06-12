@@ -8,7 +8,7 @@ import React from 'react';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
 export type AvatarColor = 'green' | 'red' | 'amber' | 'grey' | 'brand' | 'purple';
-export type PresenceColor = 'green' | 'red' | 'amber' | 'grey';
+export type PresenceColor = 'green' | 'blue' | 'red' | 'amber' | 'grey';
 
 const COLORS: AvatarColor[] = ['green', 'red', 'amber', 'purple', 'brand', 'grey'];
 

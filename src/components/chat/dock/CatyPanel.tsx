@@ -15,7 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
-import catalystChatIcon from '@/assets/caty-ai-bg.svg';
+// catalystChatIcon removed — replaced with inline caty-ai.svg gradient C mark
 import catyIcon from '@/assets/caty-icon.svg';
 import {
   CATY_ASSISTANTS,
@@ -25,6 +25,12 @@ import {
   type CatyAssistant,
 } from '@/lib/caty-assistants';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import EpicIcon from '@atlaskit/icon-object/glyph/epic/16';
+import StoryIcon from '@atlaskit/icon-object/glyph/story/16';
+import QuestionIcon from '@atlaskit/icon-object/glyph/question/16';
+import BugIcon from '@atlaskit/icon-object/glyph/bug/16';
+import IncidentIcon from '@atlaskit/icon-object/glyph/incident/16';
+import NewFeatureIcon from '@atlaskit/icon-object/glyph/new-feature/16';
 import { renderCatyContent } from './caty-render';
 import { useCatyContext } from './useCatyContext';
 import { MessageComposer } from '@/components/chat/main/MessageComposer';
@@ -224,15 +230,20 @@ function StepIcon({ type }: { type: CatyStep['type'] }) {
 
 // ─── Assistant icon ───────────────────────────────────────────────────
 
+const ASSISTANT_ICON_MAP: Record<string, React.ReactElement> = {
+  epic:             <EpicIcon label="" />,
+  story:            <StoryIcon label="" />,
+  'business-request': <QuestionIcon label="" />,
+  defect:           <BugIcon label="" />,
+  incident:         <IncidentIcon label="" />,
+  release:          <NewFeatureIcon label="" />,
+};
+
 function AssistantIcon({ assistant }: { assistant: CatyAssistant }) {
-  if (!assistant.iconType) {
-    return (
-      <img src={catyIcon} alt="" width={20} height={20} />
-    );
+  if (assistant.id === 'general') {
+    return <img src={catyIcon} alt="" width={20} height={20} />;
   }
-  return (
-    <JiraIssueTypeIcon type={assistant.iconType as any} size={20} />
-  );
+  return ASSISTANT_ICON_MAP[assistant.id] ?? <img src={catyIcon} alt="" width={20} height={20} />;
 }
 
 // ─── Story card ───────────────────────────────────────────────────────
@@ -331,6 +342,7 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
   const [epicInput, setEpicInput] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const pickerRef = useRef<HTMLDivElement>(null);
 
   const activeAssistant = CATY_ASSISTANTS.find((a) => a.id === activeId)!;
   const canUse = canUseAssistant(activeAssistant, role, productRoles);
@@ -344,6 +356,17 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    if (!showPicker) return;
+    const handler = (e: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setShowPicker(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showPicker]);
 
   const addMessage = useCallback((msg: Omit<CatyMessage, 'id'>) => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -679,7 +702,7 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
           computes (0,0) inside the dock's position:fixed container (see
           ConversationHeader.tsx note, 2026-06). */}
       {showPicker && (
-        <div className="cp-view-menu cp-assistant-menu" role="menu" aria-label="Switch assistant">
+        <div ref={pickerRef} className="cp-view-menu cp-assistant-menu" role="menu" aria-label="Switch assistant">
           <div className="cp-view-menu__header">Switch assistant</div>
           {CATY_ASSISTANTS.map((a) => {
             const unlocked = canUseAssistant(a, role, productRoles);
@@ -694,10 +717,7 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
                 title={unlocked ? a.tagline : a.lockedMessage}
                 aria-disabled={!unlocked}
               >
-                <span
-                  className="cp-assistant-menu__icon"
-                  style={{ background: unlocked ? a.tileBgToken : 'var(--ds-background-neutral, #F1F2F4)' }}
-                >
+                <span className="cp-assistant-menu__icon">
                   <AssistantIcon assistant={a} />
                 </span>
                 <span className="cp-view-menu__label">{a.name}</span>
@@ -742,7 +762,22 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
         <div className="cp-welcome">
           {/* Hero: Caty icon + speech bubble overlay */}
           <div className="cp-welcome__hero">
-            <img src={catalystChatIcon} alt="" className="cp-welcome__hero-icon" />
+            <svg width="56" height="56" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" className="cp-welcome__hero-icon" aria-hidden>
+                <defs>
+                  {/* ads-scanner:ignore-next-line — Caty brand gradient */}
+                  <linearGradient id="cai-hero" x1="256.269" y1="93.9727" x2="256.269" y2="417.5" gradientUnits="userSpaceOnUse">
+                    {/* ads-scanner:ignore-next-line */}
+                    <stop stopColor="#F79357"/>
+                    {/* ads-scanner:ignore-next-line */}
+                    <stop offset="0.5" stopColor="#F53F68"/>
+                    {/* ads-scanner:ignore-next-line */}
+                    <stop offset="0.75" stopColor="#B41572"/>
+                    {/* ads-scanner:ignore-next-line */}
+                    <stop offset="1" stopColor="#CC1E9A"/>
+                  </linearGradient>
+                </defs>
+                <path d="M421.802 200.296V93.9727H259.279L233.457 127.389L210.674 93.9727H154.474C39.037 223.991 106.375 363.832 154.474 417.5H421.802V309.658H279.025L236.495 374.971C170.878 271.685 209.155 173.969 236.495 138.021L279.025 200.296H421.802Z" fill="url(#cai-hero)"/>
+              </svg>
             <div className="cp-welcome__bubble">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden>
                 <path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6l-4 3V6a2 2 0 0 1 2-2Z"
@@ -827,7 +862,22 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
                 <div className="cp-msg__bubble--user">{msg.content}</div>
               ) : (
                 <div className="cp-msg__ai-row">
-                  <img src={catalystChatIcon} alt="" className="cp-msg__ai-avatar" />
+                  <svg width="24" height="24" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" className="cp-msg__ai-avatar" aria-hidden>
+                    <defs>
+                      {/* ads-scanner:ignore-next-line — Caty brand gradient */}
+                      <linearGradient id="cai-avatar" x1="256.269" y1="93.9727" x2="256.269" y2="417.5" gradientUnits="userSpaceOnUse">
+                        {/* ads-scanner:ignore-next-line */}
+                        <stop stopColor="#F79357"/>
+                        {/* ads-scanner:ignore-next-line */}
+                        <stop offset="0.5" stopColor="#F53F68"/>
+                        {/* ads-scanner:ignore-next-line */}
+                        <stop offset="0.75" stopColor="#B41572"/>
+                        {/* ads-scanner:ignore-next-line */}
+                        <stop offset="1" stopColor="#CC1E9A"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M421.802 200.296V93.9727H259.279L233.457 127.389L210.674 93.9727H154.474C39.037 223.991 106.375 363.832 154.474 417.5H421.802V309.658H279.025L236.495 374.971C170.878 271.685 209.155 173.969 236.495 138.021L279.025 200.296H421.802Z" fill="url(#cai-avatar)"/>
+                  </svg>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     {/* Active thinking transcript */}
                     {msg.thinkingActive && msg.steps && msg.steps.length > 0 && (
@@ -967,6 +1017,7 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
           }
           disabled={loading || !canUse}
           onSend={handleComposerSend}
+          minHeight={40}
         />
       )}
 

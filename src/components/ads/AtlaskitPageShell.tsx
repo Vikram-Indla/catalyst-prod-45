@@ -201,7 +201,7 @@ export function AtlaskitPageShell({
             padding: '16px 16px 4px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyContent: title != null ? 'space-between' : 'flex-end',
             gap: 12,
           }}
         >
