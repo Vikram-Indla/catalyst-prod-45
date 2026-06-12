@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Button from '@atlaskit/button/new';
@@ -11,8 +12,11 @@ import {
   useBoardsForProject,
   useToggleFilterBoardLink,
   useToggleFilterSubscription,
+  useExistingBoardForFilter,
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
+import { useCreateKanbanFromFilter } from '@/hooks/workhub/useCreateKanbanFromFilter';
+import { ENABLE_FILTER_TO_KANBAN } from '@/lib/featureFlags';
 import { useParams, useNavigate } from 'react-router-dom';
 import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
@@ -35,6 +39,9 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const [boardName, setBoardName] = useState('');
   const [boardType, setBoardType] = useState<{ label: string; value: string }>({ label: 'Kanban', value: 'kanban' });
   const [creatingBoard, setCreatingBoard] = useState(false);
+  // Filter→Kanban (ENABLE_FILTER_TO_KANBAN) — guided create flow.
+  const [createKanbanOpen, setCreateKanbanOpen] = useState(false);
+  const [kanbanName, setKanbanName] = useState('');
   const navigate = useNavigate();
 
   const { key: projectKey } = useParams<{ key: string }>();
@@ -46,6 +53,26 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const subscribeFilter  = useToggleFilterSubscription();
   const { data: boards = [] } = useBoardsForProject(projectKey);
 
+  // Filter→Kanban: dedup (open an existing board for this filter+owner instead
+  // of creating a second), the project's primary board to clone columns from,
+  // and the canonical create service. All inert when the flag is off.
+  const createKanban = useCreateKanbanFromFilter();
+  const existingBoard = useExistingBoardForFilter(
+    ENABLE_FILTER_TO_KANBAN ? filter.id : undefined,
+    currentUserId,
+  );
+  const { data: projectId = null } = useQuery({
+    queryKey: ['ph-project-id', projectKey],
+    queryFn: async () => {
+      if (!projectKey) return null;
+      const { data } = await supabase
+        .from('ph_projects').select('id').eq('key', projectKey.toUpperCase()).maybeSingle();
+      return (data as any)?.id ?? null;
+    },
+    enabled: ENABLE_FILTER_TO_KANBAN && !!projectKey,
+    staleTime: 300_000,
+  });
+
   const isOwner = filter.user_id === currentUserId || filter.owner_id === currentUserId;
   const isSubscribed = currentUserId ? (filter.subscriber_ids ?? []).includes(currentUserId) : false;
   const isPrivate = filter.viewers_config?.type === 'private';
@@ -56,6 +83,22 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
       : { is_shared: false, viewers_config: { type: 'private' as const } };
 
     updateFilter.mutate({ id: filter.id, updates: next as any });
+  }
+
+  async function handleCreateKanban() {
+    try {
+      const boardId = await createKanban.mutateAsync({
+        filter,
+        projectId,
+        sourceBoardId: boards[0]?.id ?? null, // project's existing board → column template
+        name: kanbanName.trim(),
+        visibility: isPrivate ? 'private' : 'project',
+      });
+      setCreateKanbanOpen(false);
+      if (projectKey && boardId) navigate(`/project-hub/${projectKey}/boards/${boardId}`);
+    } catch (e: any) {
+      console.error('Failed to create Kanban from filter:', e);
+    }
   }
 
   return (
@@ -129,9 +172,25 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
 
         {isOwner && (
           <DropdownItemGroup>
-            <DropdownItem onClick={() => { setBoardName(`${filter.name} board`); setCreateBoardOpen(true); }}>
-              Create board from filter
-            </DropdownItem>
+            {ENABLE_FILTER_TO_KANBAN ? (
+              <DropdownItem
+                onClick={() => {
+                  // Dedup: if a board already exists for this filter+owner, open it.
+                  if (existingBoard.data) {
+                    if (projectKey) navigate(`/project-hub/${projectKey}/boards/${existingBoard.data.id}`);
+                    return;
+                  }
+                  setKanbanName(`${filter.name} board`);
+                  setCreateKanbanOpen(true);
+                }}
+              >
+                {existingBoard.data ? 'Open Kanban' : 'Create Kanban from filter'}
+              </DropdownItem>
+            ) : (
+              <DropdownItem onClick={() => { setBoardName(`${filter.name} board`); setCreateBoardOpen(true); }}>
+                Create board from filter
+              </DropdownItem>
+            )}
           </DropdownItemGroup>
         )}
 
@@ -300,6 +359,50 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
                 }}
               >
                 Create board
+              </Button>
+            </ModalFooter>
+          </ModalDialog>
+        )}
+      </ModalTransition>
+
+      {/* Filter→Kanban (ENABLE_FILTER_TO_KANBAN) — guided create flow. */}
+      <ModalTransition>
+        {createKanbanOpen && (
+          <ModalDialog onClose={() => setCreateKanbanOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle>Create Kanban from filter</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                    Board name
+                  </label>
+                  <Textfield
+                    autoFocus
+                    value={kanbanName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setKanbanName(e.target.value)}
+                    placeholder="e.g. Q2 delivery board"
+                  />
+                </div>
+                <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
+                  Cards come live from <strong>{filter.name}</strong>. Columns are inherited from this
+                  project&rsquo;s board. Access follows the filter &mdash; anyone who can see the filter can
+                  see this board.
+                </p>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setCreateKanbanOpen(false)} isDisabled={createKanban.isPending}>
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                isDisabled={!kanbanName.trim() || createKanban.isPending}
+                isLoading={createKanban.isPending}
+                onClick={handleCreateKanban}
+              >
+                Create Kanban
               </Button>
             </ModalFooter>
           </ModalDialog>

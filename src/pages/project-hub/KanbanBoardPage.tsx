@@ -56,7 +56,9 @@ import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
 
 import { useKanbanViewSettings } from '@/hooks/useKanbanViewSettings';
-import { ENABLE_KANBAN_V2 } from '@/lib/featureFlags';
+import { ENABLE_KANBAN_V2, ENABLE_FILTER_TO_KANBAN } from '@/lib/featureFlags';
+import { useFilterBoardIssues } from '@/components/kanban/adapters/filterBoardSource';
+import SectionMessage from '@atlaskit/section-message';
 import { readDensityPref, writeDensityPref } from '@/components/kanban/densityPrefs';
 import { statusChangeSchema } from '@/components/kanban/kanban-schemas';
 import { useBoardUrlState } from '@/components/kanban/useBoardUrlState';
@@ -241,6 +243,30 @@ export default function KanbanBoardPage() {
     staleTime: 60_000,
   });
 
+  // ─── Filter-backed board (ENABLE_FILTER_TO_KANBAN) ───────────────────────
+  // When this board is driven by a saved filter (boards.filter_id), its issue
+  // set comes from the filter's JQL via the canonical useJqlResults evaluator
+  // — not the project-wide fetch below. Columns above still come from
+  // board_columns. Entire path is inert when the flag is off (enabled gate).
+  const { data: boardFilterJql = null } = useQuery({
+    queryKey: ['kanban-board-filter-jql', resolvedBoardId],
+    queryFn: async () => {
+      if (!resolvedBoardId) return null;
+      const { data: board } = await supabase
+        .from('boards').select('filter_id').eq('id', resolvedBoardId).maybeSingle();
+      const fid = (board as any)?.filter_id;
+      if (!fid) return null;
+      const { data: filter } = await supabase
+        .from('ph_saved_filters').select('jql_query').eq('id', fid).maybeSingle();
+      return ((filter as any)?.jql_query as string | null) ?? null;
+    },
+    enabled: ENABLE_FILTER_TO_KANBAN && !!resolvedBoardId,
+    staleTime: 60_000,
+  });
+
+  const filterBoard = useFilterBoardIssues(boardFilterJql ?? undefined);
+  const isFilterBacked = ENABLE_FILTER_TO_KANBAN && !!boardFilterJql;
+
   // Build dynamic columns, falling back to hardcoded defaults
   const { KANBAN_COLUMNS, STATUS_TO_COL_ID, COL_PRIMARY_STATUS, COLUMN_ID_SET } = useMemo(() => {
     if (dynamicBoardData?.columns?.length) {
@@ -289,7 +315,7 @@ export default function KanbanBoardPage() {
     };
   }, [dynamicBoardData]);
 
-  const { data: rawIssues = [], isLoading } = useQuery({
+  const { data: projectIssues = [], isLoading: rawLoading } = useQuery({
     // FIX: projMeta?.id removed from queryKey — was causing double-fetch of all
     // ph_issues (once with id=undefined on mount, again when projMeta resolved).
     // projId is read from TanStack cache inside the queryFn instead.
@@ -391,9 +417,17 @@ export default function KanbanBoardPage() {
         }));
       return [...catIssues, ...jiraIssues];
     },
-    enabled: !!key,
+    enabled: !!key && !isFilterBacked,
     staleTime: 30_000,
   });
+
+  // Effective issue set + loading: filter-backed boards read from the filter's
+  // JQL; all other boards keep the project-wide fetch. Defining rawIssues here
+  // means EVERY downstream consumer (filtered grid, epic/type maps, counts)
+  // follows automatically. When the flag is off, isFilterBacked is always
+  // false → rawIssues === projectIssues, identical to the previous behaviour.
+  const rawIssues = isFilterBacked ? filterBoard.issues : projectIssues;
+  const isLoading = isFilterBacked ? filterBoard.isLoading : rawLoading;
 
   const issuesById = useMemo(() => {
     const m = new Map<string, BoardIssue>();
@@ -1365,6 +1399,21 @@ export default function KanbanBoardPage() {
       {/* ── Board content (Jira parity: 8px inter-column gap, 16px outer padding) ── */}
       {/* When standup panel is open, offset content 280px to the right (Jira parity) */}
       <div className="flex-1 min-h-0" style={{ overflow: 'auto', padding: '0 16px 16px 16px', marginLeft: showStandup ? 'var(--standup-panel-width, 280px)' : 0, transition: 'margin-left 200ms ease' }}>
+        {/* Filter-backed board states (ENABLE_FILTER_TO_KANBAN). */}
+        {isFilterBacked && filterBoard.isError && (
+          <div style={{ marginBottom: 16 }}>
+            <SectionMessage appearance="error" title="Couldn't load this filter's results">
+              The saved filter behind this board failed to run. Try reloading, or open the filter to check its definition.
+            </SectionMessage>
+          </div>
+        )}
+        {isFilterBacked && !filterBoard.isError && filterBoard.isTruncated && (
+          <div style={{ marginBottom: 16 }}>
+            <SectionMessage appearance="information" title={`Showing the first ${filterBoard.issues.length} of ${filterBoard.totalCount} items`}>
+              This filter matches more items than the board shows at once. Refine the filter to narrow the results.
+            </SectionMessage>
+          </div>
+        )}
         {groupBy !== 'none' ? (
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
             <div style={{ background: 'transparent', minWidth: KANBAN_COLUMNS.length * 267 + (KANBAN_COLUMNS.length - 1) * 8 }}>

@@ -28,3 +28,15 @@ export const ENABLE_FULL_APP = import.meta.env.VITE_ENABLE_FULL_APP !== 'false';
  * Out of scope: ProductHub/IncidentHub/TaskHub/legacy Project boards.
  */
 export const ENABLE_KANBAN_V2 = import.meta.env.VITE_ENABLE_KANBAN_V2 === 'true';
+
+/**
+ * Convert filter → Kanban — Filters-as-reusable-views vertical (feature 1).
+ * Defaults to FALSE: off everywhere until the vertical ships.
+ * Set VITE_ENABLE_FILTER_TO_KANBAN=true to expose the "Create Kanban from
+ * filter" action in the filter kebab and the filter_id-backed board source.
+ * When off, FilterKebabMenu and KanbanBoardPage render unchanged.
+ *
+ * Surface: /project-hub/:key filters + /project-hub/:key/boards/:boardId.
+ * Out of scope (this feature): ProductHub/IncidentHub/TaskHub.
+ */
+export const ENABLE_FILTER_TO_KANBAN = import.meta.env.VITE_ENABLE_FILTER_TO_KANBAN === 'true';
