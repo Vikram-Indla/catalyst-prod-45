@@ -215,7 +215,7 @@ export function HomeUnifiedFilterDrawer({
       </div>
 
       {/* Planner-specific filters */}
-      {mode === 'planner' && (
+      {mode === 'tasks' && (
         <>
           {/* Decision Required */}
           <div className="flex items-center justify-between py-2">

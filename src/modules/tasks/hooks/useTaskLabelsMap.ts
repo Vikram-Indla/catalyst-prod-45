@@ -17,10 +17,10 @@ export function useTaskLabelsMap(taskIds: string[]) {
       if (taskIds.length === 0) return {};
 
       const { data, error } = await supabase
-        .from('planner_task_labels')
+        .from('task_label_assignments_v2')
         .select(`
           task_id,
-          planner_labels (
+          task_labels_registry (
             id,
             name,
             color,
@@ -39,7 +39,7 @@ export function useTaskLabelsMap(taskIds: string[]) {
       
       for (const item of data || []) {
         const taskId = item.task_id;
-        const label = item.planner_labels as unknown as Label;
+        const label = item.task_labels_registry as unknown as Label;
         
         if (!labelsMap[taskId]) {
           labelsMap[taskId] = [];

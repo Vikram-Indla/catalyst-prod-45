@@ -22,10 +22,10 @@ const REFETCH_BG = false; // Stop polling when tab is hidden
 // ═══════════════════════════════════════════════════════════════════════════════
 export function useDashboardMetrics() {
   return useQuery({
-    queryKey: ['planner', 'dashboard', 'metrics'],
+    queryKey: ['tasks', 'dashboard', 'metrics'],
     queryFn: async (): Promise<DashboardMetrics> => {
       const { data, error } = await supabase
-        .from('planner_dashboard_metrics')
+        .from('tasks')
         .select('*')
         .single();
       
@@ -43,10 +43,10 @@ export function useDashboardMetrics() {
 // ═══════════════════════════════════════════════════════════════════════════════
 export function useStatusDistribution() {
   return useQuery({
-    queryKey: ['planner', 'dashboard', 'status-distribution'],
+    queryKey: ['tasks', 'dashboard', 'status-distribution'],
     queryFn: async (): Promise<StatusDistribution[]> => {
       const { data, error } = await supabase
-        .from('planner_dashboard_status_distribution')
+        .from('tasks')
         .select('*')
         .order('position');
       
@@ -64,10 +64,10 @@ export function useStatusDistribution() {
 // ═══════════════════════════════════════════════════════════════════════════════
 export function useWorkstreamHealth() {
   return useQuery({
-    queryKey: ['planner', 'dashboard', 'workstream-health'],
+    queryKey: ['tasks', 'dashboard', 'workstream-health'],
     queryFn: async (): Promise<WorkstreamHealth[]> => {
       const { data, error } = await supabase
-        .from('planner_dashboard_workstream_health')
+        .from('tasks')
         .select('*');
       
       if (error) throw error;
@@ -84,10 +84,10 @@ export function useWorkstreamHealth() {
 // ═══════════════════════════════════════════════════════════════════════════════
 export function useUpcomingDeadlines() {
   return useQuery({
-    queryKey: ['planner', 'dashboard', 'upcoming-deadlines'],
+    queryKey: ['tasks', 'dashboard', 'upcoming-deadlines'],
     queryFn: async (): Promise<UpcomingDeadline[]> => {
       const { data, error } = await supabase
-        .from('planner_dashboard_upcoming_deadlines')
+        .from('tasks')
         .select('*');
       
       if (error) throw error;
@@ -104,10 +104,10 @@ export function useUpcomingDeadlines() {
 // ═══════════════════════════════════════════════════════════════════════════════
 export function useTeamWorkload() {
   return useQuery({
-    queryKey: ['planner', 'dashboard', 'team-workload'],
+    queryKey: ['tasks', 'dashboard', 'team-workload'],
     queryFn: async (): Promise<TeamWorkload[]> => {
       const { data, error } = await supabase
-        .from('planner_dashboard_team_workload')
+        .from('tasks')
         .select('*');
       
       if (error) throw error;
@@ -124,7 +124,7 @@ export function useTeamWorkload() {
 // ═══════════════════════════════════════════════════════════════════════════════
 export function useUnassignedCount() {
   return useQuery({
-    queryKey: ['planner', 'dashboard', 'unassigned-count'],
+    queryKey: ['tasks', 'dashboard', 'unassigned-count'],
     queryFn: async (): Promise<number> => {
       const { data, error } = await supabase
         .rpc('get_unassigned_task_count');
@@ -153,7 +153,7 @@ export function useDashboardData() {
   
   const refetchAll = async () => {
     await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ['planner', 'dashboard'] }),
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'dashboard'] }),
     ]);
   };
   

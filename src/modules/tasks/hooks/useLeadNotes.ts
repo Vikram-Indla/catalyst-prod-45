@@ -35,10 +35,10 @@ export function useLeadNotes(taskId: string | null) {
       if (!taskId) return [];
 
       const { data, error } = await supabase
-        .from('planner_task_lead_notes')
+        .from('task_lead_notes')
         .select(`
           *,
-          author:profiles!planner_task_lead_notes_author_id_fkey(
+          author:profiles!task_lead_notes_author_id_fkey(
             id, full_name, email, avatar_url
           )
         `)
@@ -107,7 +107,7 @@ export function useAddLeadNote() {
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
-        .from('planner_task_lead_notes')
+        .from('task_lead_notes')
         .insert({
           task_id: taskId,
           content,
@@ -115,7 +115,7 @@ export function useAddLeadNote() {
         })
         .select(`
           *,
-          author:profiles!planner_task_lead_notes_author_id_fkey(
+          author:profiles!task_lead_notes_author_id_fkey(
             id, full_name, email, avatar_url
           )
         `)
@@ -148,12 +148,12 @@ export function useUpdateLeadNote() {
   return useMutation({
     mutationFn: async ({ noteId, content, taskId }: { noteId: string; content: string; taskId: string }) => {
       const { data, error } = await supabase
-        .from('planner_task_lead_notes')
+        .from('task_lead_notes')
         .update({ content, updated_at: new Date().toISOString() })
         .eq('id', noteId)
         .select(`
           *,
-          author:profiles!planner_task_lead_notes_author_id_fkey(
+          author:profiles!task_lead_notes_author_id_fkey(
             id, full_name, email, avatar_url
           )
         `)
@@ -181,7 +181,7 @@ export function useDeleteLeadNote() {
   return useMutation({
     mutationFn: async ({ noteId, taskId }: { noteId: string; taskId: string }) => {
       const { error } = await supabase
-        .from('planner_task_lead_notes')
+        .from('task_lead_notes')
         .delete()
         .eq('id', noteId);
 

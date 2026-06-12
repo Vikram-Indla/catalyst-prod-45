@@ -27,13 +27,13 @@ import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { MobileMenuDrawer } from '@/components/layout/MobileMenuDrawer';
 
 import { PlannerSearchBar } from './components/PlannerSearchBar';
-import { usePlannerTasks, useUpdatePlannerTask, useDeletePlannerTask, useBulkDeletePlannerTasks } from './hooks/usePlannerTasks';
-import { usePlannerUsers } from './hooks/usePlannerUsers';
-import { useCreatePlannerTask } from './hooks/useCreatePlannerTask';
-import { usePlannerSearch } from './hooks/usePlannerSearch';
-import { usePlannerKeyboard } from './hooks/usePlannerKeyboard';
+import { useTaskItems, useUpdatePlannerTask, useDeletePlannerTask, useBulkDeletePlannerTasks } from './hooks/useTaskItems';
+import { useTaskUsers } from './hooks/useTaskUsers';
+import { useCreateTask } from './hooks/useCreateTask';
+import { useTaskSearch } from './hooks/useTaskSearch';
+import { useTaskKeyboard } from './hooks/useTaskKeyboard';
 
-import { usePlannerRealtime } from './hooks/usePlannerRealtime';
+import { useTaskRealtime } from './hooks/useTaskRealtime';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { catalystToast } from '@/lib/catalystToast';
@@ -55,8 +55,31 @@ const VIEW_TITLES: Record<PlannerView, string> = {
   'settings': 'Settings',
 };
 
+// Map URL view params (the /tasks/* route scheme) to internal PlannerView keys.
+// The sidebar/routes use 'overview', 'board', 'list'; the component's view
+// switch uses 'dashboard', 'boards', 'task-list'. Without this mapping those
+// three nav items fall through to the default board and show the wrong title.
+const VIEW_ALIASES: Record<string, PlannerView> = {
+  overview: 'dashboard',
+  board: 'boards',
+  boards: 'boards',
+  list: 'task-list',
+  'task-list': 'task-list',
+};
+const normalizeView = (v?: string): PlannerView =>
+  ((v && (VIEW_ALIASES[v] ?? (v as PlannerView))) || 'boards');
+
+// Reverse: internal PlannerView key → URL slug used by the /tasks/* routes and
+// sidebar, so internal view switches keep the URL consistent with the nav.
+const VIEW_TO_SLUG: Partial<Record<PlannerView, string>> = {
+  dashboard: 'overview',
+  boards: 'board',
+  'task-list': 'list',
+};
+const viewToSlug = (v: PlannerView): string => VIEW_TO_SLUG[v] ?? v;
+
 // Check if view is an insight view
-const isInsightView = (view: PlannerView) => 
+const isInsightView = (view: PlannerView) =>
   view === 'weekly-report' || view === 'workstream-performance' || view === 'ai-insights';
 
 export function PlannerPage() {
@@ -65,7 +88,7 @@ export function PlannerPage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   
   // Core state
-  const [activeView, setActiveView] = useState<PlannerView>((view as PlannerView) || 'boards');
+  const [activeView, setActiveView] = useState<PlannerView>(normalizeView(view));
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
@@ -112,14 +135,15 @@ export function PlannerPage() {
 
   // Sync activeView with URL
   useEffect(() => {
-    if (view && view !== activeView) {
-      setActiveView(view as PlannerView);
+    const normalized = normalizeView(view);
+    if (normalized !== activeView) {
+      setActiveView(normalized);
     }
   }, [view]);
 
   // Data hooks
-  const { data: tasks = [], isLoading } = usePlannerTasks(selectedTeamId);
-  const { data: users = [] } = usePlannerUsers();
+  const { data: tasks = [], isLoading } = useTaskItems(selectedTeamId);
+  const { data: users = [] } = useTaskUsers();
   
   // Online users from real users data (add color for avatar)
   const avatarColors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#10b981', '#8b5cf6', 'var(--ds-text-warning, #f59e0b)', 'var(--ds-text-danger, #ef4444)', '#0d9488'];
@@ -133,11 +157,11 @@ export function PlannerPage() {
   const updateTask = useUpdatePlannerTask();
   const deleteTask = useDeletePlannerTask();
   const bulkDeleteTasks = useBulkDeletePlannerTasks();
-  const createTask = useCreatePlannerTask();
+  const createTask = useCreateTask();
   const createTeam = useCreateTeam();
   
   // Realtime subscription for live updates
-  usePlannerRealtime(selectedTeamId);
+  useTaskRealtime(selectedTeamId);
   
   // Search and filter
   const {
@@ -153,7 +177,7 @@ export function PlannerPage() {
     hasActiveFilters,
     totalCount,
     filteredCount,
-  } = usePlannerSearch(tasks);
+  } = useTaskSearch(tasks);
 
 
 
@@ -164,7 +188,7 @@ export function PlannerPage() {
   }, [selectedKanbanTask, filteredTasks]);
 
   // Keyboard shortcuts
-  usePlannerKeyboard({
+  useTaskKeyboard({
     onCreateTask: () => {
       setCreateDefaultStatus('backlog');
       setIsCreateModalOpen(true);
@@ -202,7 +226,7 @@ export function PlannerPage() {
   // Handlers
   const handleViewChange = useCallback((view: PlannerView) => {
     setActiveView(view);
-    navigate(`/tasks/${view}`);
+    navigate(`/tasks/${viewToSlug(view)}`);
   }, [navigate]);
 
   // Convert PlannerTask to KanbanTask for unified drawer
@@ -468,7 +492,7 @@ export function PlannerPage() {
                   className="text-[11px] font-semibold uppercase tracking-wider"
                   style={{ color: 'var(--text-3)' }}
                 >
-                  PLANNER
+                  TASKS
                 </span>
                 <span className="text-[14px]" style={{ color: 'var(--text-4)' }}>
                   /

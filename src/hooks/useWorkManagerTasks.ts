@@ -81,7 +81,7 @@ export function useWorkManagerTasks(teamId?: string | null) {
         {
           event: '*',
           schema: 'public',
-          table: 'work_manager_tasks',
+          table: 'tasks',
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ['work-manager-tasks'] });
@@ -98,7 +98,7 @@ export function useWorkManagerTasks(teamId?: string | null) {
     queryKey: ['work-manager-tasks', teamId],
     queryFn: async () => {
       let query = supabase
-        .from('work_manager_tasks')
+        .from('tasks')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -147,7 +147,7 @@ export function useCreateWorkManagerTask() {
       };
 
       const { data, error } = await supabase
-        .from('work_manager_tasks')
+        .from('tasks')
         .insert(insertData as any)
         .select()
         .single();
@@ -208,7 +208,7 @@ export function useUpdateWorkManagerTask() {
       }
 
       const { data, error } = await supabase
-        .from('work_manager_tasks')
+        .from('tasks')
         .update(updateData as any)
         .eq('id', id)
         .select()
@@ -233,7 +233,7 @@ export function useDeleteWorkManagerTask() {
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('work_manager_tasks')
+        .from('tasks')
         .delete()
         .eq('id', id);
 

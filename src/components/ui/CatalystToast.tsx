@@ -42,13 +42,5 @@ export const showCatalystToast = (
   flag[type](title, description, actions);
 };
 
-export const catalystToast = {
-  success: (message: string, options?: CatalystToastOptions) =>
-    showCatalystToast('success', message, options),
-  error: (message: string, options?: CatalystToastOptions) =>
-    showCatalystToast('error', message, options),
-  warning: (message: string, options?: CatalystToastOptions) =>
-    showCatalystToast('warning', message, options),
-  info: (message: string, options?: CatalystToastOptions) =>
-    showCatalystToast('info', message, options),
-};
+// catalystToast is exported from @/lib/catalystToast (canonical source).
+// Do NOT re-export or re-declare it here — duplicate declarations crash Vite.

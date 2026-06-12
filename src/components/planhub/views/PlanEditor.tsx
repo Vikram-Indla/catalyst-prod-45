@@ -56,7 +56,7 @@ export default function PlanEditor({ planId, onBack, features }: Props) {
     queryKey: ['planhub', 'tasks', planId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('planhub_tasks')
+        .from('tasks')
         .select('*')
         .eq('plan_id', planId)
         .order('position');
@@ -92,7 +92,7 @@ export default function PlanEditor({ planId, onBack, features }: Props) {
         : `${tasks?.filter(t => !t.parent_id).length + 1}`;
 
       const { data, error } = await supabase
-        .from('planhub_tasks')
+        .from('tasks')
         .insert({
           plan_id: planId,
           parent_id: parentId || null,
@@ -119,7 +119,7 @@ export default function PlanEditor({ planId, onBack, features }: Props) {
   const updateTask = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<TaskRow> }) => {
       const { error } = await supabase
-        .from('planhub_tasks')
+        .from('tasks')
         .update(updates)
         .eq('id', id);
       if (error) throw new Error(error.message);

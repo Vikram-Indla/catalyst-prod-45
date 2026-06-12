@@ -9,7 +9,7 @@ import {
   Clock, Plus, User, Calendar, RefreshCw, Trash2, Download, Users, BarChart3, Server, Bug
 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 import { AddTestCasesModal } from '@/components/testhub/AddTestCasesModal';
 import { CreateTestCycleModal } from '@/components/testhub/CreateTestCycleModal';
 import { AssignTesterModal } from '@/components/testhub/AssignTesterModal';

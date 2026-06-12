@@ -33,7 +33,7 @@ import {
   useDeleteWorkstream,
   useArchiveWorkstream,
   useSetWorkstreamLead,
-} from '../../hooks/usePlannerWorkstreams';
+} from '../../hooks/useTaskWorkstreams';
 import {
   AlertDialog,
   AlertDialogAction,

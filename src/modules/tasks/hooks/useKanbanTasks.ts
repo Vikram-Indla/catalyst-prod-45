@@ -1,6 +1,6 @@
 // ============================================================
 // KANBAN TASKS HOOK
-// CRUD for planner_tasks with filters and drag-drop support
+// CRUD for tasks with filters and drag-drop support
 // ============================================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -18,12 +18,12 @@ export function useKanbanTasks(filters?: KanbanTaskFilters) {
   return useQuery({
     queryKey: [...QUERY_KEY, filters],
     queryFn: async () => {
-      let query = typedQuery('planner_tasks')
+      let query = typedQuery('tasks')
         .select(`
           *,
-          status:planner_statuses(*),
-          workstream:planner_workstreams(id, name),
-          assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
+          status:task_statuses(*),
+          workstream:task_workstreams(id, name),
+          assignee:profiles!tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .is('deleted_at', null)
         .order('position', { ascending: true });
@@ -64,7 +64,7 @@ export function useKanbanTasks(filters?: KanbanTaskFilters) {
 }
 
 /**
- * Subscribe to realtime changes on planner_tasks
+ * Subscribe to realtime changes on tasks
  */
 export function useKanbanTasksRealtime() {
   const queryClient = useQueryClient();
@@ -77,7 +77,7 @@ export function useKanbanTasksRealtime() {
         {
           event: '*',
           schema: 'public',
-          table: 'planner_tasks',
+          table: 'tasks',
         },
         () => {
           queryClient.invalidateQueries({ queryKey: QUERY_KEY });
@@ -103,7 +103,7 @@ export function useCreateKanbanTask() {
       
       // Get max position in target column
       const { data: existing } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .select('position')
         .eq('status_id', task.status_id)
         .is('deleted_at', null)
@@ -115,7 +115,7 @@ export function useCreateKanbanTask() {
       // Generate a temporary key - the DB trigger will override with proper PLN-XXX
       const tempKey = `PLN-${Date.now()}`;
       
-      const { data, error } = await typedQuery('planner_tasks')
+      const { data, error } = await typedQuery('tasks')
         .insert([{
           key: tempKey,
           task_key: tempKey,
@@ -132,9 +132,9 @@ export function useCreateKanbanTask() {
         }])
         .select(`
           *,
-          status:planner_statuses(*),
-          workstream:planner_workstreams(id, name),
-          assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
+          status:task_statuses(*),
+          workstream:task_workstreams(id, name),
+          assignee:profiles!tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .single();
       
@@ -142,7 +142,7 @@ export function useCreateKanbanTask() {
       
       // Create a default checklist item with the task title
       const { error: checklistError } = await supabase
-        .from('planner_task_checklist_items')
+        .from('task_checklist_items_v2')
         .insert([{
           task_id: data.id,
           content: task.title!,
@@ -174,14 +174,14 @@ export function useUpdateKanbanTask() {
   
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<KanbanTask> & { id: string }) => {
-      const { data, error } = await typedQuery('planner_tasks')
+      const { data, error } = await typedQuery('tasks')
         .update(updates as any)
         .eq('id', id)
         .select(`
           *,
-          status:planner_statuses(*),
-          workstream:planner_workstreams(id, name),
-          assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
+          status:task_statuses(*),
+          workstream:task_workstreams(id, name),
+          assignee:profiles!tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .single();
       
@@ -222,7 +222,7 @@ export function useDeleteKanbanTask() {
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .rpc('soft_delete_planner_task', { p_task_id: id });
+        .rpc('soft_delete_task', { p_task_id: id });
       
       if (error) throw error;
     },
@@ -270,7 +270,7 @@ export function useMoveKanbanTask() {
     }) => {
       // Get current task
       const { data: task, error: fetchError } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .select('status_id, position')
         .eq('id', taskId)
         .single();
@@ -284,14 +284,14 @@ export function useMoveKanbanTask() {
       if (oldStatusId === newStatusId) {
         if (oldPosition < newPosition) {
           // Moving down
-          await supabase.rpc('reorder_planner_tasks_down', {
+          await supabase.rpc('reorder_tasks_down', {
             p_status_id: newStatusId,
             p_old_position: oldPosition,
             p_new_position: newPosition,
           });
         } else if (oldPosition > newPosition) {
           // Moving up
-          await supabase.rpc('reorder_planner_tasks_up', {
+          await supabase.rpc('reorder_tasks_up', {
             p_status_id: newStatusId,
             p_old_position: oldPosition,
             p_new_position: newPosition,
@@ -305,7 +305,7 @@ export function useMoveKanbanTask() {
       
       // Update the task
       const { error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({
           status_id: newStatusId,
           position: newPosition,

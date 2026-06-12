@@ -6,7 +6,7 @@ import {
   Wrench, Power
 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { CreateEnvironmentModal } from '@/components/testhub/environments/CreateEnvironmentModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';

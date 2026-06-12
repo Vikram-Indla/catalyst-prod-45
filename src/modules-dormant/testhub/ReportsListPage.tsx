@@ -10,7 +10,7 @@ import {
   BarChart3, TrendingUp, Shield, Calendar
 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { CreateReportModal } from '@/components/testhub/reports/CreateReportModal';

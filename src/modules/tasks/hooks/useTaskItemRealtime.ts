@@ -14,7 +14,7 @@ interface UsePlannerTaskRealtimeOptions {
   onDelete?: () => void;
 }
 
-export function usePlannerTaskRealtime({ taskId, onUpdate, onDelete }: UsePlannerTaskRealtimeOptions) {
+export function useTaskItemRealtime({ taskId, onUpdate, onDelete }: UsePlannerTaskRealtimeOptions) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export function usePlannerTaskRealtime({ taskId, onUpdate, onDelete }: UsePlanne
         {
           event: 'UPDATE',
           schema: 'public',
-          table: 'planner_tasks',
+          table: 'tasks',
           filter: `id=eq.${taskId}`,
         },
         (payload) => {
@@ -59,7 +59,7 @@ export function usePlannerTaskRealtime({ taskId, onUpdate, onDelete }: UsePlanne
         {
           event: 'DELETE',
           schema: 'public',
-          table: 'planner_tasks',
+          table: 'tasks',
           filter: `id=eq.${taskId}`,
         },
         () => {
@@ -86,4 +86,4 @@ export function usePlannerTaskRealtime({ taskId, onUpdate, onDelete }: UsePlanne
   }, [taskId, queryClient, onUpdate, onDelete]);
 }
 
-export default usePlannerTaskRealtime;
+export default useTaskItemRealtime;

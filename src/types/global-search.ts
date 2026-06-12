@@ -4,7 +4,7 @@ export type WorkItemType =
 
 export type SearchHub =
   | 'StrategyHub' | 'ProductHub' | 'ProjectHub' | 'ReleaseHub'
-  | 'TestHub' | 'IncidentHub' | 'TaskHub' | 'PlanHub';
+  | 'TestHub' | 'IncidentHub' | 'Tasks' | 'PlanHub';
 
 export interface SearchResult {
   id: string;

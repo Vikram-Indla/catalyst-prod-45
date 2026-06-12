@@ -21,7 +21,7 @@ import { Tooltip } from '@/components/ads';
 import { useBulkUpdateTasks } from '../../hooks/useBulkUpdateTasks';
 import { useBulkDeleteTasks } from '../../hooks/useBulkDeleteTasks';
 import { useKanbanStatuses } from '../../hooks/useKanbanStatuses';
-import { usePlannerUsers } from '../../hooks/usePlannerUsers';
+import { useTaskUsers } from '../../hooks/useTaskUsers';
 import { useWorkstreamLeadAccess } from '../../hooks/useWorkstreamLeadAccess';
 import { PRIORITY_CONFIG } from '../../types';
 import type { TaskPriority } from '../../types';
@@ -39,7 +39,7 @@ export function BulkActionBar({ selectedIds, selectedCount, onClearSelection }: 
   const { mutate: bulkUpdate, isPending: isUpdating } = useBulkUpdateTasks();
   const { mutate: bulkDelete, isPending: isDeleting } = useBulkDeleteTasks();
   const { data: statuses = [] } = useKanbanStatuses();
-  const { data: users = [] } = usePlannerUsers();
+  const { data: users = [] } = useTaskUsers();
   const { isLeadOfAny } = useWorkstreamLeadAccess();
 
   if (selectedCount === 0) return null;

@@ -241,10 +241,10 @@ export function useStarredDeliveryItems() {
         });
       }
 
-      // Fetch tasks (from work_manager_tasks) - project = team name
+      // Fetch tasks (from tasks) - project = team name
       if (taskIds.length > 0) {
         const { data: tasks } = await supabase
-          .from('work_manager_tasks')
+          .from('tasks')
           .select('id, key, title, status, priority, blocked, updated_at, assignee_id, team:teams(id, name)')
           .in('id', taskIds);
 

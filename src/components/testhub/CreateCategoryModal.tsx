@@ -5,7 +5,7 @@ import {
   FileText, Zap, Globe, Lock, Bell, Heart, Star,
 } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface CreateCategoryModalProps {
   isOpen: boolean;

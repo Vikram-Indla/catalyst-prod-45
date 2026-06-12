@@ -3,7 +3,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface Release {
   id: string;

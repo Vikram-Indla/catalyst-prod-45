@@ -4,7 +4,7 @@ import {
   CheckCircle2, File, Trash2
 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 import Papa from 'papaparse';
 
 interface ImportModalProps {

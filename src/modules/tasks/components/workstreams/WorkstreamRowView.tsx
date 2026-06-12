@@ -11,7 +11,7 @@ import {
   Edit2,
   Trash2,
 } from '@/lib/atlaskit-icons';
-import { Workstream } from '../../hooks/usePlannerWorkstreams';
+import { Workstream } from '../../hooks/useTaskWorkstreams';
 import { COLORS, TeamMember, formatDate } from './workstreams-constants';
 import { LeadPickerDropdown } from './WorkstreamLeadPickerDropdown';
 

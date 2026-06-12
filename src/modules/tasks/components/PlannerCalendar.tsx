@@ -40,9 +40,9 @@ import { useRescheduleTask } from '../hooks/useRescheduleTask';
 import { useCalendarTasksRealtime } from '../hooks/useCalendarTasksRealtime';
 import { PlannerViewHeader } from './shared/PlannerViewHeader';
 import { PlannerSearchBar } from './PlannerSearchBar';
-import { usePlannerUsers } from '../hooks/usePlannerUsers';
-import { usePlannerSearch } from '../hooks/usePlannerSearch';
-import { usePlannerStatuses } from '../hooks/usePlannerStatuses';
+import { useTaskUsers } from '../hooks/useTaskUsers';
+import { useTaskSearch } from '../hooks/useTaskSearch';
+import { useTaskStatuses } from '../hooks/useTaskStatuses';
 import { catalystToast } from '@/lib/catalystToast';
 import '../styles/planner-calendar.css';
 
@@ -74,8 +74,8 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
 
   // Data hooks
   const teams: { id: string; name: string; color?: string; memberCount?: number }[] = []; // Workstreams removed
-  const { data: users = [] } = usePlannerUsers();
-  const { data: statuses = [] } = usePlannerStatuses();
+  const { data: users = [] } = useTaskUsers();
+  const { data: statuses = [] } = useTaskStatuses();
 
   // Format statuses for context menu
   const statusesForMenu = useMemo(() => 
@@ -106,7 +106,7 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
     hasActiveFilters,
     totalCount,
     filteredCount,
-  } = usePlannerSearch(tasks);
+  } = useTaskSearch(tasks);
 
   const rescheduleTask = useRescheduleTask();
 

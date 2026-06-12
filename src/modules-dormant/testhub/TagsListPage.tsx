@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { Tags, Plus, Search, X, Edit2, Trash2, RefreshCw, Hash } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { CreateTagModal } from '@/components/testhub/tags/CreateTagModal';

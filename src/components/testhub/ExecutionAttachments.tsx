@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { Upload, Image, FileText, Trash2, Download, X, Paperclip, Eye, Loader2 } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface Attachment {
   id: string;

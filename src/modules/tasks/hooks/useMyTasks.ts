@@ -19,7 +19,7 @@ import type {
 
 // Query keys
 export const myTasksKeys = {
-  all: ['planner', 'my-tasks'] as const,
+  all: ['tasks', 'my-tasks'] as const,
   list: (filters: FilterConfig) => [...myTasksKeys.all, 'list', filters] as const,
   summary: () => [...myTasksKeys.all, 'summary'] as const,
   calendar: (month: string) => [...myTasksKeys.all, 'calendar', month] as const,
@@ -38,8 +38,8 @@ export function useMyTasks(filters: FilterConfig = {}) {
     queryFn: async (): Promise<MyTask[]> => {
       // The view already filters by auth.uid() for user involvement
       let query = supabase
-        .from('planner_my_tasks')
-        .select('id, task_key, title, status_slug, priority, due_date, sort_order, time_section, workstream_slug, involvement_type, assignee_id, workstream_id, status_id, created_at')
+        .from('tasks')
+        .select('id, key, title, status_slug, priority, due_date, sort_order, time_section, workstream_slug, involvement_type, assignee_id, workstream_id, status_id, created_at')
         .order('due_date', { ascending: true, nullsFirst: false })
         .order('sort_order', { ascending: true });
 
@@ -57,7 +57,7 @@ export function useMyTasks(filters: FilterConfig = {}) {
         query = query.in('priority', filters.priorities);
       }
       if (filters.searchQuery) {
-        query = query.or(`title.ilike.%${filters.searchQuery}%,task_key.ilike.%${filters.searchQuery}%`);
+        query = query.or(`title.ilike.%${filters.searchQuery}%,key.ilike.%${filters.searchQuery}%`);
       }
       if (filters.involvement && filters.involvement !== 'all') {
         query = query.eq('involvement_type', filters.involvement);
@@ -82,13 +82,13 @@ export function useMyTasksSummary() {
     queryFn: async (): Promise<TaskSummary> => {
       // The view already filters by auth.uid()
       const { data, error } = await supabase
-        .from('planner_my_tasks_summary')
+        .from('tasks_summary')
         .select('*')
         .maybeSingle();
 
       if (error && error.code !== 'PGRST116') throw error;
       return (data || {
-        user_id: user?.id || null,
+        actor_id: user?.id || null,
         total_tasks: 0,
         overdue_count: 0,
         today_count: 0,
@@ -120,7 +120,7 @@ export function useMyTasksCalendar(month: string) {
         .toISOString().split('T')[0];
 
       const { data, error } = await supabase
-        .from('planner_calendar_tasks')
+        .from('task_calendar_tasks')
         .select('*')
         .eq('assignee_id', user?.id)
         .gte('due_date', startDate)
@@ -143,12 +143,12 @@ export function useMyTasksActivity(limit = 10) {
     queryKey: myTasksKeys.activity(),
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('planner_activity_log')
+        .from('task_activity')
         .select(`
           *,
-          planner_tasks!inner(task_key, title, assignee_id)
+          tasks!inner(key, title, assignee_id)
         `)
-        .eq('planner_tasks.assignee_id', user?.id)
+        .eq('tasks.assignee_id', user?.id)
         .order('created_at', { ascending: false })
         .limit(limit);
 
@@ -170,24 +170,23 @@ export function useCreateMyTask() {
     mutationFn: async (payload: CreateTaskPayload) => {
       // Generate task key
       const { data: lastTask, error: lastTaskError } = await supabase
-        .from('planner_tasks')
-        .select('task_key')
+        .from('tasks')
+        .select('key')
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
       if (lastTaskError && lastTaskError.code !== 'PGRST116') throw lastTaskError;
 
-      const lastNum = lastTask?.task_key 
-        ? parseInt(lastTask.task_key.replace('PLN-', '')) 
+      const lastNum = lastTask?.key
+        ? parseInt(lastTask.key.replace(/^[A-Z]+-/, '')) || 0
         : 0;
-      const newKey = `PLN-${String(lastNum + 1).padStart(3, '0')}`;
+      const newKey = `TSK-${String(lastNum + 1).padStart(3, '0')}`;
 
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .insert({
           ...payload,
           key: newKey,
-          task_key: newKey,
           assignee_id: user?.id,
           created_by: user?.id,
         })
@@ -197,10 +196,10 @@ export function useCreateMyTask() {
       if (error) throw error;
 
       // Log activity
-      await supabase.from('planner_activity_log').insert({
+      await supabase.from('task_activity').insert({
         task_id: data.id,
-        user_id: user?.id,
-        action: 'created',
+        actor_id: user?.id,
+        action_type: 'created',
         new_value: { title: payload.title },
       });
 
@@ -223,7 +222,7 @@ export function useUpdateMyTask() {
     mutationFn: async ({ id, ...updates }: UpdateTaskPayload) => {
       // Get old values for activity log
       const { data: oldTask, error: oldTaskError } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .select('*')
         .eq('id', id)
         .single();
@@ -234,7 +233,7 @@ export function useUpdateMyTask() {
       // If status changed to done, set completed_at
       if (updates.status_id) {
         const { data: status, error: statusError } = await supabase
-          .from('planner_statuses')
+          .from('task_statuses')
           .select('is_done')
           .eq('id', updates.status_id)
           .single();
@@ -248,7 +247,7 @@ export function useUpdateMyTask() {
       }
 
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update(updateData)
         .eq('id', id)
         .select()
@@ -263,9 +262,9 @@ export function useUpdateMyTask() {
       if (changedFields.includes('priority')) action = 'priority_changed';
       if (updateData.completed_at) action = 'completed';
 
-      await supabase.from('planner_activity_log').insert({
+      await supabase.from('task_activity').insert({
         task_id: id,
-        user_id: user?.id,
+        actor_id: user?.id,
         action,
         old_value: oldTask,
         new_value: updates,
@@ -293,7 +292,7 @@ export function useBulkUpdateMyTasks() {
       // Handle completion status
       if (updates.status_id) {
         const { data: status, error: statusError } = await supabase
-          .from('planner_statuses')
+          .from('task_statuses')
           .select('is_done')
           .eq('id', updates.status_id)
           .single();
@@ -307,7 +306,7 @@ export function useBulkUpdateMyTasks() {
       }
 
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update(updateData)
         .in('id', task_ids)
         .select();
@@ -315,11 +314,11 @@ export function useBulkUpdateMyTasks() {
       if (error) throw error;
 
       // Log bulk activity
-      await supabase.from('planner_activity_log').insert(
+      await supabase.from('task_activity').insert(
         task_ids.map(task_id => ({
           task_id,
-          user_id: user?.id,
-          action: 'updated',
+          actor_id: user?.id,
+          action_type: 'updated',
           new_value: { bulk_update: true, ...updates },
         }))
       );
@@ -341,7 +340,7 @@ export function useDeleteMyTask() {
   return useMutation({
     mutationFn: async (taskId: string) => {
       const { error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .delete()
         .eq('id', taskId);
 
@@ -364,14 +363,14 @@ export function useCompleteMyTask() {
     mutationFn: async (taskId: string) => {
       // Get done status
       const { data: doneStatus, error: doneStatusError } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('id')
         .eq('is_done', true)
         .single();
       if (doneStatusError) throw doneStatusError;
 
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({
           status_id: doneStatus?.id,
           completed_at: new Date().toISOString(),
@@ -384,10 +383,10 @@ export function useCompleteMyTask() {
       if (error) throw error;
 
       // Log completion
-      await supabase.from('planner_activity_log').insert({
+      await supabase.from('task_activity').insert({
         task_id: taskId,
-        user_id: user?.id,
-        action: 'completed',
+        actor_id: user?.id,
+        action_type: 'completed',
       });
 
       return data;
@@ -423,7 +422,7 @@ export function useReorderMyTask() {
       // Batch update
       for (const update of updates) {
         await supabase
-          .from('planner_tasks')
+          .from('tasks')
           .update({ sort_order: update.sort_order })
           .eq('id', update.id);
       }
@@ -439,10 +438,10 @@ export function useReorderMyTask() {
  */
 export function useMyWorkstreams() {
   return useQuery({
-    queryKey: ['planner', 'workstreams', 'filter'],
+    queryKey: ['tasks', 'workstreams', 'filter'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('planner_workstreams')
+        .from('task_workstreams')
         .select('id, name, color')
         .eq('is_active', true)
         .order('name');

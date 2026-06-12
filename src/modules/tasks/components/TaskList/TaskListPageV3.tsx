@@ -34,11 +34,11 @@ import {
   DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
 import { useTaskList, useTaskListStats } from '../../hooks/useTaskList';
-import { usePlannerUsers } from '../../hooks/usePlannerUsers';
-import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
+import { useTaskUsers } from '../../hooks/useTaskUsers';
+import { useTaskWorkstreams } from '../../hooks/useTaskWorkstreams';
 import { useKanbanStatuses } from '../../hooks/useKanbanStatuses';
-import { usePlannerRealtime } from '../../hooks/usePlannerRealtime';
-import { useUpdatePlannerTask } from '../../hooks/usePlannerTasks';
+import { useTaskRealtime } from '../../hooks/useTaskRealtime';
+import { useUpdatePlannerTask } from '../../hooks/useTaskItems';
 import { useTaskLabelsMap } from '../../hooks/useTaskLabelsMap';
 import { useTaskLabelsRealtime } from '../../hooks/useTaskLabelsRealtime';
 import { TaskListRowV3 } from './TaskListRowV3';
@@ -161,12 +161,12 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
   // Data hooks
   const { data: tasks = [], isLoading, refetch } = useTaskList(filters, sorting);
   const { data: stats } = useTaskListStats(filters.workstream, filters.assignee);
-  const { data: workstreamsRaw = [] } = usePlannerWorkstreams(false);
+  const { data: workstreamsRaw = [] } = useTaskWorkstreams(false);
   const workstreams = useMemo(
     () => workstreamsRaw.map(ws => ({ id: ws.id, name: ws.name, slug: ws.slug, color: ws.color })),
     [workstreamsRaw]
   );
-  const { data: users = [] } = usePlannerUsers();
+  const { data: users = [] } = useTaskUsers();
   const { data: statuses = [] } = useKanbanStatuses();
   const updateTask = useUpdatePlannerTask();
 
@@ -189,7 +189,7 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
   }, [tasks, labelsMap, selectedLabelFilters]);
 
   // Real-time subscriptions
-  usePlannerRealtime(null);
+  useTaskRealtime(null);
   useTaskLabelsRealtime();
 
   // Sync URL params to filter state

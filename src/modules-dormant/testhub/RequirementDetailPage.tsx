@@ -12,7 +12,7 @@ import {
   ExternalLink, RefreshCw, FileText, ChevronRight, Bug
 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 import { LinkTestCaseModal } from '@/components/testhub/requirements/LinkTestCaseModal';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,

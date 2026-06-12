@@ -44,12 +44,12 @@ export function useTaskDependencies(taskId: string | null) {
       if (!data || data.length === 0) return [];
       
       const linkedTaskIds = data.map(d => d.depends_on_task_id);
-      const { data: linkedTasks } = await typedQuery('planner_tasks')
+      const { data: linkedTasks } = await typedQuery('tasks')
         .select(`
           id,
           key,
           title,
-          status:planner_statuses(slug, name, color)
+          status:task_statuses(slug, name, color)
         `)
         .in('id', linkedTaskIds);
       
@@ -397,7 +397,7 @@ export function useTaskActivity(taskId: string | null) {
       
       // Query from planner_activity_log (the actual activity table)
       const { data, error } = await supabase
-        .from('planner_activity_log')
+        .from('task_activity')
         .select('*')
         .eq('task_id', taskId)
         .order('created_at', { ascending: false })

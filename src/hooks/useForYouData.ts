@@ -56,7 +56,7 @@ export interface WorkItemAssignee {
   avatarUrl?: string;
 }
 
-export type HubType = 'ProductHub' | 'ProjectHub' | 'ReleaseHub' | 'TestHub' | 'IncidentHub' | 'TaskHub' | 'StrategyHub' | 'PlanHub';
+export type HubType = 'ProductHub' | 'ProjectHub' | 'ReleaseHub' | 'TestHub' | 'IncidentHub' | 'Tasks' | 'StrategyHub' | 'PlanHub';
 
 export interface WorkItem {
   id: string;
@@ -216,14 +216,14 @@ function getInitials(name: string): string {
 function inferMode(projectKey: string, issueType: string): WorkMode {
   const type = issueType?.toLowerCase() || '';
   if (type.includes('incident') || type.includes('production')) return 'OPS';
-  if (type === 'task' || type === 'planner_task') return 'TSK';
+  if (type === 'task' || type === 'task') return 'TSK';
   return 'DEL';
 }
 
 function inferHub(issueType: string, projectKey: string): HubType {
   const type = (issueType || '').toLowerCase();
   if (type.includes('incident') || type.includes('production')) return 'IncidentHub';
-  if (type === 'planner_task' || projectKey === 'TSK') return 'TaskHub';
+  if (type === 'task' || projectKey === 'TSK') return 'Tasks';
   if (type === 'test' || type === 'test case' || type === 'test execution') return 'TestHub';
   if (type === 'epic') return 'ProjectHub';
   if (type === 'story' || type === 'sub-task' || type === 'subtask') return 'ProjectHub';
@@ -234,7 +234,7 @@ function inferHub(issueType: string, projectKey: string): HubType {
 
 const HUB_LABEL_MAP: Record<HubType, string> = {
   ProductHub: 'Product', ProjectHub: 'Project', ReleaseHub: 'Release',
-  TestHub: 'Test', IncidentHub: 'Incident', TaskHub: 'Task',
+  TestHub: 'Test', IncidentHub: 'Incident', Tasks: 'Task',
   StrategyHub: 'Strategy', PlanHub: 'Plan',
 };
 
@@ -255,7 +255,7 @@ function mapPlannerTaskToIssueRow(row: any) {
     issue_key: row.task_key,
     project_key: row.task_key?.split('-')[0] || 'TSK',
     project_name: null,
-    issue_type: 'planner_task',
+    issue_type: 'task',
     summary: row.title || '',
     status: row.status_name || 'Backlog',
     status_category: null,
@@ -529,7 +529,7 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
     supabase.from('ph_user_mapping').select('jira_account_id').eq('catalyst_profile_id', userId).eq('is_mapped', true),
     supabase.from('ph_jira_projects').select('project_key, name'),
     supabase.from('projects').select('id, key, name, avatar_url, color'),
-    supabase.from('planner_tasks')
+    supabase.from('tasks')
       .select('task_key, title, priority, assignee_id, updated_at, created_at, status_id, workstream_id, reporter_id')
       .eq('assignee_id', userId)
       .is('deleted_at', null)
@@ -628,10 +628,10 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
       ? supabase.from('ph_projects').select('key, icon, color').in('key', catalystProjectKeys)
       : Promise.resolve({ data: [] as any[] }),
     statusIds.length > 0
-      ? supabase.from('planner_statuses').select('id, name').in('id', statusIds)
+      ? supabase.from('task_statuses').select('id, name').in('id', statusIds)
       : Promise.resolve({ data: [] as any[] }),
     wsIds.length > 0
-      ? supabase.from('planner_workstreams').select('id, name').in('id', wsIds)
+      ? supabase.from('task_workstreams').select('id, name').in('id', wsIds)
       : Promise.resolve({ data: [] as any[] }),
     jiraAccountIds.length > 0
       ? supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).is('archived_at', null).order('jira_updated_at', { ascending: false }).limit(200)
@@ -765,7 +765,7 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
       : Promise.resolve({ data: [] as any[] }),
     // Viewed planner tasks
     viewedPlannerKeys.length > 0
-      ? supabase.from('planner_tasks')
+      ? supabase.from('tasks')
           .select('task_key, title, priority, assignee_id, updated_at, created_at, status_id, workstream_id, reporter_id')
           .in('task_key', viewedPlannerKeys)
           .is('deleted_at', null)
@@ -776,7 +776,7 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
       : Promise.resolve({ data: [] as any[] }),
     // Starred planner tasks
     starItemIds.length > 0
-      ? supabase.from('planner_tasks')
+      ? supabase.from('tasks')
           .select('task_key, title, priority, assignee_id, updated_at, created_at, status_id')
           .in('task_key', starItemIds)
           .is('deleted_at', null)
@@ -1025,7 +1025,7 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
       const stIds = [...new Set(starredPlannerTasksRaw.map((r: any) => r.status_id).filter(Boolean))];
       const missingStIds = stIds.filter(id => !statusMap.has(id));
       if (missingStIds.length > 0) {
-        const { data: sts } = await supabase.from('planner_statuses').select('id, name').in('id', missingStIds);
+        const { data: sts } = await supabase.from('task_statuses').select('id, name').in('id', missingStIds);
         (sts || []).forEach((s: any) => statusMap.set(s.id, s.name));
       }
       starredPlannerMapped = starredPlannerTasksRaw.map((row: any) =>
@@ -1227,7 +1227,7 @@ export function useForYouData(authLoading = false) {
           ? supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', phKeys).is('archived_at', null)
           : Promise.resolve({ data: [] as any[] }),
         plannerKeys.length > 0
-          ? supabase.from('planner_tasks')
+          ? supabase.from('tasks')
               .select('task_key, title, priority, assignee_id, updated_at, created_at, status_id, workstream_id, reporter_id')
               .in('task_key', plannerKeys)
               .is('deleted_at', null)
@@ -1276,10 +1276,10 @@ export function useForYouData(authLoading = false) {
         // Detect item_type from the source row instead of hardcoding 'ph_issue'.
         // Without this, planner_task stars get stored as ph_issue, polluting
         // analytics and downstream filtering. The row already carries
-        // `issue_type` from the mapper (planner tasks use 'planner_task').
+        // `issue_type` from the mapper (planner tasks use 'task').
         const sourceRow = [...(rawData?.assignedItems ?? []), ...(rawData?.workedOnItems ?? [])]
           .find((r: any) => r.issue_key === itemId);
-        const itemType = sourceRow?.issue_type === 'planner_task' ? 'task' : 'ph_issue';
+        const itemType = sourceRow?.issue_type === 'task' ? 'task' : 'ph_issue';
         const { error } = await supabase.from('user_starred_items')
           .insert({ user_id: authUser.id, item_id: itemId, item_type: itemType });
         if (error) throw error;

@@ -36,7 +36,7 @@ async function fetchUserRolesMap(): Promise<Map<string, string>> {
   return userRoleMap;
 }
 
-export function usePlannerUsers() {
+export function useTaskUsers() {
   return useQuery({
     queryKey: ['planner-users'],
     queryFn: async () => {

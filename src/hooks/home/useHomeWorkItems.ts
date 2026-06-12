@@ -13,7 +13,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 // ============================================
 // TYPES
 // ============================================
-export type HomeDomain = 'all' | 'operations' | 'delivery' | 'planner';
+export type HomeDomain = 'all' | 'operations' | 'delivery' | 'tasks';
 export type HomeScope = 'worked-on' | 'assigned' | 'starred';
 export type HomeSort = 'updated' | 'priority' | 'status' | 'planned-date' | 'key' | 'level' | 'assignee';
 
@@ -297,7 +297,7 @@ async function fetchStarredItems(params: {
   // Fetch tasks
   if (taskIds.length > 0) {
     const { data: tasks } = await supabase
-      .from('work_manager_tasks')
+      .from('tasks')
       .select('id, key, title, status, priority, blocked, updated_at, created_at, assignee_id, planned_date, ready_for_sprint, decision_required, review_status')
       .in('id', taskIds);
 
@@ -318,7 +318,7 @@ async function fetchStarredItems(params: {
         level: 'Planner' as HomeLevel,
         status: t.status || 'Open',
         type: 'task' as WorkItemType,
-        domain: 'planner' as HomeDomain,
+        domain: 'tasks' as HomeDomain,
         assignee: t.assignee_id ? profileMap.get(t.assignee_id) || null : null,
         activityDate: new Date(starredItem?.starred_at || t.updated_at || t.created_at),
         activityType: 'Updated' as const,
@@ -749,7 +749,7 @@ async function fetchPlanner(params: {
   const from = (page - 1) * pageSize;
 
   let query = supabase
-    .from('work_manager_tasks')
+    .from('tasks')
     .select(`
       id, key, title, status, priority, assignee_id, team_id, due_date, planned_date,
       ready_for_sprint, decision_required, review_status, blocked, created_at, updated_at
@@ -806,7 +806,7 @@ async function fetchPlanner(params: {
     level: 'Planner' as HomeLevel, // Tasks are at Planner level
     status: t.status,
     type: 'task' as WorkItemType,
-    domain: 'planner' as HomeDomain,
+    domain: 'tasks' as HomeDomain,
     assignee: t.assignee_id ? taskProfileMap.get(t.assignee_id) || null : null,
     activityDate: new Date(t.updated_at || t.created_at),
     activityType: 'Updated' as const,
@@ -836,15 +836,15 @@ async function fetchPlanner(params: {
   const [assignedToMeRes, thisWeekRes, nextWeekRes] = await Promise.all([
     // Assigned to me - tasks assigned to current user
     userId 
-      ? supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
+      ? supabase.from('tasks').select('id', { count: 'exact', head: true })
           .eq('assignee_id', userId)
       : Promise.resolve({ count: 0 }),
     // This week - tasks with due_date within this week
-    supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
+    supabase.from('tasks').select('id', { count: 'exact', head: true })
       .gte('due_date', startOfToday.toISOString().split('T')[0])
       .lte('due_date', endOfThisWeek.toISOString().split('T')[0]),
     // Next week - tasks with due_date in next week
-    supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
+    supabase.from('tasks').select('id', { count: 'exact', head: true })
       .gte('due_date', startOfNextWeek.toISOString().split('T')[0])
       .lte('due_date', endOfNextWeek.toISOString().split('T')[0]),
   ]);
@@ -1011,7 +1011,7 @@ export function useHomeWorkItems(params: HomeWorkItemsParams) {
               assignedCount = delRes.counts.assigned;
               break;
             }
-            case 'planner': {
+            case 'tasks': {
               const planRes = await fetchPlanner({ ...fetchParams, scope: 'worked-on' });
               workedOnCount = planRes.counts.workedOn;
               assignedCount = planRes.counts.assigned;
@@ -1048,7 +1048,7 @@ export function useHomeWorkItems(params: HomeWorkItemsParams) {
         case 'all': return fetchAll(fetchParams);
         case 'operations': return fetchOperations(fetchParams);
         case 'delivery': return fetchDelivery(fetchParams);
-        case 'planner': return fetchPlanner(fetchParams);
+        case 'tasks': return fetchPlanner(fetchParams);
         default: return { items: [], counts: { workedOn: 0, assigned: 0, starred: 0, total: 0 }, pagination: { page, pageSize, total: 0, hasMore: false } };
       }
     },

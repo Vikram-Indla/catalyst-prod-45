@@ -5,7 +5,7 @@ import {
   FileCheck, Layers, Tags, Database, Trash2
 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { ImportModal } from '@/components/testhub/import-export/ImportModal';

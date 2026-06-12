@@ -38,7 +38,7 @@ import {
 } from '@/lib/atlaskit-icons';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 import { FailureReasonModal } from '@/components/testhub/FailureReasonModal';
 import { KeyboardShortcutsGuide } from '@/components/testhub/execution/KeyboardShortcutsGuide';
 import { ExecutionSidebar } from '@/components/testhub/execution/ExecutionSidebar';

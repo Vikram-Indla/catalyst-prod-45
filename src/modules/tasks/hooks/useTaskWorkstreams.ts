@@ -54,13 +54,13 @@ export interface Workstream {
   };
 }
 
-export function usePlannerWorkstreams(includeArchived = false) {
+export function useTaskWorkstreams(includeArchived = false) {
   return useQuery({
     queryKey: ['planner-workstreams', includeArchived],
     queryFn: async (): Promise<Workstream[]> => {
       // Fetch workstreams
       let query = supabase
-        .from('planner_workstreams')
+        .from('task_workstreams')
         .select('*')
         .order('name');
 
@@ -104,15 +104,15 @@ export function usePlannerWorkstreams(includeArchived = false) {
         profiles: m.user_id ? profilesMap.get(m.user_id) || null : null,
       }));
 
-      // Fetch task counts from planner_tasks
+      // Fetch task counts from tasks
       const { data: tasks, error: tasksError } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .select('id, workstream_id, due_date, status_id');
       if (tasksError) throw tasksError;
 
       // Get status for done check
       const { data: statuses, error: statusesError } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('id, slug')
         .eq('slug', 'done');
       if (statusesError) throw statusesError;
@@ -120,7 +120,7 @@ export function usePlannerWorkstreams(includeArchived = false) {
       const doneStatusId = statuses?.[0]?.id;
 
       // Lead resolution
-      // - planner_workstreams.lead_id FK -> resource_inventory.id
+      // - task_workstreams.lead_id FK -> resource_inventory.id
       // - workstream_members.user_id FK -> profiles.id (profile/auth id)
       const leadResourceIds = workstreams.map(ws => ws.lead_id).filter((id): id is string => isValidUUID(id));
       const leadProfileIdsFromMembers = (members || [])
@@ -257,7 +257,7 @@ export function useArchivedWorkstreamsCount() {
     queryKey: ['planner-workstreams-archived-count'],
     queryFn: async (): Promise<number> => {
       const { count, error } = await supabase
-        .from('planner_workstreams')
+        .from('task_workstreams')
         .select('*', { count: 'exact', head: true })
         .eq('is_archived', true);
 
@@ -284,7 +284,7 @@ export function useCreateWorkstream() {
       name: string;
       description?: string;
       color: string;
-      // Must be resource_inventory.id (FK planner_workstreams.lead_id)
+      // Must be resource_inventory.id (FK task_workstreams.lead_id)
       leadId?: string | null;
       keyPrefix?: string; // 3-5 letter code for task keys
     }) => {
@@ -294,7 +294,7 @@ export function useCreateWorkstream() {
         || data.name.replace(/[^A-Za-z0-9]/g, '').slice(0, 3).toUpperCase();
       
       const { data: result, error } = await supabase
-        .from('planner_workstreams')
+        .from('task_workstreams')
         .insert({
           name: data.name,
           slug,
@@ -336,7 +336,7 @@ export function useUpdateWorkstream() {
       if (updates.key_prefix !== undefined) updateData.key_prefix = updates.key_prefix.toUpperCase();
       
       const { error } = await supabase
-        .from('planner_workstreams')
+        .from('task_workstreams')
         .update(updateData)
         .eq('id', id);
 
@@ -355,7 +355,7 @@ export function useDeleteWorkstream() {
     mutationFn: async (id: string) => {
       // Check if workstream has linked tasks
       const { count, error: countError } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .select('id', { count: 'exact', head: true })
         .eq('workstream_id', id);
       
@@ -366,7 +366,7 @@ export function useDeleteWorkstream() {
       }
       
       const { error } = await supabase
-        .from('planner_workstreams')
+        .from('task_workstreams')
         .delete()
         .eq('id', id);
 
@@ -388,7 +388,7 @@ export function useArchiveWorkstream() {
   return useMutation({
     mutationFn: async ({ id, archive }: { id: string; archive: boolean }) => {
       const { error } = await supabase
-        .from('planner_workstreams')
+        .from('task_workstreams')
         .update({ is_archived: archive })
         .eq('id', id);
 
@@ -451,7 +451,7 @@ export function useAddWorkstreamMember() {
 }
 
 // Assign/clear workstream lead while keeping workstream_members (profile_id) in sync.
-// - leadResourceId: resource_inventory.id (FK planner_workstreams.lead_id)
+// - leadResourceId: resource_inventory.id (FK task_workstreams.lead_id)
 // - workstream_members.user_id: profiles.id (resource_inventory.profile_id)
 // NOTE: Leads can be assigned even if they don't have a linked profile - the
 // profile linkage to workstream_members is optional (only done if profile exists)
@@ -476,7 +476,7 @@ export function useSetWorkstreamLead() {
 
       if (!leadResourceId) {
         const { error: clearError } = await supabase
-          .from('planner_workstreams')
+          .from('task_workstreams')
           .update({ lead_id: null })
           .eq('id', workstreamId);
         if (clearError) throw new Error(clearError.message);
@@ -486,7 +486,7 @@ export function useSetWorkstreamLead() {
       // First, update the workstream lead_id (resource_inventory.id) 
       // This is the primary assignment and always works
       const { error: leadError } = await supabase
-        .from('planner_workstreams')
+        .from('task_workstreams')
         .update({ lead_id: leadResourceId })
         .eq('id', workstreamId);
       if (leadError) throw new Error(leadError.message);
@@ -547,9 +547,9 @@ export function useRemoveWorkstreamMember() {
 
       if (deleteError) throw new Error(deleteError.message);
 
-      // If the removed member (profile id) is the current lead, clear planner_workstreams.lead_id (resource id)
+      // If the removed member (profile id) is the current lead, clear task_workstreams.lead_id (resource id)
       const { data: ws, error: wsError } = await supabase
-        .from('planner_workstreams')
+        .from('task_workstreams')
         .select('lead_id')
         .eq('id', workstreamId)
         .single();
@@ -568,7 +568,7 @@ export function useRemoveWorkstreamMember() {
       const leadProfileId = (leadResource as any)?.profile_id as string | null;
       if (leadProfileId === userId) {
         const { error: clearLeadError } = await supabase
-          .from('planner_workstreams')
+          .from('task_workstreams')
           .update({ lead_id: null })
           .eq('id', workstreamId);
         if (clearLeadError) throw new Error(clearLeadError.message);

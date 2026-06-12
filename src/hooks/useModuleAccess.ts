@@ -129,7 +129,7 @@ export function useUserModulePermissions() {
 // Core navigation modules that should NOT be blocked by org_modules
 // These are controlled purely by role-based access in admin_role_module_permissions
 const CORE_NAV_MODULES = new Set([
-  'home', 'enterprise', 'product', 'releases', 'operations', 'planner',
+  'home', 'enterprise', 'product', 'releases', 'operations', 'tasks',
   'settings', 'create', 'notifications', 'global_search'
 ]);
 

@@ -332,8 +332,8 @@ export type ExtendedNotificationType =
   | 'task_deleted' | 'task_restored' | 'task_bulk_updated'
   | 'task_commented' | 'task_label_changed' | 'task_view_changed'
   // New PlanHub types
-  | 'planner_task_created' | 'planner_task_assigned' | 'planner_task_status_changed'
-  | 'planner_task_dates_changed' | 'planner_task_workstream_changed' | 'planner_task_deleted'
+  | 'task_created' | 'task_assigned' | 'task_status_changed'
+  | 'task_dates_changed' | 'task_workstream_changed' | 'task_deleted'
   | 'workstream_created' | 'workstream_updated' | 'workstream_deleted'
   | 'allocation_created' | 'allocation_updated' | 'allocation_deleted'
   // New WikiHub types
@@ -361,6 +361,6 @@ export type ExtendedEntityType =
   | 'change' | 'signoff' | 'freeze_window' | 'production_event'
   | 'test_plan' | 'test_cycle' | 'test_execution' | 'test_set'
   | 'test_folder' | 'defect' | 'sla' | 'view'
-  | 'planner_task' | 'workstream' | 'allocation'
+  | 'task' | 'workstream' | 'allocation'
   | 'wiki_category' | 'team' | 'discussion'
   | 'ai_insight' | 'budget';

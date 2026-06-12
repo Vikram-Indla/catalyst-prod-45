@@ -35,7 +35,7 @@ export const descriptionApi = {
 
 function getTableName(workItemType: WorkItemType): string {
   const tableMap: Record<WorkItemType, string> = {
-    task: 'planner_tasks',
+    task: 'tasks',
     feature: 'features',
     incident: 'incidents',
     epic: 'epics',

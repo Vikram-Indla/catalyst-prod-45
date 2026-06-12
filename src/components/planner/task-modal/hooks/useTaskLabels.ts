@@ -18,10 +18,10 @@ export const useTaskLabels = (taskId: string) => {
     
     try {
       const { data, error } = await supabase
-        .from('planner_task_labels')
+        .from('task_label_assignments_v2')
         .select(`
           label_id,
-          planner_labels (
+          task_labels_registry (
             id,
             name,
             color,
@@ -33,7 +33,7 @@ export const useTaskLabels = (taskId: string) => {
       if (error) throw error;
 
       const labels = data
-        ?.map(item => item.planner_labels as unknown as Label)
+        ?.map(item => item.task_labels_registry as unknown as Label)
         .filter(Boolean) || [];
       
       setTaskLabels(labels);
@@ -50,7 +50,7 @@ export const useTaskLabels = (taskId: string) => {
       const { data: { user } } = await supabase.auth.getUser();
 
       const { error } = await supabase
-        .from('planner_task_labels')
+        .from('task_label_assignments_v2')
         .insert({
           task_id: taskId,
           label_id: labelId,
@@ -67,7 +67,7 @@ export const useTaskLabels = (taskId: string) => {
 
       // Fetch the label details to add to state
       const { data: labelData } = await supabase
-        .from('planner_labels')
+        .from('task_labels_registry')
         .select('*')
         .eq('id', labelId)
         .single();
@@ -88,7 +88,7 @@ export const useTaskLabels = (taskId: string) => {
   const removeLabel = async (labelId: string): Promise<boolean> => {
     try {
       const { error } = await supabase
-        .from('planner_task_labels')
+        .from('task_label_assignments_v2')
         .delete()
         .eq('task_id', taskId)
         .eq('label_id', labelId);

@@ -9,8 +9,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCreateTaskMutation, type CreateTaskInput } from './hooks/useCreateTaskMutation';
 import type { TaskPriority } from '../../types';
 import { format } from 'date-fns';
-import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
-import { usePlannerUsers } from '../../hooks/usePlannerUsers';
+import { useTaskWorkstreams } from '../../hooks/useTaskWorkstreams';
+import { useTaskUsers } from '../../hooks/useTaskUsers';
 
 // Import shared colors & atoms from TaskBoardModal
 import { 
@@ -60,8 +60,8 @@ export function CreateTaskModal({
   const { mutate: createTask, isPending } = useCreateTaskMutation();
   
   // Fetch workstreams & users from database
-  const { data: workstreams = [] } = usePlannerWorkstreams();
-  const { data: users = [] } = usePlannerUsers();
+  const { data: workstreams = [] } = useTaskWorkstreams();
+  const { data: users = [] } = useTaskUsers();
 
   // Reset form when modal opens
   useEffect(() => {
@@ -132,7 +132,7 @@ export function CreateTaskModal({
     }
 
     // Note: status is handled via status_id lookup - the mutation hook looks up
-    // the status_id from planner_statuses table based on slug (defaults to 'backlog')
+    // the status_id from task_statuses table based on slug (defaults to 'backlog')
     const input: CreateTaskInput = {
       title: title.trim(),
       description: description.trim() || undefined,

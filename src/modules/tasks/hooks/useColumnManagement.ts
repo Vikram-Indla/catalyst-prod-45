@@ -26,6 +26,16 @@ export interface ReorderColumnsInput {
   columns: Array<{ id: string; position: number }>;
 }
 
+// task_statuses.color is varchar(7) — it stores a plain hex (#rrggbb).
+// Color pickers may pass ADS token strings like 'var(--ds-text-brand, #3b82f6)'
+// which overflow the column. Extract the hex fallback (or first hex) so any
+// picker's value is normalized to a storable 7-char hex before insert/update.
+function normalizeHexColor(color: string | undefined): string | undefined {
+  if (!color) return color;
+  const match = color.match(/#[0-9a-fA-F]{6}/);
+  return match ? match[0] : color.slice(0, 7);
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // Hook: useCreateColumn
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -41,7 +51,7 @@ export function useCreateColumn() {
 
       // Get max position
       const { data: maxPosData } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('position')
         .order('position', { ascending: false })
         .limit(1)
@@ -54,11 +64,11 @@ export function useCreateColumn() {
 
       // Insert new status
       const { data, error } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .insert({
           name: name.trim(),
           slug,
-          color,
+          color: normalizeHexColor(color),
           position: newPosition,
           sort_order: newPosition,
           is_system: false,
@@ -74,7 +84,7 @@ export function useCreateColumn() {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['planner', 'board', 'columns'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'board', 'columns'] });
       queryClient.invalidateQueries({ queryKey: ['planner-statuses'] });
       catalystToast.success(`Column "${data.name}" created`);
     },
@@ -102,11 +112,11 @@ export function useUpdateColumn() {
         updates.slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
       }
       if (color !== undefined) {
-        updates.color = color;
+        updates.color = normalizeHexColor(color);
       }
 
       const { data, error } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .update(updates)
         .eq('id', id)
         .select()
@@ -116,7 +126,7 @@ export function useUpdateColumn() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['planner', 'board', 'columns'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'board', 'columns'] });
       queryClient.invalidateQueries({ queryKey: ['planner-statuses'] });
       catalystToast.success('Column updated');
     },
@@ -137,7 +147,7 @@ export function useDeleteColumn() {
     mutationFn: async ({ id, moveTasksToBacklog }: { id: string; moveTasksToBacklog?: boolean }) => {
       // Check if this is a system column
       const { data: status } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('is_system, name')
         .eq('id', id)
         .single();
@@ -149,7 +159,7 @@ export function useDeleteColumn() {
       // Get backlog status ID for moving tasks
       if (moveTasksToBacklog) {
         const { data: backlog } = await supabase
-          .from('planner_statuses')
+          .from('task_statuses')
           .select('id')
           .eq('slug', 'backlog')
           .single();
@@ -157,7 +167,7 @@ export function useDeleteColumn() {
         if (backlog) {
           // Move tasks to backlog
           await supabase
-            .from('planner_tasks')
+            .from('tasks')
             .update({ status_id: backlog.id })
             .eq('status_id', id);
         }
@@ -165,7 +175,7 @@ export function useDeleteColumn() {
 
       // Delete the status
       const { error } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .delete()
         .eq('id', id);
 
@@ -173,7 +183,7 @@ export function useDeleteColumn() {
       return { name: status?.name };
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['planner', 'board'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'board'] });
       queryClient.invalidateQueries({ queryKey: ['planner-statuses'] });
       catalystToast.success(`Column "${data.name}" deleted`);
     },
@@ -195,7 +205,7 @@ export function useReorderColumns() {
       // Update each column's position
       const updates = columns.map(({ id, position }) =>
         supabase
-          .from('planner_statuses')
+          .from('task_statuses')
           .update({ position, sort_order: position, updated_at: new Date().toISOString() })
           .eq('id', id)
       );
@@ -210,7 +220,7 @@ export function useReorderColumns() {
       return columns;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['planner', 'board', 'columns'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'board', 'columns'] });
       queryClient.invalidateQueries({ queryKey: ['planner-statuses'] });
     },
     onError: (error) => {
@@ -225,7 +235,7 @@ export function useReorderColumns() {
 // ═══════════════════════════════════════════════════════════════════════════════
 export function useColumnTaskCount(statusId: string) {
   return supabase
-    .from('planner_tasks')
+    .from('tasks')
     .select('*', { count: 'exact', head: true })
     .eq('status_id', statusId)
     .is('deleted_at', null);

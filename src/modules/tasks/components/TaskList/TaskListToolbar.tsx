@@ -30,7 +30,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { usePlannerUsers } from '../../hooks/usePlannerUsers';
+import { useTaskUsers } from '../../hooks/useTaskUsers';
 import { useKanbanStatuses } from '../../hooks/useKanbanStatuses';
 import { PRIORITY_CONFIG } from '../../types';
 import type { TaskPriority, GroupByOption } from '../../types';
@@ -87,7 +87,7 @@ export function TaskListToolbar({
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const workstreams: { id: string; name: string; slug?: string; color?: string }[] = []; // Workstreams removed
-  const { data: users = [] } = usePlannerUsers();
+  const { data: users = [] } = useTaskUsers();
   const { data: statuses = [] } = useKanbanStatuses();
 
   // Focus search on ⌘K

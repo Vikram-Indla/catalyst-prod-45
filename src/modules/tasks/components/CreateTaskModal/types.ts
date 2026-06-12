@@ -4,7 +4,7 @@
 
 import type { TaskPriority } from '../../types';
 
-// Workstream interface - data fetched from planner_workstreams table
+// Workstream interface - data fetched from task_workstreams table
 export interface Workstream {
   id: string;
   name: string;

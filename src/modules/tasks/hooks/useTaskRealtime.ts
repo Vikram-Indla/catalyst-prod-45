@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export function usePlannerRealtime(teamId?: string | null) {
+export function useTaskRealtime(teamId?: string | null) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export function usePlannerRealtime(teamId?: string | null) {
         {
           event: '*',
           schema: 'public',
-          table: 'planner_tasks',
+          table: 'tasks',
           ...(teamId ? { filter: `workstream_id=eq.${teamId}` } : {}),
         },
         () => {
@@ -49,4 +49,4 @@ export function usePlannerRealtime(teamId?: string | null) {
   }, [teamId, queryClient]);
 }
 
-export default usePlannerRealtime;
+export default useTaskRealtime;

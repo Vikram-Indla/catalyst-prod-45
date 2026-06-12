@@ -82,7 +82,7 @@ function useWorkstreams() {
       if (canAccessAll) {
         // Admin/super_admin: fetch all workstreams
         const { data, error } = await supabase
-          .from('planner_workstreams')
+          .from('task_workstreams')
           .select('id, name')
           .eq('is_active', true)
           .order('name');
@@ -95,7 +95,7 @@ function useWorkstreams() {
         .from('workstream_members')
         .select(`
           workstream_id,
-          workstream:planner_workstreams(id, name, is_active)
+          workstream:task_workstreams(id, name, is_active)
         `)
         .eq('user_id', user.id);
       

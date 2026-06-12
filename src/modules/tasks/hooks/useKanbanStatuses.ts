@@ -1,6 +1,6 @@
 // ============================================================
 // KANBAN STATUSES HOOK
-// CRUD for planner_statuses (Kanban columns)
+// CRUD for task_statuses (Kanban columns)
 // ============================================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -19,7 +19,7 @@ export function useKanbanStatuses() {
     queryKey: QUERY_KEY,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('*')
         .order('position', { ascending: true });
       
@@ -33,7 +33,7 @@ export function useKanbanStatuses() {
 }
 
 /**
- * Subscribe to realtime changes on planner_statuses
+ * Subscribe to realtime changes on task_statuses
  */
 export function useKanbanStatusesRealtime() {
   const queryClient = useQueryClient();
@@ -46,7 +46,7 @@ export function useKanbanStatusesRealtime() {
         {
           event: '*',
           schema: 'public',
-          table: 'planner_statuses',
+          table: 'task_statuses',
         },
         () => {
           queryClient.invalidateQueries({ queryKey: QUERY_KEY });
@@ -70,7 +70,7 @@ export function useCreateKanbanStatus() {
     mutationFn: async (status: { name: string; color?: string }) => {
       // Get max position
       const { data: existing } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('position')
         .order('position', { ascending: false })
         .limit(1);
@@ -79,7 +79,7 @@ export function useCreateKanbanStatus() {
       const slug = status.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
       
       const { data, error } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .insert({
           name: status.name,
           slug,
@@ -113,7 +113,7 @@ export function useUpdateKanbanStatus() {
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<PlannerStatus> & { id: string }) => {
       const { data, error } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .update(updates)
         .eq('id', id)
         .select()
@@ -141,7 +141,7 @@ export function useDeleteKanbanStatus() {
     mutationFn: async (id: string) => {
       // Get default status
       const { data: defaultStatus } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .select('id')
         .eq('is_default', true)
         .maybeSingle();
@@ -149,13 +149,13 @@ export function useDeleteKanbanStatus() {
       if (defaultStatus) {
         // Move tasks from deleted column to default
         await supabase
-          .from('planner_tasks')
+          .from('tasks')
           .update({ status_id: defaultStatus.id })
           .eq('status_id', id);
       }
       
       const { error } = await supabase
-        .from('planner_statuses')
+        .from('task_statuses')
         .delete()
         .eq('id', id);
       
@@ -182,7 +182,7 @@ export function useReorderKanbanStatuses() {
     mutationFn: async (statuses: { id: string; position: number }[]) => {
       const updates = statuses.map(({ id, position }) =>
         supabase
-          .from('planner_statuses')
+          .from('task_statuses')
           .update({ position })
           .eq('id', id)
       );

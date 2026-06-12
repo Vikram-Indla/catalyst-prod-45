@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { X, Package } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { createRelease } from '@/hooks/testhub/useReleases';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface CreateReleaseModalProps {
   open: boolean;

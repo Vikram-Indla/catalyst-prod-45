@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalyst Tasks Module — Deep Research &amp; 10-Phase Refactor Plan</title>
+<style>
+  :root {
+    --ds-surface: #FFFFFF;
+    --ds-surface-sunken: #F7F8F9;
+    --ds-text: #172B4D;
+    --ds-text-subtle: #42526E;
+    --ds-text-subtlest: #6B778C;
+    --ds-border: #DFE1E6;
+    --ds-link: #0052CC;
+    --ds-background-danger: #FFEBE6;
+    --ds-background-warning: #FFFAE6;
+    --ds-background-success: #E3FCEF;
+    --ds-background-information: #DEEBFF;
+    --ds-background-neutral: #F1F2F4;
+    --ds-text-danger: #DE350B;
+    --ds-text-warning: #FF8B00;
+    --ds-text-success: #006644;
+    --brand-purple: #6554C0;
+    --brand-teal: #00B8D9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: var(--ds-text); background: var(--ds-surface-sunken); line-height: 1.6; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+  h1 { font-size: 28px; font-weight: 653; margin-bottom: 8px; }
+  h2 { font-size: 20px; font-weight: 653; margin: 32px 0 16px; border-bottom: 2px solid var(--ds-border); padding-bottom: 8px; }
+  h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; }
+  h4 { font-size: 14px; font-weight: 600; margin: 16px 0 4px; }
+  p, li { font-size: 14px; color: var(--ds-text-subtle); }
+  .subtitle { font-size: 14px; color: var(--ds-text-subtlest); margin-bottom: 24px; }
+  .card { background: var(--ds-surface); border: 1px solid var(--ds-border); border-radius: 8px; padding: 24px; margin-bottom: 16px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 653; text-transform: uppercase; letter-spacing: 0.5px; }
+  .badge-p0 { background: var(--ds-background-danger); color: var(--ds-text-danger); }
+  .badge-p1 { background: var(--ds-background-warning); color: var(--ds-text-warning); }
+  .badge-p2 { background: var(--ds-background-information); color: var(--ds-link); }
+  .badge-confirmed { background: var(--ds-background-success); color: var(--ds-text-success); }
+  .badge-phase { background: var(--brand-purple); color: white; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+  th { text-align: left; font-size: 11px; font-weight: 653; color: var(--ds-text-subtle); padding: 8px; border-bottom: 2px solid var(--ds-border); }
+  td { padding: 8px; border-bottom: 1px solid var(--ds-border); vertical-align: top; }
+  tr:hover { background: var(--ds-background-neutral); }
+  .violation-id { font-family: 'SF Mono', monospace; font-size: 11px; color: var(--ds-text-subtlest); }
+  code { font-family: 'SF Mono', monospace; font-size: 12px; background: var(--ds-background-neutral); padding: 1px 4px; border-radius: 3px; }
+  .phase-card { border-left: 4px solid var(--brand-purple); }
+  .phase-number { font-size: 32px; font-weight: 700; color: var(--brand-purple); float: left; margin-right: 16px; line-height: 1; }
+  .flow-diagram { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; align-items: center; }
+  .flow-node { background: var(--ds-background-information); border: 1px solid #B3D4FF; border-radius: 4px; padding: 8px 12px; font-size: 12px; font-weight: 500; text-align: center; min-width: 100px; }
+  .flow-node.current { background: var(--ds-background-danger); border-color: #FF8F73; }
+  .flow-node.target { background: var(--ds-background-success); border-color: #ABF5D1; }
+  .flow-node.canonical { background: #EAE6FF; border-color: #C0B6F2; }
+  .flow-arrow { font-size: 18px; color: var(--ds-text-subtlest); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .stat-box { text-align: center; padding: 16px; background: var(--ds-surface); border: 1px solid var(--ds-border); border-radius: 8px; }
+  .stat-number { font-size: 36px; font-weight: 700; color: var(--brand-purple); }
+  .stat-label { font-size: 12px; color: var(--ds-text-subtlest); margin-top: 4px; }
+  .toc { background: var(--ds-surface); border: 1px solid var(--ds-border); border-radius: 8px; padding: 16px 24px; margin-bottom: 32px; }
+  .toc a { color: var(--ds-link); text-decoration: none; font-size: 13px; }
+  .toc a:hover { text-decoration: underline; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 4px 0; }
+  .rename-table td:first-child { font-family: 'SF Mono', monospace; font-size: 12px; color: var(--ds-text-danger); text-decoration: line-through; }
+  .rename-table td:nth-child(2) { font-family: 'SF Mono', monospace; font-size: 12px; color: var(--ds-text-success); font-weight: 600; }
+  .source-tag { font-size: 10px; padding: 1px 6px; border-radius: 2px; background: var(--ds-background-neutral); color: var(--ds-text-subtlest); margin-left: 4px; }
+  .before-after { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: start; }
+  .before-box { background: #FFEBE6; border: 1px solid #FF8F73; border-radius: 4px; padding: 12px; }
+  .after-box { background: #E3FCEF; border: 1px solid #ABF5D1; border-radius: 4px; padding: 12px; }
+  .arrow-col { display: flex; align-items: center; font-size: 24px; color: var(--ds-text-subtlest); padding-top: 40px; }
+  .checklist { list-style: none; padding: 0; }
+  .checklist li { padding: 4px 0; font-size: 13px; }
+  .checklist li::before { content: "☐ "; color: var(--ds-text-subtlest); }
+  .section-nav { position: sticky; top: 0; background: var(--ds-surface); z-index: 10; border-bottom: 1px solid var(--ds-border); padding: 8px 0; margin-bottom: 16px; }
+  @media (max-width: 768px) { .grid-2, .grid-3, .before-after { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<h1>Catalyst Tasks Module — Deep Research &amp; Refactor Plan</h1>
+<p class="subtitle">Generated 2026-06-02 &middot; Sources: Asana, Notion, Linear, Planview, ADS, Catalyst codebase &middot; 104 research agents &middot; 13 verified findings &middot; 22 sources fetched</p>
+
+<!-- STATS -->
+<div class="grid-3" style="margin-bottom:32px;">
+  <div class="stat-box"><div class="stat-number">62</div><div class="stat-label">Business Rule Violations</div></div>
+  <div class="stat-box"><div class="stat-number">10</div><div class="stat-label">Execution Phases</div></div>
+  <div class="stat-box"><div class="stat-number">38</div><div class="stat-label">Existing Hooks to Refactor</div></div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h3>Table of Contents</h3>
+  <ol>
+    <li><a href="#research">Verified Research Findings (Asana, Notion, ADS)</a></li>
+    <li><a href="#codebase">Current Codebase State</a></li>
+    <li><a href="#rename">Naming &amp; Route Overhaul (Hub → Tasks)</a></li>
+    <li><a href="#violations">62 Business Rule Violations</a></li>
+    <li><a href="#inherit">Canonical Components to Inherit from Project Module</a></li>
+    <li><a href="#phases">10-Phase Execution Plan with Visual Maps</a></li>
+    <li><a href="#caty">CATY AI Integration Strategy</a></li>
+    <li><a href="#foryou">For You Page Integration</a></li>
+  </ol>
+</div>
+
+<!-- SECTION 1: RESEARCH -->
+<h2 id="research">1. Verified Research Findings</h2>
+<p>25 claims extracted from 22 sources across 5 search angles. 13 confirmed (3-vote adversarial), 12 killed. Only confirmed findings below.</p>
+
+<div class="card">
+  <h3>Asana — View Architecture <span class="badge badge-confirmed">3-0 CONFIRMED</span></h3>
+  <p>Asana provides four standard project views (List, Board/Kanban, Calendar, Timeline) displaying the same underlying data, switchable by any teammate at any time. Dedicated <strong>My Tasks</strong> view aggregates all user assignments for prioritization.</p>
+  <p style="margin-top:8px;"><strong>Catalyst implication:</strong> Our 7 views (Task List, Board, Timeline, Priorities, My Tasks, Work Streams, Overview) exceed Asana's model. The same <code>planner_tasks</code> table must power ALL views — no per-view tables.</p>
+  <p class="source-tag">Sources: asana.com/features, asana.com/inside-asana/manage-workflow-project-views</p>
+</div>
+
+<div class="card">
+  <h3>Asana AI Studio <span class="badge badge-confirmed">2-1 CONFIRMED</span></h3>
+  <p>No-code workflow builder for AI-powered task automations. Reference pattern for CATY AI: surface task recommendations, auto-assign, auto-prioritize, summarize workstream progress.</p>
+  <p class="source-tag">Source: asana.com/product/ai</p>
+</div>
+
+<div class="card">
+  <h3>Notion — Data Model &amp; Views <span class="badge badge-confirmed">3-0 CONFIRMED</span></h3>
+  <p>Structures tasks as a standalone database with multiple views (Kanban, Timeline, Table, List, Gallery, Calendar) as layout options over the same dataset. Tasks are parentless work items — aligns with Vikram's directive that Catalyst tasks have no parent hierarchy.</p>
+  <p class="source-tag">Source: notion.com/help/guides/getting-started-with-projects-and-tasks</p>
+</div>
+
+<div class="card">
+  <h3>ADS Dynamic Table <span class="badge badge-confirmed">3-0 CONFIRMED</span></h3>
+  <p><code>@atlaskit/dynamic-table</code> provides pagination, sorting, and drag-and-drop re-ordering. Catalyst wraps this in <strong>JiraTable</strong> — the task list MUST reuse JiraTable, not dynamic-table directly.</p>
+  <p class="source-tag">Source: atlassian.design/components/dynamic-table</p>
+</div>
+
+<div class="card">
+  <h3>ADS Has NO Board/Timeline Components <span class="badge badge-confirmed">2-1 CONFIRMED</span></h3>
+  <p>ADS provides <strong>Pragmatic Drag and Drop</strong> (<code>@atlaskit/pragmatic-drag-and-drop</code>) as the official DnD library (powers Trello, Jira, Confluence in production). Board and Timeline views must be assembled from this primitive. Catalyst already has <code>PragmaticBoard</code> internally.</p>
+  <p class="source-tag">Sources: atlassian.design/components/pragmatic-drag-and-drop, github.com/atlassian/pragmatic-drag-and-drop</p>
+</div>
+
+<!-- SECTION 2: CODEBASE STATE -->
+<h2 id="codebase">2. Current Codebase State</h2>
+<div class="grid-2">
+  <div class="card">
+    <h4>Routes (11 total)</h4>
+    <ul>
+      <li><code>/taskhub</code> → redirects to <code>/taskhub/boards</code></li>
+      <li><code>/taskhub/:view</code> → PlannerPage</li>
+      <li><code>/taskhub/boards</code> → Board view</li>
+      <li><code>/taskhub/task-list</code> → Task list view</li>
+      <li><code>/taskhub/timeline</code> → Timeline/Gantt</li>
+      <li><code>/taskhub/my-tasks</code> → MyTasksPage</li>
+      <li><code>/taskhub/dashboard</code> → Dashboard overview</li>
+      <li><code>/taskhub/workstreams</code> → Workstreams</li>
+      <li><code>/taskhub/settings</code> → Settings</li>
+      <li><code>/priorities</code> → T10LandingPage</li>
+      <li><code>/taskhub-kanban</code> → KanbanPage (legacy)</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Supabase Tables (18)</h4>
+    <ul>
+      <li><code>planner_tasks</code> — main tasks table</li>
+      <li><code>planner_board_tasks</code> — board view data</li>
+      <li><code>planner_my_tasks</code> — personal tasks</li>
+      <li><code>planner_task_list</code> — list view</li>
+      <li><code>planner_task_labels</code> / <code>_assignments</code></li>
+      <li><code>planner_task_checklist_items</code></li>
+      <li><code>planner_task_lead_notes</code></li>
+      <li><code>planner_task_mentions</code></li>
+      <li><code>planner_task_watchers</code></li>
+      <li><code>work_manager_tasks</code></li>
+      <li><code>task_activity</code> / <code>task_attachments</code></li>
+      <li><code>task_comments</code> / <code>task_dependencies</code></li>
+      <li><code>task_label_assignments</code> / <code>task_labels</code></li>
+      <li><code>planhub_tasks</code></li>
+    </ul>
+  </div>
+</div>
+<div class="card">
+  <h4>Key Problem: TaskDetailDrawer (BANNED)</h4>
+  <p>The current task detail opens in <code>TaskDetailDrawer/TaskDetailDrawer.tsx</code> — a side drawer. Per CLAUDE.md, <strong>drawers are banned</strong>. Must be replaced with full-page view or modal (like CatalystViewBase in project module).</p>
+</div>
+
+<!-- SECTION 3: RENAME -->
+<h2 id="rename">3. Naming &amp; Route Overhaul</h2>
+<p>Per Vikram's directive: <strong>"Hub" must be removed from all naming. The module is "Tasks" not "Tasks Hub".</strong></p>
+
+<h4>Route Changes</h4>
+<table class="rename-table">
+  <thead><tr><th>Current (Remove)</th><th>New (Target)</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>/taskhub</td><td>/tasks</td><td>Root redirect → /tasks/board</td></tr>
+    <tr><td>/taskhub/boards</td><td>/tasks/board</td><td>Singular for consistency</td></tr>
+    <tr><td>/taskhub/task-list</td><td>/tasks/list</td><td>Redundant "task-" prefix removed</td></tr>
+    <tr><td>/taskhub/timeline</td><td>/tasks/timeline</td><td>Same view name</td></tr>
+    <tr><td>/taskhub/my-tasks</td><td>/tasks/my-tasks</td><td>Keep as-is under new root</td></tr>
+    <tr><td>/taskhub/dashboard</td><td>/tasks/overview</td><td>Renamed: "Overview" not "Dashboard"</td></tr>
+    <tr><td>/taskhub/workstreams</td><td>/tasks/workstreams</td><td>Keep as-is under new root</td></tr>
+    <tr><td>/taskhub/settings</td><td>/tasks/settings</td><td>Keep as-is under new root</td></tr>
+    <tr><td>/priorities</td><td>/tasks/priorities</td><td>Merged under Tasks root</td></tr>
+    <tr><td>/taskhub-kanban</td><td>(DELETE)</td><td>Legacy route — remove entirely</td></tr>
+    <tr><td>/planner/*</td><td>(DELETE)</td><td>Legacy redirects — remove entirely</td></tr>
+  </tbody>
+</table>
+
+<h4>Backend Table Renames</h4>
+<table class="rename-table">
+  <thead><tr><th>Current</th><th>New</th><th>Rationale</th></tr></thead>
+  <tbody>
+    <tr><td>planner_tasks</td><td>tasks</td><td>Canonical. "Planner" prefix is legacy Trello naming</td></tr>
+    <tr><td>planner_board_tasks</td><td>(DELETE — use view)</td><td>Board is a VIEW over tasks, not a separate table</td></tr>
+    <tr><td>planner_my_tasks</td><td>(DELETE — use query)</td><td>My Tasks = tasks WHERE assignee = current_user</td></tr>
+    <tr><td>planner_task_list</td><td>(DELETE — use view)</td><td>Task list = tasks with column config</td></tr>
+    <tr><td>planner_task_labels</td><td>task_labels</td><td>Already exists — consolidate</td></tr>
+    <tr><td>planner_task_label_assignments</td><td>task_label_assignments</td><td>Already exists — consolidate</td></tr>
+    <tr><td>planner_task_checklist_items</td><td>task_checklist_items</td><td>Already exists — consolidate</td></tr>
+    <tr><td>planner_task_lead_notes</td><td>task_lead_notes</td><td>Drop "planner_" prefix</td></tr>
+    <tr><td>planner_task_mentions</td><td>task_mentions</td><td>Drop "planner_" prefix</td></tr>
+    <tr><td>planner_task_watchers</td><td>task_watchers</td><td>Drop "planner_" prefix</td></tr>
+    <tr><td>work_manager_tasks</td><td>(MERGE into tasks)</td><td>Duplicate table — consolidate</td></tr>
+    <tr><td>planhub_tasks</td><td>(DELETE)</td><td>Dead legacy table</td></tr>
+  </tbody>
+</table>
+
+<h4>Component/Module Renames</h4>
+<table class="rename-table">
+  <thead><tr><th>Current</th><th>New</th></tr></thead>
+  <tbody>
+    <tr><td>src/modules/planner/</td><td>src/modules/tasks/</td></tr>
+    <tr><td>TaskHubSidebar.tsx</td><td>TasksSidebar.tsx</td></tr>
+    <tr><td>PlannerPage.tsx</td><td>TasksPage.tsx</td></tr>
+    <tr><td>PlannerBoardsPage.tsx</td><td>TasksBoardPage.tsx</td></tr>
+    <tr><td>PlannerDashboard.tsx</td><td>TasksOverview.tsx</td></tr>
+    <tr><td>PlannerTimeline.tsx</td><td>TasksTimeline.tsx</td></tr>
+    <tr><td>PlannerCalendar.tsx</td><td>(MERGE into Timeline)</td></tr>
+    <tr><td>TaskDetailDrawer/</td><td>TaskDetailModal/ (or full-page)</td></tr>
+    <tr><td>HubSwitcher key: 'task'</td><td>Keep key, change label to 'Tasks'</td></tr>
+  </tbody>
+</table>
+
+<!-- SECTION 4: VIOLATIONS -->
+<h2 id="violations">4. Business Rule Violations (62 Total)</h2>
+<p>Organized bottom-to-top per Vikram's directive: Task List → Board → Timeline → Priorities → My Tasks → Work Streams → Overview, then cross-cutting.</p>
+
+<h3>A. Task List (V1–V10)</h3>
+<table>
+  <thead><tr><th style="width:50px">ID</th><th style="width:50px">Sev</th><th>Violation</th><th>Expected (Research-Backed)</th></tr></thead>
+  <tbody>
+    <tr><td class="violation-id">V1</td><td><span class="badge badge-p0">P0</span></td><td>Task list uses custom <code>TaskListPageV3</code> with hand-rolled table — does NOT use canonical <code>JiraTable</code></td><td>Must use JiraTable with cell factories (makeKeyCell, makeStatusCell, etc.) per CLAUDE.md canonical table rule</td></tr>
+    <tr><td class="violation-id">V2</td><td><span class="badge badge-p0">P0</span></td><td>No inline editing in task list rows — every edit requires opening the drawer</td><td>Asana List view edits inline (confirmed). Use JiraTable's <code>makeSummaryInlineEditCell</code>, <code>makeAssigneeEditCell</code>, <code>makeStatusEditCellAkPopup</code>, <code>makePriorityEditCell</code></td></tr>
+    <tr><td class="violation-id">V3</td><td><span class="badge badge-p0">P0</span></td><td>Task detail opens in side drawer (<code>TaskDetailDrawer.tsx</code>) — drawers are BANNED</td><td>Must open in full-page view (like BacklogDetailPage) or @atlaskit/modal-dialog</td></tr>
+    <tr><td class="violation-id">V4</td><td><span class="badge badge-p1">P1</span></td><td>No column picker / column management on task list</td><td>JiraTable provides column reorder/resize/picker — wire it</td></tr>
+    <tr><td class="violation-id">V5</td><td><span class="badge badge-p1">P1</span></td><td>No grouping support (Group By status, assignee, workstream, label)</td><td>JiraTable supports grouping with collapsible headers — Asana and Notion both offer group-by</td></tr>
+    <tr><td class="violation-id">V6</td><td><span class="badge badge-p1">P1</span></td><td>No bulk select / bulk actions bar in task list</td><td>JiraTable has bulk select built in. Asana multi-select is a core feature</td></tr>
+    <tr><td class="violation-id">V7</td><td><span class="badge badge-p1">P1</span></td><td>No keyboard navigation (arrow keys, Enter to open, Escape to close)</td><td>JiraTable provides keyboard nav. Linear is entirely keyboard-driven</td></tr>
+    <tr><td class="violation-id">V8</td><td><span class="badge badge-p1">P1</span></td><td>Separate <code>planner_task_list</code> table exists — data duplication</td><td>Task list is a VIEW over <code>planner_tasks</code> with column config, not a separate table</td></tr>
+    <tr><td class="violation-id">V9</td><td><span class="badge badge-p2">P2</span></td><td>No sort persistence (sort state lost on navigation)</td><td>Persist to URL params like BacklogPage does</td></tr>
+    <tr><td class="violation-id">V10</td><td><span class="badge badge-p2">P2</span></td><td>No empty state with CTA when task list is empty</td><td>Asana shows illustrated empty state with "Add task" CTA</td></tr>
+  </tbody>
+</table>
+
+<h3>B. Board (V11–V20)</h3>
+<table>
+  <thead><tr><th style="width:50px">ID</th><th style="width:50px">Sev</th><th>Violation</th><th>Expected</th></tr></thead>
+  <tbody>
+    <tr><td class="violation-id">V11</td><td><span class="badge badge-p0">P0</span></td><td>Board uses legacy <code>KanbanBoard.tsx</code> — NOT using Catalyst's canonical <code>PragmaticBoard</code></td><td>Must use PragmaticBoard (same as project-hub kanban) with @atlaskit/pragmatic-drag-and-drop</td></tr>
+    <tr><td class="violation-id">V12</td><td><span class="badge badge-p0">P0</span></td><td>Board card click opens drawer (BANNED) instead of modal/full-page</td><td>Card click → full-page TaskDetailView or @atlaskit/modal-dialog</td></tr>
+    <tr><td class="violation-id">V13</td><td><span class="badge badge-p1">P1</span></td><td>No swimlane support (group columns by assignee, workstream, priority)</td><td>Asana Board supports sectioning. PragmaticBoard can render grouped rows</td></tr>
+    <tr><td class="violation-id">V14</td><td><span class="badge badge-p1">P1</span></td><td>Board column add/rename/delete uses <code>AddColumnModal</code> — not using @atlaskit/modal-dialog</td><td>Must use @atlaskit/modal-dialog per ADS guardrail</td></tr>
+    <tr><td class="violation-id">V15</td><td><span class="badge badge-p1">P1</span></td><td>No WIP limits on board columns</td><td>Trello and Linear both support WIP limits per column</td></tr>
+    <tr><td class="violation-id">V16</td><td><span class="badge badge-p1">P1</span></td><td>Card does not show checklist progress indicator</td><td>Trello shows checklist progress bar on card face. Component exists: <code>ChecklistIndicator.tsx</code> — not wired</td></tr>
+    <tr><td class="violation-id">V17</td><td><span class="badge badge-p1">P1</span></td><td>No quick-add card at bottom of each column</td><td>Trello and Asana both have inline-create at column bottom</td></tr>
+    <tr><td class="violation-id">V18</td><td><span class="badge badge-p2">P2</span></td><td>No card cover images / color coding</td><td>Trello supports card covers. Notion board cards show cover images</td></tr>
+    <tr><td class="violation-id">V19</td><td><span class="badge badge-p2">P2</span></td><td>No board filtering (by assignee, label, priority)</td><td>All competitors support board-level filters</td></tr>
+    <tr><td class="violation-id">V20</td><td><span class="badge badge-p2">P2</span></td><td>Drag-and-drop status change on board doesn't update <code>planner_tasks.status</code> immediately (optimistic update missing)</td><td>Drag should optimistically update status, then confirm via Supabase mutation</td></tr>
+  </tbody>
+</table>
+
+<h3>C. Timeline (V21–V28)</h3>
+<table>
+  <thead><tr><th style="width:50px">ID</th><th style="width:50px">Sev</th><th>Violation</th><th>Expected</th></tr></thead>
+  <tbody>
+    <tr><td class="violation-id">V21</td><td><span class="badge badge-p0">P0</span></td><td><code>PlannerTimeline.tsx</code> uses custom implementation — no canonical Gantt component</td><td>ADS has no timeline component (confirmed). Must build from Pragmatic DnD + custom canvas. Reference: Asana Timeline</td></tr>
+    <tr><td class="violation-id">V22</td><td><span class="badge badge-p0">P0</span></td><td>Timeline has no drag-to-resize for task duration</td><td>Asana Timeline supports drag-to-resize task bars. Critical interaction</td></tr>
+    <tr><td class="violation-id">V23</td><td><span class="badge badge-p1">P1</span></td><td>No dependency arrows between tasks on timeline</td><td>Asana Timeline shows dependency lines. Task dependencies table exists but not visualized</td></tr>
+    <tr><td class="violation-id">V24</td><td><span class="badge badge-p1">P1</span></td><td>No zoom levels (day/week/month/quarter)</td><td>Asana and Planview both support multi-level zoom</td></tr>
+    <tr><td class="violation-id">V25</td><td><span class="badge badge-p1">P1</span></td><td>No today-line marker on timeline</td><td>Standard Gantt feature — red vertical line at today's date</td></tr>
+    <tr><td class="violation-id">V26</td><td><span class="badge badge-p1">P1</span></td><td>Timeline does not group by workstream</td><td>Rows should be groupable by workstream, assignee, or label</td></tr>
+    <tr><td class="violation-id">V27</td><td><span class="badge badge-p2">P2</span></td><td>No drag-to-create on empty timeline space</td><td>Click-drag on empty area creates new task with date range pre-filled</td></tr>
+    <tr><td class="violation-id">V28</td><td><span class="badge badge-p2">P2</span></td><td>Calendar view (<code>PlannerCalendar.tsx</code>) is separate from Timeline — should be a zoom level</td><td>Calendar = "day/week" zoom level of Timeline, not a separate view</td></tr>
+  </tbody>
+</table>
+
+<h3>D. Priorities / Task10 (V29–V35)</h3>
+<table>
+  <thead><tr><th style="width:50px">ID</th><th style="width:50px">Sev</th><th>Violation</th><th>Expected</th></tr></thead>
+  <tbody>
+    <tr><td class="violation-id">V29</td><td><span class="badge badge-p0">P0</span></td><td>Priorities lives at <code>/priorities</code> outside Tasks module — route isolation</td><td>Must move to <code>/tasks/priorities</code> and share Tasks layout/sidebar</td></tr>
+    <tr><td class="violation-id">V30</td><td><span class="badge badge-p0">P0</span></td><td>Task10 module (<code>src/modules/task10/</code>) is entirely separate codebase from planner — duplicate hooks, types, components</td><td>Merge into <code>src/modules/tasks/</code> — one module, shared hooks</td></tr>
+    <tr><td class="violation-id">V31</td><td><span class="badge badge-p1">P1</span></td><td>Priorities page uses its own detail panel (not connected to task detail)</td><td>Priority item click → same TaskDetailModal used by List and Board views</td></tr>
+    <tr><td class="violation-id">V32</td><td><span class="badge badge-p1">P1</span></td><td>No CATY AI integration for priority suggestions</td><td>AI should suggest top-10 based on due dates, blockers, workstream health</td></tr>
+    <tr><td class="violation-id">V33</td><td><span class="badge badge-p1">P1</span></td><td>Weekly view (<code>T10WeekPageV3</code>) uses custom list — not JiraTable</td><td>Reuse JiraTable for consistency</td></tr>
+    <tr><td class="violation-id">V34</td><td><span class="badge badge-p2">P2</span></td><td>Completed tasks page (<code>T10CompletedPage</code>) is standalone — should be a filter state</td><td>"Completed" = filter on task list/priorities, not a separate page</td></tr>
+    <tr><td class="violation-id">V35</td><td><span class="badge badge-p2">P2</span></td><td>No drag-to-reorder in priority list</td><td>Must use Pragmatic DnD sortable for manual priority ranking</td></tr>
+  </tbody>
+</table>
+
+<h3>E. My Tasks (V36–V42)</h3>
+<table>
+  <thead><tr><th style="width:50px">ID</th><th style="width:50px">Sev</th><th>Violation</th><th>Expected</th></tr></thead>
+  <tbody>
+    <tr><td class="violation-id">V36</td><td><span class="badge badge-p0">P0</span></td><td><code>planner_my_tasks</code> table exists as separate data source — data duplication</td><td>My Tasks = query on <code>planner_tasks</code> WHERE assignee = auth.uid(). No separate table</td></tr>
+    <tr><td class="violation-id">V37</td><td><span class="badge badge-p1">P1</span></td><td>My Tasks page (<code>MyTasksPage.tsx</code>) uses custom components instead of JiraTable</td><td>Reuse JiraTable with "My Tasks" filter preset</td></tr>
+    <tr><td class="violation-id">V38</td><td><span class="badge badge-p1">P1</span></td><td>No "Recently assigned" section (Asana My Tasks shows recently assigned at top)</td><td>Add "Recently assigned" group header with auto-sort by assigned_at DESC</td></tr>
+    <tr><td class="violation-id">V39</td><td><span class="badge badge-p1">P1</span></td><td>No overdue highlighting on My Tasks</td><td>Overdue tasks should show red date badge and sort to top</td></tr>
+    <tr><td class="violation-id">V40</td><td><span class="badge badge-p1">P1</span></td><td>Complete-with-undo (<code>useCompleteMyTaskWithUndo</code>) doesn't show toast notification</td><td>Must show @atlaskit/flag with "Task completed" + Undo action button</td></tr>
+    <tr><td class="violation-id">V41</td><td><span class="badge badge-p2">P2</span></td><td>No "Today / Upcoming / Later" sections (Asana My Tasks pattern)</td><td>Group tasks by due date proximity: Today, This Week, Later, No Date</td></tr>
+    <tr><td class="violation-id">V42</td><td><span class="badge badge-p2">P2</span></td><td>My Tasks not linked to For You page "Assigned" tab</td><td>Tasks assigned to user should appear in For You / Assigned alongside ph_issues</td></tr>
+  </tbody>
+</table>
+
+<h3>F. Work Streams (V43–V50)</h3>
+<table>
+  <thead><tr><th style="width:50px">ID</th><th style="width:50px">Sev</th><th>Violation</th><th>Expected</th></tr></thead>
+  <tbody>
+    <tr><td class="violation-id">V43</td><td><span class="badge badge-p0">P0</span></td><td>Workstreams page (<code>WorkstreamsPage.tsx</code>) has no CRUD — read-only listing</td><td>Must support Create / Edit / Archive / Delete workstreams with @atlaskit/modal-dialog</td></tr>
+    <tr><td class="violation-id">V44</td><td><span class="badge badge-p0">P0</span></td><td>No workstream detail view — clicking a workstream does nothing meaningful</td><td>Workstream click → filtered task list showing all tasks in that workstream</td></tr>
+    <tr><td class="violation-id">V45</td><td><span class="badge badge-p1">P1</span></td><td>No workstream owner/lead assignment</td><td>Each workstream needs an owner field (maps to <code>useWorkstreamLeadAccess</code> hook that already exists)</td></tr>
+    <tr><td class="violation-id">V46</td><td><span class="badge badge-p1">P1</span></td><td>No workstream progress indicator (% complete based on task statuses)</td><td>Progress bar: done_tasks / total_tasks per workstream</td></tr>
+    <tr><td class="violation-id">V47</td><td><span class="badge badge-p1">P1</span></td><td>No workstream color/icon customization</td><td>Notion and Asana both support project/section color coding</td></tr>
+    <tr><td class="violation-id">V48</td><td><span class="badge badge-p1">P1</span></td><td>Workstream membership (who can see/edit tasks in a workstream) not enforced via RLS</td><td>RLS policy: workstream members can CRUD tasks in their workstreams</td></tr>
+    <tr><td class="violation-id">V49</td><td><span class="badge badge-p2">P2</span></td><td>No workstream templates (pre-configured task sets for recurring workstreams)</td><td>Asana has project templates. Workstream templates = predefined task list</td></tr>
+    <tr><td class="violation-id">V50</td><td><span class="badge badge-p2">P2</span></td><td>No archive/soft-delete for completed workstreams</td><td>Archived workstreams hidden from active list, accessible via filter</td></tr>
+  </tbody>
+</table>
+
+<h3>G. Overview (V51–V55)</h3>
+<table>
+  <thead><tr><th style="width:50px">ID</th><th style="width:50px">Sev</th><th>Violation</th><th>Expected</th></tr></thead>
+  <tbody>
+    <tr><td class="violation-id">V51</td><td><span class="badge badge-p0">P0</span></td><td><code>PlannerDashboard.tsx</code> is a basic stats page — no actionable widgets</td><td>Overview should show: task burndown, overdue count, workstream health, team velocity, CATY AI summary</td></tr>
+    <tr><td class="violation-id">V52</td><td><span class="badge badge-p1">P1</span></td><td>No real-time task activity feed on overview</td><td>Show recent task updates (created, completed, reassigned) as activity stream</td></tr>
+    <tr><td class="violation-id">V53</td><td><span class="badge badge-p1">P1</span></td><td>Dashboard data hook (<code>usePlannerDashboard</code>) queries multiple tables separately — N+1 problem</td><td>Single RPC function returning aggregated dashboard stats</td></tr>
+    <tr><td class="violation-id">V54</td><td><span class="badge badge-p2">P2</span></td><td>No CATY AI "What should I focus on today?" widget</td><td>AI-generated daily focus card based on due dates, priorities, workstream health</td></tr>
+    <tr><td class="violation-id">V55</td><td><span class="badge badge-p2">P2</span></td><td>No team workload view (who has capacity, who is overloaded)</td><td>Asana Workload view. Resource inventory already exists in Catalyst</td></tr>
+  </tbody>
+</table>
+
+<h3>H. Cross-Cutting (V56–V62)</h3>
+<table>
+  <thead><tr><th style="width:50px">ID</th><th style="width:50px">Sev</th><th>Violation</th><th>Expected</th></tr></thead>
+  <tbody>
+    <tr><td class="violation-id">V56</td><td><span class="badge badge-p0">P0</span></td><td>Global search does not index tasks — <code>GlobalSearchPanel</code> only queries <code>ph_issues</code></td><td>Add planner_tasks to GlobalSearchPanel query with unified result rendering</td></tr>
+    <tr><td class="violation-id">V57</td><td><span class="badge badge-p0">P0</span></td><td>Notifications not wired for task events (assignment, mention, due date)</td><td>Wire task mutations to notification system (same pattern as ph_issues notifications)</td></tr>
+    <tr><td class="violation-id">V58</td><td><span class="badge badge-p0">P0</span></td><td>No RLS policies audited for task tables — access control unknown</td><td>Every task table needs RLS: workspace members for SELECT, task assignee/creator for UPDATE/DELETE</td></tr>
+    <tr><td class="violation-id">V59</td><td><span class="badge badge-p1">P1</span></td><td>For You page shows tasks via TSK mode but doesn't link back to task detail</td><td>For You task cards must openDetail → TaskDetailModal (not drawer)</td></tr>
+    <tr><td class="violation-id">V60</td><td><span class="badge badge-p1">P1</span></td><td>18 tables for what should be 6-8 — massive table sprawl and duplication</td><td>Consolidate to: tasks, task_labels, task_label_assignments, task_checklist_items, task_comments, task_activity, task_attachments, task_dependencies</td></tr>
+    <tr><td class="violation-id">V61</td><td><span class="badge badge-p1">P1</span></td><td>CATY AI has zero integration points in the Tasks module — no AI anywhere</td><td>Add: AI task summarizer, AI priority suggestions, AI workstream health analysis, Ask CATY on task detail</td></tr>
+    <tr><td class="violation-id">V62</td><td><span class="badge badge-p2">P2</span></td><td>Hardcoded colors in task module components (not using ADS tokens)</td><td>All colors must use var(--ds-*) tokens per design system guardrail</td></tr>
+  </tbody>
+</table>
+
+<!-- SECTION 5: INHERIT -->
+<h2 id="inherit">5. Canonical Components to Inherit from Project Module</h2>
+
+<div class="before-after">
+  <div class="before-box">
+    <h4 style="color:var(--ds-text-danger);">Current Tasks Module (Custom)</h4>
+    <ul style="font-size:12px;">
+      <li>TaskListPageV3 — hand-rolled table</li>
+      <li>KanbanBoard.tsx — legacy DnD</li>
+      <li>TaskDetailDrawer — side drawer (BANNED)</li>
+      <li>StatusDropdown — custom select</li>
+      <li>AssigneeDropdown — custom select</li>
+      <li>PriorityDropdown — custom select</li>
+      <li>CreateTaskModal — custom modal</li>
+      <li>Custom checklist component</li>
+      <li>Custom activity feed</li>
+      <li>Custom description editor</li>
+    </ul>
+  </div>
+  <div class="arrow-col">→</div>
+  <div class="after-box">
+    <h4 style="color:var(--ds-text-success);">Target (Canonical Catalyst Components)</h4>
+    <ul style="font-size:12px;">
+      <li><strong>JiraTable</strong> — with all cell factories</li>
+      <li><strong>PragmaticBoard</strong> — kanban from project-hub</li>
+      <li><strong>CatalystViewBase</strong> (modal/full-page mode) — detail view</li>
+      <li><strong>StatusTransitionDropdown</strong> — status changes</li>
+      <li><strong>EditableAssignee</strong> — assignee picker</li>
+      <li><strong>EditablePriority</strong> — priority picker</li>
+      <li><strong>@atlaskit/modal-dialog</strong> — all modals</li>
+      <li><strong>SubtasksPanel</strong> — checklist (adapt for tasks)</li>
+      <li><strong>ActivityPanel</strong> — activity feed</li>
+      <li><strong>CatalystDescriptionSection</strong> — description</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+  <h4>Data Adapter Pattern</h4>
+  <p>Per CLAUDE.md "ADOPT CANONICAL COMPONENTS — DO NOT REIMPLEMENT": mount the real component and feed it task data through an adapter. Example:</p>
+  <pre style="background:var(--ds-background-neutral);padding:12px;border-radius:4px;font-size:12px;overflow-x:auto;margin-top:8px;">
+// Adapter: map planner_tasks row → JiraTable WorkItem shape
+function taskToWorkItem(task: PlannerTask): WorkItem {
+  return {
+    id: task.task_key,           // TSK-001
+    issue_key: task.task_key,
+    summary: task.title,
+    status: task.status,
+    status_category: task.status_category,
+    assignee_display_name: task.assignee_name,
+    priority_name: task.priority,
+    issue_type: 'Task',
+    created: task.created_at,
+    updated: task.updated_at,
+    // ... map remaining fields
+  };
+}</pre>
+</div>
+
+<!-- SECTION 6: PHASES -->
+<h2 id="phases">6. Ten-Phase Execution Plan</h2>
+
+<!-- Phase 1 -->
+<div class="card phase-card">
+  <div class="phase-number">01</div>
+  <h3>Schema Consolidation &amp; Route Rename</h3>
+  <p><span class="badge badge-phase">PHASE 1</span> Foundation — no UI changes</p>
+  <div class="flow-diagram">
+    <div class="flow-node current">18 tables (current)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node target">8 tables (target)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node canonical">RLS policies</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node target">Route rename /tasks/*</div>
+  </div>
+  <h4>Outcome</h4>
+  <ul class="checklist">
+    <li>Migration: rename planner_tasks → tasks, drop duplicate tables</li>
+    <li>RLS policies on all 8 consolidated tables</li>
+    <li>All routes changed from /taskhub/* to /tasks/*</li>
+    <li>Legacy routes (/planner/*, /taskhub-kanban) redirect then delete</li>
+    <li>Module directory renamed: src/modules/planner/ → src/modules/tasks/</li>
+    <li>HubSwitcher label updated: "Tasks" (not "Task Hub")</li>
+  </ul>
+  <p style="margin-top:8px;font-size:12px;color:var(--ds-text-subtlest);">Violations closed: V8, V29, V30, V36, V58, V60</p>
+</div>
+
+<!-- Phase 2 -->
+<div class="card phase-card">
+  <div class="phase-number">02</div>
+  <h3>Task List — JiraTable Migration</h3>
+  <p><span class="badge badge-phase">PHASE 2</span> Replace custom table with canonical JiraTable</p>
+  <div class="flow-diagram">
+    <div class="flow-node current">TaskListPageV3</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node canonical">JiraTable + taskToWorkItem adapter</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node target">Inline edit + column picker + bulk select</div>
+  </div>
+  <h4>Outcome</h4>
+  <ul class="checklist">
+    <li>Task list renders via JiraTable with full cell factory set</li>
+    <li>Inline editing: summary, status, assignee, priority, due date, labels</li>
+    <li>Column picker with all task fields</li>
+    <li>Group By (status, assignee, workstream, label)</li>
+    <li>Bulk select with footer bar (edit, move, delete)</li>
+    <li>Keyboard navigation (arrows, Enter, Escape)</li>
+    <li>Sort persistence via URL params</li>
+  </ul>
+  <p style="margin-top:8px;font-size:12px;color:var(--ds-text-subtlest);">Violations closed: V1, V2, V4, V5, V6, V7, V9, V10</p>
+</div>
+
+<!-- Phase 3 -->
+<div class="card phase-card">
+  <div class="phase-number">03</div>
+  <h3>Task Detail — Full-Page/Modal View</h3>
+  <p><span class="badge badge-phase">PHASE 3</span> Replace banned drawer with CatalystViewBase</p>
+  <div class="flow-diagram">
+    <div class="flow-node current">TaskDetailDrawer (BANNED)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node canonical">CatalystViewBase (task adapter)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node target">Full-page + modal modes</div>
+  </div>
+  <h4>Outcome</h4>
+  <ul class="checklist">
+    <li>TaskDetailView built on CatalystViewBase with task data adapter</li>
+    <li>Full-page mode at /tasks/list/:taskKey and /tasks/board/:taskKey</li>
+    <li>Modal mode when opened from board card or notification</li>
+    <li>Right rail: status, assignee, priority, due date, labels, workstream, watchers</li>
+    <li>Left panel: description (CatalystDescriptionSection), checklist, attachments, activity</li>
+    <li>All editable fields use canonical Catalyst editable components</li>
+    <li>Delete old TaskDetailDrawer/ directory entirely</li>
+  </ul>
+  <p style="margin-top:8px;font-size:12px;color:var(--ds-text-subtlest);">Violations closed: V3, V12, V31</p>
+</div>
+
+<!-- Phase 4 -->
+<div class="card phase-card">
+  <div class="phase-number">04</div>
+  <h3>Board — PragmaticBoard Migration</h3>
+  <p><span class="badge badge-phase">PHASE 4</span> Replace legacy kanban with canonical PragmaticBoard</p>
+  <div class="flow-diagram">
+    <div class="flow-node current">KanbanBoard.tsx (legacy)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node canonical">PragmaticBoard + task adapter</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node target">Swimlanes + WIP + quick-add</div>
+  </div>
+  <h4>Outcome</h4>
+  <ul class="checklist">
+    <li>Board renders via PragmaticBoard with task card component</li>
+    <li>Drag-and-drop status change with optimistic update</li>
+    <li>Column management via @atlaskit/modal-dialog</li>
+    <li>WIP limits per column (configurable)</li>
+    <li>Swimlane support (by assignee, workstream, priority)</li>
+    <li>Quick-add card at column bottom (inline create)</li>
+    <li>Board filtering (assignee, label, priority)</li>
+    <li>Checklist progress indicator on cards</li>
+  </ul>
+  <p style="margin-top:8px;font-size:12px;color:var(--ds-text-subtlest);">Violations closed: V11, V13, V14, V15, V16, V17, V18, V19, V20</p>
+</div>
+
+<!-- Phase 5 -->
+<div class="card phase-card">
+  <div class="phase-number">05</div>
+  <h3>Timeline — Gantt View Build</h3>
+  <p><span class="badge badge-phase">PHASE 5</span> Build production timeline from Pragmatic DnD primitives</p>
+  <div class="flow-diagram">
+    <div class="flow-node current">PlannerTimeline (basic)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node target">Gantt with drag-resize + dependencies</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node target">Zoom levels + today line</div>
+  </div>
+  <h4>Outcome</h4>
+  <ul class="checklist">
+    <li>Horizontal timeline with task bars positioned by start_date/due_date</li>
+    <li>Drag-to-resize task duration (updates dates via mutation)</li>
+    <li>Dependency arrows between tasks (using task_dependencies table)</li>
+    <li>Zoom levels: Day, Week, Month, Quarter</li>
+    <li>Today-line marker (red vertical line)</li>
+    <li>Group rows by workstream, assignee, or label</li>
+    <li>Drag-to-create on empty space</li>
+    <li>Merge PlannerCalendar into Timeline as "Day/Week" zoom</li>
+  </ul>
+  <p style="margin-top:8px;font-size:12px;color:var(--ds-text-subtlest);">Violations closed: V21, V22, V23, V24, V25, V26, V27, V28</p>
+</div>
+
+<!-- Phase 6 -->
+<div class="card phase-card">
+  <div class="phase-number">06</div>
+  <h3>Work Streams — Full CRUD</h3>
+  <p><span class="badge badge-phase">PHASE 6</span> Make workstreams a first-class entity</p>
+  <div class="flow-diagram">
+    <div class="flow-node current">Read-only listing</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node target">CRUD + detail + progress + RLS</div>
+  </div>
+  <h4>Outcome</h4>
+  <ul class="checklist">
+    <li>Create workstream: name, description, color, icon, owner (lead)</li>
+    <li>Edit workstream: all fields editable inline</li>
+    <li>Archive/delete workstream with confirmation modal</li>
+    <li>Workstream detail view: filtered task list for that workstream</li>
+    <li>Progress indicator: done_count / total_count per workstream</li>
+    <li>Color/icon customization</li>
+    <li>RLS: workstream members can CRUD their tasks</li>
+    <li>Workstream templates for recurring setups</li>
+  </ul>
+  <p style="margin-top:8px;font-size:12px;color:var(--ds-text-subtlest);">Violations closed: V43, V44, V45, V46, V47, V48, V49, V50</p>
+</div>
+
+<!-- Phase 7 -->
+<div class="card phase-card">
+  <div class="phase-number">07</div>
+  <h3>My Tasks &amp; Priorities — Unified Personal View</h3>
+  <p><span class="badge badge-phase">PHASE 7</span> Merge My Tasks + Task10 into one coherent personal view</p>
+  <div class="flow-diagram">
+    <div class="flow-node current">MyTasksPage + T10LandingPage (separate)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node target">Unified personal tasks hub</div>
+  </div>
+  <h4>Outcome</h4>
+  <ul class="checklist">
+    <li>My Tasks = JiraTable filtered to assignee = current_user</li>
+    <li>Sections: Today, This Week, Later, No Date (Asana pattern)</li>
+    <li>Recently assigned group at top</li>
+    <li>Overdue highlighting with red date badge</li>
+    <li>Complete-with-undo shows @atlaskit/flag toast</li>
+    <li>Priorities tab: top-10 drag-sortable list (Pragmatic DnD sortable)</li>
+    <li>Task10 completed view becomes a filter state, not separate page</li>
+    <li>Delete T10CompletedPage, merge T10 hooks into tasks module</li>
+  </ul>
+  <p style="margin-top:8px;font-size:12px;color:var(--ds-text-subtlest);">Violations closed: V33, V34, V35, V37, V38, V39, V40, V41</p>
+</div>
+
+<!-- Phase 8 -->
+<div class="card phase-card">
+  <div class="phase-number">08</div>
+  <h3>Overview Dashboard &amp; CATY AI</h3>
+  <p><span class="badge badge-phase">PHASE 8</span> Intelligence layer — AI-powered overview</p>
+  <div class="flow-diagram">
+    <div class="flow-node current">Basic stats dashboard</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node canonical">CATY AI + analytics widgets</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node target">Actionable overview</div>
+  </div>
+  <h4>Outcome</h4>
+  <ul class="checklist">
+    <li>Task burndown chart (tasks created vs completed over time)</li>
+    <li>Overdue count with drill-down link to filtered list</li>
+    <li>Workstream health cards (progress bars per workstream)</li>
+    <li>Team workload view (tasks per assignee, capacity indicators)</li>
+    <li>Activity feed (recent task updates as stream)</li>
+    <li>CATY AI "Daily Focus" card: top 3 tasks to focus on today</li>
+    <li>CATY AI workstream summary: natural language health report</li>
+    <li>Ask CATY button on overview (connects to existing CatyPanelV4)</li>
+    <li>Single RPC function for dashboard aggregates (fix N+1)</li>
+  </ul>
+  <p style="margin-top:8px;font-size:12px;color:var(--ds-text-subtlest);">Violations closed: V32, V51, V52, V53, V54, V55, V61</p>
+</div>
+
+<!-- Phase 9 -->
+<div class="card phase-card">
+  <div class="phase-number">09</div>
+  <h3>Cross-Cutting Integration</h3>
+  <p><span class="badge badge-phase">PHASE 9</span> Wire tasks into Catalyst's shared systems</p>
+  <div class="flow-diagram">
+    <div class="flow-node current">Isolated module</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node target">Search + Notifications + For You</div>
+  </div>
+  <h4>Outcome</h4>
+  <ul class="checklist">
+    <li>Global search indexes tasks (add to GlobalSearchPanel query)</li>
+    <li>Notification system wired for task events (assign, mention, due, complete)</li>
+    <li>For You / Assigned tab shows tasks alongside ph_issues</li>
+    <li>For You / Recommended shows task mentions</li>
+    <li>For You task cards link to TaskDetailModal (not drawer)</li>
+    <li>Sidebar recent items show tasks with proper icon</li>
+    <li>Design system audit pass — all ADS tokens, no hardcoded colors</li>
+  </ul>
+  <p style="margin-top:8px;font-size:12px;color:var(--ds-text-subtlest);">Violations closed: V42, V56, V57, V59, V62</p>
+</div>
+
+<!-- Phase 10 -->
+<div class="card phase-card">
+  <div class="phase-number">10</div>
+  <h3>Polish, Cleanup &amp; Legacy Removal</h3>
+  <p><span class="badge badge-phase">PHASE 10</span> Delete dead code, run full audit</p>
+  <div class="flow-diagram">
+    <div class="flow-node current">Legacy code remains</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node target">Clean module, zero legacy</div>
+  </div>
+  <h4>Outcome</h4>
+  <ul class="checklist">
+    <li>Delete: src/modules/task10/ (fully merged)</li>
+    <li>Delete: TaskDetailDrawer/ (replaced by TaskDetailModal)</li>
+    <li>Delete: KanbanBoard.tsx, KanbanPage.tsx (replaced by PragmaticBoard)</li>
+    <li>Delete: TaskListPageV3 (replaced by JiraTable)</li>
+    <li>Delete: PlannerCalendar.tsx (merged into Timeline)</li>
+    <li>Delete: all planner_* prefixed hook files (renamed to task_*)</li>
+    <li>Drop legacy Supabase tables (planner_board_tasks, planner_my_tasks, etc.)</li>
+    <li>Run design-system audit: 0 violations</li>
+    <li>Run jira-compare against Asana reference screenshots</li>
+    <li>Full CRUD acceptance test on all 7 views</li>
+    <li>Realtime subscriptions verified on all mutation paths</li>
+  </ul>
+</div>
+
+<!-- SECTION 7: CATY AI -->
+<h2 id="caty">7. CATY AI Integration Strategy</h2>
+<div class="card">
+  <h4>Reference: Asana AI Studio (confirmed 2-1)</h4>
+  <p>Asana's no-code workflow builder for AI automations. Catalyst equivalent: CATY AI with existing Gemini + Claude backends.</p>
+
+  <h4 style="margin-top:16px;">Integration Points (6 total)</h4>
+  <table>
+    <thead><tr><th>Surface</th><th>AI Feature</th><th>Backend</th></tr></thead>
+    <tbody>
+      <tr><td>Task Detail (right rail)</td><td>"Ask CATY" button — summarize task, suggest next steps</td><td>ai-improve-story edge function (adapt for tasks)</td></tr>
+      <tr><td>Overview Dashboard</td><td>"Daily Focus" — top 3 tasks to tackle today</td><td>New edge function: ai-task-focus (Gemini)</td></tr>
+      <tr><td>Overview Dashboard</td><td>Workstream Health Summary — NL report per workstream</td><td>ai-digest edge function (adapt for workstreams)</td></tr>
+      <tr><td>Priorities</td><td>AI Priority Suggestions — auto-rank by urgency/impact</td><td>New edge function: ai-task-prioritize</td></tr>
+      <tr><td>Board</td><td>AI Column Suggestions — "move these tasks to Done?"</td><td>Client-side inference from due_date + status</td></tr>
+      <tr><td>Create Task Modal</td><td>AI Description Generation — scaffold from title</td><td>ai-improve-story (adapt prompt)</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:8px;font-size:12px;color:var(--ds-text-subtlest);">All AI CTAs use the canonical <code>AIIntelligenceButton</code> with static rainbow border per CLAUDE.md carve-out.</p>
+</div>
+
+<!-- SECTION 8: FOR YOU -->
+<h2 id="foryou">8. For You Page Integration</h2>
+<div class="card">
+  <h4>Current State</h4>
+  <p>For You already queries <code>planner_tasks</code> in Wave 1 and has TSK mode. But task cards link to the banned drawer, and task mentions don't appear in the Recommended tab.</p>
+
+  <h4 style="margin-top:16px;">Required Wiring</h4>
+  <table>
+    <thead><tr><th>For You Tab</th><th>Task Integration</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Assigned</td><td>Show tasks assigned to user alongside ph_issues</td><td style="color:var(--ds-text-warning);">Partial — query exists, linking broken</td></tr>
+      <tr><td>Recommended / Mentions</td><td>Show task mentions from task_mentions table</td><td style="color:var(--ds-text-danger);">Missing — not queried</td></tr>
+      <tr><td>Starred</td><td>Show starred/watched tasks from task_watchers</td><td style="color:var(--ds-text-danger);">Missing — not queried</td></tr>
+      <tr><td>Ageing</td><td>Show tasks older than N days with no activity</td><td style="color:var(--ds-text-danger);">Missing — not queried</td></tr>
+      <tr><td>AI Focus / Themes</td><td>Include task workstreams in AI theme analysis</td><td style="color:var(--ds-text-danger);">Missing — ai-digest only covers ph_issues</td></tr>
+    </tbody>
+  </table>
+
+  <h4 style="margin-top:16px;">Key Change</h4>
+  <p>All For You task cards must use <code>openDetail</code> → <strong>TaskDetailModal</strong> (Phase 3 output). The <code>openDetail</code> call must pass <code>task_key</code> (e.g., TSK-001), not a UUID — same pattern as ph_issues per CLAUDE.md.</p>
+</div>
+
+<!-- FOOTER -->
+<div style="margin-top:48px;padding-top:24px;border-top:2px solid var(--ds-border);text-align:center;">
+  <p style="font-size:12px;color:var(--ds-text-subtlest);">
+    Catalyst Tasks Module Deep Research Report &middot; Generated 2026-06-02<br>
+    Research: 104 agents &middot; 22 sources &middot; 25 claims verified (13 confirmed, 12 killed)<br>
+    Codebase: 38 hooks, 30+ components, 18 tables, 11 routes mapped<br>
+    Sources: <a href="https://asana.com/features">Asana Features</a> &middot;
+    <a href="https://www.notion.com/help/guides/getting-started-with-projects-and-tasks">Notion Tasks Guide</a> &middot;
+    <a href="https://atlassian.design/components/dynamic-table">ADS Dynamic Table</a> &middot;
+    <a href="https://atlassian.design/components/pragmatic-drag-and-drop">Pragmatic DnD</a>
+  </p>
+</div>
+
+</div>
+</body>
+</html>

@@ -32,7 +32,7 @@ export const useTaskActions = () => {
     setIsLoading(true);
     try {
       const { error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({ 
           is_archived: true,
           updated_at: new Date().toISOString()
@@ -57,7 +57,7 @@ export const useTaskActions = () => {
     setIsLoading(true);
     try {
       const { error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .delete()
         .eq('id', taskId);
 

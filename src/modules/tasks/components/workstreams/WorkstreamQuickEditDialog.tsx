@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Workstream, useUpdateWorkstream } from '../../hooks/usePlannerWorkstreams';
+import { Workstream, useUpdateWorkstream } from '../../hooks/useTaskWorkstreams';
 
 function cleanPrefix(value: string) {
   return value

@@ -52,7 +52,7 @@ export function useDailyScorecardData() {
     queryFn: async (): Promise<DailyScorecardData> => {
       // Fetch workstreams - avoid chained query to prevent type recursion
       const wsResult = await supabase
-        .from('planner_workstreams')
+        .from('task_workstreams')
         .select('id, name, color');
       
       if (wsResult.error) throw wsResult.error;
@@ -63,7 +63,7 @@ export function useDailyScorecardData() {
 
       // Fetch tasks with related data
       const { data: tasks, error: taskError } = await (supabase
-        .from('planner_tasks') as any)
+        .from('tasks') as any)
         .select(`
           id,
           title,
@@ -72,9 +72,9 @@ export function useDailyScorecardData() {
           workstream_id,
           due_date,
           blocked,
-          assignee:profiles!planner_tasks_assignee_id_fkey(full_name),
-          workstream:planner_workstreams(name, color),
-          status:planner_statuses(is_completed_status)
+          assignee:profiles!tasks_assignee_id_fkey(full_name),
+          workstream:task_workstreams(name, color),
+          status:task_statuses(is_completed_status)
         `)
         .is('deleted_at', null);
 

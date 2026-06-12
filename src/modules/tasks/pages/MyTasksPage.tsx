@@ -9,8 +9,8 @@ import { MyTasksContent } from '../components/my-tasks';
 import { useMyTasksRealtime } from '../hooks/useMyTasksRealtime';
 import { TaskDetailDrawer } from '../components/TaskDetailDrawer/TaskDetailDrawer';
 import { PlannerCreateModal } from '../components/PlannerCreateModal';
-import { useCreatePlannerTask } from '../hooks/useCreatePlannerTask';
-import { usePlannerUsers } from '../hooks/usePlannerUsers';
+import { useCreateTask } from '../hooks/useCreateTask';
+import { useTaskUsers } from '../hooks/useTaskUsers';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { MobileMenuDrawer } from '@/components/layout/MobileMenuDrawer';
 import type { FilterConfig } from '../types/my-tasks';
@@ -30,9 +30,9 @@ export function MyTasksPage() {
   
   // Hooks
   useMyTasksRealtime();
-  const createTask = useCreatePlannerTask();
+  const createTask = useCreateTask();
   const teams: { id: string; name: string; color?: string; memberCount?: number }[] = []; // Workstreams removed
-  const { data: users = [] } = usePlannerUsers();
+  const { data: users = [] } = useTaskUsers();
 
   // Handler for creating task
   const handleCreateTask = useCallback((data: {

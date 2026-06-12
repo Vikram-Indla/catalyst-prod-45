@@ -543,7 +543,7 @@ export const HomeContentV2 = memo(function HomeContentV2() {
         'story': 'stories',
         'feature': 'features',
         'epic': 'epics',
-        'task': 'work_manager_tasks',
+        'task': 'tasks',
       };
       
       const tableName = tableMap[itemType];
@@ -610,7 +610,7 @@ export const HomeContentV2 = memo(function HomeContentV2() {
     if (domain === 'operations') {
       return [...base, { value: 'priority', label: 'Priority' }];
     }
-    if (domain === 'planner') {
+    if (domain === 'tasks') {
       return [...base, { value: 'planned-date', label: 'Planned date' }];
     }
     return [...base, { value: 'priority', label: 'Priority' }];
@@ -638,7 +638,7 @@ export const HomeContentV2 = memo(function HomeContentV2() {
             />
           </>
         );
-      case 'planner':
+      case 'tasks':
         return (
           <>
             <FocusWidget 

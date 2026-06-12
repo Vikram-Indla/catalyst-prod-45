@@ -8,7 +8,7 @@ import { X, Calendar, User, Flag, Activity, Tag, AlertTriangle, Trash2, Clock } 
 import type { KanbanTask, KanbanTaskPriority } from '../../types/kanban';
 import { useKanbanStatuses } from '../../hooks/useKanbanStatuses';
 import { useUpdateKanbanTask, useDeleteKanbanTask } from '../../hooks/useKanbanTasks';
-import { usePlannerUsers } from '../../hooks/usePlannerUsers';
+import { useTaskUsers } from '../../hooks/useTaskUsers';
 import { PriorityBadge } from './PriorityBadge';
 import { DueDateBadge } from './DueDateBadge';
 import { AssigneeAvatar } from './AssigneeAvatar';
@@ -52,7 +52,7 @@ interface TaskDetailDrawerProps {
 
 export function TaskDetailDrawer({ task, open, onOpenChange }: TaskDetailDrawerProps) {
   const { data: statuses = [] } = useKanbanStatuses();
-  const { data: users = [] } = usePlannerUsers();
+  const { data: users = [] } = useTaskUsers();
   const updateTask = useUpdateKanbanTask();
   const deleteTask = useDeleteKanbanTask();
   

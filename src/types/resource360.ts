@@ -92,7 +92,7 @@ export const StatusConfig = {
 
 export type R360Hub =
   | 'StrategyHub' | 'ProductHub' | 'ProjectHub' | 'ReleaseHub'
-  | 'TestHub' | 'IncidentHub' | 'TaskHub';
+  | 'TestHub' | 'IncidentHub' | 'Tasks';
 
 export type R360WorkItemType =
   | 'Request' | 'Epic' | 'Feature' | 'Story' | 'Subtask' | 'Bug' | 'Task'
@@ -568,7 +568,7 @@ export const WH_HUB_COLORS: Record<string, string> = {
   ReleaseHub:   'var(--cp-warning, #D97706)',
   TestHub:      'var(--cp-danger, #DC2626)',
   IncidentHub:  '#EF4444',
-  TaskHub:      'var(--cp-ink-3, var(--cp-text-secondary, #64748B))',
+  Tasks:      'var(--cp-ink-3, var(--cp-text-secondary, #64748B))',
 };
 
 /** Hub short names for badges (V3) */
@@ -579,7 +579,7 @@ export const WH_HUB_SHORT: Record<string, string> = {
   ReleaseHub:   'REL',
   TestHub:      'TEST',
   IncidentHub:  'INC',
-  TaskHub:      'TASK',
+  Tasks:      'TASK',
 };
 
 // ═══════════════════════════════════════════════════════════

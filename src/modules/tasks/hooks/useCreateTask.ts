@@ -27,7 +27,7 @@ interface CreateTaskData {
 }
 
 
-export function useCreatePlannerTask() {
+export function useCreateTask() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -83,7 +83,7 @@ export function useCreatePlannerTask() {
 
       // Auto-create default checklist item with task title
       const { error: checklistError } = await supabase
-        .from('planner_task_checklist_items')
+        .from('task_checklist_items_v2')
         .insert({
           task_id: taskId,
           content: data.title,

@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
-import type { WorkstreamMember, Workstream } from '../../hooks/usePlannerWorkstreams';
+import type { WorkstreamMember, Workstream } from '../../hooks/useTaskWorkstreams';
 
 interface MemberWithDetails extends WorkstreamMember {
   assignment_name?: string | null;

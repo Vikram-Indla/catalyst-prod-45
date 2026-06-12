@@ -11,7 +11,7 @@ import {
 } from '@/lib/atlaskit-icons';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 import { useTheme } from '@/hooks/useTheme';
 import type { ActiveCycle } from '@/components/testhub/dashboard/ActiveCyclesList';
 import type { RecentActivity } from '@/components/testhub/dashboard/RecentActivityFeed';

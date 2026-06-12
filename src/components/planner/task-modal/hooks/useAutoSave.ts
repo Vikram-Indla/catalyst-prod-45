@@ -58,7 +58,7 @@ export const useAutoSave = (options: UseAutoSaveOptions = {}) => {
       if (changes.startDate !== undefined) dbUpdates.start_date = changes.startDate || null;
 
       const { error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update(dbUpdates)
         .eq('id', taskId);
 

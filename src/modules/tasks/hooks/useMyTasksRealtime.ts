@@ -24,7 +24,7 @@ export function useMyTasksRealtime() {
         {
           event: '*',
           schema: 'public',
-          table: 'planner_tasks',
+          table: 'tasks',
           filter: `assignee_id=eq.${user.id}`,
         },
         (payload) => {
@@ -43,7 +43,7 @@ export function useMyTasksRealtime() {
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'planner_activity_log',
+          table: 'task_activity',
         },
         () => {
           queryClient.invalidateQueries({ queryKey: myTasksKeys.activity() });

@@ -58,7 +58,7 @@ export default function CreatePlanModal({ onClose, onCreated }: Props) {
         
         for (let i = 0; i < phases.length; i++) {
           const phase = phases[i];
-          await supabase.from('planhub_tasks').insert({
+          await supabase.from('tasks').insert({
             plan_id: data.id,
             wbs: `${i + 1}`,
             name: phase.name,

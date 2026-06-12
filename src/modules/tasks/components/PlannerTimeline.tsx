@@ -30,9 +30,9 @@ import {
   startOfDay 
 } from 'date-fns';
 import { CreateTaskModal } from './kanban';
-import { usePlannerWorkstreams, Workstream } from '../hooks/usePlannerWorkstreams';
+import { useTaskWorkstreams, Workstream } from '../hooks/useTaskWorkstreams';
 import { WorkstreamDrawer } from './workstreams/WorkstreamDrawer';
-import { usePlannerUsers } from '../hooks/usePlannerUsers';
+import { useTaskUsers } from '../hooks/useTaskUsers';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getWorkstreamColor, getStatusDotColor, STATUS_DOT_COLORS } from '@/lib/workstream-colors';
@@ -111,7 +111,7 @@ function useTimelineTasks() {
     queryKey: ['timeline-tasks-dashboard'],
     queryFn: async (): Promise<TimelineTask[]> => {
       const { data: tasks, error } = await (supabase
-        .from('planner_tasks') as any)
+        .from('tasks') as any)
         .select(`
           id,
           task_key,
@@ -122,9 +122,9 @@ function useTimelineTasks() {
           start_date,
           due_date,
           progress,
-          status:planner_statuses(slug, name),
-          workstream:planner_workstreams(id, name, color),
-          assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name)
+          status:task_statuses(slug, name),
+          workstream:task_workstreams(id, name, color),
+          assignee:profiles!tasks_assignee_id_fkey(id, full_name)
         `)
         .is('deleted_at', null)
         .order('start_date', { ascending: true, nullsFirst: false });
@@ -238,8 +238,8 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
 
   // Data
   const { data: allTasks = [], isLoading: tasksLoading } = useTimelineTasks();
-  const { data: workstreams = [], isLoading: wsLoading } = usePlannerWorkstreams();
-  const { data: users = [] } = usePlannerUsers();
+  const { data: workstreams = [], isLoading: wsLoading } = useTaskWorkstreams();
+  const { data: users = [] } = useTaskUsers();
 
   // ============================================================
   // FILTER LOGIC

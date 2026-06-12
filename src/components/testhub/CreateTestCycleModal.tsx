@@ -11,7 +11,7 @@ const CYCLE_STATUS_OPTIONS = [
   { value: 'paused', label: 'PAUSED', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)' },
   { value: 'archived', label: 'ARCHIVED', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)' },
 ] as const;
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface EnvironmentOption {
   id: string;

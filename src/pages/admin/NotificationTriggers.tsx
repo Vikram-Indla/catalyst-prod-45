@@ -45,7 +45,7 @@ const HUB_LABELS: Record<string, string> = {
   ReleaseHub: 'Release',
   TestHub: 'Test',
   IncidentHub: 'Incident',
-  TaskHub: 'Task',
+  Tasks: 'Task',
   PlanHub: 'Plan',
   WikiHub: 'Wiki',
   CrossHub: 'Cross-Hub',

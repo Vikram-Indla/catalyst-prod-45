@@ -24,24 +24,28 @@ interface AddColumnModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// task_statuses.color is varchar(7) — these are persisted DATA values (plain
+// hex), not UI style tokens. Existing seed statuses store plain hex (#9ca3af).
+// Do NOT use var(--ds-*) token strings here: they exceed 7 chars and overflow
+// the column. The swatch renders identically via backgroundColor.
 const STATUS_COLORS = [
-  { name: 'Slate', value: 'var(--ds-text-subtlest, #94a3b8)' },
-  { name: 'Blue', value: 'var(--ds-text-brand, #3b82f6)' },
+  { name: 'Slate', value: '#94a3b8' },
+  { name: 'Blue', value: '#3b82f6' },
   { name: 'Teal', value: '#14b8a6' },
-  { name: 'Green', value: 'var(--ds-text-success, #22c55e)' },
+  { name: 'Green', value: '#22c55e' },
   { name: 'Yellow', value: '#eab308' },
   { name: 'Orange', value: '#f97316' },
-  { name: 'Red', value: 'var(--ds-text-danger, #ef4444)' },
+  { name: 'Red', value: '#ef4444' },
   { name: 'Purple', value: '#8b5cf6' },
   { name: 'Pink', value: '#ec4899' },
   { name: 'Cyan', value: '#06b6d4' },
-  { name: 'Amber', value: 'var(--ds-text-warning, #f59e0b)' },
+  { name: 'Amber', value: '#f59e0b' },
   { name: 'Emerald', value: '#10b981' },
 ];
 
 export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
   const [name, setName] = useState('');
-  const [color, setColor] = useState('var(--ds-text-subtlest, #94a3b8)');
+  const [color, setColor] = useState('#94a3b8');
   
   const createColumn = useCreateColumn();
 
@@ -53,7 +57,7 @@ export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
     try {
       await createColumn.mutateAsync({ name: name.trim(), color });
       setName('');
-      setColor('var(--ds-text-subtlest, #94a3b8)');
+      setColor('#94a3b8');
       onOpenChange(false);
     } catch {
       // Error handled in hook
@@ -62,7 +66,7 @@ export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
 
   const handleClose = () => {
     setName('');
-    setColor('var(--ds-text-subtlest, #94a3b8)');
+    setColor('#94a3b8');
     onOpenChange(false);
   };
 

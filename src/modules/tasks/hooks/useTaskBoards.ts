@@ -22,10 +22,10 @@ const STALE_TIME = 30 * 1000;
 // ═══════════════════════════════════════════════════════════════════════════════
 export function useBoardColumns() {
   return useQuery({
-    queryKey: ['planner', 'board', 'columns'],
+    queryKey: ['tasks', 'board', 'columns'],
     queryFn: async (): Promise<BoardColumn[]> => {
       const { data, error } = await supabase
-        .from('planner_board_columns')
+        .from('task_board_columns')
         .select('*')
         .order('position');
       
@@ -41,12 +41,12 @@ export function useBoardColumns() {
 // ═══════════════════════════════════════════════════════════════════════════════
 export function useBoardTasks(filters?: BoardFilters) {
   return useQuery({
-    queryKey: ['planner', 'board', 'tasks', filters],
+    queryKey: ['tasks', 'board', 'tasks', filters],
     queryFn: async (): Promise<BoardTask[]> => {
       // Use any to break excessive type recursion in Supabase query builder
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let query: any = supabase
-        .from('planner_board_tasks')
+        .from('tasks')
         .select('*');
       
       // Apply filters
@@ -125,7 +125,7 @@ export function useCreateBoardTask() {
     mutationFn: async (input: CreateTaskInput) => {
       // Generate next task key
       const { data: lastTask } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .select('key')
         .order('created_at', { ascending: false })
         .limit(1)
@@ -138,7 +138,7 @@ export function useCreateBoardTask() {
       
       // Get max position in target status
       const { data: maxPos } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .select('position')
         .eq('status_id', input.status_id)
         .order('position', { ascending: false })
@@ -149,7 +149,7 @@ export function useCreateBoardTask() {
       
       // Insert task
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .insert([{
           key: newKey,
           task_key: newKey,
@@ -169,8 +169,8 @@ export function useCreateBoardTask() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['planner', 'board'] });
-      queryClient.invalidateQueries({ queryKey: ['planner', 'dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'board'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'dashboard'] });
     },
   });
 }
@@ -186,7 +186,7 @@ export function useUpdateBoardTask() {
       const { id, ...updates } = input;
       
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({
           ...updates,
           updated_at: new Date().toISOString(),
@@ -199,8 +199,8 @@ export function useUpdateBoardTask() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['planner', 'board'] });
-      queryClient.invalidateQueries({ queryKey: ['planner', 'dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'board'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'dashboard'] });
     },
   });
 }
@@ -214,7 +214,7 @@ export function useMoveBoardTask() {
   return useMutation({
     mutationFn: async ({ task_id, target_status_id, target_position }: MoveTaskInput) => {
       const { data, error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({
           status_id: target_status_id,
           position: target_position,
@@ -229,17 +229,17 @@ export function useMoveBoardTask() {
     },
     onMutate: async ({ task_id, target_status_id }) => {
       // Cancel queries
-      await queryClient.cancelQueries({ queryKey: ['planner', 'board', 'tasks'] });
+      await queryClient.cancelQueries({ queryKey: ['tasks', 'board', 'tasks'] });
       
-      const previousTasks = queryClient.getQueryData<BoardTask[]>(['planner', 'board', 'tasks']);
+      const previousTasks = queryClient.getQueryData<BoardTask[]>(['tasks', 'board', 'tasks']);
       
       if (previousTasks) {
-        const columns = queryClient.getQueryData<BoardColumn[]>(['planner', 'board', 'columns']);
+        const columns = queryClient.getQueryData<BoardColumn[]>(['tasks', 'board', 'columns']);
         const targetColumn = columns?.find(c => c.id === target_status_id);
         
         // Optimistic update
         queryClient.setQueryData<BoardTask[]>(
-          ['planner', 'board', 'tasks'],
+          ['tasks', 'board', 'tasks'],
           previousTasks.map(task => 
             task.id === task_id 
               ? { 
@@ -256,12 +256,12 @@ export function useMoveBoardTask() {
     },
     onError: (_, __, context) => {
       if (context?.previousTasks) {
-        queryClient.setQueryData(['planner', 'board', 'tasks'], context.previousTasks);
+        queryClient.setQueryData(['tasks', 'board', 'tasks'], context.previousTasks);
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['planner', 'board'] });
-      queryClient.invalidateQueries({ queryKey: ['planner', 'dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'board'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'dashboard'] });
     },
   });
 }
@@ -276,15 +276,15 @@ export function useDeleteBoardTask() {
     mutationFn: async (taskId: string) => {
       // Soft delete
       const { error } = await supabase
-        .from('planner_tasks')
+        .from('tasks')
         .update({ deleted_at: new Date().toISOString() })
         .eq('id', taskId);
       
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['planner', 'board'] });
-      queryClient.invalidateQueries({ queryKey: ['planner', 'dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'board'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'dashboard'] });
     },
   });
 }

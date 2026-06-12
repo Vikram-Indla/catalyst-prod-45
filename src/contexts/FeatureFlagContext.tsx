@@ -25,7 +25,7 @@ const MODULE_KEY_ALIASES: Record<string, string> = {
   strategyhub: 'strategy_hub',
   testhub: 'test_hub',
   workhub: 'work_hub',
-  planner: 'task_hub',
+  tasks: 'task_hub',
   planhub: 'plan_hub',
   wiki: 'wiki_hub',
   operations: 'incident_hub',

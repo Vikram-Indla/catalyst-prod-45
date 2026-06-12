@@ -19,13 +19,13 @@ import {
 } from '@/lib/atlaskit-icons';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  usePlannerWorkstreams,
+  useTaskWorkstreams,
   Workstream,
   useArchiveWorkstream,
   useDeleteWorkstream,
   useArchivedWorkstreamsCount,
   useSetWorkstreamLead,
-} from '../../hooks/usePlannerWorkstreams';
+} from '../../hooks/useTaskWorkstreams';
 import { useResourceInventory } from '../../hooks/useResourceInventory';
 import { WorkstreamDrawer } from './WorkstreamDrawer';
 import { CreateWorkstreamModal } from './CreateWorkstreamModal';
@@ -114,7 +114,7 @@ export function WorkstreamsPage() {
 
   // Archive filter - check URL param
   const showArchived = searchParams.get('archived') === 'true';
-  const { data: workstreams = [], isLoading } = usePlannerWorkstreams(showArchived);
+  const { data: workstreams = [], isLoading } = useTaskWorkstreams(showArchived);
   const { data: archivedCount = 0 } = useArchivedWorkstreamsCount();
   const { data: resources = [] } = useResourceInventory();
   const archiveWorkstream = useArchiveWorkstream();

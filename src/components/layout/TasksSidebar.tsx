@@ -1,5 +1,5 @@
 /**
- * TaskHubSidebar — TaskHub module sidebar using SidebarBase
+ * TasksSidebar — Tasks module sidebar using SidebarBase
  * 
  * Uses the shared SidebarBase component for consistent styling across all non-admin sidebars.
  * Matches the PlannerSidebar navigation structure.
@@ -18,7 +18,7 @@ import {
 } from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
-interface TaskHubSidebarProps {
+interface TasksSidebarProps {
   expanded: boolean;
   onToggle: () => void;
   className?: string;
@@ -63,7 +63,7 @@ const taskHubSidebarConfig: SidebarConfig = {
   badge: 'TH',
   label: 'Tasks',
   // Design critique (2026-04-19): stripped redundant "Task" prefix from
-  // items where the hub badge ("TH / Task Hub") already provides context.
+  // items where the hub badge ("TH / Tasks") already provides context.
   //   "Task Overview" → "Overview"
   //   "Task Board"    → "Board"
   //   "Task Timeline" → "Timeline"
@@ -98,7 +98,7 @@ const taskHubSidebarConfig: SidebarConfig = {
   },
 };
 
-export function TaskHubSidebar({ expanded, onToggle, className }: TaskHubSidebarProps) {
+export function TasksSidebar({ expanded, onToggle, className }: TasksSidebarProps) {
   return (
     <SidebarBase
       config={taskHubSidebarConfig}

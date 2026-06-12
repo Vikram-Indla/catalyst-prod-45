@@ -13,7 +13,7 @@ import {
   Flame, Search, Filter, Plus, ArrowRight, ExternalLink,
 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { Button } from '@/components/ui/button';
 import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';

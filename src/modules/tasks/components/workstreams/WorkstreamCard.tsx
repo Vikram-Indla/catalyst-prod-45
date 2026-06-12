@@ -5,7 +5,7 @@
 import React, { useState } from 'react';
 import { MoreHorizontal, Archive, Pencil, Trash2, ExternalLink } from '@/lib/atlaskit-icons';
 import { LeadPicker } from './LeadPicker';
-import type { Workstream } from '../../hooks/usePlannerWorkstreams';
+import type { Workstream } from '../../hooks/useTaskWorkstreams';
 
 interface WorkstreamCardProps {
   workstream: Workstream;

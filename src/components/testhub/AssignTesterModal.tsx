@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, User, Users, Check, Search } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface Profile {
   id: string;
