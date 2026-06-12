@@ -1046,41 +1046,49 @@ If DELETE raises `Physical deletion blocked` → trigger 3 (use `force_jira_clea
 
 **This map governs: what rows are pulled into `ph_issues`, what `parent_key` links are valid, what icons render, and what the parent pull-through must fetch. Any sync code, UI component, or migration that touches parent/child relationships MUST be consistent with this map.**
 
-### Hierarchy tree (BAU project — all active types)
+### Hierarchy tree — canonical (verified by Vikram 2026-06-12)
 
 ```
-Epic  (hierarchy_level = 1, jira_type_id ≈ 10000)
- ├─ Feature  (level = 2, type_id ≈ 10173)
- │   └─ Story  (level = 3, type_id ≈ 10006)
- │       └─ Sub-task  (level = 4, type_id ≈ 10003)
- ├─ Story  (level = 3)  ← Story can sit directly under Epic
- │   └─ Sub-task
- ├─ Task  (level = 3, type_id ≈ 10010)
- │   └─ Sub-task
- ├─ QA Bug / Defect  (level = 3, type_id ≈ 10012)
- │   └─ Sub-task
- ├─ Production Incident  (level = 3, type_id ≈ 10045)
- ├─ Change Request  (level = 3, type_id ≈ 10305)
- ├─ Business Gap  (level = 3, type_id ≈ 10035)
- ├─ Backend  (level = 3, subtask-family, type_id ≈ 10022)
- ├─ Frontend  (level = 3, subtask-family)
- ├─ Integration  (level = 3, subtask-family)
- └─ Idea  (level = 3)
+Business Request  ← ROOT (ProductHub, business_requests table, NOT ph_issues)
+  │
+  └─ Epic  (parent → Business Request OR standalone)
+       │
+       ├─ Feature  (parent → Epic ONLY; acts like mini-Epic; children = Stories)
+       │    └─ Story  (parent → Epic OR Feature)
+       │         └─ [subtask-family: see below]
+       │
+       ├─ Story  (parent → Epic OR Feature)
+       │    └─ [subtask-family]
+       │
+       ├─ Task  (parent → Story / Epic / Feature)
+       │    └─ [subtask-family]
+       │
+       ├─ QA Bug / Defect  (parent → Story / Epic / Feature)
+       ├─ Change Request   (parent → Story / Epic / Business Request)
+       ├─ Production Incident  (parent → Business Request / Epic / Feature)
+       ├─ Business Gap     (parent → Business Request / Epic / Feature)
+       └─ Idea             (no parent)
+
+Subtask family — sit under Epic / Story / Task (NOT Feature):
+  Sub-task · Backend · Frontend · Integration · API Requirement · BRD Task · Figma
 ```
 
-### What `parent_key` means per type
+### What `parent_key` means per type — authoritative table
 
-| Child type | Valid `parent_key` types | Notes |
+| Child type | Allowed `parent_key` types | Notes |
 |---|---|---|
-| Feature | Epic | Feature always under Epic |
+| Epic | Business Request (or null) | BR is in business_requests table, not ph_issues |
+| Feature | Epic only | Feature = mini-Epic; never standalone |
 | Story | Epic OR Feature | Can skip Feature level |
-| Task | Epic OR Feature OR Story | Can sit at any level |
-| Sub-task | Story OR Task OR QA Bug | Sub-tasks only under work items, never Epic |
-| QA Bug | Epic OR Feature OR Story | |
-| Production Incident | Epic (optional) | Often standalone, Epic when tracking a release |
-| Change Request | Epic (optional) | Often standalone |
-| Business Gap | Epic (optional) | Often standalone |
-| Backend/Frontend/Integration | Story OR Task (subtask-family) | |
+| Task | Story / Epic / Feature | Any work level |
+| QA Bug / Defect | Story / Epic / Feature | |
+| Change Request | Story / Epic / Business Request | Primary level = Story; can escalate to Epic or BR |
+| Production Incident | Business Request / Epic / Feature | NOT Story |
+| Business Gap | Business Request / Epic / Feature | NOT Story |
+| Sub-task | Story only | |
+| Backend / Frontend / Integration / API Requirement | Epic / Story / Task | NOT Feature |
+| Idea | none | Standalone |
+| Business Request | none | Root of entire hierarchy |
 
 ### Pull-through rule (applies to ALL above)
 
