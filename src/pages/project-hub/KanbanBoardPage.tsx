@@ -315,7 +315,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
 
   /* ═══ DYNAMIC BOARD COLUMNS FROM DB ═══ */
 
-  const resolvedBoardId = activeBoardId ?? projectBoards[0]?.id ?? null;
+  const resolvedBoardId = isProduct ? null : (activeBoardId ?? projectBoards[0]?.id ?? null);
 
   const { data: dynamicBoardData } = useQuery({
     queryKey: ['kanban-board-columns', resolvedBoardId],
@@ -339,7 +339,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
       if (!cols?.length) return null;
       return { boardId: resolvedBoardId, columns: cols, mappings: mappings ?? [] };
     },
-    enabled: !!resolvedBoardId,
+    enabled: !!resolvedBoardId && !isProduct,
     staleTime: 60_000,
   });
 
@@ -360,7 +360,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
         .from('ph_saved_filters').select('jql_query').eq('id', fid).maybeSingle();
       return ((filter as any)?.jql_query as string | null) ?? null;
     },
-    enabled: ENABLE_FILTER_TO_KANBAN && !!resolvedBoardId,
+    enabled: ENABLE_FILTER_TO_KANBAN && !!resolvedBoardId && !isProduct,
     staleTime: 60_000,
   });
 
