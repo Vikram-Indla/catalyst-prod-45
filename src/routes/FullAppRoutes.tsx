@@ -102,6 +102,7 @@ const AllProductsPage = lazy(() => import("../pages/product-hub/AllProductsPage"
 const ProductBacklogPage = lazy(() => import("../pages/product-hub/ProductBacklogPage"));
 const ProductBacklogDetailPage = lazy(() => import("../pages/product-hub/InvestorJourneyDetailPage"));
 const ProductNativeBoardPage = lazy(() => import("../pages/product-hub/ProductNativeBoardPage"));
+const ProductBoardManagerPage = lazy(() => import("../pages/product-hub/ProductBoardManagerPage"));
 const ProductNativeAllWorkPage = lazy(() => import("../pages/product-hub/ProductNativeAllWorkPage"));
 const IdeationPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeationPage")) : () => <FeatureComingSoon title="Ideation" />;
 const IdeasRoadmapPage = ENABLE_AI ? lazy(() => import("../pages/product/ideas/IdeasRoadmapPage")) : () => <FeatureComingSoon title="Ideas Roadmap" />;
@@ -446,7 +447,7 @@ export default function FullAppRoutes() {
         {/* Generic per-product routes — native product hub pages (2026-06-01) */}
         <Route path="/product-hub/:key/backlog/:issueKey" element={<MG k="producthub" t="ProductHub"><S><ProductBacklogDetailPage /></S></MG>} />
         <Route path="/product-hub/:key/backlog" element={<MG k="producthub" t="ProductHub"><S><ProductBacklogPage /></S></MG>} />
-        <Route path="/product-hub/:key/boards" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
+        <Route path="/product-hub/:key/boards" element={<MG k="producthub" t="ProductHub"><S><ProductBoardManagerPage /></S></MG>} />
         <Route path="/product-hub/:key/boards/:boardId" element={<MG k="producthub" t="ProductHub"><S><KanbanBoardPageLazy /></S></MG>} />
         <Route path="/product-hub/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
         <Route path="/product-hub/:key/allwork" element={<MG k="producthub" t="ProductHub"><S><ProductNativeAllWorkPage /></S></MG>} />
