@@ -27,9 +27,8 @@ import { Separator } from '@/components/ui/separator';
 import { useInJira } from '../context/InJiraContext';
 import { IssueType, IssuePriority } from '../types';
 import { cn } from '@/lib/utils';
-import { useWorkflow } from '@/lib/workflows';
-import { JiraStatusLozengeForState, workItemTypeToIssueType } from '@/components/workflow';
-import type { WorkItemType } from '@/types/workItem.types';
+import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
+import { JiraStatusLozenge } from '@/components/workflow';
 
 // Issue type icons/labels
 const ISSUE_TYPES: { value: IssueType; label: string; color: string }[] = [
@@ -124,20 +123,13 @@ export function CreateIssueModal() {
   const selectedType = ISSUE_TYPES.find(t => t.value === issueType);
   const selectedPriority = PRIORITIES.find(p => p.value === priority);
 
-  // Map in-jira's IssueType → canonical WorkItemType → workflow IssueType so
-  // we can show the initial status the new issue will land in. Matches the
-  // workflow engine bound at /admin/workflows.
-  const workItemType: WorkItemType | undefined = (
-    issueType === 'defect'   ? 'bug' :
-    issueType === 'incident' ? 'bug' :
-    issueType === 'feature'  ? 'feature' :
-    issueType === 'story'    ? 'story' :
-    issueType === 'subtask'  ? 'subtask' :
-    undefined
-  );
-  const wfIssueType = workItemType ? workItemTypeToIssueType(workItemType) : undefined;
-  const workflow = useWorkflow(wfIssueType);
-  const initialState = workflow?.states.find(s => s.id === workflow.initialStateId);
+  // useIssueTypeWorkflow resolves in-jira IssueType → canonical WorkItemType
+  // via its ALIASES map (defect→QA Bug, incident→Production Incident, etc.)
+  // and fetches from ph_workflow_* — the same tables /admin/workflows manages.
+  const { initialStatus, statusGroups } = useIssueTypeWorkflow(issueType);
+  const initialStatusCategory = statusGroups
+    .flatMap(g => g.statuses.map(s => ({ name: s.name, category: g.category })))
+    .find(s => s.name === initialStatus)?.category ?? 'default';
 
   return (
     <Dialog open={isCreateModalOpen} onOpenChange={() => closeCreateModal()}>
@@ -227,15 +219,15 @@ export function CreateIssueModal() {
 
           {/* Status preview — new issues always land on the workflow's initial
               state. Read-only here (matches Jira's create dialog). */}
-          {initialState && (
+          {initialStatus && (
             <div className="space-y-1.5">
               <Label className="text-sm font-medium text-text-secondary">
                 Status
               </Label>
               <div className="flex items-center gap-2 px-3 py-2 bg-surface-2 rounded-md border border-border-default">
-                <JiraStatusLozengeForState state={initialState} />
+                <JiraStatusLozenge category={initialStatusCategory} name={initialStatus} variant="subtle" />
                 <span className="text-xs text-text-secondary">
-                  New {selectedType?.label.toLowerCase()}s start in this state (workflow: {workflow?.name})
+                  New {selectedType?.label.toLowerCase()}s start in this state
                 </span>
               </div>
             </div>

@@ -1,10 +1,17 @@
 import React from 'react';
 import { token } from '@atlaskit/tokens';
-import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
+import { useProcessSteps } from '@/modules/kanban/hooks/useProcessSteps';
 import { getBrandColorHex } from '@/components/admin/BrandColorPicker';
 
+// Category → dot color token (for steps that have no explicit color set)
+const CATEGORY_DOT: Record<string, string> = {
+  todo:        token('color.text.subtlest', '#6B778C'),
+  in_progress: token('color.text.information', '#0052CC'),
+  done:        token('color.text.success', '#006644'),
+};
+
 export function DashboardWorkflowPath() {
-  const { data: steps = [], isLoading } = useActiveDemandProcessSteps();
+  const { data: steps = [], isLoading } = useProcessSteps();
 
   if (isLoading) {
     return (
@@ -62,7 +69,7 @@ export function DashboardWorkflowPath() {
         }}
       >
         {sorted.map((step, idx) => {
-          const color = getBrandColorHex(step.color);
+          const color = token('color.text.information', '#0052CC');
           const isLast = idx === sorted.length - 1;
           return (
             <li
@@ -102,7 +109,7 @@ export function DashboardWorkflowPath() {
                     textOverflow: 'ellipsis',
                   }}
                 >
-                  {step.label}
+                  {step.value}
                 </span>
               </div>
 

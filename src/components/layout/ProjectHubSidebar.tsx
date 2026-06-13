@@ -24,6 +24,7 @@ import {
   X,
   Filter,
   Map,
+  GanttChart,
 } from '@/lib/atlaskit-icons';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -134,6 +135,7 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             // carry it.
             { id: 'allwork', title: 'Project Work', path: `${base}/allwork`, icon: GitBranch, exact: false },
             { id: 'filters', title: 'Project Filters', path: `${base}/filters`, icon: Filter, exact: false },
+            { id: 'timeline', title: 'Timeline', path: `${base}/timeline`, icon: GanttChart, exact: false },
             { id: 'roadmaps', title: 'Project Roadmaps', path: `${base}/roadmaps`, icon: Map, exact: false },
             // Story / Epic / Feature Backlog pages were removed — their scope
             // is fully covered by the unified Backlog view above. Routes now

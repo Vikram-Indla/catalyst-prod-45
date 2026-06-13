@@ -68,6 +68,7 @@ import {
 } from '@/components/kanban/AdvancedFilterPanel';
 import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import type { GroupByOption } from '@/components/shared/GroupByPopover';
+import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -206,20 +207,16 @@ export default function ProductNativeBoardPage() {
 
   const productId = productMeta?.id ?? null;
 
-  /* ═══ DATA: COLUMNS from demand_process_steps (replaces board_columns) ═══ */
-  const { data: processSteps = [] } = useQuery({
-    queryKey: ['demand-process-steps', 'active'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('demand_process_steps').select('*')
-        .eq('is_active', true).order('sort_order');
-      return (data ?? []) as { id: string; value: string; label: string; sort_order: number }[];
-    },
-    staleTime: 60_000,
-  });
+  /* ═══ DATA: COLUMNS from ph_workflow_type_statuses — single source of truth ═══
+   * useTypeWorkflow('BAU', 'Business Request') reads the same tables that
+   * CatalystStatusPill and /admin/workflows manage. Any status added/removed
+   * in admin automatically propagates to kanban columns here.
+   */
+  const { data: brWorkflow } = useTypeWorkflow('BAU', 'Business Request');
 
   const { KANBAN_COLUMNS, STATUS_TO_COL_ID, COL_PRIMARY_STATUS, COLUMN_ID_SET } = useMemo(() => {
-    if (!processSteps.length) {
+    const statuses = brWorkflow?.statuses ?? [];
+    if (!statuses.length) {
       return {
         KANBAN_COLUMNS: DEFAULT_KANBAN_COLUMNS,
         STATUS_TO_COL_ID: DEFAULT_STATUS_TO_COL_ID,
@@ -227,13 +224,11 @@ export default function ProductNativeBoardPage() {
         COLUMN_ID_SET: DEFAULT_COLUMN_ID_SET,
       };
     }
-    const cols: KanbanColumnDef[] = processSteps.map(s => ({
-      id: s.value,
-      name: s.label.toUpperCase(),
-      statuses: [s.value],
-      category: (s.value.includes('done') || s.value.includes('cancel'))
-        ? 'done'
-        : s.sort_order <= 2 ? 'todo' : 'in_progress',
+    const cols: KanbanColumnDef[] = statuses.map(s => ({
+      id: s.name,
+      name: s.name.toUpperCase(),
+      statuses: [s.name],
+      category: s.category as 'todo' | 'in_progress' | 'done',
     }));
     const sToCId = new Map<string, string>();
     const cPrimary: Record<string, string> = {};
@@ -247,7 +242,7 @@ export default function ProductNativeBoardPage() {
       COL_PRIMARY_STATUS: cPrimary,
       COLUMN_ID_SET: new Set(cols.map(c => c.id)),
     };
-  }, [processSteps]);
+  }, [brWorkflow?.statuses]);
 
   /* ═══ DATA: ISSUES from business_requests (replaces ph_issues) ═══ */
   const { data: rawIssues = [], isLoading } = useQuery({

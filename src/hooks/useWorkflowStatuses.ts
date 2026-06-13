@@ -68,7 +68,7 @@ export function useWorkflowStatuses(projectKey: string) {
         work_item_types: typeMap[s.id] ?? [],
       }));
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
     enabled: Boolean(projectKey),
   });
 }

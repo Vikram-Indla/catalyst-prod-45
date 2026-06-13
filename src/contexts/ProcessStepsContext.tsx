@@ -1,21 +1,21 @@
 /**
  * ProcessStepsContext - Provides dynamic process steps data throughout the app
- * 
- * This context fetches process steps from demand_process_steps table and provides:
- * - processSteps: Array of active process steps
- * - getProcessStepLabel: Function to get label for a value
- * - getProcessStepColor: Function to get color hex for a value
- * - processStepOptions: Array of {value, label} for dropdowns
- * - isLoading: Loading state
- * 
- * When process steps are renamed/added/deleted in admin, all consumers update automatically
- * Colors selected in admin are applied in real-time across the entire application.
+ *
+ * Source of truth: ph_workflow_type_statuses (via useTypeWorkflow('BAU', 'Business Request'))
+ * Legacy demand_process_steps table is no longer the source — all status changes
+ * must go through /admin/workflows.
  */
 
 import React, { createContext, useContext, useMemo, ReactNode } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import { getBrandColorHex } from '@/components/admin/BrandColorPicker';
+
+// Category → default color fallback when no explicit color is set on the status
+const CATEGORY_COLOR: Record<string, string> = {
+  todo:        'olive',
+  in_progress: 'blue',
+  done:        'green',
+};
 
 export interface ProcessStep {
   id: string;
@@ -47,21 +47,21 @@ interface ProcessStepsProviderProps {
 }
 
 export function ProcessStepsProvider({ children }: ProcessStepsProviderProps) {
-  const { data: processSteps = [], isLoading } = useQuery({
-    queryKey: ['demand-process-steps', 'active'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('demand_process_steps')
-        .select('id, value, label, sort_order, is_active, color')
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true });
-      
-      if (error) throw error;
-      return data as ProcessStep[];
-    },
-    staleTime: 2 * 60_000,
-    refetchOnWindowFocus: false,
-  });
+  // Single source of truth: ph_workflow_type_statuses for Business Request via BAU project
+  const { data: brWorkflow, isLoading } = useTypeWorkflow('BAU', 'Business Request');
+
+  // Map TypeStatus[] → ProcessStep[] so all consumers work unchanged
+  const processSteps = useMemo<ProcessStep[]>(
+    () => (brWorkflow?.statuses ?? []).map(s => ({
+      id: s.id,
+      value: s.name,
+      label: s.name,
+      sort_order: s.position,
+      is_active: true,
+      color: s.color ?? CATEGORY_COLOR[s.category] ?? 'olive',
+    })),
+    [brWorkflow?.statuses],
+  );
 
   // Build lookup map for O(1) access
   const processStepMap = useMemo(() => {

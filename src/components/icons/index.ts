@@ -23,11 +23,14 @@ export {
   PRIORITY_REGISTRY,
   PROJECT_AVATAR_REGISTRY,
   STOCK_AVATAR_REGISTRY,
+  STOCK_AVATAR_IDS,
+  HUB_ICON_REGISTRY,
   WORK_ITEM_TYPES,
   PRIORITY_LEVELS,
   PROJECT_KEYS,
   normalizeWorkItemType,
   normalizePriority,
+  pickStockAvatarForKey,
 } from './icons.registry';
 
 export type {
@@ -35,6 +38,7 @@ export type {
   PriorityLevel,
   ProjectKey,
   StockAvatarId,
+  HubKey,
   WorkTypeMeta,
   PriorityMeta,
   ProjectAvatarMeta,

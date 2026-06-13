@@ -34,7 +34,7 @@ import { WorkListPanel } from '@/pages/project-hub/jira-list/components/WorkList
 import { makeOpenItemHandler } from '@/pages/project-hub/jira-list/openItemDispatch';
 import { useItemSelection } from '@/hooks/useItemSelection';
 import { useBusinessRequestsByProduct } from '@/hooks/useBusinessRequests';
-import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
+import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { jqlToFilterState } from '@/lib/jql/jqlToFilterState';
 import { filterStateToJql } from '@/lib/filters/filterStateToJql';
@@ -86,13 +86,7 @@ function useProfileMap(brs: BusinessRequest[]) {
 //   useItemSelection (id, jiraKey, summary)
 //   CatalystDetailRouter (id = request_key, rawType = 'business_request')
 
-function brStatusCategory(processStep: string | null | undefined): 'todo' | 'in_progress' | 'done' {
-  const s = (processStep ?? '').toLowerCase();
-  if (s === 'done') return 'done';
-  if (s === 'canceled') return 'done';
-  if (s === 'on_hold' || s === 'new') return 'todo';
-  return 'in_progress';
-}
+// Category now derived from ph_workflow_statuses via useTypeWorkflow — no hardcoding.
 
 function initials(name: string | null | undefined): string {
   if (!name) return '??';
@@ -103,11 +97,13 @@ function mapBrToWorkItem(
   r: BusinessRequest,
   profileMap: Map<string, ProfileRow>,
   statusLabel: string,
+  statusCategoryMap: Map<string, 'todo' | 'in_progress' | 'done'>,
 ): WorkItem {
   const dm = (r as any).project_manager_user_id ? profileMap.get((r as any).project_manager_user_id) : null;
   const po = (r as any).po_user_id ? profileMap.get((r as any).po_user_id) : null;
   const rKey = (r as any).request_key as string;
   const quarter = (r as any).planned_quarter;
+  const processStep = (r as any).process_step as string | null | undefined;
 
   return {
     id: rKey,                           // request_key — used for URL sync + itemId in CatalystDetailRouter
@@ -121,7 +117,7 @@ function mapBrToWorkItem(
     summary: r.title ?? '(Untitled)',
     status: 'in_progress' as any,
     statusName: statusLabel,
-    statusCategory: brStatusCategory((r as any).process_step),
+    statusCategory: statusCategoryMap.get(processStep ?? '') ?? 'todo',
     assigneeId: (r as any).project_manager_user_id ?? null,
     assignee: dm ? {
       id: (r as any).project_manager_user_id,
@@ -148,18 +144,24 @@ function mapBrToWorkItem(
 
 export default function ProductAllWorkView({ productCode, productId, productName }: Props) {
   const { data: brs = [], isLoading: brsLoading } = useBusinessRequestsByProduct(productId ?? null);
-  const { data: processSteps = [] } = useActiveDemandProcessSteps();
+  const { data: brWorkflow } = useTypeWorkflow('BAU', 'Business Request');
   const { data: profileMap = new Map<string, ProfileRow>() } = useProfileMap(brs as BusinessRequest[]);
 
-  const stepMap = useMemo(() => new Map(processSteps.map(s => [s.value, s])), [processSteps]);
+  // Build category + label lookup from ph_workflow_statuses — single source of truth.
+  const statusCategoryMap = useMemo(
+    () => new Map<string, 'todo' | 'in_progress' | 'done'>(
+      (brWorkflow?.statuses ?? []).map(s => [s.name, s.category as 'todo' | 'in_progress' | 'done']),
+    ),
+    [brWorkflow?.statuses],
+  );
 
   const workItems: WorkItem[] = useMemo(
     () => (brs as BusinessRequest[]).map(r => {
-      const step = stepMap.get((r as any).process_step ?? '');
-      const label = step?.label ?? ((r as any).process_step?.replace(/_/g, ' ') ?? '');
-      return mapBrToWorkItem(r, profileMap, label);
+      const processStep = (r as any).process_step as string | null | undefined;
+      const label = processStep ?? '';
+      return mapBrToWorkItem(r, profileMap, label, statusCategoryMap);
     }),
-    [brs, profileMap, stepMap],
+    [brs, profileMap, statusCategoryMap],
   );
 
   // ── Filter URL params (mirrors ProjectAllWorkView) ─────────────────────────
