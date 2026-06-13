@@ -13,7 +13,6 @@ import EditorDoneIcon from '@atlaskit/icon/glyph/editor/done';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { GanttChart, Calendar } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
 import { useProjectHubTimeline, type TimelineIssue } from '@/hooks/useProjectHubTimeline';
 import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
 import Spinner from '@atlaskit/spinner';
@@ -27,7 +26,7 @@ import { supabase } from '@/integrations/supabase/client';
 /* ─────────────────────────────── types ─────────────────────────────── */
 
 type ZoomLevel = 'week' | 'month' | 'quarter';
-type OpenDropdown = 'epic' | 'status' | 'quick' | 'more' | null;
+type OpenDropdown = 'epic' | 'status' | 'assignee' | 'quick' | 'more' | null;
 
 interface FlatRow {
   issue: TimelineIssue;
@@ -44,7 +43,7 @@ interface EpicProgress {
 /* ─────────────────────────────── constants ──────────────────────────── */
 
 const ROW_H = 40;
-const DEFAULT_SIDEBAR_W = 320;
+const DEFAULT_SIDEBAR_W = 384;
 const MIN_SIDEBAR_W = 160;
 const MAX_SIDEBAR_W = 560;
 const HEADER_H = 40;
@@ -484,6 +483,7 @@ export default function ProjectHubTimelinePage() {
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [quickFilter, setQuickFilter] = useState<string | null>(null);
   const [activeSavedFilterId, setActiveSavedFilterId] = useState<string | null>(null);
+  const [assigneeFilter, setAssigneeFilter] = useState<string | null>(null);
 
   /* view settings */
   const [showProgress, setShowProgress] = useState(true);
@@ -519,6 +519,7 @@ export default function ProjectHubTimelinePage() {
   /* dropdown trigger refs */
   const epicBtnRef = useRef<HTMLButtonElement>(null);
   const statusBtnRef = useRef<HTMLButtonElement>(null);
+  const assigneeBtnRef = useRef<HTMLButtonElement>(null);
   const quickBtnRef = useRef<HTMLButtonElement>(null);
   const moreBtnRef = useRef<HTMLButtonElement>(null);
   const viewSettingsBtnRef = useRef<HTMLButtonElement>(null);
@@ -540,6 +541,17 @@ export default function ProjectHubTimelinePage() {
       }
     }
     return epics;
+  }, [allRows]);
+
+  /* derive unique assignees for assignee filter */
+  const assigneeOptions = useMemo(() => {
+    const seen = new Set<string>();
+    const result: string[] = [];
+    for (const row of allRows) {
+      const name = row.issue.assigneeDisplayName;
+      if (name && !seen.has(name)) { seen.add(name); result.push(name); }
+    }
+    return result.sort();
   }, [allRows]);
 
   /* active saved filter object */
@@ -577,6 +589,9 @@ export default function ProjectHubTimelinePage() {
     } else if (quickFilter === 'no_assignee') {
       result = result.filter(({ issue }) => !issue.assigneeDisplayName);
     }
+    if (assigneeFilter) {
+      result = result.filter(({ issue }) => issue.assigneeDisplayName === assigneeFilter);
+    }
     /* apply saved filter config */
     if (activeSavedFilter?.filter_config) {
       const cfg = activeSavedFilter.filter_config;
@@ -602,7 +617,7 @@ export default function ProjectHubTimelinePage() {
       }
     }
     return result;
-  }, [allRows, searchQuery, epicFilter, statusFilter, quickFilter, activeSavedFilter]);
+  }, [allRows, searchQuery, epicFilter, statusFilter, quickFilter, activeSavedFilter, assigneeFilter]);
 
   const headerCols = useMemo(() => buildHeaderCols(dateRange.start, dateRange.end, zoom, pxPerDay), [dateRange, zoom, pxPerDay]);
   const subHeaderCols = useMemo(() => buildSubHeaderCols(dateRange.start, dateRange.end, zoom, pxPerDay), [dateRange, zoom, pxPerDay]);
@@ -721,9 +736,10 @@ export default function ProjectHubTimelinePage() {
     setStatusFilter([]);
     setQuickFilter(null);
     setActiveSavedFilterId(null);
+    setAssigneeFilter(null);
   }, []);
 
-  const hasActiveFilters = epicFilter !== null || statusFilter.length > 0 || quickFilter !== null || searchQuery.trim() !== '' || activeSavedFilterId !== null;
+  const hasActiveFilters = epicFilter !== null || statusFilter.length > 0 || quickFilter !== null || searchQuery.trim() !== '' || activeSavedFilterId !== null || assigneeFilter !== null;
 
   const handleCreateEpic = async () => {
     if (!epicSummary.trim() || !projectKey) return;
@@ -927,6 +943,46 @@ export default function ProjectHubTimelinePage() {
             </PortalMenu>
           </div>
 
+          {/* assignee filter */}
+          <div style={{ position: 'relative' }}>
+            <button
+              ref={assigneeBtnRef}
+              onClick={() => toggleDropdown('assignee')}
+              aria-haspopup="menu"
+              aria-expanded={openDropdown === 'assignee'}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 4,
+                height: 32, padding: '0 8px', border: `1px solid ${assigneeFilter ? 'var(--ds-border-selected, #388BFF)' : 'var(--ds-border, #DFE1E6)'}`,
+                borderRadius: 3, background: assigneeFilter ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--ds-surface, #FFFFFF)',
+                cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)',
+                fontFamily: 'var(--ds-font-family-body)',
+              }}
+            >
+              Assignee
+              {assigneeFilter && <span style={{ fontSize: 11, background: 'var(--ds-background-selected-bold, #0052CC)', color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 2, padding: '0 4px', marginLeft: 4 }}>1</span>}
+              <ChevronDownIcon label="" size="small" />
+            </button>
+            <PortalMenu isOpen={openDropdown === 'assignee'} onClose={closeDropdown} triggerRef={assigneeBtnRef} minWidth={200}>
+              <MenuItemRow
+                label="All assignees"
+                isChecked={assigneeFilter === null}
+                onClick={() => { setAssigneeFilter(null); closeDropdown(); }}
+              />
+              {assigneeOptions.length > 0 && <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />}
+              {assigneeOptions.map(name => (
+                <MenuItemRow
+                  key={name}
+                  label={name}
+                  isChecked={assigneeFilter === name}
+                  onClick={() => { setAssigneeFilter(assigneeFilter === name ? null : name); closeDropdown(); }}
+                />
+              ))}
+              {assigneeOptions.length === 0 && (
+                <div style={{ padding: '8px 12px', fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)' }}>No assignees in view</div>
+              )}
+            </PortalMenu>
+          </div>
+
           {/* quick filters + saved filters merged */}
           <div style={{ position: 'relative' }}>
             <button
@@ -1045,6 +1101,20 @@ export default function ProjectHubTimelinePage() {
               >×</button>
             </div>
           )}
+          {assigneeFilter && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, height: 28, padding: '0 8px',
+              border: '1px solid var(--ds-border-selected, #388BFF)', borderRadius: 3,
+              background: 'var(--ds-background-selected, #E9F2FF)',
+              fontSize: 12, color: 'var(--ds-link, #0052CC)', fontFamily: 'var(--ds-font-family-body)' }}>
+              {assigneeFilter}
+              <button
+                onClick={() => setAssigneeFilter(null)}
+                style={{ display: 'flex', alignItems: 'center', padding: 0, border: 'none',
+                  background: 'transparent', cursor: 'pointer', color: 'var(--ds-link, #0052CC)', lineHeight: 1 }}
+                aria-label={`Remove assignee filter: ${assigneeFilter}`}
+              >×</button>
+            </div>
+          )}
           {/* clear all filters */}
           {hasActiveFilters && (
             <button
@@ -1114,13 +1184,8 @@ export default function ProjectHubTimelinePage() {
               }}
             >
               <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', letterSpacing: '0.04em' }}>
-                Issue
+                Work
               </span>
-              {rows.length > 0 && (
-                <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)', marginLeft: 'auto' }}>
-                  {rows.length} {rows.length === 1 ? 'item' : 'items'}
-                </span>
-              )}
             </div>
 
             {/* sidebar body — scrollable */}
@@ -1141,7 +1206,7 @@ export default function ProjectHubTimelinePage() {
                       ? <ChevronRightIcon label="Expand releases" size="small" />
                       : <ChevronDownIcon label="Collapse releases" size="small" />}
                   </div>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>
+                  <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #172B4D)' }}>
                     Releases
                   </span>
                 </div>
@@ -1364,11 +1429,11 @@ export default function ProjectHubTimelinePage() {
               {todayLeft >= 0 && todayLeft <= gridWidth && (
                 <div style={{
                   position: 'absolute', top: 0, bottom: 0, left: todayLeft, width: 2,
-                  background: 'var(--ds-text-danger, #AE2A19)', zIndex: 5, pointerEvents: 'none',
+                  background: 'var(--ds-background-information-bold, #388BFF)', zIndex: 5, pointerEvents: 'none',
                 }}>
                   <div style={{
                     position: 'absolute', top: -2, left: -4, width: 10, height: 10,
-                    borderRadius: '50%', background: 'var(--ds-text-danger, #AE2A19)',
+                    borderRadius: '50%', background: 'var(--ds-background-information-bold, #388BFF)',
                   }} />
                 </div>
               )}
@@ -1542,6 +1607,10 @@ export default function ProjectHubTimelinePage() {
         </Tooltip>
 
         {/* center: zoom radio group */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap' }}>
+            Timeline time period
+          </span>
         <div
           role="radiogroup"
           aria-label="Timeline view to show as"
@@ -1573,6 +1642,7 @@ export default function ProjectHubTimelinePage() {
               {level.charAt(0).toUpperCase() + level.slice(1)}
             </label>
           ))}
+        </div>
         </div>
 
         {/* right: Legend */}
@@ -1651,6 +1721,18 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
       onMouseEnter={() => setRowHovered(true)}
       onMouseLeave={() => { if (!menuOpen) setRowHovered(false); }}
     >
+      {/* row checkbox */}
+      <div
+        style={{ width: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: rowHovered ? 1 : 0, transition: 'opacity 80ms ease' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <input
+          type="checkbox"
+          aria-label={`Select ${issue.issueKey}`}
+          style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--ds-background-selected-bold, #0052CC)', margin: 0 }}
+        />
+      </div>
+
       {/* collapse toggle */}
       <div style={{ width: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-text-subtlest, #626F86)' }}>
         {hasChildren && (
@@ -1669,7 +1751,7 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 1 }}>
         <Tooltip content={issue.summary} position="right">
           <span style={{
-            fontSize: 12, fontWeight: 500, color: 'var(--ds-text, #172B4D)',
+            fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #172B4D)',
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.3,
             display: 'block',
           }}>
@@ -1682,23 +1764,19 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
               Saving…
             </span>
           ) : (
-            <span
-              role="link"
-              tabIndex={0}
-              onClick={e => {
-                e.stopPropagation();
-                window.open(`/project-hub/${issue.projectKey}/backlog?issue=${issue.issueKey}`, '_blank');
-              }}
-              onKeyDown={e => {
-                if (e.key === 'Enter') { e.stopPropagation(); window.open(`/project-hub/${issue.projectKey}/backlog?issue=${issue.issueKey}`, '_blank'); }
-              }}
+            <a
+              href={`/project-hub/${issue.projectKey}/backlog?issue=${issue.issueKey}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={e => e.stopPropagation()}
               style={{
-                fontSize: 11, fontWeight: 400, color: 'var(--ds-link, #0052CC)',
-                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2, cursor: 'pointer',
+                fontSize: 14, fontWeight: 500, color: 'var(--ds-text-subtlest, #626F86)',
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2,
+                textDecoration: 'none',
               }}
             >
               {issue.issueKey}
-            </span>
+            </a>
           )}
           {/* mini progress bar */}
           {progress && progress.total > 0 && (
@@ -1713,26 +1791,6 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
           )}
         </div>
       </div>
-
-      {/* status pill with tooltip for truncated statuses */}
-      {issue.status && (
-        <Tooltip content={issue.status} position="top">
-          <div style={{ flexShrink: 0, maxWidth: 120 }} onClick={e => e.stopPropagation()}>
-            <CatalystStatusPill status={issue.status} statusCategory={issue.statusCategory} />
-          </div>
-        </Tooltip>
-      )}
-
-      {/* assignee avatar with tooltip */}
-      {issue.assigneeDisplayName ? (
-        <Tooltip content={issue.assigneeDisplayName} position="top">
-          <div style={{ flexShrink: 0 }} onClick={e => e.stopPropagation()}>
-            <Avatar name={issue.assigneeDisplayName} size="xsmall" />
-          </div>
-        </Tooltip>
-      ) : (
-        <div style={{ width: 24, flexShrink: 0 }} />
-      )}
 
       {/* ⋯ more-actions button — visible on hover */}
       <button
