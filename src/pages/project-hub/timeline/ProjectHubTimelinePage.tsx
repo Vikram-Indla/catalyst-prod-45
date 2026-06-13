@@ -20,6 +20,7 @@ import { useJiraProjects } from '@/hooks/workhub/useJiraProjects';
 import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button';
 import Tooltip from '@atlaskit/tooltip';
+import { IssueHoverCard } from '@/components/shared/IssueHoverCard';
 import Avatar from '@atlaskit/avatar';
 import AvatarGroup from '@atlaskit/avatar-group';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
@@ -1747,19 +1748,6 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                 const isEpic = issue.issueType === 'Epic';
                 const progress = isEpic && issue.children.length > 0 ? computeEpicProgress(issue) : null;
 
-                const tooltipContent = (
-                  <div>
-                    <div style={{ fontWeight: 600, marginBottom: 4 }}>{issue.issueKey}: {issue.summary}</div>
-                    <div style={{ opacity: 0.85 }}>{issue.startDate ?? '–'} → {issue.dueDate ?? '–'}</div>
-                    {issue.assigneeDisplayName && <div style={{ opacity: 0.85 }}>{issue.assigneeDisplayName}</div>}
-                    {progress && progress.total > 0 && (
-                      <div style={{ opacity: 0.85, fontSize: 11, marginTop: 4 }}>
-                        Done: {progress.done} · In Progress: {progress.inProgress} · To Do: {progress.toDo}
-                      </div>
-                    )}
-                    <div style={{ opacity: 0.55, fontSize: 10, marginTop: 4 }}>Drag edges to adjust dates</div>
-                  </div>
-                );
 
                 const bar = (
                   <div
@@ -1809,14 +1797,16 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                       />
                     )}
 
-                    <span style={{
-                      fontSize: 11, fontWeight: 500,
-                      color: progress && progress.toDo === progress.total ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-inverse, #FFFFFF)',
-                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1, flex: 1,
-                      position: 'relative', zIndex: 2,
-                    }}>
-                      {issue.summary}
-                    </span>
+                    {finalWidth >= 60 && (
+                      <span style={{
+                        fontSize: 11, fontWeight: 500,
+                        color: progress && progress.toDo === progress.total ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-inverse, #FFFFFF)',
+                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1, flex: 1,
+                        position: 'relative', zIndex: 2,
+                      }}>
+                        {issue.summary}
+                      </span>
+                    )}
 
                     {/* right drag handle */}
                     {issue.dueDate && (
@@ -1836,12 +1826,10 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                   </div>
                 );
 
-                return isThisDragging ? (
-                  <React.Fragment key={issue.issueKey}>{bar}</React.Fragment>
-                ) : (
-                  <Tooltip key={issue.issueKey} content={tooltipContent} position="top">
+                return (
+                  <IssueHoverCard key={issue.issueKey} issueKey={issue.issueKey} disabled={isThisDragging}>
                     {bar}
-                  </Tooltip>
+                  </IssueHoverCard>
                 );
               })}
 
