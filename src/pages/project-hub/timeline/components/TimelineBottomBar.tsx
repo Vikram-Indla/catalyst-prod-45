@@ -8,6 +8,8 @@ export interface TimelineBottomBarProps {
   onScrollToToday: () => void;
   onToggleLegend?: () => void;
   legendOpen?: boolean;
+  onToggleSidePanel?: () => void;
+  sidePanelOpen?: boolean;
 }
 
 const ZOOM_LEVELS: { key: ZoomLevel; label: string }[] = [
@@ -89,12 +91,23 @@ function BarButton({ children, onClick, title, style, isSquare }: {
   );
 }
 
+function SidebarPanelIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" role="presentation">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <line x1="9" y1="3" x2="9" y2="21" />
+    </svg>
+  );
+}
+
 export function TimelineBottomBar({
   zoom,
   onZoomChange,
   onScrollToToday,
   onToggleLegend,
   legendOpen,
+  onToggleSidePanel,
+  sidePanelOpen,
 }: TimelineBottomBarProps) {
   const [hoveredZoom, setHoveredZoom] = useState<ZoomLevel | null>(null);
   const [collapsed, setCollapsed] = useState(false);
@@ -133,6 +146,20 @@ export function TimelineBottomBar({
     >
       {!collapsed && (
         <>
+          {onToggleSidePanel && (
+            <BarButton
+              onClick={onToggleSidePanel}
+              title={sidePanelOpen ? 'Hide work panel' : 'Show work panel'}
+              isSquare
+              style={{
+                color: sidePanelOpen ? T.textSelected : T.textSubtle,
+                background: sidePanelOpen ? T.bgSelected : undefined,
+              }}
+            >
+              <SidebarPanelIcon />
+            </BarButton>
+          )}
+
           <BarButton onClick={onScrollToToday} title="Scroll to today">Today</BarButton>
 
           <div

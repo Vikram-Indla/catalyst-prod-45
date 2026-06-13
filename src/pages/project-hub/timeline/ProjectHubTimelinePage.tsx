@@ -345,7 +345,7 @@ function MenuItemRow({
 
 /* ─────────────────────────────── inline empty overlay ──────────────── */
 
-function InlineEmptyOverlay({ projectKey }: { projectKey: string }) {
+function InlineEmptyOverlay({ projectKey, onDismiss }: { projectKey: string; onDismiss: () => void }) {
   return (
     <div style={{
       position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
@@ -353,8 +353,23 @@ function InlineEmptyOverlay({ projectKey }: { projectKey: string }) {
       background: 'var(--ds-surface-overlay, #FFFFFF)',
       border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8,
       boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.15))',
-      zIndex: 20, minWidth: 280, pointerEvents: 'none',
+      zIndex: 20, minWidth: 280,
     }}>
+      <button
+        onClick={onDismiss}
+        aria-label="Dismiss"
+        style={{
+          position: 'absolute', top: 8, right: 8,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: 24, height: 24, border: 'none', borderRadius: 3,
+          background: 'transparent', cursor: 'pointer',
+          color: 'var(--ds-text-subtlest, #626F86)',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+      >
+        <CrossIcon label="Dismiss" size="small" />
+      </button>
       <GanttChart style={{ width: 40, height: 40, color: 'var(--ds-text-subtlest, #626F86)' }} />
       <div style={{ textAlign: 'center' }}>
         <p style={{ margin: 0, fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
@@ -470,6 +485,12 @@ export default function ProjectHubTimelinePage() {
     closePanel();
   }, [panelItem, projectKey, navigate, closePanel]);
 
+  /* empty overlay dismiss */
+  const [emptyOverlayDismissed, setEmptyOverlayDismissed] = useState(false);
+
+  /* today line DOM ref (updated directly in scroll handler to avoid re-renders) */
+  const todayLineRef = useRef<HTMLDivElement>(null);
+
   /* responsive container */
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -545,6 +566,7 @@ export default function ProjectHubTimelinePage() {
   const [releasesCollapsed, setReleasesCollapsed] = useState(false);
   const [viewSettingsOpen, setViewSettingsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<OpenDropdown>(null);
+  const [sidebarHidden, setSidebarHidden] = useState(false);
 
   /* create epic */
   const [creatingEpic, setCreatingEpic] = useState(false);
@@ -714,9 +736,15 @@ export default function ProjectHubTimelinePage() {
     requestAnimationFrame(() => {
       if (headerScrollRef.current) headerScrollRef.current.scrollLeft = grid.scrollLeft;
       if (sidebarBodyRef.current) sidebarBodyRef.current.scrollTop = grid.scrollTop;
+      /* update today line position without a React re-render */
+      if (todayLineRef.current) {
+        const x = todayLeft - grid.scrollLeft;
+        todayLineRef.current.style.left = x + 'px';
+        todayLineRef.current.style.display = (x >= 0 && x <= grid.clientWidth) ? 'block' : 'none';
+      }
       isSyncingScroll.current = false;
     });
-  }, []);
+  }, [todayLeft]);
 
   const handleSidebarScroll = useCallback(() => {
     if (isSyncingScroll.current) return;
@@ -916,6 +944,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
         display: 'flex', flexDirection: 'column',
         height: 'calc(100vh - 124px)',
         background: 'var(--ds-surface, #FFFFFF)', overflow: 'hidden',
+        border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
       }}
     >
       {/* ── toolbar ── */}
@@ -1296,7 +1325,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
 
         {/* ── sidebar panel ── */}
-        {!isNarrow && (
+        {!isNarrow && !sidebarHidden && (
           <div style={{
             width: sidebarWidth, flexShrink: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden',
           }}>
@@ -1540,7 +1569,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
         )}
 
         {/* ── drag divider ── */}
-        {!isNarrow && (
+        {!isNarrow && !sidebarHidden && (
           <div
             role="separator"
             aria-label="Resize sidebar"
@@ -1574,7 +1603,30 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
         )}
 
         {/* ── grid panel ── */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
+
+          {/* today line — fixed to grid panel so it doesn't shift when scrolling */}
+          {todayLeft >= 0 && (
+            <div
+              ref={todayLineRef}
+              style={{
+                position: 'absolute', top: 0, bottom: 0,
+                left: todayLeft,
+                width: 1.5,
+                background: 'var(--ds-chart-danger-bold, #E34935)',
+                zIndex: 8, pointerEvents: 'none',
+                display: todayLeft >= 0 ? 'block' : 'none',
+              }}
+            >
+              <div style={{
+                position: 'absolute', top: 0, left: -4,
+                width: 0, height: 0,
+                borderLeft: '4.5px solid transparent',
+                borderRight: '4.5px solid transparent',
+                borderTop: '7px solid var(--ds-chart-danger-bold, #E34935)',
+              }} />
+            </div>
+          )}
 
           {/* sticky date header */}
           <div
@@ -1635,23 +1687,6 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
             <div style={{ width: gridWidth, height: contentHeight, position: 'relative' }}>
 
               {/* vertical grid lines — intentionally hidden for clean Jira parity */}
-
-              {/* today marker */}
-              {todayLeft >= 0 && todayLeft <= gridWidth && (
-                <div style={{
-                  position: 'absolute', top: 0, bottom: 0, left: todayLeft, width: 1.5,
-                  background: 'var(--ds-chart-danger-bold, #E34935)', zIndex: 5, pointerEvents: 'none',
-                }}>
-                  {/* downward triangle cap */}
-                  <div style={{
-                    position: 'absolute', top: 0, left: -4,
-                    width: 0, height: 0,
-                    borderLeft: '4.5px solid transparent',
-                    borderRight: '4.5px solid transparent',
-                    borderTop: '7px solid var(--ds-chart-danger-bold, #E34935)',
-                  }} />
-                </div>
-              )}
 
               {/* releases row in grid */}
               {showReleases && (
@@ -1799,7 +1834,9 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
               })}
 
               {/* inline empty overlay */}
-              {!hasAnyDates && <InlineEmptyOverlay projectKey={projectKey ?? ''} />}
+              {!hasAnyDates && !emptyOverlayDismissed && (
+                <InlineEmptyOverlay projectKey={projectKey ?? ''} onDismiss={() => setEmptyOverlayDismissed(true)} />
+              )}
             </div>
           </div>
         </div>
@@ -1811,6 +1848,8 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
         onScrollToToday={scrollToToday}
         onToggleLegend={() => setLegendOpen(v => !v)}
         legendOpen={legendOpen}
+        onToggleSidePanel={() => setSidebarHidden(v => !v)}
+        sidePanelOpen={!sidebarHidden && !isNarrow}
       />
     </div>
     {/* ── detail side panel — canonical BacklogPage pattern ── */}
@@ -1921,7 +1960,13 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
   const [editStartDate, setEditStartDate] = useState('');
   const [editDueDate, setEditDueDate] = useState('');
   const [savingDates, setSavingDates] = useState(false);
+  const [inlineCreateOpen, setInlineCreateOpen] = useState(false);
+  const [inlineCreateType, setInlineCreateType] = useState('Story');
+  const [inlineCreateSummary, setInlineCreateSummary] = useState('');
+  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const inlineCreateInputRef = useRef<HTMLInputElement>(null);
+  const typePickerRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
 
   const openEditDates = () => {
@@ -1972,7 +2017,88 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
     }
   };
 
+  const childTypes = issue.issueType === 'Epic'
+    ? ['Story', 'Feature', 'Task']
+    : issue.issueType === 'Feature'
+    ? ['Story', 'Task']
+    : issue.issueType === 'Story'
+    ? ['Sub-task', 'Task']
+    : ['Sub-task'];
+
+  const canHaveChildren = !['Sub-task', 'Backend', 'Frontend', 'Integration', 'Idea'].includes(issue.issueType ?? '');
+
+  useEffect(() => {
+    if (inlineCreateOpen && inlineCreateInputRef.current) inlineCreateInputRef.current.focus();
+  }, [inlineCreateOpen]);
+
+  const handleCreateChild = async () => {
+    if (!inlineCreateSummary.trim() || !projectKey) return;
+    const localKey = `${projectKey.toUpperCase()}-LOCAL-${Date.now()}`;
+    queryClient.setQueryData(
+      ['project-hub-timeline', projectKey],
+      (old: TimelineIssue[] | undefined) => {
+        function inject(list: TimelineIssue[]): TimelineIssue[] {
+          return list.map(i => {
+            if (i.issueKey === issue.issueKey) {
+              const newChild: TimelineIssue = {
+                issueKey: localKey,
+                projectKey: projectKey.toUpperCase(),
+                issueType: inlineCreateType,
+                summary: inlineCreateSummary.trim(),
+                status: 'To Do',
+                statusCategory: 'default',
+                startDate: null,
+                dueDate: null,
+                assigneeDisplayName: null,
+                assigneeAvatarUrl: null,
+                parentKey: issue.issueKey,
+                children: [],
+              };
+              return { ...i, children: [...i.children, newChild] };
+            }
+            if (i.children.length) return { ...i, children: inject(i.children) };
+            return i;
+          });
+        }
+        return inject(old ?? []);
+      }
+    );
+    setInlineCreateOpen(false);
+    setInlineCreateSummary('');
+    try {
+      await (supabase as any).from('ph_issues').insert({
+        issue_key: localKey,
+        project_key: projectKey.toUpperCase(),
+        issue_type: inlineCreateType,
+        summary: inlineCreateSummary.trim(),
+        status: 'To Do',
+        source: 'catalyst',
+        parent_key: issue.issueKey,
+        jira_created_at: new Date().toISOString(),
+      });
+      queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+    } catch (err) {
+      console.warn('create child failed:', err);
+      queryClient.setQueryData(
+        ['project-hub-timeline', projectKey],
+        (old: TimelineIssue[] | undefined) => {
+          function remove(list: TimelineIssue[]): TimelineIssue[] {
+            return list.map(i => ({ ...i, children: remove(i.children.filter(c => c.issueKey !== localKey)) }));
+          }
+          return remove(old ?? []);
+        }
+      );
+    }
+  };
+
+  const cancelInlineCreate = () => {
+    setInlineCreateOpen(false);
+    setInlineCreateSummary('');
+    setShowTypeDropdown(false);
+  };
+
   return (
+    <>
     <div
       role="rowheader"
       style={{
@@ -2078,23 +2204,23 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         </Tooltip>
       )}
 
-      {/* status pill — non-Epic rows, always visible */}
+      {/* status pill — non-Epic rows, always visible (80% scale = 20% smaller) */}
       {issue.issueType !== 'Epic' && issue.status && (
-        <div style={{ flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+        <div style={{ flexShrink: 0, transform: 'scale(0.8)', transformOrigin: 'right center', lineHeight: 0 }} onClick={e => e.stopPropagation()}>
           <StatusPill value={issue.statusCategory} label={issue.status} />
         </div>
       )}
 
-      {/* + add child — Epic rows, hover only (width collapses in idle so pill slides right) */}
-      {issue.issueType === 'Epic' && (
+      {/* + add child — hover only on rows that can have children */}
+      {canHaveChildren && (
         <button
-          onClick={e => { e.stopPropagation(); setMenuOpen(v => !v); }}
+          onClick={e => { e.stopPropagation(); setInlineCreateOpen(v => !v); if (!inlineCreateOpen) setInlineCreateType(childTypes[0]); }}
           aria-label={`Add child issue to ${issue.issueKey}`}
           style={{
             ...iconBtnStyle,
-            width: rowHovered || menuOpen ? 24 : 0,
+            width: rowHovered || inlineCreateOpen ? 24 : 0,
             overflow: 'hidden',
-            opacity: rowHovered || menuOpen ? 1 : 0,
+            opacity: rowHovered || inlineCreateOpen ? 1 : 0,
             padding: 0,
             transition: 'width 80ms ease, opacity 80ms ease',
           }}
@@ -2153,10 +2279,12 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         minWidth={220}
         alignRight
       >
-        <MenuItemRow
-          label={issue.issueType === 'Epic' ? 'Create issue in epic' : 'Create child issue'}
-          onClick={() => setMenuOpen(false)}
-        />
+        {canHaveChildren && (
+          <MenuItemRow
+            label={issue.issueType === 'Epic' ? 'Create issue in epic' : 'Create child issue'}
+            onClick={() => { setMenuOpen(false); setInlineCreateType(childTypes[0]); setInlineCreateOpen(true); }}
+          />
+        )}
         <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
         {issue.issueType === 'Epic' && (
           <MenuItemRow label="Change epic color" onClick={() => setMenuOpen(false)} />
@@ -2225,5 +2353,86 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         )}
       </ModalTransition>
     </div>
+
+    {/* inline create row — appears below parent row when + clicked */}
+    {inlineCreateOpen && (
+      <div
+        style={{
+          height: ROW_H, display: 'flex', alignItems: 'center', gap: 6,
+          paddingTop: 0, paddingBottom: 0, paddingRight: 8,
+          paddingLeft: 8 + (depth + 1) * 12,
+          borderBottom: '1px solid rgba(9,30,66,0.06)',
+          background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        <button
+          ref={typePickerRef}
+          onClick={e => { e.stopPropagation(); setShowTypeDropdown(v => !v); }}
+          style={{ ...iconBtnStyle, padding: 0, flexShrink: 0 }}
+          title="Select type"
+          aria-label="Select child issue type"
+          aria-haspopup="listbox"
+          aria-expanded={showTypeDropdown}
+        >
+          <JiraIssueTypeIcon type={inlineCreateType} size={14} />
+        </button>
+        <PortalMenu isOpen={showTypeDropdown} onClose={() => setShowTypeDropdown(false)} triggerRef={typePickerRef} minWidth={160}>
+          {childTypes.map(ct => (
+            <div
+              key={ct}
+              role="option"
+              aria-selected={ct === inlineCreateType}
+              onClick={() => { setInlineCreateType(ct); setShowTypeDropdown(false); }}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+            >
+              <JiraIssueTypeIcon type={ct} size={14} />
+              <span>{ct}</span>
+            </div>
+          ))}
+        </PortalMenu>
+        <input
+          ref={inlineCreateInputRef}
+          value={inlineCreateSummary}
+          onChange={e => setInlineCreateSummary(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === 'Enter') { e.preventDefault(); handleCreateChild(); }
+            if (e.key === 'Escape') { e.preventDefault(); cancelInlineCreate(); }
+          }}
+          placeholder="What needs to be done?"
+          style={{
+            flex: 1, height: 28, padding: '0 8px',
+            border: '1px solid var(--ds-border-focused, #388BFF)',
+            borderRadius: 3, fontSize: 13, outline: 'none',
+            background: 'var(--ds-background-input, #FFFFFF)',
+            fontFamily: 'var(--ds-font-family-body)',
+            color: 'var(--ds-text, #172B4D)',
+          }}
+        />
+        <button
+          onClick={handleCreateChild}
+          disabled={!inlineCreateSummary.trim()}
+          style={{
+            ...iconBtnStyle, padding: 0, flexShrink: 0,
+            color: !inlineCreateSummary.trim() ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-text-success, #1F845A)',
+          }}
+          title="Save"
+          aria-label="Save new issue"
+        >
+          <EditorDoneIcon label="Save" size="small" />
+        </button>
+        <button
+          onClick={cancelInlineCreate}
+          style={{ ...iconBtnStyle, padding: 0, flexShrink: 0 }}
+          title="Cancel"
+          aria-label="Cancel"
+        >
+          <CrossIcon label="Cancel" size="small" />
+        </button>
+      </div>
+    )}
+    </>
   );
 }
