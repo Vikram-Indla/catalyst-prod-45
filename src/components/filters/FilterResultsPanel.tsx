@@ -25,7 +25,9 @@ import type { Column, SortOrder } from '@/components/shared/JiraTable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { lozengeAppearance, jiraIconType } from '@/components/universal-work-view/uwv.utils';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
-import { useJqlResults, JQL_RESULTS_LIMIT, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
+import { JQL_RESULTS_LIMIT, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
+import { useJQLFilteredIssues } from '@/hooks/workhub/useJQLFilteredIssues';
+import { useCurrentUserDisplayName } from '@/hooks/workhub/useCurrentUserDisplayName';
 
 interface FilterResultsPanelProps {
   jql: string;
@@ -53,29 +55,61 @@ export function FilterResultsPanel({
   onResultsChange,
 }: FilterResultsPanelProps) {
   const debouncedJql = useDebounced(jql, debounceMs);
-  const { data, isLoading, isFetching, error } = useJqlResults(debouncedJql);
+  const currentUserDisplayName = useCurrentUserDisplayName();
+  const {
+    data: rawRows,
+    isLoading,
+    isFetching,
+    error,
+    count: totalCount,
+    activeFilters,
+  } = useJQLFilteredIssues({ jql: debouncedJql, currentUserDisplayName });
 
   useEffect(() => {
-    onResultsChange?.(debouncedJql.trim() && data ? data.totalCount : null);
-  }, [data, debouncedJql, onResultsChange]);
+    onResultsChange?.(debouncedJql.trim() ? totalCount : null);
+  }, [totalCount, debouncedJql, onResultsChange]);
 
   const [sortKey, setSortKey] = useState<string>('updated');
   const [sortOrder, setSortOrder] = useState<SortOrder>('DESC');
 
-  const items = useMemo(() => {
-    const rows = [...(data?.items ?? [])];
+  // Map raw snake_case Supabase rows → typed JqlResultRow for JiraTable columns.
+  const items = useMemo<JqlResultRow[]>(() => {
+    type R = Record<string, string | null | boolean>;
+    const mapped: JqlResultRow[] = rawRows.map((raw) => {
+      const r = raw as R;
+      return {
+        id: r.id as string,
+        key: r.issue_key as string,
+        summary: (r.summary as string) ?? '',
+        issueType: (r.issue_type as string) ?? null,
+        status: (r.status as string) ?? '',
+        statusCategory: (r.status_category as string) ?? '',
+        projectKey: (r.project_key as string) ?? '',
+        assigneeName: (r.assignee_display_name as string) ?? null,
+        priority: (r.priority as string) ?? null,
+        created: (r.jira_created_at as string) ?? null,
+        updated: (r.jira_updated_at as string) ?? null,
+        dueDate: (r.effective_due_date as string) ?? (r.due_date as string) ?? null,
+        parentKey: (r.parent_key as string) ?? null,
+        parentSummary: (r.parent_summary as string) ?? null,
+        sprintName: (r.sprint_name as string) ?? null,
+        isFlagged: r.is_flagged === true || r.is_flagged === 'true' ? true
+          : r.is_flagged === false || r.is_flagged === 'false' ? false : null,
+        flagReason: (r.flag_reason as string) ?? null,
+      };
+    });
     const dir = sortOrder === 'ASC' ? 1 : -1;
-    rows.sort((a, b) => {
+    mapped.sort((a, b) => {
       const va = (a as unknown as Record<string, unknown>)[sortKey] ?? '';
       const vb = (b as unknown as Record<string, unknown>)[sortKey] ?? '';
       return va < vb ? -dir : va > vb ? dir : 0;
     });
-    return rows;
-  }, [data?.items, sortKey, sortOrder]);
+    return mapped;
+  }, [rawRows, sortKey, sortOrder]);
 
   const projectCount = useMemo(
-    () => new Set((data?.items ?? []).map(r => r.projectKey).filter(Boolean)).size,
-    [data?.items],
+    () => new Set(rawRows.map(r => (r as Record<string, unknown>).project_key).filter(Boolean)).size,
+    [rawRows],
   );
 
   const openDetail = (key: string) =>
@@ -184,11 +218,11 @@ export function FilterResultsPanel({
         }}>
           Results
         </h2>
-        {hasJql && data && (
+        {hasJql && totalCount > 0 && (
           <span style={{ fontSize: 12, color: token('color.text.subtlest') }}>
-            {data.totalCount > JQL_RESULTS_LIMIT
-              ? `${JQL_RESULTS_LIMIT} of ${data.totalCount}`
-              : `${data.totalCount}`} work item{data.totalCount === 1 ? '' : 's'}
+            {totalCount > JQL_RESULTS_LIMIT
+              ? `${JQL_RESULTS_LIMIT} of ${totalCount}`
+              : `${totalCount}`} work item{totalCount === 1 ? '' : 's'}
           </span>
         )}
         {hasJql && projectCount > 1 && (
@@ -199,9 +233,35 @@ export function FilterResultsPanel({
         {isFetching && hasJql && <Spinner size="small" />}
       </div>
 
+      {/* Active-filter chips — one per parsed JqlFilter from useJQLFilteredIssues */}
+      {activeFilters.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
+          {activeFilters.map((f, i) => (
+            <span key={i} style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 2,
+              fontSize: 11,
+              fontWeight: 500,
+              padding: '2px 6px',
+              borderRadius: 3,
+              background: `var(--ds-background-neutral, #F1F2F4)`,
+              color: token('color.text.subtle'),
+              border: `1px solid ${token('color.border')}`,
+            }}>
+              <span style={{ color: token('color.text'), fontWeight: 600 }}>{f.column}</span>
+              <span style={{ opacity: 0.7 }}>{f.method}</span>
+              <span style={{ color: token('color.text') }}>
+                {Array.isArray(f.value) ? f.value.join(', ') : (f.value ?? 'EMPTY')}
+              </span>
+            </span>
+          ))}
+        </div>
+      )}
+
       {error && (
         <SectionMessage appearance="warning" title="Couldn't run this filter">
-          {(error as Error).message}
+          {error.message}
         </SectionMessage>
       )}
 
@@ -230,7 +290,7 @@ export function FilterResultsPanel({
           density="comfortable"
           ariaLabel="Filter results"
           showRowCount
-          totalRowCount={data?.totalCount}
+          totalRowCount={totalCount}
           emptyView={
             <div style={{
               padding: '32px 24px',

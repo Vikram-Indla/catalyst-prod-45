@@ -55,6 +55,7 @@ import {
 } from '@/pages/project-hub/jira-list/components/AllWorkToolbar';
 import { JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
 import { JQLEditor } from '@/components/filters/JQLEditor';
+import { useJQLValuePool } from '@/hooks/workhub/useJQLValuePool';
 import type { FilterCategory as JiraFilterCategory } from '@/components/shared/JiraBasicFilter';
 import type { WorkItem } from '@/types/workItem.types';
 import FilterIconCore from '@atlaskit/icon/core/filter';
@@ -304,6 +305,7 @@ export function FilterPreviewPage() {
   const linkedEntities = useLinkedEntities(savedFilterId);
   const facetItems = useProjectFacetItems(projectKey);
   const members = useProjectMembers(projectKey);
+  const jqlValuePool = useJQLValuePool(facetItems, projectKey);
 
   // Load saved filter when navigated from FiltersListPage with ?filterId=
   const { data: loadedFilter } = useQuery({
@@ -731,6 +733,7 @@ export function FilterPreviewPage() {
                 onChange={v => { setJqlText(v); markDirty(); }}
                 singleLine
                 placeholder="project = BAU AND status in (Done) ORDER BY updated DESC"
+                valuePool={jqlValuePool}
               />
             </div>
           ) : (

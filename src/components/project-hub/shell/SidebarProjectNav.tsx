@@ -52,7 +52,7 @@ const PLANNING_NAV = [
   { icon: Network, label: 'All Work', path: 'allwork' },
   { icon: Columns3, label: 'Boards', path: 'boards' },
   { icon: Filter, label: 'Project Filters', path: 'filters' },
-  { icon: GanttChart, label: 'Timeline', path: 'timeline' },
+  { icon: GanttChart, label: 'Project Timeline', path: 'timeline' },
 ];
 
 const TRACKING_NAV = [

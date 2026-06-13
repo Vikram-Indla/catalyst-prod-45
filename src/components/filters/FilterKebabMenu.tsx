@@ -9,8 +9,8 @@ import {
   useUpdateSavedFilter,
   useDeleteSavedFilter,
 
-  useToggleFilterSubscription,
   useExistingBoardForFilter,
+  useBoardsForProject,
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
 import { useCreateKanbanFromFilter } from '@/hooks/workhub/useCreateKanbanFromFilter';
@@ -88,9 +88,8 @@ export function FilterKebabMenu({ filter, currentUserId, rows = [], isLoadingRow
   const copyFilter      = useCopyFilter();
   const updateFilter    = useUpdateSavedFilter();
   const deleteFilter    = useDeleteSavedFilter();
-  const subscribeFilter = useToggleFilterSubscription();
-
   const createKanban = useCreateKanbanFromFilter();
+  const projectBoards = useBoardsForProject(ENABLE_FILTER_TO_KANBAN ? projectKey : undefined);
   const existingBoard = useExistingBoardForFilter(
     ENABLE_FILTER_TO_KANBAN ? filter.id : undefined,
     currentUserId,
@@ -114,7 +113,6 @@ export function FilterKebabMenu({ filter, currentUserId, rows = [], isLoadingRow
   const modalLoadingRows = rows.length === 0 ? (selfFetch.isLoading || selfFetch.isFetching) : isLoadingRows;
 
 const isOwner = filter.user_id === currentUserId || filter.owner_id === currentUserId;
-  const isSubscribed = currentUserId ? (filter.subscriber_ids ?? []).includes(currentUserId) : false;
   const isPrivate = filter.viewers_config?.type === 'private';
 
   const openMenu = useCallback((e: React.MouseEvent) => {
@@ -165,7 +163,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
       const boardId = await createKanban.mutateAsync({
         filter,
         projectKey: projectKey ?? null,
-        sourceBoardId: boards[0]?.id ?? null,
+        sourceBoardId: projectBoards.data?.[0]?.id ?? null,
         name: kanbanName.trim(),
         // Filter boards have project_id=null, so 'project' visibility (which gates on
         // project_members join) would never resolve correctly. Use 'shared' instead —
@@ -307,11 +305,6 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
               : `/product-hub/allwork?filterId=${filter.id}`;
             navigator.clipboard.writeText(base + path).catch(() => {});
           })}
-          {menuItem(
-            isSubscribed ? 'Unsubscribe' : 'Subscribe',
-            () => subscribeFilter.mutate({ filterId: filter.id, currentSubscriberIds: filter.subscriber_ids ?? [], userId: currentUserId ?? '' }),
-            !currentUserId,
-          )}
           {isOwner && menuItem(isPrivate ? 'Share with organisation' : 'Make private', handleToggleVisibility)}
           {menuItem('View version history', () => setHistoryOpen(true))}
           {isOwner && menuItem('Change owner', () => setTransferOpen(true))}
@@ -738,7 +731,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                 </div>
                 <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
                   Cards come live from <strong>{filter.name}</strong>.{' '}
-                  {boards.length > 0
+                  {(projectBoards.data?.length ?? 0) > 0
                     ? "Columns are inherited from this project's board."
                     : 'No existing board found — the board will start with default columns (To Do, In Progress, Done). You can customise them after creation.'
                   }{' '}

@@ -147,7 +147,7 @@
 @supports (backdrop-filter: blur(0)) {
   .clmp-nav { backdrop-filter: blur(14px); }
 }
-.clmp-nav-inner { display: flex; align-items: center; gap: 24px; height: 64px; }
+.clmp-nav-inner { display: flex; align-items: center; gap: 24px; height: 64px; max-width: 1440px; margin-inline: auto; padding-inline: 32px; }
 .clmp-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; letter-spacing: -.4px; text-decoration: none; color: var(--clmp-text); }
 .clmp-brand-mark { display: block; }
 .clmp-brand-word { font-size: 18px; font-weight: 700; }

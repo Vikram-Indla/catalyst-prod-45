@@ -158,11 +158,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (invokeError) {
         console.error('Login invoke error:', invokeError);
-        toast({
-          title: "Sign-in failed",
-          description: "The email or password you entered is incorrect.",
-          variant: "destructive",
-        });
         return { error: invokeError };
       }
 
@@ -184,11 +179,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         // Generic error for invalid credentials
-        toast({
-          title: "Sign-in failed",
-          description: data?.error || "The email or password you entered is incorrect.",
-          variant: "destructive",
-        });
         return { error: { message: data?.error || "Invalid credentials" } };
       }
 
@@ -202,11 +192,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       return { error: null };
     } catch (error: any) {
-      toast({
-        title: "Sign-in failed",
-        description: "The email or password you entered is incorrect.",
-        variant: "destructive",
-      });
       return { error };
     }
   }, [toast]);

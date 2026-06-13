@@ -65,6 +65,12 @@ export function CatalystLoginPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!loginError) return;
+    const t = window.setTimeout(() => setLoginError(null), 6000);
+    return () => window.clearTimeout(t);
+  }, [loginError]);
   const [mustChangePassword, setMustChangePassword] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [showPendingMessage, setShowPendingMessage] = useState(false);
@@ -361,7 +367,7 @@ export function CatalystLoginPage() {
 
       {/* NAV */}
       <nav className="clmp-nav" aria-label="Site navigation">
-        <div className="clmp-container clmp-nav-inner">
+        <div className="clmp-nav-inner">
           <a href="#top" className="clmp-brand" aria-label="Catalyst — home">
             <CMarkSvg size={32} className="clmp-brand-mark" />
             <span className="clmp-brand-word">Catalyst</span>

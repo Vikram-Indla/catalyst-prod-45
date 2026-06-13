@@ -2089,31 +2089,36 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         </div>
       )}
 
-      {/* + add child — Epic rows, hover only */}
+      {/* + add child — Epic rows, hover only (width collapses in idle so pill slides right) */}
       {issue.issueType === 'Epic' && (
         <button
           onClick={e => { e.stopPropagation(); setMenuOpen(v => !v); }}
           aria-label={`Add child issue to ${issue.issueKey}`}
           style={{
             ...iconBtnStyle,
+            width: rowHovered || menuOpen ? 24 : 0,
+            overflow: 'hidden',
             opacity: rowHovered || menuOpen ? 1 : 0,
-            transition: 'opacity 80ms ease',
+            padding: 0,
+            transition: 'width 80ms ease, opacity 80ms ease',
           }}
         >
           <EditorAddIcon label="" size="small" />
         </button>
       )}
 
-      {/* open-in-side-panel button — visible on hover */}
+      {/* open-in-side-panel button — visible on hover (width collapses in idle) */}
       <button
         type="button"
         aria-label={`Open ${issue.issueKey} in side panel`}
         onClick={e => { e.stopPropagation(); onOpenDetail(issue); }}
         style={{
           ...iconBtnStyle,
+          width: rowHovered ? 24 : 0,
+          overflow: 'hidden',
           opacity: rowHovered ? 1 : 0,
-          transition: 'opacity 80ms ease',
-          flexShrink: 0,
+          padding: 0,
+          transition: 'width 80ms ease, opacity 80ms ease',
         }}
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
@@ -2125,7 +2130,7 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         </svg>
       </button>
 
-      {/* ⋯ more-actions button — visible on hover */}
+      {/* ⋯ more-actions button — visible on hover (width collapses in idle so pill slides right) */}
       <button
         ref={menuBtnRef}
         onClick={e => { e.stopPropagation(); setMenuOpen(v => !v); }}
@@ -2134,9 +2139,11 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         aria-expanded={menuOpen}
         style={{
           ...iconBtnStyle,
+          width: rowHovered || menuOpen ? 24 : 0,
+          overflow: 'hidden',
           opacity: rowHovered || menuOpen ? 1 : 0,
-          transition: 'opacity 80ms ease',
-          flexShrink: 0,
+          padding: 0,
+          transition: 'width 80ms ease, opacity 80ms ease',
         }}
       >
         <MoreIcon label="" size="small" />

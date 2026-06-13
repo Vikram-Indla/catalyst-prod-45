@@ -45,7 +45,6 @@ export function CatyMascot({
     <span className={`caty-mascot${stateClass} ${className}`.trim()} aria-hidden="true">
       <svg viewBox="0 0 512 512" fill="none" role="img" aria-label={title}>
         {variant === 'gradient' && (
-          {/* ads-scanner:ignore-block — SVG gradient stops are illustration asset colors */}
           <defs>
             <linearGradient id="caty-askdg" x1="256" y1="40" x2="256" y2="470" gradientUnits="userSpaceOnUse">
               <stop stopColor="#F79357" />

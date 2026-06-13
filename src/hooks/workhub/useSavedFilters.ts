@@ -223,6 +223,8 @@ export function useFiltersForProject(projectKey?: string, hubScope?: HubScope) {
   return useQuery({
     queryKey: FILTERS_QUERY_KEY(hubScope, projectKey),
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+
       let query = supabase
         .from('ph_saved_filters')
         .select('*, owner:profiles!ph_saved_filters_owner_id_fkey(id, full_name, avatar_url)')
@@ -237,6 +239,12 @@ export function useFiltersForProject(projectKey?: string, hubScope?: HubScope) {
       // remain visible within a project context.
       if (projectKey) {
         query = (query as any).or(`project_key.eq.${projectKey},project_key.is.null`);
+      }
+
+      // Only return filters the current user owns or that are public (is_shared).
+      // Prevents filters from other hubs/owners leaking into Quick Filters dropdowns.
+      if (user) {
+        query = (query as any).or(`owner_id.eq.${user.id},is_shared.eq.true`);
       }
 
       const { data, error } = await query;

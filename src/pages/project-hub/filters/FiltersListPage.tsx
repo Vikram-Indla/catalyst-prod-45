@@ -29,6 +29,7 @@ import {
   CatalystListPageLayout,
   type QuickTab,
   type ToolbarFilter,
+  type ToolbarFilterOption,
   type BulkAction,
   PermissionList,
   type PermissionEntry,
@@ -447,8 +448,8 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
 
   const toolbarFilters: ToolbarFilter[] = [
     { id: 'owner', placeholder: 'Owner', options: ownerOptions, value: ownerFilter, onChange: v => setOwnerFilter(v) },
-    { id: 'project', placeholder: 'Project', options: projectOptions, value: projectFilter, onChange: v => setProjectFilter(v) },
-    { id: 'group', placeholder: 'Group', options: groupOptions, value: groupFilter, onChange: v => setGroupFilter(v) },
+    ...(projectOptions.length > 0 ? [{ id: 'project', placeholder: 'Project', options: projectOptions, value: projectFilter, onChange: (v: ToolbarFilterOption | null) => setProjectFilter(v) }] : []),
+    ...(groupOptions.length > 0 ? [{ id: 'group', placeholder: 'Group', options: groupOptions, value: groupFilter, onChange: (v: ToolbarFilterOption | null) => setGroupFilter(v) }] : []),
   ];
 
   const bulkActions: BulkAction[] = [
