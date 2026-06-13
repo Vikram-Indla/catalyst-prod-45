@@ -72,10 +72,47 @@ import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTran
 import Textfield from '@atlaskit/textfield';
 import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { useUpdateBoard } from '@/hooks/useBoardMutations';
+import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
+import { useDefaultProject } from '@/hooks/useProjects';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
-export default function KanbanBoardPage() {
+// ─── Product adapter helpers (used when mode='product') ───────────────────────
+
+function toBoardIssue(r: any): BoardIssue {
+  return {
+    id: r.id,
+    issueKey: r.request_key ?? r.id,
+    summary: r.title ?? '',
+    issueType: 'Business Request',
+    priority: r.urgency ?? 'Medium',
+    status: r.process_step ?? '',
+    statusCategory: 'inprogress',
+    assigneeName: r._assignee_name ?? null,
+    labels: [],
+    sprintName: null,
+    storyPoints: null,
+    parentKey: null,
+    parentSummary: null,
+    fixVersion: null,
+    isFlagged: !!(r.is_flagged),
+    updatedAt: r.updated_at ?? r.created_at,
+    createdAt: r.created_at ?? null,
+  };
+}
+
+async function resolveAssigneeNames(rows: any[]): Promise<Map<string, string>> {
+  const ids = [...new Set(rows.map((r: any) => r.project_manager_user_id).filter(Boolean))];
+  if (!ids.length) return new Map();
+  const { data } = await supabase.from('profiles').select('id, full_name').in('id', ids);
+  const m = new Map<string, string>();
+  (data ?? []).forEach((p: any) => { if (p.full_name) m.set(p.id, p.full_name); });
+  return m;
+}
+
+export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project' | 'product' } = {}) {
+  const isProduct = mode === 'product';
   const { key, boardId: urlBoardId } = useParams<{ key: string; boardId?: string }>();
   const { isDark } = useTheme();
   const tk = isDark ? KANBAN_TOKENS.dark : KANBAN_TOKENS.light;
@@ -129,9 +166,16 @@ export default function KanbanBoardPage() {
   // F3 (Archive) — Archived filter chip. When true, the kanban-issues query
   // inverts archived_at IS NULL → archived_at IS NOT NULL. Admin/owner only;
   // FE gate is cosmetic, RLS enforces server-side.
-  const { isAdminOrOwner: canArchive } = useProjectMemberRole(key);
+  const { isAdminOrOwner: _projectCanArchive } = useProjectMemberRole(isProduct ? undefined : key);
+  const canArchive = isProduct ? false : _projectCanArchive;
   const [showArchived, setShowArchived] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // Always call unconditionally (Rules of Hooks). Used only when isProduct.
+  // useDefaultProject mirrors what /admin/workflows uses — global workflow config
+  // lives under the default project's project_id in ph_workflow_type_statuses.
+  const { data: defaultProject } = useDefaultProject();
+  const brWorkflow = useTypeWorkflow(defaultProject?.key ?? 'BAU', 'Business Request');
 
   /* ═══ PHASE 2: PAGINATION STATE ═══ */
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -188,9 +232,22 @@ export default function KanbanBoardPage() {
       const { data } = await supabase.from('ph_projects').select('id, key, name').eq('key', key.toUpperCase()).maybeSingle();
       return data;
     },
-    enabled: !!key,
+    enabled: !!key && !isProduct,
     staleTime: 60_000,
   });
+
+  const { data: productMeta } = useQuery({
+    queryKey: ['product-meta', key],
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from('products').select('id, name, code')
+        .eq('code', key!.toUpperCase()).eq('is_active', true).maybeSingle();
+      return data as { id: string; name: string; code: string } | null;
+    },
+    enabled: !!key && isProduct,
+    staleTime: 60_000,
+  });
+  const productId = productMeta?.id ?? null;
 
   /* ═══ BOARDS LIST (multi-board support) ═══ */
 
@@ -213,7 +270,7 @@ export default function KanbanBoardPage() {
         id: b.id, name: b.name, sort_order: b.sort_order,
       })) as { id: string; name: string; sort_order: number }[];
     },
-    enabled: !!key,
+    enabled: !!key && !isProduct,
     staleTime: 60_000,
   });
 
@@ -232,7 +289,7 @@ export default function KanbanBoardPage() {
         id: b.id, name: b.name, sort_order: b.sort_order,
       })) as { id: string; name: string; sort_order: number }[];
     },
-    enabled: !!key,
+    enabled: !!key && !isProduct,
     staleTime: 60_000,
   });
 
@@ -347,6 +404,23 @@ export default function KanbanBoardPage() {
       return { KANBAN_COLUMNS: cols, STATUS_TO_COL_ID: sToCId, COL_PRIMARY_STATUS: cPrimary, COLUMN_ID_SET: cIdSet };
     }
 
+    // Product fallback: build columns from workflow steps when no board_columns data
+    if (isProduct && !dynamicBoardData?.columns?.length && brWorkflow?.data?.statuses?.length) {
+      const cols: KanbanColumnDef[] = brWorkflow.data.statuses.map((s: any, i: number) => ({
+        id: s.id ?? String(i),
+        name: (s.name ?? s.status ?? '').toUpperCase(),
+        statuses: [s.name ?? s.status ?? ''],
+        category: (s.category === 'done' ? 'done' : s.category === 'todo' ? 'todo' : 'in_progress') as 'todo' | 'in_progress' | 'done',
+      }));
+      const sToCId = new Map<string, string>();
+      const cPrimary: Record<string, string> = {};
+      cols.forEach(col => {
+        if (col.statuses.length > 0) cPrimary[col.id] = col.statuses[0];
+        col.statuses.forEach(s => sToCId.set(s.toLowerCase(), col.id));
+      });
+      return { KANBAN_COLUMNS: cols, STATUS_TO_COL_ID: sToCId, COL_PRIMARY_STATUS: cPrimary, COLUMN_ID_SET: new Set(cols.map(c => c.id)) };
+    }
+
     // Fallback to defaults
     return {
       KANBAN_COLUMNS: DEFAULT_KANBAN_COLUMNS,
@@ -354,7 +428,7 @@ export default function KanbanBoardPage() {
       COL_PRIMARY_STATUS: DEFAULT_COL_PRIMARY_STATUS,
       COLUMN_ID_SET: DEFAULT_COLUMN_ID_SET,
     };
-  }, [dynamicBoardData]);
+  }, [dynamicBoardData, isProduct, brWorkflow.data]);
 
   const { data: projectIssues = [], isLoading: rawLoading } = useQuery({
     // FIX: projMeta?.id removed from queryKey — was causing double-fetch of all
@@ -458,17 +532,33 @@ export default function KanbanBoardPage() {
         }));
       return [...catIssues, ...jiraIssues];
     },
-    enabled: !!key && !isFilterBacked,
+    enabled: !!key && !isFilterBacked && !isProduct,
     staleTime: 30_000,
   });
 
-  // Effective issue set + loading: filter-backed boards read from the filter's
-  // JQL; all other boards keep the project-wide fetch. Defining rawIssues here
-  // means EVERY downstream consumer (filtered grid, epic/type maps, counts)
-  // follows automatically. When the flag is off, isFilterBacked is always
-  // false → rawIssues === projectIssues, identical to the previous behaviour.
-  const rawIssues = isFilterBacked ? filterBoard.issues : projectIssues;
-  const isLoading = isFilterBacked ? filterBoard.isLoading : rawLoading;
+  // Product issues query — fetches from business_requests table
+  const { data: productIssues = [], isLoading: productLoading } = useQuery({
+    queryKey: ['product-kanban-issues', productId],
+    queryFn: async () => {
+      if (!productId) return [];
+      const { data } = await (supabase as any)
+        .from('business_requests')
+        .select('id, request_key, title, process_step, urgency, project_manager_user_id, is_flagged, created_at, updated_at')
+        .eq('product_id', productId)
+        .is('deleted_at', null)
+        .order('updated_at', { ascending: false });
+      const rows = data ?? [];
+      const nameMap = await resolveAssigneeNames(rows);
+      return rows.map((r: any): BoardIssue => toBoardIssue({ ...r, _assignee_name: r.project_manager_user_id ? nameMap.get(r.project_manager_user_id) ?? null : null }));
+    },
+    enabled: isProduct && !!productId,
+    staleTime: 30_000,
+  });
+
+  // Effective issue set + loading: product mode uses business_requests;
+  // filter-backed boards use JQL; all others use the project-wide fetch.
+  const rawIssues = isProduct ? productIssues : isFilterBacked ? filterBoard.issues : projectIssues;
+  const isLoading = isProduct ? productLoading : isFilterBacked ? filterBoard.isLoading : rawLoading;
 
   // ── Subtask map: parentKey → subtask-family children ──
   // Populated from rawIssues so it covers both filter-backed and project-wide boards.
@@ -601,12 +691,13 @@ export default function KanbanBoardPage() {
   }, [rawIssues]);
 
   const allEpics = useMemo(() => {
+    if (isProduct) return [];
     const epicSummaryMap = new Map<string, string>();
     rawIssues.forEach(i => { if (i.issueType === 'Epic') epicSummaryMap.set(i.issueKey, i.summary); });
     const m = new Map<string, number>();
     rawIssues.forEach(i => { if (i.parentKey) m.set(i.parentKey, (m.get(i.parentKey) ?? 0) + 1); });
     return Array.from(m.entries()).map(([k, c]) => ({ key: k, summary: epicSummaryMap.get(k) ?? null, count: c })).sort((a, b) => b.count - a.count);
-  }, [rawIssues]);
+  }, [rawIssues, isProduct]);
 
   const allTypes = useMemo(() => {
     const m = new Map<string, number>();
@@ -641,7 +732,7 @@ export default function KanbanBoardPage() {
       avatarType: (avatarsByName.get(a.name.toLowerCase()) ? 'photo' : 'person-icon') as 'photo' | 'person-icon',
     }));
     return [
-      { id: 'epic', label: 'Epic', options: epicOptions, searchPlaceholder: 'Search epics...' },
+      ...(!isProduct ? [{ id: 'epic', label: 'Epic', options: epicOptions, searchPlaceholder: 'Search epics...' }] : []),
       { id: 'type', label: 'Type', options: typeOptions },
       { id: 'priority', label: 'Priority', options: priorityOptions },
       { id: 'status', label: 'Status', options: statusOptions },
@@ -668,15 +759,22 @@ export default function KanbanBoardPage() {
 
   const basicFilterCount = selEpics.length + selTypes.length + selPriorities.length + selAssignees.size;
 
-  const BOARD_GROUP_OPTIONS: GroupByOption<GroupByMode>[] = useMemo(() => [
-    { key: 'none' as GroupByMode, label: 'None' },
-    { key: 'queries' as GroupByMode, label: 'Queries' },
-    { key: 'assignee' as GroupByMode, label: 'Assignee', icon: 'assignee' },
-    { key: 'epic' as GroupByMode, label: 'Epic', icon: 'parent' },
-    { key: 'feature' as GroupByMode, label: 'Feature', icon: 'parent' },
-    { key: 'priority' as GroupByMode, label: 'Priority', icon: 'priority' },
-    { key: 'sprintRelease' as GroupByMode, label: 'Sprint/Iteration' },
-  ], []);
+  const BOARD_GROUP_OPTIONS: GroupByOption<GroupByMode>[] = useMemo(() => isProduct
+    ? [
+        { key: 'none' as GroupByMode, label: 'None' },
+        { key: 'assignee' as GroupByMode, label: 'Assignee', icon: 'assignee' },
+        { key: 'priority' as GroupByMode, label: 'Priority', icon: 'priority' },
+      ]
+    : [
+        { key: 'none' as GroupByMode, label: 'None' },
+        { key: 'queries' as GroupByMode, label: 'Queries' },
+        { key: 'assignee' as GroupByMode, label: 'Assignee', icon: 'assignee' },
+        { key: 'epic' as GroupByMode, label: 'Epic', icon: 'parent' },
+        { key: 'feature' as GroupByMode, label: 'Feature', icon: 'parent' },
+        { key: 'priority' as GroupByMode, label: 'Priority', icon: 'priority' },
+        { key: 'sprintRelease' as GroupByMode, label: 'Sprint/Iteration' },
+      ]
+  , [isProduct]);
 
   // Current user for "Assigned to me"
   const { data: currentUserName } = useQuery({
@@ -709,7 +807,7 @@ export default function KanbanBoardPage() {
 
     const allowedTypes: Set<string> = advancedFilters.issueTypes.length > 0
       ? new Set(advancedFilters.issueTypes.filter(t => !BOARD_SUBTASK_TYPES.has(t)))
-      : isFilterBacked
+      : (isProduct || isFilterBacked)
         ? new Set(baseIssues.map(i => i.issueType).filter(t => !BOARD_SUBTASK_TYPES.has(t)))
         : (groupBy !== 'none' ? KANBAN_BOARD_TYPES : KANBAN_STORY_TYPES);
     let issues = baseIssues.filter(i => allowedTypes.has(i.issueType));
@@ -870,14 +968,19 @@ export default function KanbanBoardPage() {
     const oldSummary = issue.summary;
     issue.summary = newSummary;
     try {
-      await supabase.from('ph_issues').update({ summary: newSummary } as any).eq('id', issueId);
-      await supabase.from('catalyst_issues').update({ title: newSummary } as any).eq('issue_key', issue.issueKey);
-      qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+      if (isProduct) {
+        await (supabase as any).from('business_requests').update({ title: newSummary }).eq('id', issueId);
+        qc.invalidateQueries({ queryKey: ['product-kanban-issues', productId] });
+      } else {
+        await supabase.from('ph_issues').update({ summary: newSummary } as any).eq('id', issueId);
+        await supabase.from('catalyst_issues').update({ title: newSummary } as any).eq('issue_key', issue.issueKey);
+        qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+      }
     } catch {
       issue.summary = oldSummary;
       toastError('Failed to update summary');
     }
-  }, [issuesById, key, qc, toastError]);
+  }, [issuesById, key, qc, toastError, isProduct, productId]);
 
   const handleToggleFlag = useCallback(async (issueId: string) => {
     const issue = issuesById.get(issueId);
@@ -885,22 +988,29 @@ export default function KanbanBoardPage() {
     const newFlag = !issue.isFlagged;
     issue.isFlagged = newFlag;
     try {
-      await supabase.from('ph_issues').update({ is_flagged: newFlag } as any).eq('id', issueId);
+      if (isProduct) {
+        await (supabase as any).from('business_requests').update({ is_flagged: newFlag }).eq('id', issueId);
+        qc.invalidateQueries({ queryKey: ['product-kanban-issues', productId] });
+      } else {
+        await supabase.from('ph_issues').update({ is_flagged: newFlag } as any).eq('id', issueId);
+        qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+      }
       toastSuccess(newFlag ? `Flagged ${issue.issueKey}` : `Unflagged ${issue.issueKey}`);
-      qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
     } catch {
       issue.isFlagged = !newFlag;
       toastError('Failed to update flag');
     }
-  }, [issuesById, key, qc, toastSuccess, toastError]);
+  }, [issuesById, key, qc, toastSuccess, toastError, isProduct, productId]);
 
   const handleCopyLink = useCallback((issueKey: string) => {
-    const url = `${window.location.origin}/project-hub/${key}/issue/${issueKey}`;
+    const url = isProduct
+      ? `${window.location.origin}/product-hub/${key}/boards?issue=${issueKey}`
+      : `${window.location.origin}/project-hub/${key}/issue/${issueKey}`;
     navigator.clipboard.writeText(url).then(
       () => toastSuccess('Link copied'),
       () => toastError('Failed to copy link'),
     );
-  }, [key, toastSuccess, toastError]);
+  }, [key, toastSuccess, toastError, isProduct]);
 
   const handleCopyKey = useCallback((issueKey: string) => {
     navigator.clipboard.writeText(issueKey).then(
@@ -927,28 +1037,33 @@ export default function KanbanBoardPage() {
     const oldAssignee = issue.assigneeName;
     issue.assigneeName = newAssignee;
     try {
-      await supabase.from('ph_issues').update({ assignee_display_name: newAssignee } as any).eq('id', issueId);
-      await supabase.from('catalyst_issues').update({ assignee_id: null } as any).eq('issue_key', issue.issueKey);
-      qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+      if (isProduct) {
+        // Product: best-effort no-op (no assignee_display_name column on business_requests)
+        qc.invalidateQueries({ queryKey: ['product-kanban-issues', productId] });
+      } else {
+        await supabase.from('ph_issues').update({ assignee_display_name: newAssignee } as any).eq('id', issueId);
+        await supabase.from('catalyst_issues').update({ assignee_id: null } as any).eq('issue_key', issue.issueKey);
+        qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+      }
     } catch {
       issue.assigneeName = oldAssignee;
       toastError('Failed to update assignee');
     }
-  }, [issuesById, key, qc, toastError]);
+  }, [issuesById, key, qc, toastError, isProduct, productId]);
 
   /* ═══ LABELS UPDATE ═══ */
 
   const handleLabelsUpdated = useCallback(async (issueId: string, newLabels: string[]) => {
     const issue = issuesById.get(issueId);
     if (!issue) return;
-    const oldLabels = issue.labels;
     issue.labels = newLabels;
-    qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
-  }, [issuesById, key, qc]);
+    qc.invalidateQueries({ queryKey: isProduct ? ['product-kanban-issues', productId] : ['kanban-issues', key] });
+  }, [issuesById, key, qc, isProduct, productId]);
 
   /* ═══ PARENT CHANGE ═══ */
 
   const handleParentChange = useCallback(async (issueId: string, newParentKey: string | null) => {
+    if (isProduct) return; // no parent concept on business_requests
     const issue = issuesById.get(issueId);
     if (!issue) return;
     const oldParentKey = issue.parentKey;
@@ -971,25 +1086,27 @@ export default function KanbanBoardPage() {
       issue.parentSummary = oldParentSummary;
       toastError('Failed to update parent');
     }
-  }, [issuesById, key, qc, toastError]);
+  }, [issuesById, key, qc, toastError, isProduct]);
 
   /* ═══ MOVE WORK ITEM ═══ */
 
   const handleMoved = useCallback((issueId: string, newProjectKey: string) => {
+    if (isProduct) return; // no cross-product move
     toastSuccess(`Moved ${issuesById.get(issueId)?.issueKey ?? 'item'} to ${newProjectKey}`);
     qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
-  }, [issuesById, key, qc, toastSuccess]);
+  }, [issuesById, key, qc, toastSuccess, isProduct]);
 
   /* ═══ LINK WORK ITEM ═══ */
 
   const handleLinked = useCallback(() => {
     toastSuccess('Work item linked');
-    qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
-  }, [key, qc, toastSuccess]);
+    qc.invalidateQueries({ queryKey: isProduct ? ['product-kanban-issues', productId] : ['kanban-issues', key] });
+  }, [key, qc, toastSuccess, isProduct, productId]);
 
   /* ═══ PAGINATION: LOAD NEXT BATCH ═══ */
 
   const loadNextBatch = useCallback(async () => {
+    if (isProduct) return; // product issues are loaded in full by productIssues query
     if (isLoadingMore || !hasMoreIssues || !nextPageToken || !key) return;
 
     setIsLoadingMore(true);
@@ -1077,6 +1194,8 @@ export default function KanbanBoardPage() {
   /* ═══ ARCHIVE ═══ */
 
   const handleArchive = useCallback(async (issueId: string) => {
+    // Product: archive delegates to delete (soft-delete on business_requests)
+    if (isProduct) { return handleDelete(issueId); }
     const issue = issuesById.get(issueId);
     if (!issue) return;
     try {
@@ -1088,7 +1207,7 @@ export default function KanbanBoardPage() {
     } catch {
       toastError(`Failed to archive ${issue.issueKey}`);
     }
-  }, [issuesById, key, qc, toastSuccess, toastError, selIssueId]);
+  }, [issuesById, key, qc, toastSuccess, toastError, selIssueId, isProduct]);
 
   /* ═══ DELETE (soft) ═══ */
 
@@ -1096,15 +1215,23 @@ export default function KanbanBoardPage() {
     const issue = issuesById.get(issueId);
     if (!issue) return;
     try {
-      const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', issueId);
-      if (error) throw error;
-      toastSuccess(`Deleted ${issue.issueKey}`);
-      if (selIssueId === issueId) setSelIssueId(null);
-      qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+      if (isProduct) {
+        const { error } = await (supabase as any).from('business_requests').update({ deleted_at: new Date().toISOString() }).eq('id', issueId);
+        if (error) throw error;
+        toastSuccess(`Deleted ${issue.issueKey}`);
+        if (selIssueId === issueId) setSelIssueId(null);
+        qc.invalidateQueries({ queryKey: ['product-kanban-issues', productId] });
+      } else {
+        const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', issueId);
+        if (error) throw error;
+        toastSuccess(`Deleted ${issue.issueKey}`);
+        if (selIssueId === issueId) setSelIssueId(null);
+        qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+      }
     } catch {
       toastError(`Failed to delete ${issue.issueKey}`);
     }
-  }, [issuesById, key, qc, toastSuccess, toastError, selIssueId]);
+  }, [issuesById, key, qc, toastSuccess, toastError, selIssueId, isProduct, productId]);
 
   /* ═══ DND HANDLERS ═══ */
 
@@ -1165,17 +1292,23 @@ export default function KanbanBoardPage() {
     }
 
     try {
-      const { error } = await supabase.from('ph_issues').update({ status: newStatus }).eq('id', issueId);
-      if (error) throw error;
-      await supabase.from('catalyst_issues').update({ status: newStatus }).eq('issue_key', issue.issueKey);
-      qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+      if (isProduct) {
+        const { error } = await (supabase as any).from('business_requests').update({ process_step: newStatus }).eq('id', issueId);
+        if (error) throw error;
+        qc.invalidateQueries({ queryKey: ['product-kanban-issues', productId] });
+      } else {
+        const { error } = await supabase.from('ph_issues').update({ status: newStatus }).eq('id', issueId);
+        if (error) throw error;
+        await supabase.from('catalyst_issues').update({ status: newStatus }).eq('issue_key', issue.issueKey);
+        qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+      }
     } catch {
       issue.status = oldStatus;
       toastError(`Failed to move ${issue.issueKey}`);
       // Refetch authoritatively replaces our optimistic colMap on failure.
-      qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+      qc.invalidateQueries({ queryKey: isProduct ? ['product-kanban-issues', productId] : ['kanban-issues', key] });
     }
-  }, [issuesById, key, qc, toastSuccess, toastError, effectiveStatusToColId]);
+  }, [issuesById, key, qc, toastSuccess, toastError, effectiveStatusToColId, isProduct, productId]);
 
   const onDragEnd = useCallback((e: DragEndEvent) => {
     const aid = String(e.active.id), oid = e.over?.id ? String(e.over.id) : null;
@@ -1259,7 +1392,7 @@ export default function KanbanBoardPage() {
     <div className="flex flex-col flex-1 min-h-0" style={{ background: tk.pageBg }}>
       {/* jira-compare catalog item 1 cascade (2026-05-02): canonical
           project chip mounts above the page header. */}
-      {key && <ProjectHeaderChip projectKey={key} />}
+      {key && !isProduct && <ProjectHeaderChip projectKey={key} />}
       {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
       {/* Board switcher now lives inside <KanbanToolbar /> via boardSwitcherSlot. */}
 
@@ -1482,7 +1615,7 @@ export default function KanbanBoardPage() {
         enableDensity={ENABLE_KANBAN_V2}
         density={density}
         onDensityChange={onDensityChange}
-        mapStatusesPath={resolvedBoardId ? `/project-hub/${key}/boards/${resolvedBoardId}/map-statuses` : undefined}
+        mapStatusesPath={resolvedBoardId ? `/${isProduct ? 'product-hub' : 'project-hub'}/${key}/boards/${resolvedBoardId}/map-statuses` : undefined}
         projectKey={key ?? ''}
         canArchive={canArchive}
         showArchived={showArchived}
@@ -1499,7 +1632,7 @@ export default function KanbanBoardPage() {
         catyInsightSlot={
           <CatyBoardInsight projectKey={key ?? null} resourceId={key ?? 'project'} />
         }
-        boardSwitcherSlot={
+        boardSwitcherSlot={isProduct ? null :
           <div ref={boardSwitcherRef} style={{ position: 'relative' }}>
             {(() => {
               const isActive = showBoardSwitcher || isBoardSwitcherFocused;
@@ -1748,7 +1881,7 @@ export default function KanbanBoardPage() {
             onCreateCard={() => {
               /* InlineCreateCard already wrote the issue to Supabase.
                  Refetch the board so the new card appears in its column. */
-              qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+              qc.invalidateQueries({ queryKey: isProduct ? ['product-kanban-issues', productId] : ['kanban-issues', key] });
             }}
             createInColumnLabel="Create"
             onDrop={({ cardId, sourceColId, destColId, insertIndex }) => {
@@ -1788,7 +1921,7 @@ export default function KanbanBoardPage() {
             isOpen={true}
             onClose={() => setSelIssueId(null)}
             itemId={issuesById.get(selIssueId)?.issueKey ?? selIssueId}
-            itemType={issuesById.get(selIssueId)?.issueType ?? undefined}
+            itemType={isProduct ? 'business_request' : (issuesById.get(selIssueId)?.issueType ?? undefined)}
             projectId={projMeta?.id ?? ''}
             projectKey={key}
           />
