@@ -66,7 +66,8 @@ function ProductChromeHeader({ productCode, productName }: { productCode: string
       </span>
       <span style={{
         fontSize: 12,
-        color: token('color.text.subtlest', '#626F86'),
+        fontWeight: 500,
+        color: token('color.text.subtlest', '#6B778C'),
         fontFamily: 'var(--cp-font-mono)',
         marginLeft: 4,
       }}>
