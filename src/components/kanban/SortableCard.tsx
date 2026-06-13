@@ -55,8 +55,6 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
     });
   }, [issue.id]);
 
-  const restShadow = tk.cardShadowRest;
-  const hoverShadow = tk.cardHoverShadow;
   const focusShadow = `0 0 0 2px ${tk.selectedAccent}`;
 
   /* ─── Right-click context menu — Jira parity for swimlane mode ─── */
@@ -78,7 +76,9 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
   const cardStyle: React.CSSProperties = {
     background: tk.cardBg,
     borderRadius: 4,                                    /* Jira parity: 4px */
-    border: 'none',                                     /* Jira: shadow-only, no border */
+    border: 'none',
+    /* Jira parity: flat tile + single gray border-bottom (no rest shadow). */
+    borderBottom: '1px solid var(--ds-border, #DFE1E6)',
     borderLeft: isSelected
       ? `3px solid ${tk.selectedAccent}`
       : (() => {
@@ -96,10 +96,14 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
     display: 'flex',
     flexDirection: 'column',
     cursor: 'pointer',
-    transition: 'background 150ms ease, box-shadow 150ms ease, border-left 120ms ease',
+    transition: 'background 120ms ease, box-shadow 120ms ease, border-left 120ms ease',
     opacity: isDragging ? 0.35 : 1,
     zIndex: isDragging ? 999 : 'auto',
-    boxShadow: isDragging ? tk.cardDragShadow : isFocused ? focusShadow : restShadow,
+    boxShadow: isDragging
+      ? tk.cardDragShadow
+      : isFocused
+        ? focusShadow
+        : 'none',
     position: 'relative' as const,
     outline: 'none',
     overflow: 'visible',
@@ -123,7 +127,6 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
       onMouseEnter={e => {
         if (!isDragging) {
           e.currentTarget.style.background = tk.cardHoverBg;
-          e.currentTarget.style.boxShadow = hoverShadow;
           e.currentTarget.querySelectorAll('.kanban-card-menu-btn, .kanban-card-edit-btn').forEach((el) => {
             (el as HTMLElement).style.opacity = '1';
           });
@@ -131,7 +134,6 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
       }}
       onMouseLeave={e => {
         e.currentTarget.style.background = tk.cardBg;
-        e.currentTarget.style.boxShadow = isDragging ? tk.cardDragShadow : isFocused ? focusShadow : restShadow;
         e.currentTarget.querySelectorAll('.kanban-card-menu-btn, .kanban-card-edit-btn').forEach((el) => {
           (el as HTMLElement).style.opacity = '0';
         });

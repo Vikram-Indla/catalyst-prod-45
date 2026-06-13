@@ -1725,6 +1725,12 @@ export default function KanbanBoardPage() {
             visibleFields={visibleFields}
             cardColorMode={cardColorMode}
             subtasksByParentKey={subtasksByParentKey}
+            onCreateCard={() => {
+              /* InlineCreateCard already wrote the issue to Supabase.
+                 Refetch the board so the new card appears in its column. */
+              qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+            }}
+            createInColumnLabel="Create"
             onDrop={({ cardId, sourceColId, destColId, insertIndex }) => {
               /* 1. Optimistic local reorder. */
               setColMap(prev => {
