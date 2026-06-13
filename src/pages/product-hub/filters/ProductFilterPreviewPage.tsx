@@ -1,3 +1,20 @@
+/**
+ * ProductFilterPreviewPage — /product-hub/:key/filters/create
+ *
+ * Mirror of FilterPreviewPage (/project-hub/:key/filters/create) for Product Hub.
+ *
+ * Differences from the project-hub source:
+ *  1. Data source: business_requests (not ph_issues via JQL)
+ *  2. Filtering: client-side (no JQL engine for BRs) — Basic mode only
+ *  3. Facet pool: built from business_requests fields (request_type→labels, process_step→status, urgency→priority, planned_quarter→sprintRelease)
+ *  4. Save navigation: /product-hub/:key/filters (not /project-hub/:key/filters)
+ *  5. Save modal: productKey={key} instead of projectKey (hub_scope = 'product')
+ *  6. JQL mode removed (no BR JQL engine)
+ *
+ * Everything else is verbatim identical to FilterPreviewPage: same columns,
+ * same JiraTable props, same toolbar chrome, same flag notifications, same
+ * column-visibility/widths localStorage pattern.
+ */
 import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -30,13 +47,11 @@ import {
 } from '@/components/shared/JiraTable';
 import type { Column, SortOrder, LozengeAppearance } from '@/components/shared/JiraTable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { jiraIconType } from '@/components/universal-work-view/uwv.utils';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { useUpdateSavedFilter } from '@/hooks/workhub/useSavedFilters';
 import { useJqlResults, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
-import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { supabase } from '@/integrations/supabase/client';
@@ -54,8 +69,6 @@ import {
   type FacetOption,
 } from '@/pages/project-hub/jira-list/components/AllWorkToolbar';
 import { JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
-import { JQLEditor } from '@/components/filters/JQLEditor';
-import { useJQLValuePool } from '@/hooks/workhub/useJQLValuePool';
 import type { FilterCategory as JiraFilterCategory } from '@/components/shared/JiraBasicFilter';
 import type { WorkItem } from '@/types/workItem.types';
 import FilterIconCore from '@atlaskit/icon/core/filter';
@@ -63,47 +76,235 @@ import FilterIconCore from '@atlaskit/icon/core/filter';
 const SUBTLE = token('color.text.subtle', '#505258');
 const FilterIcon = () => <FilterIconCore label="" color={SUBTLE} />;
 
+// ── Status appearances for BR process_step values ───────────────────────────
+
 const ALL_FILTER_STATUSES = [
-  'To Do', 'In Requirements', 'In Design', 'Ready for Development',
-  'In Development', 'Ready for QA', 'In QA', 'Ready for UAT', 'In UAT',
-  'In Production', 'Done', 'Blocked', 'On Hold', 'Closed', 'Cancelled',
-  'Backlog', 'In Progress', 'In Review', 'Ready to Implement',
-  'Beta Ready',
+  'New', 'In Review', 'Approved', 'In Progress', 'On Hold',
+  'Done', 'Rejected', 'Cancelled', 'Backlog', 'Ready for Development',
 ];
 
 function filterStatusAppearance(status: string | null | undefined): LozengeAppearance {
   if (!status) return 'default';
   const s = status.toLowerCase();
-  if (s === 'done' || s === 'closed' || s === 'cancelled') return 'success';
-  if (s.includes('progress') || s.includes('development') || s.includes('qa') || s.includes('uat') || s.includes('review') || s.includes('design') || s.includes('requirements')) return 'inprogress';
-  if (s === 'blocked') return 'removed';
+  if (s === 'done' || s === 'approved' || s === 'closed') return 'success';
+  if (s.includes('progress') || s.includes('review') || s.includes('development')) return 'inprogress';
+  if (s === 'rejected' || s === 'cancelled') return 'removed';
   if (s === 'on hold') return 'moved';
   return 'default';
 }
 
-// Reverse of filterStateToJql — parses the predictable JQL we generate back into
-// chip-level FilterState so saved filters restore their UI selections on load.
-// Only handles the exact format filterStateToJql outputs; arbitrary JQL is ignored.
+// ── Product lookup — resolves product_id from URL :key (code) ───────────────
+
+function useProductByCode(code: string | undefined): { id: string | null; name: string } {
+  const { data } = useQuery({
+    queryKey: ['product-by-code', code],
+    enabled: !!code,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from('products')
+        .select('id, name')
+        .eq('code', code!.toUpperCase())
+        .maybeSingle();
+      return data as { id: string; name: string } | null;
+    },
+  });
+  return { id: data?.id ?? null, name: data?.name ?? code ?? '' };
+}
+
+// ── BR → JqlResultRow mapper ─────────────────────────────────────────────────
+
+function mapBrToJqlRow(r: any, profileMap: Record<string, string>): JqlResultRow {
+  return {
+    id: r.id,
+    key: r.request_key ?? r.id,
+    summary: r.title ?? '',
+    issueType: 'Business Request',
+    status: r.process_step ?? 'New',
+    statusCategory: r.process_step === 'Done' || r.process_step === 'Approved' ? 'done' : 'in_progress',
+    projectKey: '',
+    assigneeName: r.po_user_id ? (profileMap[r.po_user_id] ?? null) : null,
+    priority: r.urgency ?? null,
+    created: r.created_at ?? null,
+    updated: r.updated_at ?? null,
+    dueDate: r.end_date ?? null,
+    parentKey: null,
+    parentSummary: null,
+    sprintName: null,
+    isFlagged: null,
+    flagReason: null,
+    // Extra fields accessed by columns (not in JqlResultRow interface, safe at runtime)
+    ...({
+      sprintRelease: Array.isArray(r.planned_quarter) ? r.planned_quarter : [],
+      labels: r.request_type ? [r.request_type] : [],
+      commentCount: 0,
+      reporterName: r.created_by ? (profileMap[r.created_by] ?? null) : null,
+    } as any),
+  };
+}
+
+// ── Facet items hook — builds WorkItem pool from business_requests ────────────
+// Verified columns: id, request_key, title, process_step, urgency, po_user_id,
+// project_manager_user_id, created_by, request_type, planned_quarter, end_date,
+// created_at, updated_at, product_id, deleted_at (no 'assignee' column)
+
+function useProductBrFacetItems(productId: string | null): WorkItem[] {
+  const { data = [] } = useQuery<WorkItem[]>({
+    queryKey: ['product-filter-facet-items', productId],
+    enabled: !!productId,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data: rows } = await (supabase as any)
+        .from('business_requests')
+        .select('id, request_key, title, process_step, urgency, po_user_id, created_by, request_type, planned_quarter, created_at, updated_at')
+        .eq('product_id', productId)
+        .is('deleted_at', null)
+        .limit(2000);
+      if (!rows) return [];
+
+      const userIds = [...new Set((rows as any[]).flatMap((r: any) => [r.po_user_id, r.created_by].filter(Boolean)))];
+      const profileMap: Record<string, string> = {};
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', userIds as string[]);
+        (profiles ?? []).forEach((p: any) => { profileMap[p.id] = p.full_name; });
+      }
+
+      return (rows as any[]).map((r: any): WorkItem => ({
+        id: r.id,
+        projectId: '',
+        parentId: null,
+        parentKey: null,
+        parentSummary: null,
+        jiraKey: r.request_key ?? r.id,
+        type: 'task' as any,
+        rawType: 'Business Request',
+        summary: r.title ?? '',
+        status: 'todo' as any,
+        statusName: r.process_step ?? '',
+        statusCategory: 'todo' as any,
+        assigneeId: r.po_user_id ?? null,
+        assignee: r.po_user_id && profileMap[r.po_user_id]
+          ? { id: r.po_user_id, name: profileMap[r.po_user_id], avatarUrl: null, initials: '', color: '' }
+          : undefined,
+        reporterId: r.created_by ?? null,
+        reporter: r.created_by && profileMap[r.created_by]
+          ? { id: r.created_by, name: profileMap[r.created_by], avatarUrl: null, initials: '', color: '' }
+          : undefined,
+        priority: (r.urgency ?? 'medium') as any,
+        fixVersion: null,
+        sprintRelease: Array.isArray(r.planned_quarter) && r.planned_quarter.length > 0
+          ? r.planned_quarter[0]
+          : null,
+        sprintName: null,
+        labels: r.request_type ? [r.request_type] : [],
+        resolution: null,
+        severity: null,
+        commentsCount: 0,
+        childCount: 0,
+        createdAt: r.created_at ?? '',
+        updatedAt: r.updated_at ?? '',
+        createdBy: null,
+      } as any));
+    },
+  });
+  return data;
+}
+
+// ── BR results hook — fetches + filters business_requests ────────────────────
+
+function useProductBrResults(productId: string | null, filters: FilterState, search: string) {
+  return useQuery({
+    queryKey: ['product-br-results', productId, JSON.stringify(filters), search],
+    enabled: !!productId,
+    staleTime: 30 * 1000,
+    queryFn: async () => {
+      const { data: rows } = await (supabase as any)
+        .from('business_requests')
+        .select('id, request_key, title, process_step, urgency, po_user_id, created_by, request_type, planned_quarter, end_date, created_at, updated_at')
+        .eq('product_id', productId)
+        .is('deleted_at', null)
+        .order('updated_at', { ascending: false })
+        .limit(500);
+      if (!rows) return { items: [], totalCount: 0 };
+
+      const userIds = [...new Set(
+        (rows as any[]).flatMap((r: any) => [r.po_user_id, r.created_by].filter(Boolean))
+      )];
+      const profileMap: Record<string, string> = {};
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', userIds as string[]);
+        (profiles ?? []).forEach((p: any) => { profileMap[p.id] = p.full_name; });
+      }
+
+      let items: JqlResultRow[] = (rows as any[]).map(r => mapBrToJqlRow(r, profileMap));
+
+      // Client-side filter by FilterState
+      if (filters.assignee.length > 0) {
+        items = items.filter(r => r.assigneeName && filters.assignee.includes(r.assigneeName));
+      }
+      if (filters.status.length > 0) {
+        items = items.filter(r => filters.status.includes(r.status));
+      }
+      if (filters.workType.length > 0) {
+        const labels = (r: any) => (r as any).labels as string[];
+        items = items.filter(r => filters.workType.some(t => labels(r).includes(t)));
+      }
+      if (filters.priority.length > 0) {
+        items = items.filter(r => r.priority && filters.priority.includes(r.priority));
+      }
+      if (filters.labels.length > 0) {
+        items = items.filter(r => {
+          const rLabels = (r as any).labels as string[];
+          return filters.labels.some(l => rLabels.includes(l));
+        });
+      }
+      if (filters.sprintReleases.length > 0) {
+        items = items.filter(r => {
+          const sr = (r as any).sprintRelease as string[];
+          return Array.isArray(sr) && filters.sprintReleases.some(v => sr.includes(v));
+        });
+      }
+      if (search.trim()) {
+        const q = search.toLowerCase();
+        items = items.filter(r => r.summary.toLowerCase().includes(q) || r.key.toLowerCase().includes(q));
+      }
+
+      return { items, totalCount: items.length };
+    },
+  });
+}
+
+// ── Linked entities (scaffold — same as FilterPreviewPage) ───────────────────
+
+export interface LinkedFilterEntity { type: string; name: string; href?: string; }
+function useLinkedEntities(_filterId: string | null): LinkedFilterEntity[] { return []; }
+
+// ── JQL→FilterState parser (same as FilterPreviewPage — for loading saved filters) ──
+
 const JQL_FIELD_TO_FACET: Record<string, FilterFacet> = {
-  assignee:    'assignee',
-  reporter:    'reporter',
-  status:      'status',
-  priority:    'priority',
-  issuetype:   'workType',
-  labels:      'labels',
-  fixVersion:  'sprintReleases',
-  parent:      'parent',
-  resolution:  'resolution',
-  sprint:      'sprint',
+  assignee: 'assignee',
+  reporter: 'reporter',
+  status: 'status',
+  priority: 'priority',
+  issuetype: 'workType',
+  labels: 'labels',
+  fixVersion: 'sprintReleases',
+  parent: 'parent',
+  resolution: 'resolution',
+  sprint: 'sprint',
   storyPoints: 'storyPoints',
   'cf[10125]': 'severity',
 };
 
 function jqlToFilterState(jql: string): Partial<FilterState> {
   const result: Partial<FilterState> = {};
-  // Match: field in ("a", "b") — multi-value
   const inRe = /(\S+)\s+in\s+\(([^)]+)\)/g;
-  // Match: field = "a" — single-value (skip project clause)
   const eqRe = /(\S+)\s+=\s+"([^"]+)"/g;
   let m: RegExpExecArray | null;
   while ((m = inRe.exec(jql)) !== null) {
@@ -115,131 +316,23 @@ function jqlToFilterState(jql: string): Partial<FilterState> {
   while ((m = eqRe.exec(jql)) !== null) {
     if (m[1] === 'project') continue;
     const facet = JQL_FIELD_TO_FACET[m[1]];
-    if (!facet || result[facet]) continue; // skip if already set by IN clause
+    if (!facet || result[facet]) continue;
     result[facet] = [m[2]];
   }
   return result;
 }
 
-// Mirrors AllWorkToolbar's TOOLBAR_FACET_TYPES exactly — same type filter drives
-// the Work type chip options so FilterPreviewPage shows the same set as AllWork.
-const TOOLBAR_FACET_TYPES = ['Story', 'Backend', 'Frontend', 'Sub-task', 'Epic', 'Feature'];
+// ── Page component ─────────────────────────────────────────────────────────────
 
-function useProjectFacetItems(projectKey: string | undefined): WorkItem[] {
-  const { data = [] } = useQuery<WorkItem[]>({
-    queryKey: ['filter-preview-facet-items', projectKey],
-    enabled: !!projectKey,
-    staleTime: 5 * 60 * 1000,
-    queryFn: async () => {
-      const { data: rows } = await supabase
-        .from('ph_issues')
-        .select(
-          'issue_key, issue_type, status, status_category, assignee_account_id, assignee_display_name, reporter_account_id, reporter_display_name, priority, labels, sprint_release, sprint_name, resolution, severity, parent_key, parent_summary'
-        )
-        .eq('project_key', projectKey)
-        .in('issue_type', TOOLBAR_FACET_TYPES)
-        .is('jira_removed_at', null)
-        .is('archived_at', null)
-        .is('deleted_at', null)
-        .limit(5000);
-      if (!rows) return [];
-      return (rows as any[]).map(
-        (r: any): WorkItem =>
-          ({
-            id: r.issue_key,
-            projectId: projectKey!,
-            parentId: null,
-            parentKey: r.parent_key ?? null,
-            parentSummary: r.parent_summary ?? null,
-            jiraKey: r.issue_key,
-            type: 'task' as any,
-            rawType: r.issue_type ?? null,
-            summary: '',
-            status: 'todo' as any,
-            statusName: r.status ?? '',
-            statusCategory: (r.status_category ?? 'todo') as any,
-            assigneeId: r.assignee_account_id ?? null,
-            assignee: r.assignee_display_name
-              ? { id: r.assignee_account_id ?? r.assignee_display_name, name: r.assignee_display_name, avatarUrl: null, initials: '', color: '' }
-              : undefined,
-            reporterId: null,
-            reporter: r.reporter_display_name
-              ? { id: r.reporter_account_id ?? '', name: r.reporter_display_name }
-              : undefined,
-            priority: (r.priority ?? 'medium') as any,
-            fixVersion: null,
-            sprintRelease: Array.isArray(r.sprint_release) && r.sprint_release.length > 0 ? r.sprint_release[0] : null,
-            sprintName: r.sprint_name ?? null,
-            labels: r.labels ?? [],
-            resolution: r.resolution ?? null,
-            severity: r.severity ?? null,
-            commentsCount: 0,
-            childCount: 0,
-            createdAt: '',
-            updatedAt: '',
-            createdBy: null,
-          } as any)
-      );
-    },
-  });
-  return data;
-}
-
-interface Member { id: string; name: string; src: string | null }
-
-function useProjectMembers(projectKey: string | undefined): Member[] {
-  const { data = [] } = useQuery<Member[]>({
-    queryKey: ['filter-preview-members', projectKey],
-    enabled: !!projectKey,
-    staleTime: 60 * 1000,
-    queryFn: async () => {
-      const { data: project } = await supabase
-        .from('projects')
-        .select('id')
-        .eq('key', projectKey)
-        .maybeSingle();
-      if (!project?.id) return [];
-      const { data } = await supabase
-        .from('project_members')
-        .select('user_id, profiles!inner(id, full_name, avatar_url)')
-        .eq('project_id', project.id)
-        .limit(20);
-      return ((data ?? []) as any[]).map((r) => ({
-        id: r.profiles?.id ?? r.user_id,
-        name: r.profiles?.full_name ?? 'Member',
-        src: r.profiles?.avatar_url ?? null,
-      }));
-    },
-  });
-  return data;
-}
-
-// ---------------------------------------------------------------------------
-// Linked entities — scaffolded for future Kanban/board/widget wiring.
-// When a saved filter gains dependents (Kanban board, Sprint board, gadget),
-// this hook will return them and the impact Flag will show automatically.
-// ---------------------------------------------------------------------------
-export interface LinkedFilterEntity {
-  type: string;   // e.g. "Kanban board", "Sprint board"
-  name: string;
-  href?: string;
-}
-
-function useLinkedEntities(_filterId: string | null): LinkedFilterEntity[] {
-  // TODO: query ph_filter_dependents (or equivalent) when the schema exists.
-  return [];
-}
-
-// ---------------------------------------------------------------------------
-
-export function FilterPreviewPage() {
-  const { key: projectKey } = useParams<{ key: string }>();
+export function ProductFilterPreviewPage() {
+  const { key: productCode } = useParams<{ key: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const urlFilterId = searchParams.get('filterId');
 
+  const { id: productId, name: productName } = useProductByCode(productCode);
+
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS);
-  // When opened from a saved filter, this holds the raw saved JQL and name.
   const [savedFilterJql, setSavedFilterJql] = useState<string | null>(null);
   const [savedFilterName, setSavedFilterName] = useState<string | null>(null);
   const [openChipKey, setOpenChipKey] = useState<string | null>(null);
@@ -248,25 +341,19 @@ export function FilterPreviewPage() {
   const [sortOrder, setSortOrder] = useState<SortOrder>('DESC');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  // Column picker — mirrors BacklogPage's canonical column-visibility state.
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(
-    () => new Set(['key', 'status', 'parent', 'assignee'])
+    () => new Set(['key', 'status', 'assignee', 'priority'])
   );
 
-  // Column order + widths — localStorage keys scoped to avoid collision with BacklogPage
-  const COL_WIDTHS_KEY = `ph-filter-col-widths-v1:${projectKey}`;
+  const COL_WIDTHS_KEY = `ph-product-filter-col-widths-v1:${productCode}`;
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(
     () => { try { const r = localStorage.getItem(COL_WIDTHS_KEY); return r ? JSON.parse(r) : {}; } catch { return {}; } }
   );
   const [columnOrder, setColumnOrder] = useState<string[] | null>(null);
-
-  // Density state — mirrors BacklogPage (default 'compact')
   const [density, setDensity] = useState<'compact' | 'comfortable'>('compact');
-
-  // Ask Caty inline bar — mirrors BacklogPage's setAskCatyOpen pattern
   const [askCatyOpen, setAskCatyOpen] = useState(false);
 
-  // JC-1: Basic/JQL mode toggle
+  // JC-1: Basic/JQL mode toggle (mirrors FilterPreviewPage — JQL mode shows derived JQL, no engine)
   const [filterMode, setFilterMode] = useState<'basic' | 'jql'>('basic');
   const [jqlText, setJqlText] = useState('');
 
@@ -277,7 +364,6 @@ export function FilterPreviewPage() {
     });
   }, []);
 
-  // Save state — isDirty gates the Save button; savedFilterId drives override logic
   const [savedFilterId, setSavedFilterId] = useState<string | null>(null);
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveAsOpen, setSaveAsOpen] = useState(false);
@@ -285,29 +371,19 @@ export function FilterPreviewPage() {
 
   const updateFilter = useUpdateSavedFilter();
 
-  // Atlaskit Flag notifications
-  const [flags, setFlags] = useState<
-    Array<{ id: string; type: 'save-success' | 'impact-entities' }>
-  >([]);
+  const [flags, setFlags] = useState<Array<{ id: string; type: 'save-success' | 'impact-entities' }>>([]);
   const flagIdRef = useRef(0);
   const addFlag = useCallback((type: 'save-success' | 'impact-entities') => {
     const id = `flag-${++flagIdRef.current}`;
     setFlags(prev => [...prev, { id, type }]);
-    if (type !== 'override-warning') {
-      setTimeout(() => setFlags(prev => prev.filter(f => f.id !== id)), 8000);
-    }
+    setTimeout(() => setFlags(prev => prev.filter(f => f.id !== id)), 8000);
   }, []);
-  const dismissFlag = useCallback(
-    (id: string) => setFlags(prev => prev.filter(f => f.id !== id)),
-    []
-  );
+  const dismissFlag = useCallback((id: string) => setFlags(prev => prev.filter(f => f.id !== id)), []);
 
   const linkedEntities = useLinkedEntities(savedFilterId);
-  const facetItems = useProjectFacetItems(projectKey);
-  const members = useProjectMembers(projectKey);
-  const jqlValuePool = useJQLValuePool(facetItems, projectKey);
+  const facetItems = useProductBrFacetItems(productId);
 
-  // Load saved filter when navigated from FiltersListPage with ?filterId=
+  // Load saved filter when navigated with ?filterId=
   const { data: loadedFilter } = useQuery({
     queryKey: ['ph_saved_filter', urlFilterId],
     enabled: !!urlFilterId,
@@ -316,76 +392,31 @@ export function FilterPreviewPage() {
       const { data } = await supabase
         .from('ph_saved_filters')
         .select('id, name, jql_query, filter_config, user_id, owner_id, subscriber_ids, viewers_config, editors_config, used_by_board_ids, is_shared, page, created_at, updated_at, hub_scope, health_status, description, starred_by_user_ids, last_used_at, use_count')
-        .eq('id', urlFilterId)
+        .eq('id', urlFilterId!)
         .maybeSingle();
       return data ?? null;
     },
   });
 
-  // Seed savedFilterId, JQL, and name once the filter row arrives.
   useEffect(() => {
     if (!loadedFilter) return;
     setSavedFilterId(loadedFilter.id);
     setSavedFilterName(loadedFilter.name ?? null);
     setSavedFilterJql(loadedFilter.jql_query ?? null);
     const cfg = loadedFilter.filter_config;
-    // Prefer filter_config when it has FilterState shape (chips already stored).
     if (cfg && typeof cfg === 'object' && ('workType' in cfg || 'status' in cfg || 'assignee' in cfg)) {
       setFilters({ ...EMPTY_FILTERS, ...(cfg as Partial<FilterState>) });
     } else if (loadedFilter.jql_query) {
-      // Legacy filters stored only jql_query — parse it back into chip state.
       const parsed = jqlToFilterState(loadedFilter.jql_query);
-      if (Object.keys(parsed).length > 0) {
-        setFilters({ ...EMPTY_FILTERS, ...parsed });
-      }
+      if (Object.keys(parsed).length > 0) setFilters({ ...EMPTY_FILTERS, ...parsed });
     }
   }, [loadedFilter]);
 
-  const facetOptions = useMemo(() => {
-    const ALL_FACETS = ['workType', 'status', 'assignee', ...MORE_FILTERS_FACETS] as const;
-    const out: Record<string, FacetOption[]> = {};
-    for (const f of ALL_FACETS) out[f] = distinctOptions(facetItems, f as any);
-    return out;
-  }, [facetItems]);
-
-  // When a saved filter is loaded via ?filterId=, use its stored JQL directly.
-  // In JQL mode, use the raw jqlText. Otherwise derive from chip state.
-  const jql = useMemo(() => {
-    if (filterMode === 'jql') return jqlText || filterStateToJql(filters, projectKey);
-    return savedFilterJql ?? filterStateToJql(filters, projectKey);
-  }, [filterMode, jqlText, savedFilterJql, filters, projectKey]);
-
-  const { data, isLoading, isFetching } = useJqlResults(jql);
-
-  const items = useMemo(() => {
-    const rows = [...(data?.items ?? [])];
-    const dir = sortOrder === 'ASC' ? 1 : -1;
-    rows.sort((a, b) => {
-      const va = (a as unknown as Record<string, unknown>)[sortKey] ?? '';
-      const vb = (b as unknown as Record<string, unknown>)[sortKey] ?? '';
-      return va < vb ? -dir : va > vb ? dir : 0;
-    });
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      return rows.filter(r => r.summary.toLowerCase().includes(q) || r.key.toLowerCase().includes(q));
-    }
-    return rows;
-  }, [data?.items, sortKey, sortOrder, search]);
-
-  // Resolve each parent's TRUE issue_type so the Parent cell draws the real
-  // icon (no hardcoded "Story" lie — CLAUDE.md zero-assumption 2026-06-11).
-  const parentTypeMap = useParentIssueTypes((data?.items ?? []).map((r) => r.parentKey));
-
-  const totalCount = totalSelected(filters);
-  const moreCount = MORE_FILTERS_FACETS.reduce((n, f) => n + filters[f].length, 0);
-
-  const markDirty = useCallback(() => setIsDirty(true), []);
-
   const switchToJql = useCallback(() => {
-    const current = savedFilterJql ?? filterStateToJql(filters, projectKey);
+    const current = savedFilterJql ?? filterStateToJql(filters, productCode);
     setJqlText(current);
     setFilterMode('jql');
-  }, [savedFilterJql, filters, projectKey]);
+  }, [savedFilterJql, filters, productCode]);
 
   const switchToBasic = useCallback(() => {
     const parsed = jqlToFilterState(jqlText);
@@ -398,9 +429,58 @@ export function FilterPreviewPage() {
     setFilterMode('basic');
   }, [jqlText]);
 
+  // Derive members from facet items (unique assignees — no extra query needed)
+  const productMembers = useMemo(() => {
+    const seen = new Set<string>();
+    const out: { id: string; name: string; src: string | null }[] = [];
+    for (const item of facetItems) {
+      const key = item.assigneeId ?? item.assignee?.name;
+      if (item.assignee?.name && key && !seen.has(key)) {
+        seen.add(key);
+        out.push({ id: item.assignee.name, name: item.assignee.name, src: item.assignee.avatarUrl });
+      }
+    }
+    return out;
+  }, [facetItems]);
+
+  const avatarData = productMembers.map((m) => ({
+    key: m.id,
+    name: m.name,
+    src: resolveAvatarUrl(m.src ?? null) ?? undefined,
+  }));
+
+  const facetOptions = useMemo(() => {
+    const ALL_FACETS = ['workType', 'status', 'assignee', ...MORE_FILTERS_FACETS] as const;
+    const out: Record<string, FacetOption[]> = {};
+    for (const f of ALL_FACETS) out[f] = distinctOptions(facetItems, f as any);
+    return out;
+  }, [facetItems]);
+
+  const brResults = useProductBrResults(productId, filters, search);
+  const jqlResults = useJqlResults(jqlText, filterMode === 'jql' && !!jqlText.trim());
+
+  const activeData = filterMode === 'jql' ? jqlResults.data : brResults.data;
+  const isLoading  = filterMode === 'jql' ? jqlResults.isLoading : brResults.isLoading;
+  const isFetching = filterMode === 'jql' ? jqlResults.isFetching : brResults.isFetching;
+
+  const items = useMemo(() => {
+    const rows = [...(activeData?.items ?? [])];
+    const dir = sortOrder === 'ASC' ? 1 : -1;
+    rows.sort((a, b) => {
+      const va = (a as unknown as Record<string, unknown>)[sortKey] ?? '';
+      const vb = (b as unknown as Record<string, unknown>)[sortKey] ?? '';
+      return va < vb ? -dir : va > vb ? dir : 0;
+    });
+    return rows;
+  }, [activeData?.items, sortKey, sortOrder]);
+
+  const totalCount = totalSelected(filters);
+  const moreCount = MORE_FILTERS_FACETS.reduce((n, f) => n + filters[f].length, 0);
+
+  const markDirty = useCallback(() => setIsDirty(true), []);
+
   const updateFacet = (facet: string, next: string[]) => {
     setFilters(prev => ({ ...prev, [facet]: next }));
-    setSavedFilterJql(null); // switch to chip-driven JQL once user modifies
     markDirty();
   };
 
@@ -413,20 +493,17 @@ export function FilterPreviewPage() {
   const openDetail = (key: string) =>
     useGlobalSearchStore.getState().openDetail({ id: key });
 
-  const avatarData = members.map((m) => ({ key: m.id, name: m.name, src: resolveAvatarUrl(m.src ?? null) ?? undefined }));
-
   // ── Save handlers ──────────────────────────────────────────────────────────
 
-  // Jira "Save" behavior: update JQL in-place, no dialog.
-  // Also persist filter_config as the current chip state so the next
-  // load can restore chips without re-parsing JQL.
+  // Derived JQL from current filter state (used for saving — same as FilterPreviewPage)
+  const jql = useMemo(() => {
+    return savedFilterJql ?? filterStateToJql(filters, productCode);
+  }, [savedFilterJql, filters, productCode]);
+
   const handleSaveClick = () => {
     if (savedFilterId) {
       updateFilter.mutate(
-        {
-          id: savedFilterId,
-          updates: { jql_query: jql.trim() || null, filter_config: filters },
-        },
+        { id: savedFilterId, updates: { jql_query: jql.trim() || null, filter_config: filters } },
         {
           onSuccess: () => {
             setIsDirty(false);
@@ -442,23 +519,25 @@ export function FilterPreviewPage() {
   const handleSaved = useCallback(
     (id: string) => {
       setSaveOpen(false);
+      setSaveAsOpen(false);
       setSavedFilterId(id);
       setIsDirty(false);
       if (linkedEntities.length > 0) addFlag('impact-entities');
-      navigate(`/project-hub/${projectKey}/filters`);
+      navigate(`/product-hub/${productCode}/filters`);
     },
-    [linkedEntities, addFlag, navigate, projectKey]
+    [linkedEntities, addFlag, navigate, productCode]
   );
 
-  // ── Column definitions — mirrors BacklogPage.atlaskit.tsx canonical structure
-  // JqlResultRow is read-only (no mutation), so edit cells use canEdit:()=>false.
+  // ── Column definitions — verbatim from FilterPreviewPage (same JqlResultRow type) ──
 
   const columns = useMemo<Column<JqlResultRow>[]>(() => {
     const keyCellRenderer = makeKeyCell(
       (r: JqlResultRow) => r.key,
       (r: JqlResultRow) => openDetail(r.key),
       undefined,
-      (r: JqlResultRow) => r.issueType ? <JiraIssueTypeIcon type={jiraIconType(r.issueType)} size={16} /> : undefined,
+      (r: JqlResultRow) => r.issueType
+        ? <JiraIssueTypeIcon type={r.issueType} size={16} />
+        : undefined,
     );
     const summaryCellRenderer = makeSummaryInlineEditCell<JqlResultRow>({
       getSummary: (r) => r.summary,
@@ -485,29 +564,6 @@ export function FilterPreviewPage() {
         },
       },
       {
-        id: 'parent',
-        label: 'Parent',
-        width: 11,
-        sortable: true,
-        defaultVisible: true,
-        accessor: (r) => r.parentKey ?? '',
-        cell: makeParentEditCell<JqlResultRow>({
-          getParent: (r) => {
-            if (!r.parentKey) return null;
-            const pType = parentTypeMap.get(r.parentKey);
-            return {
-              id: r.parentKey,
-              key: r.parentKey,
-              label: r.parentSummary ?? r.parentKey,
-              icon: pType ? <JiraIssueTypeIcon type={pType} size={16} /> : undefined,
-            };
-          },
-          options: [],
-          canEdit: () => false,
-          onChange: () => {},
-        }),
-      },
-      {
         id: 'status',
         label: 'Status',
         width: 15,
@@ -521,28 +577,6 @@ export function FilterPreviewPage() {
           canEdit: () => false,
           onChange: () => {},
         }),
-      },
-      {
-        id: 'comments',
-        label: 'Comments',
-        width: 8,
-        sortable: false,
-        defaultVisible: false,
-        alwaysVisible: false,
-        cell: makeCommentsCell(
-          (r: JqlResultRow) => r.commentCount,
-          (r: JqlResultRow) => openDetail(r.key),
-        ),
-      },
-      {
-        id: 'sprint_release',
-        label: 'Sprint/Release',
-        width: 18,
-        sortable: false,
-        defaultVisible: true,
-        accessor: (r) => (r.sprintRelease || []).join(', '),
-        cell: makeSprintReleaseCell((r: JqlResultRow) => r.sprintRelease),
-        include: (row: JqlResultRow) => row.issueType !== 'Feature',
       },
       {
         id: 'assignee',
@@ -561,19 +595,6 @@ export function FilterPreviewPage() {
         }),
       },
       {
-        id: 'due_date',
-        label: 'Due date',
-        width: 8,
-        sortable: true,
-        defaultVisible: false,
-        accessor: (r) => r.dueDate ?? '',
-        cell: makeDateEditCell<JqlResultRow>({
-          getDate: (r) => r.dueDate,
-          canEdit: () => false,
-          onChange: () => {},
-        }),
-      },
-      {
         id: 'priority',
         label: 'Priority',
         width: 6,
@@ -587,14 +608,36 @@ export function FilterPreviewPage() {
         }),
       },
       {
-        id: 'labels',
-        label: 'Labels',
-        width: 7,
+        id: 'sprint_release',
+        label: 'Quarter/Release',
+        width: 18,
         sortable: false,
-        defaultVisible: false,
-        accessor: (r) => (r.labels || []).join(', '),
+        defaultVisible: true,
+        accessor: (r) => ((r as any).sprintRelease || []).join(', '),
+        cell: makeSprintReleaseCell((r: JqlResultRow) => (r as any).sprintRelease),
+      },
+      {
+        id: 'labels',
+        label: 'Type',
+        width: 10,
+        sortable: false,
+        defaultVisible: true,
+        accessor: (r) => ((r as any).labels || []).join(', '),
         cell: makeLabelsEditCell<JqlResultRow>({
-          getLabels: (r) => r.labels,
+          getLabels: (r) => (r as any).labels,
+          canEdit: () => false,
+          onChange: () => {},
+        }),
+      },
+      {
+        id: 'due_date',
+        label: 'Target date',
+        width: 8,
+        sortable: true,
+        defaultVisible: false,
+        accessor: (r) => r.dueDate ?? '',
+        cell: makeDateEditCell<JqlResultRow>({
+          getDate: (r) => r.dueDate,
           canEdit: () => false,
           onChange: () => {},
         }),
@@ -604,7 +647,7 @@ export function FilterPreviewPage() {
         label: 'Created',
         width: 8,
         sortable: true,
-        defaultVisible: true,
+        defaultVisible: false,
         accessor: (r) => r.created ?? '',
         cell: makeDateCell((r: JqlResultRow) => r.created),
       },
@@ -619,16 +662,15 @@ export function FilterPreviewPage() {
       },
       {
         id: 'reporter',
-        label: 'Reporter',
+        label: 'Created by',
         width: 10,
         sortable: true,
         defaultVisible: false,
-        accessor: (r) => r.reporterName ?? '',
-        cell: makeAssigneeCell((r: JqlResultRow) =>
-          r.reporterName
-            ? { name: r.reporterName, avatarUrl: resolveAvatarUrl(r.reporterName) ?? null }
-            : null,
-        ),
+        accessor: (r) => (r as any).reporterName ?? '',
+        cell: makeAssigneeCell((r: JqlResultRow) => {
+          const name = (r as any).reporterName as string | null;
+          return name ? { name, avatarUrl: resolveAvatarUrl(name) ?? null } : null;
+        }),
       },
       {
         id: '__actions',
@@ -642,7 +684,7 @@ export function FilterPreviewPage() {
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parentTypeMap]);
+  }, []);
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -663,10 +705,10 @@ export function FilterPreviewPage() {
         </h1>
       }
     >
-      {/* Ask Caty inline bar — replaces toolbar row when open (mirrors BacklogPage) */}
+      {/* Ask Caty inline bar */}
       {askCatyOpen && (
         <AskCatyInlineBar
-          projectKey={projectKey ?? null}
+          projectKey={productCode ?? null}
           onClose={() => setAskCatyOpen(false)}
           onJqlGenerated={(generatedJql) => {
             setSavedFilterJql(generatedJql);
@@ -675,7 +717,7 @@ export function FilterPreviewPage() {
         />
       )}
 
-      {/* Toolbar — hidden when Caty bar is open — Jira two-row layout */}
+      {/* Toolbar */}
       <div
         style={{
           display: askCatyOpen ? 'none' : 'flex',
@@ -684,7 +726,7 @@ export function FilterPreviewPage() {
           borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
         }}
       >
-        {/* ── Row 1: Ask Caty · Basic/JQL toggle · search · chips · active chips ── */}
+        {/* Row 1: Ask Caty · search · chips */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 24px', flexWrap: 'nowrap', overflow: 'visible' }}>
           <AIIntelligenceButton
             label="Ask Caty"
@@ -692,7 +734,7 @@ export function FilterPreviewPage() {
             tooltip="Ask Caty about these results"
           />
 
-          {/* JC-1: Basic / JQL toggle — Jira-style adjacent buttons */}
+          {/* JC-1: Basic / JQL toggle — mirrors FilterPreviewPage */}
           <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
             <button
               onClick={switchToBasic}
@@ -726,116 +768,115 @@ export function FilterPreviewPage() {
           </div>
 
           {filterMode === 'jql' ? (
-            /* JQL mode: single-line editor takes remaining width */
+            /* JQL mode: show derived JQL as editable text (no engine — display only) */
             <div style={{ flex: 1, minWidth: 0 }}>
-              <JQLEditor
+              <Textfield
+                isCompact
                 value={jqlText}
-                onChange={v => { setJqlText(v); markDirty(); }}
-                singleLine
-                placeholder="project = BAU AND status in (Done) ORDER BY updated DESC"
-                valuePool={jqlValuePool}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setJqlText(e.target.value); markDirty(); }}
+                placeholder="product = INV ORDER BY updated DESC"
               />
             </div>
           ) : (
             <>
-              {/* JC-4: compact search — fixed 200px, no flex expansion */}
-              <div style={{ width: 200, flexShrink: 0 }}>
-                <Textfield
-                  isCompact
-                  placeholder="Search work"
-                  value={search}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setSearch(e.target.value);
-                    markDirty();
+          {/* Search */}
+          <div style={{ width: 200, flexShrink: 0 }}>
+            <Textfield
+              isCompact
+              placeholder="Search requests"
+              value={search}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setSearch(e.target.value);
+                markDirty();
+              }}
+              elemBeforeInput={
+                <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
+                  <AkSearchIcon label="" size="small" />
+                </span>
+              }
+              elemAfterInput={
+                search ? (
+                  <Button
+                    appearance="subtle"
+                    spacing="compact"
+                    iconBefore={AkCloseIcon}
+                    onClick={() => setSearch('')}
+                    label="Clear search"
+                  />
+                ) : undefined
+              }
+            />
+          </div>
+
+          {/* Filter chips — Assignee → Type → Status */}
+          <FilterChip
+            label={FACET_LABELS.assignee}
+            facet="assignee"
+            options={facetOptions.assignee ?? []}
+            selected={filters.assignee}
+            onToggle={v => toggleValue('assignee', v)}
+            onClear={() => updateFacet('assignee', [])}
+            isOpen={openChipKey === 'assignee'}
+            onOpenChange={open => setOpenChipKey(open ? 'assignee' : null)}
+            headline="Assignee = (equals)"
+          />
+          <FilterChip
+            label={FACET_LABELS.workType}
+            facet="workType"
+            options={facetOptions.workType ?? []}
+            selected={filters.workType}
+            onToggle={v => toggleValue('workType', v)}
+            onClear={() => updateFacet('workType', [])}
+            isOpen={openChipKey === 'workType'}
+            onOpenChange={open => setOpenChipKey(open ? 'workType' : null)}
+            headline="Type = (equals)"
+          />
+          <FilterChip
+            label={FACET_LABELS.status}
+            facet="status"
+            options={facetOptions.status ?? []}
+            selected={filters.status}
+            onToggle={v => toggleValue('status', v)}
+            onClear={() => updateFacet('status', [])}
+            isOpen={openChipKey === 'status'}
+            onOpenChange={open => setOpenChipKey(open ? 'status' : null)}
+            headline="Status = (equals)"
+          />
+
+          {/* Active filter chips */}
+          {(['assignee', 'workType', 'status'] as FilterFacet[]).flatMap(facet =>
+            filters[facet].map(val => {
+              const opt = (facetOptions[facet] ?? []).find(o => o.value === val);
+              const displayLabel = opt?.label ?? val;
+              return (
+                <span
+                  key={`${facet}:${val}`}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    height: 28, padding: '0 8px',
+                    borderRadius: 3,
+                    border: `1px solid ${token('color.border.focused', '#388BFF')}`,
+                    background: 'transparent',
+                    fontSize: 14,
+                    color: token('color.link', '#0C66E4'),
+                    whiteSpace: 'nowrap', flexShrink: 0,
                   }}
-                  elemBeforeInput={
-                    <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
-                      <AkSearchIcon label="" size="small" />
-                    </span>
-                  }
-                  elemAfterInput={
-                    search ? (
-                      <Button
-                        appearance="subtle"
-                        spacing="compact"
-                        iconBefore={AkCloseIcon}
-                        onClick={() => setSearch('')}
-                        label="Clear search"
-                      />
-                    ) : undefined
-                  }
-                />
-              </div>
-
-              {/* JC-5: chip order — Assignee → Type → Status (Jira order) */}
-              <FilterChip
-                label={FACET_LABELS.assignee}
-                facet="assignee"
-                options={facetOptions.assignee ?? []}
-                selected={filters.assignee}
-                onToggle={v => toggleValue('assignee', v)}
-                onClear={() => updateFacet('assignee', [])}
-                isOpen={openChipKey === 'assignee'}
-                onOpenChange={open => setOpenChipKey(open ? 'assignee' : null)}
-                headline="Assignee = (equals)"
-              />
-              <FilterChip
-                label={FACET_LABELS.workType}
-                facet="workType"
-                options={facetOptions.workType ?? []}
-                selected={filters.workType}
-                onToggle={v => toggleValue('workType', v)}
-                onClear={() => updateFacet('workType', [])}
-                isOpen={openChipKey === 'workType'}
-                onOpenChange={open => setOpenChipKey(open ? 'workType' : null)}
-                headline="Type = (equals)"
-              />
-              <FilterChip
-                label={FACET_LABELS.status}
-                facet="status"
-                options={facetOptions.status ?? []}
-                selected={filters.status}
-                onToggle={v => toggleValue('status', v)}
-                onClear={() => updateFacet('status', [])}
-                isOpen={openChipKey === 'status'}
-                onOpenChange={open => setOpenChipKey(open ? 'status' : null)}
-                headline="Status = (equals)"
-              />
-
-              {/* JC-6: active filter chips — removable inline chips for each selected value */}
-              {(['assignee', 'workType', 'status'] as FilterFacet[]).flatMap(facet =>
-                filters[facet].map(val => {
-                  const opt = (facetOptions[facet] ?? []).find(o => o.value === val);
-                  const displayLabel = opt?.label ?? val;
-                  return (
-                    <span
-                      key={`${facet}:${val}`}
-                      style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 4,
-                        height: 28, padding: '0 8px',
-                        borderRadius: 3,
-                        border: `1px solid ${token('color.border.focused', '#388BFF')}`,
-                        background: 'transparent',
-                        fontSize: 14,
-                        color: token('color.link', '#0C66E4'),
-                        whiteSpace: 'nowrap', flexShrink: 0,
-                      }}
-                    >
-                      {FACET_LABELS[facet]}: {displayLabel}
-                      <button
-                        onClick={() => toggleValue(facet, val)}
-                        style={{ background: 'none', border: 'none', padding: '0 0 0 2px', cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'inherit', fontSize: 16, lineHeight: 1 }}
-                        aria-label={`Remove ${FACET_LABELS[facet]} ${displayLabel}`}
-                      >×</button>
-                    </span>
-                  );
-                })
-              )}
+                >
+                  {FACET_LABELS[facet]}: {displayLabel}
+                  <button
+                    onClick={() => toggleValue(facet, val)}
+                    style={{ background: 'none', border: 'none', padding: '0 0 0 2px', cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'inherit', fontSize: 16, lineHeight: 1 }}
+                    aria-label={`Remove ${FACET_LABELS[facet]} ${displayLabel}`}
+                  >×</button>
+                </span>
+              );
+            })
+          )}
             </>
           )}
         </div>
 
-        {/* ── Row 2: More filters · Clear filters · spacer · count · kebab · Save as · Save filter ── */}
+        {/* Row 2: More filters · Clear · AvatarGroup · spacer · count · kebab · Save as · Save */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 24px 8px', flexWrap: 'nowrap' }}>
           <FilterTriggerAndPopup
             triggerLabel={`More filters${moreCount > 0 ? ` (${moreCount})` : ''}`}
@@ -897,27 +938,25 @@ export function FilterPreviewPage() {
 
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 8px', color: token('color.text.subtlest', '#626F86'), fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }}>
             {isFetching && <Spinner size="small" />}
-            {!isFetching && data != null && `${data.totalCount} item${data.totalCount === 1 ? '' : 's'}`}
+            {!isFetching && activeData != null && `${activeData.totalCount} item${activeData.totalCount === 1 ? '' : 's'}`}
           </div>
 
-          {/* Kebab menu — only shown when a saved filter is loaded (has an id) */}
           {savedFilterId && loadedFilter && (
             <FilterKebabMenu
               filter={loadedFilter as any}
               currentUserId={currentUserId}
               rows={items}
               isLoadingRows={isFetching}
+              hubType="product"
             />
           )}
 
-          {/* JC-3: Save as — subtle button */}
           {savedFilterId && (
             <Button appearance="subtle" onClick={() => setSaveAsOpen(true)}>
               Save as
             </Button>
           )}
 
-          {/* JC-3: Save filter — ADS canonical button */}
           <Button
             appearance="subtle"
             onClick={handleSaveClick}
@@ -928,7 +967,7 @@ export function FilterPreviewPage() {
         </div>
       </div>
 
-      {/* Table — same container pattern as BacklogPage (padding:24px on wrapper) */}
+      {/* Table */}
       <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
         <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, padding: '24px' }}>
           <JiraTable<JqlResultRow>
@@ -941,10 +980,10 @@ export function FilterPreviewPage() {
             onSortChange={(k, o) => { setSortKey(k); setSortOrder(o); }}
             isLoading={isLoading}
             density={density}
-            ariaLabel="Filter preview"
+            ariaLabel="Product filter preview"
             rowsPerPage={0}
             page={1}
-            totalRowCount={data?.totalCount}
+            totalRowCount={activeData?.totalCount}
             enableVirtualization
             enableColumnReorder
             columnOrder={columnOrder ?? undefined}
@@ -963,34 +1002,36 @@ export function FilterPreviewPage() {
             onSelectionChange={setSelectedIds}
             emptyView={
               <div style={{ padding: '32px 24px', textAlign: 'center', color: token('color.text.subtle'), fontSize: 14 }}>
-                No work items match this filter. Adjust the criteria above.
+                No requests match this filter. Adjust the criteria above.
               </div>
             }
           />
         </div>
       </div>
 
-      {/* New filter save modal — only shown when no existing filter is loaded */}
+      {/* Save modals */}
       {saveOpen && (
         <FilterSaveModal
           initialJql={jql}
           initialName="Untitled filter"
           onClose={() => setSaveOpen(false)}
           onSaved={handleSaved}
+          hubScope="product"
+          productKey={productCode}
         />
       )}
-
-      {/* Save as modal — creates a new filter from the current JQL (Jira parity) */}
       {saveAsOpen && (
         <FilterSaveModal
           initialJql={jql}
           initialName={savedFilterName ? `${savedFilterName} (copy)` : 'Untitled filter'}
           onClose={() => setSaveAsOpen(false)}
           onSaved={handleSaved}
+          hubScope="product"
+          productKey={productCode}
         />
       )}
 
-      {/* Atlaskit Flag notifications — override warning + impact alert */}
+      {/* Flag notifications */}
       <FlagGroup onDismissed={id => dismissFlag(id as string)}>
         {flags.map(flag => {
           if (flag.type === 'save-success') {

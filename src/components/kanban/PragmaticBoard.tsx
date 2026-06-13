@@ -98,6 +98,13 @@ interface CardActions {
    * each card renders a SubtaskStrip showing hover-card chips for its children.
    */
   subtasksByParentKey?: Map<string, BoardIssue[]>;
+  /**
+   * The full ordered list of columns the board is currently rendering.
+   * Threaded down so the per-card three-dots menu can list every status
+   * (forward AND backward) in the same order the user sees on screen,
+   * excluding only the card's current column.
+   */
+  boardColumns?: KanbanColumnDef[];
 }
 
 /* ═════════════════════════════════════════════════════════════════════════
@@ -182,14 +189,16 @@ const PragmaticCard = memo(function PragmaticCard({
     });
   }, [issue.id, colId]);
 
-  const restShadow = tk.cardShadowRest;
-  const hoverShadow = tk.cardHoverShadow;
   const focusShadow = `0 0 0 2px ${tk.selectedAccent}`;
 
   const cardStyle: React.CSSProperties = {
     background: tk.cardBg,
     borderRadius: 4,                                        /* Jira parity: 4px */
-    border: 'none',                                         /* shadow-only */
+    border: 'none',
+    /* Jira parity: cards are flat tiles — no rest shadow, single gray border-bottom
+       gives the row-separation cue (CardColorMode borderLeft still wins for the
+       priority/type accent stripe). */
+    borderBottom: '1px solid var(--ds-border, #DFE1E6)',
     borderLeft: isSelected
       ? `3px solid ${tk.selectedAccent}`
       : (() => {
@@ -207,9 +216,13 @@ const PragmaticCard = memo(function PragmaticCard({
     display: 'flex',
     flexDirection: 'column',
     cursor: 'grab',
-    transition: 'background 150ms ease, box-shadow 150ms ease, border-left 120ms ease',
+    transition: 'background 120ms ease, box-shadow 120ms ease, border-left 120ms ease',
     opacity: isDragging ? 0.35 : 1,
-    boxShadow: isDragging ? tk.cardDragShadow : isFocused ? focusShadow : restShadow,
+    boxShadow: isDragging
+      ? tk.cardDragShadow
+      : isFocused
+        ? focusShadow
+        : 'none',
     position: 'relative',
     outline: 'none',
     overflow: 'visible',
@@ -229,7 +242,6 @@ const PragmaticCard = memo(function PragmaticCard({
         onMouseEnter={(e) => {
           if (!isDragging) {
             e.currentTarget.style.background = tk.cardHoverBg;
-            e.currentTarget.style.boxShadow = hoverShadow;
             e.currentTarget.querySelectorAll('.kanban-card-menu-btn, .kanban-card-edit-btn').forEach((el) => {
               (el as HTMLElement).style.opacity = '1';
             });
@@ -237,7 +249,6 @@ const PragmaticCard = memo(function PragmaticCard({
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.background = tk.cardBg;
-          e.currentTarget.style.boxShadow = isDragging ? tk.cardDragShadow : isFocused ? focusShadow : restShadow;
           e.currentTarget.querySelectorAll('.kanban-card-menu-btn, .kanban-card-edit-btn').forEach((el) => {
             (el as HTMLElement).style.opacity = '0';
           });
@@ -336,15 +347,18 @@ interface PragmaticColumnProps extends CardActions {
   cardColorMode?: CardColorMode;
   /** When true and issueIds is empty, render pulse skeleton cards instead of "No items" */
   isLoading?: boolean;
+  /** When true (first column), the "+ Create" button stays visible while empty. */
+  isFirst?: boolean;
 }
 
 const PragmaticColumn = memo(function PragmaticColumn({
   column, issueIds, issuesById, avatarsByName, onCardClick, d, tk,
-  selectedId, focusedId, cardColorMode, isLoading, ...actions
+  selectedId, focusedId, cardColorMode, isLoading, isFirst, ...actions
 }: PragmaticColumnProps) {
   const bodyRef = useRef<HTMLDivElement>(null);
   const meatballRef = useRef<HTMLButtonElement>(null);
   const [isOver, setIsOver] = useState(false);
+  const [isColHovered, setIsColHovered] = useState(false);
   // Meatball menu — manual createPortal popover positioned by trigger rect.
   // Replaces @atlaskit/dropdown-menu which fails to anchor properly inside
   // the column header (CLAUDE.md L1 + cycle-3 evidence: trigger flips
@@ -395,13 +409,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
     });
   }, [column.id]);
 
-  // jira-compare 2026-05-08 — K.11 measured status category colors
-  // Done: lime green #94C748, In Progress: cornflower #669DF1, To Do: muted grey #5E6C84
-  const categoryDot = column.category === 'done'
-    ? 'var(--ds-background-success-bold, #94C748)'
-    : column.category === 'in_progress'
-    ? 'var(--ds-background-information, #669DF1)'
-    : 'var(--ds-text-subtlest, #5E6C84)';
+  const isDoneCategory = column.category === 'done';
 
   return (
     <div
@@ -418,37 +426,53 @@ const PragmaticColumn = memo(function PragmaticColumn({
         maxWidth: 360,
         background: tk.surfaceAlt,
         borderRadius: 6,
+        /* Column height now follows content (Jira parity). flex-col with no
+           explicit height means the column shrinks to fit cards + create btn. */
+        alignSelf: 'flex-start',
       }}
       role="list"
       aria-label={`${column.name} column, ${issueIds.length} items`}
+      onMouseEnter={() => setIsColHovered(true)}
+      onMouseLeave={() => setIsColHovered(false)}
     >
-      {/* Header — 48h, 6px top-radius, plain-text count.
-          Note: previously `sticky top-0` — removed because Atlaskit Floating UI
-          inside @atlaskit/dropdown-menu computes the wrong reference frame
-          when its trigger lives in a position:sticky parent (cycle-3 evidence:
-          menu mounts at viewport (0,0) instead of below trigger). The sticky
-          behaviour can be reintroduced once Floating UI's reference resolution
-          is fixed (open Atlaskit issue) or a `@atlaskit/popup` swap is in. */}
+      {/* Header — Jira parity: plain uppercase title, no gray background.
+          Title sits top-left; count chip (or green ✓ for done) sits next to it. */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: SPACING_TOKENS.gap8,
         position: 'relative',
-        height: 48,
-        padding: '0 12px',
-        background: tk.headerBg,
-        borderRadius: '6px 6px 0 0',
+        padding: '12px 12px 8px 12px',
+        background: 'transparent',
         flexShrink: 0,
       }}>
         <span style={{
-          width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0,
-        }} />
-        <span style={{
-          // jira-compare 2026-05-08 — Jira column headers: 11px/600/0.04em
-          // Column names are uppercase in content (e.g. "IN REQUIREMENTS") — no CSS transform needed.
           fontSize: 11, fontWeight: 600,
           color: tk.textMuted, fontFamily: 'var(--cp-font-body)',
-          lineHeight: '16px', flex: 1,
+          lineHeight: '16px',
           letterSpacing: '0.04em',
+          textTransform: 'uppercase',
         }}>{column.name}</span>
+        {/* Done category → green ✓; other categories → gray count chip when > 0 */}
+        {isDoneCategory ? (
+          <svg
+            aria-hidden="true"
+            width="14" height="14" viewBox="0 0 16 16" fill="none"
+            style={{ flexShrink: 0 }}
+          >
+            <path d="M3 8l3.5 3.5L13 5" stroke="var(--ds-text-success, #1F845A)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        ) : issueIds.length > 0 ? (
+          <span style={{
+            fontSize: 11, fontWeight: 600,
+            color: tk.textMuted,
+            background: 'var(--ds-background-neutral, #F1F2F4)',
+            padding: '1px 6px',
+            borderRadius: 3,
+            lineHeight: '16px',
+            fontFamily: 'var(--cp-font-body)',
+            minWidth: 18,
+            textAlign: 'center',
+          }}>{issueIds.length}</span>
+        ) : null}
         {/* MAX badge — Jira board 597 surfaces column WIP via `MAX: <n>`. */}
         {column.wipLimit != null && (
           <span
@@ -470,12 +494,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
             MAX: {column.wipLimit}
           </span>
         )}
-        {/* jira-compare 2026-05-08 — count: 11px/500/textMuted matching Jira column count style */}
-        <span style={{
-          fontSize: 11, fontWeight: 500, color: tk.textMuted,
-          fontFamily: 'var(--cp-font-body)', lineHeight: '16px',
-          minWidth: 14, textAlign: 'right',
-        }}>{issueIds.length}</span>
+        <span style={{ flex: 1 }} />
         {/* Per-column meatball — manual popover via createPortal. */}
         <button
           ref={meatballRef}
@@ -605,6 +624,8 @@ const PragmaticColumn = memo(function PragmaticColumn({
         actions={actions}
         inlineCreateColId={inlineCreateColId}
         setInlineCreateColId={setInlineCreateColId}
+        isFirst={isFirst}
+        isColHovered={isColHovered}
       />
     </div>
   );
@@ -632,6 +653,8 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
     actions,
     inlineCreateColId,
     setInlineCreateColId,
+    isFirst,
+    isColHovered,
   }: {
     issueIds: string[];
     issuesById: Map<string, BoardIssue>;
@@ -648,6 +671,8 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
     actions: CardActions;
     inlineCreateColId: string | null;
     setInlineCreateColId: (id: string | null) => void;
+    isFirst?: boolean;
+    isColHovered?: boolean;
   },
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
@@ -728,14 +753,12 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
     return (
       <div
         ref={parentRef}
-        className="flex flex-col overflow-y-auto"
+        className="flex flex-col"
         style={{
-          padding: '8px',
+          padding: '0 8px 12px 8px',
           gap: d.cardGap,
-          flex: 1,
-          minHeight: 120,
+          minHeight: 100,  /* empty columns still feel like a column, stay droppable */
           background: isOver ? tk.dropHighlight : 'transparent',
-          transition: 'background 150ms ease',
           borderRadius: '0 0 6px 6px',
         }}
       >
@@ -757,16 +780,12 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
             ))}
           </div>
         )}
-        {issueIds.length === 0 && !isLoading && (
+        {issueIds.length === 0 && !isLoading && isOver && (
           <div className="flex flex-col items-center justify-center" style={{
-            minHeight: 100, color: tk.textDisabled, fontSize: 12, gap: SPACING_TOKENS.gap8,
+            minHeight: 60, color: tk.selectedAccent, fontSize: 13, fontWeight: 600,
             fontFamily: 'var(--cp-font-body)',
           }}>
-            {isOver ? (
-              <span style={{ color: tk.selectedAccent, fontWeight: 600, fontSize: 13 }}>Drop here</span>
-            ) : (
-              <span style={{ opacity: 0.5 }}>No work items</span>
-            )}
+            Drop here
           </div>
         )}
         {/* F7: Staggered card entrance — CSS animation-delay per index, capped at 8 cards
@@ -801,43 +820,60 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
             </div>
           );
         })}
-        {(actions.onCreateInColumn || actions.onCreateCard) && (
-          inlineCreateColId === column.id ? (
-            <div style={{ marginTop: issueIds.length === 0 ? 0 : 4 }}>
-              <InlineCreateCard
-                projectKey={actions.projectKey || ''}
-                columnId={column.id}
-                onCreateCard={(issue) => {
-                  actions.onCreateCard?.(issue);
-                  setInlineCreateColId(null);
-                }}
-                onCancel={() => setInlineCreateColId(null)}
-              />
-            </div>
-          ) : (
+        {(actions.onCreateInColumn || actions.onCreateCard) && (() => {
+          // Visibility rule (Jira parity):
+          //  • First column AND empty → always visible (entry-point affordance)
+          //  • Otherwise → only while the column is hovered
+          // Layout: the button is ALWAYS in the DOM so the column reserves its
+          // height — hover only flips visibility. Prevents column-height jump.
+          const showCreate = (isFirst && issueIds.length === 0) || isColHovered;
+          if (inlineCreateColId === column.id) {
+            return (
+              <div style={{ marginTop: issueIds.length === 0 ? 0 : 4 }}>
+                <InlineCreateCard
+                  projectKey={actions.projectKey || ''}
+                  columnId={column.id}
+                  status={column.statuses?.[0]}
+                  onCreateCard={(issue) => {
+                    actions.onCreateCard?.(issue);
+                    setInlineCreateColId(null);
+                  }}
+                  onCancel={() => setInlineCreateColId(null)}
+                />
+              </div>
+            );
+          }
+          return (
             <button
               type="button"
               data-testid={`kanban-column-create-${column.id}`}
               onClick={() => setInlineCreateColId(column.id)}
               style={{
-                display: 'inline-flex',
+                display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 gap: SPACING_TOKENS.gap8,
-                padding: '4px 8px',
+                width: '100%',
+                boxSizing: 'border-box',
+                /* Match card padding so the "+ Create" text inset aligns with
+                   card content above. */
+                padding: d.cardPad,
                 border: 'none',
                 background: 'transparent',
                 color: tk.textMuted,
-                fontSize: 12,
+                fontSize: 13,
                 fontWeight: 500,
                 fontFamily: 'var(--cp-font-body)',
                 borderRadius: 4,
-                cursor: 'pointer',
-                transition: 'background 120ms ease, color 120ms ease',
+                cursor: showCreate ? 'pointer' : 'default',
+                textAlign: 'left',
                 marginTop: issueIds.length === 0 ? 0 : 4,
+                visibility: showCreate ? 'visible' : 'hidden',
               }}
+              tabIndex={showCreate ? 0 : -1}
+              aria-hidden={!showCreate}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover ?? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))';
+                (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, #F1F2F4)';
                 (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
               }}
               onMouseLeave={(e) => {
@@ -846,10 +882,10 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
               }}
             >
               <AddIcon label="" size="small" primaryColor="currentColor" />
-              <span>{actions.createInColumnLabel ?? 'Create issue'}</span>
+              <span>Create</span>
             </button>
-          )
-        )}
+          );
+        })()}
       </div>
     );
   }
@@ -944,47 +980,60 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
         })}
       </div>
 
-      {/* Per-column create button — rendered outside virtualization */}
-      {(actions.onCreateInColumn || actions.onCreateCard) && (
-        inlineCreateColId === column.id ? (
-          <div style={{ marginTop: issueIds.length === 0 ? 0 : 4 }}>
-            <InlineCreateCard
-              projectKey={actions.projectKey || ''}
-              columnId={column.id}
-              onCreateCard={(issue) => {
-                actions.onCreateCard?.(issue);
-                setInlineCreateColId(null);
-              }}
-              onCancel={() => setInlineCreateColId(null)}
-            />
-          </div>
-        ) : (
+      {/* Per-column create button — always in DOM (reserves layout space);
+          visibility toggled so the column height never jumps on hover. */}
+      {(actions.onCreateInColumn || actions.onCreateCard) && (() => {
+        const showCreate = (isFirst && issueIds.length === 0) || isColHovered;
+        if (inlineCreateColId === column.id) {
+          return (
+            <div style={{ marginTop: issueIds.length === 0 ? 0 : 4 }}>
+              <InlineCreateCard
+                projectKey={actions.projectKey || ''}
+                columnId={column.id}
+                status={column.statuses?.[0]}
+                assigneeOptions={actions.assigneeOptions}
+                avatarsByName={avatarsByName}
+                onCreateCard={(issue) => {
+                  actions.onCreateCard?.(issue);
+                  setInlineCreateColId(null);
+                }}
+                onCancel={() => setInlineCreateColId(null)}
+              />
+            </div>
+          );
+        }
+        return (
           <button
             type="button"
             data-testid={`kanban-column-create-${column.id}`}
             onClick={() => setInlineCreateColId(column.id)}
             style={{
-              display: 'inline-flex',
+              display: 'flex',
               alignItems: 'center',
               justifyContent: 'flex-start',
               gap: 8,
-              padding: '4px 8px',
+              /* Left/right margin matches the body's 8px padding so the button's
+                 outer box lines up with the card boxes inside the body. */
+              width: 'calc(100% - 16px)',
+              margin: '4px 8px 0',
+              boxSizing: 'border-box',
+              /* Match card padding so internal content aligns with card content. */
+              padding: d.cardPad,
               border: 'none',
               background: 'transparent',
               color: tk.textMuted,
-              fontSize: 12,
+              fontSize: 13,
               fontWeight: 500,
               fontFamily: 'var(--cp-font-body)',
               borderRadius: 4,
-              cursor: 'pointer',
-              transition: 'background 120ms ease, color 120ms ease',
-              marginTop: 4,
-              position: 'absolute',
-              bottom: 0,
-              left: '10px',
+              cursor: showCreate ? 'pointer' : 'default',
+              textAlign: 'left',
+              visibility: showCreate ? 'visible' : 'hidden',
             }}
+            tabIndex={showCreate ? 0 : -1}
+            aria-hidden={!showCreate}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover ?? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))';
+              (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, #F1F2F4)';
               (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
             }}
             onMouseLeave={(e) => {
@@ -993,10 +1042,10 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
             }}
           >
             <AddIcon label="" size="small" primaryColor="currentColor" />
-            <span>{actions.createInColumnLabel ?? 'Create issue'}</span>
+            <span>Create</span>
           </button>
-        )
-      )}
+        );
+      })()}
     </div>
     {/* closes A23/A24 wrapper */}
     </div>
@@ -1017,7 +1066,9 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
     prevProps.focusedId === nextProps.focusedId &&
     prevProps.isOver === nextProps.isOver &&
     prevProps.isLoading === nextProps.isLoading &&
-    prevProps.inlineCreateColId === nextProps.inlineCreateColId
+    prevProps.inlineCreateColId === nextProps.inlineCreateColId &&
+    prevProps.isColHovered === nextProps.isColHovered &&
+    prevProps.isFirst === nextProps.isFirst
   );
 });
 
@@ -1267,7 +1318,7 @@ export function PragmaticBoard({
                   marginTop: 4,
                 }}
               >
-                {columns.map((col) => (
+                {columns.map((col, idx) => (
                   <PragmaticColumn
                     key={`${lane.key}-${col.id}`}
                     column={col}
@@ -1280,6 +1331,7 @@ export function PragmaticBoard({
                     selectedId={selectedId}
                     focusedId={focusedId}
                     cardColorMode={cardColorMode}
+                    isFirst={idx === 0}
                     {...actions}
                   />
                 ))}
@@ -1304,7 +1356,7 @@ export function PragmaticBoard({
         minWidth: columns.length * 267 + (columns.length - 1) * 8,
       }}
     >
-      {columns.map((col) => (
+      {columns.map((col, idx) => (
         <PragmaticColumn
           key={col.id}
           column={col}
@@ -1318,6 +1370,7 @@ export function PragmaticBoard({
           focusedId={focusedId}
           cardColorMode={cardColorMode}
           isLoading={isLoading}
+          isFirst={idx === 0}
           {...actions}
         />
       ))}

@@ -7,6 +7,7 @@ import { useBoard } from '@/hooks/useBoard';
 import { useUpdateBoard, useDeleteBoard, useAddColumn, useDeleteColumn, useAddQuickFilter, useDeleteQuickFilter } from '@/hooks/useBoardMutations';
 import { typedQuery } from '@/integrations/supabase/client';
 import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
+import { useJqlResults } from '@/hooks/workhub/useJqlResults';
 
 interface Props {
   board: BoardListItem;
@@ -75,6 +76,9 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
   const [newCardColorLabel, setNewCardColorLabel] = useState('');
   const [newCardColorJql, setNewCardColorJql] = useState('');
   const [newCardColorHex, setNewCardColorHex] = useState(DEFAULT_CARD_COLOR);
+
+  const qfJqlPreview = useJqlResults(newFilterJql, !!newFilterJql.trim());
+  const ccJqlPreview = useJqlResults(newCardColorJql, !!newCardColorJql.trim());
 
   const { data: boardData } = useBoard(board.id);
   const { data: availableFilters = [] } = useFiltersForProject(projectKey, 'project');
@@ -389,7 +393,12 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                     <input value={newFilterJql} onChange={e => setNewFilterJql(e.target.value)}
                       placeholder="assignee = currentUser()"
                       onKeyDown={e => e.key === 'Enter' && handleAddFilter()}
-                      style={{ ...inputStyle, height: 34, fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 12, marginBottom: 8 }} />
+                      style={{ ...inputStyle, height: 34, fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 12, marginBottom: 4 }} />
+                    {newFilterJql.trim() && (
+                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 8 }}>
+                        {qfJqlPreview.isLoading ? 'Checking…' : `${qfJqlPreview.data?.totalCount ?? 0} issues match`}
+                      </div>
+                    )}
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button onClick={() => setAddingFilter(false)} style={{
                         height: 28, padding: '0 12px', borderRadius: 4,
@@ -556,7 +565,12 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                     </div>
                     <input value={newCardColorJql} onChange={e => setNewCardColorJql(e.target.value)}
                       placeholder="JQL: priority = Critical"
-                      style={{ width: '100%', height: 32, padding: '0 8px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, fontSize: 12, fontFamily: 'monospace', color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', outline: 'none', boxSizing: 'border-box' as const, marginBottom: 8 }} />
+                      style={{ width: '100%', height: 32, padding: '0 8px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, fontSize: 12, fontFamily: 'monospace', color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', outline: 'none', boxSizing: 'border-box' as const, marginBottom: 4 }} />
+                    {newCardColorJql.trim() && (
+                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 8 }}>
+                        {ccJqlPreview.isLoading ? 'Checking…' : `${ccJqlPreview.data?.totalCount ?? 0} issues match`}
+                      </div>
+                    )}
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button onClick={() => { setAddingCardColor(false); setNewCardColorLabel(''); setNewCardColorJql(''); setNewCardColorHex(DEFAULT_CARD_COLOR); }} style={{
                         height: 28, padding: '0 12px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'transparent', cursor: 'pointer', fontSize: 12, color: 'var(--ds-text, #172B4D)',

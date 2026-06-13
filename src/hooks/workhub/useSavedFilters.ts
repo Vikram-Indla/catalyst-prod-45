@@ -234,11 +234,15 @@ export function useFiltersForProject(projectKey?: string, hubScope?: HubScope) {
         query = query.in('hub_scope', [hubScope, 'both']);
       }
 
-      // Scope to the specific project when a key is provided.
-      // Includes global filters (project_key IS NULL) so shared/org-level filters
-      // remain visible within a project context.
+      // Scope to the specific project/product when a key is provided.
+      // Products scope by product_key; projects scope by project_key.
+      // Both include global (null) filters so org-level shared filters remain visible.
       if (projectKey) {
-        query = (query as any).or(`project_key.eq.${projectKey},project_key.is.null`);
+        if (hubScope === 'product') {
+          query = (query as any).or(`product_key.eq.${projectKey},product_key.is.null`);
+        } else {
+          query = (query as any).or(`project_key.eq.${projectKey},project_key.is.null`);
+        }
       }
 
       // Only return filters the current user owns or that are public (is_shared).
