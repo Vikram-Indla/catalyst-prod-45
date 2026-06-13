@@ -33,7 +33,7 @@ test.describe('Chat full-screen module', () => {
     const sidebar = page.locator('[aria-label="Conversations"]');
 
     // Click the first conversation row if one exists
-    const firstRow = sidebar.locator('.c-conv-row').first();
+    const firstRow = sidebar.locator('.c-sb-row').first();
     const rowCount = await firstRow.count();
 
     if (rowCount === 0) {
