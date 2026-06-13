@@ -716,6 +716,18 @@ export default function ProjectHubTimelinePage() {
     });
   }, []);
 
+  const parentKeys = useMemo(() => {
+    const keys: string[] = [];
+    function collect(issues: TimelineIssue[]) {
+      for (const i of issues) { if (i.children.length) { keys.push(i.issueKey); collect(i.children); } }
+    }
+    collect(tree);
+    return keys;
+  }, [tree]);
+
+  const collapseAll = useCallback(() => setCollapsed(new Set(parentKeys)), [parentKeys]);
+  const expandAll = useCallback(() => setCollapsed(new Set()), []);
+
   const scrollToToday = useCallback(() => {
     if (!gridRef.current) return;
     gridRef.current.scrollLeft = todayLeft - gridRef.current.clientWidth / 2;
@@ -1186,6 +1198,32 @@ export default function ProjectHubTimelinePage() {
               <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', letterSpacing: '0.04em' }}>
                 Work
               </span>
+              {parentKeys.length > 0 && (
+                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 0 }}>
+                  <Tooltip content="Expand all" position="top">
+                    <button
+                      onClick={expandAll}
+                      aria-label="Expand all rows"
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 3, color: 'var(--ds-text-subtlest, #626F86)', padding: 0 }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #626F86)'; }}
+                    >
+                      <ChevronDownIcon label="" size="small" />
+                    </button>
+                  </Tooltip>
+                  <Tooltip content="Collapse all" position="top">
+                    <button
+                      onClick={collapseAll}
+                      aria-label="Collapse all rows"
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 3, color: 'var(--ds-text-subtlest, #626F86)', padding: 0 }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #626F86)'; }}
+                    >
+                      <ChevronRightIcon label="" size="small" />
+                    </button>
+                  </Tooltip>
+                </div>
+              )}
             </div>
 
             {/* sidebar body — scrollable */}
