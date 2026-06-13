@@ -132,10 +132,14 @@ export function ProjectIcon({
     );
   }
 
-  // 0b. Explicit avatarUrl — takes priority over the bundled registry so that
-  // product adapters (ProductHeaderChip) can inject a landmark SVG for product
-  // codes that share a key with PROJECT_AVATAR_REGISTRY (e.g. 'INV').
-  if (avatarUrl) {
+  // 0b. Local avatarUrl — only wins over the bundled registry when the URL is a
+  // LOCAL asset (localhost or Vite-served /src/assets path). External Jira CDN
+  // URLs are G6-banned and silently skipped; the registry handles those keys.
+  // This lets ProductHeaderChip inject a landmark SVG for product codes (INV)
+  // while ProjectDashboardPage's ph_projects.avatar_url (Jira CDN) is ignored.
+  const isLocalUrl = (url: string) =>
+    url.startsWith('/') || url.includes('localhost') || url.startsWith('blob:');
+  if (avatarUrl && isLocalUrl(avatarUrl)) {
     return (
       <img
         src={avatarUrl}
