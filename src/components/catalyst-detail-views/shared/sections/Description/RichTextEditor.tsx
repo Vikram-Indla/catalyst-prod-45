@@ -347,6 +347,20 @@ export function RichTextEditor({
     [editor, dismissTrigger, onImproveClick],
   );
 
+  // Cmd+Enter (Mac) / Ctrl+Enter (Win) to save — mirrors Slack/Teams keyboard UX
+  useEffect(() => {
+    const el = editorRootRef.current;
+    if (!el) return;
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (!isSaving && pendingUploads === 0) handleSaveClick();
+      }
+    };
+    el.addEventListener('keydown', onKey);
+    return () => el.removeEventListener('keydown', onKey);
+  }, [handleSaveClick, isSaving, pendingUploads]);
+
   if (!editor) return null;
 
   const saveDisabled = isSaving || pendingUploads > 0;

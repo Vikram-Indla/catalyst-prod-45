@@ -114,6 +114,9 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
       [conversationId, lastSentMessageId, onSend, uploadAttachment],
     );
 
+    const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/i.test(navigator.platform);
+    const sendHint = isMac ? '⌘↵ to send · ⇧↵ new line' : 'Ctrl+Enter to send · Shift+Enter new line';
+
     return (
       <div className="cc-composer" style={{ position: 'relative' }}>
         <input
@@ -135,6 +138,18 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
           isSaving={sending || uploading || disabled}
           minHeight={minHeight}
         />
+        <div
+          aria-live="off"
+          style={{
+            fontSize: 11,
+            color: 'var(--ds-text-subtlest, #6B778C)',
+            padding: '2px 4px',
+            textAlign: 'right',
+            userSelect: 'none',
+          }}
+        >
+          {sendHint}
+        </div>
       </div>
     );
   },

@@ -118,6 +118,7 @@ function MoreMenu({
   onClose: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const top = anchorRect.bottom + 4;
   const left = Math.max(8, anchorRect.right - 164);
@@ -127,7 +128,11 @@ function MoreMenu({
       if (ref.current && !ref.current.contains(e.target as Node)) onClose();
     }
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        if (confirmDelete) setConfirmDelete(false);
+        else onClose();
+      }
     }
     document.addEventListener('mousedown', onMouseDown);
     document.addEventListener('keydown', onKeyDown, true);
@@ -135,7 +140,7 @@ function MoreMenu({
       document.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('keydown', onKeyDown, true);
     };
-  }, [onClose]);
+  }, [onClose, confirmDelete]);
 
   return createPortal(
     <div
@@ -145,7 +150,7 @@ function MoreMenu({
       role="menu"
       aria-label="Message actions"
     >
-      {isOwn && (
+      {isOwn && !confirmDelete && (
         <button
           className="c-more-menu__item"
           role="menuitem"
@@ -155,14 +160,35 @@ function MoreMenu({
           Edit message
         </button>
       )}
-      {isOwn && (
+      {isOwn && !confirmDelete && (
         <button
           className="c-more-menu__item c-more-menu__item--danger"
           role="menuitem"
-          onClick={() => { onDelete(); onClose(); }}
+          onClick={() => setConfirmDelete(true)}
         >
           Delete message
         </button>
+      )}
+      {isOwn && confirmDelete && (
+        <div className="c-more-menu__confirm" role="alertdialog" aria-label="Confirm delete">
+          <span className="c-more-menu__confirm-label">Delete this message?</span>
+          <div className="c-more-menu__confirm-actions">
+            <button
+              className="c-more-menu__item c-more-menu__item--danger"
+              role="menuitem"
+              onClick={() => { onDelete(); onClose(); }}
+            >
+              Delete
+            </button>
+            <button
+              className="c-more-menu__item"
+              role="menuitem"
+              onClick={() => setConfirmDelete(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       )}
       {!isOwn && (
         <button className="c-more-menu__item" role="menuitem" onClick={onClose}>

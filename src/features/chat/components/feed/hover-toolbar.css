@@ -155,3 +155,31 @@
 .c-more-menu__item--danger:hover {
   background: var(--ds-background-danger);
 }
+
+/* ── Delete confirmation panel ── */
+.c-more-menu__confirm {
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.c-more-menu__confirm-label {
+  font-size: 13px;
+  color: var(--c-chat-text);
+  font-weight: 500;
+}
+
+.c-more-menu__confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.c-more-menu__confirm-actions .c-more-menu__item {
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  flex: none;
+  width: auto;
+}
