@@ -142,6 +142,19 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             // redirect to /backlog; source files remain on disk as-is.
           ],
         },
+        // TEMP: full dashboard explorer — remove once Vikram picks the canonical dashboard
+        {
+          title: 'All Dashboards',
+          items: [
+            { id: 'dash-project',   title: 'Project Dashboard',   path: `${base}/dashboard`,              icon: LayoutDashboard, exact: false },
+            { id: 'dash-product',   title: 'Product Dashboard',   path: '/product-hub/product-dashboard', icon: LayoutDashboard, exact: false },
+            { id: 'dash-testhub',   title: 'TestHub Dashboard',   path: '/testhub/dashboard',             icon: LayoutDashboard, exact: false },
+            { id: 'dash-incidents', title: 'Incidents Dashboard', path: '/release/incidents/dashboard',   icon: LayoutDashboard, exact: false },
+            { id: 'dash-strategy',  title: 'Strategy Room',       path: '/strategyhub',                   icon: LayoutDashboard, exact: false },
+            { id: 'dash-capacity',  title: 'Capacity Planner',    path: '/planhub/capacity',              icon: LayoutDashboard, exact: false },
+            { id: 'dash-tasks',     title: 'Task Overview',       path: '/tasks/overview',                icon: LayoutDashboard, exact: false },
+          ],
+        },
       ],
       footerItem: {
         id: 'settings',

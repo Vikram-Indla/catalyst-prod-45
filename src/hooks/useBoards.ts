@@ -3,12 +3,18 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { BoardListItem } from '@/types/board';
 
-export function useBoards(projectId: string | undefined) {
+export function useBoards(projectId: string | undefined, projectKey?: string) {
   return useQuery<BoardListItem[]>({
-    queryKey: ['boards', projectId],
+    queryKey: ['boards', projectId, projectKey],
     queryFn: async (): Promise<BoardListItem[]> => {
       const { data: { user } } = await supabase.auth.getUser();
       const uid = user?.id;
+
+      // Include: (a) boards tied to the legacy projects UUID, (b) filter-derived
+      // boards linked via jira_project_key (project_id=null), (c) personal boards.
+      const orClauses = [`project_id.eq.${projectId}`];
+      if (projectKey) orClauses.push(`jira_project_key.eq.${projectKey.toUpperCase()}`);
+      if (uid) orClauses.push(`and(is_personal.eq.true,created_by.eq.${uid})`);
 
       const { data, error } = await typedQuery('boards')
         .select(`
@@ -17,7 +23,7 @@ export function useBoards(projectId: string | undefined) {
           board_issue_rank(id),
           board_members(is_starred, last_viewed_at, user_id)
         `)
-        .or(`project_id.eq.${projectId},and(is_personal.eq.true,created_by.eq.${uid})`)
+        .or(orClauses.join(','))
         .is('deleted_at', null)
         .order('sort_order', { ascending: true });
 

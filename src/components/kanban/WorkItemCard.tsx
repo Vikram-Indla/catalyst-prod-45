@@ -16,6 +16,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { KanbanAvatar } from './KanbanAvatar';
 import { AssigneePickerPopover, type AssigneeOption } from './AssigneePickerPopover';
 import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
+import { IssueHoverCard } from '@/components/shared/IssueHoverCard';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 import { SPACING_TOKENS } from './kanban-tokens';
@@ -112,6 +113,43 @@ interface WorkItemCardProps {
    * it returns `null`, the default Jira icon is used as a fallback.
    */
   resolveIcon?: (issue: BoardIssue) => ReactNode | null;
+  /** Subtask-family issues linked to this card — shown as hover-card chips. */
+  subtasks?: BoardIssue[];
+}
+
+/* ── SubtaskStrip: row of subtask chips, each wired to IssueHoverCard ── */
+
+function SubtaskStrip({ subtasks, tk }: { subtasks: BoardIssue[]; tk: KanbanThemeTokens }) {
+  if (!subtasks.length) return null;
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4, marginBottom: 2 }}>
+      {subtasks.map(st => (
+        <IssueHoverCard key={st.id} issueKey={st.issueKey}>
+          <span
+            role="img"
+            aria-label={st.issueKey}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 3,
+              padding: '2px 6px',
+              borderRadius: 3,
+              background: 'var(--ds-background-neutral, #F1F2F4)',
+              color: tk.textMuted,
+              fontSize: 11, fontFamily: 'var(--cp-font-body)',
+              lineHeight: '16px',
+              cursor: 'default',
+              userSelect: 'none',
+              transition: 'background 120ms ease',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #DCDFE4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, #F1F2F4)'; }}
+          >
+            <JiraIssueTypeIcon type={st.issueType} size={12} />
+            <span>{st.issueKey}</span>
+          </span>
+        </IssueHoverCard>
+      ))}
+    </div>
+  );
 }
 
 export function WorkItemCard({
@@ -119,7 +157,7 @@ export function WorkItemCard({
   onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail,
   onArchive, onDelete, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName,
   projectKey, onLabelsUpdated, onParentChange, onMoved, onLinked, visibleFields,
-  resolveIcon,
+  resolveIcon, subtasks = [],
 }: WorkItemCardProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
@@ -313,7 +351,8 @@ export function WorkItemCard({
         </div>
       )}
 
-      {/* spacer — only used when card has explicit minHeight */}
+      {/* ─── SUBTASK STRIP: hover-card chips for linked subtask-family issues ─── */}
+      <SubtaskStrip subtasks={subtasks} tk={tk} />
 
       {/* ─── FOOTER: Type Icon + Key (left) + Priority + Avatar (right) ─── */}
       <div className="flex items-center" style={{ gap: SPACING_TOKENS.gap8, minHeight: d.footerHeight, marginTop: 8 }}>

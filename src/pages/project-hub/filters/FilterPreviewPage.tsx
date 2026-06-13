@@ -9,7 +9,6 @@ import AvatarGroup from '@atlaskit/avatar-group';
 import AkFlag, { FlagGroup } from '@atlaskit/flag';
 import AkSearchIcon from '@atlaskit/icon/core/search';
 import AkCloseIcon from '@atlaskit/icon/core/close';
-import AkWarningIcon from '@atlaskit/icon/core/warning';
 import AkInfoIcon from '@atlaskit/icon/core/information';
 import Spinner from '@atlaskit/spinner';
 import { AtlaskitPageShell } from '@/components/ads';
@@ -34,6 +33,8 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { jiraIconType } from '@/components/universal-work-view/uwv.utils';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
+import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
+import { useUpdateSavedFilter } from '@/hooks/workhub/useSavedFilters';
 import { useJqlResults, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
 import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
@@ -43,6 +44,7 @@ import {
   FilterChip,
   FilterTriggerAndPopup,
   type FilterState,
+  type FilterFacet,
   EMPTY_FILTERS,
   FACET_LABELS,
   MORE_FILTERS_FACETS,
@@ -52,6 +54,7 @@ import {
   type FacetOption,
 } from '@/pages/project-hub/jira-list/components/AllWorkToolbar';
 import { JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
+import { JQLEditor } from '@/components/filters/JQLEditor';
 import type { FilterCategory as JiraFilterCategory } from '@/components/shared/JiraBasicFilter';
 import type { WorkItem } from '@/types/workItem.types';
 import FilterIconCore from '@atlaskit/icon/core/filter';
@@ -75,6 +78,46 @@ function filterStatusAppearance(status: string | null | undefined): LozengeAppea
   if (s === 'blocked') return 'removed';
   if (s === 'on hold') return 'moved';
   return 'default';
+}
+
+// Reverse of filterStateToJql — parses the predictable JQL we generate back into
+// chip-level FilterState so saved filters restore their UI selections on load.
+// Only handles the exact format filterStateToJql outputs; arbitrary JQL is ignored.
+const JQL_FIELD_TO_FACET: Record<string, FilterFacet> = {
+  assignee:    'assignee',
+  reporter:    'reporter',
+  status:      'status',
+  priority:    'priority',
+  issuetype:   'workType',
+  labels:      'labels',
+  fixVersion:  'sprintReleases',
+  parent:      'parent',
+  resolution:  'resolution',
+  sprint:      'sprint',
+  storyPoints: 'storyPoints',
+  'cf[10125]': 'severity',
+};
+
+function jqlToFilterState(jql: string): Partial<FilterState> {
+  const result: Partial<FilterState> = {};
+  // Match: field in ("a", "b") — multi-value
+  const inRe = /(\S+)\s+in\s+\(([^)]+)\)/g;
+  // Match: field = "a" — single-value (skip project clause)
+  const eqRe = /(\S+)\s+=\s+"([^"]+)"/g;
+  let m: RegExpExecArray | null;
+  while ((m = inRe.exec(jql)) !== null) {
+    const facet = JQL_FIELD_TO_FACET[m[1]];
+    if (!facet) continue;
+    const vals = [...m[2].matchAll(/"([^"]+)"/g)].map(v => v[1]);
+    if (vals.length) result[facet] = vals;
+  }
+  while ((m = eqRe.exec(jql)) !== null) {
+    if (m[1] === 'project') continue;
+    const facet = JQL_FIELD_TO_FACET[m[1]];
+    if (!facet || result[facet]) continue; // skip if already set by IN clause
+    result[facet] = [m[2]];
+  }
+  return result;
 }
 
 // Mirrors AllWorkToolbar's TOOLBAR_FACET_TYPES exactly — same type filter drives
@@ -222,17 +265,31 @@ export function FilterPreviewPage() {
   // Ask Caty inline bar — mirrors BacklogPage's setAskCatyOpen pattern
   const [askCatyOpen, setAskCatyOpen] = useState(false);
 
+  // JC-1: Basic/JQL mode toggle
+  const [filterMode, setFilterMode] = useState<'basic' | 'jql'>('basic');
+  const [jqlText, setJqlText] = useState('');
+
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUserId(session?.user?.id ?? null);
+    });
+  }, []);
+
   // Save state — isDirty gates the Save button; savedFilterId drives override logic
   const [savedFilterId, setSavedFilterId] = useState<string | null>(null);
   const [saveOpen, setSaveOpen] = useState(false);
+  const [saveAsOpen, setSaveAsOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
+
+  const updateFilter = useUpdateSavedFilter();
 
   // Atlaskit Flag notifications
   const [flags, setFlags] = useState<
-    Array<{ id: string; type: 'override-warning' | 'impact-entities' }>
+    Array<{ id: string; type: 'save-success' | 'impact-entities' }>
   >([]);
   const flagIdRef = useRef(0);
-  const addFlag = useCallback((type: 'override-warning' | 'impact-entities') => {
+  const addFlag = useCallback((type: 'save-success' | 'impact-entities') => {
     const id = `flag-${++flagIdRef.current}`;
     setFlags(prev => [...prev, { id, type }]);
     if (type !== 'override-warning') {
@@ -256,7 +313,7 @@ export function FilterPreviewPage() {
     queryFn: async () => {
       const { data } = await (supabase as any)
         .from('ph_saved_filters')
-        .select('id, name, jql_query, filter_config')
+        .select('id, name, jql_query, filter_config, user_id, owner_id, subscriber_ids, viewers_config, editors_config, used_by_board_ids, is_shared, page, created_at, updated_at, hub_scope, health_status, description, starred_by_user_ids, last_used_at, use_count')
         .eq('id', urlFilterId)
         .maybeSingle();
       return data ?? null;
@@ -269,10 +326,16 @@ export function FilterPreviewPage() {
     setSavedFilterId(loadedFilter.id);
     setSavedFilterName(loadedFilter.name ?? null);
     setSavedFilterJql(loadedFilter.jql_query ?? null);
-    // Restore chip state if filter_config has FilterState shape (workType/status/assignee).
     const cfg = loadedFilter.filter_config;
+    // Prefer filter_config when it has FilterState shape (chips already stored).
     if (cfg && typeof cfg === 'object' && ('workType' in cfg || 'status' in cfg || 'assignee' in cfg)) {
       setFilters({ ...EMPTY_FILTERS, ...(cfg as Partial<FilterState>) });
+    } else if (loadedFilter.jql_query) {
+      // Legacy filters stored only jql_query — parse it back into chip state.
+      const parsed = jqlToFilterState(loadedFilter.jql_query);
+      if (Object.keys(parsed).length > 0) {
+        setFilters({ ...EMPTY_FILTERS, ...parsed });
+      }
     }
   }, [loadedFilter]);
 
@@ -284,11 +347,11 @@ export function FilterPreviewPage() {
   }, [facetItems]);
 
   // When a saved filter is loaded via ?filterId=, use its stored JQL directly.
-  // Otherwise derive JQL from the chip state.
-  const jql = useMemo(
-    () => savedFilterJql ?? filterStateToJql(filters, projectKey),
-    [savedFilterJql, filters, projectKey]
-  );
+  // In JQL mode, use the raw jqlText. Otherwise derive from chip state.
+  const jql = useMemo(() => {
+    if (filterMode === 'jql') return jqlText || filterStateToJql(filters, projectKey);
+    return savedFilterJql ?? filterStateToJql(filters, projectKey);
+  }, [filterMode, jqlText, savedFilterJql, filters, projectKey]);
 
   const { data, isLoading, isFetching } = useJqlResults(jql);
 
@@ -316,6 +379,23 @@ export function FilterPreviewPage() {
 
   const markDirty = useCallback(() => setIsDirty(true), []);
 
+  const switchToJql = useCallback(() => {
+    const current = savedFilterJql ?? filterStateToJql(filters, projectKey);
+    setJqlText(current);
+    setFilterMode('jql');
+  }, [savedFilterJql, filters, projectKey]);
+
+  const switchToBasic = useCallback(() => {
+    const parsed = jqlToFilterState(jqlText);
+    if (Object.keys(parsed).length > 0) {
+      setFilters({ ...EMPTY_FILTERS, ...parsed });
+      setSavedFilterJql(null);
+    } else if (jqlText.trim()) {
+      setSavedFilterJql(jqlText.trim());
+    }
+    setFilterMode('basic');
+  }, [jqlText]);
+
   const updateFacet = (facet: string, next: string[]) => {
     setFilters(prev => ({ ...prev, [facet]: next }));
     setSavedFilterJql(null); // switch to chip-driven JQL once user modifies
@@ -335,20 +415,27 @@ export function FilterPreviewPage() {
 
   // ── Save handlers ──────────────────────────────────────────────────────────
 
+  // Jira "Save" behavior: update JQL in-place, no dialog.
+  // Also persist filter_config as the current chip state so the next
+  // load can restore chips without re-parsing JQL.
   const handleSaveClick = () => {
     if (savedFilterId) {
-      // Filter was previously saved — show override warning first
-      addFlag('override-warning');
+      updateFilter.mutate(
+        {
+          id: savedFilterId,
+          updates: { jql_query: jql.trim() || null, filter_config: filters },
+        },
+        {
+          onSuccess: () => {
+            setIsDirty(false);
+            addFlag('save-success');
+          },
+        }
+      );
     } else {
       setSaveOpen(true);
     }
   };
-
-  const handleConfirmOverride = useCallback(() => {
-    // User confirmed the override — dismiss the warning flag and open modal
-    setFlags(prev => prev.filter(f => f.type !== 'override-warning'));
-    setSaveOpen(true);
-  }, []);
 
   const handleSaved = useCallback(
     (id: string) => {
@@ -586,154 +673,267 @@ export function FilterPreviewPage() {
         />
       )}
 
-      {/* Toolbar — hidden when Caty bar is open, same as BacklogPage pattern */}
+      {/* Toolbar — hidden when Caty bar is open — Jira two-row layout */}
       <div
         style={{
           display: askCatyOpen ? 'none' : 'flex',
-          alignItems: 'center',
-          gap: 12,
-          padding: '32px 24px',
+          flexDirection: 'column',
           flexShrink: 0,
           borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-          flexWrap: 'nowrap',
-          overflow: 'visible',
         }}
       >
-        <AIIntelligenceButton
-          label="Ask Caty"
-          onClick={() => setAskCatyOpen(true)}
-          tooltip="Ask Caty about these results"
-        />
-
-        <div style={{ flex: 1, minWidth: 240, maxWidth: 640 }}>
-          <Textfield
-            isCompact
-            placeholder="Search list"
-            value={search}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setSearch(e.target.value);
-              markDirty();
-            }}
-            elemBeforeInput={
-              <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
-                <AkSearchIcon label="" size="small" />
-              </span>
-            }
-            elemAfterInput={
-              search ? (
-                <button
-                  type="button"
-                  aria-label="Clear search"
-                  onClick={() => setSearch('')}
-                  style={{ display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', '#6B778C'), padding: '0 8px 0 4px' }}
-                >
-                  <AkCloseIcon label="" size="small" />
-                </button>
-              ) : undefined
-            }
+        {/* ── Row 1: Ask Caty · Basic/JQL toggle · search · chips · active chips ── */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 24px', flexWrap: 'nowrap', overflow: 'visible' }}>
+          <AIIntelligenceButton
+            label="Ask Caty"
+            onClick={() => setAskCatyOpen(true)}
+            tooltip="Ask Caty about these results"
           />
+
+          {/* JC-1: Basic / JQL toggle — Jira-style adjacent buttons */}
+          <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+            <button
+              onClick={switchToBasic}
+              style={{
+                height: 32, padding: '0 12px', fontSize: 14,
+                fontWeight: filterMode === 'basic' ? 600 : 400,
+                border: `1px solid ${filterMode === 'basic' ? token('color.border.focused', '#388BFF') : token('color.border', '#DFE1E6')}`,
+                borderRight: filterMode === 'basic' ? `1px solid ${token('color.border.focused', '#388BFF')}` : 'none',
+                borderRadius: '3px 0 0 3px',
+                background: 'transparent',
+                color: filterMode === 'basic' ? token('color.link', '#0C66E4') : token('color.text', '#172B4D'),
+                cursor: 'pointer',
+              }}
+            >
+              Basic
+            </button>
+            <button
+              onClick={switchToJql}
+              style={{
+                height: 32, padding: '0 12px', fontSize: 14,
+                fontWeight: filterMode === 'jql' ? 600 : 400,
+                border: `1px solid ${filterMode === 'jql' ? token('color.border.focused', '#388BFF') : token('color.border', '#DFE1E6')}`,
+                borderRadius: '0 3px 3px 0',
+                background: 'transparent',
+                color: filterMode === 'jql' ? token('color.link', '#0C66E4') : token('color.text', '#172B4D'),
+                cursor: 'pointer',
+              }}
+            >
+              JQL
+            </button>
+          </div>
+
+          {filterMode === 'jql' ? (
+            /* JQL mode: single-line editor takes remaining width */
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <JQLEditor
+                value={jqlText}
+                onChange={v => { setJqlText(v); markDirty(); }}
+                singleLine
+                placeholder="project = BAU AND status in (Done) ORDER BY updated DESC"
+              />
+            </div>
+          ) : (
+            <>
+              {/* JC-4: compact search — fixed 200px, no flex expansion */}
+              <div style={{ width: 200, flexShrink: 0 }}>
+                <Textfield
+                  isCompact
+                  placeholder="Search work"
+                  value={search}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setSearch(e.target.value);
+                    markDirty();
+                  }}
+                  elemBeforeInput={
+                    <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
+                      <AkSearchIcon label="" size="small" />
+                    </span>
+                  }
+                  elemAfterInput={
+                    search ? (
+                      <button
+                        type="button"
+                        aria-label="Clear search"
+                        onClick={() => setSearch('')}
+                        style={{ display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', '#6B778C'), padding: '0 8px 0 4px' }}
+                      >
+                        <AkCloseIcon label="" size="small" />
+                      </button>
+                    ) : undefined
+                  }
+                />
+              </div>
+
+              {/* JC-5: chip order — Assignee → Type → Status (Jira order) */}
+              <FilterChip
+                label={FACET_LABELS.assignee}
+                facet="assignee"
+                options={facetOptions.assignee ?? []}
+                selected={filters.assignee}
+                onToggle={v => toggleValue('assignee', v)}
+                onClear={() => updateFacet('assignee', [])}
+                isOpen={openChipKey === 'assignee'}
+                onOpenChange={open => setOpenChipKey(open ? 'assignee' : null)}
+                headline="Assignee = (equals)"
+              />
+              <FilterChip
+                label={FACET_LABELS.workType}
+                facet="workType"
+                options={facetOptions.workType ?? []}
+                selected={filters.workType}
+                onToggle={v => toggleValue('workType', v)}
+                onClear={() => updateFacet('workType', [])}
+                isOpen={openChipKey === 'workType'}
+                onOpenChange={open => setOpenChipKey(open ? 'workType' : null)}
+                headline="Type = (equals)"
+              />
+              <FilterChip
+                label={FACET_LABELS.status}
+                facet="status"
+                options={facetOptions.status ?? []}
+                selected={filters.status}
+                onToggle={v => toggleValue('status', v)}
+                onClear={() => updateFacet('status', [])}
+                isOpen={openChipKey === 'status'}
+                onOpenChange={open => setOpenChipKey(open ? 'status' : null)}
+                headline="Status = (equals)"
+              />
+
+              {/* JC-6: active filter chips — removable inline chips for each selected value */}
+              {(['assignee', 'workType', 'status'] as FilterFacet[]).flatMap(facet =>
+                filters[facet].map(val => {
+                  const opt = (facetOptions[facet] ?? []).find(o => o.value === val);
+                  const displayLabel = opt?.label ?? val;
+                  return (
+                    <span
+                      key={`${facet}:${val}`}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        height: 28, padding: '0 8px',
+                        borderRadius: 3,
+                        border: `1px solid ${token('color.border.focused', '#388BFF')}`,
+                        background: 'transparent',
+                        fontSize: 13,
+                        color: token('color.link', '#0C66E4'),
+                        whiteSpace: 'nowrap', flexShrink: 0,
+                      }}
+                    >
+                      {FACET_LABELS[facet]}: {displayLabel}
+                      <button
+                        onClick={() => toggleValue(facet, val)}
+                        style={{ background: 'none', border: 'none', padding: '0 0 0 2px', cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'inherit', fontSize: 16, lineHeight: 1 }}
+                        aria-label={`Remove ${FACET_LABELS[facet]} ${displayLabel}`}
+                      >×</button>
+                    </span>
+                  );
+                })
+              )}
+            </>
+          )}
         </div>
 
-        <FilterChip
-          label={FACET_LABELS.workType}
-          facet="workType"
-          options={facetOptions.workType ?? []}
-          selected={filters.workType}
-          onToggle={v => toggleValue('workType', v)}
-          onClear={() => updateFacet('workType', [])}
-          isOpen={openChipKey === 'workType'}
-          onOpenChange={open => setOpenChipKey(open ? 'workType' : null)}
-          headline="Type = (equals)"
-        />
-        <FilterChip
-          label={FACET_LABELS.status}
-          facet="status"
-          options={facetOptions.status ?? []}
-          selected={filters.status}
-          onToggle={v => toggleValue('status', v)}
-          onClear={() => updateFacet('status', [])}
-          isOpen={openChipKey === 'status'}
-          onOpenChange={open => setOpenChipKey(open ? 'status' : null)}
-          headline="Status = (equals)"
-        />
-        <FilterChip
-          label={FACET_LABELS.assignee}
-          facet="assignee"
-          options={facetOptions.assignee ?? []}
-          selected={filters.assignee}
-          onToggle={v => toggleValue('assignee', v)}
-          onClear={() => updateFacet('assignee', [])}
-          isOpen={openChipKey === 'assignee'}
-          onOpenChange={open => setOpenChipKey(open ? 'assignee' : null)}
-          headline="Assignee = (equals)"
-        />
-        <FilterTriggerAndPopup
-          triggerLabel={`More filters${moreCount > 0 ? ` (${moreCount})` : ''}`}
-          isOpen={openChipKey === 'more'}
-          onOpenChange={open => setOpenChipKey(open ? 'more' : null)}
-          FilterIcon={FilterIcon}
-          renderContent={() => {
-            const categories: JiraFilterCategory[] = MORE_FILTERS_FACETS.map(f => ({
-              id: f,
-              label: FACET_LABELS[f],
-              options: (facetOptions[f] ?? []).map(o => ({ id: o.value, label: o.label })),
-            }));
-            const selected: Record<string, string[]> = {};
-            for (const f of MORE_FILTERS_FACETS) selected[f] = filters[f];
-            return (
-              <JiraBasicFilter
-                categories={categories}
-                selected={selected}
-                onSelectionChange={(categoryId, optionIds) => updateFacet(categoryId, optionIds)}
-                onClearAll={() => {
-                  const next = { ...filters };
-                  for (const f of MORE_FILTERS_FACETS) next[f] = [];
-                  setFilters(next);
-                  markDirty();
-                }}
-                onClose={() => setOpenChipKey(null)}
-              />
-            );
-          }}
-        />
+        {/* ── Row 2: More filters · Clear filters · spacer · count · kebab · Save as · Save filter ── */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 24px 8px', flexWrap: 'nowrap' }}>
+          <FilterTriggerAndPopup
+            triggerLabel={`More filters${moreCount > 0 ? ` (${moreCount})` : ''}`}
+            isOpen={openChipKey === 'more'}
+            onOpenChange={open => setOpenChipKey(open ? 'more' : null)}
+            FilterIcon={FilterIcon}
+            renderContent={() => {
+              const categories: JiraFilterCategory[] = MORE_FILTERS_FACETS.map(f => ({
+                id: f,
+                label: FACET_LABELS[f],
+                options: (facetOptions[f] ?? []).map(o => ({ id: o.value, label: o.label })),
+              }));
+              const selected: Record<string, string[]> = {};
+              for (const f of MORE_FILTERS_FACETS) selected[f] = filters[f];
+              return (
+                <JiraBasicFilter
+                  categories={categories}
+                  selected={selected}
+                  onSelectionChange={(categoryId, optionIds) => updateFacet(categoryId, optionIds)}
+                  onClearAll={() => {
+                    const next = { ...filters };
+                    for (const f of MORE_FILTERS_FACETS) next[f] = [];
+                    setFilters(next);
+                    markDirty();
+                  }}
+                  onClose={() => setOpenChipKey(null)}
+                />
+              );
+            }}
+          />
 
-        {totalCount > 0 && (
-          <Button
-            appearance="subtle"
-            onClick={() => {
-              setFilters(EMPTY_FILTERS);
-              markDirty();
+          {totalCount > 0 && (
+            <Button
+              appearance="subtle"
+              onClick={() => {
+                setFilters(EMPTY_FILTERS);
+                markDirty();
+              }}
+            >
+              Clear filters
+            </Button>
+          )}
+
+          {avatarData.length > 0 && (
+            <AvatarGroup
+              appearance="stack"
+              size="small"
+              maxCount={4}
+              label="Assignees"
+              data={avatarData}
+              onAvatarClick={(_, member) => {
+                const id = (member as any).key as string;
+                toggleValue('assignee', id);
+              }}
+            />
+          )}
+
+          <div style={{ flex: 1 }} />
+
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 8px', color: token('color.text.subtlest', '#626F86'), fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }}>
+            {isFetching && <Spinner size="small" />}
+            {!isFetching && data != null && `${data.totalCount} item${data.totalCount === 1 ? '' : 's'}`}
+          </div>
+
+          {/* Kebab menu — only shown when a saved filter is loaded (has an id) */}
+          {savedFilterId && loadedFilter && (
+            <FilterKebabMenu
+              filter={loadedFilter as any}
+              currentUserId={currentUserId}
+              rows={items}
+              isLoadingRows={isFetching}
+            />
+          )}
+
+          {/* JC-3: Save as — subtle button */}
+          {savedFilterId && (
+            <Button appearance="subtle" onClick={() => setSaveAsOpen(true)}>
+              Save as
+            </Button>
+          )}
+
+          {/* JC-3: Save filter — plain blue text link (Jira parity) */}
+          <button
+            onClick={handleSaveClick}
+            disabled={updateFilter.isPending}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '0 4px',
+              fontSize: 14,
+              fontWeight: 400,
+              color: isDirty ? token('color.link', '#0C66E4') : token('color.text.disabled', '#8993A4'),
+              cursor: isDirty ? 'pointer' : 'default',
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
             }}
           >
-            Clear filters
-          </Button>
-        )}
-
-        {avatarData.length > 0 && (
-          <AvatarGroup
-            appearance="stack"
-            size="small"
-            maxCount={4}
-            label="Assignees"
-            data={avatarData}
-            onAvatarClick={(_, member) => {
-              const id = (member as any).key as string;
-              toggleValue('assignee', id);
-            }}
-          />
-        )}
-
-        <div style={{ flex: 1 }} />
-
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 8px', color: token('color.text.subtlest', '#626F86'), fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }}>
-          {isFetching && <Spinner size="small" />}
-          {!isFetching && data != null && `${data.totalCount} item${data.totalCount === 1 ? '' : 's'}`}
+            {updateFilter.isPending ? 'Saving…' : 'Save filter'}
+          </button>
         </div>
-
-        {/* Save button — disabled until user touches any filter or search */}
-        <Button appearance="primary" isDisabled={!isDirty} onClick={handleSaveClick}>
-          Save filter
-        </Button>
       </div>
 
       {/* Table — same container pattern as BacklogPage (padding:24px on wrapper) */}
@@ -778,13 +978,22 @@ export function FilterPreviewPage() {
         </div>
       </div>
 
-      {/* Save modal */}
+      {/* New filter save modal — only shown when no existing filter is loaded */}
       {saveOpen && (
         <FilterSaveModal
-          filter={savedFilterId ? ({ id: savedFilterId } as any) : undefined}
           initialJql={jql}
-          initialName={savedFilterId ? undefined : 'Untitled filter'}
+          initialName="Untitled filter"
           onClose={() => setSaveOpen(false)}
+          onSaved={handleSaved}
+        />
+      )}
+
+      {/* Save as modal — creates a new filter from the current JQL (Jira parity) */}
+      {saveAsOpen && (
+        <FilterSaveModal
+          initialJql={jql}
+          initialName={savedFilterName ? `${savedFilterName} (copy)` : 'Untitled filter'}
+          onClose={() => setSaveAsOpen(false)}
           onSaved={handleSaved}
         />
       )}
@@ -792,19 +1001,16 @@ export function FilterPreviewPage() {
       {/* Atlaskit Flag notifications — override warning + impact alert */}
       <FlagGroup onDismissed={id => dismissFlag(id as string)}>
         {flags.map(flag => {
-          if (flag.type === 'override-warning') {
+          if (flag.type === 'save-success') {
             return (
               <AkFlag
                 key={flag.id}
                 id={flag.id}
-                appearance="warning"
-                icon={<AkWarningIcon label="Warning" color={token('color.icon.warning', '#974F0C')} />}
-                title="Override existing filter?"
-                description="You are about to save changes over the existing saved filter. This cannot be undone."
-                actions={[
-                  { content: 'Yes, override', onClick: handleConfirmOverride },
-                  { content: 'Cancel', onClick: () => dismissFlag(flag.id) },
-                ]}
+                appearance="success"
+                icon={<AkInfoIcon label="Saved" color={token('color.icon.success', '#22A06B')} />}
+                title="Filter saved"
+                description="Your changes have been saved."
+                actions={[{ content: 'Dismiss', onClick: () => dismissFlag(flag.id) }]}
               />
             );
           }

@@ -16,6 +16,8 @@ interface Props {
   isInvalid?: boolean;
   /** Show the filter count below the editor */
   showFilterCount?: boolean;
+  /** Render as a single-line <input> (height 32px) instead of a multi-line textarea */
+  singleLine?: boolean;
   /**
    * Map of JQL field name → list of actual project values.
    * When provided, value-state completions will surface these first
@@ -33,6 +35,7 @@ export function JQLEditor({
   autoFocus,
   isInvalid,
   showFilterCount,
+  singleLine,
   valuePool,
 }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -106,6 +109,36 @@ export function JQLEditor({
   const borderColor = (isInvalid || hasServerErrors)
     ? token('color.border.danger')
     : `var(--ds-border, #DFE1E6)`;
+
+  if (singleLine) {
+    return (
+      <input
+        type="text"
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        autoFocus={autoFocus}
+        spellCheck={false}
+        style={{
+          width: '100%',
+          boxSizing: 'border-box',
+          height: 32,
+          padding: '0 12px',
+          fontSize: 13,
+          fontFamily: 'var(--ds-font-family-monospace, monospace)',
+          lineHeight: '32px',
+          color: token('color.text'),
+          background: `var(--ds-surface, #FFFFFF)`,
+          border: `2px solid ${borderColor}`,
+          borderRadius: 3,
+          outline: 'none',
+          transition: 'border-color 0.15s',
+        }}
+        onFocus={e => { e.target.style.borderColor = token('color.border.focused'); }}
+        onBlur={e => { e.target.style.borderColor = borderColor; }}
+      />
+    );
+  }
 
   return (
     <div style={{ position: 'relative', width: '100%' }}>

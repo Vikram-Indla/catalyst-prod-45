@@ -52,3 +52,27 @@ export const ENABLE_FILTER_TO_KANBAN = import.meta.env.VITE_ENABLE_FILTER_TO_KAN
  * Out of scope (this feature): ProductHub/IncidentHub/TaskHub.
  */
 export const ENABLE_FILTER_TO_ROADMAP = import.meta.env.VITE_ENABLE_FILTER_TO_ROADMAP === 'true';
+
+/**
+ * Convert filter → Dashboard — Filters-as-reusable-views vertical (feature 3).
+ * Defaults to FALSE: off everywhere until the vertical ships.
+ * Set VITE_ENABLE_FILTER_TO_DASHBOARD=true to expose the "Create Dashboard from
+ * filter" action in the filter kebab and the filter_derived_views-backed dashboard.
+ * When off, FilterKebabMenu renders unchanged.
+ *
+ * Surface: /project-hub/:key filters + /project-hub/:key/dashboards/:id.
+ * Out of scope (this feature): ProductHub/IncidentHub/TaskHub.
+ */
+export const ENABLE_FILTER_TO_DASHBOARD = import.meta.env.VITE_ENABLE_FILTER_TO_DASHBOARD === 'true';
+
+/**
+ * WhatsApp AI Summary — Filters-as-reusable-views vertical (feature 4).
+ * Defaults to FALSE: off everywhere until the vertical ships.
+ * Set VITE_ENABLE_FILTER_WHATSAPP_AI_SUMMARY=true to expose the "Copy WhatsApp
+ * summary" action in the filter kebab. When off, FilterKebabMenu renders unchanged.
+ *
+ * Surface: /project-hub/:key filters (kebab menu + filter-results entry).
+ * Out of scope (MVP): workspace-card entry, history, templates, scheduled sends.
+ */
+export const ENABLE_FILTER_WHATSAPP_AI_SUMMARY =
+  import.meta.env.VITE_ENABLE_FILTER_WHATSAPP_AI_SUMMARY === 'true';

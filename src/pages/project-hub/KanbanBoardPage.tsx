@@ -68,6 +68,9 @@ import {
 } from '@/components/kanban/AdvancedFilterPanel';
 import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import type { GroupByOption } from '@/components/shared/GroupByPopover';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
+import Textfield from '@atlaskit/textfield';
+import { useUpdateBoard } from '@/hooks/useBoardMutations';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -106,6 +109,9 @@ export default function KanbanBoardPage() {
   const [colMap, setColMap] = useState<ColMap>({});
   const [showViewSettings, setShowViewSettings] = useState(false);
   const [showBoardMenu, setShowBoardMenu] = useState(false);
+  const [renameBoardOpen, setRenameBoardOpen] = useState(false);
+  const [renameBoardValue, setRenameBoardValue] = useState('');
+  const updateBoard = useUpdateBoard();
   const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
   const [showBasicFilter, setShowBasicFilter] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(EMPTY_ADVANCED_FILTERS);
@@ -461,11 +467,103 @@ export default function KanbanBoardPage() {
   const rawIssues = isFilterBacked ? filterBoard.issues : projectIssues;
   const isLoading = isFilterBacked ? filterBoard.isLoading : rawLoading;
 
+  // ── Subtask map: parentKey → subtask-family children ──
+  // Populated from rawIssues so it covers both filter-backed and project-wide boards.
+  const subtasksByParentKey = useMemo(() => {
+    const m = new Map<string, BoardIssue[]>();
+    rawIssues.forEach(i => {
+      if (BOARD_SUBTASK_TYPES.has(i.issueType) && i.parentKey) {
+        const arr = m.get(i.parentKey) ?? [];
+        arr.push(i);
+        m.set(i.parentKey, arr);
+      }
+    });
+    return m;
+  }, [rawIssues]);
+
+  // ── Parent promotion: when a filter-backed board returns ONLY subtasks,
+  //    fetch their immediate parents so the board always has non-subtask cards. ──
+  const allFilteredAreSubtasks = useMemo(() => {
+    if (!isFilterBacked || rawIssues.length === 0) return false;
+    return rawIssues.every(i => BOARD_SUBTASK_TYPES.has(i.issueType));
+  }, [isFilterBacked, rawIssues]);
+
+  const parentKeysNeeded = useMemo(() => {
+    if (!allFilteredAreSubtasks) return [];
+    const keys = new Set<string>();
+    rawIssues.forEach(i => { if (i.parentKey) keys.add(i.parentKey); });
+    return Array.from(keys);
+  }, [allFilteredAreSubtasks, rawIssues]);
+
+  const { data: promotedParents = [] } = useQuery<BoardIssue[]>({
+    queryKey: ['kanban-promoted-parents', parentKeysNeeded],
+    enabled: allFilteredAreSubtasks && parentKeysNeeded.length > 0,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key, summary, issue_type, priority, status, status_category, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, sprint_release, is_flagged, jira_updated_at, jira_created_at')
+        .in('issue_key', parentKeysNeeded);
+      if (error || !data) return [];
+      return data.map(r => ({
+        id: r.id,
+        issueKey: r.issue_key,
+        summary: r.summary ?? '',
+        issueType: r.issue_type ?? null,
+        priority: r.priority ?? '',
+        status: r.status ?? '',
+        statusCategory: r.status_category ?? '',
+        assigneeName: r.assignee_display_name ?? null,
+        labels: (r.labels as string[]) ?? [],
+        sprintName: r.sprint_name ?? null,
+        storyPoints: r.story_points ?? null,
+        parentKey: r.parent_key ?? null,
+        parentSummary: r.parent_summary ?? null,
+        fixVersion: (r.sprint_release as string[] | null)?.[0] ?? null,
+        isFlagged: r.is_flagged ?? false,
+        updatedAt: r.jira_updated_at ?? null,
+        createdAt: r.jira_created_at ?? null,
+      } as BoardIssue));
+    },
+  });
+
   const issuesById = useMemo(() => {
     const m = new Map<string, BoardIssue>();
     rawIssues.forEach(i => m.set(i.id, i));
+    // Merge promoted parents so detail panel + column mapping can resolve them
+    promotedParents.forEach(p => { if (!m.has(p.id)) m.set(p.id, p); });
     return m;
-  }, [rawIssues]);
+  }, [rawIssues, promotedParents]);
+
+  // When showing promoted parents, augment STATUS_TO_COL_ID with category-based
+  // fallbacks so parents whose exact status isn't mapped still land in a column.
+  // e.g. "Ready for development" (In Progress category) → In Progress column.
+  const effectiveStatusToColId = useMemo(() => {
+    if (!allFilteredAreSubtasks || promotedParents.length === 0) return STATUS_TO_COL_ID;
+    const catToCol = new Map<string, string>();
+    KANBAN_COLUMNS.forEach(col => {
+      if (col.category === 'todo') {
+        if (!catToCol.has('to do')) catToCol.set('to do', col.id);
+        catToCol.set('todo', col.id);
+      } else if (col.category === 'in_progress') {
+        if (!catToCol.has('in progress')) {
+          catToCol.set('in progress', col.id);
+          catToCol.set('indeterminate', col.id);
+        }
+      } else if (col.category === 'done') {
+        if (!catToCol.has('done')) catToCol.set('done', col.id);
+      }
+    });
+    const augmented = new Map(STATUS_TO_COL_ID);
+    promotedParents.forEach(p => {
+      const sl = p.status.toLowerCase();
+      if (!augmented.has(sl)) {
+        const fallback = catToCol.get((p.statusCategory ?? '').toLowerCase());
+        if (fallback) augmented.set(sl, fallback);
+      }
+    });
+    return augmented;
+  }, [allFilteredAreSubtasks, promotedParents, STATUS_TO_COL_ID, KANBAN_COLUMNS]);
 
   // Debounce search
   useEffect(() => {
@@ -596,10 +694,22 @@ export default function KanbanBoardPage() {
     // In group-by-none (flat) mode only Stories are cards — Epics and Features
     // are swimlane metadata and should not appear as standalone cards.
     // When the advanced filter specifies types explicitly, honour those exactly.
+    // Filter-backed boards: the JQL already scoped the issue types, so accept
+    // all types returned. Non-filter boards restrict to KANBAN_BOARD_TYPES (all
+    // groupBy modes) or KANBAN_STORY_TYPES (flat/none mode, stories only).
+    // When the filter returned ONLY subtasks, we promote their parents onto the
+    // board. In that mode the rawIssues are the subtask-family issues themselves
+    // (stored in subtasksByParentKey) and the promoted parents become the cards.
+    const baseIssues = allFilteredAreSubtasks && promotedParents.length > 0
+      ? promotedParents
+      : rawIssues;
+
     const allowedTypes: Set<string> = advancedFilters.issueTypes.length > 0
-      ? new Set(advancedFilters.issueTypes)
-      : (isFilterBacked || groupBy !== 'none') ? KANBAN_BOARD_TYPES : KANBAN_STORY_TYPES;
-    let issues = rawIssues.filter(i => allowedTypes.has(i.issueType));
+      ? new Set(advancedFilters.issueTypes.filter(t => !BOARD_SUBTASK_TYPES.has(t)))
+      : isFilterBacked
+        ? new Set(baseIssues.map(i => i.issueType).filter(t => !BOARD_SUBTASK_TYPES.has(t)))
+        : (groupBy !== 'none' ? KANBAN_BOARD_TYPES : KANBAN_STORY_TYPES);
+    let issues = baseIssues.filter(i => allowedTypes.has(i.issueType));
     if (debSearch.trim()) {
       const q = debSearch.trim().toLowerCase();
       issues = issues.filter(i =>
@@ -689,7 +799,7 @@ export default function KanbanBoardPage() {
     }
 
     return issues;
-  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, selPriorities, quickFilters, currentUserName, advancedFilters, standupAssignee, groupBy]);
+  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, selPriorities, quickFilters, currentUserName, advancedFilters, standupAssignee, groupBy, allFilteredAreSubtasks, promotedParents]);
 
   /* ═══ COLUMN MAPPING ═══ */
 
@@ -701,7 +811,7 @@ export default function KanbanBoardPage() {
     // Statuses not present in STATUS_TO_COL_ID (unmapped or zero-issue statuses)
     // are intentionally dropped — the board only shows statuses with issues.
     filtered.forEach(i => {
-      const targetCol = STATUS_TO_COL_ID.get(i.status.toLowerCase());
+      const targetCol = effectiveStatusToColId.get(i.status.toLowerCase());
       if (targetCol && m[targetCol]) m[targetCol].push(i.id);
     });
     setColMap(prev => {
@@ -710,7 +820,7 @@ export default function KanbanBoardPage() {
       const newStr = JSON.stringify(m);
       return prevStr === newStr ? prev : m;
     });
-  }, [filtered, dragId, groupBy, KANBAN_COLUMNS, STATUS_TO_COL_ID]);
+  }, [filtered, dragId, groupBy, KANBAN_COLUMNS, effectiveStatusToColId]);
 
   const groups = useMemo(() => groupBy === 'none' ? [] : groupIssues(filtered, groupBy), [filtered, groupBy]);
 
@@ -1428,8 +1538,52 @@ export default function KanbanBoardPage() {
         quickFilters={quickFilters}
         onQuickFiltersChange={setQuickFilters}
         enabledQuickFilters={enabledQuickFilters}
+        onRenameBoard={resolvedBoardId ? () => {
+          const currentName = projectBoards.find(b => b.id === resolvedBoardId)?.name ?? '';
+          setRenameBoardValue(currentName);
+          setRenameBoardOpen(true);
+        } : undefined}
       />
       </div>
+
+      <ModalTransition>
+        {renameBoardOpen && (
+          <ModalDialog onClose={() => setRenameBoardOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle>Rename board</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <Textfield
+                autoFocus
+                value={renameBoardValue}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRenameBoardValue(e.target.value)}
+                onKeyDown={(e: React.KeyboardEvent) => {
+                  if (e.key === 'Enter' && renameBoardValue.trim() && resolvedBoardId) {
+                    updateBoard.mutate({ boardId: resolvedBoardId, name: renameBoardValue.trim() });
+                    setRenameBoardOpen(false);
+                  }
+                }}
+                placeholder="Board name"
+              />
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setRenameBoardOpen(false)}>Cancel</Button>
+              <Button
+                appearance="primary"
+                isDisabled={!renameBoardValue.trim()}
+                isLoading={updateBoard.isPending}
+                onClick={() => {
+                  if (!resolvedBoardId) return;
+                  updateBoard.mutate({ boardId: resolvedBoardId, name: renameBoardValue.trim() });
+                  setRenameBoardOpen(false);
+                }}
+              >
+                Rename
+              </Button>
+            </ModalFooter>
+          </ModalDialog>
+        )}
+      </ModalTransition>
 
       {/* ── Board content (Jira parity: 8px inter-column gap, 16px outer padding) ── */}
       {/* When standup panel is open, offset content 280px to the right (Jira parity) */}
@@ -1457,7 +1611,7 @@ export default function KanbanBoardPage() {
                 {KANBAN_COLUMNS.map((col) => {
                   const count = groups.reduce((sum, g) => sum + g.issueIds.filter(id => {
                     const issue = issuesById.get(id);
-                    return issue ? STATUS_TO_COL_ID.get(issue.status.toLowerCase()) === col.id : false;
+                    return issue ? effectiveStatusToColId.get(issue.status.toLowerCase()) === col.id : false;
                   }).length, 0);
                   // jira-compare 2026-05-08: fix category dot colors + column header typography to match PragmaticBoard patch
                   const categoryDot = col.category === 'done'
@@ -1511,7 +1665,8 @@ export default function KanbanBoardPage() {
                   visibleFields={groupBy === 'epic' ? { ...visibleFields, epic: false } : visibleFields}
                   cardColorMode={cardColorMode}
                   columns={KANBAN_COLUMNS}
-                  statusToColId={STATUS_TO_COL_ID}
+                  statusToColId={effectiveStatusToColId}
+                  subtasksByParentKey={subtasksByParentKey}
                 />
               ))}
               {groups.length === 0 && (
@@ -1554,6 +1709,7 @@ export default function KanbanBoardPage() {
             onLinked={handleLinked}
             visibleFields={visibleFields}
             cardColorMode={cardColorMode}
+            subtasksByParentKey={subtasksByParentKey}
             onDrop={({ cardId, sourceColId, destColId, insertIndex }) => {
               /* 1. Optimistic local reorder. */
               setColMap(prev => {

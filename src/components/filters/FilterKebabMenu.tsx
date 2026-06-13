@@ -8,17 +8,21 @@ import {
   useCopyFilter,
   useUpdateSavedFilter,
   useDeleteSavedFilter,
-  useBoardsForProject,
-  useToggleFilterBoardLink,
+
   useToggleFilterSubscription,
   useExistingBoardForFilter,
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
 import { useCreateKanbanFromFilter } from '@/hooks/workhub/useCreateKanbanFromFilter';
-import { ENABLE_FILTER_TO_KANBAN, ENABLE_FILTER_TO_ROADMAP } from '@/lib/featureFlags';
+import { ENABLE_FILTER_TO_KANBAN, ENABLE_FILTER_TO_ROADMAP, ENABLE_FILTER_TO_DASHBOARD, ENABLE_FILTER_WHATSAPP_AI_SUMMARY } from '@/lib/featureFlags';
+import type { JqlResultRow } from '@/hooks/workhub/useJqlResults';
+import { useJqlResults } from '@/hooks/workhub/useJqlResults';
+import { WhatsAppSummaryModal } from '@/features/whatsapp-summary/WhatsAppSummaryModal';
 import {
   useExistingRoadmapForFilter,
   useCreateRoadmapFromFilter,
+  useExistingDashboardForFilter,
+  useCreateDashboardFromFilter,
 } from '@/hooks/workhub/useFilterDerivedViews';
 import { useParams, useNavigate } from 'react-router-dom';
 import Textfield from '@atlaskit/textfield';
@@ -31,12 +35,18 @@ import { TransferOwnershipModal } from './TransferOwnershipModal';
 interface FilterKebabMenuProps {
   filter: SavedFilterFull;
   currentUserId: string | null;
+  /** JQL result rows — available when rendered inside FilterPreviewPage. */
+  rows?: JqlResultRow[];
+  /** True while JQL results are still loading — prevents "No items" false alarm. */
+  isLoadingRows?: boolean;
 }
 
-export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps) {
+export function FilterKebabMenu({ filter, currentUserId, rows = [], isLoadingRows = false }: FilterKebabMenuProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [editOpen, setEditOpen] = useState(false);
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [renameValue, setRenameValue] = useState('');
   const [historyOpen, setHistoryOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
@@ -52,6 +62,10 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const [roadmapDateField, setRoadmapDateField] = useState<{ label: string; value: string }>({ label: 'Due date', value: 'due_date' });
   const [roadmapLaneBy, setRoadmapLaneBy] = useState<{ label: string; value: string }>({ label: 'Status', value: 'status' });
   const [roadmapError, setRoadmapError] = useState<string | null>(null);
+  const [createDashboardOpen, setCreateDashboardOpen] = useState(false);
+  const [dashboardName, setDashboardName] = useState('');
+  const [dashboardError, setDashboardError] = useState<string | null>(null);
+  const [whatsAppOpen, setWhatsAppOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -74,9 +88,7 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const copyFilter      = useCopyFilter();
   const updateFilter    = useUpdateSavedFilter();
   const deleteFilter    = useDeleteSavedFilter();
-  const boardLink       = useToggleFilterBoardLink();
   const subscribeFilter = useToggleFilterSubscription();
-  const { data: boards = [] } = useBoardsForProject(projectKey);
 
   const createKanban = useCreateKanbanFromFilter();
   const existingBoard = useExistingBoardForFilter(
@@ -88,6 +100,19 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
     ENABLE_FILTER_TO_ROADMAP ? filter.id : undefined,
     currentUserId,
   );
+  const createDashboard  = useCreateDashboardFromFilter();
+  const existingDashboard = useExistingDashboardForFilter(
+    ENABLE_FILTER_TO_DASHBOARD ? filter.id : undefined,
+    currentUserId,
+  );
+  // Self-fetch rows for WhatsApp modal when opened from the filter list (no rows prop).
+  // Enabled only when the modal is open and no pre-loaded rows were provided.
+  const selfFetch = useJqlResults(
+    whatsAppOpen && rows.length === 0 ? (filter.jql_query ?? '') : '',
+  );
+  const modalRows = rows.length > 0 ? rows : (selfFetch.data?.items ?? []);
+  const modalLoadingRows = rows.length === 0 ? (selfFetch.isLoading || selfFetch.isFetching) : isLoadingRows;
+
 const isOwner = filter.user_id === currentUserId || filter.owner_id === currentUserId;
   const isSubscribed = currentUserId ? (filter.subscriber_ids ?? []).includes(currentUserId) : false;
   const isPrivate = filter.viewers_config?.type === 'private';
@@ -96,7 +121,14 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
     e.stopPropagation();
     const rect = triggerRef.current?.getBoundingClientRect();
     if (!rect) return;
-    setMenuPos({ top: rect.bottom + 4, left: rect.right });
+    // Estimate menu height (each item ~36px, dividers ~9px).
+    // If not enough room below, open upward from the trigger top.
+    const ESTIMATED_MENU_HEIGHT = 520;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const top = spaceBelow < ESTIMATED_MENU_HEIGHT
+      ? Math.max(8, rect.top - ESTIMATED_MENU_HEIGHT - 4)
+      : rect.bottom + 4;
+    setMenuPos({ top, left: rect.right });
     setMenuOpen(true);
   }, []);
 
@@ -169,6 +201,25 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
     } catch (e: any) {
       console.error('Failed to create roadmap from filter:', e);
       setRoadmapError(e?.message ?? 'Something went wrong creating the roadmap.');
+    }
+  }
+
+  async function handleCreateDashboard() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    try {
+      const viewId = await createDashboard.mutateAsync({
+        filterId: filter.id,
+        title: dashboardName.trim(),
+        ownerId: user.id,
+        visibility: isPrivate ? 'private' : 'org',
+      });
+      setDashboardError(null);
+      setCreateDashboardOpen(false);
+      if (projectKey && viewId) navigate(`/project-hub/${projectKey}/dashboards/${viewId}`);
+    } catch (e: any) {
+      console.error('Failed to create dashboard from filter:', e);
+      setDashboardError(e?.message ?? 'Something went wrong creating the dashboard.');
     }
   }
 
@@ -248,11 +299,12 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
         >
           {isOwner && menuItem('Edit filter', () => setEditOpen(true))}
           {menuItem('Copy filter', () => copyFilter.mutate(filter))}
+          {isOwner && menuItem('Rename', () => { setRenameValue(filter.name); setRenameOpen(true); })}
           {menuItem('Copy link', () => {
             const base = window.location.origin;
             const path = projectKey
-              ? `/project-hub/${projectKey}/filters/${filter.id}`
-              : `/product-hub/filters/${filter.id}`;
+              ? `/project-hub/${projectKey}/filters/create?filterId=${filter.id}`
+              : `/product-hub/allwork?filterId=${filter.id}`;
             navigator.clipboard.writeText(base + path).catch(() => {});
           })}
           {menuItem(
@@ -306,6 +358,23 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             </>
           )}
 
+          {ENABLE_FILTER_TO_DASHBOARD && (
+            <>
+              {divider}
+              {menuItem(
+                existingDashboard.data ? 'Open dashboard' : 'Create dashboard from filter',
+                () => {
+                  if (existingDashboard.data) {
+                    if (projectKey) navigate(`/project-hub/${projectKey}/dashboards/${existingDashboard.data.id}`);
+                    return;
+                  }
+                  setDashboardName(`${filter.name} dashboard`);
+                  setCreateDashboardOpen(true);
+                },
+              )}
+            </>
+          )}
+
           {!ENABLE_FILTER_TO_KANBAN && isOwner && (
             <>
               {divider}
@@ -313,26 +382,10 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             </>
           )}
 
-          {/* Legacy link-a-board section: native project boards only.
-              When ENABLE_FILTER_TO_KANBAN is on, filter-backed boards have their
-              own "Open Kanban" entry above — exclude them here to avoid a duplicate
-              toggle-link entry with the wrong handler. */}
-          {boards.filter(b => !ENABLE_FILTER_TO_KANBAN || !filter.used_by_board_ids.includes(b.id)).length > 0 && isOwner && (
+          {ENABLE_FILTER_WHATSAPP_AI_SUMMARY && (
             <>
               {divider}
-              {boards
-                .filter(b => !ENABLE_FILTER_TO_KANBAN || !filter.used_by_board_ids.includes(b.id))
-                .map(board => {
-                  const isLinked = filter.used_by_board_ids.includes(board.id);
-                  return (
-                    <React.Fragment key={board.id}>
-                      {menuItem(
-                        `${isLinked ? '✓ ' : ''}${board.name}`,
-                        () => boardLink.mutate({ filterId: filter.id, boardId: board.id, currentUsedByBoardIds: filter.used_by_board_ids, link: !isLinked }),
-                      )}
-                    </React.Fragment>
-                  );
-                })}
+              {menuItem('Copy WhatsApp summary', () => setWhatsAppOpen(true))}
             </>
           )}
 
@@ -364,6 +417,44 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
           onClose={() => setHistoryOpen(false)}
         />
       )}
+
+      <ModalTransition>
+        {renameOpen && (
+          <ModalDialog onClose={() => setRenameOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle>Rename filter</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <Textfield
+                autoFocus
+                value={renameValue}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRenameValue(e.target.value)}
+                onKeyDown={(e: React.KeyboardEvent) => {
+                  if (e.key === 'Enter' && renameValue.trim() && renameValue.trim() !== filter.name) {
+                    updateFilter.mutate({ id: filter.id, updates: { name: renameValue.trim() } as any });
+                    setRenameOpen(false);
+                  }
+                }}
+                placeholder="Filter name"
+              />
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setRenameOpen(false)}>Cancel</Button>
+              <Button
+                appearance="primary"
+                isDisabled={!renameValue.trim() || renameValue.trim() === filter.name}
+                isLoading={updateFilter.isPending}
+                onClick={() => {
+                  updateFilter.mutate({ id: filter.id, updates: { name: renameValue.trim() } as any });
+                  setRenameOpen(false);
+                }}
+              >
+                Rename
+              </Button>
+            </ModalFooter>
+          </ModalDialog>
+        )}
+      </ModalTransition>
 
       <ModalTransition>
         {deleteOpen && (
@@ -567,6 +658,64 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
           </ModalDialog>
         )}
       </ModalTransition>
+
+      <ModalTransition>
+        {createDashboardOpen && (
+          <ModalDialog onClose={() => setCreateDashboardOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle>Create dashboard from filter</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                    Dashboard name
+                  </label>
+                  <Textfield
+                    autoFocus
+                    value={dashboardName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDashboardName(e.target.value)}
+                    placeholder="e.g. Q3 delivery dashboard"
+                  />
+                </div>
+                <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
+                  Metrics come live from <strong>{filter.name}</strong>. Access follows the filter visibility.
+                </p>
+                {dashboardError && (
+                  <p style={{ margin: 0, fontSize: 13, color: token('color.text.danger', '#AE2A19') }}>
+                    {dashboardError}
+                  </p>
+                )}
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setCreateDashboardOpen(false)} isDisabled={createDashboard.isPending}>
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                isDisabled={!dashboardName.trim() || createDashboard.isPending}
+                isLoading={createDashboard.isPending}
+                onClick={handleCreateDashboard}
+              >
+                Create dashboard
+              </Button>
+            </ModalFooter>
+          </ModalDialog>
+        )}
+      </ModalTransition>
+
+      {ENABLE_FILTER_WHATSAPP_AI_SUMMARY && (
+        <WhatsAppSummaryModal
+          isOpen={whatsAppOpen}
+          onClose={() => setWhatsAppOpen(false)}
+          filterName={filter.name}
+          filterJql={filter.jql_query ?? ''}
+          projectKey={jqlProjectKey}
+          rows={modalRows}
+          isLoadingRows={modalLoadingRows}
+        />
+      )}
 
       <ModalTransition>
         {createKanbanOpen && (
