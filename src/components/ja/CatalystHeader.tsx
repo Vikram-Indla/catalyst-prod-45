@@ -41,7 +41,7 @@ const isMacPlatform = () =>
 export function CatalystHeader() {
   const isDark = useIsDarkTheme();
   const {
-    sidebarHidden, sidebarPinned, sidebarHoverOpen,
+    sidebarHidden, sidebarPinned, sidebarHoverOpen, sidebarExpanded,
     cycleSidebarState,
   } = useCatalystContext();
 
@@ -52,10 +52,10 @@ export function CatalystHeader() {
   // is byte-identical: the early-narrow branch is the only thing changing.
   const { isNarrow, isMobile } = useNavBreakpoint();
 
-  // The chevron's POSITION/ICON is driven by stickiness (sidebarPinned),
-  // NOT by visibility. Pinned-visible → chevron at right edge (x=240) with
-  // Collapse icon. Otherwise → chevron at left (x=12) with Expand icon.
-  const isPinnedOpen = sidebarPinned && !sidebarHidden;
+  // Chevron POSITION/ICON: right edge (x=240) only when sidebar is fully
+  // expanded with labels. Icon-only rail (sidebarExpanded=false) and hidden
+  // both put the chevron at the leading left corner (x≈12).
+  const isPinnedOpen = sidebarPinned && !sidebarHidden && sidebarExpanded;
   const sidebarLabel = isPinnedOpen ? 'Collapse sidebar' : 'Expand sidebar';
   const shortcutLabel = isMacPlatform() ? '⌘ [' : 'Ctrl [';
   const sidebarTooltip = `${sidebarLabel} (${shortcutLabel})`;
@@ -114,6 +114,7 @@ export function CatalystHeader() {
           justifySelf: 'start',
           justifyContent: 'space-between',
           width: isPinnedOpen && !isNarrow ? '228px' : 'auto',
+          transition: 'width 200ms cubic-bezier(0, 0, 0.2, 1)',
           // Reserve room for the external mobile hamburger (rendered by
           // CatalystShell at left:8 / 36px wide) so HubSwitcher doesn't
           // sit underneath it on iPhone/iPad.
