@@ -16,6 +16,7 @@ import {
 import { useCreateKanbanFromFilter } from '@/hooks/workhub/useCreateKanbanFromFilter';
 import { ENABLE_FILTER_TO_KANBAN, ENABLE_FILTER_TO_ROADMAP, ENABLE_FILTER_TO_DASHBOARD, ENABLE_FILTER_WHATSAPP_AI_SUMMARY } from '@/lib/featureFlags';
 import type { JqlResultRow } from '@/hooks/workhub/useJqlResults';
+import { useJqlResults } from '@/hooks/workhub/useJqlResults';
 import { WhatsAppSummaryModal } from '@/features/whatsapp-summary/WhatsAppSummaryModal';
 import {
   useExistingRoadmapForFilter,
@@ -104,6 +105,14 @@ export function FilterKebabMenu({ filter, currentUserId, rows = [], isLoadingRow
     ENABLE_FILTER_TO_DASHBOARD ? filter.id : undefined,
     currentUserId,
   );
+  // Self-fetch rows for WhatsApp modal when opened from the filter list (no rows prop).
+  // Enabled only when the modal is open and no pre-loaded rows were provided.
+  const selfFetch = useJqlResults(
+    whatsAppOpen && rows.length === 0 ? (filter.jql_query ?? '') : '',
+  );
+  const modalRows = rows.length > 0 ? rows : (selfFetch.data?.items ?? []);
+  const modalLoadingRows = rows.length === 0 ? (selfFetch.isLoading || selfFetch.isFetching) : isLoadingRows;
+
 const isOwner = filter.user_id === currentUserId || filter.owner_id === currentUserId;
   const isSubscribed = currentUserId ? (filter.subscriber_ids ?? []).includes(currentUserId) : false;
   const isPrivate = filter.viewers_config?.type === 'private';
@@ -703,8 +712,8 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
           filterName={filter.name}
           filterJql={filter.jql_query ?? ''}
           projectKey={jqlProjectKey}
-          rows={rows}
-          isLoadingRows={isLoadingRows}
+          rows={modalRows}
+          isLoadingRows={modalLoadingRows}
         />
       )}
 
