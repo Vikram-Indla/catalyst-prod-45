@@ -73,6 +73,10 @@ export interface StandupPanelProps {
   onClose: () => void;
   /** Called whenever the selected person changes so the board can filter */
   onPersonChange: (assigneeName: string | null) => void;
+  /** When true, render as an inline docked flex-item (no position:fixed). The
+   *  parent is responsible for sizing + positioning. Used by the Jira-parity
+   *  layout where the standup sits side-by-side with the board columns. */
+  docked?: boolean;
 }
 
 /* ── Assignee bucket ── */
@@ -103,7 +107,7 @@ function playBeep() {
 
 const DEFAULT_TIMER_SEC = 120; // 2 minutes
 
-export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChange }: StandupPanelProps) {
+export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChange, docked }: StandupPanelProps) {
   const [order, setOrder] = useState<number[]>([]);
   const [step, setStep] = useState(0);         // index into `order`
   const [visited, setVisited] = useState<Set<string>>(new Set());
@@ -235,7 +239,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
 
   if (buckets.length === 0) {
     return (
-      <div style={panelWrapStyle(tk)}>
+      <div style={panelWrapStyle(tk, docked)}>
         <PanelHeader tk={tk} onEnd={handleEnd} />
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: tk.textMuted, fontSize: 13, padding: 24, fontFamily: 'var(--cp-font-body)', textAlign: 'center' }}>
           No team members with issues on the board.
@@ -245,7 +249,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   }
 
   return (
-    <div style={panelWrapStyle(tk)}>
+    <div style={panelWrapStyle(tk, docked)}>
       {/* ── Header: title + End standup ── */}
       <PanelHeader tk={tk} onEnd={handleEnd} />
 
@@ -482,7 +486,28 @@ function IconBtn({ onClick, title, children, tk, active }: {
   );
 }
 
-function panelWrapStyle(tk: KanbanThemeTokens): React.CSSProperties {
+function panelWrapStyle(tk: KanbanThemeTokens, docked?: boolean): React.CSSProperties {
+  if (docked) {
+    /* Inline docked variant — sits as a flex item next to the board columns.
+       Jira-parity: white surface, rounded gray border, no fixed positioning.
+       Sticky + viewport-relative max-height keep the panel pinned to the
+       visible viewport even when the board area scrolls past the bottom of
+       the column list. Content inside scrolls internally via overflowY. */
+    return {
+      width: 280, minWidth: 280,
+      position: 'sticky',
+      top: 0,
+      alignSelf: 'flex-start',
+      maxHeight: 'calc(100vh - 180px)',
+      background: tk.surfaceBg,
+      border: `1px solid ${tk.border}`,
+      borderRadius: 8,
+      display: 'flex', flexDirection: 'column',
+      fontFamily: 'var(--cp-font-body)',
+      overflowY: 'auto',
+    };
+  }
+  /* Legacy fixed overlay variant — left-edge dock spanning the viewport. */
   return {
     position: 'fixed',
     top: 0, left: 0, bottom: 0,
