@@ -92,7 +92,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .clmp-root:not([data-color-mode="light"]) {
+  html:not([data-color-mode="light"]) .clmp-root {
     --clmp-brand: var(--ds-background-brand-bold, #579DFF);
     --clmp-brand-hover: var(--ds-background-brand-bold-hovered, #85B8FF);
     --clmp-brand-text: var(--ds-text-brand, #85B8FF);
