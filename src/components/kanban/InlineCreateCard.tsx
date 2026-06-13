@@ -20,7 +20,7 @@
  *   { issueId, issueKey, issueType, summary, status, dueDate?, assigneeId? }
  */
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import Button from '@atlaskit/button';
 import TextField from '@atlaskit/textfield';

@@ -98,6 +98,13 @@ interface CardActions {
    * each card renders a SubtaskStrip showing hover-card chips for its children.
    */
   subtasksByParentKey?: Map<string, BoardIssue[]>;
+  /**
+   * The full ordered list of columns the board is currently rendering.
+   * Threaded down so the per-card three-dots menu can list every status
+   * (forward AND backward) in the same order the user sees on screen,
+   * excluding only the card's current column.
+   */
+  boardColumns?: KanbanColumnDef[];
 }
 
 /* ═════════════════════════════════════════════════════════════════════════

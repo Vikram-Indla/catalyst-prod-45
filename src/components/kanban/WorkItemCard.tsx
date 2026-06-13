@@ -7,21 +7,23 @@
  *   FOOTER: type-icon + issue_key (left) + priority chevron + assignee avatar (right)
  */
 import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import FlagFilledIcon from '@atlaskit/icon/core/flag-filled';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import EditIcon from '@atlaskit/icon/core/edit';
 import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
 import CloseIcon from '@atlaskit/icon/core/close';
+import AkChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { KanbanAvatar } from './KanbanAvatar';
 import { AssigneePickerPopover, type AssigneeOption } from './AssigneePickerPopover';
 import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
 import { IssueHoverCard } from '@/components/shared/IssueHoverCard';
 import type { BoardIssue } from './kanban-types';
-import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
-import { SPACING_TOKENS } from './kanban-tokens';
-import { WorkItemOverflowMenu } from './overflow-menu/WorkItemOverflowMenu';
+import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
+import { SPACING_TOKENS, KANBAN_COLUMNS } from './kanban-tokens';
 import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
+import { catalystToast } from '@/lib/catalystToast';
 
 /* ═══ PRIORITY ICON — Jira-parity directional chevrons ═══ */
 
@@ -115,6 +117,11 @@ interface WorkItemCardProps {
   resolveIcon?: (issue: BoardIssue) => ReactNode | null;
   /** Subtask-family issues linked to this card — shown as hover-card chips. */
   subtasks?: BoardIssue[];
+  /** Ordered list of columns currently rendered on the board. When provided,
+   *  the three-dots menu's "Change status" sub-menu lists every column except
+   *  the one containing this card's current status. Falls back to the
+   *  module-default KANBAN_COLUMNS if omitted (legacy callers). */
+  boardColumns?: KanbanColumnDef[];
 }
 
 /* ── SubtaskStrip: row of subtask chips, each wired to IssueHoverCard ── */
@@ -157,21 +164,102 @@ export function WorkItemCard({
   onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail,
   onArchive, onDelete, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName,
   projectKey, onLabelsUpdated, onParentChange, onMoved, onLinked, visibleFields,
-  resolveIcon, subtasks = [],
+  resolveIcon, subtasks = [], boardColumns,
 }: WorkItemCardProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
+  const [statusSubmenuOpen, setStatusSubmenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(issue.summary);
   const btnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleMenuBtn = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    const rect = (e.target as HTMLElement).getBoundingClientRect();
+    e.preventDefault();
+    // Use btnRef instead of e.target — when the user clicks the SVG glyph
+    // inside the button, e.target is the SVG, not the button. The button's
+    // rect is the correct anchor for the menu.
+    const rect = btnRef.current?.getBoundingClientRect();
+    if (!rect) return;
     setMenuPos({ x: rect.right, y: rect.bottom + 4 });
     setShowMenu(prev => !prev);
+    setStatusSubmenuOpen(false);
   }, []);
+
+  /* ── Three-dots menu: close on outside click + Escape ───────────────── */
+  useEffect(() => {
+    if (!showMenu) return;
+    const onDown = (e: MouseEvent) => {
+      const target = e.target as Node | null;
+      if (!target) return;
+      if (menuRef.current?.contains(target)) return;
+      if (btnRef.current?.contains(target)) return;
+      setShowMenu(false);
+      setStatusSubmenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowMenu(false);
+        setStatusSubmenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [showMenu]);
+
+  /* ── Menu actions ─────────────────────────────────────────────────── */
+  const closeMenu = useCallback(() => {
+    setShowMenu(false);
+    setStatusSubmenuOpen(false);
+  }, []);
+
+  const handleCopyLink = useCallback(async () => {
+    const url = `${window.location.origin}/project-hub/${projectKey || issue.issueKey.split('-')[0]}/allwork/${encodeURIComponent(issue.issueKey)}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      catalystToast.success('Link copied');
+    } catch {
+      catalystToast.error('Copy failed');
+    }
+    onCopyLink?.(issue.issueKey);
+    closeMenu();
+  }, [issue.issueKey, projectKey, onCopyLink, closeMenu]);
+
+  const handleCopyKey = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(issue.issueKey);
+      catalystToast.success(`Copied ${issue.issueKey}`);
+    } catch {
+      catalystToast.error('Copy failed');
+    }
+    onCopyKey?.(issue.issueKey);
+    closeMenu();
+  }, [issue.issueKey, onCopyKey, closeMenu]);
+
+  const handlePickStatus = useCallback((status: string) => {
+    onChangeStatus?.(issue.id, status);
+    closeMenu();
+  }, [issue.id, onChangeStatus, closeMenu]);
+
+  /* Status options: every column EXCEPT the one containing the issue's
+     current status, IN THE SAME ORDER the board renders them. We prefer
+     the host-supplied `boardColumns` (the actual columns on screen, which
+     may be a custom 3-column setup) and fall back to the module default
+     only when the host didn't pass one. This ensures backward statuses
+     (above the current column) appear in the menu too. */
+  const columnsForMenu = boardColumns && boardColumns.length > 0 ? boardColumns : KANBAN_COLUMNS;
+  const currentColId = columnsForMenu.find(c =>
+    c.statuses.some(s => s.toLowerCase() === (issue.status || '').toLowerCase())
+  )?.id;
+  const statusOptions = columnsForMenu
+    .filter(c => c.id !== currentColId)
+    .map(c => ({ id: c.id, name: c.name, status: c.statuses[0] }));
 
   const startEditing = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -427,26 +515,173 @@ export function WorkItemCard({
         )}
       </div>
 
-      {/* ─── OVERFLOW MENU ─── */}
-      {showMenu && menuPos && (
-        <WorkItemOverflowMenu
-          issue={issue}
-          menuPos={menuPos}
-          tk={tk}
-          projectKey={projectKey ?? ''}
-          onClose={() => setShowMenu(false)}
-          onToggleFlag={onToggleFlag}
-          onCopyLink={onCopyLink}
-          onCopyKey={onCopyKey}
-          onChangeStatus={onChangeStatus}
-          onOpenDetail={onOpenDetail}
-          onArchive={onArchive}
-          onDelete={onDelete}
-          onLabelsUpdated={onLabelsUpdated}
-          onParentChange={onParentChange}
-          onMoved={onMoved}
-          onLinked={onLinked}
-        />
+      {/* ─── OVERFLOW MENU (simple Jira-style) ─── */}
+      {showMenu && menuPos && createPortal(
+        (() => {
+          // Anchor: menu's right edge aligned to the trigger button's right.
+          const menuWidth = 200;
+          const left = Math.max(8, Math.min(menuPos.x - menuWidth, window.innerWidth - menuWidth - 8));
+          const top = Math.min(menuPos.y, window.innerHeight - 220);
+          // Light-blue hover/focus background — matches the card surface
+          // palette (var(--ds-background-information)) so the menu reads
+          // as part of the same blue family rather than the neutral gray
+          // we use elsewhere.
+          const hoverBg = 'var(--ds-background-information, #E9F2FE)';
+          // Mouse + keyboard parity — same blue on hover and focus.
+          const activate = (e: React.SyntheticEvent<HTMLButtonElement>) => {
+            (e.currentTarget as HTMLButtonElement).style.background = hoverBg;
+          };
+          const deactivate = (e: React.SyntheticEvent<HTMLButtonElement>) => {
+            (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+          };
+          return (
+            <div
+              ref={menuRef}
+              role="menu"
+              data-testid={`workitem-menu-${issue.issueKey}`}
+              style={{
+                position: 'fixed',
+                left,
+                top,
+                zIndex: 9999,
+                width: menuWidth,
+                background: tk.surfaceBg,
+                border: `1px solid ${tk.border}`,
+                borderRadius: 6,
+                boxShadow: '0 4px 16px rgba(9,30,66,0.16)',
+                padding: '4px 0',
+                fontFamily: 'var(--cp-font-body)',
+              }}
+              onMouseDown={e => e.stopPropagation()}
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Change status (hover-reveal sub-menu of every column EXCEPT current) */}
+              <div
+                style={{ position: 'relative' }}
+                onMouseEnter={() => setStatusSubmenuOpen(true)}
+                onMouseLeave={() => setStatusSubmenuOpen(false)}
+              >
+                <button
+                  type="button"
+                  role="menuitem"
+                  aria-haspopup="menu"
+                  aria-expanded={statusSubmenuOpen}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    width: '100%', padding: '8px 12px', border: 'none',
+                    background: statusSubmenuOpen ? hoverBg : 'transparent',
+                    cursor: 'pointer', textAlign: 'left',
+                    fontSize: 13, color: tk.textPrimary,
+                    fontFamily: 'var(--cp-font-body)',
+                    outline: 'none',
+                  }}
+                  onMouseEnter={activate}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.background = statusSubmenuOpen ? hoverBg : 'transparent';
+                  }}
+                  onFocus={activate}
+                  onBlur={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.background = statusSubmenuOpen ? hoverBg : 'transparent';
+                  }}
+                >
+                  <span style={{ flex: 1 }}>Change status</span>
+                  <AkChevronRightIcon label="" size="medium" primaryColor={tk.textMuted} />
+                </button>
+                {statusSubmenuOpen && statusOptions.length > 0 && (
+                  <div
+                    role="menu"
+                    style={{
+                      position: 'absolute',
+                      /* No gap between the menu and the sub-menu: left/top
+                         pinned flush against the parent so the user can
+                         drag horizontally onto the sub-menu without ever
+                         leaving a hover region. */
+                      left: '100%',
+                      top: 0,
+                      minWidth: 180,
+                      background: tk.surfaceBg,
+                      border: `1px solid ${tk.border}`,
+                      borderRadius: 6,
+                      boxShadow: '0 4px 16px rgba(9,30,66,0.16)',
+                      padding: '4px 0',
+                      zIndex: 10000,
+                    }}
+                  >
+                    {statusOptions.map(opt => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        role="menuitem"
+                        onClick={() => handlePickStatus(opt.status)}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 8,
+                          width: '100%', padding: '8px 12px', border: 'none',
+                          background: 'transparent', cursor: 'pointer', textAlign: 'left',
+                          fontSize: 13, color: tk.textPrimary,
+                          fontFamily: 'var(--cp-font-body)',
+                          textTransform: 'capitalize',
+                          outline: 'none',
+                        }}
+                        onMouseEnter={activate}
+                        onMouseLeave={deactivate}
+                        onFocus={activate}
+                        onBlur={deactivate}
+                      >
+                        {opt.name.toLowerCase().replace(/\b\w/g, (m) => m.toUpperCase())}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Divider */}
+              <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 8px' }} />
+
+              {/* Copy link */}
+              <button
+                type="button"
+                role="menuitem"
+                onClick={handleCopyLink}
+                style={{
+                  display: 'flex', alignItems: 'center',
+                  width: '100%', padding: '8px 12px', border: 'none',
+                  background: 'transparent', cursor: 'pointer', textAlign: 'left',
+                  fontSize: 13, color: tk.textPrimary,
+                  fontFamily: 'var(--cp-font-body)',
+                  outline: 'none',
+                }}
+                onMouseEnter={activate}
+                onMouseLeave={deactivate}
+                onFocus={activate}
+                onBlur={deactivate}
+              >
+                Copy link
+              </button>
+
+              {/* Copy key */}
+              <button
+                type="button"
+                role="menuitem"
+                onClick={handleCopyKey}
+                style={{
+                  display: 'flex', alignItems: 'center',
+                  width: '100%', padding: '8px 12px', border: 'none',
+                  background: 'transparent', cursor: 'pointer', textAlign: 'left',
+                  fontSize: 13, color: tk.textPrimary,
+                  fontFamily: 'var(--cp-font-body)',
+                  outline: 'none',
+                }}
+                onMouseEnter={activate}
+                onMouseLeave={deactivate}
+                onFocus={activate}
+                onBlur={deactivate}
+              >
+                Copy key
+              </button>
+            </div>
+          );
+        })(),
+        document.body,
       )}
     </div>
   );

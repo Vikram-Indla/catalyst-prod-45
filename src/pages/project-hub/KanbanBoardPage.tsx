@@ -1146,6 +1146,24 @@ export default function KanbanBoardPage() {
     if (!issue || issue.status === newStatus) return;
     const oldStatus = issue.status;
     issue.status = newStatus;
+
+    // Optimistic local colMap update — moves the card to its new column
+    // immediately so the user doesn't need to refresh. Drag-paths that
+    // already adjusted colMap upstream see this as a no-op (filter + insert
+    // on the same id is idempotent across calls). On failure the catch
+    // below invalidates and the server state replaces this.
+    const targetColId = effectiveStatusToColId.get(newStatus.toLowerCase());
+    if (targetColId) {
+      setColMap(prev => {
+        const fromColId = (Object.keys(prev) as string[]).find(cid => prev[cid]?.includes(issueId));
+        if (!fromColId || fromColId === targetColId) return prev;
+        const next: typeof prev = { ...prev };
+        next[fromColId] = (prev[fromColId] || []).filter(id => id !== issueId);
+        next[targetColId] = [issueId, ...(prev[targetColId] || [])];
+        return next;
+      });
+    }
+
     try {
       const { error } = await supabase.from('ph_issues').update({ status: newStatus }).eq('id', issueId);
       if (error) throw error;
@@ -1154,9 +1172,10 @@ export default function KanbanBoardPage() {
     } catch {
       issue.status = oldStatus;
       toastError(`Failed to move ${issue.issueKey}`);
+      // Refetch authoritatively replaces our optimistic colMap on failure.
       qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
     }
-  }, [issuesById, key, qc, toastSuccess, toastError]);
+  }, [issuesById, key, qc, toastSuccess, toastError, effectiveStatusToColId]);
 
   const onDragEnd = useCallback((e: DragEndEvent) => {
     const aid = String(e.active.id), oid = e.over?.id ? String(e.over.id) : null;
@@ -1725,6 +1744,7 @@ export default function KanbanBoardPage() {
             visibleFields={visibleFields}
             cardColorMode={cardColorMode}
             subtasksByParentKey={subtasksByParentKey}
+            boardColumns={KANBAN_COLUMNS}
             onCreateCard={() => {
               /* InlineCreateCard already wrote the issue to Supabase.
                  Refetch the board so the new card appears in its column. */
