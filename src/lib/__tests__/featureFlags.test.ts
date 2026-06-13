@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ENABLE_FILTER_TO_KANBAN, ENABLE_FILTER_TO_ROADMAP } from '@/lib/featureFlags';
+import { ENABLE_FILTER_TO_KANBAN, ENABLE_FILTER_TO_ROADMAP, ENABLE_FILTER_TO_DASHBOARD } from '@/lib/featureFlags';
 
 /**
  * Step 2 — ENABLE_FILTER_TO_KANBAN gate.
@@ -29,5 +29,20 @@ describe('ENABLE_FILTER_TO_ROADMAP feature flag', () => {
 
   it('defaults to OFF when the env var is unset', () => {
     expect(ENABLE_FILTER_TO_ROADMAP).toBe(false);
+  });
+});
+
+/**
+ * Step 2 — ENABLE_FILTER_TO_DASHBOARD gate.
+ * Mirrors ENABLE_FILTER_TO_ROADMAP: opt-in via VITE_ENABLE_FILTER_TO_DASHBOARD==='true'.
+ * With the env var unset (test/default environment) it MUST be false.
+ */
+describe('ENABLE_FILTER_TO_DASHBOARD feature flag', () => {
+  it('is a boolean', () => {
+    expect(typeof ENABLE_FILTER_TO_DASHBOARD).toBe('boolean');
+  });
+
+  it('defaults to OFF when the env var is unset', () => {
+    expect(ENABLE_FILTER_TO_DASHBOARD).toBe(false);
   });
 });
