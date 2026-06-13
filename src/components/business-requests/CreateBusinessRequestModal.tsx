@@ -46,7 +46,7 @@ import {
   type ChangeEvent,
   type ReactNode,
 } from 'react';
-import ReactDOM from 'react-dom';
+
 import {
   ModalDialog,
   ModalBody,
@@ -77,8 +77,8 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { flag } from '@/components/shared/JiraTable/flags';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { TitleTranslateWrapper } from '@/components/shared/title-translate/TitleTranslateWrapper';
-import { useCatalystWorkflow } from '@/hooks/useCatalystWorkflow';
-import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
+import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
+import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
 import {
   CATEGORY_OPTIONS,
   THEME_OPTIONS,
@@ -365,46 +365,6 @@ function MoreActionsButton() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// StatusChip — @atlaskit/dropdown-menu + inline ADS-token spans (sentence-case, no uppercase)
-// ─────────────────────────────────────────────────────────────────────────────
-
-type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new';
-
-// Canonical colors — probed from Catalyst Storybook Pages/Business Request (2026-06-12)
-const STATUS_BG: Record<string, string> = {
-  success:    '#94C748',
-  inprogress: '#8FB8F6',
-  default:    '#DDDEE1',
-  moved:      '#DDDEE1',
-  removed:    '#DDDEE1',
-  new:        '#DDDEE1',
-};
-const STATUS_COLOR: Record<string, string> = {
-  success:    '#292A2E',
-  inprogress: '#292A2E',
-  default:    '#292A2E',
-  moved:      '#292A2E',
-  removed:    '#292A2E',
-  new:        '#292A2E',
-};
-
-function StatusSpan({ appearance, label }: { appearance: LozengeAppearance; label: string }) {
-  const bg = STATUS_BG[appearance] ?? STATUS_BG.default;
-  const color = STATUS_COLOR[appearance] ?? STATUS_COLOR.default;
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center',
-      height: 20, padding: '0 7px', borderRadius: 3,
-      fontSize: 11, fontWeight: 700,
-      textTransform: 'none', letterSpacing: 'normal',
-      background: bg, color,
-    }}>
-      {label}
-    </span>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // BRD drag-drop upload zone (no ADS equivalent — retained as-is)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -511,47 +471,14 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
   const [formError, setFormError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  // Status portal-dropdown — mirrors CreateStoryModal pattern exactly
-  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
-  const [statusMenuAnchor, setStatusMenuAnchor] = useState<{ top: number; left: number; width: number } | null>(null);
-  const statusTriggerRef = useRef<HTMLButtonElement>(null);
-  const statusMenuRef = useRef<HTMLDivElement>(null);
-  const repositionStatusMenu = useCallback(() => {
-    if (!statusTriggerRef.current) return;
-    const r = statusTriggerRef.current.getBoundingClientRect();
-    setStatusMenuAnchor({ top: r.bottom + 4, left: r.left, width: r.width });
-  }, []);
+  // Seed initial process_step from ph_workflow_* config
+  const { initialStatus: brInitialStatus } = useIssueTypeWorkflow('Business Request');
   useEffect(() => {
-    if (!statusMenuOpen) return;
-    repositionStatusMenu();
-  }, [statusMenuOpen, repositionStatusMenu]);
-  useEffect(() => {
-    if (!statusMenuOpen) return;
-    window.addEventListener('scroll', repositionStatusMenu, true);
-    window.addEventListener('resize', repositionStatusMenu);
-    return () => { window.removeEventListener('scroll', repositionStatusMenu, true); window.removeEventListener('resize', repositionStatusMenu); };
-  }, [statusMenuOpen, repositionStatusMenu]);
-  useEffect(() => {
-    if (!statusMenuOpen) return;
-    const handler = (e: MouseEvent) => {
-      const t = e.target as Node;
-      if (statusTriggerRef.current?.contains(t)) return;
-      if (statusMenuRef.current?.contains(t)) return;
-      setStatusMenuOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [statusMenuOpen]);
-
-  // Canonical workflow statuses — same source as BrStatusSection
-  const { statuses: brStatuses, initialStatus: brInitialStatus } = useCatalystWorkflow('Business Request');
-  useEffect(() => {
-    if (!brStatuses.length) return;
-    const validSlugs = brStatuses.map(s => s.slug);
-    if (!form.process_step || !validSlugs.includes(form.process_step)) {
-      setForm(prev => ({ ...prev, process_step: brInitialStatus?.slug ?? brStatuses[0].slug }));
+    if (!brInitialStatus) return;
+    if (!form.process_step) {
+      setForm(prev => ({ ...prev, process_step: brInitialStatus }));
     }
-  }, [brStatuses, brInitialStatus, form.process_step]);
+  }, [brInitialStatus, form.process_step]);
 
   const set = useCallback(<K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -734,95 +661,18 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
                 )}
               </Field>
 
-              {/* ── Status — portal dropdown, mirrors CreateStoryModal ── */}
+              {/* ── Status — canonical CatalystStatusPill (ADS tokens, group headers, workflow links) ── */}
               <Field name="status" label="Status">
                 {() => (
-                  <>
-                    <div style={{ display: 'block', marginTop: 4 }}>
-                      <button
-                        ref={statusTriggerRef}
-                        type="button"
-                        aria-haspopup="listbox"
-                        aria-expanded={statusMenuOpen}
-                        onClick={() => setStatusMenuOpen((v) => !v)}
-                        style={{
-                          display: 'inline-flex', alignItems: 'center', gap: 6,
-                          background: 'transparent', border: 'none', borderRadius: 3,
-                          padding: '4px 6px 4px 0', cursor: 'pointer',
-                          color: token('color.text.subtle', '#42526E'),
-                        }}
-                      >
-                        {(() => {
-                          const status = brStatuses.find(s => s.slug === form.process_step);
-                          return (
-                            <StatusSpan
-                              appearance={status ? statusToLozenge(status.name, status.category) : 'default'}
-                              label={status?.name ?? form.process_step ?? 'New'}
-                            />
-                          );
-                        })()}
-                        <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true" style={{ flexShrink: 0 }}>
-                          <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </button>
-                    </div>
-                    {statusMenuOpen && statusMenuAnchor && ReactDOM.createPortal(
-                      <div
-                        ref={statusMenuRef}
-                        role="listbox"
-                        aria-label="Select status"
-                        style={{
-                          position: 'fixed',
-                          top: statusMenuAnchor.top,
-                          left: statusMenuAnchor.left,
-                          minWidth: Math.max(160, statusMenuAnchor.width),
-                          maxHeight: '50vh',
-                          overflowY: 'auto',
-                          background: token('elevation.surface.overlay', '#FFFFFF'),
-                          border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                          borderRadius: 4,
-                          boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
-                          padding: '4px 0',
-                          zIndex: 9999,
-                          fontFamily: 'inherit',
-                          fontSize: 14,
-                        }}
-                      >
-                        {brStatuses.map((status) => {
-                          const selected = form.process_step === status.slug;
-                          return (
-                            <button
-                              key={status.slug}
-                              type="button"
-                              role="option"
-                              aria-selected={selected}
-                              onClick={() => { set('process_step', status.slug); setStatusMenuOpen(false); statusTriggerRef.current?.focus(); }}
-                              style={{
-                                display: 'flex', alignItems: 'center', gap: 8,
-                                width: '100%', padding: '8px 12px',
-                                border: 'none', outline: 'none',
-                                background: 'transparent',
-                                color: token('color.text', '#292A2E'),
-                                fontSize: 14, fontWeight: 400,
-                                fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer',
-                              }}
-                              onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
-                              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                            >
-                              <StatusSpan appearance={statusToLozenge(status.name, status.category)} label={status.name} />
-                              {selected && (
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 'auto', color: token('color.text.brand', '#0C66E4') }} aria-hidden="true">
-                                  <polyline points="20 6 9 17 4 12" />
-                                </svg>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>,
-                      document.body,
-                    )}
-                    <HelperMessage>This is the initial status upon creation</HelperMessage>
-                  </>
+                  <div style={{ marginTop: 4 }}>
+                    <CatalystStatusPill
+                      issueType="Business Request"
+                      status={form.process_step || brInitialStatus || ''}
+                      onStatusChange={(displayName) => {
+                        set('process_step', displayName);
+                      }}
+                    />
+                  </div>
                 )}
               </Field>
 

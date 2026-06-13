@@ -135,7 +135,6 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             { id: 'allwork', title: 'Project Work', path: `${base}/allwork`, icon: GitBranch, exact: false },
             { id: 'filters', title: 'Project Filters', path: `${base}/filters`, icon: Filter, exact: false },
             { id: 'roadmaps', title: 'Project Roadmaps', path: `${base}/roadmaps`, icon: Map, exact: false },
-            { id: 'roadmap-showcase', title: '🗺 Roadmap Showcase', path: `${base}/roadmap-showcase`, icon: Map, exact: false },
             // Story / Epic / Feature Backlog pages were removed — their scope
             // is fully covered by the unified Backlog view above. Routes now
             // redirect to /backlog; source files remain on disk as-is.

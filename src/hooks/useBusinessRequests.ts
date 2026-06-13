@@ -498,7 +498,7 @@ export function useDuplicateBusinessRequest() {
         .insert({
           title: `${originalTyped.title} (Copy)`,
           request_key: requestKey,
-          process_step: 'new_request',
+          process_step: 'In Requirements',
           requestor: user?.id || null, // Set reporter to current user
 
           // Reset scoring to "unscored"

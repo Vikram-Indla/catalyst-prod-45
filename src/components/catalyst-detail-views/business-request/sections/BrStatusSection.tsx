@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { token } from '@atlaskit/tokens';
-import { useCatalystWorkflow } from '@/hooks/useCatalystWorkflow';
+import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import type { BusinessRequest } from '@/types/business-request';
 
@@ -39,7 +39,7 @@ interface Props {
 }
 
 export function BrStatusSection({ request, onUpdate }: Props) {
-  const { statuses, isLoading } = useCatalystWorkflow('Business Request');
+  const { statusGroups, isLoading } = useIssueTypeWorkflow('Business Request');
   const [open, setOpen] = useState(false);
   const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -68,7 +68,9 @@ export function BrStatusSection({ request, onUpdate }: Props) {
 
   if (!request) return null;
 
-  const options = statuses.map((s) => ({ value: s.slug, label: s.name, category: s.category }));
+  const options = statusGroups.flatMap((g) =>
+    g.statuses.map((name) => ({ value: name, label: name, category: g.category }))
+  );
   const current =
     options.find((o) => o.value === request.process_step) ??
     options[0] ?? {

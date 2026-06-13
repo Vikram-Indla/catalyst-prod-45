@@ -406,7 +406,7 @@ function BusinessRequestParentPicker({
     },
   });
 
-  const DONE_STEPS = ["done", "completed", "closed", "cancelled", "rejected"];
+  const DONE_STEPS = ["done", "completed", "closed", "cancelled", "rejected", "won't do"];
   const filtered = candidates.filter((c) => {
     if (!search) return true;
     const q = search.toLowerCase();
@@ -625,7 +625,7 @@ function renderBrGroup(
   onSelect: (key: string) => void,
 ) {
   if (items.length === 0) return null;
-  const DONE_STEPS = ["done", "completed", "closed", "cancelled", "rejected"];
+  const DONE_STEPS = ["done", "completed", "closed", "cancelled", "rejected", "won't do"];
   return (
     <>
       <div
@@ -644,7 +644,7 @@ function renderBrGroup(
         const isSelected = currentParentKey === item.request_key;
         const statusCat = DONE_STEPS.includes(item.process_step?.toLowerCase())
           ? "done"
-          : ["in_progress", "in progress", "implementation", "testing"].some(
+          : ["in_progress", "in progress", "implementation", "testing", "in development"].some(
                 (s) => item.process_step?.toLowerCase().includes(s),
               )
             ? "indeterminate"

@@ -51,7 +51,6 @@ import { Star, StarOff } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type { WorkItem } from '@/hooks/useForYouData';
-import { IssueHoverCard } from '@/components/shared/IssueHoverCard';
 
 export interface ForYouRowAction {
   id: string;
@@ -187,7 +186,6 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         minWidth: 0,
       }}
     >
-      <IssueHoverCard issueKey={item.key}>
       {/* Left — work item type icon.
           jira-assigned variant: 32x32 rounded grey tile (border-radius 25%)
           containing the type icon. Confirmed via 2026-05-17 LIVE Jira DOM
@@ -323,7 +321,6 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           )}
         </div>
       </div>
-      </IssueHoverCard>
 
       {/* Trailing slot
           ───────────────

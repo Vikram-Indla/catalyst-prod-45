@@ -61,6 +61,7 @@ import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
+import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
 
 import './create-story.css';
 
@@ -761,55 +762,25 @@ export function CreateStoryModal({
                 </Field>
               )}
 
-              {/* ── Status — read-only initial status badge (Jira Create parity).
-                   Jira's Create dialog shows status as a non-interactive lozenge;
-                   status changes happen via workflow transitions after creation. */}
+              {/* ── Status — CatalystStatusPill (canonical, workflow-driven).
+                   User can override the initial status before creating. */}
               <Field name="status" label="Status">
-                {() => {
-                  const appearance = statusToLozenge(form.status || 'To Do');
-                  const bgMap: Record<string, string> = {
-                    success:    'var(--ds-background-success, #DCFFF1)',
-                    inprogress: 'var(--ds-background-information, #E9F2FF)',
-                    moved:      'var(--ds-background-warning, #FFF7D6)',
-                    removed:    'var(--ds-background-danger, #FFEBE6)',
-                    new:        'var(--ds-background-discovery, #F3F0FF)',
-                    default:    'var(--ds-background-neutral, #F4F5F7)',
-                  };
-                  const colorMap: Record<string, string> = {
-                    success:    'var(--ds-text-success, #216E4E)',
-                    inprogress: 'var(--ds-text-information, #0055CC)',
-                    moved:      'var(--ds-text-warning, #974F0C)',
-                    removed:    'var(--ds-text-danger, #AE2A19)',
-                    new:        'var(--ds-text-discovery, #5E4DB2)',
-                    default:    'var(--ds-text-subtle, #626F86)',
-                  };
-                  return (
-                    <>
-                      <div style={{ display: 'block', marginTop: 4 }}>
-                        <span style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          height: 24,
-                          padding: '0 8px',
-                          borderRadius: 3,
-                          fontSize: 12,
-                          fontWeight: 500,
-                          textTransform: 'none',
-                          letterSpacing: 'normal',
-                          background: bgMap[appearance] ?? bgMap.default,
-                          color: colorMap[appearance] ?? colorMap.default,
-                        }}>
-                          {form.status || 'To Do'}
-                        </span>
-                      </div>
-                      <Box xcss={statusHelperStyles}>
-                        <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
-                          This is the initial status upon creation
-                        </span>
-                      </Box>
-                    </>
-                  );
-                }}
+                {() => (
+                  <>
+                    <div style={{ display: 'block', marginTop: 4 }}>
+                      <CatalystStatusPill
+                        status={form.status || 'To Do'}
+                        onStatusChange={(newStatus) => updateField('status', newStatus)}
+                        issueType={workType}
+                      />
+                    </div>
+                    <Box xcss={statusHelperStyles}>
+                      <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
+                        This is the initial status upon creation
+                      </span>
+                    </Box>
+                  </>
+                )}
               </Field>
 
               {/* ── Summary — required, with RTL auto-detect + CATY translate ── */}

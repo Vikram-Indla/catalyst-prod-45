@@ -90,7 +90,7 @@ export function FeatureAuditTab({ featureId }: FeatureAuditTabProps) {
           const brTyped = businessRequest as { process_step: string; assignee: string } | null;
 
           if (brTyped) {
-            if (brTyped.process_step === 'ready for implementation') {
+            if (brTyped.process_step === 'Prioritized Backlog') {
               businessRequestStatus = 'approved';
               businessRequestOwner = brTyped.assignee;
             } else {

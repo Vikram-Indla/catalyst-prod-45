@@ -102,7 +102,7 @@ export async function exportRoadmapToPDF(config: ExportConfig): Promise<Blob> {
   if (includeMetadata) {
     const stats = [
       { label: 'Total Items', value: items.length.toString() },
-      { label: 'In Progress', value: items.filter(i => i.process_step === 'in_progress').length.toString() },
+      { label: 'In Progress', value: items.filter(i => i.process_step === 'In Development').length.toString() },
       { label: 'Scheduled', value: items.filter(i => i.start_date && i.end_date).length.toString() },
       { label: 'Unscheduled', value: items.filter(i => !i.start_date).length.toString() },
     ];

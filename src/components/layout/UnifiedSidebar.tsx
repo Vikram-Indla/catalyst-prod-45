@@ -150,7 +150,7 @@ export function UnifiedSidebar({
     return location.pathname === resolvedPath || location.pathname.startsWith(resolvedPath);
   };
 
-  const settingsPath = workspaceType === 'program' ? '/admin/portfolios' : '/admin/programs';
+  const settingsPath = '/admin/overview';
 
   return (
     <aside
