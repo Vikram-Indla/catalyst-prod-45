@@ -98,3 +98,85 @@ export function useCreateRoadmapFromFilter() {
     },
   });
 }
+
+// ── Feature 3: Dashboard ──────────────────────────────────────────────────────
+
+export interface DashboardViewOption {
+  id: string;
+  title: string;
+}
+
+export interface CreateDashboardFromFilterArgs {
+  filterId: string;
+  title: string;
+  /** Caller must obtain this from supabase.auth.getUser() — never rely on auth.uid() (lesson #3). */
+  ownerId: string;
+  visibility: 'private' | 'org';
+}
+
+/**
+ * Dedup hook: does this (filterId, owner) pair already have a dashboard?
+ * Returns { id, title } when found, null otherwise.
+ * Mirrors useExistingRoadmapForFilter — same shape, type='dashboard'.
+ */
+export function useExistingDashboardForFilter(
+  filterId: string | undefined,
+  userId: string | null | undefined,
+) {
+  return useQuery({
+    queryKey: ['existing-dashboard-for-filter', filterId, userId],
+    queryFn: async (): Promise<DashboardViewOption | null> => {
+      if (!filterId || !userId) return null;
+      const { data, error } = await (supabase as any)
+        .from('filter_derived_views')
+        .select('id, title')
+        .eq('source_filter_id', filterId)
+        .eq('owner_id', userId)
+        .eq('type', 'dashboard')
+        .order('created_at', { ascending: true })
+        .limit(1);
+      if (error) throw new Error(error.message);
+      const row = (data ?? [])[0];
+      return row ? ({ id: row.id, title: row.title } as DashboardViewOption) : null;
+    },
+    enabled: !!filterId && !!userId,
+    staleTime: 60_000,
+  });
+}
+
+/**
+ * Create a filter-backed dashboard view.
+ * Inserts one row into filter_derived_views (type='dashboard').
+ * v1 uses an empty shared_default_config — the Executive Summary bundle
+ * is the only template and requires no persisted config.
+ */
+export function useCreateDashboardFromFilter() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      filterId,
+      title,
+      ownerId,
+      visibility,
+    }: CreateDashboardFromFilterArgs): Promise<string> => {
+      const { data, error } = await (supabase as any)
+        .from('filter_derived_views')
+        .insert({
+          source_filter_id: filterId,
+          type: 'dashboard',
+          title,
+          owner_id: ownerId,
+          shared_default_config: {},
+          visibility,
+        })
+        .select('id')
+        .single();
+      if (error) throw new Error(error.message);
+      return (data as { id: string }).id;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['existing-dashboard-for-filter'] });
+      qc.invalidateQueries({ queryKey: ['filter-derived-views'] });
+    },
+  });
+}

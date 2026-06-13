@@ -14,10 +14,12 @@ import {
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
 import { useCreateKanbanFromFilter } from '@/hooks/workhub/useCreateKanbanFromFilter';
-import { ENABLE_FILTER_TO_KANBAN, ENABLE_FILTER_TO_ROADMAP } from '@/lib/featureFlags';
+import { ENABLE_FILTER_TO_KANBAN, ENABLE_FILTER_TO_ROADMAP, ENABLE_FILTER_TO_DASHBOARD } from '@/lib/featureFlags';
 import {
   useExistingRoadmapForFilter,
   useCreateRoadmapFromFilter,
+  useExistingDashboardForFilter,
+  useCreateDashboardFromFilter,
 } from '@/hooks/workhub/useFilterDerivedViews';
 import { useParams, useNavigate } from 'react-router-dom';
 import Textfield from '@atlaskit/textfield';
@@ -53,6 +55,9 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const [roadmapDateField, setRoadmapDateField] = useState<{ label: string; value: string }>({ label: 'Due date', value: 'due_date' });
   const [roadmapLaneBy, setRoadmapLaneBy] = useState<{ label: string; value: string }>({ label: 'Status', value: 'status' });
   const [roadmapError, setRoadmapError] = useState<string | null>(null);
+  const [createDashboardOpen, setCreateDashboardOpen] = useState(false);
+  const [dashboardName, setDashboardName] = useState('');
+  const [dashboardError, setDashboardError] = useState<string | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -85,6 +90,11 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const createRoadmap  = useCreateRoadmapFromFilter();
   const existingRoadmap = useExistingRoadmapForFilter(
     ENABLE_FILTER_TO_ROADMAP ? filter.id : undefined,
+    currentUserId,
+  );
+  const createDashboard  = useCreateDashboardFromFilter();
+  const existingDashboard = useExistingDashboardForFilter(
+    ENABLE_FILTER_TO_DASHBOARD ? filter.id : undefined,
     currentUserId,
   );
 const isOwner = filter.user_id === currentUserId || filter.owner_id === currentUserId;
@@ -168,6 +178,25 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
     } catch (e: any) {
       console.error('Failed to create roadmap from filter:', e);
       setRoadmapError(e?.message ?? 'Something went wrong creating the roadmap.');
+    }
+  }
+
+  async function handleCreateDashboard() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    try {
+      const viewId = await createDashboard.mutateAsync({
+        filterId: filter.id,
+        title: dashboardName.trim(),
+        ownerId: user.id,
+        visibility: isPrivate ? 'private' : 'org',
+      });
+      setDashboardError(null);
+      setCreateDashboardOpen(false);
+      if (projectKey && viewId) navigate(`/project-hub/${projectKey}/dashboards/${viewId}`);
+    } catch (e: any) {
+      console.error('Failed to create dashboard from filter:', e);
+      setDashboardError(e?.message ?? 'Something went wrong creating the dashboard.');
     }
   }
 
@@ -301,6 +330,23 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                   }
                   setRoadmapName(`${filter.name} roadmap`);
                   setCreateRoadmapOpen(true);
+                },
+              )}
+            </>
+          )}
+
+          {ENABLE_FILTER_TO_DASHBOARD && (
+            <>
+              {divider}
+              {menuItem(
+                existingDashboard.data ? 'Open dashboard' : 'Create dashboard from filter',
+                () => {
+                  if (existingDashboard.data) {
+                    if (projectKey) navigate(`/project-hub/${projectKey}/dashboards/${existingDashboard.data.id}`);
+                    return;
+                  }
+                  setDashboardName(`${filter.name} dashboard`);
+                  setCreateDashboardOpen(true);
                 },
               )}
             </>
@@ -578,6 +624,52 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                 onClick={handleCreateRoadmap}
               >
                 Create roadmap
+              </Button>
+            </ModalFooter>
+          </ModalDialog>
+        )}
+      </ModalTransition>
+
+      <ModalTransition>
+        {createDashboardOpen && (
+          <ModalDialog onClose={() => setCreateDashboardOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle>Create dashboard from filter</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                    Dashboard name
+                  </label>
+                  <Textfield
+                    autoFocus
+                    value={dashboardName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDashboardName(e.target.value)}
+                    placeholder="e.g. Q3 delivery dashboard"
+                  />
+                </div>
+                <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
+                  Metrics come live from <strong>{filter.name}</strong>. Access follows the filter visibility.
+                </p>
+                {dashboardError && (
+                  <p style={{ margin: 0, fontSize: 13, color: token('color.text.danger', '#AE2A19') }}>
+                    {dashboardError}
+                  </p>
+                )}
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setCreateDashboardOpen(false)} isDisabled={createDashboard.isPending}>
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                isDisabled={!dashboardName.trim() || createDashboard.isPending}
+                isLoading={createDashboard.isPending}
+                onClick={handleCreateDashboard}
+              >
+                Create dashboard
               </Button>
             </ModalFooter>
           </ModalDialog>
