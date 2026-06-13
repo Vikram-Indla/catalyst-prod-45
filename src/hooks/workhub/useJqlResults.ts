@@ -26,11 +26,18 @@ export interface JqlResultRow {
   dueDate: string | null;
   parentKey: string | null;
   parentSummary: string | null;
+  /** Sprint name from ph_issues.sprint_name (nullable). Used by WhatsApp summary context builder. */
+  sprintName: string | null;
+  /** True when item is flagged as blocked in Jira. Used by WhatsApp summary context builder. */
+  isFlagged: boolean | null;
+  /** Free-text reason for the flag/blocker. Used by WhatsApp summary context builder. */
+  flagReason: string | null;
 }
 
 const RESULT_SELECT = `id, issue_key, summary, status, status_category, issue_type,
   assignee_display_name, project_key, jira_created_at, jira_updated_at,
-  due_date, effective_due_date, priority, parent_key, parent_summary`;
+  due_date, effective_due_date, priority, parent_key, parent_summary,
+  sprint_name, is_flagged, flag_reason`;
 
 export const JQL_RESULTS_LIMIT = 100;
 
@@ -88,6 +95,9 @@ export function useJqlResults(jql: string, enabled = true) {
         dueDate: r.effective_due_date ?? r.due_date ?? null,
         parentKey: r.parent_key ?? null,
         parentSummary: r.parent_summary ?? null,
+        sprintName: r.sprint_name ?? null,
+        isFlagged: r.is_flagged === 'true' || r.is_flagged === true ? true : r.is_flagged === 'false' || r.is_flagged === false ? false : null,
+        flagReason: r.flag_reason ?? null,
       }));
 
       return { items, totalCount: count ?? items.length };
