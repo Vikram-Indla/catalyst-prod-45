@@ -20,21 +20,13 @@
  *   { issueId, issueKey, issueType, summary, status, dueDate?, assigneeId? }
  */
 
-import { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import Button from '@atlaskit/button';
-import TextField from '@atlaskit/textfield';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import Calendar from '@atlaskit/calendar';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { catalystToast } from '@/lib/catalystToast';
-import { useCreatemeta } from '@/hooks/useCreatemeta';
-import { useSearchAssignees } from '@/hooks/useSearchAssignees';
-import { SPACING_TOKENS } from './kanban-tokens';
+import { supabase } from '@/integrations/supabase/client';
+import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
+import type { AssigneeOption } from './AssigneePickerPopover';
 
 export interface CreatedIssue {
   issueId: string;
@@ -50,109 +42,158 @@ interface InlineCreateCardProps {
   projectKey: string;
   columnId: string;
   swimlaneGroupKey?: string;
+  /** The target status for the new card — typically the destination column's
+   *  primary status. The created card lands in this status, which puts it in
+   *  the right column immediately after creation. */
+  status?: string;
+  /** Optional override for the creatable type list. Falls back to the canonical
+   *  Catalyst list (matches BacklogPage's CREATABLE_TYPES). */
+  creatableTypes?: string[];
+  /** Assignee options sourced from the kanban host (the same list the board's
+   *  AssigneePickerPopover uses). When empty/undefined the picker is hidden
+   *  by an empty-state message. */
+  assigneeOptions?: AssigneeOption[];
+  /** Lower-case-name → avatar URL map used to render avatars in the picker. */
+  avatarsByName?: Map<string, string>;
   onCreateCard: (issue: CreatedIssue) => void;
   onCancel: () => void;
 }
 
-const CREATABLE_TYPES = ['Story', 'Task', 'Bug', 'Defect', 'Feature'];
+/* Canonical Catalyst-creatable types — mirrors BacklogPage's CREATABLE_TYPES
+   so the kanban + backlog stay in sync. No Jira REST createmeta fetch is
+   required (and the REST call previously used a hard-coded 'mock-token'
+   that didn't authenticate). */
+const DEFAULT_CREATABLE_TYPES = [
+  'Story', 'Epic', 'Feature', 'Task', 'QA Bug',
+  'Production Incident', 'Business Gap', 'API Requirement', 'Change Request',
+];
 
 function InlineCreateCardComponent({
   projectKey,
   columnId,
   swimlaneGroupKey,
+  status,
+  creatableTypes,
+  assigneeOptions = [],
+  avatarsByName,
   onCreateCard,
   onCancel,
 }: InlineCreateCardProps) {
   const [summary, setSummary] = useState('');
-  const [issueTypeId, setIssueTypeId] = useState<string>('10006'); // Story default
   const [issueName, setIssueName] = useState('Story');
-  const [dueDate, setDueDate] = useState('');
-  const [assigneeId, setAssigneeId] = useState<string>('');
+  const [dueDate, setDueDate] = useState('');           // ISO yyyy-mm-dd
+  const [assigneeName, setAssigneeName] = useState<string>('');
   const [assigneeSearch, setAssigneeSearch] = useState('');
   const [error, setError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Assignee search dropdown visibility
+  // Dropdown visibility
   const [showAssigneeDropdown, setShowAssigneeDropdown] = useState(false);
-  const [assigneeOptions, setAssigneeOptions] = useState<Array<{ id: string; name: string }>>([]);
-
-  // Date picker visibility
+  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  // Refs
   const datePickerRef = useRef<HTMLDivElement>(null);
   const assigneePickerRef = useRef<HTMLDivElement>(null);
   const summaryRef = useRef<HTMLTextAreaElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
+  const typeDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fetch createmeta using hook
-  const { data: createmetaData, isLoading: isLoadingCreatemeta, error: createmetaError } = useCreatemeta(projectKey);
-  const issueTypes = createmetaData?.projects[0]?.issuetypes
-    ?.filter((t: any) => CREATABLE_TYPES.includes(t.name))
-    ?.map((t: any) => ({ id: t.id, name: t.name })) || [];
+  // The creatable type list (string names — icon comes from JiraIssueTypeIcon)
+  const issueTypes = creatableTypes && creatableTypes.length > 0
+    ? creatableTypes
+    : DEFAULT_CREATABLE_TYPES;
 
-  // Fetch assignee search results using hook
-  const { data: assigneeSearchData, isLoading: isSearchingAssignee } = useSearchAssignees(projectKey, assigneeSearch);
+  /* All profiles — the same source the canonical AssigneePickerPopover and
+     avatarsByName map are derived from. Falls back to the host-supplied
+     assigneeOptions when the query hasn't returned yet so the picker still
+     populates from the kanban-scope assignees in the meantime. */
+  const { data: profileAssignees = [] } = useQuery<AssigneeOption[]>({
+    queryKey: ['inline-create-assignees'],
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name, avatar_url, email')
+        .not('full_name', 'is', null)
+        .order('full_name');
+      return ((data as any[]) || [])
+        .filter((p) => !!p.full_name)
+        .map((p) => ({
+          name: p.full_name as string,
+          avatarUrl: p.avatar_url ?? null,
+          email: p.email ?? null,
+        }));
+    },
+  });
 
-  // Focus summary on mount
+  /* Merge: host-supplied assigneeOptions (board-scoped) ∪ profileAssignees
+     (app-wide). Dedup by lower-case name. Profile entries win for avatar URL
+     because they reflect the latest profile photo. */
+  const mergedAssignees = useMemo(() => {
+    const byName = new Map<string, AssigneeOption>();
+    assigneeOptions.forEach(a => byName.set(a.name.toLowerCase(), a));
+    profileAssignees.forEach(a => byName.set(a.name.toLowerCase(), a));
+    return Array.from(byName.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [assigneeOptions, profileAssignees]);
+
+  // Filter the merged list against the search query
+  const filteredAssignees = useMemo(() => {
+    const q = assigneeSearch.trim().toLowerCase();
+    if (!q) return mergedAssignees;
+    return mergedAssignees.filter(a => a.name.toLowerCase().includes(q));
+  }, [assigneeSearch, mergedAssignees]);
+
+  // Focus summary on mount + default the due date to today so the picker
+  // input reads today's date the moment the form opens (Jira parity).
   useEffect(() => {
     summaryRef.current?.focus();
+    if (!dueDate) setDueDate(new Date().toISOString().slice(0, 10));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Debounced assignee search
-  const searchAssignees = useCallback(async (query: string) => {
-    if (!query.trim()) {
-      setAssigneeOptions([]);
-      return;
-    }
-    setIsSearchingAssignee(true);
-    try {
-      const response = await fetch(
-        `/rest/api/3/user/assignable/search?projectKey=${projectKey}&query=${encodeURIComponent(query)}&maxResults=10`,
-        {
-          headers: { Authorization: `Bearer ${await getAuthToken()}` },
-        }
-      );
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const users = await response.json();
-      setAssigneeOptions(
-        users.map((u: any) => ({ id: u.accountId, name: u.displayName }))
-      );
-    } catch (err) {
-      console.error('Failed to search assignees:', err);
-    } finally {
-      setIsSearchingAssignee(false);
-    }
-  }, [projectKey]);
-
-  // Debounce assignee search
-  useEffect(() => {
-    if (!assigneeSearch) {
-      setAssigneeOptions([]);
-      return;
-    }
-    const timer = setTimeout(() => searchAssignees(assigneeSearch), 300);
-    return () => clearTimeout(timer);
-  }, [assigneeSearch, searchAssignees]);
-
-  // Close dropdowns on click outside
+  // Close child popovers (type + assignee + date) on click outside their panels.
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        datePickerRef.current &&
-        !datePickerRef.current.contains(e.target as Node)
-      ) {
+      const target = e.target as Node | null;
+      if (!target) return;
+      if (datePickerRef.current && !datePickerRef.current.contains(target)) {
         setShowDatePicker(false);
       }
-      if (
-        assigneePickerRef.current &&
-        !assigneePickerRef.current.contains(e.target as Node)
-      ) {
+      if (assigneePickerRef.current && !assigneePickerRef.current.contains(target)) {
         setShowAssigneeDropdown(false);
+      }
+      if (typeDropdownRef.current && !typeDropdownRef.current.contains(target)) {
+        setShowTypeDropdown(false);
       }
     };
     document.addEventListener('click', handleClickOutside, { capture: true });
     return () => document.removeEventListener('click', handleClickOutside, { capture: true });
   }, []);
 
-  // Escape key handling
+  // Close the whole form when the user clicks outside it (Jira parity:
+  // there's no cancel button — clicking off the card dismisses without
+  // saving). Portals (date picker, assignee picker, type dropdown) carry
+  // data-inline-create-portal so clicking inside them does NOT dismiss.
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Element | null;
+      if (!target) return;
+      if (formRef.current?.contains(target)) return;
+      if (target.closest && target.closest('[data-inline-create-portal="true"]')) return;
+      onCancel();
+    };
+    // Defer one frame so the click that opened the form doesn't immediately close it.
+    const id = window.setTimeout(() => {
+      document.addEventListener('mousedown', handler);
+    }, 0);
+    return () => {
+      window.clearTimeout(id);
+      document.removeEventListener('mousedown', handler);
+    };
+  }, [onCancel]);
+
+  // Escape key handling — closes any open child dropdown first, then the form.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -162,6 +203,9 @@ function InlineCreateCardComponent({
         } else if (showAssigneeDropdown) {
           setShowAssigneeDropdown(false);
           e.stopPropagation();
+        } else if (showTypeDropdown) {
+          setShowTypeDropdown(false);
+          e.stopPropagation();
         } else {
           onCancel();
         }
@@ -169,64 +213,72 @@ function InlineCreateCardComponent({
     };
     document.addEventListener('keydown', handleKeyDown, { capture: true });
     return () => document.removeEventListener('keydown', handleKeyDown, { capture: true });
-  }, [showDatePicker, showAssigneeDropdown, onCancel]);
+  }, [showDatePicker, showAssigneeDropdown, showTypeDropdown, onCancel]);
 
-  const getAuthToken = async (): Promise<string> => {
-    // For development/testing, use browser's Authorization header from Jira session
-    // In production, this would be obtained from backend or Supabase auth
-    return 'mock-token'; // This will be handled by the backend API proxy
-  };
+  /* Toggle the calendar popover. The Atlaskit <Calendar /> grid renders
+     directly inside — no input or inner icon click required. */
+  const toggleDatePicker = () => setShowDatePicker(v => !v);
 
   const handleSubmit = async () => {
     if (!summary.trim()) {
       setError('Summary is required');
       return;
     }
-
+    if (!projectKey) {
+      setError('Missing project key');
+      return;
+    }
     setIsSubmitting(true);
     setError('');
-
     try {
-      const payload = {
-        fields: {
-          'project.key': projectKey,
-          'issuetype.id': issueTypeId,
-          summary: summary.trim(),
-          ...(dueDate && { duedate: dueDate }),
-          ...(assigneeId && { 'assignee.accountId': assigneeId }),
-        },
+      // Mirror useCreateStoryMutation's pattern: generate a real issue_key
+      // and insert directly into ph_issues with source='catalyst'. The host's
+      // onCreateCard then invalidates ['kanban-issues', key]; the refetch
+      // picks up the new row, rawIssues updates → the colMap useEffect
+      // rebuilds → the card appears in its destination column with no
+      // manual page refresh.
+      const issueKey = await generateIssueKey(projectKey);
+      const nowIso = new Date().toISOString();
+      const insertRow: Record<string, any> = {
+        project_key: projectKey,
+        issue_key: issueKey,
+        summary: summary.trim(),
+        issue_type: issueName,
+        status: status || 'To Do',
+        priority: 'Medium',
+        labels: [],
+        source: 'catalyst',
+        jira_created_at: nowIso,
+        jira_updated_at: nowIso,
+        description_text: null,
+        description_adf: null,
+        parent_key: null,
+        assignee_display_name: assigneeName || null,
+        due_date: dueDate || null,
       };
 
-      const response = await fetch('/rest/api/3/issue', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${await getAuthToken()}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const { data, error: insErr } = await supabase
+        .from('ph_issues')
+        .insert(insertRow as any)
+        .select('id, issue_key')
+        .single();
+      if (insErr) throw insErr;
 
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.errorMessages?.[0] || `HTTP ${response.status}`);
-      }
-
-      const created = await response.json();
       const createdIssue: CreatedIssue = {
-        issueId: created.id,
-        issueKey: created.key,
+        issueId: (data as any)?.id ?? issueKey,
+        issueKey: (data as any)?.issue_key ?? issueKey,
         issueType: issueName,
         summary: summary.trim(),
-        status: 'To Do', // Default status for newly created issues
+        status: status || 'To Do',
         dueDate: dueDate || undefined,
-        assigneeId: assigneeId || undefined,
+        assigneeId: assigneeName || undefined,
       };
-
       onCreateCard(createdIssue);
-      // Clear form
+
+      // Clear form (the form is also unmounted by the host after this returns)
       setSummary('');
       setDueDate('');
-      setAssigneeId('');
+      setAssigneeName('');
       setAssigneeSearch('');
       setError('');
     } catch (err) {
@@ -238,211 +290,383 @@ function InlineCreateCardComponent({
     }
   };
 
+  /* ── Helpers ──────────────────────────────────────────────────────── */
+  const formatDueDate = (iso: string) => {
+    if (!iso) return '';
+    try {
+      const d = new Date(iso + 'T00:00:00');
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    } catch {
+      return iso;
+    }
+  };
+
+  const canSubmit = !!summary.trim() && !isSubmitting;
+
+  const iconBtnStyle: React.CSSProperties = {
+    width: 28, height: 28,
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    border: 'none', background: 'transparent', borderRadius: 4,
+    cursor: 'pointer', padding: 0,
+    color: 'var(--ds-text-subtle, #44546F)',
+  };
+
+  /* Position helper for portal popovers — anchored under the toolbar. */
+  const popoverStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: 'calc(100% + 4px)',
+    left: 0,
+    zIndex: 10000,
+    background: 'var(--ds-surface-overlay, #FFFFFF)',
+    border: '1px solid var(--ds-border, #DFE1E6)',
+    borderRadius: 6,
+    boxShadow: '0 4px 16px rgba(9,30,66,0.16)',
+  };
+
   return (
     <div
+      ref={formRef}
       data-inline-create-form="true"
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: SPACING_TOKENS.gap8,
-        padding: '8px',
-        background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-        borderRadius: 4,
-        border: '1px solid var(--ds-border-neutral, #DFE1E6)',
+        gap: 6,
+        padding: '10px 12px',
+        background: 'var(--ds-surface, #FFFFFF)',
+        borderRadius: 6,
+        /* Jira-parity: full clean blue outline around the whole card. */
+        border: '2px solid var(--ds-border-selected, #0C66E4)',
+        boxShadow: '0 2px 8px rgba(9,30,66,0.06)',
       }}
+      onMouseDown={e => e.stopPropagation()}
+      onClick={e => e.stopPropagation()}
     >
-      {/* Error message */}
       {error && (
         <div
           style={{
-            background: '#FFEBE6',
-            color: '#AE2A19',
-            padding: '6px 8px',
+            background: 'var(--ds-background-danger, #FFEBE6)',
+            color: 'var(--ds-text-danger, #AE2A19)',
+            padding: '4px 6px',
             borderRadius: 3,
-            fontSize: 12,
+            fontSize: 11,
           }}
         >
           {error}
         </div>
       )}
 
-      {/* Summary TextArea */}
-      <TextField
+      {/* Summary input — single placeholder "What needs to be done?" */}
+      <textarea
         ref={summaryRef}
-        isCompact
-        appearance="subtle"
-        placeholder="What needs to be done?"
         value={summary}
-        onChange={(e) => setSummary(e.currentTarget.value)}
+        onChange={(e) => setSummary(e.target.value)}
+        placeholder="What needs to be done?"
         disabled={isSubmitting}
+        rows={2}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' && e.ctrlKey) {
-            handleSubmit();
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if (canSubmit) handleSubmit();
           } else if (e.key === 'Escape') {
             onCancel();
           }
         }}
-        style={{ width: '100%' }}
+        style={{
+          width: '100%',
+          border: 'none',
+          outline: 'none',
+          background: 'transparent',
+          resize: 'none',
+          fontSize: 14,
+          lineHeight: '20px',
+          fontFamily: 'var(--cp-font-body)',
+          color: 'var(--ds-text, #292A2E)',
+          padding: 0,
+          minHeight: 40,
+        }}
       />
 
-      {/* Issue Type Dropdown */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            appearance="subtle"
-            isDisabled={isSubmitting}
-            iconBefore={
-              issueTypes.find((t) => t.id === issueTypeId) && (
-                <JiraIssueTypeIcon
-                  type={issueName.toLowerCase()}
-                  size={14}
-                />
-              )
-            }
+      {/* Bottom toolbar: type · date · assignee · (spacer) · enter */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
+        {/* Type icon dropdown */}
+        <div ref={typeDropdownRef} style={{ position: 'relative' }}>
+          <button
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => setShowTypeDropdown(v => !v)}
+            style={iconBtnStyle}
+            aria-label={`Type: ${issueName}`}
+            title={issueName}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
           >
-            {issueName}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          {issueTypes.map((type) => (
-            <DropdownMenuItem
-              key={type.id}
-              onClick={() => {
-                setIssueTypeId(type.id);
-                setIssueName(type.name);
-              }}
-            >
-              <JiraIssueTypeIcon type={type.name.toLowerCase()} size={14} />
-              {type.name}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* Date Picker */}
-      <div style={{ position: 'relative' }}>
-        <Button
-          appearance="subtle"
-          isDisabled={isSubmitting}
-          onClick={() => setShowDatePicker(!showDatePicker)}
-        >
-          {dueDate ? `Due: ${dueDate}` : 'Add due date'}
-        </Button>
-        {showDatePicker &&
-          createPortal(
-            <div
-              ref={datePickerRef}
-              data-inline-create-portal="true"
-              style={{
-                position: 'fixed',
-                background: 'var(--ds-background-elevation-raised, #ffffff)',
-                border: '1px solid var(--ds-border-neutral, #DFE1E6)',
-                borderRadius: 4,
-                padding: '8px',
-                zIndex: 10000,
-                minWidth: 200,
-                boxShadow: '0 4px 8px rgba(9,30,66,0.15)',
-              }}
-            >
-              <input
-                type="date"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.currentTarget.value)}
-                style={{ width: '100%' }}
-              />
-            </div>,
-            document.body
+            <JiraIssueTypeIcon type={issueName.toLowerCase()} size={16} />
+          </button>
+          {showTypeDropdown && (
+            <div data-inline-create-portal="true" style={{ ...popoverStyle, minWidth: 200, padding: '4px 0' }}>
+              {issueTypes.map((name) => (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => {
+                    setIssueName(name);
+                    setShowTypeDropdown(false);
+                  }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    width: '100%', padding: '8px 12px',
+                    border: 'none', background: 'transparent',
+                    cursor: 'pointer', textAlign: 'left',
+                    fontSize: 13, color: 'var(--ds-text, #292A2E)',
+                    fontFamily: 'var(--cp-font-body)',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-information, #E9F2FE)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                >
+                  <JiraIssueTypeIcon type={name.toLowerCase()} size={14} />
+                  <span>{name}</span>
+                </button>
+              ))}
+            </div>
           )}
-      </div>
+        </div>
 
-      {/* Assignee Search */}
-      <div style={{ position: 'relative' }}>
-        <TextField
-          isCompact
-          appearance="subtle"
-          placeholder="Assign to..."
-          value={assigneeSearch}
-          onChange={(e) => setAssigneeSearch(e.currentTarget.value)}
-          onFocus={() => setShowAssigneeDropdown(true)}
-          disabled={isSubmitting}
-        />
-        {showAssigneeDropdown &&
-          createPortal(
+        {/* Calendar / due date — icon trigger opens an Atlaskit Calendar
+            popover directly. No input, no inner-icon click, no extra
+            Clear/Today chrome. */}
+        <div ref={datePickerRef} style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+          <button
+            type="button"
+            disabled={isSubmitting}
+            onClick={toggleDatePicker}
+            style={dueDate ? {
+              ...iconBtnStyle,
+              width: 'auto',
+              padding: '0 8px',
+              gap: 6,
+            } : iconBtnStyle}
+            aria-label="Due date"
+            title="Due date"
+            aria-haspopup="dialog"
+            aria-expanded={showDatePicker}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+          >
+            <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden>
+              <rect x="2" y="3" width="12" height="11" rx="1.6" stroke="currentColor" strokeWidth="1.3" />
+              <path d="M2 6.5h12" stroke="currentColor" strokeWidth="1.3" />
+              <path d="M5 1.5v3M11 1.5v3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+            </svg>
+            {dueDate && (
+              <span style={{ fontSize: 12, fontWeight: 500 }}>{formatDueDate(dueDate)}</span>
+            )}
+          </button>
+          {showDatePicker && (
+            <div
+              data-inline-create-portal="true"
+              style={{ ...popoverStyle, padding: 6 }}
+              onMouseDown={e => e.stopPropagation()}
+            >
+              <Calendar
+                selected={dueDate ? [dueDate] : []}
+                defaultSelected={dueDate ? [dueDate] : []}
+                onSelect={(d: any) => {
+                  if (d?.iso) setDueDate(d.iso);
+                  setShowDatePicker(false);
+                }}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Assignee avatar */}
+        <div style={{ position: 'relative' }}>
+          <button
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => setShowAssigneeDropdown(v => !v)}
+            style={iconBtnStyle}
+            aria-label={assigneeName ? `Assigned to ${assigneeName}` : 'Unassigned'}
+            title={assigneeName || 'Unassigned'}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+          >
+            {assigneeName ? (
+              (() => {
+                const url = avatarsByName?.get(assigneeName.toLowerCase());
+                return url ? (
+                  <img
+                    src={url}
+                    alt={assigneeName}
+                    style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <span
+                    style={{
+                      width: 18, height: 18, borderRadius: '50%',
+                      background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
+                      color: 'var(--ds-text, #172B4D)',
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 10, fontWeight: 700,
+                    }}
+                  >
+                    {assigneeName.slice(0, 1).toUpperCase()}
+                  </span>
+                );
+              })()
+            ) : (
+              /* Unassigned avatar — solid neutral fill, person silhouette
+                 inside. No dashed border (matches the rest of the app's
+                 avatar treatment). Visual footprint matches the assigned
+                 18×18 badge so the toolbar slots stay aligned. */
+              <span
+                style={{
+                  width: 18, height: 18, borderRadius: '50%',
+                  background: 'var(--ds-background-neutral, #F1F2F4)',
+                  color: 'var(--ds-text-subtle, #44546F)',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <svg width={12} height={12} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+                  <circle cx="8" cy="6.2" r="2.6" />
+                  <path d="M2.8 14c0-2.6 2.4-4.5 5.2-4.5s5.2 1.9 5.2 4.5z" />
+                </svg>
+              </span>
+            )}
+          </button>
+          {showAssigneeDropdown && (
             <div
               ref={assigneePickerRef}
               data-inline-create-portal="true"
-              style={{
-                position: 'fixed',
-                background: 'var(--ds-background-elevation-raised, #ffffff)',
-                border: '1px solid var(--ds-border-neutral, #DFE1E6)',
-                borderRadius: 4,
-                padding: '0',
-                zIndex: 10000,
-                minWidth: 200,
-                maxHeight: 200,
-                overflowY: 'auto',
-                boxShadow: '0 4px 8px rgba(9,30,66,0.15)',
-              }}
+              style={{ ...popoverStyle, minWidth: 240, maxHeight: 280, overflowY: 'auto' }}
             >
-              {isSearchingAssignee ? (
-                <div style={{ padding: '8px', fontSize: 12 }}>Searching...</div>
-              ) : assigneeOptions.length > 0 ? (
-                assigneeOptions.map((option) => (
+              <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+                <input
+                  type="text"
+                  value={assigneeSearch}
+                  onChange={(e) => setAssigneeSearch(e.target.value)}
+                  placeholder="Search a user…"
+                  autoFocus
+                  style={{
+                    width: '100%', padding: '6px 8px',
+                    border: '1px solid var(--ds-border, #DFE1E6)',
+                    borderRadius: 4, fontSize: 13,
+                    fontFamily: 'var(--cp-font-body)', outline: 'none',
+                  }}
+                />
+              </div>
+              <div style={{ padding: '4px 0' }}>
+                {/* Unassign option (only when somebody is currently assigned) */}
+                {assigneeName && (
                   <button
-                    key={option.id}
                     type="button"
                     onClick={() => {
-                      setAssigneeId(option.id);
-                      setAssigneeSearch(option.name);
+                      setAssigneeName('');
+                      setAssigneeSearch('');
                       setShowAssigneeDropdown(false);
                     }}
                     style={{
-                      width: '100%',
-                      padding: '8px',
-                      textAlign: 'left',
-                      border: 'none',
-                      background: 'transparent',
-                      cursor: 'pointer',
-                      fontSize: 12,
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      width: '100%', padding: '8px 12px',
+                      border: 'none', background: 'transparent',
+                      cursor: 'pointer', textAlign: 'left',
+                      fontSize: 13, color: 'var(--ds-text-subtle, #44546F)',
+                      fontFamily: 'var(--cp-font-body)',
                     }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background =
-                        'var(--ds-background-neutral-subtle, #F7F8F9)';
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background =
-                        'transparent';
-                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-information, #E9F2FE)'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                   >
-                    {option.name}
+                    Unassign
                   </button>
-                ))
-              ) : assigneeSearch ? (
-                <div style={{ padding: '8px', fontSize: 12 }}>
-                  No results for "{assigneeSearch}"
-                </div>
-              ) : null}
-            </div>,
-            document.body
+                )}
+                {filteredAssignees.length > 0 ? (
+                  filteredAssignees.map((option) => {
+                    const url = avatarsByName?.get(option.name.toLowerCase()) ?? option.avatarUrl ?? null;
+                    return (
+                      <button
+                        key={option.name}
+                        type="button"
+                        onClick={() => {
+                          setAssigneeName(option.name);
+                          setAssigneeSearch('');
+                          setShowAssigneeDropdown(false);
+                        }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 8,
+                          width: '100%', padding: '8px 12px',
+                          border: 'none', background: 'transparent',
+                          cursor: 'pointer', textAlign: 'left',
+                          fontSize: 13, color: 'var(--ds-text, #292A2E)',
+                          fontFamily: 'var(--cp-font-body)',
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-information, #E9F2FE)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                      >
+                        {url ? (
+                          <img src={url} alt={option.name} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover' }} />
+                        ) : (
+                          <span
+                            style={{
+                              width: 20, height: 20, borderRadius: '50%',
+                              background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
+                              color: 'var(--ds-text, #172B4D)',
+                              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                              fontSize: 11, fontWeight: 700,
+                            }}
+                          >
+                            {option.name.slice(0, 1).toUpperCase()}
+                          </span>
+                        )}
+                        <span>{option.name}</span>
+                      </button>
+                    );
+                  })
+                ) : assigneeOptions.length === 0 ? (
+                  <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>
+                    No assignees available
+                  </div>
+                ) : (
+                  <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>
+                    No results for "{assigneeSearch}"
+                  </div>
+                )}
+              </div>
+            </div>
           )}
-      </div>
+        </div>
 
-      {/* Actions */}
-      <div style={{ display: 'flex', gap: SPACING_TOKENS.gap8 }}>
-        <Button
-          appearance="primary"
-          isDisabled={!summary.trim() || isSubmitting}
+        <span style={{ flex: 1 }} />
+
+        {/* Enter / submit button — blue + white when ready, gray when disabled */}
+        <button
+          type="button"
           onClick={handleSubmit}
+          disabled={!canSubmit}
+          aria-label="Create"
+          title="Create (Enter)"
+          style={{
+            width: 28, height: 28,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            border: 'none', borderRadius: 4, padding: 0,
+            cursor: canSubmit ? 'pointer' : 'not-allowed',
+            background: canSubmit
+              ? 'var(--ds-background-brand-bold, #0C66E4)'
+              : 'var(--ds-background-neutral, #F1F2F4)',
+            color: canSubmit
+              ? 'var(--ds-text-inverse, #FFFFFF)'
+              : 'var(--ds-text-disabled, #B3B9C4)',
+            transition: 'background 120ms ease, color 120ms ease',
+          }}
         >
-          {isSubmitting ? 'Creating...' : 'Create'}
-        </Button>
-        <Button
-          appearance="subtle"
-          isDisabled={isSubmitting}
-          onClick={onCancel}
-        >
-          Cancel
-        </Button>
+          {/* Return / enter glyph — corner-arrow */}
+          <svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-hidden>
+            <path
+              d="M14 3.5v3.5a3 3 0 0 1-3 3H3M3 10l3.2-3.2M3 10l3.2 3.2"
+              stroke="currentColor" strokeWidth="1.6"
+              strokeLinecap="round" strokeLinejoin="round"
+            />
+          </svg>
+        </button>
       </div>
     </div>
   );

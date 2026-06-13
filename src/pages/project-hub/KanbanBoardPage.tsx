@@ -70,6 +70,7 @@ import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import type { GroupByOption } from '@/components/shared/GroupByPopover';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Textfield from '@atlaskit/textfield';
+import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { useUpdateBoard } from '@/hooks/useBoardMutations';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
@@ -120,6 +121,8 @@ export default function KanbanBoardPage() {
   const [standupAssignee, setStandupAssignee] = useState<string | null>(null);
   const [activeBoardId, setActiveBoardId] = useState<string | null>(urlBoardId ?? null);
   const [showBoardSwitcher, setShowBoardSwitcher] = useState(false);
+  const [isBoardSwitcherFocused, setIsBoardSwitcherFocused] = useState(false);
+  const [isBoardSwitcherHovered, setIsBoardSwitcherHovered] = useState(false);
   const [showCreateBoard, setShowCreateBoard] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
   const boardSwitcherRef = React.useRef<HTMLDivElement>(null);
@@ -1143,6 +1146,24 @@ export default function KanbanBoardPage() {
     if (!issue || issue.status === newStatus) return;
     const oldStatus = issue.status;
     issue.status = newStatus;
+
+    // Optimistic local colMap update — moves the card to its new column
+    // immediately so the user doesn't need to refresh. Drag-paths that
+    // already adjusted colMap upstream see this as a no-op (filter + insert
+    // on the same id is idempotent across calls). On failure the catch
+    // below invalidates and the server state replaces this.
+    const targetColId = effectiveStatusToColId.get(newStatus.toLowerCase());
+    if (targetColId) {
+      setColMap(prev => {
+        const fromColId = (Object.keys(prev) as string[]).find(cid => prev[cid]?.includes(issueId));
+        if (!fromColId || fromColId === targetColId) return prev;
+        const next: typeof prev = { ...prev };
+        next[fromColId] = (prev[fromColId] || []).filter(id => id !== issueId);
+        next[targetColId] = [issueId, ...(prev[targetColId] || [])];
+        return next;
+      });
+    }
+
     try {
       const { error } = await supabase.from('ph_issues').update({ status: newStatus }).eq('id', issueId);
       if (error) throw error;
@@ -1151,9 +1172,10 @@ export default function KanbanBoardPage() {
     } catch {
       issue.status = oldStatus;
       toastError(`Failed to move ${issue.issueKey}`);
+      // Refetch authoritatively replaces our optimistic colMap on failure.
       qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
     }
-  }, [issuesById, key, qc, toastSuccess, toastError]);
+  }, [issuesById, key, qc, toastSuccess, toastError, effectiveStatusToColId]);
 
   const onDragEnd = useCallback((e: DragEndEvent) => {
     const aid = String(e.active.id), oid = e.over?.id ? String(e.over.id) : null;
@@ -1239,76 +1261,7 @@ export default function KanbanBoardPage() {
           project chip mounts above the page header. */}
       {key && <ProjectHeaderChip projectKey={key} />}
       {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
-      {/* ── Page header with board switcher ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 16px', minHeight: 48, flexShrink: 0, position: 'relative' }}>
-        <span style={{ fontSize: 20, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
-          Board
-        </span>
-        {/* Board switcher — only shown when multiple boards exist or as entry point */}
-        <div ref={boardSwitcherRef} style={{ position: 'relative' }}>
-          <button
-            onClick={() => setShowBoardSwitcher(v => !v)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 4,
-              height: 32, padding: '0 8px',
-              background: showBoardSwitcher ? tk.surfaceHover : 'transparent',
-              border: `1px solid ${showBoardSwitcher ? tk.border : 'transparent'}`,
-              borderRadius: 4, cursor: 'pointer', fontSize: 13, fontWeight: 500,
-              color: tk.textSecondary, fontFamily: 'var(--cp-font-body)',
-              transition: 'background 120ms ease',
-            }}
-            onMouseEnter={e => { if (!showBoardSwitcher) e.currentTarget.style.background = tk.surfaceHover; }}
-            onMouseLeave={e => { if (!showBoardSwitcher) e.currentTarget.style.background = 'transparent'; }}
-          >
-            {projectBoards.find(b => b.id === resolvedBoardId)?.name ?? 'Board'}
-            <span style={{ fontSize: 10, marginLeft: 4 }}>▾</span>
-          </button>
-          {showBoardSwitcher && (
-            <div
-              style={{
-                position: 'absolute', top: 'calc(100% + 4px)', left: 0,
-                width: 220, background: tk.surfaceBg,
-                border: `1px solid ${tk.border}`, borderRadius: 8,
-                boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(0,0,0,0.16))', zIndex: 60,
-                padding: '8px 0',
-              }}
-              onMouseDown={e => e.stopPropagation()}
-            >
-              {projectBoards.map(b => (
-                <button
-                  key={b.id}
-                  onClick={() => { setActiveBoardId(b.id); setShowBoardSwitcher(false); }}
-                  style={{
-                    width: '100%', textAlign: 'left', padding: '8px 16px',
-                    background: b.id === resolvedBoardId ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent',
-                    border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                    color: b.id === resolvedBoardId ? 'var(--ds-link, var(--cp-primary-60, #0052CC))' : tk.textPrimary,
-                    fontFamily: 'var(--cp-font-body)',
-                  }}
-                  onMouseEnter={e => { if (b.id !== resolvedBoardId) e.currentTarget.style.background = tk.surfaceHover; }}
-                  onMouseLeave={e => { if (b.id !== resolvedBoardId) e.currentTarget.style.background = 'transparent'; }}
-                >
-                  {b.name}
-                </button>
-              ))}
-              {projectBoards.length > 0 && <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 8px' }} />}
-              <button
-                onClick={() => { setShowBoardSwitcher(false); setNewBoardName(''); setShowCreateBoard(true); }}
-                style={{
-                  width: '100%', textAlign: 'left', padding: '8px 16px',
-                  background: 'transparent', border: 'none', cursor: 'pointer',
-                  fontSize: 13, fontWeight: 500,
-                  color: 'var(--ds-link, var(--cp-primary-60, #0052CC))', fontFamily: 'var(--cp-font-body)',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              >
-                + Create board
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+      {/* Board switcher now lives inside <KanbanToolbar /> via boardSwitcherSlot. */}
 
       {/* Create board dialog */}
       {showCreateBoard && (
@@ -1473,7 +1426,7 @@ export default function KanbanBoardPage() {
         </div>
       )}
 
-      <CatyBoardInsight projectKey={key ?? null} resourceId={key ?? 'project'} />
+      {/* CatyBoardInsight now lives inside <KanbanToolbar /> via catyInsightSlot. */}
       {/* ── Toolbar — canonical <KanbanToolbar/> (Phase 1 extraction) ── */}
       {/* Offset matches standup panel width when open */}
       <div style={{ marginLeft: showStandup ? 'var(--standup-panel-width, 280px)' : 0, transition: 'margin-left 200ms ease' }}>
@@ -1543,6 +1496,87 @@ export default function KanbanBoardPage() {
           setRenameBoardValue(currentName);
           setRenameBoardOpen(true);
         } : undefined}
+        catyInsightSlot={
+          <CatyBoardInsight projectKey={key ?? null} resourceId={key ?? 'project'} />
+        }
+        boardSwitcherSlot={
+          <div ref={boardSwitcherRef} style={{ position: 'relative' }}>
+            {(() => {
+              const isActive = showBoardSwitcher || isBoardSwitcherFocused;
+              const bg = showBoardSwitcher || isBoardSwitcherHovered
+                ? tk.surfaceHover
+                : 'var(--ds-surface, #FFFFFF)';
+              return (
+                <button
+                  onClick={() => setShowBoardSwitcher(v => !v)}
+                  onFocus={() => setIsBoardSwitcherFocused(true)}
+                  onBlur={() => setIsBoardSwitcherFocused(false)}
+                  onMouseEnter={() => setIsBoardSwitcherHovered(true)}
+                  onMouseLeave={() => setIsBoardSwitcherHovered(false)}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+                    width: 220, height: 32, padding: '0 8px 0 12px',
+                    background: bg,
+                    border: `1px solid ${isActive ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
+                    boxShadow: isActive ? '0 0 0 1px var(--ds-border-selected, #0C66E4)' : 'none',
+                    borderRadius: 4, cursor: 'pointer', fontSize: 13, fontWeight: 500,
+                    color: tk.textSecondary, fontFamily: 'var(--cp-font-body)',
+                    outline: 'none',
+                  }}
+                >
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {projectBoards.find(b => b.id === resolvedBoardId)?.name ?? 'Board'}
+                  </span>
+                  <AkChevronDownIcon label="" size="medium" />
+                </button>
+              );
+            })()}
+            {showBoardSwitcher && (
+              <div
+                style={{
+                  position: 'absolute', top: 'calc(100% + 4px)', left: 0,
+                  width: 220, background: tk.surfaceBg,
+                  border: `1px solid ${tk.border}`, borderRadius: 8,
+                  boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(0,0,0,0.16))', zIndex: 60,
+                  padding: '8px 0',
+                }}
+                onMouseDown={e => e.stopPropagation()}
+              >
+                {projectBoards.map(b => (
+                  <button
+                    key={b.id}
+                    onClick={() => { setActiveBoardId(b.id); setShowBoardSwitcher(false); }}
+                    style={{
+                      width: '100%', textAlign: 'left', padding: '8px 16px',
+                      background: b.id === resolvedBoardId ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent',
+                      border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500,
+                      color: b.id === resolvedBoardId ? 'var(--ds-link, var(--cp-primary-60, #0052CC))' : tk.textPrimary,
+                      fontFamily: 'var(--cp-font-body)',
+                    }}
+                    onMouseEnter={e => { if (b.id !== resolvedBoardId) e.currentTarget.style.background = tk.surfaceHover; }}
+                    onMouseLeave={e => { if (b.id !== resolvedBoardId) e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    {b.name}
+                  </button>
+                ))}
+                {projectBoards.length > 0 && <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 8px' }} />}
+                <button
+                  onClick={() => { setShowBoardSwitcher(false); setNewBoardName(''); setShowCreateBoard(true); }}
+                  style={{
+                    width: '100%', textAlign: 'left', padding: '8px 16px',
+                    background: 'transparent', border: 'none', cursor: 'pointer',
+                    fontSize: 13, fontWeight: 500,
+                    color: 'var(--ds-link, var(--cp-primary-60, #0052CC))', fontFamily: 'var(--cp-font-body)',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  + Create board
+                </button>
+              </div>
+            )}
+          </div>
+        }
       />
       </div>
 
@@ -1710,6 +1744,13 @@ export default function KanbanBoardPage() {
             visibleFields={visibleFields}
             cardColorMode={cardColorMode}
             subtasksByParentKey={subtasksByParentKey}
+            boardColumns={KANBAN_COLUMNS}
+            onCreateCard={() => {
+              /* InlineCreateCard already wrote the issue to Supabase.
+                 Refetch the board so the new card appears in its column. */
+              qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+            }}
+            createInColumnLabel="Create"
             onDrop={({ cardId, sourceColId, destColId, insertIndex }) => {
               /* 1. Optimistic local reorder. */
               setColMap(prev => {

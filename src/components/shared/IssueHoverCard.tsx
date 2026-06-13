@@ -597,6 +597,60 @@ export function IssueHoverCard({ issueKey, children, disabled }: IssueHoverCardP
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Safety net: while the card is open, listen at the document level for the
+  // cursor leaving both the trigger AND the portaled card. Required because
+  // (a) the trigger can unmount under the cursor when its kanban card is
+  // virtualized out, so no `mouseleave` ever fires; (b) the browser can drop
+  // `mouseleave`/`mouseenter` pairs when the cursor crosses the 8px gap
+  // between trigger and card too fast. Without this listener the portal can
+  // be left open until page refresh.
+  //
+  // The watchdog arms only on the first cursor transition after open — that
+  // first event records the cursor's location but cannot trigger a close on
+  // its own. Only subsequent transitions can schedule the close. This avoids
+  // false dismissals if the very first mouseover after open lands outside.
+  useEffect(() => {
+    if (!isOpen) return;
+    let armed = false;
+    let inside = true;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Element | null;
+      if (!target) return;
+      const inTrigger = !!triggerRef.current?.contains(target);
+      const inCard = !!(target.closest && target.closest('[data-hover-portal="true"]'));
+      const nowInside = inTrigger || inCard;
+      if (!armed) {
+        armed = true;
+        inside = nowInside;
+        return;
+      }
+      if (nowInside && !inside) {
+        window.clearTimeout(leaveTimer.current);
+        inside = true;
+      } else if (!nowInside && inside) {
+        window.clearTimeout(leaveTimer.current);
+        leaveTimer.current = window.setTimeout(close, LEAVE_GRACE);
+        inside = false;
+      }
+    };
+    document.addEventListener('mouseover', handler);
+    return () => document.removeEventListener('mouseover', handler);
+  }, [isOpen, close]);
+
+  // Second safety net: if the trigger element gets removed from the DOM
+  // (e.g. virtualizer scrolls its parent card out, or the underlying data
+  // changes and the chip unmounts) AND the cursor doesn't move, no mouseover
+  // event will ever fire and the document-level watchdog above can't see it.
+  // Poll every 500ms while open and force-close if the trigger is gone.
+  useEffect(() => {
+    if (!isOpen) return;
+    const id = window.setInterval(() => {
+      const el = triggerRef.current;
+      if (!el || !document.body.contains(el)) close();
+    }, 500);
+    return () => window.clearInterval(id);
+  }, [isOpen, close]);
+
   return (
     <>
       <span
