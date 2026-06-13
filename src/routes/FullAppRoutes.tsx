@@ -47,6 +47,7 @@ const ProjectBoardManagerPageLazy = lazy(() => import("../pages/project-hub/Proj
 const ProjectBoardSettingsPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardSettingsPage"));
 const KanbanBoardPageLazy = lazy(() => import("../pages/project-hub/KanbanBoardPage"));
 const FilterRoadmapPageLazy = lazy(() => import("../pages/project-hub/FilterRoadmapPage"));
+const FilterDashboardPageLazy = lazy(() => import("../pages/project-hub/FilterDashboardPage"));
 const MapStatusesPageLazy = lazy(() => import("../pages/project-hub/MapStatusesPage"));
 const AllProjectsPageLazy = lazy(() => import("../pages/project-hub/AllProjectsPage"));
 const UnifiedBacklogPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));
@@ -883,6 +884,7 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/boards/:boardId" element={<S><KanbanBoardPageLazy /></S>} />
         <Route path="/project-hub/:key/roadmaps" element={<S><RoadmapsListPageLazy /></S>} />
         <Route path="/project-hub/:key/roadmaps/:id" element={<S><FilterRoadmapPageLazy /></S>} />
+        <Route path="/project-hub/:key/dashboards/:id" element={<S><FilterDashboardPageLazy /></S>} />
         <Route path="/project-hub/:key/list" element={<S><ProjectJiraLayoutLazy /></S>} />
         <Route path="/project-hub/:key/allwork/:issueKey" element={<S><AllWorkDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />
