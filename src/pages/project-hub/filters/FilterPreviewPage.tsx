@@ -130,7 +130,7 @@ function useProjectFacetItems(projectKey: string | undefined): WorkItem[] {
     enabled: !!projectKey,
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const { data: rows } = await (supabase as any)
+      const { data: rows } = await supabase
         .from('ph_issues')
         .select(
           'issue_key, issue_type, status, status_category, assignee_account_id, assignee_display_name, reporter_account_id, reporter_display_name, priority, labels, sprint_release, sprint_name, resolution, severity, parent_key, parent_summary'
@@ -192,13 +192,13 @@ function useProjectMembers(projectKey: string | undefined): Member[] {
     enabled: !!projectKey,
     staleTime: 60 * 1000,
     queryFn: async () => {
-      const { data: project } = await (supabase as any)
+      const { data: project } = await supabase
         .from('projects')
         .select('id')
         .eq('key', projectKey)
         .maybeSingle();
       if (!project?.id) return [];
-      const { data } = await (supabase as any)
+      const { data } = await supabase
         .from('project_members')
         .select('user_id, profiles!inner(id, full_name, avatar_url)')
         .eq('project_id', project.id)
@@ -311,7 +311,7 @@ export function FilterPreviewPage() {
     enabled: !!urlFilterId,
     staleTime: 60_000,
     queryFn: async () => {
-      const { data } = await (supabase as any)
+      const { data } = await supabase
         .from('ph_saved_filters')
         .select('id, name, jql_query, filter_config, user_id, owner_id, subscriber_ids, viewers_config, editors_config, used_by_board_ids, is_shared, page, created_at, updated_at, hub_scope, health_status, description, starred_by_user_ids, last_used_at, use_count')
         .eq('id', urlFilterId)
@@ -752,14 +752,13 @@ export function FilterPreviewPage() {
                   }
                   elemAfterInput={
                     search ? (
-                      <button
-                        type="button"
-                        aria-label="Clear search"
+                      <Button
+                        appearance="subtle"
+                        spacing="compact"
+                        iconBefore={AkCloseIcon}
                         onClick={() => setSearch('')}
-                        style={{ display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', '#6B778C'), padding: '0 8px 0 4px' }}
-                      >
-                        <AkCloseIcon label="" size="small" />
-                      </button>
+                        label="Clear search"
+                      />
                     ) : undefined
                   }
                 />
