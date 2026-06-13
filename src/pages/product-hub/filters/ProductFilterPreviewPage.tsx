@@ -1010,6 +1010,7 @@ export function ProductFilterPreviewPage() {
           initialName="Untitled filter"
           onClose={() => setSaveOpen(false)}
           onSaved={handleSaved}
+          hubScope="product"
           productKey={productCode}
         />
       )}
@@ -1019,6 +1020,7 @@ export function ProductFilterPreviewPage() {
           initialName={savedFilterName ? `${savedFilterName} (copy)` : 'Untitled filter'}
           onClose={() => setSaveAsOpen(false)}
           onSaved={handleSaved}
+          hubScope="product"
           productKey={productCode}
         />
       )}
