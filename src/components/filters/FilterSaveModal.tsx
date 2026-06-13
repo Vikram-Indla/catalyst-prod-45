@@ -9,6 +9,12 @@ import Select from '@atlaskit/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useCreateSavedFilter, useUpdateSavedFilter, type SavedFilterFull, type HubScope } from '@/hooks/workhub/useSavedFilters';
 import { filterStateToJql, type FilterState } from '@/pages/project-hub/jira-list/components/AllWorkToolbar';
+import {
+  visibilityOptions,
+  scopeToVisibility,
+  visibilityToScope,
+  type FilterVisibilityScope,
+} from '@/lib/filters/filterVisibility';
 
 interface ProfileOption {
   label: string;
@@ -27,22 +33,20 @@ interface FilterSaveModalProps {
   /** Live match count for the JQL — shown so the user knows what they're saving */
   resultCount?: number | null;
   hubScope?: HubScope;
+  /** Originating project — drives the "Project members" visibility scope + enforcement. */
+  projectKey?: string | null;
+  /** Originating product — drives the "Product members" visibility scope (when in a product hub). */
+  productKey?: string | null;
   onClose: () => void;
   onSaved?: (id: string) => void;
 }
-
-const VIEWERS_OPTIONS = [
-  { label: 'Private (only me)',      value: 'private'  },
-  { label: 'Organisation',           value: 'org'      },
-  { label: 'Specific people',        value: 'specific' },
-];
 
 const EDITORS_OPTIONS = [
   { label: 'Owner only',             value: 'owner_only' },
   { label: 'Specific people',        value: 'specific'   },
 ];
 
-/** O6: hub scope options shown when viewersType !== 'private' */
+/** O6: hub scope options shown when the scope is not 'private' */
 const HUB_SCOPE_OPTIONS = [
   { label: 'This hub only',       value: 'current' },
   { label: 'Both hubs (cross-hub)', value: 'both'  },
@@ -70,6 +74,8 @@ export function FilterSaveModal({
   initialDescription,
   resultCount,
   hubScope = 'project',
+  projectKey = null,
+  productKey = null,
   onClose,
   onSaved,
 }: FilterSaveModalProps) {
@@ -96,7 +102,8 @@ export function FilterSaveModal({
   }, [filter, initialJql]);
 
   const [jql, setJql] = useState(derivedJql);
-  const [viewersType, setViewersType] = useState<string>(filter?.viewers_config?.type ?? 'private');
+  const scopeOptions = useMemo(() => visibilityOptions({ projectKey, productKey }), [projectKey, productKey]);
+  const [scope, setScope] = useState<FilterVisibilityScope>(() => visibilityToScope(filter?.viewers_config));
   const [editorsType, setEditorsType] = useState<string>(filter?.editors_config?.type ?? 'owner_only');
   const [crossHub, setCrossHub] = useState<boolean>(filter?.hub_scope === 'both');
   const [viewerUsers, setViewerUsers] = useState<ProfileOption[]>([]);
@@ -136,20 +143,22 @@ export function FilterSaveModal({
   }, [filter, profileOptions]);
 
   function buildConfigs() {
-    const viewersConfig = viewersType === 'specific'
-      ? { type: 'specific' as const, user_ids: viewerUsers.map(u => u.value) }
-      : { type: viewersType as 'private' | 'org' };
+    const visibility = scopeToVisibility(scope, {
+      projectKey,
+      productKey,
+      userIds: viewerUsers.map(u => u.value),
+    });
     const editorsConfig = editorsType === 'specific'
       ? { type: 'specific' as const, user_ids: editorUsers.map(u => u.value) }
       : { type: editorsType as 'owner_only' };
-    return { viewersConfig, editorsConfig, isShared: viewersType !== 'private' };
+    return { visibility, editorsConfig };
   }
 
   function handleSave() {
     if (!name.trim()) return;   // Textfield is required — browser validation fires first
 
-    const { viewersConfig, editorsConfig, isShared } = buildConfigs();
-    const resolvedHubScope = crossHub && isShared ? 'both' : hubScope;
+    const { visibility, editorsConfig } = buildConfigs();
+    const resolvedHubScope = visibility.is_shared && crossHub ? 'both' : hubScope;
 
     if (isEditing && filter) {
       updateFilter.mutate(
@@ -159,10 +168,12 @@ export function FilterSaveModal({
             name: name.trim(),
             description: description.trim() || null,
             jql_query: jql.trim() || null,
-            is_shared: isShared,
+            is_shared: visibility.is_shared,
             hub_scope: resolvedHubScope,
-            viewers_config: viewersConfig,
+            viewers_config: visibility.viewers_config,
             editors_config: editorsConfig,
+            project_key: visibility.project_key,
+            product_key: visibility.product_key,
           },
         },
         { onSuccess: () => { onSaved?.(filter.id); onClose(); } }
@@ -174,11 +185,13 @@ export function FilterSaveModal({
           filter_config: { jql_query: jql.trim() || null },
           jql_query: jql.trim() || null,
           page: 'filters',
-          is_shared: isShared,
+          is_shared: visibility.is_shared,
           hub_scope: resolvedHubScope,
-          viewers_config: viewersConfig,
+          viewers_config: visibility.viewers_config,
           editors_config: editorsConfig,
           description: description.trim() || null,
+          project_key: visibility.project_key,
+          product_key: visibility.product_key,
         },
         { onSuccess: (data: any) => { onSaved?.(data?.id); onClose(); } }
       );
@@ -253,15 +266,16 @@ export function FilterSaveModal({
             />
           </div>
 
-          {/* Viewers */}
+          {/* Viewers — Catalyst-real scopes (no "organisation"); enforced by RLS */}
           <div>
             <FieldLabel>Who can view</FieldLabel>
-            <RadioGroup
-              options={VIEWERS_OPTIONS}
-              value={viewersType}
-              onChange={e => setViewersType(e.currentTarget.value)}
+            <Select<{ label: string; value: FilterVisibilityScope }>
+              options={scopeOptions}
+              value={scopeOptions.find(o => o.value === scope) ?? scopeOptions[0]}
+              onChange={opt => opt && setScope(opt.value)}
+              isSearchable={false}
             />
-            {viewersType === 'specific' && (
+            {scope === 'specific' && (
               <div style={{ marginTop: 8 }}>
                 <Select
                   isMulti
@@ -275,7 +289,7 @@ export function FilterSaveModal({
           </div>
 
           {/* O6: Cross-hub scope (only shown when filter is shared) */}
-          {viewersType !== 'private' && (
+          {scope !== 'private' && (
             <div>
               <FieldLabel>Hub visibility</FieldLabel>
               <p style={{ margin: '0 0 8px', fontSize: 12, color: token('color.text.subtlest') }}>

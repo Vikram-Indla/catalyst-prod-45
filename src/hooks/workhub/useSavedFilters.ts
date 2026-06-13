@@ -31,7 +31,7 @@ export interface OwnerProfile {
 export interface SavedFilterFull extends SavedFilter {
   description: string | null;
   jql_query: string | null;
-  viewers_config: { type: 'private' | 'org' | 'specific'; user_ids?: string[] };
+  viewers_config: { type: 'private' | 'project' | 'product' | 'everyone' | 'specific' | 'org'; user_ids?: string[] };
   editors_config: { type: 'owner_only' | 'specific'; user_ids?: string[] };
   starred_by_user_ids: string[];
   subscriber_ids: string[];
@@ -86,6 +86,7 @@ export interface CreateSavedFilterParams {
   editors_config?: SavedFilterFull['editors_config'];
   owner_id?: string | null;
   project_key?: string | null;
+  product_key?: string | null;
 }
 
 export function useCreateSavedFilter() {
@@ -108,6 +109,7 @@ export function useCreateSavedFilter() {
           owner_id: params.owner_id ?? user?.id ?? null,
           user_id: user?.id ?? null,
           project_key: params.project_key ?? null,
+          product_key: params.product_key ?? null,
         } as any)
         .select()
         .single();
@@ -139,6 +141,7 @@ export interface UpdateSavedFilterParams {
   editors_config?: SavedFilterFull['editors_config'];
   owner_id?: string | null;
   project_key?: string | null;
+  product_key?: string | null;
 }
 
 export function useUpdateSavedFilter() {

@@ -93,10 +93,17 @@ export default function FilterDetailPage() {
     );
   }
 
-  const viewersLabel =
-    filter.viewers_config?.type === 'private' ? 'Private' :
-    filter.viewers_config?.type === 'org'     ? 'Organisation' :
-    `${filter.viewers_config?.user_ids?.length ?? 0} people`;
+  const viewersLabel = (() => {
+    switch (filter.viewers_config?.type) {
+      case 'private': return 'Private';
+      case 'project': return 'Project members';
+      case 'product': return 'Product members';
+      case 'everyone':
+      case 'org': return 'Everyone';
+      case 'specific': return `${filter.viewers_config?.user_ids?.length ?? 0} people`;
+      default: return 'Private';
+    }
+  })();
 
   return (
     <div style={{

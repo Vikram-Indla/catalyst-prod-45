@@ -92,12 +92,21 @@ function sharePermissionEntries(perms: JiraSharePermission[] | undefined): Permi
   });
 }
 
-/** Catalyst-native viewers_config → the same icon + text vocabulary */
+/** Catalyst-native viewers_config → the same icon + text vocabulary.
+ *  Scopes align with the RLS enforcement (migration 20260612130000). 'org' is a
+ *  legacy value that collapses to 'Everyone'. */
 function viewersConfigEntries(config: SavedFilterFull['viewers_config']): PermissionEntry[] {
-  if (config?.type === 'org') {
-    return [{ icon: <OfficeBuildingIcon label="" color={ICON_COLOR} />, label: 'My organization' }];
+  const type = config?.type;
+  if (type === 'everyone' || type === 'org') {
+    return [{ icon: <OfficeBuildingIcon label="" color={ICON_COLOR} />, label: 'Everyone' }];
   }
-  if (config?.type === 'specific') {
+  if (type === 'project') {
+    return [{ icon: <PeopleGroupIcon label="" color={ICON_COLOR} />, label: 'Project members' }];
+  }
+  if (type === 'product') {
+    return [{ icon: <PeopleGroupIcon label="" color={ICON_COLOR} />, label: 'Product members' }];
+  }
+  if (type === 'specific') {
     const n = config.user_ids?.length ?? 0;
     return [{ icon: <PeopleGroupIcon label="" color={ICON_COLOR} />, label: `${n} ${n === 1 ? 'person' : 'people'}` }];
   }
