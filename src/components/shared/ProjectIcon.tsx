@@ -21,8 +21,12 @@
  */
 import React from 'react';
 import * as LucideIcons from 'lucide-react';
-import { Folder } from 'lucide-react';
-import { PROJECT_AVATAR_REGISTRY, type ProjectKey } from '@/components/icons/icons.registry';
+import {
+  PROJECT_AVATAR_REGISTRY,
+  STOCK_AVATAR_REGISTRY,
+  pickStockAvatarForKey,
+  type ProjectKey,
+} from '@/components/icons/icons.registry';
 import { useIconOverrides } from '@/components/icons/useIconOverrides';
 
 export type ProjectIconSize = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
@@ -203,25 +207,29 @@ export function ProjectIcon({
     );
   }
 
-  // 3. Fallback: muted grey Folder. Never letters. (mem://constraints/canonical-project-icons)
+  // 3. Fallback: stock avatar from rotation pool (deterministic hash on projectKey).
+  // Unknown project keys get a real branded icon — never a grey folder.
+  const stockId = pickStockAvatarForKey(projectKey ?? 'unknown');
+  const stockUrl = STOCK_AVATAR_REGISTRY[stockId];
   return (
-    <span
-      aria-label={name ?? undefined}
+    <img
+      src={stockUrl}
+      alt={name ?? projectKey ?? 'project'}
+      width={px}
+      height={px}
       className={className}
+      data-project-key={projectKey ?? ''}
+      data-icon-source="stock"
+      data-stock-id={stockId}
       style={{
         width: px,
         height: px,
         borderRadius: radius,
-        background: '#DCDFE4', // ADS color.background.neutral
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        objectFit: 'fill',
         flexShrink: 0,
-        color: '#626F86', // ADS color.text.subtle
+        display: 'inline-block',
       }}
-    >
-      <Folder size={iconPx} strokeWidth={2} />
-    </span>
+    />
   );
 }
 

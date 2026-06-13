@@ -23,11 +23,13 @@ export {
   PRIORITY_REGISTRY,
   PROJECT_AVATAR_REGISTRY,
   STOCK_AVATAR_REGISTRY,
+  STOCK_AVATAR_IDS,
   WORK_ITEM_TYPES,
   PRIORITY_LEVELS,
   PROJECT_KEYS,
   normalizeWorkItemType,
   normalizePriority,
+  pickStockAvatarForKey,
 } from './icons.registry';
 
 export type {

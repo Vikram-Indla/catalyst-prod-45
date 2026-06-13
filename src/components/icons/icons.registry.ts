@@ -8,7 +8,7 @@
  * Single source of truth for resolving:
  *   • work-item-type id  → SVG asset URL (light + optional dark variant)
  *   • priority level     → SVG asset URL (light + optional dark variant)
- *   • project key        → avatar PNG asset URL
+ *   • project key        → avatar SVG asset URL
  *
  * Engineers MUST consume icons via this registry — never import from
  * src/assets/icons/** directly. The registry is the seam where:
@@ -59,35 +59,32 @@ import priorityNoneLight from '@/assets/icons/priority/none.svg?url';
 
 import priorityNoneDark from '@/assets/icons/priority/_dark/none.svg?url';
 
-// ─── PROJECT AVATARS ──────────────────────────────────────────────────
+// ─── PROJECT AVATARS (SVG set — 2026-06-13) ───────────────────────────
+//
+// 18 canonical project keys each get a named SVG.
+// All 20 SVGs also form the STOCK_AVATAR_REGISTRY rotation pool
+// for new projects not yet in the registry.
 
-import bauAvatar from '@/assets/icons/project-avatars/BAU.png?url';
-import dataAvatar from '@/assets/icons/project-avatars/DATA.png?url';
-import detAvatar from '@/assets/icons/project-avatars/DET.png?url';
-import essAvatar from '@/assets/icons/project-avatars/ESS.png?url';
-import fsmAvatar from '@/assets/icons/project-avatars/FSM.png?url';
-import icpAvatar from '@/assets/icons/project-avatars/ICP.png?url';
-import inAvatar from '@/assets/icons/project-avatars/IN.png?url';
-import invAvatar from '@/assets/icons/project-avatars/INV.png?url';
-import ipAvatar from '@/assets/icons/project-avatars/IP.png?url';
-import irpAvatar from '@/assets/icons/project-avatars/IRP.png?url';
-import isaAvatar from '@/assets/icons/project-avatars/ISA.png?url';
-import mdtAvatar from '@/assets/icons/project-avatars/MDT.png?url';
-import mimiAvatar from '@/assets/icons/project-avatars/MIMI.png?url';
-import mwrAvatar from '@/assets/icons/project-avatars/MWR.png?url';
-import sapiAvatar from '@/assets/icons/project-avatars/SAPI.png?url';
-import simpAvatar from '@/assets/icons/project-avatars/SIMP.png?url';
-import ssAvatar from '@/assets/icons/project-avatars/SS.png?url';
-import tahAvatar from '@/assets/icons/project-avatars/TAH.png?url';
-
-import stockUfo from '@/assets/icons/project-avatars/_stock/ufo.png?url';
-import stockParrot from '@/assets/icons/project-avatars/_stock/parrot.png?url';
-import stockCoffee from '@/assets/icons/project-avatars/_stock/coffee.png?url';
-import stockHotDog from '@/assets/icons/project-avatars/_stock/hot-dog.png?url';
-import stockKoala from '@/assets/icons/project-avatars/_stock/koala.png?url';
-import stockFlask from '@/assets/icons/project-avatars/_stock/flask.png?url';
-import stockStormCloud from '@/assets/icons/project-avatars/_stock/storm-cloud.png?url';
-import stockYeti from '@/assets/icons/project-avatars/_stock/yeti.png?url';
+import analyticsReporting from '@/assets/icons/project-avatars/analytics-reporting.svg?url';
+import apiIntegration from '@/assets/icons/project-avatars/api-integration.svg?url';
+import automationPipeline from '@/assets/icons/project-avatars/automation-pipeline.svg?url';
+import cloudInfrastructure from '@/assets/icons/project-avatars/cloud-infrastructure.svg?url';
+import customerPortal from '@/assets/icons/project-avatars/customer-portal.svg?url';
+import dataMigration from '@/assets/icons/project-avatars/data-migration.svg?url';
+import financeBudget from '@/assets/icons/project-avatars/finance-budget.svg?url';
+import icpProject from '@/assets/icons/project-avatars/icp-project.svg?url';
+import inspectionProject from '@/assets/icons/project-avatars/inspection-project.svg?url';
+import ipImplementation from '@/assets/icons/project-avatars/ip-implementation.svg?url';
+import irPlatform from '@/assets/icons/project-avatars/ir-platform.svg?url';
+import marketingCampaign from '@/assets/icons/project-avatars/marketing-campaign.svg?url';
+import mimWebsiteRevamp from '@/assets/icons/project-avatars/mim-website-revamp.svg?url';
+import mobileApp from '@/assets/icons/project-avatars/mobile-app.svg?url';
+import onboardingTraining from '@/assets/icons/project-avatars/onboarding-training.svg?url';
+import productRoadmap from '@/assets/icons/project-avatars/product-roadmap.svg?url';
+import researchDiscovery from '@/assets/icons/project-avatars/research-discovery.svg?url';
+import securityCompliance from '@/assets/icons/project-avatars/security-compliance.svg?url';
+import senaEiBau from '@/assets/icons/project-avatars/senaei-bau.svg?url';
+import tahommena from '@/assets/icons/project-avatars/tahommena.svg?url';
 
 // ═══════════════════════════════════════════════════════════════════════
 // PUBLIC TYPES
@@ -108,8 +105,26 @@ export type ProjectKey =
   | 'SS' | 'TAH';
 
 export type StockAvatarId =
-  | 'ufo' | 'parrot' | 'coffee' | 'hot-dog' | 'koala'
-  | 'flask' | 'storm-cloud' | 'yeti';
+  | 'analytics-reporting'
+  | 'api-integration'
+  | 'automation-pipeline'
+  | 'cloud-infrastructure'
+  | 'customer-portal'
+  | 'data-migration'
+  | 'finance-budget'
+  | 'icp-project'
+  | 'inspection-project'
+  | 'ip-implementation'
+  | 'ir-platform'
+  | 'marketing-campaign'
+  | 'mim-website-revamp'
+  | 'mobile-app'
+  | 'onboarding-training'
+  | 'product-roadmap'
+  | 'research-discovery'
+  | 'security-compliance'
+  | 'senaei-bau'
+  | 'tahommena';
 
 export interface WorkTypeMeta {
   id: WorkItemType;
@@ -180,36 +195,88 @@ export const PRIORITY_REGISTRY: Record<PriorityLevel, PriorityMeta> = {
 };
 
 export const PROJECT_AVATAR_REGISTRY: Record<ProjectKey, ProjectAvatarMeta> = {
-  BAU:  { key: 'BAU',  name: 'Senaei BAU',                  url: bauAvatar },
-  DATA: { key: 'DATA', name: 'DATA Project',                url: dataAvatar },
-  DET:  { key: 'DET',  name: 'Digital Experience Team',     url: detAvatar },
-  ESS:  { key: 'ESS',  name: 'Enterprise Shared Services',  url: essAvatar },
-  FSM:  { key: 'FSM',  name: 'Field Service Management',    url: fsmAvatar },
-  ICP:  { key: 'ICP',  name: 'ICP Project',                 url: icpAvatar },
-  IN:   { key: 'IN',   name: 'Inspection Project',          url: inAvatar },
-  INV:  { key: 'INV',  name: 'Investor360',                 url: invAvatar },
-  IP:   { key: 'IP',   name: 'IP Implementation',           url: ipAvatar },
-  IRP:  { key: 'IRP',  name: 'IR Platform',                 url: irpAvatar },
-  ISA:  { key: 'ISA',  name: 'Industry.sa',                 url: isaAvatar },
-  MDT:  { key: 'MDT',  name: 'MIM Digital Transformation',  url: mdtAvatar },
-  MIMI: { key: 'MIMI', name: 'MIM Internal Implementation', url: mimiAvatar },
-  MWR:  { key: 'MWR',  name: 'MIM Website Revamp',          url: mwrAvatar },
-  SAPI: { key: 'SAPI', name: 'SAP Implementation',          url: sapiAvatar },
-  SIMP: { key: 'SIMP', name: 'SS Implementation',           url: simpAvatar },
-  SS:   { key: 'SS',   name: 'Sectorial Services',          url: ssAvatar },
-  TAH:  { key: 'TAH',  name: 'Tahommena',                   url: tahAvatar },
+  BAU:  { key: 'BAU',  name: 'Senaei BAU',                  url: senaEiBau },
+  DATA: { key: 'DATA', name: 'Data Migration',              url: dataMigration },
+  DET:  { key: 'DET',  name: 'Digital Experience Team',     url: mobileApp },
+  ESS:  { key: 'ESS',  name: 'Enterprise Shared Services',  url: cloudInfrastructure },
+  FSM:  { key: 'FSM',  name: 'Field Service Management',    url: automationPipeline },
+  ICP:  { key: 'ICP',  name: 'ICP Project',                 url: icpProject },
+  IN:   { key: 'IN',   name: 'Inspection Project',          url: inspectionProject },
+  INV:  { key: 'INV',  name: 'Investor360',                 url: analyticsReporting },
+  IP:   { key: 'IP',   name: 'IP Implementation',           url: ipImplementation },
+  IRP:  { key: 'IRP',  name: 'IR Platform',                 url: irPlatform },
+  ISA:  { key: 'ISA',  name: 'Industry.sa',                 url: researchDiscovery },
+  MDT:  { key: 'MDT',  name: 'MIM Digital Transformation',  url: productRoadmap },
+  MIMI: { key: 'MIMI', name: 'MIM Internal Implementation', url: onboardingTraining },
+  MWR:  { key: 'MWR',  name: 'MIM Website Revamp',          url: mimWebsiteRevamp },
+  SAPI: { key: 'SAPI', name: 'SAP Implementation',          url: apiIntegration },
+  SIMP: { key: 'SIMP', name: 'SS Implementation',           url: securityCompliance },
+  SS:   { key: 'SS',   name: 'Sectorial Services',          url: financeBudget },
+  TAH:  { key: 'TAH',  name: 'Tahommena',                   url: tahommena },
 };
 
+// All 20 icons in rotation order — new projects cycle through this pool.
+// Order follows _index.json (project-named icons first, generic spares after).
+export const STOCK_AVATAR_IDS: readonly StockAvatarId[] = [
+  'senaei-bau',
+  'mim-website-revamp',
+  'ip-implementation',
+  'inspection-project',
+  'ir-platform',
+  'tahommena',
+  'icp-project',
+  'product-roadmap',
+  'data-migration',
+  'analytics-reporting',
+  'security-compliance',
+  'mobile-app',
+  'api-integration',
+  'cloud-infrastructure',
+  'customer-portal',
+  'marketing-campaign',
+  'finance-budget',
+  'automation-pipeline',
+  'onboarding-training',
+  'research-discovery',
+] as const;
+
 export const STOCK_AVATAR_REGISTRY: Record<StockAvatarId, string> = {
-  'ufo':         stockUfo,
-  'parrot':      stockParrot,
-  'coffee':      stockCoffee,
-  'hot-dog':     stockHotDog,
-  'koala':       stockKoala,
-  'flask':       stockFlask,
-  'storm-cloud': stockStormCloud,
-  'yeti':        stockYeti,
+  'analytics-reporting':  analyticsReporting,
+  'api-integration':      apiIntegration,
+  'automation-pipeline':  automationPipeline,
+  'cloud-infrastructure': cloudInfrastructure,
+  'customer-portal':      customerPortal,
+  'data-migration':       dataMigration,
+  'finance-budget':       financeBudget,
+  'icp-project':          icpProject,
+  'inspection-project':   inspectionProject,
+  'ip-implementation':    ipImplementation,
+  'ir-platform':          irPlatform,
+  'marketing-campaign':   marketingCampaign,
+  'mim-website-revamp':   mimWebsiteRevamp,
+  'mobile-app':           mobileApp,
+  'onboarding-training':  onboardingTraining,
+  'product-roadmap':      productRoadmap,
+  'research-discovery':   researchDiscovery,
+  'security-compliance':  securityCompliance,
+  'senaei-bau':           senaEiBau,
+  'tahommena':            tahommena,
 };
+
+// ═══════════════════════════════════════════════════════════════════════
+// ROTATION HELPER — deterministic stock icon for unknown project keys
+// ═══════════════════════════════════════════════════════════════════════
+
+/**
+ * Returns a stock avatar id for a project key not in PROJECT_AVATAR_REGISTRY.
+ * Uses a stable djb2-style hash so the same key always gets the same icon
+ * across renders and sessions. New projects cycle through all 20 icons.
+ */
+export function pickStockAvatarForKey(projectKey: string): StockAvatarId {
+  const hash = projectKey.split('').reduce((acc, c) => ((acc << 5) - acc) + c.charCodeAt(0), 0);
+  const index = Math.abs(hash) % STOCK_AVATAR_IDS.length;
+  return STOCK_AVATAR_IDS[index];
+}
 
 // ═══════════════════════════════════════════════════════════════════════
 // JIRA-SIDE NORMALIZATION
