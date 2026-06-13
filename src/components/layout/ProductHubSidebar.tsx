@@ -15,14 +15,16 @@
 import { token } from '@atlaskit/tokens';
 import {
   LayoutGrid,
-  LayoutDashboard,
-  ClipboardList,
-  Columns3,
-  Network,
   ArrowLeft,
   Settings,
-  Filter,
 } from '@/lib/atlaskit-icons';
+import {
+  NavDashboardIcon,
+  NavKanbanIcon,
+  NavBacklogIcon,
+  NavWorkIcon,
+  NavFiltersIcon,
+} from '@/lib/nav-icons';
 import { useLocation } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { useQuery } from '@tanstack/react-query';
@@ -70,11 +72,11 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
       {
         title: 'Planning',
         items: [
-          { id: 'dashboard', title: 'Product Dashboard', path: `${base}/dashboard`, icon: LayoutDashboard, exact: true  },
-          { id: 'backlog',   title: 'Product Backlog',   path: `${base}/backlog`,   icon: ClipboardList,   exact: true  },
-          { id: 'allwork',   title: 'Product Work',      path: `${base}/allwork`,   icon: Network,         exact: false },
-          { id: 'boards',    title: 'Product Board',     path: `${base}/boards`,    icon: Columns3,        exact: false },
-          { id: 'filters',   title: 'Product Filters',   path: `${base}/filters`,   icon: Filter,          exact: false },
+          { id: 'dashboard', title: 'Product Dashboard', path: `${base}/dashboard`, icon: NavDashboardIcon, exact: true  },
+          { id: 'backlog',   title: 'Product Backlog',   path: `${base}/backlog`,   icon: NavBacklogIcon,   exact: true  },
+          { id: 'allwork',   title: 'Product Work',      path: `${base}/allwork`,   icon: NavWorkIcon,      exact: false },
+          { id: 'boards',    title: 'Product Board',     path: `${base}/boards`,    icon: NavKanbanIcon,    exact: false },
+          { id: 'filters',   title: 'Product Filters',   path: `${base}/filters`,   icon: NavFiltersIcon,   exact: false },
         ],
       },
     ],
