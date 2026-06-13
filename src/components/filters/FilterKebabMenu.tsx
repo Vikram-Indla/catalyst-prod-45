@@ -36,9 +36,11 @@ interface FilterKebabMenuProps {
   currentUserId: string | null;
   /** JQL result rows — available when rendered inside FilterPreviewPage. */
   rows?: JqlResultRow[];
+  /** True while JQL results are still loading — prevents "No items" false alarm. */
+  isLoadingRows?: boolean;
 }
 
-export function FilterKebabMenu({ filter, currentUserId, rows = [] }: FilterKebabMenuProps) {
+export function FilterKebabMenu({ filter, currentUserId, rows = [], isLoadingRows = false }: FilterKebabMenuProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [editOpen, setEditOpen] = useState(false);
@@ -702,6 +704,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
           filterJql={filter.jql_query ?? ''}
           projectKey={jqlProjectKey}
           rows={rows}
+          isLoadingRows={isLoadingRows}
         />
       )}
 

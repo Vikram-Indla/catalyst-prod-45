@@ -801,6 +801,7 @@ export function FilterPreviewPage() {
             filter={loadedFilter as any}
             currentUserId={currentUserId}
             rows={items}
+            isLoadingRows={isFetching}
           />
         )}
 

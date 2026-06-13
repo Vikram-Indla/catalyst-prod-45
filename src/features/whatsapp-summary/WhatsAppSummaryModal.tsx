@@ -115,6 +115,8 @@ interface WhatsAppSummaryModalProps {
   filterJql: string;
   projectKey: string | null;
   rows: JqlResultRow[];
+  /** True while the JQL query is still loading — shows "Loading…" instead of "No items". */
+  isLoadingRows?: boolean;
 }
 
 export function WhatsAppSummaryModal({
@@ -124,6 +126,7 @@ export function WhatsAppSummaryModal({
   filterJql,
   projectKey,
   rows,
+  isLoadingRows = false,
 }: WhatsAppSummaryModalProps) {
   const { state, setOptions, setEditableText, generate, retry, copyToClipboard, reset } =
     useWhatsAppSummary(filterName, filterJql, projectKey, rows);
@@ -241,7 +244,13 @@ export function WhatsAppSummaryModal({
                   />
                 </div>
 
-                {rows.length === 0 && (
+                {isLoadingRows && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0', color: token('color.text.subtlest', '#6B778C'), fontSize: 13 }}>
+                    <Spinner size="small" />
+                    Loading filter results…
+                  </div>
+                )}
+                {!isLoadingRows && rows.length === 0 && (
                   <div style={{ padding: '12px 0', color: token('color.text.subtlest', '#6B778C'), fontSize: 13 }}>
                     No items in this filter. Load the filter results first.
                   </div>
@@ -298,7 +307,7 @@ export function WhatsAppSummaryModal({
               <Button
                 appearance="primary"
                 onClick={generate}
-                isDisabled={isLoading || rows.length === 0}
+                isDisabled={isLoading || isLoadingRows || rows.length === 0}
                 isLoading={isLoading}
               >
                 Generate
