@@ -17,6 +17,8 @@ export interface TimelineIssue {
   parentKey: string | null;
   startDate: string | null;
   dueDate: string | null;
+  epicColor: string | null;
+  fixVersions: string[];
   children: TimelineIssue[];
 }
 
@@ -40,6 +42,16 @@ function extractDueDate(rawJson: any): string | null {
   return null;
 }
 
+function extractEpicColor(rawJson: any): string | null {
+  return rawJson?.fields?.catalyst_color ?? null;
+}
+
+function extractFixVersions(rawJson: any): string[] {
+  const fv = rawJson?.fields?.fixVersions;
+  if (!Array.isArray(fv)) return [];
+  return fv.map((v: any) => v?.name ?? '').filter(Boolean);
+}
+
 function mapRow(row: any): TimelineIssue {
   return {
     id: row.id,
@@ -55,6 +67,8 @@ function mapRow(row: any): TimelineIssue {
     parentKey: row.parent_key ?? null,
     startDate: extractStartDate(row.raw_json),
     dueDate: extractDueDate(row.raw_json),
+    epicColor: extractEpicColor(row.raw_json),
+    fixVersions: extractFixVersions(row.raw_json),
     children: [],
   };
 }

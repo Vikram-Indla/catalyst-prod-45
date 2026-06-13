@@ -171,7 +171,19 @@ function flattenTree(issues: TimelineIssue[], collapsed: Set<string>, depth = 0)
 
 /* ─────────────────────────────── bar color ─────────────────────────── */
 
+const JIRA_EPIC_COLORS = [
+  { label: 'Purple',  hex: '#8869AC' },
+  { label: 'Blue',    hex: '#3C6FBB' },
+  { label: 'Teal',    hex: '#3BAF85' },
+  { label: 'Green',   hex: '#65C170' },
+  { label: 'Yellow',  hex: '#F0C43F' },
+  { label: 'Orange',  hex: '#F79231' },
+  { label: 'Red',     hex: '#F04D44' },
+  { label: 'Pink',    hex: '#E74A8E' },
+];
+
 function barColor(issue: TimelineIssue): string {
+  if (issue.epicColor) return issue.epicColor;
   const cat = (issue.statusCategory ?? '').toLowerCase();
   if (cat.includes('done')) return 'var(--ds-background-success-bold, #1F845A)';
   if (cat.includes('progress')) return 'var(--ds-background-information-bold, #0055CC)';
@@ -1951,6 +1963,50 @@ interface SidebarRowProps {
   onOpenDetail: (issue: TimelineIssue) => void;
 }
 
+function formatDateCompact(d: string | null): string {
+  if (!d) return '';
+  const date = new Date(d + 'T00:00:00');
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function DateChipButton({ startDate, dueDate, rowHovered, onClick }: {
+  startDate: string | null;
+  dueDate: string | null;
+  rowHovered: boolean;
+  onClick: (e: React.MouseEvent) => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const hasDates = !!(startDate || dueDate);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      title={hasDates ? 'Edit dates' : 'Add dates'}
+      style={{
+        flexShrink: 0,
+        background: hovered ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'none',
+        border: 'none',
+        padding: '1px 4px',
+        borderRadius: 3,
+        cursor: 'pointer',
+        fontSize: 11,
+        fontFamily: 'var(--ds-font-family-body)',
+        color: 'var(--ds-text-subtlest, #626F86)',
+        whiteSpace: 'nowrap',
+        lineHeight: 1,
+        opacity: hasDates ? 1 : (rowHovered ? 0.5 : 0),
+        transition: 'opacity 80ms ease, background 80ms ease',
+      }}
+    >
+      {hasDates
+        ? [formatDateCompact(startDate), formatDateCompact(dueDate)].filter(Boolean).join(' → ')
+        : 'Add dates'}
+    </button>
+  );
+}
+
 function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKey, queryClient, isSelected, onSelect, onOpenDetail }: SidebarRowProps) {
   const hasChildren = issue.children.length > 0;
   const progress = showProgress && hasChildren ? computeEpicProgress(issue) : null;
@@ -1968,6 +2024,16 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
   const inlineCreateInputRef = useRef<HTMLInputElement>(null);
   const typePickerRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
+  const [moveOpen, setMoveOpen] = useState(false);
+  const [availableVersions, setAvailableVersions] = useState<string[]>([]);
+  const [parentPickerOpen, setParentPickerOpen] = useState(false);
+  const [parentSearch, setParentSearch] = useState('');
+  const [parentCandidates, setParentCandidates] = useState<TimelineIssue[]>([]);
+  const [depsOpen, setDepsOpen] = useState(false);
+  const [depsLinkType, setDepsLinkType] = useState<string>('blocks');
+  const [depsIssueKey, setDepsIssueKey] = useState('');
+  const [depsSaving, setDepsSaving] = useState(false);
+  const [existingLinks, setExistingLinks] = useState<any[]>([]);
 
   const openEditDates = () => {
     setEditStartDate(issue.startDate ?? '');
@@ -2041,14 +2107,18 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
           return list.map(i => {
             if (i.issueKey === issue.issueKey) {
               const newChild: TimelineIssue = {
+                id: '',
                 issueKey: localKey,
                 projectKey: projectKey.toUpperCase(),
                 issueType: inlineCreateType,
                 summary: inlineCreateSummary.trim(),
                 status: 'To Do',
                 statusCategory: 'default',
+                priority: null,
                 startDate: null,
                 dueDate: null,
+                epicColor: null,
+                fixVersions: [],
                 assigneeDisplayName: null,
                 assigneeAvatarUrl: null,
                 parentKey: issue.issueKey,
@@ -2095,6 +2165,135 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
     setInlineCreateOpen(false);
     setInlineCreateSummary('');
     setShowTypeDropdown(false);
+  };
+
+  const handleEpicColorChange = async (hex: string) => {
+    setMenuOpen(false);
+    setRowHovered(false);
+    queryClient.setQueryData(['project-hub-timeline', projectKey], (old: TimelineIssue[] | undefined) => {
+      function update(list: TimelineIssue[]): TimelineIssue[] {
+        return list.map(i => {
+          if (i.issueKey === issue.issueKey) return { ...i, epicColor: hex || null };
+          if (i.children.length) return { ...i, children: update(i.children) };
+          return i;
+        });
+      }
+      return update(old ?? []);
+    });
+    try {
+      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
+      if (row?.raw_json) {
+        const fields = { ...(row.raw_json.fields ?? {}) };
+        if (hex) fields.catalyst_color = hex; else delete fields.catalyst_color;
+        await (supabase as any).from('ph_issues').update({ raw_json: { ...row.raw_json, fields } }).eq('issue_key', issue.issueKey);
+      }
+    } catch (err) {
+      console.warn('color change failed:', err);
+      queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+    }
+  };
+
+  const openMoveModal = () => {
+    const allIssues = queryClient.getQueryData<TimelineIssue[]>(['project-hub-timeline', projectKey]) ?? [];
+    function flatAll(list: TimelineIssue[]): TimelineIssue[] {
+      return list.flatMap(i => [i, ...flatAll(i.children)]);
+    }
+    const versions = [...new Set(flatAll(allIssues).flatMap(i => i.fixVersions))].filter(Boolean).sort();
+    setAvailableVersions(versions);
+    setMenuOpen(false);
+    setMoveOpen(true);
+  };
+
+  const handleMoveTo = async (versionName: string) => {
+    setMoveOpen(false);
+    try {
+      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
+      if (row?.raw_json) {
+        const newFV = versionName ? [{ id: versionName, name: versionName }] : [];
+        const updated = { ...row.raw_json, fields: { ...(row.raw_json.fields ?? {}), fixVersions: newFV } };
+        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issue.issueKey);
+        queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+      }
+    } catch (err) {
+      console.warn('move to release failed:', err);
+    }
+  };
+
+  const openParentPicker = () => {
+    const allIssues = queryClient.getQueryData<TimelineIssue[]>(['project-hub-timeline', projectKey]) ?? [];
+    function flattenAll(list: TimelineIssue[]): TimelineIssue[] {
+      return list.flatMap(i => [i, ...flattenAll(i.children)]);
+    }
+    const flat = flattenAll(allIssues);
+    let validParentTypes: string[];
+    if (issue.issueType === 'Feature') validParentTypes = ['Epic'];
+    else if (['Sub-task', 'Backend', 'Frontend', 'Integration'].includes(issue.issueType)) validParentTypes = ['Story', 'Task'];
+    else validParentTypes = ['Epic', 'Feature'];
+    setParentCandidates(flat.filter(i => validParentTypes.includes(i.issueType) && i.issueKey !== issue.issueKey));
+    setParentSearch('');
+    setParentPickerOpen(true);
+    setMenuOpen(false);
+  };
+
+  const handleChangeParent = async (newParentKey: string) => {
+    setParentPickerOpen(false);
+    try {
+      await (supabase as any).from('ph_issues').update({ parent_key: newParentKey }).eq('issue_key', issue.issueKey);
+      queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+    } catch (err) {
+      console.warn('change parent failed:', err);
+    }
+  };
+
+  const openDepsModal = async () => {
+    setDepsIssueKey('');
+    setDepsLinkType('blocks');
+    setExistingLinks([]);
+    setDepsOpen(true);
+    setMenuOpen(false);
+    try {
+      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
+      setExistingLinks(row?.raw_json?.fields?.issuelinks ?? []);
+    } catch (_) {}
+  };
+
+  const handleAddDependency = async () => {
+    if (!depsIssueKey.trim()) return;
+    setDepsSaving(true);
+    try {
+      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
+      if (row?.raw_json) {
+        const existing = row.raw_json.fields?.issuelinks ?? [];
+        const newLink = (depsLinkType === 'blocks' || depsLinkType === 'duplicates')
+          ? { type: { name: depsLinkType, outward: depsLinkType }, outwardIssue: { key: depsIssueKey.trim().toUpperCase() } }
+          : { type: { name: depsLinkType, inward: depsLinkType }, inwardIssue: { key: depsIssueKey.trim().toUpperCase() } };
+        const updated = { ...row.raw_json, fields: { ...(row.raw_json.fields ?? {}), issuelinks: [...existing, newLink] } };
+        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issue.issueKey);
+        setExistingLinks([...existing, newLink]);
+        setDepsIssueKey('');
+        queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+      }
+    } catch (err) {
+      console.warn('add dep failed:', err);
+    } finally {
+      setDepsSaving(false);
+    }
+  };
+
+  const handleRemoveDependency = async (index: number) => {
+    try {
+      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
+      if (row?.raw_json) {
+        const links = [...(row.raw_json.fields?.issuelinks ?? [])];
+        links.splice(index, 1);
+        const updated = { ...row.raw_json, fields: { ...(row.raw_json.fields ?? {}), issuelinks: links } };
+        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issue.issueKey);
+        setExistingLinks(links);
+        queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+      }
+    } catch (err) {
+      console.warn('remove dep failed:', err);
+    }
   };
 
   return (
@@ -2211,6 +2410,16 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         </div>
       )}
 
+      {/* inline date chip — hidden on depth≥2 subtasks (too cramped); for parent rows: always visible when dates set, "Add dates" fades on hover */}
+      {depth < 2 && (
+        <DateChipButton
+          startDate={issue.startDate}
+          dueDate={issue.dueDate}
+          rowHovered={rowHovered}
+          onClick={e => { e.stopPropagation(); openEditDates(); }}
+        />
+      )}
+
       {/* + add child — hover only on rows that can have children */}
       {canHaveChildren && (
         <button
@@ -2287,16 +2496,51 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         )}
         <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
         {issue.issueType === 'Epic' && (
-          <MenuItemRow label="Change epic color" onClick={() => setMenuOpen(false)} />
+          <>
+            <div style={{ padding: '4px 12px 2px', fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-body)' }}>
+              Epic color
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '4px 12px 8px' }}>
+              {JIRA_EPIC_COLORS.map(({ label, hex }) => (
+                <button
+                  key={hex}
+                  type="button"
+                  title={label}
+                  aria-label={`Set epic color to ${label}`}
+                  onClick={(e) => { e.stopPropagation(); handleEpicColorChange(hex); }}
+                  style={{
+                    width: 20, height: 20, borderRadius: '50%', padding: 0, cursor: 'pointer', flexShrink: 0,
+                    background: hex, outline: 'none',
+                    border: issue.epicColor === hex ? '2px solid var(--ds-border-selected, #0052CC)' : '2px solid transparent',
+                    boxShadow: issue.epicColor === hex ? '0 0 0 1.5px #fff inset' : 'none',
+                  }}
+                />
+              ))}
+              {issue.epicColor && (
+                <button
+                  type="button"
+                  title="Remove color"
+                  aria-label="Remove epic color"
+                  onClick={(e) => { e.stopPropagation(); handleEpicColorChange(''); }}
+                  style={{ width: 20, height: 20, borderRadius: '50%', border: '1.5px dashed var(--ds-border, #DFE1E6)', background: 'transparent', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-text-subtlest, #626F86)', fontSize: 12, fontWeight: 600, outline: 'none' }}
+                >
+                  ×
+                </button>
+              )}
+            </div>
+            <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '0 0 4px' }} />
+          </>
         )}
+        <MenuItemRow label="Move to release" onClick={openMoveModal} />
+        {issue.issueType !== 'Epic' && (
+          <MenuItemRow label="Change parent" onClick={openParentPicker} />
+        )}
+        <MenuItemRow label="Edit dependencies" onClick={openDepsModal} />
         <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
         <MenuItemRow label="Edit dates" onClick={openEditDates} />
         {(issue.startDate || issue.dueDate) && (
           <MenuItemRow label="Remove dates" onClick={handleRemoveDates} danger />
         )}
-        <div style={{ padding: '6px 12px', fontSize: 11, fontStyle: 'italic', color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-body)' }}>
-          Move, reparent &amp; more — coming soon
-        </div>
       </PortalMenu>
 
       {/* Edit Dates modal */}
@@ -2348,6 +2592,200 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
               <Button appearance="primary" onClick={handleSaveDates} isDisabled={savingDates}>
                 {savingDates ? 'Saving…' : 'Confirm'}
               </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
+
+      {/* Move to release modal */}
+      <ModalTransition>
+        {moveOpen && (
+          <Modal onClose={() => setMoveOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle>Move to release</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <div
+                  onClick={() => handleMoveTo('')}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => { if (e.key === 'Enter') handleMoveTo(''); }}
+                  style={{ padding: '8px 12px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)', borderRadius: 3 }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                >
+                  No release
+                </div>
+                {availableVersions.length === 0 && (
+                  <div style={{ padding: '8px 12px', fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic', fontFamily: 'var(--ds-font-family-body)' }}>
+                    No releases found for this project
+                  </div>
+                )}
+                {availableVersions.map(v => (
+                  <div
+                    key={v}
+                    onClick={() => handleMoveTo(v)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => { if (e.key === 'Enter') handleMoveTo(v); }}
+                    style={{ padding: '8px 12px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)', borderRadius: 3, display: 'flex', alignItems: 'center', gap: 8 }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                  >
+                    <span style={{ flex: 1 }}>{v}</span>
+                    {issue.fixVersions.includes(v) && (
+                      <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-body)' }}>current</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setMoveOpen(false)}>Cancel</Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
+
+      {/* Change parent modal */}
+      <ModalTransition>
+        {parentPickerOpen && (
+          <Modal onClose={() => setParentPickerOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle>Change parent</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ marginBottom: 12 }}>
+                <input
+                  autoFocus
+                  value={parentSearch}
+                  onChange={e => setParentSearch(e.target.value)}
+                  placeholder="Search by key or summary…"
+                  style={{
+                    width: '100%', height: 36, padding: '0 10px', boxSizing: 'border-box',
+                    border: '1px solid var(--ds-border-input, #DFE1E6)', borderRadius: 3, fontSize: 13,
+                    outline: 'none', fontFamily: 'var(--ds-font-family-body)', color: 'var(--ds-text, #172B4D)',
+                    background: 'var(--ds-background-input, #FFFFFF)',
+                  }}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-border-focused, #388BFF)'; }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'var(--ds-border-input, #DFE1E6)'; }}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, maxHeight: 260, overflowY: 'auto' }}>
+                {parentCandidates
+                  .filter(c => !parentSearch || c.issueKey.toLowerCase().includes(parentSearch.toLowerCase()) || c.summary.toLowerCase().includes(parentSearch.toLowerCase()))
+                  .slice(0, 50)
+                  .map(c => (
+                    <div
+                      key={c.issueKey}
+                      onClick={() => handleChangeParent(c.issueKey)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={e => { if (e.key === 'Enter') handleChangeParent(c.issueKey); }}
+                      style={{ padding: '8px 10px', cursor: 'pointer', borderRadius: 3, display: 'flex', alignItems: 'center', gap: 8 }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                    >
+                      <JiraIssueTypeIcon type={c.issueType} size={14} />
+                      <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-body)', flexShrink: 0 }}>{c.issueKey}</span>
+                      <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.summary}</span>
+                    </div>
+                  ))
+                }
+                {parentCandidates.filter(c => !parentSearch || c.issueKey.toLowerCase().includes(parentSearch.toLowerCase()) || c.summary.toLowerCase().includes(parentSearch.toLowerCase())).length === 0 && (
+                  <div style={{ padding: '12px', fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic', fontFamily: 'var(--ds-font-family-body)', textAlign: 'center' }}>
+                    No matching issues found
+                  </div>
+                )}
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setParentPickerOpen(false)}>Cancel</Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
+
+      {/* Edit dependencies modal */}
+      <ModalTransition>
+        {depsOpen && (
+          <Modal onClose={() => setDepsOpen(false)} width="medium">
+            <ModalHeader>
+              <ModalTitle>Edit dependencies</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderRadius: 3 }}>
+                <JiraIssueTypeIcon type={issue.issueType} size={13} />
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)' }}>{issue.issueKey}</span>
+                <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.summary}</span>
+              </div>
+
+              {/* existing links */}
+              {existingLinks.length > 0 && (
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)', marginBottom: 6 }}>
+                    Existing dependencies
+                  </div>
+                  {existingLinks.map((link, idx) => {
+                    const linkedKey = link.outwardIssue?.key ?? link.inwardIssue?.key ?? '—';
+                    const linkLabel = link.type?.outward ?? link.type?.inward ?? link.type?.name ?? '—';
+                    return (
+                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: idx < existingLinks.length - 1 ? '1px solid var(--ds-border, #DFE1E6)' : 'none' }}>
+                        <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)', minWidth: 90 }}>{linkLabel}</span>
+                        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)', flex: 1 }}>{linkedKey}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveDependency(idx)}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-danger, #AE2A19)', fontSize: 12, fontFamily: 'var(--ds-font-family-body)', padding: '2px 6px', borderRadius: 3 }}
+                          title="Remove dependency"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* add new link */}
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)', marginBottom: 8 }}>
+                Add dependency
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                <select
+                  value={depsLinkType}
+                  onChange={e => setDepsLinkType(e.target.value)}
+                  style={{
+                    height: 36, padding: '0 8px', border: '1px solid var(--ds-border-input, #DFE1E6)', borderRadius: 3, fontSize: 13,
+                    fontFamily: 'var(--ds-font-family-body)', color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-input, #FFFFFF)', cursor: 'pointer', outline: 'none',
+                  }}
+                >
+                  <option value="blocks">blocks</option>
+                  <option value="is blocked by">is blocked by</option>
+                  <option value="relates to">relates to</option>
+                  <option value="duplicates">duplicates</option>
+                </select>
+                <input
+                  value={depsIssueKey}
+                  onChange={e => setDepsIssueKey(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') handleAddDependency(); }}
+                  placeholder="Issue key (e.g. BAU-1234)"
+                  style={{
+                    flex: 1, minWidth: 160, height: 36, padding: '0 10px', boxSizing: 'border-box',
+                    border: '1px solid var(--ds-border-input, #DFE1E6)', borderRadius: 3, fontSize: 13,
+                    fontFamily: 'var(--ds-font-family-body)', color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-input, #FFFFFF)', outline: 'none',
+                  }}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-border-focused, #388BFF)'; }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'var(--ds-border-input, #DFE1E6)'; }}
+                />
+                <Button appearance="primary" onClick={handleAddDependency} isDisabled={!depsIssueKey.trim() || depsSaving}>
+                  {depsSaving ? 'Saving…' : 'Add'}
+                </Button>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setDepsOpen(false)}>Close</Button>
             </ModalFooter>
           </Modal>
         )}
