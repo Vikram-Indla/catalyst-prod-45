@@ -180,6 +180,11 @@ export interface KanbanToolbarProps<TGroupBy extends string = string> {
   onQuickFiltersChange?: Dispatch<SetStateAction<Set<string>>>;
   /** Which pill keys are visible — controlled by View Settings */
   enabledQuickFilters?: string[];
+
+  /** Optional render slot for a board-switcher dropdown — placed between
+   *  the avatar stack (Users) and the Filter trigger. Owner supplies the
+   *  fully-styled JSX; the toolbar just hosts it. */
+  boardSwitcherSlot?: React.ReactNode;
 }
 
 /* ═══ KanbanToolbar — composed toolbar, presentational ═══ */
@@ -205,6 +210,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
   onRenameBoard,
   onStartStandup,
   quickFilters, onQuickFiltersChange, enabledQuickFilters,
+  boardSwitcherSlot,
 }: KanbanToolbarProps<TGroupBy>) {
   const navigate = useNavigate();
   const boardMenuRef = useRef<HTMLDivElement>(null);
@@ -275,6 +281,9 @@ export function KanbanToolbar<TGroupBy extends string = string>({
         avatarsByName={avatarsByName}
         tk={tk}
       />
+
+      {/* Board switcher slot (owner-rendered) — between Users and Filter */}
+      {boardSwitcherSlot}
 
       {/* Canonical Filter */}
       <div style={{ position: 'relative' }}>

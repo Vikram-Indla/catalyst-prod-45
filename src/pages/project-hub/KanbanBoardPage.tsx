@@ -1242,86 +1242,7 @@ export default function KanbanBoardPage() {
           project chip mounts above the page header. */}
       {key && <ProjectHeaderChip projectKey={key} />}
       {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
-      {/* ── Page header with board switcher ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 24px', minHeight: 48, flexShrink: 0, position: 'relative' }}>
-        {/* Board switcher — only shown when multiple boards exist or as entry point */}
-        <div ref={boardSwitcherRef} style={{ position: 'relative' }}>
-          {(() => {
-            const isActive = showBoardSwitcher || isBoardSwitcherFocused;
-            const bg = showBoardSwitcher || isBoardSwitcherHovered
-              ? tk.surfaceHover
-              : 'var(--ds-surface, #FFFFFF)';
-            return (
-              <button
-                onClick={() => setShowBoardSwitcher(v => !v)}
-                onFocus={() => setIsBoardSwitcherFocused(true)}
-                onBlur={() => setIsBoardSwitcherFocused(false)}
-                onMouseEnter={() => setIsBoardSwitcherHovered(true)}
-                onMouseLeave={() => setIsBoardSwitcherHovered(false)}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
-                  width: 220, height: 32, padding: '0 8px 0 12px',
-                  background: bg,
-                  border: `1px solid ${isActive ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
-                  boxShadow: isActive ? '0 0 0 1px var(--ds-border-selected, #0C66E4)' : 'none',
-                  borderRadius: 4, cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                  color: tk.textSecondary, fontFamily: 'var(--cp-font-body)',
-                  outline: 'none',
-                }}
-              >
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {projectBoards.find(b => b.id === resolvedBoardId)?.name ?? 'Board'}
-                </span>
-                <AkChevronDownIcon label="" size="medium" />
-              </button>
-            );
-          })()}
-          {showBoardSwitcher && (
-            <div
-              style={{
-                position: 'absolute', top: 'calc(100% + 4px)', left: 0,
-                width: 220, background: tk.surfaceBg,
-                border: `1px solid ${tk.border}`, borderRadius: 8,
-                boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(0,0,0,0.16))', zIndex: 60,
-                padding: '8px 0',
-              }}
-              onMouseDown={e => e.stopPropagation()}
-            >
-              {projectBoards.map(b => (
-                <button
-                  key={b.id}
-                  onClick={() => { setActiveBoardId(b.id); setShowBoardSwitcher(false); }}
-                  style={{
-                    width: '100%', textAlign: 'left', padding: '8px 16px',
-                    background: b.id === resolvedBoardId ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent',
-                    border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                    color: b.id === resolvedBoardId ? 'var(--ds-link, var(--cp-primary-60, #0052CC))' : tk.textPrimary,
-                    fontFamily: 'var(--cp-font-body)',
-                  }}
-                  onMouseEnter={e => { if (b.id !== resolvedBoardId) e.currentTarget.style.background = tk.surfaceHover; }}
-                  onMouseLeave={e => { if (b.id !== resolvedBoardId) e.currentTarget.style.background = 'transparent'; }}
-                >
-                  {b.name}
-                </button>
-              ))}
-              {projectBoards.length > 0 && <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 8px' }} />}
-              <button
-                onClick={() => { setShowBoardSwitcher(false); setNewBoardName(''); setShowCreateBoard(true); }}
-                style={{
-                  width: '100%', textAlign: 'left', padding: '8px 16px',
-                  background: 'transparent', border: 'none', cursor: 'pointer',
-                  fontSize: 13, fontWeight: 500,
-                  color: 'var(--ds-link, var(--cp-primary-60, #0052CC))', fontFamily: 'var(--cp-font-body)',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              >
-                + Create board
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+      {/* Board switcher now lives inside <KanbanToolbar /> via boardSwitcherSlot. */}
 
       {/* Create board dialog */}
       {showCreateBoard && (
@@ -1556,6 +1477,84 @@ export default function KanbanBoardPage() {
           setRenameBoardValue(currentName);
           setRenameBoardOpen(true);
         } : undefined}
+        boardSwitcherSlot={
+          <div ref={boardSwitcherRef} style={{ position: 'relative' }}>
+            {(() => {
+              const isActive = showBoardSwitcher || isBoardSwitcherFocused;
+              const bg = showBoardSwitcher || isBoardSwitcherHovered
+                ? tk.surfaceHover
+                : 'var(--ds-surface, #FFFFFF)';
+              return (
+                <button
+                  onClick={() => setShowBoardSwitcher(v => !v)}
+                  onFocus={() => setIsBoardSwitcherFocused(true)}
+                  onBlur={() => setIsBoardSwitcherFocused(false)}
+                  onMouseEnter={() => setIsBoardSwitcherHovered(true)}
+                  onMouseLeave={() => setIsBoardSwitcherHovered(false)}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+                    width: 220, height: 32, padding: '0 8px 0 12px',
+                    background: bg,
+                    border: `1px solid ${isActive ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
+                    boxShadow: isActive ? '0 0 0 1px var(--ds-border-selected, #0C66E4)' : 'none',
+                    borderRadius: 4, cursor: 'pointer', fontSize: 13, fontWeight: 500,
+                    color: tk.textSecondary, fontFamily: 'var(--cp-font-body)',
+                    outline: 'none',
+                  }}
+                >
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {projectBoards.find(b => b.id === resolvedBoardId)?.name ?? 'Board'}
+                  </span>
+                  <AkChevronDownIcon label="" size="medium" />
+                </button>
+              );
+            })()}
+            {showBoardSwitcher && (
+              <div
+                style={{
+                  position: 'absolute', top: 'calc(100% + 4px)', left: 0,
+                  width: 220, background: tk.surfaceBg,
+                  border: `1px solid ${tk.border}`, borderRadius: 8,
+                  boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(0,0,0,0.16))', zIndex: 60,
+                  padding: '8px 0',
+                }}
+                onMouseDown={e => e.stopPropagation()}
+              >
+                {projectBoards.map(b => (
+                  <button
+                    key={b.id}
+                    onClick={() => { setActiveBoardId(b.id); setShowBoardSwitcher(false); }}
+                    style={{
+                      width: '100%', textAlign: 'left', padding: '8px 16px',
+                      background: b.id === resolvedBoardId ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent',
+                      border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500,
+                      color: b.id === resolvedBoardId ? 'var(--ds-link, var(--cp-primary-60, #0052CC))' : tk.textPrimary,
+                      fontFamily: 'var(--cp-font-body)',
+                    }}
+                    onMouseEnter={e => { if (b.id !== resolvedBoardId) e.currentTarget.style.background = tk.surfaceHover; }}
+                    onMouseLeave={e => { if (b.id !== resolvedBoardId) e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    {b.name}
+                  </button>
+                ))}
+                {projectBoards.length > 0 && <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 8px' }} />}
+                <button
+                  onClick={() => { setShowBoardSwitcher(false); setNewBoardName(''); setShowCreateBoard(true); }}
+                  style={{
+                    width: '100%', textAlign: 'left', padding: '8px 16px',
+                    background: 'transparent', border: 'none', cursor: 'pointer',
+                    fontSize: 13, fontWeight: 500,
+                    color: 'var(--ds-link, var(--cp-primary-60, #0052CC))', fontFamily: 'var(--cp-font-body)',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  + Create board
+                </button>
+              </div>
+            )}
+          </div>
+        }
       />
       </div>
 
