@@ -1745,9 +1745,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                 const finalLeft = baseLeft + deltaLeft;
                 const finalWidth = Math.max(MIN_BAR_W, baseWidth + deltaWidth);
 
-                const isEpic = issue.issueType === 'Epic';
-                const progress = isEpic && issue.children.length > 0 ? computeEpicProgress(issue) : null;
-
+                const borderColor = barColor(issue);
 
                 const bar = (
                   <div
@@ -1757,30 +1755,17 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                     style={{
                       position: 'absolute', top: barTop, left: finalLeft, width: finalWidth, height: BAR_H,
                       borderRadius: BAR_RADIUS,
-                      background: progress && progress.total > 0 ? 'transparent' : barColor(issue),
-                      display: 'flex', alignItems: 'center', paddingLeft: 8, paddingRight: 8,
+                      background: 'var(--ds-surface, #FFFFFF)',
+                      border: `2px solid ${borderColor}`,
+                      display: 'flex', alignItems: 'center', paddingLeft: 6, paddingRight: 6,
                       overflow: 'hidden', cursor: isThisDragging ? 'default' : 'pointer',
                       zIndex: isThisDragging ? 10 : 2,
                       boxShadow: isThisDragging ? 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.3))' : 'none',
                       opacity: isThisDragging ? 0.85 : 1,
                       userSelect: 'none',
+                      boxSizing: 'border-box',
                     }}
                   >
-                    {/* segmented progress bar for epics */}
-                    {progress && progress.total > 0 && (
-                      <div
-                        role="progressbar"
-                        aria-valuenow={Math.round((progress.done / progress.total) * 100)}
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        style={{ position: 'absolute', inset: 0, borderRadius: BAR_RADIUS, display: 'flex', overflow: 'hidden' }}
-                      >
-                        {progress.done > 0 && <div style={{ flex: progress.done, background: 'var(--ds-chart-success-bold, #94C748)', minWidth: 2 }} />}
-                        {progress.inProgress > 0 && <div style={{ flex: progress.inProgress, background: 'var(--ds-chart-information-bold, #8FB8F6)', minWidth: 2 }} />}
-                        {progress.toDo > 0 && <div style={{ flex: progress.toDo, background: 'var(--ds-background-neutral, #DDDEE1)', minWidth: 2 }} />}
-                      </div>
-                    )}
-
                     {/* left drag handle */}
                     {issue.startDate && (
                       <div
@@ -1791,8 +1776,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                         }}
                         style={{
                           position: 'absolute', left: 0, top: 0, bottom: 0, width: 8, cursor: 'ew-resize',
-                          background: 'var(--ds-border-inverse, rgba(255,255,255,0.22))',
-                          borderRadius: '3px 0 0 3px', zIndex: 1,
+                          zIndex: 1,
                         }}
                       />
                     )}
@@ -1800,7 +1784,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                     {finalWidth >= 60 && (
                       <span style={{
                         fontSize: 11, fontWeight: 500,
-                        color: progress && progress.toDo === progress.total ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-inverse, #FFFFFF)',
+                        color: 'var(--ds-text, #172B4D)',
                         whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1, flex: 1,
                         position: 'relative', zIndex: 2,
                       }}>
@@ -1818,8 +1802,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                         }}
                         style={{
                           position: 'absolute', right: 0, top: 0, bottom: 0, width: 8, cursor: 'ew-resize',
-                          background: 'var(--ds-border-inverse, rgba(255,255,255,0.22))',
-                          borderRadius: '0 3px 3px 0', zIndex: 1,
+                          zIndex: 1,
                         }}
                       />
                     )}
