@@ -130,6 +130,8 @@ export function GroupByPopover<K extends string>({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [focusIdx, setFocusIdx] = useState(-1);
+  const [isFocused, setIsFocused] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -195,23 +197,32 @@ export function GroupByPopover<K extends string>({
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
-      {/* ── Trigger Button — Jira parity: no border, 3px radius, 14px/500 ── */}
+      {/* ── Trigger Button — gray border idle, blue border open/focused/active ── */}
       <button
         onClick={() => { setOpen(p => !p); if (!open) setTimeout(() => inputRef.current?.focus(), 50); }}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
           height: 32, padding: '0 8px',
-          background: isActive ? selBg : 'transparent',
-          border: 'none',
+          background: isActive
+            ? selBg
+            : isHovered
+              ? hover
+              : T.surface,
+          border: `1px solid ${(open || isFocused || isActive) ? 'var(--ds-border-selected, #0C66E4)' : T.border}`,
+          boxShadow: (open || isFocused || isActive)
+            ? '0 0 0 1px var(--ds-border-selected, #0C66E4)'
+            : 'none',
           borderRadius: 3,
           cursor: 'pointer',
           fontSize: 14, fontWeight: 500, lineHeight: '20px',
           color: isActive ? selText : text,
           fontFamily: 'var(--cp-font-body)',
-          transition: 'background 100ms',
+          outline: 'none',
         }}
-        onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = hover; }}
-        onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
         aria-haspopup="listbox"
         aria-expanded={open}
       >
