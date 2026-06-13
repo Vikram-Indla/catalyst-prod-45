@@ -132,18 +132,18 @@ export function ProjectIcon({
     );
   }
 
-  // 0b. Bundled registry avatar (the 18 canonical Catalyst project keys).
-  if (projectKey && projectKey in PROJECT_AVATAR_REGISTRY) {
-    const url = PROJECT_AVATAR_REGISTRY[projectKey as ProjectKey].url;
+  // 0b. Explicit avatarUrl — takes priority over the bundled registry so that
+  // product adapters (ProductHeaderChip) can inject a landmark SVG for product
+  // codes that share a key with PROJECT_AVATAR_REGISTRY (e.g. 'INV').
+  if (avatarUrl) {
     return (
       <img
-        src={url}
-        alt={name ?? PROJECT_AVATAR_REGISTRY[projectKey as ProjectKey].name}
+        src={avatarUrl}
+        alt={name ?? ''}
         width={px}
         height={px}
         className={className}
-        data-project-key={projectKey}
-        data-icon-source="bundled"
+        data-icon-source="avatar-url"
         style={{
           width: px,
           height: px,
@@ -156,15 +156,18 @@ export function ProjectIcon({
     );
   }
 
-  // 1. Canonical: Jira-uploaded image
-  if (avatarUrl) {
+  // 0c. Bundled registry avatar (the 18 canonical Catalyst project keys).
+  if (projectKey && projectKey in PROJECT_AVATAR_REGISTRY) {
+    const url = PROJECT_AVATAR_REGISTRY[projectKey as ProjectKey].url;
     return (
       <img
-        src={avatarUrl}
-        alt={name ?? ''}
+        src={url}
+        alt={name ?? PROJECT_AVATAR_REGISTRY[projectKey as ProjectKey].name}
         width={px}
         height={px}
         className={className}
+        data-project-key={projectKey}
+        data-icon-source="bundled"
         style={{
           width: px,
           height: px,

@@ -26,6 +26,7 @@ import {
   useBusinessRequestsSource,
   type ProductInfo,
 } from '@/modules/project-work-hub/adapters/backlogDataSource';
+import { ProductAvatar } from '@/components/icons';
 
 // ─── Product resolution ──────────────────────────────────────────────────────
 
@@ -54,15 +55,7 @@ function useProductInfo(key: string | undefined) {
 function ProductChromeHeader({ productCode, productName }: { productCode: string; productName: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0' }}>
-      <div style={{
-        width: 24, height: 24, borderRadius: 4, flexShrink: 0,
-        background: token('color.background.brand.bold', '#0052CC'),
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 11, fontWeight: 700, color: token('color.text.inverse', '#FFFFFF'),
-        fontFamily: 'var(--cp-font-body)',
-      }}>
-        {(productCode || '').slice(0, 2).toUpperCase()}
-      </div>
+      <ProductAvatar code={productCode} size={24} />
       <span style={{
         fontSize: 20, fontWeight: 500,
         color: token('color.text', '#172B4D'),
