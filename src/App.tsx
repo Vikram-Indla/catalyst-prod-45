@@ -15,7 +15,6 @@ import { AuthProvider } from "./lib/auth";
 import { NavigationProvider } from "./contexts/NavigationContext";
 import { ProcessStepsProvider } from "./contexts/ProcessStepsContext";
 import { FeatureFlagProvider } from "./contexts/FeatureFlagContext";
-import { WorkflowProvider } from "./lib/workflows";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -147,7 +146,6 @@ function App() {
         
         <LanguageProvider>
         <FeatureFlagProvider>
-        <WorkflowProvider>
         <NavigationProvider>
           <ProcessStepsProvider>
               <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -236,7 +234,6 @@ function App() {
               </BrowserRouter>
           </ProcessStepsProvider>
         </NavigationProvider>
-        </WorkflowProvider>
         </FeatureFlagProvider>
         </LanguageProvider>
       </AuthProvider>

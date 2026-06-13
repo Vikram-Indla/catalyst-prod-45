@@ -2,38 +2,30 @@
  * StatusTransitionDropdown — Jira-parity status picker for an issue.
  *
  * Trigger: the current-status Lozenge rendered as a 32px button (Jira-style).
- * Menu rows: action verb (left) → target lozenge (right), mirroring image 4
- * from the product brief. Footer: "View workflow" opens WorkflowDiagramModal.
+ * Menu rows: target lozenge, grouped by category (todo / in_progress / done).
+ * Footer: "View workflow" opens CatalystWorkflowModal.
+ *
+ * Source of truth: ph_workflow_* tables via useIssueTypeWorkflow —
+ * the same data source that /admin/workflows manages.
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import DropdownMenu, {
   DropdownItem,
   DropdownItemGroup,
 } from '@atlaskit/dropdown-menu';
 import Lozenge from '@atlaskit/lozenge';
-import { useWorkflow } from '../../lib/workflows/WorkflowProvider';
-import type { IssueType, Transition, WorkflowState, StatusCategory } from '../../lib/workflows/types';
+import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 import { JiraStatusLozenge } from './JiraStatusLozenge';
-import { WorkflowDiagramModal } from './WorkflowDiagramModal';
 import { CatalystWorkflowModal } from '../catalyst-detail-views/shared/workflow/CatalystWorkflowModal';
 import type { WorkItemType } from '@/hooks/useTypeWorkflow';
 
-const APPEARANCE_MAP: Record<StatusCategory, 'default' | 'inprogress' | 'success' | 'removed' | 'new' | 'moved'> = {
-  default:    'default',
-  inprogress: 'inprogress',
-  success:    'success',
-  removed:    'removed',
-  new:        'new',
-  moved:      'moved',
-};
-
 export interface StatusTransitionDropdownProps {
-  /** Issue type — determines which workflow is used */
-  issueType: IssueType | string;
-  /** Current state ID (e.g. "under_implementation"). If unknown, falls back to initial state. */
-  currentStateId: string;
-  /** Called with the target state ID after the user picks a transition */
-  onTransition?: (targetStateId: string, transition: Transition) => void;
+  /** Jira issue_type string — resolves via ALIASES in useIssueTypeWorkflow */
+  issueType: string;
+  /** Current status NAME (e.g. "In Progress") */
+  currentStatusName: string | null | undefined;
+  /** Called with the target status NAME after the user picks a transition */
+  onTransition?: (targetStatusName: string) => void;
   /** Disable the trigger (no menu opens) */
   isDisabled?: boolean;
   /** Compact trigger — smaller padding, suitable for table cells */
@@ -42,54 +34,41 @@ export interface StatusTransitionDropdownProps {
 
 export function StatusTransitionDropdown({
   issueType,
-  currentStateId,
+  currentStatusName,
   onTransition,
   isDisabled,
   size = 'default',
 }: StatusTransitionDropdownProps) {
-  const workflow = useWorkflow(issueType);
+  const { statusGroups, getAvailableStatuses, isLoading } = useIssueTypeWorkflow(issueType);
   const [isWorkflowModalOpen, setIsWorkflowModalOpen] = useState(false);
 
-  const currentState: WorkflowState | undefined = useMemo(() => {
-    if (!workflow) return undefined;
-    return workflow.states.find(s => s.id === currentStateId)
-      ?? workflow.states.find(s => s.id === workflow.initialStateId);
-  }, [workflow, currentStateId]);
+  // Find the current status in the groups to get its category
+  const currentStatusEntry = statusGroups
+    .flatMap(g => g.statuses.map(s => ({ name: s.name, category: g.category })))
+    .find(s => s.name === currentStatusName);
 
-  const availableTransitions: Transition[] = useMemo(() => {
-    if (!workflow || !currentState) return [];
-    const explicit = workflow.transitions.filter(t => t.from === currentState.id);
-
-    // Any-to-Any logic for the Simple workflow
-    const implicit: Transition[] = [];
-    const allAnyToThis = workflow.states.every(s => s.anyToThis);
-    if (allAnyToThis || currentState.anyFromThis) {
-      workflow.states.forEach(target => {
-        if (target.id === currentState.id) return;
-        if (explicit.some(e => e.to === target.id)) return;
-        implicit.push({ from: currentState.id, to: target.id, verb: target.name });
-      });
-    }
-    return [...explicit, ...implicit];
-  }, [workflow, currentState]);
+  // All status names the user can transition to from the current status
+  const availableStatusNames = getAvailableStatuses(currentStatusName);
 
   const handleSelect = useCallback(
-    (transition: Transition) => {
-      if (!workflow) return;
-      const target = workflow.states.find(s => s.id === transition.to);
-      if (!target) return;
-      onTransition?.(target.id, transition);
+    (targetName: string) => {
+      onTransition?.(targetName);
     },
-    [workflow, onTransition],
+    [onTransition],
   );
 
-  if (!workflow || !currentState) {
-    // Fallback lozenge if the issue type is unmapped
+  if (isLoading) {
     return (
-<span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-        <Lozenge appearance="default" isBold>
-          {currentStateId || 'Unknown'}
-        </Lozenge>
+      <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+        <Lozenge appearance="default">{currentStatusName || '…'}</Lozenge>
+      </span>
+    );
+  }
+
+  if (!currentStatusEntry && !currentStatusName) {
+    return (
+      <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+        <Lozenge appearance="default" isBold>Unknown</Lozenge>
       </span>
     );
   }
@@ -118,50 +97,44 @@ export function StatusTransitionDropdown({
               background: 'transparent',
               font: 'inherit',
             }}
-            aria-label={`Status: ${currentState.name}. Click to change.`}
+            aria-label={`Status: ${currentStatusName ?? 'Unknown'}. Click to change.`}
           >
             <JiraStatusLozenge
-              category={currentState.category}
-              name={currentState.name}
+              category={currentStatusEntry?.category ?? 'default'}
+              name={currentStatusName ?? '—'}
             />
-            <span aria-hidden="true" style={{ fontSize: 10, color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' }}>▾</span>
+            <span aria-hidden="true" style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #44546F)' }}>▾</span>
           </button>
         )}
         placement="bottom-start"
         spacing="compact"
       >
         <DropdownItemGroup>
-          {availableTransitions.length === 0 && (
+          {availableStatusNames.length === 0 && (
             <DropdownItem isDisabled>No transitions available</DropdownItem>
           )}
-          {availableTransitions.map(tr => {
-            const target = workflow.states.find(s => s.id === tr.to);
-            if (!target) return null;
-            return (
-              <DropdownItem
-                key={`${tr.from}->${tr.to}`}
-                onClick={() => handleSelect(tr)}
-              >
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr auto auto',
-                    alignItems: 'center',
-                    gap: 12,
-                    minWidth: 220,
-                  }}
+          {availableStatusNames
+            .filter(name => name !== currentStatusName)
+            .map(name => {
+              const entry = statusGroups
+                .flatMap(g => g.statuses.map(s => ({ name: s.name, category: g.category })))
+                .find(s => s.name === name);
+              return (
+                <DropdownItem
+                  key={name}
+                  onClick={() => handleSelect(name)}
                 >
-                  <span style={{ color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' }}>{tr.verb}</span>
-                  <span aria-hidden="true" style={{ color: '#8590A2' }}>→</span>
                   <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-                    <Lozenge appearance={APPEARANCE_MAP[target.category]} isBold>
-                      {target.name}
-                    </Lozenge>
+                    <JiraStatusLozenge
+                      category={entry?.category ?? 'default'}
+                      name={name}
+                      variant="subtle"
+                    />
                   </span>
-                </div>
-              </DropdownItem>
-            );
-          })}
+                </DropdownItem>
+              );
+            })
+          }
         </DropdownItemGroup>
         <DropdownItemGroup hasSeparator>
           <DropdownItem onClick={() => setIsWorkflowModalOpen(true)}>
@@ -171,19 +144,11 @@ export function StatusTransitionDropdown({
       </DropdownMenu>
 
       {isWorkflowModalOpen && (
-        issueType === 'Story' ? (
-          <WorkflowDiagramModal
-            workflow={workflow}
-            currentStateId={currentState.id}
-            onClose={() => setIsWorkflowModalOpen(false)}
-          />
-        ) : (
-          <CatalystWorkflowModal
-            issueTypeName={issueType as WorkItemType}
-            currentStatusName={currentState.name}
-            onClose={() => setIsWorkflowModalOpen(false)}
-          />
-        )
+        <CatalystWorkflowModal
+          issueTypeName={issueType as WorkItemType}
+          currentStatusName={currentStatusName ?? undefined}
+          onClose={() => setIsWorkflowModalOpen(false)}
+        />
       )}
     </>
   );
