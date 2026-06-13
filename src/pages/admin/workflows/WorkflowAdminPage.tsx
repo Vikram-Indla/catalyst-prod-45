@@ -188,7 +188,7 @@ export default function WorkflowAdminPage() {
         {/* Page header */}
         <div
           style={{
-            padding: '20px 24px 16px',
+            padding: '24px 24px 16px',
             borderBottom: '1px solid var(--ds-border, #DFE1E6)',
           }}
         >
@@ -231,7 +231,7 @@ export default function WorkflowAdminPage() {
               <div>
                 <h2
                   style={{
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: 653,
                     color: 'var(--ds-text, #292A2E)',
                     margin: 0,
@@ -248,7 +248,7 @@ export default function WorkflowAdminPage() {
                     </span>
                   )}
                 </h2>
-                <p style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)', margin: '4px 0 0', maxWidth: 680 }}>
+                <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #505258)', margin: '4px 0 0', maxWidth: 680 }}>
                   Statuses are project-scoped and defined once. The "Available for" column controls which work item types can use each status — edit it from the status's Work item types tab.
                 </p>
               </div>
@@ -327,7 +327,7 @@ export default function WorkflowAdminPage() {
             <div style={{ marginBottom: 12 }}>
               <h2
                 style={{
-                  fontSize: 20,
+                  fontSize: 16,
                   fontWeight: 653,
                   color: 'var(--ds-text, #172B4D)',
                   margin: 0,
@@ -341,7 +341,7 @@ export default function WorkflowAdminPage() {
                   (per work item type)
                 </span>
               </h2>
-              <p style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)', margin: '4px 0 0' }}>
+              <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #505258)', margin: '4px 0 0' }}>
                 Each work item type has its own workflow: a subset of registry statuses, one initial status, and its own transition rules. Global rules apply to every type and are managed once.
               </p>
             </div>
@@ -350,7 +350,7 @@ export default function WorkflowAdminPage() {
               style={{
                 border: '1px solid var(--ds-border, #DFE1E6)',
                 borderRadius: 4,
-                overflow: 'hidden',
+                overflow: 'clip',
               }}
             >
               <Tabs
@@ -399,7 +399,7 @@ export default function WorkflowAdminPage() {
             style={{
               position: 'fixed',
               inset: 0,
-              background: 'rgba(9,30,66,0.54)',
+              background: 'var(--ds-blanket, rgba(9,30,66,0.54))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -418,10 +418,10 @@ export default function WorkflowAdminPage() {
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 653, color: 'var(--ds-text-danger, #AE2A19)' }}>
+              <h3 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 653, color: 'var(--ds-text-danger, #AE2A19)' }}>
                 Delete status?
               </h3>
-              <p style={{ margin: '0 0 20px', fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
+              <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
                 Delete <strong>{deleteConfirmTarget.name}</strong>? This action cannot be undone.
               </p>
               <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>

@@ -117,7 +117,7 @@ function StatusChip({
         display: 'inline-flex',
         alignItems: 'center',
         gap: 6,
-        height: 28,
+        height: 32,
         padding: '0 10px',
         border: `1px solid var(--ds-border, #DFE1E6)`,
         borderRadius: 3,
@@ -137,9 +137,8 @@ function StatusChip({
             <span
               {...tp}
               style={{
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: '0.05em',
+                fontSize: 11,
+                fontWeight: 600,
                 color: 'var(--ds-text-brand, #0C66E4)',
                 background: 'var(--ds-background-selected, #E9F2FF)',
                 borderRadius: 3,
@@ -240,10 +239,10 @@ function TransitionPill({
         display: 'inline-flex',
         alignItems: 'center',
         gap: 6,
-        height: 28,
+        height: 32,
         padding: '0 10px',
         border: `1px solid var(--ds-border, #DFE1E6)`,
-        borderRadius: 14,
+        borderRadius: 3,
         fontSize: 13,
         fontWeight: 500,
         background: hovered ? 'var(--ds-surface-sunken, #F7F8F9)' : 'var(--ds-surface, #FFFFFF)',
@@ -310,10 +309,10 @@ function AddPill({ label, onClick }: { label: string; onClick: () => void }) {
         display: 'inline-flex',
         alignItems: 'center',
         gap: 5,
-        height: 28,
+        height: 32,
         padding: '0 10px',
         border: '1px dashed var(--ds-border, #DFE1E6)',
-        borderRadius: 14,
+        borderRadius: 3,
         fontSize: 13,
         fontWeight: 500,
         color: 'var(--ds-text-brand, #0C66E4)',
@@ -341,7 +340,7 @@ function AddStatusChip({ onClick }: { onClick: () => void }) {
         display: 'inline-flex',
         alignItems: 'center',
         gap: 5,
-        height: 28,
+        height: 32,
         padding: '0 10px',
         border: '1px dashed var(--ds-border, #DFE1E6)',
         borderRadius: 3,
@@ -389,7 +388,7 @@ function TransitionGroupRow({
     <div
       style={{
         border: '1px solid var(--ds-border, #DFE1E6)',
-        borderRadius: 6,
+        borderRadius: 4,
         marginBottom: 8,
         background: isGlobal ? 'var(--ds-surface-sunken, #F7F8F9)' : 'var(--ds-surface, #FFFFFF)',
       }}
@@ -401,11 +400,11 @@ function TransitionGroupRow({
           width: '100%',
           display: 'flex',
           alignItems: 'center',
-          gap: 10,
-          padding: '10px 14px',
+          gap: 8,
+          padding: '8px 16px',
           textAlign: 'left',
           fontSize: 14,
-          fontWeight: 600,
+          fontWeight: 500,
           background: 'none',
           border: 'none',
           cursor: 'pointer',
@@ -427,10 +426,8 @@ function TransitionGroupRow({
         <span
           style={{
             fontSize: 11,
-            fontWeight: 600,
+            fontWeight: 500,
             color: 'var(--ds-text-subtlest, #6B6E76)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
           }}
         >
           From
@@ -438,19 +435,17 @@ function TransitionGroupRow({
         {isGlobal ? (
           <>
             <PillDot color="var(--ds-border-bold, #8C8F97)" />
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #292A2E)' }}>
+            <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)' }}>
               Any status
             </span>
             <span
               style={{
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: '0.06em',
+                fontSize: 11,
+                fontWeight: 600,
                 color: 'var(--ds-text-subtle, #505258)',
                 background: 'var(--ds-background-neutral, #F1F2F4)',
                 borderRadius: 3,
                 padding: '2px 5px',
-                textTransform: 'uppercase',
               }}
             >
               Global · all types
@@ -459,12 +454,12 @@ function TransitionGroupRow({
         ) : fromStatus ? (
           <>
             <PillDot color={fromStatus.color} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #292A2E)' }}>
+            <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)' }}>
               {fromStatus.name}
             </span>
           </>
         ) : (
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #292A2E)' }}>
+          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)' }}>
             Any status
           </span>
         )}
@@ -484,7 +479,7 @@ function TransitionGroupRow({
       {open && (
         <div
           style={{
-            padding: '4px 14px 14px 38px',
+            padding: '4px 16px 16px 40px',
             display: 'flex',
             flexWrap: 'wrap',
             gap: 8,
@@ -542,10 +537,10 @@ function TransitionGroupRow({
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: 6,
-                      height: 28,
+                      height: 32,
                       padding: '0 10px',
                       border: '1px solid var(--ds-border, #DFE1E6)',
-                      borderRadius: 14,
+                      borderRadius: 3,
                       fontSize: 13,
                       fontWeight: 500,
                       background: 'var(--ds-surface, #FFFFFF)',
@@ -673,8 +668,8 @@ function AddStatusPicker({
         left: 0,
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
-        borderRadius: 6,
-        boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+        borderRadius: 4,
+        boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))',
         padding: 8,
         minWidth: 240,
         maxHeight: 320,
@@ -891,7 +886,7 @@ export function WorkflowTypePanel({
           marginBottom: 16,
           padding: '12px 16px',
           border: '1px solid var(--ds-border, #DFE1E6)',
-          borderRadius: 6,
+          borderRadius: 4,
           background: 'var(--ds-surface-sunken, #F7F8F9)',
         }}
       >
@@ -999,7 +994,7 @@ export function WorkflowTypePanel({
         <div
           style={{
             border: '1px solid var(--ds-border, #DFE1E6)',
-            borderRadius: 6,
+            borderRadius: 4,
             padding: 32,
             textAlign: 'center',
             color: 'var(--ds-text-subtlest, #6B6E76)',
@@ -1014,7 +1009,7 @@ export function WorkflowTypePanel({
       {wfMode === 'editor' && (
         <>
           {/* ── statuses section ──────────────────────────────────────── */}
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: 16 }}>
             <h3
               style={{
                 fontSize: 16,
@@ -1108,7 +1103,7 @@ export function WorkflowTypePanel({
                     left: 0,
                     background: 'var(--ds-surface-overlay, #FFFFFF)',
                     border: '1px solid var(--ds-border, #DFE1E6)',
-                    borderRadius: 6,
+                    borderRadius: 4,
                     padding: '10px 12px',
                     fontSize: 13,
                     color: 'var(--ds-text-subtlest, #6B6E76)',
