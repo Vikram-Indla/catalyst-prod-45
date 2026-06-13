@@ -20,11 +20,15 @@ import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button';
 import Tooltip from '@atlaskit/tooltip';
 import Avatar from '@atlaskit/avatar';
+import AvatarGroup from '@atlaskit/avatar-group';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
+import { DatePicker } from '@atlaskit/datetime-picker';
 import Checkbox from '@atlaskit/checkbox';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatusPill } from '@/components/shared/StatusPill';
 import { translate } from '@/lib/jql';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 /* ─────────────────────────────── types ─────────────────────────────── */
 
@@ -569,7 +573,7 @@ export default function ProjectHubTimelinePage() {
       const name = row.issue.assigneeDisplayName;
       if (name && !seen.has(name)) {
         seen.add(name);
-        result.push({ name, avatarUrl: row.issue.assigneeAvatarUrl ?? null });
+        result.push({ name, avatarUrl: resolveAvatarUrl(name) });
       }
     }
     return result.sort((a, b) => a.name.localeCompare(b.name));
@@ -1038,12 +1042,14 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', cursor: 'pointer',
                     fontSize: 14, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)',
+                    background: assigneeFilter === opt.name ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = assigneeFilter === opt.name ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = assigneeFilter === opt.name ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent'; }}
                 >
-                  <Checkbox label="" isChecked={assigneeFilter === opt.name} onChange={() => {}} />
-                  <Avatar size="xsmall" src={opt.avatarUrl ?? undefined} name={opt.name} />
+                  <span style={{ display: 'inline-flex', borderRadius: '50%', outline: assigneeFilter === opt.name ? '2px solid var(--ds-border-selected, #388BFF)' : '2px solid transparent', outlineOffset: 1 }}>
+                    <Avatar size="xsmall" src={opt.avatarUrl ?? undefined} name={opt.name} />
+                  </span>
                   <span>{opt.name}</span>
                 </div>
               ))}
@@ -1052,6 +1058,26 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
               )}
             </PortalMenu>
           </div>
+
+          {/* assignee avatar stack — click to filter */}
+          {(() => {
+            const active = assigneeOptions.filter(a => a.avatarUrl);
+            if (!active.length) return null;
+            return (
+              <AvatarGroup
+                appearance="stack"
+                size="small"
+                maxCount={5}
+                label="Filter by assignee"
+                data={active.map(a => ({ key: a.name, name: a.name, src: a.avatarUrl ?? undefined }))}
+                onAvatarClick={(_e, _analytics, index) => {
+                  const a = active[index];
+                  if (!a) return;
+                  setAssigneeFilter(prev => prev === a.name ? null : a.name);
+                }}
+              />
+            );
+          })()}
 
           {/* quick filters + saved filters merged */}
           <div style={{ position: 'relative' }}>
@@ -1783,8 +1809,43 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
   const progress = showProgress && hasChildren ? computeEpicProgress(issue) : null;
   const [rowHovered, setRowHovered] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [editDatesOpen, setEditDatesOpen] = useState(false);
+  const [editStartDate, setEditStartDate] = useState('');
+  const [editDueDate, setEditDueDate] = useState('');
+  const [savingDates, setSavingDates] = useState(false);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
+
+  const openEditDates = () => {
+    setEditStartDate(issue.startDate ?? '');
+    setEditDueDate(issue.dueDate ?? '');
+    setMenuOpen(false);
+    setEditDatesOpen(true);
+  };
+
+  const handleSaveDates = async () => {
+    setSavingDates(true);
+    try {
+      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
+      if (row?.raw_json) {
+        const updated = {
+          ...row.raw_json,
+          fields: {
+            ...(row.raw_json.fields ?? {}),
+            customfield_10015: editStartDate || null,
+            duedate: editDueDate || null,
+          },
+        };
+        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issue.issueKey);
+        queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+      }
+    } catch (err) {
+      console.warn('save dates failed:', err);
+    } finally {
+      setSavingDates(false);
+      setEditDatesOpen(false);
+    }
+  };
 
   const handleRemoveDates = async () => {
     setMenuOpen(false);
@@ -1900,6 +1961,15 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         </div>
       </div>
 
+      {/* assignee avatar — always visible */}
+      {issue.assigneeAvatarUrl && (
+        <Tooltip content={issue.assigneeDisplayName ?? 'Assigned'} position="left">
+          <span style={{ flexShrink: 0, lineHeight: 0 }}>
+            <Avatar size="xsmall" src={issue.assigneeAvatarUrl} name={issue.assigneeDisplayName ?? undefined} />
+          </span>
+        </Tooltip>
+      )}
+
       {/* ⋯ more-actions button — visible on hover */}
       <button
         ref={menuBtnRef}
@@ -1934,7 +2004,7 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
           <MenuItemRow label="Change epic color" onClick={() => setMenuOpen(false)} />
         )}
         <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
-        <MenuItemRow label="Edit dates" onClick={() => setMenuOpen(false)} />
+        <MenuItemRow label="Edit dates" onClick={openEditDates} />
         {(issue.startDate || issue.dueDate) && (
           <MenuItemRow label="Remove dates" onClick={handleRemoveDates} danger />
         )}
@@ -1942,6 +2012,60 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
           Move, reparent &amp; more — coming soon
         </div>
       </PortalMenu>
+
+      {/* Edit Dates modal */}
+      <ModalTransition>
+        {editDatesOpen && (
+          <Modal onClose={() => setEditDatesOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle>Edit dates</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '6px 8px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderRadius: 3 }}>
+                <JiraIssueTypeIcon type={issue.issueType} size={14} />
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)' }}>
+                  {issue.issueKey}
+                </span>
+                <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {issue.summary}
+                </span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>
+                    Start date
+                  </label>
+                  <DatePicker
+                    value={editStartDate}
+                    onChange={(val) => setEditStartDate(val)}
+                    placeholder="Select start date"
+                    dateFormat="YYYY-MM-DD"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>
+                    Due date
+                  </label>
+                  <DatePicker
+                    value={editDueDate}
+                    onChange={(val) => setEditDueDate(val)}
+                    placeholder="Select due date"
+                    dateFormat="YYYY-MM-DD"
+                  />
+                </div>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setEditDatesOpen(false)} isDisabled={savingDates}>
+                Cancel
+              </Button>
+              <Button appearance="primary" onClick={handleSaveDates} isDisabled={savingDates}>
+                {savingDates ? 'Saving…' : 'Confirm'}
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
     </div>
   );
 }

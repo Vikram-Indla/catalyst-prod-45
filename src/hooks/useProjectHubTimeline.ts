@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 export interface TimelineIssue {
   id: string;
@@ -12,6 +13,7 @@ export interface TimelineIssue {
   statusCategory: string | null;
   priority: string | null;
   assigneeDisplayName: string | null;
+  assigneeAvatarUrl: string | null;
   parentKey: string | null;
   startDate: string | null;
   dueDate: string | null;
@@ -49,6 +51,7 @@ function mapRow(row: any): TimelineIssue {
     statusCategory: row.status_category ?? null,
     priority: row.priority ?? null,
     assigneeDisplayName: row.assignee_display_name ?? null,
+    assigneeAvatarUrl: resolveAvatarUrl(row.assignee_display_name),
     parentKey: row.parent_key ?? null,
     startDate: extractStartDate(row.raw_json),
     dueDate: extractDueDate(row.raw_json),
