@@ -1,10 +1,13 @@
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { GanttChart, ChevronRight, ChevronDown, Calendar } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
 import { useProjectHubTimeline, type TimelineIssue } from '@/hooks/useProjectHubTimeline';
 import Spinner from '@atlaskit/spinner';
+import Button from '@atlaskit/button';
+import Tooltip from '@atlaskit/tooltip';
+import Avatar from '@atlaskit/avatar';
 
 /* ─────────────────────────────── types ─────────────────────────────── */
 
@@ -18,9 +21,10 @@ interface FlatRow {
 /* ─────────────────────────────── constants ──────────────────────────── */
 
 const ROW_H = 40;
-const SIDEBAR_W = 280;
-const HEADER_H = 48;
-const MIN_BAR_W = 16;
+const SIDEBAR_W = 320;
+const HEADER_H = 40;
+const BAR_H = 22;
+const MIN_BAR_W = 18;
 const TODAY = new Date();
 
 const ZOOM_PX_PER_DAY: Record<ZoomLevel, number> = {
@@ -82,13 +86,14 @@ function computeDateRange(issues: TimelineIssue[]): { start: Date; end: Date } {
   }
   scan(issues);
 
-  const fallbackStart = new Date(TODAY.getFullYear(), 0, 1);
-  const fallbackEnd = new Date(TODAY.getFullYear(), 11, 31);
+  // FIX: fallback = today ±3 months so the today marker is always centred on screen
+  const now = new Date();
+  const fallbackStart = addDays(now, -90);
+  const fallbackEnd = addDays(now, 90);
 
   const rangeStart = isFinite(minMs) ? new Date(minMs) : fallbackStart;
   const rangeEnd = isFinite(maxMs) ? new Date(maxMs) : fallbackEnd;
 
-  // pad 4 weeks on each side
   return {
     start: addDays(rangeStart, -28),
     end: addDays(rangeEnd, 28),
@@ -136,14 +141,12 @@ function buildHeaderCols(
   pxPerDay: number,
 ): HeaderCol[] {
   const cols: HeaderCol[] = [];
-  const totalDays = daysBetween(start, end);
 
   if (zoom === 'week') {
     let cur = startOfWeek(start);
     while (cur <= end) {
       const left = daysBetween(start, cur) * pxPerDay;
-      const label = `${MONTHS[cur.getMonth()]} ${cur.getDate()}`;
-      cols.push({ label, left, width: 7 * pxPerDay });
+      cols.push({ label: `${MONTHS[cur.getMonth()]} ${cur.getDate()}`, left, width: 7 * pxPerDay });
       cur = addDays(cur, 7);
     }
   } else if (zoom === 'month') {
@@ -170,7 +173,7 @@ function buildHeaderCols(
   return cols;
 }
 
-/* ─────────────────────────────── sub-header (day/week ticks) ───────── */
+/* ─────────────────────────────── sub-header ────────────────────────── */
 
 function buildSubHeaderCols(
   start: Date,
@@ -196,7 +199,6 @@ function buildSubHeaderCols(
       cur = addDays(cur, 7);
     }
   } else {
-    // month ticks inside quarters
     let cur = startOfMonth(start);
     while (cur <= end) {
       const left = daysBetween(start, cur) * pxPerDay;
@@ -241,20 +243,29 @@ function buildGridLines(
   return lines;
 }
 
-/* ─────────────────────────────── empty state ───────────────────────── */
+/* ─────────────────────────────── inline empty overlay ──────────────── */
 
-function EmptyState({ projectKey }: { projectKey: string }) {
+// FIX: position:absolute inside the grid — never a full-page replacement
+function InlineEmptyOverlay({ projectKey }: { projectKey: string }) {
   return (
     <div style={{
-      flex: 1,
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'center',
       gap: 16,
-      padding: 48,
+      padding: 32,
+      background: 'var(--ds-surface-overlay, #FFFFFF)',
+      border: '1px solid var(--ds-border, #DFE1E6)',
+      borderRadius: 8,
+      boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.15))',
+      zIndex: 20,
+      minWidth: 280,
     }}>
-      <GanttChart style={{ width: 48, height: 48, color: 'var(--ds-text-subtlest, #626F86)' }} />
+      <GanttChart style={{ width: 40, height: 40, color: 'var(--ds-text-subtlest, #626F86)' }} />
       <div style={{ textAlign: 'center' }}>
         <p style={{ margin: 0, fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
           No issues with dates
@@ -275,7 +286,12 @@ export default function ProjectHubTimelinePage() {
 
   const [zoom, setZoom] = useState<ZoomLevel>('month');
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+
+  // FIX: 3-ref scroll sync architecture
   const gridRef = useRef<HTMLDivElement>(null);
+  const sidebarBodyRef = useRef<HTMLDivElement>(null);
+  const headerScrollRef = useRef<HTMLDivElement>(null);
+  const isSyncingScroll = useRef(false);
 
   const pxPerDay = ZOOM_PX_PER_DAY[zoom];
 
@@ -299,6 +315,52 @@ export default function ProjectHubTimelinePage() {
     [dateRange, zoom, pxPerDay],
   );
 
+  const hasAnyDates = useMemo(() => {
+    function check(list: TimelineIssue[]): boolean {
+      for (const i of list) {
+        if (i.startDate || i.dueDate) return true;
+        if (i.children.length && check(i.children)) return true;
+      }
+      return false;
+    }
+    return check(tree);
+  }, [tree]);
+
+  // FIX: scroll sync — grid drives both header (horizontal) and sidebar (vertical)
+  const handleGridScroll = useCallback(() => {
+    if (isSyncingScroll.current) return;
+    const grid = gridRef.current;
+    if (!grid) return;
+    isSyncingScroll.current = true;
+    requestAnimationFrame(() => {
+      if (headerScrollRef.current) headerScrollRef.current.scrollLeft = grid.scrollLeft;
+      if (sidebarBodyRef.current) sidebarBodyRef.current.scrollTop = grid.scrollTop;
+      isSyncingScroll.current = false;
+    });
+  }, []);
+
+  const handleSidebarScroll = useCallback(() => {
+    if (isSyncingScroll.current) return;
+    const sidebar = sidebarBodyRef.current;
+    if (!sidebar) return;
+    isSyncingScroll.current = true;
+    requestAnimationFrame(() => {
+      if (gridRef.current) gridRef.current.scrollTop = sidebar.scrollTop;
+      isSyncingScroll.current = false;
+    });
+  }, []);
+
+  useEffect(() => {
+    const grid = gridRef.current;
+    const sidebar = sidebarBodyRef.current;
+    if (grid) grid.addEventListener('scroll', handleGridScroll, { passive: true });
+    if (sidebar) sidebar.addEventListener('scroll', handleSidebarScroll, { passive: true });
+    return () => {
+      if (grid) grid.removeEventListener('scroll', handleGridScroll);
+      if (sidebar) sidebar.removeEventListener('scroll', handleSidebarScroll);
+    };
+  }, [handleGridScroll, handleSidebarScroll]);
+
   const toggleCollapse = useCallback((key: string) => {
     setCollapsed(prev => {
       const next = new Set(prev);
@@ -312,17 +374,6 @@ export default function ProjectHubTimelinePage() {
     if (!gridRef.current) return;
     gridRef.current.scrollLeft = todayLeft - gridRef.current.clientWidth / 2;
   }, [todayLeft]);
-
-  const hasAnyDates = useMemo(() => {
-    function check(list: TimelineIssue[]): boolean {
-      for (const i of list) {
-        if (i.startDate || i.dueDate) return true;
-        if (i.children.length && check(i.children)) return true;
-      }
-      return false;
-    }
-    return check(tree);
-  }, [tree]);
 
   if (isLoading) {
     return (
@@ -342,11 +393,9 @@ export default function ProjectHubTimelinePage() {
     );
   }
 
-  if (!hasAnyDates) {
-    return <EmptyState projectKey={projectKey ?? ''} />;
-  }
-
-  const contentHeight = rows.length * ROW_H;
+  // FIX: NEVER early-return for !hasAnyDates — timeline skeleton always renders
+  const contentHeight = Math.max(rows.length * ROW_H, 240);
+  const doubleHeaderH = HEADER_H * 2;
 
   return (
     <div style={{
@@ -372,86 +421,77 @@ export default function ProjectHubTimelinePage() {
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {/* zoom controls */}
+          {/* FIX: @atlaskit/button for zoom — not bare <button> */}
           <div style={{
             display: 'flex',
             border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 3,
             overflow: 'hidden',
           }}>
-            {(['week', 'month', 'quarter'] as ZoomLevel[]).map(level => (
-              <button
+            {(['week', 'month', 'quarter'] as ZoomLevel[]).map((level, i, arr) => (
+              <Button
                 key={level}
+                appearance={zoom === level ? 'primary' : 'subtle'}
+                isSelected={zoom === level}
                 onClick={() => setZoom(level)}
                 style={{
-                  padding: '4px 12px',
-                  fontSize: 12,
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  border: 'none',
-                  borderRight: level !== 'quarter' ? '1px solid var(--ds-border, #DFE1E6)' : 'none',
-                  background: zoom === level
-                    ? 'var(--ds-background-selected, #E9F2FE)'
-                    : 'var(--ds-surface, #FFFFFF)',
-                  color: zoom === level
-                    ? 'var(--ds-link, #0052CC)'
-                    : 'var(--ds-text-subtle, #42526E)',
+                  borderRadius: 0,
+                  borderRight: i < arr.length - 1 ? '1px solid var(--ds-border, #DFE1E6)' : 'none',
                 }}
               >
                 {level.charAt(0).toUpperCase() + level.slice(1)}
-              </button>
+              </Button>
             ))}
           </div>
-          {/* today button */}
-          <button
-            onClick={scrollToToday}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '4px 8px',
-              fontSize: 12,
-              fontWeight: 500,
-              cursor: 'pointer',
-              border: '1px solid var(--ds-border, #DFE1E6)',
-              borderRadius: 3,
-              background: 'var(--ds-surface, #FFFFFF)',
-              color: 'var(--ds-text-subtle, #42526E)',
-            }}
-          >
-            <Calendar style={{ width: 12, height: 12 }} />
-            Today
-          </button>
+          {/* FIX: @atlaskit/Tooltip + @atlaskit/button for today */}
+          <Tooltip content="Scroll to today" position="bottom">
+            <Button
+              appearance="default"
+              onClick={scrollToToday}
+              iconBefore={<Calendar style={{ width: 12, height: 12 }} />}
+            >
+              Today
+            </Button>
+          </Tooltip>
         </div>
       </div>
 
-      {/* ── body ── */}
+      {/* ── body: sidebar + grid ── */}
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* sidebar */}
+
+        {/* ── sidebar panel ── */}
         <div style={{
           width: SIDEBAR_W,
           flexShrink: 0,
           display: 'flex',
           flexDirection: 'column',
-          borderRight: '1px solid var(--ds-border, #DFE1E6)',
+          borderRight: '2px solid var(--ds-border, #DFE1E6)',
           overflow: 'hidden',
         }}>
-          {/* sidebar header */}
+          {/* sidebar header — static, must match doubleHeaderH of grid header */}
           <div style={{
-            height: HEADER_H * 2,
+            height: doubleHeaderH,
             flexShrink: 0,
             borderBottom: '1px solid var(--ds-border, #DFE1E6)',
             background: 'var(--ds-surface-sunken, #F7F8F9)',
             display: 'flex',
-            alignItems: 'center',
-            padding: '0 12px',
+            alignItems: 'flex-end',
+            padding: '0 8px 8px',
           }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', letterSpacing: '0.04em' }}>
+            <span style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: 'var(--ds-text-subtlest, #626F86)',
+              letterSpacing: '0.04em',
+            }}>
               Issue
             </span>
           </div>
-          {/* sidebar rows */}
-          <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
+          {/* FIX: sidebar body ref — synced vertically with grid */}
+          <div
+            ref={sidebarBodyRef}
+            style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}
+          >
             {rows.map(({ issue, depth }) => (
               <SidebarRow
                 key={issue.issueKey}
@@ -464,22 +504,26 @@ export default function ProjectHubTimelinePage() {
           </div>
         </div>
 
-        {/* grid */}
-        <div
-          ref={gridRef}
-          style={{ flex: 1, overflow: 'auto', position: 'relative' }}
-        >
-          <div style={{ width: gridWidth, minHeight: '100%' }}>
-            {/* header */}
-            <div style={{
-              position: 'sticky',
-              top: 0,
-              zIndex: 10,
+        {/* ── grid panel ── */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+
+          {/* FIX: header in its own div — overflow:hidden, synced horizontally by JS */}
+          <div
+            ref={headerScrollRef}
+            style={{
+              overflow: 'hidden',
+              flexShrink: 0,
               background: 'var(--ds-surface-sunken, #F7F8F9)',
               borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-            }}>
+            }}
+          >
+            <div style={{ width: gridWidth }}>
               {/* main header row */}
-              <div style={{ height: HEADER_H, position: 'relative', borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)' }}>
+              <div style={{
+                height: HEADER_H,
+                position: 'relative',
+                borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
+              }}>
                 {headerCols.map((col, i) => (
                   <div key={i} style={{
                     position: 'absolute',
@@ -492,7 +536,12 @@ export default function ProjectHubTimelinePage() {
                     borderRight: '1px solid var(--ds-border-subtle, #EBECF0)',
                     overflow: 'hidden',
                   }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', whiteSpace: 'nowrap' }}>
+                    <span style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      color: 'var(--ds-text-subtlest, #626F86)',
+                      whiteSpace: 'nowrap',
+                    }}>
                       {col.label}
                     </span>
                   </div>
@@ -512,16 +561,26 @@ export default function ProjectHubTimelinePage() {
                     borderRight: '1px solid var(--ds-border-subtle, #EBECF0)',
                     overflow: 'hidden',
                   }}>
-                    <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #626F86)', whiteSpace: 'nowrap' }}>
+                    <span style={{
+                      fontSize: 10,
+                      color: 'var(--ds-text-subtlest, #626F86)',
+                      whiteSpace: 'nowrap',
+                    }}>
                       {col.label}
                     </span>
                   </div>
                 ))}
               </div>
             </div>
+          </div>
 
-            {/* grid content */}
-            <div style={{ position: 'relative', height: contentHeight }}>
+          {/* FIX: grid body — separate scrollable div, source of truth for scroll position */}
+          <div
+            ref={gridRef}
+            style={{ flex: 1, overflow: 'auto', position: 'relative' }}
+          >
+            <div style={{ width: gridWidth, height: contentHeight, position: 'relative' }}>
+
               {/* vertical grid lines */}
               {gridLines.map((x, i) => (
                 <div key={i} style={{
@@ -561,19 +620,19 @@ export default function ProjectHubTimelinePage() {
 
               {/* row backgrounds */}
               {rows.map(({ issue }, idx) => (
-                <div key={issue.issueKey} style={{
+                <div key={issue.issueKey + '_bg'} style={{
                   position: 'absolute',
                   top: idx * ROW_H,
                   left: 0,
                   right: 0,
                   height: ROW_H,
-                  background: idx % 2 === 0
-                    ? 'transparent'
-                    : 'var(--ds-background-neutral-subtle, #F7F8F9)',
+                  background: idx % 2 !== 0
+                    ? 'var(--ds-background-neutral-subtle, #F7F8F9)'
+                    : 'transparent',
                 }} />
               ))}
 
-              {/* bars */}
+              {/* FIX: bars wrapped in @atlaskit/Tooltip — no native title= attribute */}
               {rows.map(({ issue }, idx) => {
                 const start = parseDate(issue.startDate);
                 const end = parseDate(issue.dueDate);
@@ -587,44 +646,61 @@ export default function ProjectHubTimelinePage() {
                   daysBetween(effectiveStart, effectiveEnd) * pxPerDay + pxPerDay,
                   MIN_BAR_W,
                 );
-                const top = idx * ROW_H + (ROW_H - 20) / 2;
+                const barTop = idx * ROW_H + (ROW_H - BAR_H) / 2;
 
-                return (
-                  <div
-                    key={issue.issueKey}
-                    title={`${issue.issueKey}: ${issue.summary}\n${issue.startDate ?? '?'} → ${issue.dueDate ?? '?'}`}
-                    style={{
-                      position: 'absolute',
-                      top,
-                      left,
-                      width,
-                      height: 20,
-                      borderRadius: 4,
-                      background: barColor(issue),
-                      display: 'flex',
-                      alignItems: 'center',
-                      paddingLeft: 8,
-                      paddingRight: 8,
-                      overflow: 'hidden',
-                      cursor: 'default',
-                      zIndex: 2,
-                      boxShadow: 'var(--ds-shadow-raised, 0 1px 2px rgba(9,30,66,0.15))',
-                    }}
-                  >
-                    <span style={{
-                      fontSize: 11,
-                      fontWeight: 500,
-                      color: 'var(--ds-text-inverse, #FFFFFF)',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      lineHeight: 1,
-                    }}>
-                      {issue.summary}
-                    </span>
+                const tooltipContent = (
+                  <div>
+                    <div style={{ fontWeight: 600, marginBottom: 4 }}>
+                      {issue.issueKey}: {issue.summary}
+                    </div>
+                    <div style={{ opacity: 0.85 }}>
+                      {issue.startDate ?? '–'} → {issue.dueDate ?? '–'}
+                    </div>
+                    {issue.assigneeDisplayName && (
+                      <div style={{ opacity: 0.85 }}>{issue.assigneeDisplayName}</div>
+                    )}
                   </div>
                 );
+
+                return (
+                  <Tooltip key={issue.issueKey} content={tooltipContent} position="top">
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: barTop,
+                        left,
+                        width,
+                        height: BAR_H,
+                        borderRadius: 4,
+                        background: barColor(issue),
+                        display: 'flex',
+                        alignItems: 'center',
+                        paddingLeft: 8,
+                        paddingRight: 8,
+                        overflow: 'hidden',
+                        cursor: 'default',
+                        zIndex: 2,
+                        boxShadow: 'var(--ds-shadow-raised, 0 1px 2px rgba(9,30,66,0.15))',
+                      }}
+                    >
+                      <span style={{
+                        fontSize: 11,
+                        fontWeight: 500,
+                        color: 'var(--ds-text-inverse, #FFFFFF)',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        lineHeight: 1,
+                      }}>
+                        {issue.summary}
+                      </span>
+                    </div>
+                  </Tooltip>
+                );
               })}
+
+              {/* FIX: inline overlay — never a full-page replacement */}
+              {!hasAnyDates && <InlineEmptyOverlay projectKey={projectKey ?? ''} />}
             </div>
           </div>
         </div>
@@ -642,25 +718,33 @@ interface SidebarRowProps {
   onToggle: (key: string) => void;
 }
 
+// FIX: enhanced sidebar row — 2-line text + CatalystStatusPill + Avatar
 function SidebarRow({ issue, depth, collapsed, onToggle }: SidebarRowProps) {
   const hasChildren = issue.children.length > 0;
 
   return (
-    <div style={{
-      height: ROW_H,
-      display: 'flex',
-      alignItems: 'center',
-      paddingLeft: 8 + depth * 16,
-      paddingRight: 8,
-      gap: 4,
-      borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
-      overflow: 'hidden',
-      cursor: hasChildren ? 'pointer' : 'default',
-    }}
+    <div
+      style={{
+        height: ROW_H,
+        display: 'flex',
+        alignItems: 'center',
+        paddingLeft: 8 + depth * 16,
+        paddingRight: 8,
+        gap: 4,
+        borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
+        overflow: 'hidden',
+        cursor: hasChildren ? 'pointer' : 'default',
+      }}
       onClick={hasChildren ? () => onToggle(issue.issueKey) : undefined}
     >
       {/* collapse toggle */}
-      <div style={{ width: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{
+        width: 16,
+        flexShrink: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
         {hasChildren && (
           collapsed
             ? <ChevronRight style={{ width: 12, height: 12, color: 'var(--ds-text-subtlest, #626F86)' }} />
@@ -669,20 +753,73 @@ function SidebarRow({ issue, depth, collapsed, onToggle }: SidebarRowProps) {
       </div>
 
       {/* type icon */}
-      <JiraIssueTypeIcon type={issue.issueType} size={14} />
+      <div style={{ flexShrink: 0 }}>
+        <JiraIssueTypeIcon type={issue.issueType} size={14} />
+      </div>
 
-      {/* summary */}
-      <span style={{
-        flex: 1,
-        fontSize: 12,
-        color: 'var(--ds-text, #172B4D)',
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        lineHeight: 1.2,
-      }}>
-        {issue.summary}
-      </span>
+      {/* FIX: two-line text block — summary (primary) + key as link (secondary) */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+        <span style={{
+          fontSize: 12,
+          fontWeight: 500,
+          color: 'var(--ds-text, #172B4D)',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          lineHeight: 1.3,
+        }}>
+          {issue.summary}
+        </span>
+        <span
+          role="link"
+          tabIndex={0}
+          onClick={e => {
+            e.stopPropagation();
+            window.open(`/project-hub/${issue.projectKey}/backlog?issue=${issue.issueKey}`, '_blank');
+          }}
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              e.stopPropagation();
+              window.open(`/project-hub/${issue.projectKey}/backlog?issue=${issue.issueKey}`, '_blank');
+            }
+          }}
+          style={{
+            fontSize: 11,
+            fontWeight: 400,
+            color: 'var(--ds-link, #0052CC)',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            lineHeight: 1.2,
+            cursor: 'pointer',
+          }}
+        >
+          {issue.issueKey}
+        </span>
+      </div>
+
+      {/* FIX: status pill — CatalystStatusPill, not bare span */}
+      {issue.status && (
+        <div
+          style={{ flexShrink: 0, maxWidth: 72, overflow: 'hidden' }}
+          onClick={e => e.stopPropagation()}
+        >
+          <CatalystStatusPill
+            status={issue.status}
+            statusCategory={issue.statusCategory}
+          />
+        </div>
+      )}
+
+      {/* FIX: Avatar with initials — no src (assignee_display_name only in DB, no avatarUrl) */}
+      {issue.assigneeDisplayName && (
+        <div style={{ flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+          <Avatar
+            name={issue.assigneeDisplayName}
+            size="xsmall"
+          />
+        </div>
+      )}
     </div>
   );
 }
