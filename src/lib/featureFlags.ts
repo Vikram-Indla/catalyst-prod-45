@@ -64,3 +64,15 @@ export const ENABLE_FILTER_TO_ROADMAP = import.meta.env.VITE_ENABLE_FILTER_TO_RO
  * Out of scope (this feature): ProductHub/IncidentHub/TaskHub.
  */
 export const ENABLE_FILTER_TO_DASHBOARD = import.meta.env.VITE_ENABLE_FILTER_TO_DASHBOARD === 'true';
+
+/**
+ * WhatsApp AI Summary — Filters-as-reusable-views vertical (feature 4).
+ * Defaults to FALSE: off everywhere until the vertical ships.
+ * Set VITE_ENABLE_FILTER_WHATSAPP_AI_SUMMARY=true to expose the "Copy WhatsApp
+ * summary" action in the filter kebab. When off, FilterKebabMenu renders unchanged.
+ *
+ * Surface: /project-hub/:key filters (kebab menu + filter-results entry).
+ * Out of scope (MVP): workspace-card entry, history, templates, scheduled sends.
+ */
+export const ENABLE_FILTER_WHATSAPP_AI_SUMMARY =
+  import.meta.env.VITE_ENABLE_FILTER_WHATSAPP_AI_SUMMARY === 'true';
