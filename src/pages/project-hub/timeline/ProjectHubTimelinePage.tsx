@@ -2358,10 +2358,10 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
     {inlineCreateOpen && (
       <div
         style={{
-          height: ROW_H, display: 'flex', alignItems: 'center', gap: 6,
+          height: ROW_H, display: 'flex', alignItems: 'center', gap: 8,
           paddingTop: 0, paddingBottom: 0, paddingRight: 8,
           paddingLeft: 8 + (depth + 1) * 12,
-          borderBottom: '1px solid rgba(9,30,66,0.06)',
+          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
           background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
         }}
         onClick={e => e.stopPropagation()}
@@ -2384,7 +2384,7 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
               role="option"
               aria-selected={ct === inlineCreateType}
               onClick={() => { setInlineCreateType(ct); setShowTypeDropdown(false); }}
-              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
@@ -2403,7 +2403,7 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
           }}
           placeholder="What needs to be done?"
           style={{
-            flex: 1, height: 28, padding: '0 8px',
+            flex: 1, height: 24, padding: '0 8px',
             border: '1px solid var(--ds-border-focused, #388BFF)',
             borderRadius: 3, fontSize: 13, outline: 'none',
             background: 'var(--ds-background-input, #FFFFFF)',
