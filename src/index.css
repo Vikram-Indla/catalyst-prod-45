@@ -180,27 +180,17 @@
   --panel-w: 540px;
 
   /* ═══ CATALYST V12 HYBRID PRECISION — Wiki Design Tokens ═══ */
-  --cp-bg-page: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
-  /* Outer page bg for migrated hub surfaces — consumed by
-     <AtlaskitPageShell>. Flattened to white Apr 19, 2026 per Vikram;
-     project-hub pages now render on a single white canvas (token
-     docstring in src/theme/ads/tokens.ts explains the pre-V3 value). */
-  --cp-bg-hub-page: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
-  /* --cp-bg-surface is "cards, panels" per CLAUDE.md §4. Was drifting to
-     #F8FAFC (slate-50) which painted a grey tint behind every Atlaskit
-     PageShell inner card — visible in BAU backlog audit 2026-04-27 as
-     a grey wash behind the right rail header band. Restored to canonical
-     var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)) to match both CLAUDE.md and src/theme/ads/tokens.ts which
-     already declared bg.surface light = var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)). The grey-card aesthetic
-     was never the design — it was a value drift. */
-  --cp-bg-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
-  --cp-bg-sunken: #F1F5F9;
-  --cp-bg-elevated: #ffffff;
-  --cp-text-primary: #172B4D;
-  --cp-text-secondary: #44546F;
-  --cp-text-tertiary: #626F86;
-  --cp-text-muted: #626F86;
-  --cp-text-link: var(--cp-primary-60, #0052CC);
+  /* ADS bridge (V9 migration 2026-06-13): surface tokens now use --ds-* as primary source */
+  --cp-bg-page: var(--ds-surface, #FFFFFF);
+  --cp-bg-hub-page: var(--ds-surface, #FFFFFF);
+  --cp-bg-surface: var(--ds-surface, #FFFFFF);
+  --cp-bg-sunken: var(--ds-surface-sunken, #F7F8F9);
+  --cp-bg-elevated: var(--ds-surface, #FFFFFF);
+  --cp-text-primary: var(--ds-text, #172B4D);
+  --cp-text-secondary: var(--ds-text-subtle, #42526E);
+  --cp-text-tertiary: var(--ds-text-subtlest, #6B778C);
+  --cp-text-muted: var(--ds-text-subtlest, #6B778C);
+  --cp-text-link: var(--ds-link, #0052CC);
   --cp-border-subtle: rgba(15,23,42,0.06);
   --cp-border-default: rgba(15,23,42,0.12);
   --cp-border-strong: rgba(15,23,42,0.20);
@@ -243,29 +233,30 @@
   --ph-card-panel-w: 288px;
   --ph-sidebar-w: 240px;
 
-  /* ═══ SHORTHAND TOKENS — For You / shared components ═══ */
-  --cp-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
-  --cp-float: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
-  --cp-hover: rgba(15,23,42,0.04);
-  --cp-bd: rgba(15,23,42,0.12);
-  --cp-bd-zone: rgba(15,23,42,0.06);
-  --cp-bd-table: rgba(15,23,42,0.06);
-  --cp-t1: var(--cp-ink-1, var(--cp-ink-1, #0F172A));
-  --cp-t2: var(--cp-ink-2, var(--cp-ink-2, #334155));
-  --cp-t3: var(--cp-ink-3, var(--cp-text-secondary, #64748B));
-  --cp-t4: var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8));
-  --cp-blue: var(--cp-workstream-catalyst-primary, #2563EB);
-  --cp-blue-wash: rgba(37,99,235,0.08);
-  --cp-blue-text: var(--cp-workstream-catalyst-primary, #2563EB);
-  --cp-blue-link: var(--cp-workstream-catalyst-primary, #2563EB);
-  --cp-ok: var(--cp-success, #16A34A);
-  --cp-ok-bg: rgba(22,163,74,0.08);
-  --cp-warn: var(--cp-warning, #D97706);
-  --cp-warn-bg: rgba(217,119,6,0.08);
-  --cp-err: var(--cp-danger, #DC2626);
-  --cp-err-bg: rgba(220,38,38,0.08);
-  --cp-err-text: var(--cp-danger, #DC2626);
-  --cp-prg-bg: rgba(37,99,235,0.08);
+  /* ═══ SHORTHAND TOKENS — ADS bridge (V9 migration 2026-06-13) ═══ */
+  /* All --cp-* shorthand tokens now use --ds-* as primary source */
+  --cp-bg: var(--ds-surface, #FFFFFF);
+  --cp-float: var(--ds-surface-raised, #FFFFFF);
+  --cp-hover: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
+  --cp-bd: var(--ds-border, #DFE1E6);
+  --cp-bd-zone: var(--ds-background-neutral-subtle, #F7F8F9);
+  --cp-bd-table: var(--ds-border, #DFE1E6);
+  --cp-t1: var(--ds-text, #172B4D);
+  --cp-t2: var(--ds-text-subtle, #42526E);
+  --cp-t3: var(--ds-text-subtlest, #6B778C);
+  --cp-t4: var(--ds-text-disabled, #8993A5);
+  --cp-blue: var(--ds-link, #0052CC);
+  --cp-blue-wash: var(--ds-background-selected, #E9F2FE);
+  --cp-blue-text: var(--ds-link, #0052CC);
+  --cp-blue-link: var(--ds-link, #0052CC);
+  --cp-ok: var(--ds-text-success, #216E4E);
+  --cp-ok-bg: var(--ds-background-success, #DFFCF0);
+  --cp-warn: var(--ds-text-warning, #974F0C);
+  --cp-warn-bg: var(--ds-background-warning, #FFF7D6);
+  --cp-err: var(--ds-text-danger, #AE2A19);
+  --cp-err-bg: var(--ds-background-danger, #FFEBE6);
+  --cp-err-text: var(--ds-text-danger, #AE2A19);
+  --cp-prg-bg: var(--ds-background-information, #E9F2FE);
   --cp-lz-gy-bg: var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   --cp-lz-gy-t: #42526E;
   --cp-lz-bl-bg: #0C66E4;
