@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useId, useMemo } from 'react';
 import type { TypeStatus, Transition } from '@/hooks/useTypeWorkflow';
 
 // Map DB category to Tier-1 lozenge color tokens
@@ -19,7 +19,6 @@ const H_GAP = 56;
 const V_GAP = 32;
 const START_W = 48;
 const START_H = 24;
-const MARKER_ID = 'arrow';
 
 export interface CatalystWorkflowDiagramProps {
   statuses: TypeStatus[];
@@ -95,6 +94,9 @@ export function CatalystWorkflowDiagram({
   showTransitionLabels,
   zoom,
 }: CatalystWorkflowDiagramProps) {
+  const uid = useId();
+  const markerId = `arrow-${uid.replace(/:/g, '')}`;
+
   const { nodes, edges, svgW, svgH } = useMemo(() => {
     if (!statuses.length) return { nodes: [], edges: [], svgW: 200, svgH: 100 };
 
@@ -169,7 +171,7 @@ export function CatalystWorkflowDiagram({
       >
         <defs>
           <marker
-            id={MARKER_ID}
+            id={markerId}
             markerWidth="8"
             markerHeight="8"
             refX="6"
@@ -216,7 +218,7 @@ export function CatalystWorkflowDiagram({
               fill="none"
               stroke="var(--ds-border, #DFE1E6)"
               strokeWidth={1.5}
-              markerEnd={`url(#${MARKER_ID})`}
+              markerEnd={`url(#${markerId})`}
             />
           );
         })()}
@@ -255,7 +257,7 @@ export function CatalystWorkflowDiagram({
                 fill="none"
                 stroke="var(--ds-border, #DFE1E6)"
                 strokeWidth={1.5}
-                markerEnd={`url(#${MARKER_ID})`}
+                markerEnd={`url(#${markerId})`}
               />
               {showTransitionLabels && (
                 <text

@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import Modal, { ModalHeader, ModalTitle, ModalFooter, ModalBody } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
-import Checkbox from '@atlaskit/checkbox';
 import Spinner from '@atlaskit/spinner';
 import { useNavigate } from 'react-router-dom';
 import { useDefaultProject } from '@/hooks/useProjects';
@@ -48,7 +47,6 @@ export function CatalystWorkflowModal({
   const tier1Workflow = useWorkflow(issueTypeName);
   const workflowName = tier1Workflow?.name ?? '';
 
-  const [showLabels, setShowLabels] = useState(false);
   const [zoom, setZoom] = useState(100);
 
   // Build title — dedup guard: skip prefix when name equals type
@@ -95,7 +93,7 @@ export function CatalystWorkflowModal({
     return [...reachable]
       .map((id) => statusMap.get(id))
       .filter((s): s is NonNullable<typeof s> => Boolean(s));
-  }, [typeWorkflow, currentStatusId]);
+  }, [typeWorkflow, resolvedCurrentStatusId]);
 
   return (
     <Modal onClose={onClose} width="large">
@@ -156,38 +154,32 @@ export function CatalystWorkflowModal({
               </div>
             )}
 
-            {/* Controls row */}
+            {/* Zoom control */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 16,
+                gap: 8,
                 borderTop: '1px solid var(--ds-border, #DFE1E6)',
                 paddingTop: 12,
+                justifyContent: 'flex-end',
               }}
             >
-              <Checkbox
-                isChecked={showLabels}
-                onChange={(e) => setShowLabels(e.target.checked)}
-                label="Show transition labels"
+              <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
+                Zoom
+              </span>
+              <input
+                type="range"
+                min={50}
+                max={150}
+                step={10}
+                value={zoom}
+                onChange={(e) => setZoom(Number(e.target.value))}
+                style={{ width: 96, accentColor: 'var(--ds-link, #0052CC)' }}
               />
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' }}>
-                <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
-                  Zoom
-                </span>
-                <input
-                  type="range"
-                  min={50}
-                  max={150}
-                  step={10}
-                  value={zoom}
-                  onChange={(e) => setZoom(Number(e.target.value))}
-                  style={{ width: 96, accentColor: 'var(--ds-link, #0052CC)' }}
-                />
-                <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', minWidth: 32 }}>
-                  {zoom}%
-                </span>
-              </div>
+              <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', minWidth: 32 }}>
+                {zoom}%
+              </span>
             </div>
 
             {/* DAG diagram */}
@@ -206,7 +198,7 @@ export function CatalystWorkflowModal({
                   transitions={typeWorkflow.transitions}
                   initialStatusId={typeWorkflow.initialStatusId}
                   currentStatusId={resolvedCurrentStatusId}
-                  showTransitionLabels={showLabels}
+                  showTransitionLabels={false}
                   zoom={zoom}
                 />
               )}
