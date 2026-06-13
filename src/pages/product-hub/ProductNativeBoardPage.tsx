@@ -113,7 +113,7 @@ async function resolveAssigneeNames(rows: any[]): Promise<Map<string, string>> {
 }
 
 export default function ProductNativeBoardPage() {
-  const { key } = useParams<{ key: string }>();
+  const { key, boardId } = useParams<{ key: string; boardId?: string }>();
   const { isDark } = useTheme();
   const tk = isDark ? KANBAN_TOKENS.dark : KANBAN_TOKENS.light;
   const avatarsByName = useProfileAvatarsByName();
@@ -207,14 +207,70 @@ export default function ProductNativeBoardPage() {
 
   const productId = productMeta?.id ?? null;
 
+  /* ═══ DATA: BOARD-SPECIFIC COLUMNS (when /boards/:boardId route) ═══
+   * When a boardId is in the URL (user navigated from ProductBoardManagerPage),
+   * load that board's column config from board_columns + board_status_mappings.
+   * Falls back to useTypeWorkflow columns when no boardId (/kanban route).
+   */
+  const { data: dynamicBoardData } = useQuery({
+    queryKey: ['kanban-board-columns', boardId ?? null],
+    queryFn: async () => {
+      if (!boardId) return null;
+      const { data: cols } = await supabase
+        .from('board_columns')
+        .select('id, name, position, status_ids, is_backlog, is_done')
+        .eq('board_id', boardId)
+        .order('position');
+      const { data: mappings } = await supabase
+        .from('board_status_mappings')
+        .select('status_id, status_name, bucket_type, column_id, order_index')
+        .eq('board_id', boardId)
+        .order('order_index');
+      if (!cols?.length) return null;
+      return { boardId, columns: cols, mappings: mappings ?? [] };
+    },
+    enabled: !!boardId,
+    staleTime: 60_000,
+  });
+
   /* ═══ DATA: COLUMNS from ph_workflow_type_statuses — single source of truth ═══
    * useTypeWorkflow('BAU', 'Business Request') reads the same tables that
    * CatalystStatusPill and /admin/workflows manage. Any status added/removed
    * in admin automatically propagates to kanban columns here.
+   * Only used when no boardId is present (the /kanban route).
    */
   const { data: brWorkflow } = useTypeWorkflow('BAU', 'Business Request');
 
   const { KANBAN_COLUMNS, STATUS_TO_COL_ID, COL_PRIMARY_STATUS, COLUMN_ID_SET } = useMemo(() => {
+    // Priority 1: board-specific columns from board_columns (when boardId in URL)
+    if (dynamicBoardData?.columns?.length) {
+      const cols: KanbanColumnDef[] = dynamicBoardData.columns.map((c: any) => {
+        const mappedStatuses = dynamicBoardData.mappings
+          .filter((m: any) => m.bucket_type === 'column' && m.column_id === c.id)
+          .map((m: any) => m.status_name);
+        let statuses = mappedStatuses.length > 0 ? mappedStatuses : [];
+        if (statuses.length === 0 && c.status_ids?.length) {
+          statuses = dynamicBoardData.mappings
+            .filter((m: any) => c.status_ids.includes(m.status_id))
+            .map((m: any) => m.status_name);
+        }
+        const category: 'todo' | 'in_progress' | 'done' = c.is_done ? 'done' : c.is_backlog ? 'todo' : 'in_progress';
+        return { id: c.id, name: c.name.toUpperCase(), statuses, category };
+      });
+      const sToCId = new Map<string, string>();
+      const cPrimary: Record<string, string> = {};
+      cols.forEach(col => {
+        if (col.statuses.length > 0) cPrimary[col.id] = col.statuses[0];
+        col.statuses.forEach(s => sToCId.set(s.toLowerCase(), col.id));
+      });
+      return {
+        KANBAN_COLUMNS: cols,
+        STATUS_TO_COL_ID: sToCId,
+        COL_PRIMARY_STATUS: cPrimary,
+        COLUMN_ID_SET: new Set(cols.map(c => c.id)),
+      };
+    }
+    // Priority 2: workflow-based columns (no boardId — /kanban route)
     const statuses = brWorkflow?.statuses ?? [];
     if (!statuses.length) {
       return {
@@ -242,7 +298,7 @@ export default function ProductNativeBoardPage() {
       COL_PRIMARY_STATUS: cPrimary,
       COLUMN_ID_SET: new Set(cols.map(c => c.id)),
     };
-  }, [brWorkflow?.statuses]);
+  }, [dynamicBoardData, brWorkflow?.statuses]);
 
   /* ═══ DATA: ISSUES from business_requests (replaces ph_issues) ═══ */
   const { data: rawIssues = [], isLoading } = useQuery({

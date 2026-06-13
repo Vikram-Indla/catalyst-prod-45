@@ -18,7 +18,6 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { KanbanAvatar } from './KanbanAvatar';
 import { AssigneePickerPopover, type AssigneeOption } from './AssigneePickerPopover';
 import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
-import { IssueHoverCard } from '@/components/shared/IssueHoverCard';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
 import { SPACING_TOKENS, KANBAN_COLUMNS } from './kanban-tokens';
@@ -124,15 +123,15 @@ interface WorkItemCardProps {
   boardColumns?: KanbanColumnDef[];
 }
 
-/* ── SubtaskStrip: row of subtask chips, each wired to IssueHoverCard ── */
+/* ── SubtaskStrip: row of subtask chips ── */
 
 function SubtaskStrip({ subtasks, tk }: { subtasks: BoardIssue[]; tk: KanbanThemeTokens }) {
   if (!subtasks.length) return null;
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4, marginBottom: 2 }}>
       {subtasks.map(st => (
-        <IssueHoverCard key={st.id} issueKey={st.issueKey}>
           <span
+            key={st.id}
             role="img"
             aria-label={st.issueKey}
             style={{
@@ -153,7 +152,6 @@ function SubtaskStrip({ subtasks, tk }: { subtasks: BoardIssue[]; tk: KanbanThem
             <JiraIssueTypeIcon type={st.issueType} size={12} />
             <span>{st.issueKey}</span>
           </span>
-        </IssueHoverCard>
       ))}
     </div>
   );
@@ -456,12 +454,7 @@ export function WorkItemCard({
             : <JiraIssueTypeIcon type={issue.issueType} size={16} />
         )}
         {vf?.workItemKey !== false && (
-          /* Jira parity: clicking the issue key opens the detail panel.
-             Wrapped in <IssueHoverCard> so hovering the key on ANY card
-             type (Story/Task/Epic/etc.) shows the quick-view preview —
-             previously only subtask chips had this affordance. */
-          <IssueHoverCard issueKey={issue.issueKey}>
-            <button
+          <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -490,7 +483,6 @@ export function WorkItemCard({
             >
               {issue.issueKey}
             </button>
-          </IssueHoverCard>
         )}
         {issue.sourceTag && (
           <SourceBadge source={issue.sourceTag} />
