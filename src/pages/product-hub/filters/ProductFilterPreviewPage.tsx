@@ -942,6 +942,7 @@ export function ProductFilterPreviewPage() {
               currentUserId={currentUserId}
               rows={items}
               isLoadingRows={isFetching}
+              hubType="product"
             />
           )}
 

@@ -39,9 +39,11 @@ interface FilterKebabMenuProps {
   rows?: JqlResultRow[];
   /** True while JQL results are still loading — prevents "No items" false alarm. */
   isLoadingRows?: boolean;
+  /** 'project' (default) or 'product' — controls nav prefix for Create Kanban/Roadmap/Dashboard. */
+  hubType?: 'project' | 'product';
 }
 
-export function FilterKebabMenu({ filter, currentUserId, rows = [], isLoadingRows = false }: FilterKebabMenuProps) {
+export function FilterKebabMenu({ filter, currentUserId, rows = [], isLoadingRows = false, hubType = 'project' }: FilterKebabMenuProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [editOpen, setEditOpen] = useState(false);
@@ -175,7 +177,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
       });
       setKanbanError(null);
       setCreateKanbanOpen(false);
-      if (projectKey && boardId) navigate(`/project-hub/${projectKey}/boards/${boardId}`);
+      if (projectKey && boardId) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/boards/${boardId}`);
     } catch (e: any) {
       console.error('Failed to create Kanban from filter:', e);
       setKanbanError(e?.message ?? 'Something went wrong creating the board.');
@@ -198,7 +200,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
       });
       setRoadmapError(null);
       setCreateRoadmapOpen(false);
-      if (projectKey && viewId) navigate(`/project-hub/${projectKey}/roadmaps/${viewId}`);
+      if (projectKey && viewId) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/roadmaps/${viewId}`);
     } catch (e: any) {
       console.error('Failed to create roadmap from filter:', e);
       setRoadmapError(e?.message ?? 'Something went wrong creating the roadmap.');
@@ -217,7 +219,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
       });
       setDashboardError(null);
       setCreateDashboardOpen(false);
-      if (projectKey && viewId) navigate(`/project-hub/${projectKey}/dashboards/${viewId}`);
+      if (projectKey && viewId) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/dashboards/${viewId}`);
     } catch (e: any) {
       console.error('Failed to create dashboard from filter:', e);
       setDashboardError(e?.message ?? 'Something went wrong creating the dashboard.');
@@ -334,7 +336,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                   linkedBoardId ? 'Open Kanban' : 'Create Kanban from filter',
                   () => {
                     if (linkedBoardId) {
-                      if (projectKey) navigate(`/project-hub/${projectKey}/boards/${linkedBoardId}`);
+                      if (projectKey) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/boards/${linkedBoardId}`);
                       return;
                     }
                     setKanbanName(`${filter.name} board`);
@@ -352,7 +354,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                 existingRoadmap.data ? 'Open roadmap' : 'Create roadmap from filter',
                 () => {
                   if (existingRoadmap.data) {
-                    if (projectKey) navigate(`/project-hub/${projectKey}/roadmaps/${existingRoadmap.data.id}`);
+                    if (projectKey) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/roadmaps/${existingRoadmap.data.id}`);
                     return;
                   }
                   setRoadmapName(`${filter.name} roadmap`);
@@ -369,7 +371,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                 existingDashboard.data ? 'Open dashboard' : 'Create dashboard from filter',
                 () => {
                   if (existingDashboard.data) {
-                    if (projectKey) navigate(`/project-hub/${projectKey}/dashboards/${existingDashboard.data.id}`);
+                    if (projectKey) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/dashboards/${existingDashboard.data.id}`);
                     return;
                   }
                   setDashboardName(`${filter.name} dashboard`);
@@ -569,7 +571,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                       .eq('id', filter.id);
                     setCreateBoardOpen(false);
                     if (projectKey && board?.id) {
-                      navigate(`/project-hub/${projectKey}/boards/${board.id}`);
+                      navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/boards/${board.id}`);
                     }
                   } catch (e: any) {
                     console.error('Failed to create board:', e);

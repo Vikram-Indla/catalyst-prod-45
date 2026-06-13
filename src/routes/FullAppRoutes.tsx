@@ -447,6 +447,7 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/backlog/:issueKey" element={<MG k="producthub" t="ProductHub"><S><ProductBacklogDetailPage /></S></MG>} />
         <Route path="/product-hub/:key/backlog" element={<MG k="producthub" t="ProductHub"><S><ProductBacklogPage /></S></MG>} />
         <Route path="/product-hub/:key/boards" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
+        <Route path="/product-hub/:key/boards/:boardId" element={<MG k="producthub" t="ProductHub"><S><KanbanBoardPageLazy /></S></MG>} />
         <Route path="/product-hub/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
         <Route path="/product-hub/:key/allwork" element={<MG k="producthub" t="ProductHub"><S><ProductNativeAllWorkPage /></S></MG>} />
 
