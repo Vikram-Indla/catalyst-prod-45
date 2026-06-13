@@ -57,7 +57,8 @@ const DEFAULT_SIDEBAR_W = 384;
 const MIN_SIDEBAR_W = 160;
 const MAX_SIDEBAR_W = 560;
 const HEADER_H = 40;
-const BAR_H = 22;
+const BAR_H = 24;
+const BAR_RADIUS = 3;
 const MIN_BAR_W = 18;
 const TODAY = new Date();
 
@@ -238,15 +239,13 @@ function buildSubHeaderCols(start: Date, end: Date, zoom: ZoomLevel, pxPerDay: n
 
 function buildGridLines(start: Date, end: Date, zoom: ZoomLevel, pxPerDay: number): number[] {
   const lines: number[] = [];
-  if (zoom === 'week') {
-    let cur = startOfWeek(start);
-    while (cur <= end) { lines.push(daysBetween(start, cur) * pxPerDay); cur = addDays(cur, 7); }
-  } else if (zoom === 'month') {
-    let cur = startOfMonth(start);
-    while (cur <= end) { lines.push(daysBetween(start, cur) * pxPerDay); cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1); }
-  } else {
+  // Only major boundaries — month for week/month zoom, quarter for quarter zoom
+  if (zoom === 'quarter') {
     let cur = startOfQuarter(start);
     while (cur <= end) { lines.push(daysBetween(start, cur) * pxPerDay); cur = new Date(cur.getFullYear(), cur.getMonth() + 3, 1); }
+  } else {
+    let cur = startOfMonth(start);
+    while (cur <= end) { lines.push(daysBetween(start, cur) * pxPerDay); cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1); }
   }
   return lines;
 }
@@ -913,7 +912,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
       aria-label="Timeline"
       style={{
         display: 'flex', flexDirection: 'column',
-        height: 'calc(100vh - 56px)',
+        height: 'calc(100vh - 124px)',
         background: 'var(--ds-surface, #FFFFFF)', overflow: 'hidden',
       }}
     >
@@ -1348,18 +1347,20 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                 <div
                   role="row"
                   style={{
-                    height: ROW_H, display: 'flex', alignItems: 'center', padding: '0 8px', gap: 4,
-                    borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
+                    height: 36, display: 'flex', alignItems: 'center', padding: '0 8px', gap: 4,
+                    borderBottom: '1px solid rgba(9,30,66,0.06)',
                     background: 'var(--ds-background-neutral-subtle, #F7F8F9)', cursor: 'pointer',
                   }}
                   onClick={() => setReleasesCollapsed(v => !v)}
                 >
-                  <div style={{ color: 'var(--ds-text-subtlest, #626F86)', lineHeight: 0 }}>
-                    {releasesCollapsed
-                      ? <ChevronRightIcon label="Expand releases" size="small" />
-                      : <ChevronDownIcon label="Collapse releases" size="small" />}
+                  <div style={{
+                    color: 'var(--ds-text-subtlest, #626F86)', lineHeight: 0,
+                    transform: releasesCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.15s ease',
+                  }}>
+                    <ChevronDownIcon label={releasesCollapsed ? 'Expand releases' : 'Collapse releases'} size="small" />
                   </div>
-                  <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
                     {projectName}
                   </span>
                 </div>
@@ -1395,7 +1396,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                 paddingLeft: 8,
                 paddingRight: 4,
                 gap: 6,
-                borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
+                borderBottom: '1px solid rgba(9,30,66,0.06)',
               }}>
                 {creatingEpic ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1 }}>
@@ -1529,7 +1530,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
               {/* main header */}
               <div
                 role="rowgroup"
-                style={{ height: HEADER_H, position: 'relative', borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)' }}
+                style={{ height: HEADER_H, position: 'relative', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}
               >
                 {headerCols.map((col, i) => (
                   <div
@@ -1538,10 +1539,10 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                     style={{
                       position: 'absolute', left: col.left, width: col.width, height: HEADER_H,
                       display: 'flex', alignItems: 'center', paddingLeft: 8,
-                      borderRight: '1px solid var(--ds-border-subtle, #EBECF0)', overflow: 'hidden',
+                      borderRight: '1px solid var(--ds-border, #DFE1E6)', overflow: 'hidden',
                     }}
                   >
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', whiteSpace: 'nowrap' }}>
                       {col.label}
                     </span>
                   </div>
@@ -1552,10 +1553,10 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                 {subHeaderCols.map((col, i) => (
                   <div key={i} style={{
                     position: 'absolute', left: col.left, width: col.width, height: HEADER_H,
-                    display: 'flex', alignItems: 'center', paddingLeft: 4,
-                    borderRight: '1px solid var(--ds-border-subtle, #EBECF0)', overflow: 'hidden',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: 0,
+                    borderRight: '1px solid var(--ds-border, #DFE1E6)', overflow: 'hidden',
                   }}>
-                    <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #626F86)', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtle, #44546F)', whiteSpace: 'nowrap' }}>
                       {col.label}
                     </span>
                   </div>
@@ -1577,19 +1578,23 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
               {gridLines.map((x, i) => (
                 <div key={i} style={{
                   position: 'absolute', top: 0, bottom: 0, left: x, width: 1,
-                  background: 'var(--ds-border-subtle, #EBECF0)', pointerEvents: 'none',
+                  background: 'rgba(9,30,66,0.06)', pointerEvents: 'none',
                 }} />
               ))}
 
               {/* today marker */}
               {todayLeft >= 0 && todayLeft <= gridWidth && (
                 <div style={{
-                  position: 'absolute', top: 0, bottom: 0, left: todayLeft, width: 2,
-                  background: 'var(--ds-background-information-bold, #388BFF)', zIndex: 5, pointerEvents: 'none',
+                  position: 'absolute', top: 0, bottom: 0, left: todayLeft, width: 1.5,
+                  background: 'var(--ds-chart-danger-bold, #E34935)', zIndex: 5, pointerEvents: 'none',
                 }}>
+                  {/* downward triangle cap */}
                   <div style={{
-                    position: 'absolute', top: -2, left: -4, width: 10, height: 10,
-                    borderRadius: '50%', background: 'var(--ds-background-information-bold, #388BFF)',
+                    position: 'absolute', top: 0, left: -4,
+                    width: 0, height: 0,
+                    borderLeft: '4.5px solid transparent',
+                    borderRight: '4.5px solid transparent',
+                    borderTop: '7px solid var(--ds-chart-danger-bold, #E34935)',
                   }} />
                 </div>
               )}
@@ -1601,7 +1606,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                   style={{
                     position: 'absolute', top: 0, left: 0, right: 0, height: ROW_H,
                     background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-                    borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
+                    borderBottom: '1px solid rgba(9,30,66,0.06)',
                     display: 'flex', alignItems: 'center',
                   }}
                 />
@@ -1613,8 +1618,8 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                 return (
                   <div key={issue.issueKey + '_bg'} role="row" style={{
                     position: 'absolute', top: rowTop, left: 0, right: 0, height: ROW_H,
-                    background: idx % 2 !== 0 ? 'var(--ds-background-neutral-subtle, #F7F8F9)' : 'transparent',
-                    borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
+                    background: 'transparent',
+                    borderBottom: '1px solid rgba(9,30,66,0.06)',
                   }} />
                 );
               })}
@@ -1659,14 +1664,15 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                   <div
                     role="gridcell"
                     aria-label={`${issue.issueKey} ${issue.startDate ?? 'no start'} to ${issue.dueDate ?? 'no due'}`}
+                    onClick={e => { if (!dragging) { e.stopPropagation(); openDetail(issue); } }}
                     style={{
                       position: 'absolute', top: barTop, left: finalLeft, width: finalWidth, height: BAR_H,
-                      borderRadius: 4,
+                      borderRadius: BAR_RADIUS,
                       background: progress && progress.total > 0 ? 'transparent' : barColor(issue),
                       display: 'flex', alignItems: 'center', paddingLeft: 8, paddingRight: 8,
-                      overflow: 'hidden', cursor: 'default',
+                      overflow: 'hidden', cursor: isThisDragging ? 'default' : 'pointer',
                       zIndex: isThisDragging ? 10 : 2,
-                      boxShadow: isThisDragging ? 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.3))' : 'var(--ds-shadow-raised, 0 1px 2px rgba(9,30,66,0.15))',
+                      boxShadow: isThisDragging ? 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.3))' : 'none',
                       opacity: isThisDragging ? 0.85 : 1,
                       userSelect: 'none',
                     }}
@@ -1678,7 +1684,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                         aria-valuenow={Math.round((progress.done / progress.total) * 100)}
                         aria-valuemin={0}
                         aria-valuemax={100}
-                        style={{ position: 'absolute', inset: 0, borderRadius: 4, display: 'flex', overflow: 'hidden' }}
+                        style={{ position: 'absolute', inset: 0, borderRadius: BAR_RADIUS, display: 'flex', overflow: 'hidden' }}
                       >
                         {progress.done > 0 && <div style={{ flex: progress.done, background: 'var(--ds-chart-success-bold, #94C748)', minWidth: 2 }} />}
                         {progress.inProgress > 0 && <div style={{ flex: progress.inProgress, background: 'var(--ds-chart-information-bold, #8FB8F6)', minWidth: 2 }} />}
@@ -1697,7 +1703,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                         style={{
                           position: 'absolute', left: 0, top: 0, bottom: 0, width: 8, cursor: 'ew-resize',
                           background: 'var(--ds-border-inverse, rgba(255,255,255,0.22))',
-                          borderRadius: '4px 0 0 4px', zIndex: 1,
+                          borderRadius: '3px 0 0 3px', zIndex: 1,
                         }}
                       />
                     )}
@@ -1722,7 +1728,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                         style={{
                           position: 'absolute', right: 0, top: 0, bottom: 0, width: 8, cursor: 'ew-resize',
                           background: 'var(--ds-border-inverse, rgba(255,255,255,0.22))',
-                          borderRadius: '0 4px 4px 0', zIndex: 1,
+                          borderRadius: '0 3px 3px 0', zIndex: 1,
                         }}
                       />
                     )}
@@ -1915,8 +1921,8 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
       role="rowheader"
       style={{
         height: ROW_H, display: 'flex', alignItems: 'center',
-        paddingLeft: 8 + depth * 16, paddingRight: 4, gap: 4,
-        borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
+        paddingLeft: 8 + depth * 12, paddingRight: 4, gap: 6,
+        borderBottom: '1px solid rgba(9,30,66,0.06)',
         overflow: 'hidden', cursor: 'pointer',
         background: isSelected
           ? 'var(--ds-background-selected, #E9F2FE)'
@@ -1966,7 +1972,7 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 1 }}>
         <Tooltip content={issue.summary} position="right">
           <span style={{
-            fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #172B4D)',
+            fontSize: 13, fontWeight: 400, color: 'var(--ds-text, #172B4D)',
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.3,
             display: 'block',
           }}>
@@ -1983,7 +1989,7 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
               type="button"
               onClick={e => { e.stopPropagation(); navigate(`/project-hub/${projectKey}/timeline/${issue.issueKey}`); }}
               style={{
-                fontSize: 14, fontWeight: 500, color: 'var(--ds-text-subtlest, #626F86)',
+                fontSize: 11, fontWeight: 400, color: 'var(--ds-text-subtlest, #626F86)',
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2,
                 background: 'none', border: 'none', padding: 0, cursor: 'pointer',
                 textDecoration: 'none', fontFamily: 'var(--ds-font-family-body)',
