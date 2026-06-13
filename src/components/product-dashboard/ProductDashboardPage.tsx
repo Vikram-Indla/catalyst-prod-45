@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import { ProductHeaderChip } from '@/components/layout/ProductHeaderChip';
 import { DashboardWorkflowPath } from './DashboardWorkflowPath';
 import { AtAGlanceWidget } from './widgets/AtAGlanceWidget';
 import { StageOverviewWidget } from './widgets/StageOverviewWidget';
@@ -52,6 +54,7 @@ function AkBtn({
 }
 
 export function ProductDashboardPage() {
+  const { key } = useParams<{ key: string }>();
   const [timeRange, setTimeRange] = useState<TimeRange>('Last 90 days');
 
   return (
@@ -64,65 +67,23 @@ export function ProductDashboardPage() {
         background: token('elevation.surface.sunken', '#F7F8F9'),
       }}
     >
-      {/* ── Page header ─────────────────────────────────────────────────── */}
-      <header
+      {/* ── Canonical product chip — matches ProjectHeaderChip pattern on project pages */}
+      {key && <ProductHeaderChip productCode={key} />}
+
+      {/* ── Sub-header: time range filter + actions ────────────────────── */}
+      <div
         style={{
           background: token('elevation.surface', '#FFFFFF'),
-          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-          padding: '14px 32px',
+          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          padding: '8px 32px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 16,
+          justifyContent: 'flex-end',
+          gap: 8,
           flexShrink: 0,
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
         }}
       >
-        <div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              fontSize: 11,
-              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-            }}
-          >
-            <span>Projects</span>
-            <span style={{ color: token('color.text.subtlest', '#8993A4') }}>/</span>
-            <span>Product</span>
-            <span style={{ color: token('color.text.subtlest', '#8993A4') }}>/</span>
-            <span>Dashboard</span>
-          </div>
-          <h1
-            style={{
-              margin: '4px 0 0',
-              fontSize: 20,
-              fontWeight: 600,
-              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-              lineHeight: '24px',
-            }}
-          >
-            Product Dashboard
-          </h1>
-          <div
-            style={{
-              fontSize: 11,
-              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-              marginTop: 2,
-            }}
-          >
-            Senaei Demand · 11-stage process
-          </div>
-        </div>
-
-        {/* filter-bar lives in the header — testid preserved */}
-        <div
-          data-testid="filter-bar"
-          style={{ display: 'flex', gap: 8, alignItems: 'center' }}
-        >
+        <div data-testid="filter-bar" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <div data-testid="filter-trigger">
             <DropdownMenu
               trigger={`📅 ${timeRange} ▾`}
@@ -141,11 +102,10 @@ export function ProductDashboardPage() {
               </DropdownItemGroup>
             </DropdownMenu>
           </div>
-
           <AkBtn>✎ Edit</AkBtn>
           <AkBtn primary>+ Create</AkBtn>
         </div>
-      </header>
+      </div>
 
       {/* ── Workflow path strip ──────────────────────────────────────────── */}
       <div
