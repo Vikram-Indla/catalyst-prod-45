@@ -39,7 +39,6 @@ import {
 import { useCatySearch } from '@/components/caty/catySearchStore';
 import { applyCatyFilter } from '@/components/caty/applyCatyFilter';
 import type { WorkItem } from '@/types/workItem.types';
-import { jqlToFilterState } from '@/lib/jql/jqlToFilterState';
 import { filterStateToJql } from '@/lib/filters/filterStateToJql';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 
@@ -68,10 +67,11 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   // We declare toolbarFilters before the hook call so the hook can depend on it.
   // (The useState initialisation below sets it to EMPTY_FILTERS so both decls are safe.)
   const [toolbarFilters, setToolbarFilters] = useState<FilterState>(EMPTY_FILTERS);
+  // Raw JQL from a saved filter — bypasses the lossy filterState conversion
+  const [activeFilterJql, setActiveFilterJql] = useState<string | undefined>(undefined);
 
   // Hook call moved here so toolbarFilters is in scope.
-  // Server-side filter predicates are applied before LIMIT 25, so page 1 =
-  // first 25 matching rows for the active filter, not 25 unfiltered rows.
+  // When a saved filter's JQL is active, pass it directly to the engine.
   const {
     items = [],
     rowsPerPage,
@@ -80,7 +80,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     page,
     setPage,
     pageCount,
-  } = useProjectAllWorkItems(projectKey, toolbarFilters);
+  } = useProjectAllWorkItems(projectKey, activeFilterJql ? EMPTY_FILTERS : toolbarFilters, activeFilterJql);
 
   /* ── Filter URL params ────────────────────────────────────────────────────
      ?filterId=<uuid>    — navigated here by clicking a saved filter name
@@ -126,15 +126,19 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   // Open the filter panel by default when entering create-filter mode
   const [filterOpen, setFilterOpen] = useState(isCreateMode);
 
-  // When a saved filter loads, apply its JQL as the initial toolbar filter state.
+  // When a saved filter loads, pass its JQL directly to the engine.
   // We use a ref so this only fires once per filterId change, not on every re-render.
   const appliedFilterIdRef = useRef<string | null>(null);
   useEffect(() => {
     if (activeFilter && activeFilter.id !== appliedFilterIdRef.current) {
       appliedFilterIdRef.current = activeFilter.id;
       if (activeFilter.jql_query) {
-        setToolbarFilters(jqlToFilterState(activeFilter.jql_query));
+        setActiveFilterJql(activeFilter.jql_query);
       }
+    }
+    if (!activeFilter && appliedFilterIdRef.current) {
+      appliedFilterIdRef.current = null;
+      setActiveFilterJql(undefined);
     }
   }, [activeFilter]);
 

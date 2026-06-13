@@ -51,7 +51,7 @@ import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { useUpdateSavedFilter } from '@/hooks/workhub/useSavedFilters';
-import type { JqlResultRow } from '@/hooks/workhub/useJqlResults';
+import { useJqlResults, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { supabase } from '@/integrations/supabase/client';
@@ -456,10 +456,15 @@ export function ProductFilterPreviewPage() {
     return out;
   }, [facetItems]);
 
-  const { data, isLoading, isFetching } = useProductBrResults(productId, filters, search);
+  const brResults = useProductBrResults(productId, filters, search);
+  const jqlResults = useJqlResults(jqlText, filterMode === 'jql' && !!jqlText.trim());
+
+  const activeData = filterMode === 'jql' ? jqlResults.data : brResults.data;
+  const isLoading  = filterMode === 'jql' ? jqlResults.isLoading : brResults.isLoading;
+  const isFetching = filterMode === 'jql' ? jqlResults.isFetching : brResults.isFetching;
 
   const items = useMemo(() => {
-    const rows = [...(data?.items ?? [])];
+    const rows = [...(activeData?.items ?? [])];
     const dir = sortOrder === 'ASC' ? 1 : -1;
     rows.sort((a, b) => {
       const va = (a as unknown as Record<string, unknown>)[sortKey] ?? '';
@@ -467,7 +472,7 @@ export function ProductFilterPreviewPage() {
       return va < vb ? -dir : va > vb ? dir : 0;
     });
     return rows;
-  }, [data?.items, sortKey, sortOrder]);
+  }, [activeData?.items, sortKey, sortOrder]);
 
   const totalCount = totalSelected(filters);
   const moreCount = MORE_FILTERS_FACETS.reduce((n, f) => n + filters[f].length, 0);
@@ -933,7 +938,7 @@ export function ProductFilterPreviewPage() {
 
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 8px', color: token('color.text.subtlest', '#626F86'), fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }}>
             {isFetching && <Spinner size="small" />}
-            {!isFetching && data != null && `${data.totalCount} item${data.totalCount === 1 ? '' : 's'}`}
+            {!isFetching && activeData != null && `${activeData.totalCount} item${activeData.totalCount === 1 ? '' : 's'}`}
           </div>
 
           {savedFilterId && loadedFilter && (
@@ -978,7 +983,7 @@ export function ProductFilterPreviewPage() {
             ariaLabel="Product filter preview"
             rowsPerPage={0}
             page={1}
-            totalRowCount={data?.totalCount}
+            totalRowCount={activeData?.totalCount}
             enableVirtualization
             enableColumnReorder
             columnOrder={columnOrder ?? undefined}
