@@ -7,8 +7,8 @@
  * always first; the route word reflects which hub route you are on. The
  * project icon still renders ahead of this text in the chip.
  *
- * Vikram directive 2026-06-14: product-hub routes prefix "Product" before
- * the route word (e.g. "INV Product Backlog", "INV Product Work").
+ * Vikram directive 2026-06-14: product-hub routes use bare nouns, same as
+ * project-hub (e.g. "INV Backlog", "INV Work"). Matches sidebar nav convention.
  *
  * Zero-assumption rule (CLAUDE.md 2026-06-11): when the route is not a
  * recognised hub route, return null so the caller can fall back to the
@@ -30,22 +30,22 @@ const PROJECT_ROUTE_WORD_MAP: Record<string, string> = {
   reports: 'Reports',
 };
 
-/** product-hub route segment → display word (prefixed "Product"). */
+/** product-hub route segment → display word (bare nouns, mirrors PROJECT_ROUTE_WORD_MAP). */
 const PRODUCT_ROUTE_WORD_MAP: Record<string, string> = {
-  backlog: 'Product Backlog',
-  board: 'Product Board',
-  boards: 'Product Board',
-  allwork: 'Product Work',
-  list: 'Product Work',
-  filters: 'Product Filters',
-  dashboard: 'Product Dashboard',
+  backlog: 'Backlog',
+  board: 'Board',
+  boards: 'Board',
+  allwork: 'Work',
+  list: 'Work',
+  filters: 'Filters',
+  dashboard: 'Dashboard',
   settings: 'Settings',
 };
 
 /**
  * Derive the route word from a hub pathname.
  * Matches `/project-hub/:key/<segment>` and `/product-hub/:key/<segment>`.
- * Product-hub routes return the word prefixed with "Product" per directive.
+ * Product-hub routes use bare nouns (same map shape as project-hub).
  * Returns null when the pathname is not a hub route or has no segment
  * after the key (the bare `/project-hub/:key`).
  */

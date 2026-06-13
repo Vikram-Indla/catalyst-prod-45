@@ -72,11 +72,11 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
       {
         title: 'Planning',
         items: [
-          { id: 'dashboard', title: 'Product Dashboard', path: `${base}/dashboard`, icon: NavDashboardIcon, exact: true  },
-          { id: 'backlog',   title: 'Product Backlog',   path: `${base}/backlog`,   icon: NavBacklogIcon,   exact: true  },
-          { id: 'allwork',   title: 'Product Work',      path: `${base}/allwork`,   icon: NavWorkIcon,      exact: false },
-          { id: 'boards',    title: 'Product Board',     path: `${base}/boards`,    icon: NavKanbanIcon,    exact: false },
-          { id: 'filters',   title: 'Product Filters',   path: `${base}/filters`,   icon: NavFiltersIcon,   exact: false },
+          { id: 'dashboard', title: 'Dashboard', path: `${base}/dashboard`, icon: NavDashboardIcon, exact: true  },
+          { id: 'backlog',   title: 'Backlog',   path: `${base}/backlog`,   icon: NavBacklogIcon,   exact: true  },
+          { id: 'allwork',   title: 'Work',      path: `${base}/allwork`,   icon: NavWorkIcon,      exact: false },
+          { id: 'boards',    title: 'Board',     path: `${base}/boards`,    icon: NavKanbanIcon,    exact: false },
+          { id: 'filters',   title: 'Filters',   path: `${base}/filters`,   icon: NavFiltersIcon,   exact: false },
         ],
       },
     ],

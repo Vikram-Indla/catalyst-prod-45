@@ -118,22 +118,12 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             // project header ("BA · BAU"); the "Project" prefix adds the
             // scope signal that the dropped section labels used to provide
             // and gives the sidebar visual ballast at this 4-item count.
-            { id: 'board', title: 'Project Board', path: `${base}/boards`, icon: NavKanbanIcon, exact: false },
-            // Brand-new Kanban board (parallel impl for A/B efficiency vs Project Board).
+            { id: 'board', title: 'Board', path: `${base}/boards`, icon: NavKanbanIcon, exact: false },
             { id: 'kanban', title: 'Kanban', path: `${base}/kanban`, icon: NavKanbanIcon, exact: false },
-            // Jira "List view" equivalent — unified, per-project. Combines
-            // Epics, Features, Stories, Tasks, QA Bugs, Production Incidents,
-            // Change Requests, Business Gaps, and API Requirements.
-            { id: 'backlog', title: 'Project Backlog', path: `${base}/backlog`, icon: NavBacklogIcon, exact: false },
-            // Jira "All work" equivalent — per-project, hierarchy view.
-            // 2026-04-19: "All Work" → "Project Work" to match the
-            // "Project Board" / "Project Backlog" naming cadence on the
-            // flattened layout. Consistent prefix gives the 4-item list a
-            // unified scope signal without needing a section header to
-            // carry it.
-            { id: 'allwork', title: 'Project Work', path: `${base}/allwork`, icon: NavWorkIcon, exact: false },
-            { id: 'filters', title: 'Project Filters', path: `${base}/filters`, icon: NavFiltersIcon, exact: false },
-            { id: 'timeline', title: 'Project Timeline', path: `${base}/timeline`, icon: NavTimelineIcon, exact: false },
+            { id: 'backlog', title: 'Backlog', path: `${base}/backlog`, icon: NavBacklogIcon, exact: false },
+            { id: 'allwork', title: 'Work', path: `${base}/allwork`, icon: NavWorkIcon, exact: false },
+            { id: 'filters', title: 'Filters', path: `${base}/filters`, icon: NavFiltersIcon, exact: false },
+            { id: 'timeline', title: 'Timeline', path: `${base}/timeline`, icon: NavTimelineIcon, exact: false },
             // Story / Epic / Feature Backlog pages were removed — their scope
             // is fully covered by the unified Backlog view above. Routes now
             // redirect to /backlog; source files remain on disk as-is.

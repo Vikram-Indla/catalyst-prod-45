@@ -283,7 +283,7 @@ export function SidebarBase({
           }}
         >
           {expanded ? (
-            /* Expanded: full label, optionally clickable */
+            /* Expanded: project icon (if project) + label, optionally clickable */
             onHeaderClick ? (
               <button
                 onClick={onHeaderClick}
@@ -300,6 +300,14 @@ export function SidebarBase({
                   flex: 1,
                 }}
               >
+                {config.badgeProjectKey && (
+                  <ProjectIcon
+                    projectKey={config.badgeProjectKey}
+                    avatarUrl={config.badgeProjectAvatarUrl}
+                    color={config.badgeProjectColor}
+                    size="small"
+                  />
+                )}
                 <span
                   className="truncate"
                   style={{
@@ -316,18 +324,28 @@ export function SidebarBase({
                 </span>
               </button>
             ) : (
-              <span
-                className="truncate"
-                style={{
-                  fontFamily: 'var(--cp-font-heading)',
-                  fontSize: token('font.size.100', '14px'),
-                  fontWeight: 600,
-                  color: 'var(--ds-text, #292A2E)',
-                  letterSpacing: '-0.3px',
-                }}
-              >
-                {config.label}
-              </span>
+              <React.Fragment>
+                {config.badgeProjectKey && (
+                  <ProjectIcon
+                    projectKey={config.badgeProjectKey}
+                    avatarUrl={config.badgeProjectAvatarUrl}
+                    color={config.badgeProjectColor}
+                    size="small"
+                  />
+                )}
+                <span
+                  className="truncate"
+                  style={{
+                    fontFamily: 'var(--cp-font-heading)',
+                    fontSize: token('font.size.100', '14px'),
+                    fontWeight: 600,
+                    color: 'var(--ds-text, #292A2E)',
+                    letterSpacing: '-0.3px',
+                  }}
+                >
+                  {config.label}
+                </span>
+              </React.Fragment>
             )
           ) : (
             /* Icon-only rail: project icon + key stacked vertically */
