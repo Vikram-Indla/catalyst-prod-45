@@ -38,6 +38,8 @@ export interface ChatMessage {
   deletedAt: string | null;
   reactions: ChatReaction[];
   replyCount: number;
+  lastReplyAt: string | null;
+  isAlsoInChannel: boolean;
 }
 
 export interface ChatPerson {

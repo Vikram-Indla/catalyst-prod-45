@@ -420,13 +420,13 @@
   flex: none;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 4px 24px;
   min-height: 22px;
 }
 .c-feed__typing__dots {
   display: flex;
-  gap: 3px;
+  gap: 4px;
   align-items: center;
 }
 .c-feed__typing__dots span {

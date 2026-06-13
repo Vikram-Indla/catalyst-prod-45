@@ -29,7 +29,7 @@ import { DockConversationPane } from "./DockConversationPane";
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
 
-const FAB_SIZE = 64;
+const FAB_SIZE = 77;
 
 type DockMode = "messages" | "caty";
 type CatyView = "floating" | "sidebar";

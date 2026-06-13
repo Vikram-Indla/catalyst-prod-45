@@ -203,6 +203,8 @@ export function useMessageSearch(
               deletedAt: row.deleted_at,
               reactions: [],
               replyCount: 0,
+              lastReplyAt: null,
+              isAlsoInChannel: false,
             };
             return {
               message,

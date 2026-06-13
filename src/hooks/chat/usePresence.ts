@@ -12,7 +12,7 @@
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { supabase } from '@/lib/supabase';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { PresenceUI, PresenceState, PresenceRealtimeEvent } from '@/lib/chat/presence.types';
 
@@ -39,7 +39,6 @@ export function usePresence({
   typingTimeoutMs = 3000,
   enabled = true,
 }: UsePresenceOptions): UsePresenceReturn {
-  const supabase = useSupabaseClient();
   const [presenceList, setPresenceList] = useState<PresenceUI[]>([]);
   const [currentUserPresence, setCurrentUserPresence] = useState<PresenceState | null>(null);
   const [isTyping, setIsTyping] = useState(false);

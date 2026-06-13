@@ -50,6 +50,8 @@ async function fetchThread(conversationId: string, parentId: string): Promise<Ch
     deletedAt: m.deleted_at,
     reactions: [],
     replyCount: 0,
+    lastReplyAt: null,
+    isAlsoInChannel: false,
   })) as ChatMessage[];
 }
 

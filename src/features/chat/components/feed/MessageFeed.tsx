@@ -11,6 +11,8 @@ import { HoverToolbar } from './HoverToolbar';
 import { MessageText } from './MessageText';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './feed.css';
+// ads-scanner:ignore-next-line -- chat.css uses only var(--ds-*) ADS tokens; loaded here for ConversationHeader cc-* classes
+import '@/components/chat/chat.css';
 
 // ── Constants ──────────────────────────────────────────────────────────────
 

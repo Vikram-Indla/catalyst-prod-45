@@ -20,6 +20,8 @@ export interface MessageComposerProps {
     opts?: { adf?: unknown | null; scheduled_for?: string | null },
   ) => void | Promise<void>;
   onAskCaty?: () => void;
+  /** Called on every keystroke — use to broadcast typing indicators. */
+  onTyping?: () => void;
   /** Last message id created by onSend (passed back so attachments can bind). */
   lastSentMessageId?: string | null;
   /** Min height of the editor body in px. Defaults to 80. Pass smaller value in compact contexts (e.g. chat dock). */
@@ -33,6 +35,7 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
       conversationId,
       disabled,
       onSend,
+      onTyping,
       lastSentMessageId,
       minHeight = 80,
     }: MessageComposerProps,
@@ -126,6 +129,7 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
           initialAdf={null}
           onSave={handleSave}
           onCancel={handleCancel}
+          onChange={onTyping ? () => onTyping() : undefined}
           placeholder={placeholder}
           saveLabel="Send"
           isSaving={sending || uploading || disabled}

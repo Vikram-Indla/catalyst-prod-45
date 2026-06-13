@@ -18,7 +18,7 @@ export interface Toast {
   type: ToastType;
   title: string;
   description?: string;
-  autoDisp ismissMs?: number; // null = sticky (user must close manually)
+  autoDismissMs?: number; // null = sticky (user must close manually)
 }
 
 export function useChatNotifications() {

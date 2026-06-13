@@ -31,6 +31,9 @@ interface MessageRow {
   created_at: string;
   edited_at: string | null;
   deleted_at: string | null;
+  reply_count: number;
+  last_reply_at: string | null;
+  is_also_in_channel: boolean;
 }
 
 interface ReactionRow {
@@ -88,7 +91,7 @@ async function fetchPage(
 
     const { data: rows, error } = await db
       .from('chat_messages')
-      .select('id, conversation_id, parent_id, author_id, body_text, body_adf, created_at, edited_at, deleted_at')
+      .select('id, conversation_id, parent_id, author_id, body_text, body_adf, created_at, edited_at, deleted_at, reply_count, last_reply_at, is_also_in_channel')
       .eq('conversation_id', conversationId)
       .is('deleted_at', null)
       .order('created_at', { ascending: false })
@@ -102,7 +105,6 @@ async function fetchPage(
     const authorIds = Array.from(new Set(msgRows.map((m) => m.author_id))).filter(Boolean);
 
     let reactionsByMessage = new Map<string, ChatReaction[]>();
-    let replyCountByParent = new Map<string, number>();
     let authorsById = new Map<string, AuthorRow>();
 
     if (ids.length > 0) {
@@ -114,22 +116,6 @@ async function fetchPage(
         if (reactions) reactionsByMessage = aggregateReactions(reactions as ReactionRow[], myId);
       } catch {
         reactionsByMessage = new Map();
-      }
-
-      try {
-        const { data: children } = await db
-          .from('chat_messages')
-          .select('parent_id')
-          .in('parent_id', ids)
-          .is('deleted_at', null);
-        if (children) {
-          for (const c of children as { parent_id: string | null }[]) {
-            if (!c.parent_id) continue;
-            replyCountByParent.set(c.parent_id, (replyCountByParent.get(c.parent_id) ?? 0) + 1);
-          }
-        }
-      } catch {
-        replyCountByParent = new Map();
       }
     }
 
@@ -162,7 +148,9 @@ async function fetchPage(
         editedAt: m.edited_at ?? null,
         deletedAt: m.deleted_at ?? null,
         reactions: reactionsByMessage.get(m.id) ?? [],
-        replyCount: replyCountByParent.get(m.id) ?? 0,
+        replyCount: m.reply_count,
+        lastReplyAt: m.last_reply_at ?? null,
+        isAlsoInChannel: m.is_also_in_channel,
       };
     });
 
