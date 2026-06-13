@@ -24,6 +24,7 @@ import VidPlayIcon from '@atlaskit/icon/glyph/vid-play';
 import VidPauseIcon from '@atlaskit/icon/glyph/vid-pause';
 import CheckIcon from '@atlaskit/icon/glyph/check';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
+import FeedbackIcon from '@atlaskit/icon/glyph/feedback';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens } from './kanban-tokens';
 import { KanbanAvatar } from './KanbanAvatar';
@@ -385,6 +386,42 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
         </div>
       )}
 
+      {/* ── Navigation row: Shuffle (left) | Previous + Next (right) ────── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 16px 12px', gap: 8,
+      }}>
+        <button
+          type="button"
+          onClick={shuffle}
+          title="Shuffle order"
+          aria-label="Shuffle order"
+          style={{
+            width: 28, height: 28,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            border: 'none', background: 'transparent',
+            borderRadius: 4, cursor: 'pointer', padding: 0,
+            color: tk.textSecondary,
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+        >
+          <IcShuffle size={16} color="var(--ds-text-subtle, #44546F)" />
+        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <NavStepBtn
+            onClick={() => advance(-1)}
+            disabled={step === 0}
+            label="Previous"
+          />
+          <NavStepBtn
+            onClick={() => advance(1)}
+            disabled={step >= total - 1}
+            label="Next"
+          />
+        </div>
+      </div>
+
       {/* ── Team member list ─ Density controls row padding + avatar/name. */}
       {(() => {
         const compact = density === 'compact';
@@ -441,42 +478,29 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
         );
       })()}
 
-      {/* ── Footer navigation ── */}
+      {/* ── Footer: "Give feedback" centered (Jira parity). ─────────────── */}
       <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 14px', gap: 8,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '10px 14px',
       }}>
         <button
-          onClick={() => advance(-1)} disabled={step === 0}
-          style={navBtnStyle(tk, false, step === 0)}
+          type="button"
+          onClick={() => { /* feedback target — not yet wired */ }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            height: 30, padding: '0 12px',
+            border: 'none', background: 'transparent',
+            borderRadius: 4, cursor: 'pointer',
+            fontSize: 13, fontWeight: 500,
+            color: tk.textSecondary,
+            fontFamily: 'var(--cp-font-body)',
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
         >
-          ← Prev
+          <FeedbackIcon label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
+          <span>Give feedback</span>
         </button>
-        {/* Dot row */}
-        <div style={{ display: 'flex', gap: 4, flex: 1, justifyContent: 'center', flexWrap: 'wrap' }}>
-          {order.slice(0, 15).map((bIdx, lp) => (
-            <span key={lp} style={{
-              width: lp === step ? 16 : 6, height: 6, borderRadius: 3,
-              background: lp === step
-                ? 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))'
-                : visited.has(buckets[bIdx]?.name ?? '') ? '#36B37E' : tk.chipBg,
-              transition: 'width 200ms ease',
-              flexShrink: 0,
-            }} />
-          ))}
-          {order.length > 15 && (
-            <span style={{ fontSize: 10, color: tk.textMuted, lineHeight: '6px' }}>…</span>
-          )}
-        </div>
-        {isLast ? (
-          <button onClick={handleEnd} style={navBtnStyle(tk, true, false)}>
-            Done ✓
-          </button>
-        ) : (
-          <button onClick={() => advance(1)} style={navBtnStyle(tk, true, false)}>
-            Next →
-          </button>
-        )}
       </div>
     </div>
   );
@@ -898,6 +922,41 @@ function PillToggle({ value, onChange }: { value: boolean; onChange: (next: bool
           </span>
         </>
       )}
+    </button>
+  );
+}
+
+/* ── Previous / Next step button — white surface + gray border + dark text.
+   When disabled the text greys out and the hover state is suppressed. */
+function NavStepBtn({
+  onClick, disabled, label,
+}: { onClick: () => void; disabled: boolean; label: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        height: 30, padding: '0 12px',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface, #FFFFFF)',
+        borderRadius: 4,
+        fontSize: 13, fontWeight: 500,
+        color: disabled
+          ? 'var(--ds-text-disabled, #B3B9C4)'
+          : 'var(--ds-text, #292A2E)',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        fontFamily: 'var(--cp-font-body)',
+      }}
+      onMouseEnter={(e) => {
+        if (disabled) return;
+        (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)';
+      }}
+    >
+      {label}
     </button>
   );
 }
