@@ -14,7 +14,9 @@ import {
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
 import { useCreateKanbanFromFilter } from '@/hooks/workhub/useCreateKanbanFromFilter';
-import { ENABLE_FILTER_TO_KANBAN, ENABLE_FILTER_TO_ROADMAP, ENABLE_FILTER_TO_DASHBOARD } from '@/lib/featureFlags';
+import { ENABLE_FILTER_TO_KANBAN, ENABLE_FILTER_TO_ROADMAP, ENABLE_FILTER_TO_DASHBOARD, ENABLE_FILTER_WHATSAPP_AI_SUMMARY } from '@/lib/featureFlags';
+import type { JqlResultRow } from '@/hooks/workhub/useJqlResults';
+import { WhatsAppSummaryModal } from '@/features/whatsapp-summary/WhatsAppSummaryModal';
 import {
   useExistingRoadmapForFilter,
   useCreateRoadmapFromFilter,
@@ -32,9 +34,11 @@ import { TransferOwnershipModal } from './TransferOwnershipModal';
 interface FilterKebabMenuProps {
   filter: SavedFilterFull;
   currentUserId: string | null;
+  /** JQL result rows — available when rendered inside FilterPreviewPage. */
+  rows?: JqlResultRow[];
 }
 
-export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps) {
+export function FilterKebabMenu({ filter, currentUserId, rows = [] }: FilterKebabMenuProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [editOpen, setEditOpen] = useState(false);
@@ -58,6 +62,7 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const [createDashboardOpen, setCreateDashboardOpen] = useState(false);
   const [dashboardName, setDashboardName] = useState('');
   const [dashboardError, setDashboardError] = useState<string | null>(null);
+  const [whatsAppOpen, setWhatsAppOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -359,6 +364,12 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             </>
           )}
 
+          {ENABLE_FILTER_WHATSAPP_AI_SUMMARY && (
+            <>
+              {divider}
+              {menuItem('Copy WhatsApp summary', () => setWhatsAppOpen(true))}
+            </>
+          )}
 
           {isOwner && (
             <>
@@ -675,6 +686,17 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
           </ModalDialog>
         )}
       </ModalTransition>
+
+      {ENABLE_FILTER_WHATSAPP_AI_SUMMARY && (
+        <WhatsAppSummaryModal
+          isOpen={whatsAppOpen}
+          onClose={() => setWhatsAppOpen(false)}
+          filterName={filter.name}
+          filterJql={filter.jql_query ?? ''}
+          projectKey={jqlProjectKey}
+          rows={rows}
+        />
+      )}
 
       <ModalTransition>
         {createKanbanOpen && (
