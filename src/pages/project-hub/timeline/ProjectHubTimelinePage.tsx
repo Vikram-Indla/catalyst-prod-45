@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useCallback, useEffect, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router-dom';
 import { AtlaskitPageShell } from '@/components/ads';
@@ -15,6 +15,7 @@ import { GanttChart, Calendar } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useProjectHubTimeline, type TimelineIssue } from '@/hooks/useProjectHubTimeline';
 import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
+import { useJiraProjects } from '@/hooks/workhub/useJiraProjects';
 import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button';
 import Tooltip from '@atlaskit/tooltip';
@@ -22,6 +23,8 @@ import Avatar from '@atlaskit/avatar';
 import Checkbox from '@atlaskit/checkbox';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
 /* ─────────────────────────────── types ─────────────────────────────── */
 
@@ -415,6 +418,37 @@ export default function ProjectHubTimelinePage() {
   const queryClient = useQueryClient();
   const { data: tree = [], isLoading, error } = useProjectHubTimeline(projectKey);
   const { data: savedFilters = [] } = useFiltersForProject(projectKey, 'project');
+  const { data: jiraProjects = [] } = useJiraProjects();
+
+  /* project display name from ph_jira_projects */
+  const projectName = useMemo(() => {
+    const proj = jiraProjects.find(p => p.project_key === (projectKey ?? '').toUpperCase());
+    return proj?.name ?? projectKey ?? 'Releases';
+  }, [jiraProjects, projectKey]);
+
+  /* row selection */
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const toggleRowSelection = useCallback((key: string) => {
+    setSelectedRows(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+  }, []);
+
+  /* detail side panel */
+  const [panelItem, setPanelItem] = useState<{ id: string; itemType: string } | null>(null);
+  const closePanel = useCallback(() => setPanelItem(null), []);
+  const openDetail = useCallback((issue: TimelineIssue) => {
+    const rawType = (issue.issueType ?? 'Story').toLowerCase();
+    const itemType =
+      rawType === 'qa bug' || rawType === 'defect' ? 'defect' :
+      rawType === 'production incident' ? 'incident' :
+      rawType === 'business request' ? 'business_request' :
+      rawType === 'change request' ? 'change_request' :
+      rawType;
+    setPanelItem({ id: issue.issueKey, itemType });
+  }, []);
 
   /* responsive container */
   const containerRef = useRef<HTMLDivElement>(null);
@@ -634,7 +668,8 @@ export default function ProjectHubTimelinePage() {
     return check(tree);
   }, [tree]);
 
-  const contentHeight = Math.max(rows.length * ROW_H, 240);
+  const visibleRowCount = releasesCollapsed ? 0 : rows.length;
+  const contentHeight = Math.max(visibleRowCount * ROW_H, 240);
   const doubleHeaderH = HEADER_H * 2;
 
   /* scroll sync */
@@ -1177,7 +1212,7 @@ export default function ProjectHubTimelinePage() {
       </div>
 
       {/* ── body: sidebar + divider + grid ── */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', paddingRight: panelItem ? 480 : 0, transition: 'padding-right 150ms ease' }}>
 
         {/* ── sidebar panel ── */}
         {!isNarrow && (
@@ -1228,7 +1263,7 @@ export default function ProjectHubTimelinePage() {
 
             {/* sidebar body — scrollable */}
             <div ref={sidebarBodyRef} style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
-              {/* releases section */}
+              {/* releases section — header shows project name, collapse cascades all rows */}
               {showReleases && (
                 <div
                   role="row"
@@ -1244,13 +1279,13 @@ export default function ProjectHubTimelinePage() {
                       ? <ChevronRightIcon label="Expand releases" size="small" />
                       : <ChevronDownIcon label="Collapse releases" size="small" />}
                   </div>
-                  <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #172B4D)' }}>
-                    Releases
+                  <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                    {projectName}
                   </span>
                 </div>
               )}
 
-              {rows.map(({ issue, depth }) => (
+              {!releasesCollapsed && rows.map(({ issue, depth }) => (
                 <SidebarRow
                   key={issue.issueKey}
                   issue={issue}
@@ -1260,6 +1295,9 @@ export default function ProjectHubTimelinePage() {
                   showProgress={showProgress}
                   projectKey={projectKey ?? ''}
                   queryClient={queryClient}
+                  isSelected={selectedRows.has(issue.issueKey)}
+                  onSelect={toggleRowSelection}
+                  onOpenDetail={openDetail}
                 />
               ))}
 
@@ -1489,8 +1527,8 @@ export default function ProjectHubTimelinePage() {
                 />
               )}
 
-              {/* row backgrounds */}
-              {rows.map(({ issue }, idx) => {
+              {/* row backgrounds — hidden when releases section is collapsed */}
+              {!releasesCollapsed && rows.map(({ issue }, idx) => {
                 const rowTop = (showReleases ? ROW_H : 0) + idx * ROW_H;
                 return (
                   <div key={issue.issueKey + '_bg'} role="row" style={{
@@ -1501,8 +1539,8 @@ export default function ProjectHubTimelinePage() {
                 );
               })}
 
-              {/* gantt bars */}
-              {rows.map(({ issue }, idx) => {
+              {/* gantt bars — hidden when releases section is collapsed */}
+              {!releasesCollapsed && rows.map(({ issue }, idx) => {
                 const rowTop = (showReleases ? ROW_H : 0) + idx * ROW_H;
                 const start = parseDate(issue.startDate);
                 const end = parseDate(issue.dueDate);
@@ -1700,6 +1738,28 @@ export default function ProjectHubTimelinePage() {
         </div>
       </div>
     </div>
+      {/* ── detail side panel (like backlog page) ── */}
+      {panelItem && (
+        <div
+          style={{
+            position: 'fixed', top: 56, right: 0, bottom: 0, width: 480,
+            zIndex: 50, borderLeft: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-surface, #FFFFFF)',
+            display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          }}
+        >
+          <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}><Spinner size="medium" /></div>}>
+            <CatalystDetailRouter
+              isOpen={true}
+              itemId={panelItem.id}
+              itemType={panelItem.itemType}
+              onClose={closePanel}
+              panelMode={true}
+              projectKey={projectKey ?? ''}
+            />
+          </Suspense>
+        </div>
+      )}
     </AtlaskitPageShell>
   );
 }
@@ -1714,9 +1774,12 @@ interface SidebarRowProps {
   showProgress: boolean;
   projectKey: string;
   queryClient: ReturnType<typeof useQueryClient>;
+  isSelected: boolean;
+  onSelect: (key: string) => void;
+  onOpenDetail: (issue: TimelineIssue) => void;
 }
 
-function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKey, queryClient }: SidebarRowProps) {
+function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKey, queryClient, isSelected, onSelect, onOpenDetail }: SidebarRowProps) {
   const hasChildren = issue.children.length > 0;
   const progress = showProgress && hasChildren ? computeEpicProgress(issue) : null;
   const [rowHovered, setRowHovered] = useState(false);
@@ -1747,32 +1810,39 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         height: ROW_H, display: 'flex', alignItems: 'center',
         paddingLeft: 8 + depth * 16, paddingRight: 4, gap: 4,
         borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
-        overflow: 'hidden', cursor: hasChildren ? 'pointer' : 'default',
-        background: rowHovered
-          ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'
-          : 'transparent',
+        overflow: 'hidden', cursor: 'pointer',
+        background: isSelected
+          ? 'var(--ds-background-selected, #E9F2FE)'
+          : rowHovered
+            ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'
+            : 'transparent',
         transition: 'background 80ms ease',
         position: 'relative',
       }}
-      onClick={hasChildren ? () => onToggle(issue.issueKey) : undefined}
+      onClick={() => onOpenDetail(issue)}
       aria-expanded={hasChildren ? !collapsed : undefined}
       onMouseEnter={() => setRowHovered(true)}
       onMouseLeave={() => { if (!menuOpen) setRowHovered(false); }}
     >
-      {/* row checkbox */}
+      {/* row checkbox — always visible when selected, hover-only otherwise */}
       <div
-        style={{ width: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: rowHovered ? 1 : 0, transition: 'opacity 80ms ease' }}
+        style={{ width: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: rowHovered || isSelected ? 1 : 0, transition: 'opacity 80ms ease' }}
         onClick={e => e.stopPropagation()}
       >
         <input
           type="checkbox"
           aria-label={`Select ${issue.issueKey}`}
+          checked={isSelected}
+          onChange={() => onSelect(issue.issueKey)}
           style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--ds-background-selected-bold, #0052CC)', margin: 0 }}
         />
       </div>
 
-      {/* collapse toggle */}
-      <div style={{ width: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-text-subtlest, #626F86)' }}>
+      {/* collapse toggle — stopPropagation so row onClick (open detail) doesn't fire */}
+      <div
+        style={{ width: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-text-subtlest, #626F86)' }}
+        onClick={hasChildren ? e => { e.stopPropagation(); onToggle(issue.issueKey); } : undefined}
+      >
         {hasChildren && (
           collapsed
             ? <ChevronRightIcon label={`Expand ${issue.issueKey}`} size="small" />
