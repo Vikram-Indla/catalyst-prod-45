@@ -39,7 +39,7 @@ export function StatusPill({ value, label }: StatusPillProps) {
     }}>
       <span style={{
         fontSize: '11px',
-        fontWeight: 700,
+        fontWeight: 653,
         lineHeight: '20px',
         color: 'rgb(41, 42, 46)',
         textTransform: 'uppercase',

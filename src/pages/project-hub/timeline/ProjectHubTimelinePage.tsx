@@ -348,12 +348,12 @@ function MenuItemRow({
 function InlineEmptyOverlay({ projectKey }: { projectKey: string }) {
   return (
     <div style={{
-      position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+      position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, padding: 32,
       background: 'var(--ds-surface-overlay, #FFFFFF)',
       border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8,
       boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.15))',
-      zIndex: 20, minWidth: 280,
+      zIndex: 20, minWidth: 280, pointerEvents: 'none',
     }}>
       <GanttChart style={{ width: 40, height: 40, color: 'var(--ds-text-subtlest, #626F86)' }} />
       <div style={{ textAlign: 'center' }}>
