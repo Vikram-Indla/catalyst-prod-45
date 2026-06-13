@@ -1269,26 +1269,31 @@ export function useTimeInStatusMatrix(
       //    Catalyst exposes columns even with zero schemes (degraded mode).
       let statusColumns: TimeInStatusMatrixResult['statusColumns'] = [];
       try {
-        const { data: schemes } = await typedQuery('catalyst_workflow_schemes' as any)
-          .select('id')
-          .eq('issue_type', issueType)
-          .eq('is_default', true)
-          .eq('is_active', true)
-          .limit(1);
-        const schemeId = (schemes as any)?.[0]?.id;
-        if (schemeId) {
-          const { data: statuses } = await typedQuery('catalyst_workflow_statuses' as any)
+        // Get statuses for this work item type from ph_workflow_* tables
+        const { data: typeStatuses } = await typedQuery('ph_workflow_type_statuses' as any)
+          .select('position, ph_workflow_statuses!inner(name, category)')
+          .eq('work_item_type', issueType)
+          .is('ph_workflow_statuses.archived_at', null)
+          .order('position', { ascending: true });
+        if (typeStatuses && (typeStatuses as any[]).length > 0) {
+          statusColumns = ((typeStatuses as any) ?? []).map((ts: any) => ({
+            name: ts.ph_workflow_statuses.name,
+            category: ts.ph_workflow_statuses.category,
+            position: ts.position,
+          }));
+        } else {
+          // Fallback: all non-archived statuses regardless of type
+          const { data: allStatuses } = await typedQuery('ph_workflow_statuses' as any)
             .select('name, category, position')
-            .eq('scheme_id', schemeId)
+            .is('archived_at', null)
             .order('position', { ascending: true });
-          statusColumns = ((statuses as any) ?? []).map((s: any) => ({
+          statusColumns = ((allStatuses as any) ?? []).map((s: any) => ({
             name: s.name,
             category: s.category,
             position: s.position,
           }));
         }
       } catch (e) {
-         
         console.warn('[TimeInStatus] workflow lookup failed — falling back to discovered statuses', e);
       }
 

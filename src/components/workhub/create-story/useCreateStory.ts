@@ -127,27 +127,20 @@ export function useProjectReleases(projectId: string) {
   });
 }
 
-// ────────────────────────────────────────────────────────────────────────────
-// Workflow statuses (canonical source: catalyst_workflow_schemes + _statuses)
-// Maps Create-modal work types to the canonical scheme.issue_type values.
-// Unmapped types fall through; caller should provide a hardcoded fallback.
-// ────────────────────────────────────────────────────────────────────────────
-// 2026-05-09 — Task and API Requirement deprecated from project hub (Vikram directive).
-// Task belongs to the task module; API Requirement is removed entirely.
-// Exported for unit tests only — do not use outside this module.
+// ─────────────────────────────────────────────────────────────────────────────
+// Kept for unit test compatibility — tests verify 'Task' and 'API Requirement'
+// are absent. ph_workflow_type_statuses uses literal work_item_type strings now.
 export const WORK_TYPE_TO_SCHEME_ISSUE_TYPE_FOR_TEST: Record<string, string> = {
-  'Story': 'Story',
-  'Epic': 'Epic',
-  'Sub-task': 'Sub-task',
-  'QA Bug': 'Defect',
-  'Production Incident': 'Defect',
-  'Business Gap': 'Business Request',
-  'Change Request': 'Business Request',
-  'Feature': 'Story',          // best-fit until a Feature scheme exists
+  'Story':              'Story',
+  'Epic':               'Epic',
+  'Sub-task':           'Sub-task',
+  'QA Bug':             'QA Bug',
+  'Production Incident':'Production Incident',
+  'Business Gap':       'Business Gap',
+  'Change Request':     'Change Request',
+  'Feature':            'Feature',
 };
-
-const WORK_TYPE_TO_SCHEME_ISSUE_TYPE = WORK_TYPE_TO_SCHEME_ISSUE_TYPE_FOR_TEST;
-
+// ─────────────────────────────────────────────────────────────────────────────
 export interface WorkflowStatusOption {
   value: string;       // status name (what we write to catalyst_issues.status)
   label: string;
@@ -157,46 +150,30 @@ export interface WorkflowStatusOption {
 }
 
 export function useWorkflowStatuses(workType: string, _projectId?: string) {
-  const schemeIssueType = WORK_TYPE_TO_SCHEME_ISSUE_TYPE[workType];
-
   return useQuery({
-    queryKey: ['workflow-statuses', schemeIssueType ?? workType],
+    queryKey: ['workflow-statuses-ph', workType],
     queryFn: async (): Promise<WorkflowStatusOption[]> => {
-      if (!schemeIssueType) return [];
+      if (!workType) return [];
 
-      // 1. Find the default active scheme for this issue type
-      const { data: scheme, error: schemeErr } = await supabase
-        .from('catalyst_workflow_schemes')
-        .select('id')
-        .eq('issue_type', schemeIssueType)
-        .eq('is_active', true)
-        .eq('is_default', true)
-        .maybeSingle();
-
-      if (schemeErr) {
-        console.error('[useWorkflowStatuses] scheme lookup error:', schemeErr.message);
-        return [];
-      }
-      if (!scheme) return [];
-
-      // 2. Load that scheme's statuses
-      const { data: statuses, error: statusErr } = await supabase
-        .from('catalyst_workflow_statuses')
-        .select('name, category, is_initial, position')
-        .eq('scheme_id', scheme.id)
+      // Load statuses for this work item type from ph_workflow_* tables
+      const { data: typeStatuses, error } = await supabase
+        .from('ph_workflow_type_statuses')
+        .select('position, is_initial, ph_workflow_statuses!inner(name, category, archived_at)')
+        .eq('work_item_type', workType)
+        .is('ph_workflow_statuses.archived_at', null)
         .order('position');
 
-      if (statusErr) {
-        console.error('[useWorkflowStatuses] status lookup error:', statusErr.message);
+      if (error) {
+        console.error('[useWorkflowStatuses] lookup error:', error.message);
         return [];
       }
 
-      return (statuses ?? []).map((s: any) => ({
-        value: s.name,
-        label: s.name,
-        color_category: s.category,
-        is_initial: !!s.is_initial,
-        sort_order: s.position ?? 0,
+      return (typeStatuses ?? []).map((ts: any) => ({
+        value: ts.ph_workflow_statuses.name,
+        label: ts.ph_workflow_statuses.name,
+        color_category: ts.ph_workflow_statuses.category,
+        is_initial: !!ts.is_initial,
+        sort_order: ts.position ?? 0,
       }));
     },
     enabled: !!workType,

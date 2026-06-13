@@ -119,15 +119,16 @@ export function useStatusMappingLookup() {
  */
 const DEFAULT_LOOKUP = buildLookup(FULL_DEFAULT_MAPPING);
 
-// Cache from catalyst_workflow_statuses for static resolution
+// Cache from ph_workflow_statuses for static resolution
 let _workflowStatusCache: Record<string, StatusBucket> = {};
 let _workflowCacheLoaded = false;
 
 /** Pre-load workflow statuses for static resolution (call once at app init) */
 export async function preloadWorkflowStatusCache() {
   try {
-    const { data } = await typedQuery('catalyst_workflow_statuses')
-      .select('name, category');
+    const { data } = await typedQuery('ph_workflow_statuses')
+      .select('name, category')
+      .is('archived_at', null);
     if (data && Array.isArray(data)) {
       const cache: Record<string, StatusBucket> = {};
       for (const row of data) {

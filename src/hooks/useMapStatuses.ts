@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 export interface WorkflowStatus {
   id: string;
   name: string;
-  slug: string;
+  slug: string; // kept for interface compat; always '' from ph_workflow_statuses
   category: string;
   color: string;
   position: number;
@@ -66,29 +66,29 @@ export function useMapStatuses(projectKey: string | undefined, boardId?: string)
     staleTime: 300_000,
   });
 
-  // 2. Get all workflow statuses from all active schemes
+  // 2. Get all workflow statuses from ph_workflow_statuses (non-archived)
   const { data: allStatuses } = useQuery({
     queryKey: ['all-workflow-statuses'],
     queryFn: async () => {
       const { data } = await supabase
-        .from('catalyst_workflow_statuses')
-        .select('id, name, slug, category, color, position, scheme_id, catalyst_workflow_schemes!inner(issue_type, is_active)')
-        .eq('catalyst_workflow_schemes.is_active', true)
+        .from('ph_workflow_statuses')
+        .select('id, name, category, color, position, ph_workflow_type_statuses(work_item_type)')
+        .is('archived_at', null)
         .order('position');
       if (!data) return [];
-      // Deduplicate by name (same status name across schemes)
+      // Deduplicate by name across types
       const seen = new Map<string, WorkflowStatus>();
       for (const s of data) {
-        const scheme = s.catalyst_workflow_schemes as any;
         if (!seen.has(s.name)) {
+          const typeRow = (s.ph_workflow_type_statuses as any[])?.[0];
           seen.set(s.name, {
             id: s.id,
             name: s.name,
-            slug: s.slug,
+            slug: '',
             category: s.category,
-            color: s.color,
+            color: s.color ?? '',
             position: s.position,
-            issueType: scheme?.issue_type ?? '',
+            issueType: typeRow?.work_item_type ?? '',
           });
         }
       }

@@ -92,9 +92,10 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
     queryKey: ['catalyst-workflow-open-statuses'],
     queryFn: async () => {
       try {
-        const { data } = await typedQuery('catalyst_workflow_statuses' as any)
+        const { data } = await typedQuery('ph_workflow_statuses' as any)
           .select('name, category')
-          .neq('category', 'done');
+          .neq('category', 'done')
+          .is('archived_at', null);
         return ((data as any) ?? []).map((s: any) => s.name as string);
       } catch {
         return [] as string[];
