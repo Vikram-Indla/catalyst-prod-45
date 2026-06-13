@@ -171,6 +171,7 @@ const FeatureBacklogPage = lazy(() => import("../modules/feature-backlog/pages/F
 const ProjectWorkspace = lazy(() => import("../pages/project/ProjectWorkspace"));
 const BoardView = lazy(() => import("../pages/project/BoardView"));
 const TimelineView = lazy(() => import("../pages/project/TimelineView"));
+const ProjectHubTimelinePage = lazy(() => import("../pages/project-hub/timeline/ProjectHubTimelinePage"));
 const BoardManagerPage = lazy(() => import("../components/boards/BoardManagerPage"));
 const BoardCanvasPage = lazy(() => import("../components/boards/BoardCanvasPage"));
 const UserNotificationSettingsPage = lazy(() => import("../pages/UserNotificationSettingsPage"));
@@ -891,7 +892,7 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/filters/:filterId" element={<S><FilterDetailPageLazy /></S>} />
         <Route path="/project-hub/filters" element={<S><FiltersListPageLazy /></S>} />
         <Route path="/project-hub/filters/create" element={<Navigate to="/project-hub" replace />} />
-        <Route path="/project-hub/:key/timeline" element={<PHPlaceholder title="Timeline" phase="Phase 3" />} />
+        <Route path="/project-hub/:key/timeline" element={<S><ProjectHubTimelinePage /></S>} />
         <Route path="/project-hub/:key/releases" element={<PHPlaceholder title="Releases" phase="Phase 3" />} />
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />
         <Route path="/project-hub/:key/sprint-predictor" element={<PHPlaceholder title="Sprint Predictor" phase="Phase 5" />} />
