@@ -363,38 +363,40 @@ export function WorkItemCard({
         )}
         {vf?.workItemKey !== false && (
           /* Jira parity: clicking the issue key opens the detail panel.
-             Rendered as a button so keyboard users can also trigger it.
-             Hover: underline + slightly darker text, matching Jira's
-             `ds-text-subtlest` → `ds-link` transition. */
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenDetail?.(issue.id);
-            }}
-            onMouseEnter={(e) => {
-              const el = e.currentTarget as HTMLButtonElement;
-              el.style.textDecoration = 'underline';
-              el.style.color = tk.textPrimary;
-            }}
-            onMouseLeave={(e) => {
-              const el = e.currentTarget as HTMLButtonElement;
-              el.style.textDecoration = 'none';
-              el.style.color = tk.textMuted;
-            }}
-            style={{
-              fontSize: d.metaSize, fontWeight: 400,
-              color: tk.textMuted, fontFamily: 'var(--cp-font-body)',
-              lineHeight: '14px',
-              background: 'none', border: 'none', padding: 0,
-              cursor: 'pointer', textDecoration: 'none',
-              transition: 'color 80ms ease, text-decoration 80ms ease',
-            }}
-            aria-label={`Open ${issue.issueKey}`}
-            title={`Open ${issue.issueKey}`}
-          >
-            {issue.issueKey}
-          </button>
+             Wrapped in <IssueHoverCard> so hovering the key on ANY card
+             type (Story/Task/Epic/etc.) shows the quick-view preview —
+             previously only subtask chips had this affordance. */
+          <IssueHoverCard issueKey={issue.issueKey}>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenDetail?.(issue.id);
+              }}
+              onMouseEnter={(e) => {
+                const el = e.currentTarget as HTMLButtonElement;
+                el.style.textDecoration = 'underline';
+                el.style.color = tk.textPrimary;
+              }}
+              onMouseLeave={(e) => {
+                const el = e.currentTarget as HTMLButtonElement;
+                el.style.textDecoration = 'none';
+                el.style.color = tk.textMuted;
+              }}
+              style={{
+                fontSize: d.metaSize, fontWeight: 400,
+                color: tk.textMuted, fontFamily: 'var(--cp-font-body)',
+                lineHeight: '14px',
+                background: 'none', border: 'none', padding: 0,
+                cursor: 'pointer', textDecoration: 'none',
+                transition: 'color 80ms ease, text-decoration 80ms ease',
+              }}
+              aria-label={`Open ${issue.issueKey}`}
+              title={`Open ${issue.issueKey}`}
+            >
+              {issue.issueKey}
+            </button>
+          </IssueHoverCard>
         )}
         {issue.sourceTag && (
           <SourceBadge source={issue.sourceTag} />
