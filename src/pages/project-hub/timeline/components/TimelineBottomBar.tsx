@@ -117,15 +117,18 @@ export function TimelineBottomBar({
   return (
     <div
       style={{
-        height: 40,
+        position: 'fixed',
+        bottom: 24,
+        right: 24,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'flex-end',
-        gap: 8,
-        padding: '0 8px',
-        borderTop: `1px solid ${T.border}`,
+        gap: 4,
+        padding: '4px 4px',
         background: T.surface,
-        flexShrink: 0,
+        border: `1px solid rgba(11, 18, 14, 0.14)`,
+        borderRadius: 4,
+        boxShadow: 'rgba(30, 31, 33, 0.15) 0px 8px 12px 0px',
+        zIndex: 100,
         userSelect: 'none',
       }}
       role="toolbar"

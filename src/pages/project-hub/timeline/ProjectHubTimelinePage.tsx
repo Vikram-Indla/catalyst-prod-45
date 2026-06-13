@@ -450,6 +450,8 @@ export default function ProjectHubTimelinePage() {
 
   /* detail side panel */
   const navigate = useNavigate();
+  const [sidebarHidden, setSidebarHidden] = useState(false);
+  const [legendOpen, setLegendOpen] = useState(false);
   const [panelItem, setPanelItem] = useState<{ id: string; itemType: string; displayType: string } | null>(null);
   const closePanel = useCallback(() => setPanelItem(null), []);
   const openDetail = useCallback((issue: TimelineIssue) => {
@@ -1294,7 +1296,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
 
         {/* ── sidebar panel ── */}
-        {!isNarrow && (
+        {!isNarrow && !sidebarHidden && (
           <div style={{
             width: sidebarWidth, flexShrink: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden',
           }}>
@@ -1309,7 +1311,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                 display: 'flex', alignItems: 'flex-end', padding: '0 8px 8px', gap: 8,
               }}
             >
-              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
                 Work
               </span>
               {parentKeys.length > 0 && (
@@ -1480,7 +1482,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
         )}
 
         {/* ── drag divider ── */}
-        {!isNarrow && (
+        {!isNarrow && !sidebarHidden && (
           <div
             role="separator"
             aria-label="Resize sidebar"
@@ -1574,13 +1576,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
           >
             <div style={{ width: gridWidth, height: contentHeight, position: 'relative' }}>
 
-              {/* vertical grid lines */}
-              {gridLines.map((x, i) => (
-                <div key={i} style={{
-                  position: 'absolute', top: 0, bottom: 0, left: x, width: 1,
-                  background: 'rgba(9,30,66,0.06)', pointerEvents: 'none',
-                }} />
-              ))}
+              {/* vertical grid lines — intentionally hidden for clean Jira parity */}
 
               {/* today marker */}
               {todayLeft >= 0 && todayLeft <= gridWidth && (
@@ -1755,6 +1751,10 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
         zoom={zoom}
         onZoomChange={setZoom}
         onScrollToToday={scrollToToday}
+        onToggleLegend={() => setLegendOpen(v => !v)}
+        legendOpen={legendOpen}
+        onToggleSidePanel={() => setSidebarHidden(v => !v)}
+        sidePanelOpen={!sidebarHidden}
       />
     </div>
     {/* ── detail side panel — canonical BacklogPage pattern ── */}
