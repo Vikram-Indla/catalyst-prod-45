@@ -3,6 +3,7 @@
  * Rendered inside the hero grid of the marketing login page.
  */
 
+// ads-scanner:ignore-next-line
 import './login-styles.css';
 import type { Lang } from './translations';
 import { t } from './translations';

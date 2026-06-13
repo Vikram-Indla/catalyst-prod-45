@@ -410,7 +410,7 @@ export function CatalystLoginPage() {
           </div>
         </div>
         {mobileMenuOpen && (
-          <div id="clmp-mobile-menu" className="clmp-mobile-menu" role="dialog" aria-label="Navigation menu" ref={mobileMenuRef}>
+          <div id="clmp-mobile-menu" className="clmp-mobile-menu" role="dialog" aria-label="Navigation menu" aria-modal="true" ref={mobileMenuRef}>
             <a href="#ai" onClick={() => setMobileMenuOpen(false)}>{t(lang, 'nav.ai')}</a>
             <a href="#mods" onClick={() => setMobileMenuOpen(false)}>{t(lang, 'hubs.eyebrow')}</a>
             <a href="#why" onClick={() => setMobileMenuOpen(false)}>{t(lang, 'why.eyebrow')}</a>
@@ -465,7 +465,7 @@ export function CatalystLoginPage() {
         <span className="clmp-ai-watermark"><CPathSvg /></span>
         <div className="clmp-container clmp-ai-grid">
           <div className="clmp-rv">
-            <CatyMascot state="awake" className="clmp-caty-hero" />
+            <CatyMascot state="awake" variant="gradient" className="clmp-caty-hero" />
             <span className="clmp-ai-kicker">✦ {t(lang, 'ai.kicker')}</span>
             <h2>{t(lang, 'ai.title1')} <span className="clmp-ai-hl">{t(lang, 'ai.title2')}</span><br />{t(lang, 'ai.title3')}</h2>
             <p className="clmp-ai-sub">{t(lang, 'ai.sub')}</p>

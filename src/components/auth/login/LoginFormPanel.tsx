@@ -104,6 +104,14 @@ export function LoginFormPanel({
     if (saved) setSigninEmail(saved);
   }, []);
 
+  // Update document.title per sub-state for browser history clarity
+  useEffect(() => {
+    const base = 'Catalyst';
+    if (forgotMode) document.title = forgotSent ? `Check email · ${base}` : `Reset password · ${base}`;
+    else if (otpMode) document.title = otpSent ? `Enter sign-in code · ${base}` : `Sign in with code · ${base}`;
+    else document.title = `Sign in · ${base}`;
+  }, [forgotMode, forgotSent, otpMode, otpSent]);
+
   const busy = isSubmitting || loading;
 
   const handleSignInSubmit = async (e: FormEvent) => {
@@ -294,12 +302,15 @@ export function LoginFormPanel({
           )}
           {otpSent && (
             <form onSubmit={handleVerifyOtp} className="clmp-otp-verify-form">
+              <button type="button" className="clmp-back-btn" onClick={handleBackToPassword}>
+                ← Back to sign in
+              </button>
               <div className="clmp-field">
                 <label htmlFor="otp-code" className="clmp-label">Sign-in code</label>
                 <input
                   ref={otpInputRef} id="otp-code" type="text" inputMode="numeric" pattern="[0-9]*"
                   maxLength={8} placeholder="000000" value={otpCode} autoComplete="one-time-code"
-                  aria-describedby="otp-hint"
+                  aria-describedby="otp-hint" aria-invalid={!!otpError}
                   onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))} className="clmp-otp-input"
                 />
                 <p id="otp-hint" className="clmp-field-hint">Enter the 6-digit code from your email.</p>
@@ -308,9 +319,8 @@ export function LoginFormPanel({
               <Button type="submit" appearance="primary" isLoading={busy} isDisabled={busy || otpCode.length < 6 || otpCode.length > 8} shouldFitContainer>
                 Sign in
               </Button>
-              <div className="clmp-otp-footer-row">
+              <div style={{ textAlign: 'center' }}>
                 <button type="button" className="clmp-otp-text-btn" onClick={handleSendOtp} disabled={busy}>Resend code</button>
-                <button type="button" className="clmp-otp-text-btn" onClick={handleBackToPassword}>Back to password</button>
               </div>
             </form>
           )}
