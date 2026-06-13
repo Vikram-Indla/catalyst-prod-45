@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Button from '@atlaskit/button/new';
-import Lozenge from '@atlaskit/lozenge';
 import Tooltip from '@atlaskit/tooltip';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import Spinner from '@atlaskit/spinner';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import type { TypeStatus, Transition } from '@/hooks/useTypeWorkflow';
 import {
   useTypeWorkflow,
@@ -19,15 +19,22 @@ import {
 import type { WorkflowStatusWithTypes } from '@/hooks/useWorkflowStatuses';
 import { STATUS_CATEGORY_COLORS, STATUS_CATEGORY_LABELS, type StatusCategory } from '@/constants/statusCategoryColors';
 
-// ── category → lozenge appearance ──────────────────────────────────────────
-type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new';
-
-const CAT_LOZENGE: Record<string, LozengeAppearance> = {
-  todo:        'default',
-  in_progress: 'inprogress',
-  done:        'success',
-  terminal:    'removed',
+// ── CatalystStatusPill color density (matches CatalystStatusPill.tsx exactly) ─
+const STATUS_BG: Record<string, string> = {
+  success:    '#94C748',
+  inprogress: '#8FB8F6',
+  moved:      '#F3D664',
+  new:        '#B8ACF6',
+  removed:    '#FD9891',
+  default:    '#DDDEE1',
 };
+const STATUS_TEXT = '#292A2E';
+const CAT_TO_APPEARANCE: Record<string, string> = {
+  todo: 'default', in_progress: 'inprogress', done: 'success', terminal: 'removed',
+};
+function catToBg(category: string): string {
+  return STATUS_BG[CAT_TO_APPEARANCE[category] ?? 'default'] ?? STATUS_BG.default;
+}
 
 // ── icons (inline SVG only, no deps) ───────────────────────────────────────
 function ChevronRight({ size = 14, style }: { size?: number; style?: React.CSSProperties }) {
@@ -97,17 +104,20 @@ function PillDot({ color, size = 8 }: { color: string; size?: number }) {
 function StatusChip({
   name,
   color,
+  category,
   isInitial,
   onRemove,
   onSetInitial,
 }: {
   name: string;
   color: string;
+  category: string;
   isInitial: boolean;
   onRemove: () => void;
   onSetInitial: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
+  const bg = catToBg(category);
 
   return (
     <span
@@ -117,19 +127,18 @@ function StatusChip({
         display: 'inline-flex',
         alignItems: 'center',
         gap: 6,
-        height: 32,
+        height: 28,
         padding: '0 10px',
-        border: `1px solid var(--ds-border, #DFE1E6)`,
         borderRadius: 3,
-        fontSize: 13,
-        fontWeight: 500,
-        background: hovered ? 'var(--ds-surface-sunken, #F7F8F9)' : 'var(--ds-surface, #FFFFFF)',
+        fontSize: 12,
+        fontWeight: 600,
+        background: bg,
+        color: STATUS_TEXT,
         cursor: 'default',
-        transition: 'border-color 120ms ease, background 120ms ease',
-        borderColor: hovered ? 'var(--ds-border-bold, #8C8F97)' : 'var(--ds-border, #DFE1E6)',
+        transition: 'filter 120ms ease',
+        filter: hovered ? 'brightness(0.92)' : 'none',
       }}
     >
-      <PillDot color={color} />
       {name}
       {isInitial && (
         <Tooltip content="This is the initial status for this workflow">
@@ -221,15 +230,18 @@ function StatusChip({
 function TransitionPill({
   name,
   color,
+  category,
   onRemove,
   isGlobal,
 }: {
   name: string;
   color: string;
+  category: string;
   onRemove: () => void;
   isGlobal: boolean;
 }) {
   const [hovered, setHovered] = useState(false);
+  const bg = catToBg(category);
 
   return (
     <span
@@ -239,19 +251,18 @@ function TransitionPill({
         display: 'inline-flex',
         alignItems: 'center',
         gap: 6,
-        height: 32,
+        height: 28,
         padding: '0 10px',
-        border: `1px solid var(--ds-border, #DFE1E6)`,
         borderRadius: 3,
-        fontSize: 13,
-        fontWeight: 500,
-        background: hovered ? 'var(--ds-surface-sunken, #F7F8F9)' : 'var(--ds-surface, #FFFFFF)',
+        fontSize: 12,
+        fontWeight: 600,
+        background: bg,
+        color: STATUS_TEXT,
         cursor: 'default',
-        transition: 'border-color 120ms ease, background 120ms ease',
-        borderColor: hovered ? 'var(--ds-border-bold, #8C8F97)' : 'var(--ds-border, #DFE1E6)',
+        transition: 'filter 120ms ease',
+        filter: hovered ? 'brightness(0.92)' : 'none',
       }}
     >
-      <PillDot color={color} />
       {name}
       {hovered && (
         <Tooltip
@@ -452,12 +463,19 @@ function TransitionGroupRow({
             </span>
           </>
         ) : fromStatus ? (
-          <>
-            <PillDot color={fromStatus.color} />
-            <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)' }}>
-              {fromStatus.name}
-            </span>
-          </>
+          <span
+            style={{
+              display: 'inline-block',
+              padding: '2px 7px',
+              borderRadius: 3,
+              fontSize: 12,
+              fontWeight: 600,
+              background: catToBg(fromStatus.category),
+              color: STATUS_TEXT,
+            }}
+          >
+            {fromStatus.name}
+          </span>
         ) : (
           <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)' }}>
             Any status
@@ -507,6 +525,7 @@ function TransitionGroupRow({
                   key={t.id}
                   name={toStatus?.name ?? t.to_status_id}
                   color={toStatus?.color ?? '#64748B'}
+                  category={toStatus?.category ?? 'todo'}
                   isGlobal={isGlobalTrans}
                   onRemove={() => {
                     if (isGlobalTrans) {
@@ -536,25 +555,24 @@ function TransitionGroupRow({
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: 6,
-                      height: 32,
+                      height: 28,
                       padding: '0 10px',
-                      border: '1px solid var(--ds-border, #DFE1E6)',
+                      border: 'none',
                       borderRadius: 3,
-                      fontSize: 13,
-                      fontWeight: 500,
-                      background: 'var(--ds-surface, #FFFFFF)',
+                      fontSize: 12,
+                      fontWeight: 600,
+                      background: catToBg(s.category),
+                      color: STATUS_TEXT,
                       cursor: 'pointer',
-                      color: 'var(--ds-text, #292A2E)',
+                      transition: 'filter 120ms ease',
                     }}
                     onMouseEnter={(e) =>
-                      ((e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-sunken, #F7F8F9)')
+                      ((e.currentTarget as HTMLButtonElement).style.filter = 'brightness(0.88)')
                     }
                     onMouseLeave={(e) =>
-                      ((e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)')
+                      ((e.currentTarget as HTMLButtonElement).style.filter = 'none')
                     }
                   >
-                    <PillDot color={s.color} />
                     {s.name}
                   </button>
                 ))
@@ -713,7 +731,7 @@ function AddStatusPicker({
               alignItems: 'center',
               gap: 8,
               width: '100%',
-              padding: '7px 8px',
+              padding: '5px 8px',
               fontSize: 13,
               borderRadius: 3,
               background: 'none',
@@ -730,8 +748,20 @@ function AddStatusPicker({
               ((e.currentTarget as HTMLButtonElement).style.background = 'none')
             }
           >
-            <PillDot color={s.color} />
-            {s.name}
+            <span
+              style={{
+                display: 'inline-block',
+                padding: '2px 7px',
+                borderRadius: 3,
+                fontSize: 11,
+                fontWeight: 600,
+                background: catToBg(s.category),
+                color: STATUS_TEXT,
+                flexShrink: 0,
+              }}
+            >
+              {s.name}
+            </span>
           </button>
         ))
       )}
@@ -753,6 +783,118 @@ function AddStatusPicker({
         Cancel
       </button>
     </div>
+  );
+}
+
+// ── copy-workflow portal menu (bypasses @atlaskit/popup Popper bug) ────────
+function CopyWorkflowMenu({
+  isOpen,
+  onClose,
+  triggerRef,
+  items,
+  onSelect,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  items: string[];
+  onSelect: (item: string) => void;
+}) {
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function onMouseDown(e: MouseEvent) {
+      if (
+        !menuRef.current?.contains(e.target as Node) &&
+        !triggerRef.current?.contains(e.target as Node)
+      ) {
+        onClose();
+      }
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        onClose();
+      }
+    }
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => {
+      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('keydown', onKeyDown, true);
+    };
+  }, [isOpen, onClose, triggerRef]);
+
+  if (!isOpen || !triggerRef.current) return null;
+
+  const rect = triggerRef.current.getBoundingClientRect();
+
+  return createPortal(
+    <div
+      ref={menuRef}
+      role="menu"
+      aria-label="Copy workflow from"
+      style={{
+        position: 'fixed',
+        top: rect.bottom + 4,
+        right: window.innerWidth - rect.right,
+        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        borderRadius: 6,
+        boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+        padding: '4px 0',
+        minWidth: 180,
+        zIndex: 9999,
+      }}
+    >
+      <div
+        style={{
+          padding: '6px 12px 4px',
+          fontSize: 11,
+          fontWeight: 600,
+          color: 'var(--ds-text-subtlest, #6B6E76)',
+          letterSpacing: '0.04em',
+          textTransform: 'uppercase',
+        }}
+      >
+        Copy from
+      </div>
+      {items.map((item) => (
+        <button
+          key={item}
+          role="menuitem"
+          onClick={() => {
+            onSelect(item);
+            onClose();
+          }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            width: '100%',
+            padding: '7px 12px',
+            fontSize: 14,
+            color: 'var(--ds-text, #292A2E)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            textAlign: 'left',
+          }}
+          onMouseEnter={(e) =>
+            ((e.currentTarget as HTMLButtonElement).style.background =
+              'var(--ds-surface-sunken, #F7F8F9)')
+          }
+          onMouseLeave={(e) =>
+            ((e.currentTarget as HTMLButtonElement).style.background = 'none')
+          }
+        >
+          <JiraIssueTypeIcon type={item as WorkItemType} size={16} />
+          {item}
+        </button>
+      ))}
+    </div>,
+    document.body
   );
 }
 
@@ -780,6 +922,8 @@ export function WorkflowTypePanel({
 
   const [wfMode, setWfMode] = useState<'editor' | 'diagram'>('editor');
   const [showAddStatus, setShowAddStatus] = useState(false);
+  const [showCopyMenu, setShowCopyMenu] = useState(false);
+  const copyBtnRef = useRef<HTMLButtonElement>(null);
 
   if (isLoading) {
     return (
@@ -934,59 +1078,52 @@ export function WorkflowTypePanel({
         </span>
         <span style={{ flex: 1 }} />
         <ModeToggle mode={wfMode} onChange={setWfMode} />
-        <DropdownMenu
-          trigger={({ triggerRef, ...triggerProps }) => (
-            <button
-              ref={triggerRef}
-              {...triggerProps}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                height: 32,
-                padding: '0 10px',
-                border: '1px solid var(--ds-border, #DFE1E6)',
-                borderRadius: 3,
-                fontSize: 14,
-                fontWeight: 500,
-                background: 'transparent',
-                color: copyWorkflow.isPending ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, #292A2E)',
-                cursor: copyWorkflow.isPending ? 'not-allowed' : 'pointer',
-                transition: 'background 120ms ease',
-              }}
-              disabled={copyWorkflow.isPending}
-              title="Copy statuses and transitions from another work item type"
-            >
-              {copyWorkflow.isPending ? <Spinner size="small" /> : <CopyIcon />}
-              Copy workflow from…
-            </button>
-          )}
-          placement="bottom-end"
-        >
-          <DropdownItemGroup title="Copy from">
-            {WORK_ITEM_TYPES.filter((t) => t !== workItemType).map((fromType) => (
-              <DropdownItem
-                key={fromType}
-                onClick={() => {
-                  copyWorkflow.mutate(fromType, {
-                    onSuccess: ({ addedStatuses, addedTransitions }) => {
-                      onFeedback?.(
-                        'success',
-                        `Copied from ${fromType}`,
-                        `Added ${addedStatuses} status${addedStatuses !== 1 ? 'es' : ''} and ${addedTransitions} transition${addedTransitions !== 1 ? 's' : ''}.`
-                      );
-                    },
-                    onError: (err: unknown) => {
-                      onFeedback?.('error', 'Copy failed', (err as Error)?.message);
-                    },
-                  });
-                }}
-              >
-                {fromType}
-              </DropdownItem>
-            ))}
-          </DropdownItemGroup>
-        </DropdownMenu>
+        <>
+          <button
+            ref={copyBtnRef}
+            onClick={() => setShowCopyMenu((v) => !v)}
+            disabled={copyWorkflow.isPending}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              height: 32,
+              padding: '0 10px',
+              border: '1px solid var(--ds-border, #DFE1E6)',
+              borderRadius: 3,
+              fontSize: 14,
+              fontWeight: 500,
+              background: 'transparent',
+              color: copyWorkflow.isPending ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, #292A2E)',
+              cursor: copyWorkflow.isPending ? 'not-allowed' : 'pointer',
+              transition: 'background 120ms ease',
+            }}
+            title="Copy statuses and transitions from another work item type"
+          >
+            {copyWorkflow.isPending ? <Spinner size="small" /> : <CopyIcon />}
+            Copy workflow from…
+          </button>
+          <CopyWorkflowMenu
+            isOpen={showCopyMenu}
+            onClose={() => setShowCopyMenu(false)}
+            triggerRef={copyBtnRef}
+            items={WORK_ITEM_TYPES.filter((t) => t !== workItemType)}
+            onSelect={(fromType) => {
+              copyWorkflow.mutate(fromType as WorkItemType, {
+                onSuccess: ({ addedStatuses, addedTransitions }) => {
+                  onFeedback?.(
+                    'success',
+                    `Copied from ${fromType}`,
+                    `Added ${addedStatuses} status${addedStatuses !== 1 ? 'es' : ''} and ${addedTransitions} transition${addedTransitions !== 1 ? 's' : ''}.`
+                  );
+                },
+                onError: (err: unknown) => {
+                  onFeedback?.('error', 'Copy failed', (err as Error)?.message);
+                },
+              });
+            }}
+          />
+        </>
       </div>
 
       {/* ── diagram placeholder ─────────────────────────────────────────── */}
@@ -1056,12 +1193,22 @@ export function WorkflowTypePanel({
                   style={{
                     flexShrink: 0,
                     width: 96,
-                    paddingTop: 5,
+                    paddingTop: 3,
                   }}
                 >
-                  <Lozenge appearance={CAT_LOZENGE[cat] ?? 'default'}>
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      padding: '2px 7px',
+                      borderRadius: 3,
+                      fontSize: 11,
+                      fontWeight: 600,
+                      background: catToBg(cat),
+                      color: STATUS_TEXT,
+                    }}
+                  >
                     {STATUS_CATEGORY_LABELS[cat as StatusCategory]}
-                  </Lozenge>
+                  </span>
                 </span>
                 <span
                   style={{
@@ -1076,6 +1223,7 @@ export function WorkflowTypePanel({
                       key={s.id}
                       name={s.name}
                       color={s.color}
+                      category={s.category}
                       isInitial={s.id === initialStatusId}
                       onRemove={() => handleRemoveStatus(s)}
                       onSetInitial={() => handleSetInitial(s.id)}

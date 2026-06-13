@@ -22,7 +22,6 @@ import QuestionCircleIcon from '@atlaskit/icon/glyph/question-circle';
 
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
-import { WorkflowViewerModal } from './WorkflowViewerModal';
 import { CatalystWorkflowModal } from '../workflow/CatalystWorkflowModal';
 import type { WorkItemType } from '@/hooks/useTypeWorkflow';
 import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
@@ -327,9 +326,8 @@ export function CatalystStatusPill({
                     style={{
                       padding: '8px 12px 4px',
                       fontSize: 11,
-                      fontWeight: 700,
+                      fontWeight: 600,
                       color: token('color.text.subtlest', '#8590A2'),
-                      textTransform: 'uppercase',
                       letterSpacing: '0.06em',
                     }}
                   >
@@ -389,8 +387,7 @@ export function CatalystStatusPill({
                             padding: '0 7px',
                             borderRadius: 3,
                             fontSize: 11,
-                            fontWeight: 700,
-                            textTransform: 'uppercase',
+                            fontWeight: 600,
                             letterSpacing: '0.06em',
                             background: bg,
                             color: fg,
@@ -486,21 +483,12 @@ export function CatalystStatusPill({
         document.body,
       )}
 
-      {issueType === 'Story' || !issueType ? (
-        <WorkflowViewerModal
-          isOpen={workflowViewerOpen}
+      {workflowViewerOpen && issueType && (
+        <CatalystWorkflowModal
+          issueTypeName={issueType as WorkItemType}
+          currentStatusName={status ?? undefined}
           onClose={() => setWorkflowViewerOpen(false)}
-          issueType={issueType}
-          currentStatus={status}
         />
-      ) : (
-        workflowViewerOpen && (
-          <CatalystWorkflowModal
-            issueTypeName={issueType as WorkItemType}
-            currentStatusName={status ?? undefined}
-            onClose={() => setWorkflowViewerOpen(false)}
-          />
-        )
       )}
     </>
   );

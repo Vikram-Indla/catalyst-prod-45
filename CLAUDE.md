@@ -1297,6 +1297,133 @@ Surface-level "measured X column widths" reports without per-issue-type round-ro
 
 ---
 
+## 🔴 TOP-3 LESSON — `@atlaskit/dropdown-menu` POSITIONING BUG: POPPER.JS + overflow:hidden = dropdown at (0,0) (P0, Non-Negotiable — 2026-06-13)
+
+### Plain-English RCA
+
+**What happened:** The "Copy workflow from…" button on `/admin/workflows` opened its dropdown at the top-left corner of the viewport — not below the button where it should be. The dropdown was visually rendered (content was correct, items clickable if you knew to look there) but positioned at `position: fixed; left: 0px; top: 0px`.
+
+**Why it happened — 3-layer chain:**
+
+**Layer 1: `@atlaskit/dropdown-menu` uses `@atlaskit/popup` v4.16 which uses Popper.js v2.**
+When you use `@atlaskit/dropdown-menu`, you do not get a simple "render a div near this button." You get Popper.js v2 — a full positioning engine — running under the hood. Popper.js portals the dropdown to `atlaskit-portal-container` (a div attached to `document.body`) and then COMPUTES where to position it.
+
+**Layer 2: Popper.js v2 "smartly" walks up the DOM to find clipping boundaries.**
+Popper.js v2 uses `getOverflowAncestors()` — it walks every ancestor of the trigger element looking for elements with `overflow` set to anything other than `visible`. When it finds `overflow: hidden` (or `scroll`, `auto`, etc.), it treats that element as a "clipping boundary." It then computes the trigger element's visible rectangle WITHIN all those boundaries. If the trigger's visible rect collapses to zero (e.g. complex nested `overflow: hidden` containers), Popper.js places the dropdown at `(0, 0)` — it thinks the element is not visible.
+
+**Layer 3: The Catalyst admin page has `overflow: hidden` on the tabs wrapper.**
+`WorkflowAdminPage.tsx` wraps the `<Tabs>` section in `<div style={{ overflow: 'hidden' }}>` (for visual containment/border-radius). The trigger button (`Copy workflow from…`) lives inside those tabs. Popper.js detects this boundary, computes zero visible area, and places the portal at top-left.
+
+**Why `overflow: clip` partially helped but wasn't enough:**
+`overflow: clip` is visually identical to `overflow: hidden` but does NOT create a Block Formatting Context and is NOT detected as a clipping boundary by Popper.js v2's `getOverflowAncestors()`. Changing the tabs wrapper to `overflow: clip` removed ONE boundary. But 3 more `overflow: hidden` ancestors existed above it in the page hierarchy. Popper.js still collapsed the rect to zero. This is why "overflow:clip on the wrapper" was a necessary but insufficient fix.
+
+**The real fix — skip Popper.js entirely:**
+`getBoundingClientRect()` is a dumb, direct browser API call. It always returns the element's actual viewport position regardless of any overflow or scroll ancestors. Popper.js "improves" on this by applying clipping logic — but that clipping logic is the bug source. The canonical fix: `createPortal` to `document.body` + direct `getBoundingClientRect()` on a `useRef` to the trigger. Zero Popper.js, zero `@atlaskit/popup`. Position is computed as `{ top: rect.bottom + 4, right: window.innerWidth - rect.right }` — pixel-perfect, never breaks regardless of scroll or overflow context.
+
+---
+
+### Top 3 Canonical Rules (applies everywhere in Catalyst)
+
+**Rule 1 — `@atlaskit/dropdown-menu` is BANNED inside any `overflow: hidden` ancestor chain.**
+
+If a `<DropdownMenu>` trigger lives anywhere inside a DOM subtree that contains `overflow: hidden` (or `overflow: scroll/auto`), the dropdown WILL render at `(0, 0)`. This is not fixable by wrapping, z-index, or any prop. The only fix is to not use `@atlaskit/dropdown-menu` there.
+
+**How to check before using `@atlaskit/dropdown-menu`:**
+```js
+// Run in DevTools console — paste the trigger element's selector
+let el = document.querySelector('[your-trigger-selector]');
+while (el) {
+  const ov = getComputedStyle(el).overflow;
+  if (ov !== 'visible' && ov !== 'clip') console.warn('CLIPPING ANCESTOR:', el, ov);
+  el = el.parentElement;
+}
+// Any output = @atlaskit/dropdown-menu will break here
+```
+
+**Rule 2 — Canonical portal dropdown pattern (use this everywhere `@atlaskit/dropdown-menu` would break):**
+
+```tsx
+// In the file that needs a dropdown:
+import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+
+function PortalMenu({ isOpen, onClose, triggerRef, children }: {
+  isOpen: boolean;
+  onClose: () => void;
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  children: React.ReactNode;
+}) {
+  const menuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!isOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node) && !triggerRef.current?.contains(e.target as Node)) onClose();
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onClose(); } };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true); // capture phase — beats parent modal Escape
+    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey, true); };
+  }, [isOpen, onClose, triggerRef]);
+  if (!isOpen || !triggerRef.current) return null;
+  const rect = triggerRef.current.getBoundingClientRect();
+  return createPortal(
+    <div ref={menuRef} role="menu"
+      style={{ position: 'fixed', top: rect.bottom + 4, right: window.innerWidth - rect.right,
+        background: 'var(--ds-surface-overlay, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)',
+        borderRadius: 6, boxShadow: '0 8px 28px rgba(9,30,66,0.25)', padding: '4px 0',
+        minWidth: 180, zIndex: 9999 }}
+    >{children}</div>,
+    document.body
+  );
+}
+// Trigger: <button ref={btnRef} onClick={() => setOpen(v => !v)}>…</button>
+// Menu:    <PortalMenu isOpen={open} onClose={() => setOpen(false)} triggerRef={btnRef}>…</PortalMenu>
+```
+
+**WCAG requirements (mandatory for any portal menu):**
+- Trigger button: no special role needed (it's a `<button>`)
+- Menu container: `role="menu"` + `aria-label`
+- Each item: `role="menuitem"`
+- Escape: capture-phase keydown handler (above) — closes menu WITHOUT closing parent modal
+
+**Rule 3 — DOM-probe first, code second — always.**
+
+The debugging cost on this bug was 4+ iterations because the first response was pattern-matching (applied `overflow: clip` fix from docs) WITHOUT DOM-probing. The correct first step for any visual positioning bug:
+
+```js
+// Step 1 — what is Popper.js actually computing?
+document.querySelector('[data-popper-placement]')  // exists = Popper is running
+// Check its style:
+getComputedStyle(document.querySelector('[data-popper-placement]')).left  // '0px' = bug confirmed
+getComputedStyle(document.querySelector('[data-popper-placement]')).top   // '0px' = Popper placed at origin
+
+// Step 2 — find the clipping ancestor
+// (use the loop in Rule 1 above)
+
+// Step 3 — verify getBoundingClientRect works on the trigger
+document.querySelector('[your-trigger]').getBoundingClientRect()
+// If this returns correct viewport coords → skip Popper entirely, use portal pattern
+```
+
+**Meta-rule (reinforces 2026-06-07):** Any visual positioning bug → `getComputedStyle` on the broken element FIRST. A single DOM probe would have revealed `left: 0px; top: 0px` immediately and identified the root cause in < 60 seconds instead of 4 iterations.
+
+---
+
+### Where this bug class appears in Catalyst (known sites — audit before adding new dropdowns)
+
+| Component | Has `overflow:hidden` ancestor | Fix applied |
+|---|---|---|
+| `WorkflowTypePanel.tsx` — "Copy workflow from…" | ✅ tabs wrapper | ✅ portal pattern 2026-06-13 |
+| `GlobalSearchPanel` — filter chips | ✅ GlobalSearchPanel itself | ✅ portal pattern 2026-05-08 |
+| `WatchersChip.tsx` — watchers popover | ✅ detail view rail | ✅ self-rolled popover 2026-05-05 |
+| `AllProjectsTable.tsx` — row menus | ✅ table container | ✅ documented `AllProjectsTable:19-22` |
+
+**Before adding any new `<DropdownMenu>` to any admin page, modal, or panel:** run the DevTools overflow-ancestry check (Rule 1 above). If any ancestor has `overflow !== 'visible'/'clip'` → use the portal pattern from Rule 2, not `@atlaskit/dropdown-menu`.
+
+**Severity:** P0 — `@atlaskit/dropdown-menu` inside `overflow: hidden` silently produces a completely unusable dropdown at viewport origin. No console error, no visual affordance that it's broken — the user sees a menu flicker at the top-left corner and thinks the feature is broken.
+
+---
+
 ## 2026-05-08 — GlobalSearchPanel filter chips: overflow:hidden parent + @atlaskit/popup empty-portal bug; multi-select array truncation; wrong projects table
 **Surface:** GlobalSearchPanel / FilterDropdown (global search)
 **Pattern:** Three compounding bugs: (1) `@atlaskit/popup` v4.16 has an empty-portal bug on this surface — the popup never renders. GlobalSearchPanel also has `overflow: hidden`, which clips `position: absolute` children. Fix: self-rolled `createPortal` to `document.body` with `position: fixed`, `getBoundingClientRect()` for placement. (2) Click-outside handler in `GlobalSearch.tsx` fired `handleClose()` on every portal click because the portal renders to `document.body`, outside `popupRef`. Fix: add `data-filter-portal="true"` to the portal div and guard with `(t as Element).closest?.('[data-filter-portal]')` in the handler. (3) `ActiveFilters` interface used `project: string | null` / `assignee: string | null` — only the first selected value was passed to the query. Fix: changed to `projects: string[]` / `assignees: string[]` and used `.in()` for projects and `.or()` with `ilike` for assignees. (4) `useProjects()` queried `ph_issues` with limit 500 + client-side dedup — incomplete and inefficient. Fix: query `ph_jira_projects` directly.

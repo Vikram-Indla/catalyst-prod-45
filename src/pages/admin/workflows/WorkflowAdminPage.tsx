@@ -133,7 +133,7 @@ export default function WorkflowAdminPage() {
         },
         {
           onSuccess: () => {
-            addFlag('success', 'Status updated. All components refreshed.');
+            addFlag('success', 'Status updated.');
             setEditModalOpen(false);
           },
           onError: (err: unknown) => {
