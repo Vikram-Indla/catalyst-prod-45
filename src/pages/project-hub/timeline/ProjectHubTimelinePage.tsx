@@ -782,7 +782,7 @@ export default function ProjectHubTimelinePage() {
                         style={{
                           position: 'absolute', left: 0, top: 0, bottom: 0, width: 8,
                           cursor: 'ew-resize',
-                          background: 'rgba(255,255,255,0.22)',
+                          background: 'var(--ds-border-inverse, rgba(255,255,255,0.22))',
                           borderRadius: '4px 0 0 4px',
                           zIndex: 1,
                         }}
@@ -812,7 +812,7 @@ export default function ProjectHubTimelinePage() {
                         style={{
                           position: 'absolute', right: 0, top: 0, bottom: 0, width: 8,
                           cursor: 'ew-resize',
-                          background: 'rgba(255,255,255,0.22)',
+                          background: 'var(--ds-border-inverse, rgba(255,255,255,0.22))',
                           borderRadius: '0 4px 4px 0',
                           zIndex: 1,
                         }}
