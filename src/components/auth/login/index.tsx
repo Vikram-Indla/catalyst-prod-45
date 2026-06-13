@@ -72,6 +72,29 @@ export function CatalystLoginPage() {
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const checkedUserRef = useRef<string | null>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const menu = mobileMenuRef.current;
+    if (!menu) return;
+    const focusables = Array.from(menu.querySelectorAll<HTMLElement>('a, button, [tabindex]:not([tabindex="-1"])'));
+    focusables[0]?.focus();
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); setMobileMenuOpen(false); return; }
+      if (e.key !== 'Tab') return;
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => document.removeEventListener('keydown', onKeyDown, true);
+  }, [mobileMenuOpen]);
 
   const checkMustChangePassword = useCallback(async (userId: string): Promise<boolean> => {
     try {
@@ -387,7 +410,7 @@ export function CatalystLoginPage() {
           </div>
         </div>
         {mobileMenuOpen && (
-          <div id="clmp-mobile-menu" className="clmp-mobile-menu" role="dialog" aria-label="Navigation menu">
+          <div id="clmp-mobile-menu" className="clmp-mobile-menu" role="dialog" aria-label="Navigation menu" ref={mobileMenuRef}>
             <a href="#ai" onClick={() => setMobileMenuOpen(false)}>{t(lang, 'nav.ai')}</a>
             <a href="#mods" onClick={() => setMobileMenuOpen(false)}>{t(lang, 'hubs.eyebrow')}</a>
             <a href="#why" onClick={() => setMobileMenuOpen(false)}>{t(lang, 'why.eyebrow')}</a>
