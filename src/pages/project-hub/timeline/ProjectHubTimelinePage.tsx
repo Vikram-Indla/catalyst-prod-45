@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useCallback, useEffect, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { AtlaskitPageShell } from '@/components/ads';
 import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
@@ -23,13 +23,15 @@ import Avatar from '@atlaskit/avatar';
 import Checkbox from '@atlaskit/checkbox';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { StatusPill } from '@/components/shared/StatusPill';
+import { translate } from '@/lib/jql';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
 /* ─────────────────────────────── types ─────────────────────────────── */
 
 type ZoomLevel = 'week' | 'month' | 'quarter';
-type OpenDropdown = 'epic' | 'status' | 'assignee' | 'quick' | 'more' | null;
+type OpenDropdown = 'type' | 'status' | 'assignee' | 'quick' | 'more' | null;
 
 interface FlatRow {
   issue: TimelineIssue;
@@ -65,6 +67,12 @@ const STATUS_CAT_OPTIONS = [
 const BUILT_IN_QUICK_FILTERS = [
   { value: 'unscheduled', label: 'Unscheduled' },
   { value: 'no_assignee', label: 'Unassigned' },
+];
+
+const WORK_ITEM_TYPES = [
+  'Story', 'Epic', 'Feature', 'Task', 'Sub-task',
+  'QA Bug', 'Production Incident', 'Change Request',
+  'Business Gap', 'Backend', 'Frontend', 'Integration', 'Idea',
 ];
 
 /* ─────────────────────────────── date helpers ───────────────────────── */
@@ -437,7 +445,8 @@ export default function ProjectHubTimelinePage() {
   }, []);
 
   /* detail side panel */
-  const [panelItem, setPanelItem] = useState<{ id: string; itemType: string } | null>(null);
+  const navigate = useNavigate();
+  const [panelItem, setPanelItem] = useState<{ id: string; itemType: string; displayType: string } | null>(null);
   const closePanel = useCallback(() => setPanelItem(null), []);
   const openDetail = useCallback((issue: TimelineIssue) => {
     const rawType = (issue.issueType ?? 'Story').toLowerCase();
@@ -447,8 +456,13 @@ export default function ProjectHubTimelinePage() {
       rawType === 'business request' ? 'business_request' :
       rawType === 'change request' ? 'change_request' :
       rawType;
-    setPanelItem({ id: issue.issueKey, itemType });
+    setPanelItem({ id: issue.issueKey, itemType, displayType: issue.issueType ?? 'Story' });
   }, []);
+  const goToFullPage = useCallback(() => {
+    if (!panelItem) return;
+    navigate(`/project-hub/${projectKey}/timeline/${panelItem.id}`);
+    closePanel();
+  }, [panelItem, projectKey, navigate, closePanel]);
 
   /* responsive container */
   const containerRef = useRef<HTMLDivElement>(null);
@@ -513,7 +527,7 @@ export default function ProjectHubTimelinePage() {
 
   /* filters */
   const [searchQuery, setSearchQuery] = useState('');
-  const [epicFilter, setEpicFilter] = useState<string | null>(null);
+  const [issueTypeFilter, setIssueTypeFilter] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [quickFilter, setQuickFilter] = useState<string | null>(null);
   const [activeSavedFilterId, setActiveSavedFilterId] = useState<string | null>(null);
@@ -551,7 +565,7 @@ export default function ProjectHubTimelinePage() {
   const isSyncingScroll = useRef(false);
 
   /* dropdown trigger refs */
-  const epicBtnRef = useRef<HTMLButtonElement>(null);
+  const typeBtnRef = useRef<HTMLButtonElement>(null);
   const statusBtnRef = useRef<HTMLButtonElement>(null);
   const assigneeBtnRef = useRef<HTMLButtonElement>(null);
   const quickBtnRef = useRef<HTMLButtonElement>(null);
@@ -566,26 +580,18 @@ export default function ProjectHubTimelinePage() {
 
   const allRows = useMemo(() => flattenTree(tree, collapsed), [tree, collapsed]);
 
-  /* derive unique epics for epic filter */
-  const epicOptions = useMemo(() => {
-    const epics: { key: string; summary: string }[] = [];
-    for (const row of allRows) {
-      if (row.issue.issueType === 'Epic') {
-        epics.push({ key: row.issue.issueKey, summary: row.issue.summary });
-      }
-    }
-    return epics;
-  }, [allRows]);
-
   /* derive unique assignees for assignee filter */
   const assigneeOptions = useMemo(() => {
     const seen = new Set<string>();
-    const result: string[] = [];
+    const result: { name: string; avatarUrl: string | null }[] = [];
     for (const row of allRows) {
       const name = row.issue.assigneeDisplayName;
-      if (name && !seen.has(name)) { seen.add(name); result.push(name); }
+      if (name && !seen.has(name)) {
+        seen.add(name);
+        result.push({ name, avatarUrl: row.issue.assigneeAvatarUrl ?? null });
+      }
     }
-    return result.sort();
+    return result.sort((a, b) => a.name.localeCompare(b.name));
   }, [allRows]);
 
   /* active saved filter object */
@@ -603,10 +609,8 @@ export default function ProjectHubTimelinePage() {
         issue.summary.toLowerCase().includes(q) || issue.issueKey.toLowerCase().includes(q)
       );
     }
-    if (epicFilter) {
-      result = result.filter(({ issue }) =>
-        issue.issueKey === epicFilter || issue.parentKey === epicFilter
-      );
+    if (issueTypeFilter.length > 0) {
+      result = result.filter(({ issue }) => issueTypeFilter.includes(issue.issueType ?? ''));
     }
     if (statusFilter.length > 0) {
       result = result.filter(({ issue }) => {
@@ -650,8 +654,31 @@ export default function ProjectHubTimelinePage() {
         });
       }
     }
+    /* apply saved filter JQL */
+    const jqlQuery = (activeSavedFilter as any)?.jql_query;
+    if (jqlQuery && typeof jqlQuery === 'string' && jqlQuery.trim()) {
+      try {
+        const jqlFilters = translate(jqlQuery.trim());
+        for (const f of jqlFilters) {
+          const vals = Array.isArray(f.value) ? f.value : f.value !== null ? [f.value] : [];
+          if (vals.length === 0) continue;
+          if (f.column === 'issue_type' && (f.method === 'eq' || f.method === 'in')) {
+            result = result.filter(({ issue }) => vals.includes(issue.issueType ?? ''));
+          } else if (f.column === 'assignee_display_name' && (f.method === 'eq' || f.method === 'in')) {
+            result = result.filter(({ issue }) => vals.includes(issue.assigneeDisplayName ?? ''));
+          } else if (f.column === 'status' && (f.method === 'eq' || f.method === 'in')) {
+            result = result.filter(({ issue }) => vals.includes(issue.status ?? ''));
+          } else if (f.column === 'status_category' && (f.method === 'eq' || f.method === 'in')) {
+            result = result.filter(({ issue }) => {
+              const cat = (issue.statusCategory ?? '').toLowerCase();
+              return vals.some((v: string) => cat.includes(v.toLowerCase()));
+            });
+          }
+        }
+      } catch {} // ignore JQL parse errors
+    }
     return result;
-  }, [allRows, searchQuery, epicFilter, statusFilter, quickFilter, activeSavedFilter, assigneeFilter]);
+  }, [allRows, searchQuery, issueTypeFilter, statusFilter, quickFilter, activeSavedFilter, assigneeFilter]);
 
   const headerCols = useMemo(() => buildHeaderCols(dateRange.start, dateRange.end, zoom, pxPerDay), [dateRange, zoom, pxPerDay]);
   const subHeaderCols = useMemo(() => buildSubHeaderCols(dateRange.start, dateRange.end, zoom, pxPerDay), [dateRange, zoom, pxPerDay]);
@@ -768,6 +795,17 @@ export default function ProjectHubTimelinePage() {
     gridRef.current.scrollLeft = todayLeft - gridRef.current.clientWidth / 2;
   }, [todayLeft]);
 
+  // When panel opens, wait for the 150ms paddingRight transition then re-center on today
+  useEffect(() => {
+    if (!panelItem) return;
+    const timer = setTimeout(() => {
+      if (gridRef.current) {
+        gridRef.current.scrollLeft = Math.max(0, todayLeft - gridRef.current.clientWidth / 2);
+      }
+    }, 160);
+    return () => clearTimeout(timer);
+  }, [panelItem, todayLeft]);
+
   const closeDropdown = useCallback(() => setOpenDropdown(null), []);
   const toggleDropdown = useCallback((name: OpenDropdown) => {
     setOpenDropdown(prev => prev === name ? null : name);
@@ -779,14 +817,14 @@ export default function ProjectHubTimelinePage() {
 
   const clearAllFilters = useCallback(() => {
     setSearchQuery('');
-    setEpicFilter(null);
+    setIssueTypeFilter([]);
     setStatusFilter([]);
     setQuickFilter(null);
     setActiveSavedFilterId(null);
     setAssigneeFilter(null);
   }, []);
 
-  const hasActiveFilters = epicFilter !== null || statusFilter.length > 0 || quickFilter !== null || searchQuery.trim() !== '' || activeSavedFilterId !== null || assigneeFilter !== null;
+  const hasActiveFilters = issueTypeFilter.length > 0 || statusFilter.length > 0 || quickFilter !== null || searchQuery.trim() !== '' || activeSavedFilterId !== null || assigneeFilter !== null;
 
   const handleCreateEpic = async () => {
     if (!epicSummary.trim() || !projectKey) return;
@@ -869,7 +907,8 @@ export default function ProjectHubTimelinePage() {
       role="application"
       aria-label="Timeline"
       style={{
-        display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0,
+        display: 'flex', flexDirection: 'column',
+        height: 'calc(100vh - 56px)',
         background: 'var(--ds-surface, #FFFFFF)', overflow: 'hidden',
       }}
     >
@@ -904,42 +943,48 @@ export default function ProjectHubTimelinePage() {
             />
           </div>
 
-          {/* epic filter */}
+          {/* work item type filter */}
           <div style={{ position: 'relative' }}>
             <button
-              ref={epicBtnRef}
-              onClick={() => toggleDropdown('epic')}
+              ref={typeBtnRef}
+              onClick={() => toggleDropdown('type')}
               aria-haspopup="menu"
-              aria-expanded={openDropdown === 'epic'}
+              aria-expanded={openDropdown === 'type'}
               style={{
                 display: 'flex', alignItems: 'center', gap: 4,
-                height: 32, padding: '0 8px', border: `1px solid ${epicFilter ? 'var(--ds-border-selected, #388BFF)' : 'var(--ds-border, #DFE1E6)'}`,
-                borderRadius: 3, background: epicFilter ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--ds-surface, #FFFFFF)',
+                height: 32, padding: '0 8px', border: `1px solid ${issueTypeFilter.length > 0 ? 'var(--ds-border-selected, #388BFF)' : 'var(--ds-border, #DFE1E6)'}`,
+                borderRadius: 3, background: issueTypeFilter.length > 0 ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--ds-surface, #FFFFFF)',
                 cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)',
                 fontFamily: 'var(--ds-font-family-body)',
               }}
             >
-              Epic
-              {epicFilter && <span style={{ fontSize: 11, background: 'var(--ds-background-selected-bold, #0052CC)', color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 2, padding: '0 4px', marginLeft: 4 }}>1</span>}
+              Work item type
+              {issueTypeFilter.length > 0 && <span style={{ fontSize: 11, background: 'var(--ds-background-selected-bold, #0052CC)', color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 2, padding: '0 4px', marginLeft: 4 }}>{issueTypeFilter.length}</span>}
               <ChevronDownIcon label="" size="small" />
             </button>
-            <PortalMenu isOpen={openDropdown === 'epic'} onClose={closeDropdown} triggerRef={epicBtnRef} minWidth={220}>
-              <MenuItemRow
-                label="All epics"
-                isChecked={epicFilter === null}
-                onClick={() => { setEpicFilter(null); closeDropdown(); }}
-              />
-              {epicOptions.length > 0 && <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />}
-              {epicOptions.map(opt => (
-                <MenuItemRow
-                  key={opt.key}
-                  label={`${opt.key} – ${opt.summary}`}
-                  isChecked={epicFilter === opt.key}
-                  onClick={() => { setEpicFilter(epicFilter === opt.key ? null : opt.key); closeDropdown(); }}
-                />
+            <PortalMenu isOpen={openDropdown === 'type'} onClose={closeDropdown} triggerRef={typeBtnRef} minWidth={220}>
+              {WORK_ITEM_TYPES.map(type => (
+                <div
+                  key={type}
+                  role="menuitem"
+                  onClick={() => setIssueTypeFilter(prev => prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type])}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', cursor: 'pointer',
+                    fontSize: 14, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <Checkbox label="" isChecked={issueTypeFilter.includes(type)} onChange={() => {}} />
+                  <JiraIssueTypeIcon type={type} size={16} />
+                  <span>{type}</span>
+                </div>
               ))}
-              {epicOptions.length === 0 && (
-                <div style={{ padding: '8px 12px', fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)' }}>No epics in view</div>
+              {issueTypeFilter.length > 0 && (
+                <>
+                  <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
+                  <MenuItemRow label="Clear type filter" onClick={() => setIssueTypeFilter([])} />
+                </>
               )}
             </PortalMenu>
           </div>
@@ -977,8 +1022,7 @@ export default function ProjectHubTimelinePage() {
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   <Checkbox label="" isChecked={statusFilter.includes(opt.value)} onChange={() => {}} />
-                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: opt.color, flexShrink: 0 }} />
-                  {opt.label}
+                  <StatusPill value={opt.value} label={opt.label} />
                 </div>
               ))}
               {statusFilter.length > 0 && (
@@ -1016,13 +1060,22 @@ export default function ProjectHubTimelinePage() {
                 onClick={() => { setAssigneeFilter(null); closeDropdown(); }}
               />
               {assigneeOptions.length > 0 && <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />}
-              {assigneeOptions.map(name => (
-                <MenuItemRow
-                  key={name}
-                  label={name}
-                  isChecked={assigneeFilter === name}
-                  onClick={() => { setAssigneeFilter(assigneeFilter === name ? null : name); closeDropdown(); }}
-                />
+              {assigneeOptions.map(opt => (
+                <div
+                  key={opt.name}
+                  role="menuitem"
+                  onClick={() => { setAssigneeFilter(assigneeFilter === opt.name ? null : opt.name); closeDropdown(); }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', cursor: 'pointer',
+                    fontSize: 14, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <Checkbox label="" isChecked={assigneeFilter === opt.name} onChange={() => {}} />
+                  <Avatar size="xsmall" src={opt.avatarUrl ?? undefined} name={opt.name} />
+                  <span>{opt.name}</span>
+                </div>
               ))}
               {assigneeOptions.length === 0 && (
                 <div style={{ padding: '8px 12px', fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)' }}>No assignees in view</div>
@@ -1738,9 +1791,10 @@ export default function ProjectHubTimelinePage() {
         </div>
       </div>
     </div>
-      {/* ── detail side panel (like backlog page) ── */}
+      {/* ── detail side panel — canonical BacklogPage pattern ── */}
       {panelItem && (
         <div
+          data-cv-stacked-panel="true"
           style={{
             position: 'fixed', top: 56, right: 0, bottom: 0, width: 480,
             zIndex: 50, borderLeft: '1px solid var(--ds-border, #DFE1E6)',
@@ -1748,16 +1802,73 @@ export default function ProjectHubTimelinePage() {
             display: 'flex', flexDirection: 'column', overflow: 'hidden',
           }}
         >
-          <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}><Spinner size="medium" /></div>}>
-            <CatalystDetailRouter
-              isOpen={true}
-              itemId={panelItem.id}
-              itemType={panelItem.itemType}
-              onClose={closePanel}
-              panelMode={true}
-              projectKey={projectKey ?? ''}
-            />
-          </Suspense>
+          {/* canonical panel header: type icon + label + open-fullpage + close */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            padding: '8px 12px', minHeight: 44, flexShrink: 0,
+            borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-surface, #FFFFFF)',
+          }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
+              <JiraIssueTypeIcon type={panelItem.displayType} size={16} />
+              <span style={{
+                fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtle, #505258)',
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+              }}>
+                Catalyst work item
+              </span>
+            </div>
+            {/* open in full page */}
+            <button
+              type="button"
+              aria-label="Open detail in full page"
+              onClick={goToFullPage}
+              style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: 28, height: 28, border: 'none', borderRadius: 4, cursor: 'pointer',
+                background: 'transparent', color: 'var(--ds-text-subtle, #505258)', flexShrink: 0,
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+            </button>
+            {/* close */}
+            <button
+              type="button"
+              aria-label="Close panel"
+              onClick={closePanel}
+              style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: 28, height: 28, border: 'none', borderRadius: 4, cursor: 'pointer',
+                background: 'transparent', color: 'var(--ds-text-subtle, #505258)', flexShrink: 0,
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          {/* content */}
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}><Spinner size="medium" /></div>}>
+              <CatalystDetailRouter
+                isOpen={true}
+                itemId={panelItem.id}
+                itemType={panelItem.itemType}
+                onClose={closePanel}
+                panelMode={true}
+                projectKey={projectKey ?? ''}
+              />
+            </Suspense>
+          </div>
         </div>
       )}
     </AtlaskitPageShell>
@@ -1785,6 +1896,7 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
   const [rowHovered, setRowHovered] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const navigate = useNavigate();
 
   const handleRemoveDates = async () => {
     setMenuOpen(false);
@@ -1819,7 +1931,7 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         transition: 'background 80ms ease',
         position: 'relative',
       }}
-      onClick={() => onOpenDetail(issue)}
+      onClick={() => navigate(`/project-hub/${projectKey}/timeline/${issue.issueKey}`)}
       aria-expanded={hasChildren ? !collapsed : undefined}
       onMouseEnter={() => setRowHovered(true)}
       onMouseLeave={() => { if (!menuOpen) setRowHovered(false); }}
@@ -1872,19 +1984,19 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
               Saving…
             </span>
           ) : (
-            <a
-              href={`/project-hub/${issue.projectKey}/backlog?issue=${issue.issueKey}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={e => e.stopPropagation()}
+            <button
+              type="button"
+              onClick={e => { e.stopPropagation(); navigate(`/project-hub/${projectKey}/timeline/${issue.issueKey}`); }}
               style={{
                 fontSize: 14, fontWeight: 500, color: 'var(--ds-text-subtlest, #626F86)',
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2,
-                textDecoration: 'none',
+                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                textDecoration: 'none', fontFamily: 'var(--ds-font-family-body)',
               }}
+              aria-label={`Open ${issue.issueKey} in full page`}
             >
               {issue.issueKey}
-            </a>
+            </button>
           )}
           {/* mini progress bar */}
           {progress && progress.total > 0 && (
@@ -1899,6 +2011,27 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
           )}
         </div>
       </div>
+
+      {/* open-in-side-panel button — visible on hover */}
+      <button
+        type="button"
+        aria-label={`Open ${issue.issueKey} in side panel`}
+        onClick={e => { e.stopPropagation(); onOpenDetail(issue); }}
+        style={{
+          ...iconBtnStyle,
+          opacity: rowHovered ? 1 : 0,
+          transition: 'opacity 80ms ease',
+          flexShrink: 0,
+        }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <line x1="15" y1="3" x2="15" y2="21" />
+          <line x1="17.5" y1="8" x2="19" y2="8" />
+          <line x1="17.5" y1="12" x2="19" y2="12" />
+          <line x1="17.5" y1="16" x2="19" y2="16" />
+        </svg>
+      </button>
 
       {/* ⋯ more-actions button — visible on hover */}
       <button
