@@ -28,6 +28,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatusPill } from '@/components/shared/StatusPill';
 import { translate } from '@/lib/jql';
+import { TimelineBottomBar } from './components/TimelineBottomBar';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
@@ -1291,7 +1292,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
       </div>
 
       {/* ── body: sidebar + divider + grid ── */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', paddingRight: panelItem ? 480 : 0, transition: 'padding-right 150ms ease' }}>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
 
         {/* ── sidebar panel ── */}
         {!isNarrow && (
@@ -1744,78 +1745,11 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
         </div>
       </div>
 
-      {/* ── footer: Today + zoom radio group + Legend ── */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '8px 16px', borderTop: '1px solid var(--ds-border, #DFE1E6)',
-        background: 'var(--ds-surface-sunken, #F7F8F9)', flexShrink: 0, height: 40,
-      }}>
-        {/* left: Today */}
-        <Tooltip content="Scroll to today" position="top">
-          <Button
-            appearance="default"
-            onClick={scrollToToday}
-            iconBefore={<Calendar style={{ width: 12, height: 12 }} />}
-          >
-            Today
-          </Button>
-        </Tooltip>
-
-        {/* center: zoom radio group */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap' }}>
-            Timeline time period
-          </span>
-        <div
-          role="radiogroup"
-          aria-label="Timeline view to show as"
-          style={{ display: 'flex', alignItems: 'center', gap: 0, border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, overflow: 'hidden' }}
-        >
-          {(['week', 'month', 'quarter'] as ZoomLevel[]).map((level, i, arr) => (
-            <label
-              key={level}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                height: 28, padding: '0 12px', cursor: 'pointer',
-                background: zoom === level ? 'var(--ds-background-selected-bold, #0052CC)' : 'var(--ds-surface, #FFFFFF)',
-                color: zoom === level ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--ds-text, #172B4D)',
-                fontSize: 13, fontWeight: zoom === level ? 600 : 400,
-                borderRight: i < arr.length - 1 ? '1px solid var(--ds-border, #DFE1E6)' : 'none',
-                transition: 'background 100ms ease, color 100ms ease',
-                fontFamily: 'var(--ds-font-family-body)',
-              }}
-            >
-              <input
-                type="radio"
-                name="timeline-zoom"
-                value={level}
-                checked={zoom === level}
-                onChange={() => setZoom(level)}
-                style={{ position: 'absolute', opacity: 0, width: 0, height: 0 }}
-                aria-label={level.charAt(0).toUpperCase() + level.slice(1)}
-              />
-              {level.charAt(0).toUpperCase() + level.slice(1)}
-            </label>
-          ))}
-        </div>
-        </div>
-
-        {/* right: Legend */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {[
-            { color: 'var(--ds-chart-success-bold, #94C748)', label: 'Done' },
-            { color: 'var(--ds-chart-information-bold, #8FB8F6)', label: 'In Progress' },
-            { color: 'var(--ds-background-neutral, #DDDEE1)', label: 'To Do' },
-          ].map(({ color, label }) => (
-            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ width: 10, height: 10, borderRadius: 2, background: color, display: 'inline-block' }} />
-              <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-body)' }}>
-                {label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <TimelineBottomBar
+        zoom={zoom}
+        onZoomChange={setZoom}
+        onScrollToToday={scrollToToday}
+      />
     </div>
     {/* ── detail side panel — canonical BacklogPage pattern ── */}
     {panelItem && (
