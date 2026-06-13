@@ -8,6 +8,8 @@ import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button';
 import Tooltip from '@atlaskit/tooltip';
 import Avatar from '@atlaskit/avatar';
+import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 /* ─────────────────────────────── types ─────────────────────────────── */
 
@@ -282,10 +284,20 @@ function InlineEmptyOverlay({ projectKey }: { projectKey: string }) {
 
 export default function ProjectHubTimelinePage() {
   const { key: projectKey } = useParams<{ key: string }>();
+  const queryClient = useQueryClient();
   const { data: tree = [], isLoading, error } = useProjectHubTimeline(projectKey);
 
   const [zoom, setZoom] = useState<ZoomLevel>('month');
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+
+  // Drag-to-resize state
+  const [dragging, setDragging] = useState<{
+    issueKey: string;
+    edge: 'start' | 'end';
+    originX: number;
+    originalDate: string;
+  } | null>(null);
+  const [livePixelDelta, setLivePixelDelta] = useState(0);
 
   // FIX: 3-ref scroll sync architecture
   const gridRef = useRef<HTMLDivElement>(null);
@@ -360,6 +372,67 @@ export default function ProjectHubTimelinePage() {
       if (sidebar) sidebar.removeEventListener('scroll', handleSidebarScroll);
     };
   }, [handleGridScroll, handleSidebarScroll]);
+
+  // Global cursor + userSelect during drag
+  useEffect(() => {
+    if (!dragging) return;
+    document.body.style.cursor = 'ew-resize';
+    document.body.style.userSelect = 'none';
+    return () => {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [dragging]);
+
+  // Window-level drag tracking + Supabase commit on mouseup
+  useEffect(() => {
+    if (!dragging) return;
+
+    const onMove = (e: MouseEvent) => setLivePixelDelta(e.clientX - dragging.originX);
+
+    const onUp = async (e: MouseEvent) => {
+      const deltaPx = e.clientX - dragging.originX;
+      const deltaDays = Math.round(deltaPx / pxPerDay);
+      setDragging(null);
+      setLivePixelDelta(0);
+
+      if (deltaDays === 0) return;
+      const original = parseDate(dragging.originalDate);
+      if (!original) return;
+
+      const newDate = addDays(original, deltaDays);
+      const formatted = newDate.toISOString().slice(0, 10);
+      const field = dragging.edge === 'start' ? 'customfield_10015' : 'duedate';
+
+      try {
+        const { data: row } = await (supabase as any)
+          .from('ph_issues')
+          .select('raw_json')
+          .eq('issue_key', dragging.issueKey)
+          .single();
+        if (row?.raw_json) {
+          const updated = {
+            ...row.raw_json,
+            fields: { ...(row.raw_json.fields ?? {}), [field]: formatted },
+          };
+          await (supabase as any)
+            .from('ph_issues')
+            .update({ raw_json: updated })
+            .eq('issue_key', dragging.issueKey);
+          queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+        }
+      } catch (err) {
+        console.warn('timeline date update failed:', err);
+      }
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+  }, [dragging, pxPerDay, queryClient, projectKey]);
 
   const toggleCollapse = useCallback((key: string) => {
     setCollapsed(prev => {
@@ -632,7 +705,7 @@ export default function ProjectHubTimelinePage() {
                 }} />
               ))}
 
-              {/* FIX: bars wrapped in @atlaskit/Tooltip — no native title= attribute */}
+              {/* bars — drag left/right handles to adjust start/due dates */}
               {rows.map(({ issue }, idx) => {
                 const start = parseDate(issue.startDate);
                 const end = parseDate(issue.dueDate);
@@ -641,12 +714,20 @@ export default function ProjectHubTimelinePage() {
                 const effectiveStart = start ?? end!;
                 const effectiveEnd = end ?? start!;
 
-                const left = daysBetween(dateRange.start, effectiveStart) * pxPerDay;
-                const width = Math.max(
+                const baseLeft = daysBetween(dateRange.start, effectiveStart) * pxPerDay;
+                const baseWidth = Math.max(
                   daysBetween(effectiveStart, effectiveEnd) * pxPerDay + pxPerDay,
                   MIN_BAR_W,
                 );
                 const barTop = idx * ROW_H + (ROW_H - BAR_H) / 2;
+
+                const isThisDragging = dragging?.issueKey === issue.issueKey;
+                const deltaLeft = isThisDragging && dragging!.edge === 'start' ? livePixelDelta : 0;
+                const deltaWidth = isThisDragging
+                  ? dragging!.edge === 'start' ? -livePixelDelta : livePixelDelta
+                  : 0;
+                const finalLeft = baseLeft + deltaLeft;
+                const finalWidth = Math.max(MIN_BAR_W, baseWidth + deltaWidth);
 
                 const tooltipContent = (
                   <div>
@@ -659,42 +740,92 @@ export default function ProjectHubTimelinePage() {
                     {issue.assigneeDisplayName && (
                       <div style={{ opacity: 0.85 }}>{issue.assigneeDisplayName}</div>
                     )}
+                    <div style={{ opacity: 0.55, fontSize: 10, marginTop: 4 }}>
+                      Drag edges to adjust dates
+                    </div>
                   </div>
                 );
 
-                return (
+                const bar = (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: barTop,
+                      left: finalLeft,
+                      width: finalWidth,
+                      height: BAR_H,
+                      borderRadius: 4,
+                      background: barColor(issue),
+                      display: 'flex',
+                      alignItems: 'center',
+                      paddingLeft: 8,
+                      paddingRight: 8,
+                      overflow: 'hidden',
+                      cursor: 'default',
+                      zIndex: isThisDragging ? 10 : 2,
+                      boxShadow: isThisDragging
+                        ? 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.3))'
+                        : 'var(--ds-shadow-raised, 0 1px 2px rgba(9,30,66,0.15))',
+                      opacity: isThisDragging ? 0.85 : 1,
+                      userSelect: 'none',
+                    }}
+                  >
+                    {/* left handle — adjusts start date */}
+                    {issue.startDate && (
+                      <div
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setDragging({ issueKey: issue.issueKey, edge: 'start', originX: e.clientX, originalDate: issue.startDate! });
+                          setLivePixelDelta(0);
+                        }}
+                        style={{
+                          position: 'absolute', left: 0, top: 0, bottom: 0, width: 8,
+                          cursor: 'ew-resize',
+                          background: 'rgba(255,255,255,0.22)',
+                          borderRadius: '4px 0 0 4px',
+                          zIndex: 1,
+                        }}
+                      />
+                    )}
+                    <span style={{
+                      fontSize: 11,
+                      fontWeight: 500,
+                      color: 'var(--ds-text-inverse, #FFFFFF)',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      lineHeight: 1,
+                      flex: 1,
+                    }}>
+                      {issue.summary}
+                    </span>
+                    {/* right handle — adjusts due date */}
+                    {issue.dueDate && (
+                      <div
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setDragging({ issueKey: issue.issueKey, edge: 'end', originX: e.clientX, originalDate: issue.dueDate! });
+                          setLivePixelDelta(0);
+                        }}
+                        style={{
+                          position: 'absolute', right: 0, top: 0, bottom: 0, width: 8,
+                          cursor: 'ew-resize',
+                          background: 'rgba(255,255,255,0.22)',
+                          borderRadius: '0 4px 4px 0',
+                          zIndex: 1,
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+
+                return isThisDragging ? (
+                  <React.Fragment key={issue.issueKey}>{bar}</React.Fragment>
+                ) : (
                   <Tooltip key={issue.issueKey} content={tooltipContent} position="top">
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: barTop,
-                        left,
-                        width,
-                        height: BAR_H,
-                        borderRadius: 4,
-                        background: barColor(issue),
-                        display: 'flex',
-                        alignItems: 'center',
-                        paddingLeft: 8,
-                        paddingRight: 8,
-                        overflow: 'hidden',
-                        cursor: 'default',
-                        zIndex: 2,
-                        boxShadow: 'var(--ds-shadow-raised, 0 1px 2px rgba(9,30,66,0.15))',
-                      }}
-                    >
-                      <span style={{
-                        fontSize: 11,
-                        fontWeight: 500,
-                        color: 'var(--ds-text-inverse, #FFFFFF)',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        lineHeight: 1,
-                      }}>
-                        {issue.summary}
-                      </span>
-                    </div>
+                    {bar}
                   </Tooltip>
                 );
               })}
