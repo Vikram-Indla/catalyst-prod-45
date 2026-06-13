@@ -108,7 +108,6 @@ export function useProjectReleases(projectId: string) {
   return useQuery({
     queryKey: ['create-story-releases', projectId],
     queryFn: async () => {
-      console.log('[useProjectReleases] called with projectId:', projectId);
       if (!projectId) return [];
       const { data, error } = await supabase
         .from('rh_releases')

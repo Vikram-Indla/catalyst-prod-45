@@ -52,6 +52,7 @@ import { tiptapToAdf } from '@/components/catalyst-detail-views/shared/sections/
 import { Checkbox } from '@atlaskit/checkbox';
 import Avatar from '@atlaskit/avatar';
 import Button, { IconButton } from '@atlaskit/button/new';
+import Spinner from '@atlaskit/spinner';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { Box, Stack, Inline, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
@@ -262,6 +263,7 @@ const errorBannerStyles = xcss({
   backgroundColor: 'color.background.danger',
   color: 'color.text.danger',
   font: 'font.body.small',
+  marginBottom: 'space.200',
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -364,12 +366,12 @@ function MoreActionsButton() {
 
 
 // MiniAvatar — canonical @atlaskit/avatar xsmall (24px, ADS-compliant).
-function MiniAvatar({ name }: { name: string; avatarUrl?: string | null }) {
+function MiniAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string | null }) {
   return (
     <Avatar
       size="small"
       name={name}
-      src={resolveAvatarUrl(name) ?? undefined}
+      src={avatarUrl ?? resolveAvatarUrl(name) ?? undefined}
     />
   );
 }
@@ -562,7 +564,7 @@ export function CreateStoryModal({
     setFormError(null);
 
     if (!form.projectId && workType !== 'Business Request') {
-      setFormError('Space is required');
+      setFormError('Project is required');
       return;
     }
     if (!form.summary.trim()) {
@@ -694,6 +696,12 @@ export function CreateStoryModal({
               </span>
             </Box>
 
+            {formError && (
+              <Box xcss={errorBannerStyles}>
+                {formError}
+              </Box>
+            )}
+
             <Box xcss={fieldGroupStyles}>
               {/* ── Work type — first so BR hand-off fires before Project is touched ── */}
               <Field name="workType" label="Work type" isRequired>
@@ -755,7 +763,7 @@ export function CreateStoryModal({
                         isSearchable
                       />
                       {submitAttempted && !form.projectId && (
-                        <ErrorMessage>Space is required</ErrorMessage>
+                        <ErrorMessage>Project is required</ErrorMessage>
                       )}
                     </>
                   )}
@@ -763,20 +771,30 @@ export function CreateStoryModal({
               )}
 
               {/* ── Status — CatalystStatusPill (canonical, workflow-driven).
-                   User can override the initial status before creating. */}
+                   User can override the initial status before creating.
+                   statusOptions=resolvedStatusOptions passes only this
+                   work-type's statuses (not the 20-item global hardcoded list). */}
               <Field name="status" label="Status">
                 {() => (
                   <>
                     <div style={{ display: 'block', marginTop: 4 }}>
-                      <CatalystStatusPill
-                        status={form.status || 'To Do'}
-                        onStatusChange={(newStatus) => updateField('status', newStatus)}
-                        issueType={workType}
-                      />
+                      {statusesLoading ? (
+                        <Spinner size="small" />
+                      ) : (
+                        <CatalystStatusPill
+                          status={form.status || 'To Do'}
+                          statusCategory={
+                            workflowStatuses.find((s) => s.value === form.status)?.color_category ?? null
+                          }
+                          statusOptions={resolvedStatusOptions}
+                          onStatusChange={(newStatus) => updateField('status', newStatus)}
+                          issueType={workType}
+                        />
+                      )}
                     </div>
                     <Box xcss={statusHelperStyles}>
                       <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
-                        This is the initial status upon creation
+                        Starting status — you can change it before creating
                       </span>
                     </Box>
                   </>
@@ -884,7 +902,7 @@ export function CreateStoryModal({
                       value={
                         priorityOptions.find(
                           (o) => o.value === form.priority,
-                        ) ?? priorityOptions[2]
+                        ) ?? priorityOptions.find((o) => o.value === 'Medium') ?? priorityOptions[0]
                       }
                       onChange={(opt) =>
                         updateField(
@@ -996,7 +1014,7 @@ export function CreateStoryModal({
                     </Inline>
                     <Box xcss={assignToMeStyles}>
                       <Button
-                        appearance="subtle"
+                        appearance="link"
                         spacing="compact"
                         onClick={() => {
                           if (user?.id) updateField('assigneeId', user.id);
@@ -1037,10 +1055,7 @@ export function CreateStoryModal({
                         }
                         formatOptionLabel={formatIconOption}
                         placeholder="Select reporter"
-                        // Disable when a reporter is already set (defaults to current user).
-                        // This preserves Jira's "Reporter = current user, not editable inline"
-                        // pattern while using the ADS Select primitive throughout.
-                        isDisabled={!!form.reporterId}
+                        // Reporter defaults to current user but can be changed (Jira parity).
                       />
                       {submitAttempted && !form.reporterId && (
                         <ErrorMessage>Reporter is required</ErrorMessage>
@@ -1072,11 +1087,6 @@ export function CreateStoryModal({
               </Field>
 
 
-              {formError && (
-                <Box xcss={errorBannerStyles}>
-                  {formError}
-                </Box>
-              )}
             </Box>
           </ModalBody>
 
