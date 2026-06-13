@@ -14,7 +14,6 @@ import { BrCenterDetails } from '@/components/catalyst-detail-views/business-req
 import { BrDescriptionSection } from '@/components/catalyst-detail-views/business-request/sections/BrDescriptionSection';
 import { BrLinkedItemsSection } from '@/components/catalyst-detail-views/business-request/sections/BrLinkedItemsSection';
 import { BrMoveProductDialog } from '@/components/catalyst-detail-views/business-request/BrMoveProductDialog';
-import { BrStatusSection } from '@/components/catalyst-detail-views/business-request/sections/BrStatusSection';
 import { BrTitleSection } from '@/components/catalyst-detail-views/business-request/sections/BrTitleSection';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
 import { FormField } from '@/components/business-requests/create-form/FormField';
@@ -44,11 +43,6 @@ export const BrDescriptionSectionDefault: StoryObj = {
 export const BrLinkedItemsSectionDefault: StoryObj = {
   name: 'BrLinkedItemsSection / Default',
   render: () => <Wrap><BrLinkedItemsSection request=null /></Wrap>,
-}
-
-export const BrStatusSectionDefault: StoryObj = {
-  name: 'BrStatusSection / Default',
-  render: () => <Wrap><BrStatusSection request=null onUpdate={fn()} /></Wrap>,
 }
 
 export const BrTitleSectionDefault: StoryObj = {
