@@ -70,6 +70,7 @@ import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import type { GroupByOption } from '@/components/shared/GroupByPopover';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Textfield from '@atlaskit/textfield';
+import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { useUpdateBoard } from '@/hooks/useBoardMutations';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
@@ -120,6 +121,8 @@ export default function KanbanBoardPage() {
   const [standupAssignee, setStandupAssignee] = useState<string | null>(null);
   const [activeBoardId, setActiveBoardId] = useState<string | null>(urlBoardId ?? null);
   const [showBoardSwitcher, setShowBoardSwitcher] = useState(false);
+  const [isBoardSwitcherFocused, setIsBoardSwitcherFocused] = useState(false);
+  const [isBoardSwitcherHovered, setIsBoardSwitcherHovered] = useState(false);
   const [showCreateBoard, setShowCreateBoard] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
   const boardSwitcherRef = React.useRef<HTMLDivElement>(null);
@@ -1240,29 +1243,39 @@ export default function KanbanBoardPage() {
       {key && <ProjectHeaderChip projectKey={key} />}
       {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
       {/* ── Page header with board switcher ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 16px', minHeight: 48, flexShrink: 0, position: 'relative' }}>
-        <span style={{ fontSize: 20, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
-          Board
-        </span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 24px', minHeight: 48, flexShrink: 0, position: 'relative' }}>
         {/* Board switcher — only shown when multiple boards exist or as entry point */}
         <div ref={boardSwitcherRef} style={{ position: 'relative' }}>
-          <button
-            onClick={() => setShowBoardSwitcher(v => !v)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 4,
-              height: 32, padding: '0 8px',
-              background: showBoardSwitcher ? tk.surfaceHover : 'transparent',
-              border: `1px solid ${showBoardSwitcher ? tk.border : 'transparent'}`,
-              borderRadius: 4, cursor: 'pointer', fontSize: 13, fontWeight: 500,
-              color: tk.textSecondary, fontFamily: 'var(--cp-font-body)',
-              transition: 'background 120ms ease',
-            }}
-            onMouseEnter={e => { if (!showBoardSwitcher) e.currentTarget.style.background = tk.surfaceHover; }}
-            onMouseLeave={e => { if (!showBoardSwitcher) e.currentTarget.style.background = 'transparent'; }}
-          >
-            {projectBoards.find(b => b.id === resolvedBoardId)?.name ?? 'Board'}
-            <span style={{ fontSize: 10, marginLeft: 4 }}>▾</span>
-          </button>
+          {(() => {
+            const isActive = showBoardSwitcher || isBoardSwitcherFocused;
+            const bg = showBoardSwitcher || isBoardSwitcherHovered
+              ? tk.surfaceHover
+              : 'var(--ds-surface, #FFFFFF)';
+            return (
+              <button
+                onClick={() => setShowBoardSwitcher(v => !v)}
+                onFocus={() => setIsBoardSwitcherFocused(true)}
+                onBlur={() => setIsBoardSwitcherFocused(false)}
+                onMouseEnter={() => setIsBoardSwitcherHovered(true)}
+                onMouseLeave={() => setIsBoardSwitcherHovered(false)}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+                  width: 220, height: 32, padding: '0 8px 0 12px',
+                  background: bg,
+                  border: `1px solid ${isActive ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
+                  boxShadow: isActive ? '0 0 0 1px var(--ds-border-selected, #0C66E4)' : 'none',
+                  borderRadius: 4, cursor: 'pointer', fontSize: 13, fontWeight: 500,
+                  color: tk.textSecondary, fontFamily: 'var(--cp-font-body)',
+                  outline: 'none',
+                }}
+              >
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {projectBoards.find(b => b.id === resolvedBoardId)?.name ?? 'Board'}
+                </span>
+                <AkChevronDownIcon label="" size="medium" />
+              </button>
+            );
+          })()}
           {showBoardSwitcher && (
             <div
               style={{
