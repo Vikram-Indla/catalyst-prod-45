@@ -96,7 +96,7 @@ function toBoardIssue(r: any): BoardIssue {
     parentKey: null,
     parentSummary: null,
     fixVersion: null,
-    isFlagged: !!(r.is_flagged),
+    isFlagged: false,
     updatedAt: r.updated_at ?? r.created_at,
     createdAt: r.created_at ?? null,
   };
@@ -543,7 +543,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
       if (!productId) return [];
       const { data } = await (supabase as any)
         .from('business_requests')
-        .select('id, request_key, title, process_step, urgency, project_manager_user_id, is_flagged, created_at, updated_at')
+        .select('id, request_key, title, process_step, urgency, project_manager_user_id, created_at, updated_at')
         .eq('product_id', productId)
         .is('deleted_at', null)
         .order('updated_at', { ascending: false });
@@ -989,8 +989,8 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
     issue.isFlagged = newFlag;
     try {
       if (isProduct) {
-        await (supabase as any).from('business_requests').update({ is_flagged: newFlag }).eq('id', issueId);
-        qc.invalidateQueries({ queryKey: ['product-kanban-issues', productId] });
+        // is_flagged not a column on business_requests — flag toggle is a no-op in product mode
+        return;
       } else {
         await supabase.from('ph_issues').update({ is_flagged: newFlag } as any).eq('id', issueId);
         qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
