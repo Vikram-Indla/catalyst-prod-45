@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useCallback, useEffect, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AtlaskitPageShell } from '@/components/ads';
@@ -29,6 +29,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { StatusPill } from '@/components/shared/StatusPill';
 import { translate } from '@/lib/jql';
 import { resolveAvatarUrl } from '@/lib/avatars';
+
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
 /* ─────────────────────────────── types ─────────────────────────────── */
 
@@ -448,6 +450,23 @@ export default function ProjectHubTimelinePage() {
 
   /* detail side panel */
   const navigate = useNavigate();
+  const [panelItem, setPanelItem] = useState<{ id: string; itemType: string; displayType: string } | null>(null);
+  const closePanel = useCallback(() => setPanelItem(null), []);
+  const openDetail = useCallback((issue: TimelineIssue) => {
+    const rawType = (issue.issueType ?? 'Story').toLowerCase();
+    const itemType =
+      rawType === 'qa bug' || rawType === 'defect' ? 'defect' :
+      rawType === 'production incident' ? 'incident' :
+      rawType === 'business request' ? 'business_request' :
+      rawType === 'change request' ? 'change_request' :
+      rawType;
+    setPanelItem({ id: issue.issueKey, itemType, displayType: issue.issueType ?? 'Story' });
+  }, []);
+  const goToFullPage = useCallback(() => {
+    if (!panelItem) return;
+    navigate(`/project-hub/${projectKey}/timeline/${panelItem.id}`);
+    closePanel();
+  }, [panelItem, projectKey, navigate, closePanel]);
 
   /* responsive container */
   const containerRef = useRef<HTMLDivElement>(null);
@@ -754,6 +773,17 @@ export default function ProjectHubTimelinePage() {
     window.addEventListener('mouseup', onUp);
     return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
   }, [dragging, pxPerDay, queryClient, projectKey]);
+
+  /* re-center grid when side panel opens so today is still visible */
+  useEffect(() => {
+    if (!panelItem) return;
+    const timer = setTimeout(() => {
+      if (gridRef.current) {
+        gridRef.current.scrollLeft = Math.max(0, todayLeft - gridRef.current.clientWidth / 2);
+      }
+    }, 160);
+    return () => clearTimeout(timer);
+  }, [panelItem, todayLeft]);
 
   const toggleCollapse = useCallback((key: string) => {
     setCollapsed(prev => {
@@ -1261,7 +1291,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
       </div>
 
       {/* ── body: sidebar + divider + grid ── */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', paddingRight: panelItem ? 480 : 0, transition: 'padding-right 150ms ease' }}>
 
         {/* ── sidebar panel ── */}
         {!isNarrow && (
@@ -1346,6 +1376,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                   queryClient={queryClient}
                   isSelected={selectedRows.has(issue.issueKey)}
                   onSelect={toggleRowSelection}
+                  onOpenDetail={openDetail}
                 />
               ))}
 
@@ -1786,6 +1817,86 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
         </div>
       </div>
     </div>
+    {/* ── detail side panel — canonical BacklogPage pattern ── */}
+    {panelItem && (
+      <div
+        data-cv-stacked-panel="true"
+        style={{
+          position: 'fixed', top: 56, right: 0, bottom: 0, width: 480,
+          zIndex: 50, borderLeft: '1px solid var(--ds-border, #DFE1E6)',
+          background: 'var(--ds-surface, #FFFFFF)',
+          display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        }}
+      >
+        {/* panel header */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '8px 12px', minHeight: 44, flexShrink: 0,
+          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+          background: 'var(--ds-surface, #FFFFFF)',
+        }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
+            <JiraIssueTypeIcon type={panelItem.displayType} size={16} />
+            <span style={{
+              fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtle, #505258)',
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            }}>
+              Catalyst work item
+            </span>
+          </div>
+          {/* open in full page */}
+          <button
+            type="button"
+            aria-label="Open detail in full page"
+            onClick={goToFullPage}
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 28, height: 28, border: 'none', borderRadius: 4, cursor: 'pointer',
+              background: 'transparent', color: 'var(--ds-text-subtle, #505258)', flexShrink: 0,
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+          </button>
+          {/* close */}
+          <button
+            type="button"
+            aria-label="Close panel"
+            onClick={closePanel}
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 28, height: 28, border: 'none', borderRadius: 4, cursor: 'pointer',
+              background: 'transparent', color: 'var(--ds-text-subtle, #505258)', flexShrink: 0,
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        {/* content */}
+        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}><Spinner size="medium" /></div>}>
+            <CatalystDetailRouter
+              isOpen={true}
+              itemId={panelItem.id}
+              itemType={panelItem.itemType}
+              onClose={closePanel}
+              panelMode={true}
+              projectKey={projectKey ?? ''}
+            />
+          </Suspense>
+        </div>
+      </div>
+    )}
     </AtlaskitPageShell>
   );
 }
@@ -1802,9 +1913,10 @@ interface SidebarRowProps {
   queryClient: ReturnType<typeof useQueryClient>;
   isSelected: boolean;
   onSelect: (key: string) => void;
+  onOpenDetail: (issue: TimelineIssue) => void;
 }
 
-function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKey, queryClient, isSelected, onSelect }: SidebarRowProps) {
+function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKey, queryClient, isSelected, onSelect, onOpenDetail }: SidebarRowProps) {
   const hasChildren = issue.children.length > 0;
   const progress = showProgress && hasChildren ? computeEpicProgress(issue) : null;
   const [rowHovered, setRowHovered] = useState(false);
@@ -1961,14 +2073,57 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         </div>
       </div>
 
-      {/* assignee avatar — always visible */}
-      {issue.assigneeAvatarUrl && (
-        <Tooltip content={issue.assigneeDisplayName ?? 'Assigned'} position="left">
+      {/* assignee avatar — always visible when assigned */}
+      {issue.assigneeDisplayName && (
+        <Tooltip content={issue.assigneeDisplayName} position="left">
           <span style={{ flexShrink: 0, lineHeight: 0 }}>
-            <Avatar size="xsmall" src={issue.assigneeAvatarUrl} name={issue.assigneeDisplayName ?? undefined} />
+            <Avatar size="xsmall" src={resolveAvatarUrl(issue.assigneeDisplayName) ?? undefined} name={issue.assigneeDisplayName} />
           </span>
         </Tooltip>
       )}
+
+      {/* status pill — non-Epic rows, always visible */}
+      {issue.issueType !== 'Epic' && issue.status && (
+        <div style={{ flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+          <StatusPill value={issue.statusCategory} label={issue.status} />
+        </div>
+      )}
+
+      {/* + add child — Epic rows, hover only */}
+      {issue.issueType === 'Epic' && (
+        <button
+          onClick={e => { e.stopPropagation(); setMenuOpen(v => !v); }}
+          aria-label={`Add child issue to ${issue.issueKey}`}
+          style={{
+            ...iconBtnStyle,
+            opacity: rowHovered || menuOpen ? 1 : 0,
+            transition: 'opacity 80ms ease',
+          }}
+        >
+          <EditorAddIcon label="" size="small" />
+        </button>
+      )}
+
+      {/* open-in-side-panel button — visible on hover */}
+      <button
+        type="button"
+        aria-label={`Open ${issue.issueKey} in side panel`}
+        onClick={e => { e.stopPropagation(); onOpenDetail(issue); }}
+        style={{
+          ...iconBtnStyle,
+          opacity: rowHovered ? 1 : 0,
+          transition: 'opacity 80ms ease',
+          flexShrink: 0,
+        }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <line x1="15" y1="3" x2="15" y2="21" />
+          <line x1="17.5" y1="8" x2="19" y2="8" />
+          <line x1="17.5" y1="12" x2="19" y2="12" />
+          <line x1="17.5" y1="16" x2="19" y2="16" />
+        </svg>
+      </button>
 
       {/* ⋯ more-actions button — visible on hover */}
       <button
