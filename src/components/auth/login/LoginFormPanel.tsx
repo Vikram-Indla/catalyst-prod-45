@@ -299,8 +299,10 @@ export function LoginFormPanel({
                 <input
                   ref={otpInputRef} id="otp-code" type="text" inputMode="numeric" pattern="[0-9]*"
                   maxLength={8} placeholder="000000" value={otpCode} autoComplete="one-time-code"
+                  aria-describedby="otp-hint"
                   onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))} className="clmp-otp-input"
                 />
+                <p id="otp-hint" className="clmp-field-hint">Enter the 6-digit code from your email.</p>
               </div>
               {otpError && (<div aria-live="polite"><SectionMessage appearance="error"><p>{otpError}</p></SectionMessage></div>)}
               <Button type="submit" appearance="primary" isLoading={busy} isDisabled={busy || otpCode.length < 6 || otpCode.length > 8} shouldFitContainer>

@@ -833,6 +833,9 @@ export default function FullAppRoutes() {
           <Route path="resources/:resourceId" element={<S><RouteRoleGuard><R360MemberDetailLazy /></RouteRoleGuard></S>} />
         </Route>
 
+        {/* /ads-validator — design governance audit viewer; aliased to canonical admin governance page */}
+        <Route path="/ads-validator" element={<Navigate to="/admin/governance" replace />} />
+
         {/* Admin v2 — deprecated 2026-05-09. Redirects to /admin/* canonical shell. */}
         <Route path="/admin/v2/*" element={<Navigate to="/admin/overview" replace />} />
 

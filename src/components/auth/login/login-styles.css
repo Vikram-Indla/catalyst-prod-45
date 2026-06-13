@@ -1,6 +1,6 @@
 /**
  * Catalyst Portal — marketing + embedded sign-in.
- * Light default · dark via .dark/.[data-color-mode] · full RTL (logical properties).
+ * Light default · dark via .dark class (ThemeProvider) / @media prefers-color-scheme · full RTL (logical properties).
  * Colours: var(--ds-*) ADS tokens with hex fallbacks; brand-fixed colours use
  * var(--clmp-k-*, …) slots (intentionally unbound) so they never theme-flip.
  * Spacing: 4/8/16/24/32 grid only. Borders use logical properties.
@@ -63,8 +63,7 @@
   min-height: 100vh;
 }
 
-.dark .clmp-root,
-[data-color-mode="dark"] .clmp-root {
+.dark .clmp-root {
   --clmp-brand: var(--ds-background-brand-bold, #579DFF);
   --clmp-brand-hover: var(--ds-background-brand-bold-hovered, #85B8FF);
   --clmp-brand-text: var(--ds-text-brand, #85B8FF);
@@ -144,7 +143,10 @@
 .clmp-skip-link:focus { inset-block-start: 0; }
 
 /* ═══════════════ NAV ═══════════════ */
-.clmp-nav { position: sticky; top: 0; z-index: 60; background: var(--clmp-nav-bg); backdrop-filter: blur(14px); border-block-end: 2px solid var(--clmp-line-strong); }
+.clmp-nav { position: sticky; top: 0; z-index: 60; background: var(--clmp-nav-bg); border-block-end: 2px solid var(--clmp-line-strong); }
+@supports (backdrop-filter: blur(0)) {
+  .clmp-nav { backdrop-filter: blur(14px); }
+}
 .clmp-nav-inner { display: flex; align-items: center; gap: 24px; height: 64px; }
 .clmp-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; letter-spacing: -.4px; text-decoration: none; color: var(--clmp-text); }
 .clmp-brand-mark { display: block; }
@@ -160,6 +162,11 @@
   color: var(--clmp-text-subtle); font-size: 12px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all .15s;
 }
 .clmp-nav-btn:hover { border-color: var(--clmp-line-strong); color: var(--clmp-text); }
+.clmp-ham { display: none; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1.5px solid var(--clmp-line); border-radius: 6px; background: var(--clmp-raised); color: var(--clmp-text); cursor: pointer; }
+.clmp-ham:hover { border-color: var(--clmp-line-strong); }
+.clmp-mobile-menu { display: flex; flex-direction: column; gap: 4px; padding: 12px 16px 16px; border-block-start: 1px solid var(--clmp-line); background: var(--clmp-surface); }
+.clmp-mobile-menu a { font-size: 15px; font-weight: 600; color: var(--clmp-text-subtle); text-decoration: none; padding: 10px 12px; border-radius: 6px; }
+.clmp-mobile-menu a:hover { background: var(--clmp-sunken); color: var(--clmp-text); }
 
 /* ═══════════════ HERO ═══════════════ */
 .clmp-hero { position: relative; padding-block: 32px; overflow: hidden; border-block-end: 2px solid var(--clmp-line-strong); }
@@ -196,6 +203,7 @@
 .clmp-form { display: flex; flex-direction: column; gap: 16px; }
 .clmp-field { display: flex; flex-direction: column; }
 .clmp-label { font-size: 12px; font-weight: 700; color: var(--clmp-text); margin-block-end: 8px; letter-spacing: .2px; }
+.clmp-field-hint { font-size: 11px; color: var(--clmp-text-subtlest); margin-block-start: 6px; margin-block-end: 0; }
 .clmp-password-row { display: flex; justify-content: space-between; align-items: baseline; }
 .clmp-forgot { background: none; border: none; padding: 0; font-family: inherit; font-size: 12px; font-weight: 600; color: var(--clmp-brand-text); cursor: pointer; }
 .clmp-forgot:hover { text-decoration: underline; }
@@ -344,6 +352,7 @@
 .clmp-foot-brand { display: flex; align-items: center; gap: 8px; }
 .clmp-foot-legal a { margin-inline-start: 16px; text-decoration: none; color: var(--clmp-text-subtlest); }
 .clmp-foot-legal a:hover { color: var(--clmp-text); }
+.clmp-foot-link-coming { margin-inline-start: 16px; color: var(--clmp-text-subtlest); cursor: default; opacity: 0.6; }
 
 /* ═══════════════ FULL-PAGE AUTH STATES ═══════════════ */
 .clmp-fullstate { min-height: 100vh; display: grid; place-items: center; background: var(--clmp-surface); padding: 24px; }
@@ -358,6 +367,9 @@
 /* ═══════════════ REVEAL + MOTION ═══════════════ */
 .clmp-rv { opacity: 0; transform: translateY(16px); transition: opacity .55s ease, transform .55s ease; }
 .clmp-rv.in { opacity: 1; transform: none; }
+@media (scripting: none) {
+  .clmp-rv { opacity: 1; transform: none; }
+}
 @media (prefers-reduced-motion: reduce) {
   .clmp-root *, .clmp-root *::before, .clmp-root *::after { animation: none !important; transition: none !important; }
   .clmp-rv { opacity: 1; transform: none; }
@@ -376,4 +388,5 @@
   .clmp-caps, .clmp-mod-grid { grid-template-columns: 1fr; }
   .clmp-cap { border-inline-end: none; }
   .clmp-nav-links { display: none; }
+  .clmp-ham { display: inline-flex; }
 }
