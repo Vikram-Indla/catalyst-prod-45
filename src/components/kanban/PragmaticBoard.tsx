@@ -833,6 +833,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
                 <InlineCreateCard
                   projectKey={actions.projectKey || ''}
                   columnId={column.id}
+                  status={column.statuses?.[0]}
                   onCreateCard={(issue) => {
                     actions.onCreateCard?.(issue);
                     setInlineCreateColId(null);
@@ -989,6 +990,9 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
               <InlineCreateCard
                 projectKey={actions.projectKey || ''}
                 columnId={column.id}
+                status={column.statuses?.[0]}
+                assigneeOptions={actions.assigneeOptions}
+                avatarsByName={avatarsByName}
                 onCreateCard={(issue) => {
                   actions.onCreateCard?.(issue);
                   setInlineCreateColId(null);
