@@ -86,6 +86,31 @@ import securityCompliance from '@/assets/icons/project-avatars/security-complian
 import senaEiBau from '@/assets/icons/project-avatars/senaei-bau.svg?url';
 import tahommena from '@/assets/icons/project-avatars/tahommena.svg?url';
 
+// ─── PRODUCT PLACE ICONS (Saudi landmarks — 2026-06-13) ──────────────
+// 20 landmark SVGs used exclusively for product-line avatars.
+// NOT shared with project avatars (which use the project-avatars/ set).
+
+import placeKingdomCentre from '@/assets/icons/products/kingdom-centre.svg?url';
+import placeFaisaliah from '@/assets/icons/products/faisaliah.svg?url';
+import placeJeddahTower from '@/assets/icons/products/jeddah-tower.svg?url';
+import placeKafd from '@/assets/icons/products/kafd.svg?url';
+import placeMasmak from '@/assets/icons/products/masmak.svg?url';
+import placeDiriyah from '@/assets/icons/products/diriyah.svg?url';
+import placeNajdiTower from '@/assets/icons/products/najdi-tower.svg?url';
+import placeRoshan from '@/assets/icons/products/roshan.svg?url';
+import placeHegra from '@/assets/icons/products/hegra.svg?url';
+import placeElephantRock from '@/assets/icons/products/elephant-rock.svg?url';
+import placeFountain from '@/assets/icons/products/fountain.svg?url';
+import placeIthra from '@/assets/icons/products/ithra.svg?url';
+import placeNeom from '@/assets/icons/products/neom.svg?url';
+import placeWaterTower from '@/assets/icons/products/water-tower.svg?url';
+import placeTvTower from '@/assets/icons/products/tv-tower.svg?url';
+import placeFerris from '@/assets/icons/products/ferris.svg?url';
+import placeTuwaiq from '@/assets/icons/products/tuwaiq.svg?url';
+import placeOasis from '@/assets/icons/products/oasis.svg?url';
+import placeAsir from '@/assets/icons/products/asir.svg?url';
+import placeEdge from '@/assets/icons/products/edge.svg?url';
+
 // ─── HUB ICONS (SVG set — 2026-06-13) ────────────────────────────────
 
 import hubHomeUrl from '@/assets/icons/hubs/home.svg?url';
@@ -313,6 +338,103 @@ export const HUB_ICON_REGISTRY: Record<HubKey, string> = {
   plan:     hubPlanUrl,
   wiki:     hubWikiUrl,
 };
+
+// ═══════════════════════════════════════════════════════════════════════
+// PRODUCT PLACE REGISTRY — Saudi landmark avatars for product lines
+// ═══════════════════════════════════════════════════════════════════════
+
+/** All 20 Saudi-landmark place slugs (kebab-case). */
+export type PlaceId =
+  | 'kingdom-centre'
+  | 'faisaliah'
+  | 'jeddah-tower'
+  | 'kafd'
+  | 'masmak'
+  | 'diriyah'
+  | 'najdi-tower'
+  | 'roshan'
+  | 'hegra'
+  | 'elephant-rock'
+  | 'fountain'
+  | 'ithra'
+  | 'neom'
+  | 'water-tower'
+  | 'tv-tower'
+  | 'ferris'
+  | 'tuwaiq'
+  | 'oasis'
+  | 'asir'
+  | 'edge';
+
+/** Rotation order for new products — most recognisable landmarks first. */
+export const STOCK_PLACE_IDS: readonly PlaceId[] = [
+  'kingdom-centre',
+  'kafd',
+  'jeddah-tower',
+  'faisaliah',
+  'ithra',
+  'masmak',
+  'diriyah',
+  'hegra',
+  'neom',
+  'elephant-rock',
+  'fountain',
+  'ferris',
+  'tuwaiq',
+  'oasis',
+  'asir',
+  'roshan',
+  'najdi-tower',
+  'water-tower',
+  'tv-tower',
+  'edge',
+] as const;
+
+export const STOCK_PLACE_REGISTRY: Record<PlaceId, string> = {
+  'kingdom-centre': placeKingdomCentre,
+  'faisaliah':      placeFaisaliah,
+  'jeddah-tower':   placeJeddahTower,
+  'kafd':           placeKafd,
+  'masmak':         placeMasmak,
+  'diriyah':        placeDiriyah,
+  'najdi-tower':    placeNajdiTower,
+  'roshan':         placeRoshan,
+  'hegra':          placeHegra,
+  'elephant-rock':  placeElephantRock,
+  'fountain':       placeFountain,
+  'ithra':          placeIthra,
+  'neom':           placeNeom,
+  'water-tower':    placeWaterTower,
+  'tv-tower':       placeTvTower,
+  'ferris':         placeFerris,
+  'tuwaiq':         placeTuwaiq,
+  'oasis':          placeOasis,
+  'asir':           placeAsir,
+  'edge':           placeEdge,
+};
+
+/**
+ * Maps known product codes to their assigned Saudi landmark.
+ * New products not listed here get a stable rotation via getProductAvatarUrl().
+ */
+export const KNOWN_PRODUCT_PLACES: Record<string, PlaceId> = {
+  INV: 'kingdom-centre', // Investor Journey Product → Kingdom Centre (finance landmark)
+};
+
+/**
+ * Returns the bundled SVG URL for a product code.
+ * Known products get their assigned landmark; unknown products get a stable
+ * djb2 rotation through all 20 — so the 21st product wraps back around.
+ */
+export function getProductAvatarUrl(productCode: string): string {
+  const upper = productCode.toUpperCase();
+  if (upper in KNOWN_PRODUCT_PLACES) {
+    return STOCK_PLACE_REGISTRY[KNOWN_PRODUCT_PLACES[upper]];
+  }
+  const hash = upper.split('').reduce((acc, c) => ((acc << 5) - acc) + c.charCodeAt(0), 0);
+  const index = Math.abs(hash) % STOCK_PLACE_IDS.length;
+  return STOCK_PLACE_REGISTRY[STOCK_PLACE_IDS[index]];
+}
 
 // ═══════════════════════════════════════════════════════════════════════
 // JIRA-SIDE NORMALIZATION

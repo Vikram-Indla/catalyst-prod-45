@@ -16,6 +16,7 @@
  */
 import { useMemo, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { getProductAvatarUrl } from '@/components/icons';
 import { ProjectHeaderChip, type HeaderAdapter, type HeaderEntity, type MemberRow } from './ProjectHeaderChip';
 
 interface Props {
@@ -56,7 +57,7 @@ export function ProductHeaderChip({ productCode }: Props) {
       return {
         id: row?.id ?? null,
         name: row?.name ?? null,
-        avatar_url: null, // products use icon/color, not avatar_url
+        avatar_url: getProductAvatarUrl(productCode),
         icon: row?.icon ?? null,
         color: row?.color ?? null,
       };

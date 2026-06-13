@@ -39,6 +39,7 @@ import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import Lozenge from '@atlaskit/lozenge';
 import { token } from '@atlaskit/tokens';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { ProductAvatar } from '@/components/icons';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
 import { ResizableTableHeader } from '@/components/shared/ResizableTableHeader';
 import '@/styles/product-backlog.css';
@@ -524,26 +525,7 @@ export default function AllProductsPage() {
         return (
           <td key={colKey}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
-              <span
-                aria-hidden="true"
-                style={{
-                  minWidth: 24,
-                  height: 24,
-                  padding: '0 4px',
-                  borderRadius: 3,
-                  background: p.color || token('color.background.brand.bold'),
-                  color: token('color.text.inverse'),
-                  fontSize: 11,
-                  fontWeight: 700,
-                  fontFamily: 'var(--cp-font-mono)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                {p.code}
-              </span>
+              <ProductAvatar code={p.code} size={24} />
               <RouterLink
                 to={`/product-hub/${p.code}/backlog`}
                 title={p.name}
