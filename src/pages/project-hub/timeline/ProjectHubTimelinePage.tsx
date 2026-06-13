@@ -409,7 +409,7 @@ export default function ProjectHubTimelinePage() {
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              padding: '4px 10px',
+              padding: '4px 8px',
               fontSize: 12,
               fontWeight: 500,
               cursor: 'pointer',
@@ -446,7 +446,7 @@ export default function ProjectHubTimelinePage() {
             alignItems: 'center',
             padding: '0 12px',
           }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', letterSpacing: '0.04em' }}>
               Issue
             </span>
           </div>
@@ -603,18 +603,18 @@ export default function ProjectHubTimelinePage() {
                       background: barColor(issue),
                       display: 'flex',
                       alignItems: 'center',
-                      paddingLeft: 6,
-                      paddingRight: 6,
+                      paddingLeft: 8,
+                      paddingRight: 8,
                       overflow: 'hidden',
                       cursor: 'default',
                       zIndex: 2,
-                      boxShadow: '0 1px 2px rgba(9,30,66,0.15)',
+                      boxShadow: 'var(--ds-shadow-raised, 0 1px 2px rgba(9,30,66,0.15))',
                     }}
                   >
                     <span style={{
                       fontSize: 11,
                       fontWeight: 500,
-                      color: '#FFFFFF',
+                      color: 'var(--ds-text-inverse, #FFFFFF)',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
