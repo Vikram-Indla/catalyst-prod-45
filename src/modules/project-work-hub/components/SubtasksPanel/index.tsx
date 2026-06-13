@@ -928,6 +928,7 @@ export function SubtasksPanel({
                     <StatusCell
                       status={child.status}
                       statusCategory={child.status_category}
+                      issueType={child.issue_type}
                       onChange={handleStatusChange(child)}
                       readOnly={bulkEditMode}
                     />

@@ -38,12 +38,13 @@ function categoryToAppearance(category: string): AllowedAppearance {
 interface StatusCellProps {
   status: string;
   statusCategory: string;
+  issueType?: string | null;
   onChange?: (status: string, category: 'todo' | 'in_progress' | 'done') => void;
   readOnly?: boolean;
 }
 
 export const StatusCell = React.memo(function StatusCell({
-  status, statusCategory, onChange, readOnly,
+  status, statusCategory, issueType, onChange, readOnly,
 }: StatusCellProps) {
   const appearance = categoryToAppearance(statusCategory);
   const { bg, fg } = statusBg(appearance);
@@ -93,7 +94,7 @@ export const StatusCell = React.memo(function StatusCell({
   if (readOnly || !onChange) return trigger;
 
   return (
-    <StatusPopover status={status} statusCategory={statusCategory} onChange={onChange}>
+    <StatusPopover status={status} statusCategory={statusCategory} issueType={issueType} onChange={onChange}>
       {trigger}
     </StatusPopover>
   );

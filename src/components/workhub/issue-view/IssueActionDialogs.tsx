@@ -14,6 +14,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { catalystToast } from '@/lib/catalystToast';
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { resolveStatusCategory } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
+import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 
 /* ═══ Shared styles ═══ */
 const overlayStyle: React.CSSProperties = {
@@ -426,7 +427,8 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
   });
 
   const STEPS = ['Destination', 'Field Mapping', 'Status', 'Confirm'];
-  const allStatuses = useMemo(() => STATUS_OPTION_GROUPS.flatMap(g => g.statuses), []);
+  const { statusGroups: destStatusGroups, hasConfig: destHasConfig } = useIssueTypeWorkflow(destType);
+  const moveStatusGroups = destHasConfig ? destStatusGroups : STATUS_OPTION_GROUPS;
 
   const fields = [
     { name: 'Summary', current: item?.summary, result: 'Kept' },
@@ -533,7 +535,7 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
                 <span style={{ padding: '4px 10px', borderRadius: 3, background: 'var(--ds-background-warning, #FFFAE6)', border: '1px solid var(--ds-border-warning, #FFE380)', fontSize: 12, fontWeight: 700, textTransform: 'uppercase' as const }}>{item?.status}</span>
                 <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>→</span>
                 <select value={newStatus} onChange={e => setNewStatus(e.target.value)} style={{ ...inputStyle, width: 'auto', minWidth: 180, cursor: 'pointer' }}>
-                  {STATUS_OPTION_GROUPS.map(g => (
+                  {moveStatusGroups.map(g => (
                     <optgroup key={g.groupLabel} label={g.groupLabel}>
                       {g.statuses.map(s => <option key={s} value={s}>{s}</option>)}
                     </optgroup>

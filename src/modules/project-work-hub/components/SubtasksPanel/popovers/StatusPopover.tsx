@@ -18,10 +18,12 @@ import Lozenge from '@atlaskit/lozenge';
 import { Check } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
 import { STATUS_OPTION_GROUPS } from '../../dialogs/story-detail-modules/constants';
+import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 
 interface StatusPopoverProps {
   status: string;
   statusCategory: string;
+  issueType?: string | null;
   onChange: (status: string, category: 'todo' | 'in_progress' | 'done') => void;
   children: React.ReactNode;
   /** When false, no "current value" check mark is rendered — use in bulk-edit contexts. */
@@ -34,7 +36,14 @@ const CATEGORY_TO_APPEARANCE: Record<string, 'default' | 'inprogress' | 'success
   done: 'success',
 };
 
-export function StatusPopover({ status, onChange, children, showActive = true }: StatusPopoverProps) {
+export function StatusPopover({ status, issueType, onChange, children, showActive = true }: StatusPopoverProps) {
+  const { statusGroups, hasConfig, getAvailableStatuses } = useIssueTypeWorkflow(issueType ?? null);
+  const available = new Set(getAvailableStatuses(status));
+  const displayGroups = hasConfig
+    ? statusGroups
+        .map(g => ({ ...g, statuses: g.statuses.filter(s => available.has(s)) }))
+        .filter(g => g.statuses.length > 0)
+    : STATUS_OPTION_GROUPS;
   const [isOpen, setIsOpen] = useState(false);
   const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
   const triggerRef = useRef<HTMLSpanElement>(null);
@@ -107,7 +116,7 @@ export function StatusPopover({ status, onChange, children, showActive = true }:
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {STATUS_OPTION_GROUPS.map((group) => (
+            {displayGroups.map((group) => (
               <div key={group.category}>
                 <div style={{
                   fontSize: 11, fontWeight: 700,

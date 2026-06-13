@@ -140,6 +140,7 @@ import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKe
 import { jiraSyncService } from '@/services/jira-sync.service';
 import { JiraFilterAtlaskit, emptyFilterValue } from '@/components/shared/JiraFilterAtlaskit';
 import { useFiltersForProject, useRecordFilterUsage } from '@/hooks/workhub/useSavedFilters';
+import { useWorkflowStatuses } from '@/hooks/useWorkflowStatuses';
 import { isFilterRelevantToBacklog, type BacklogFilterScopeInput } from './backlogFilterScope';
 import { jqlToJiraFilterValue } from '@/lib/jql/jqlToJiraFilterValue';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
@@ -592,7 +593,27 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // from the adapter (e.g. business_requests for product hub) and routes all
   // mutations through it. When absent, behavior is identical to today's
   // project-hub ph_issues path.
-  const STATUS_OPTIONS = dataSource?.statusOptions ?? DEFAULT_STATUS_OPTIONS;
+  const { data: dbStatuses = [] } = useWorkflowStatuses(projectKey);
+  const dbStatusOptions = useMemo<StatusOption[]>(() => {
+    if (dbStatuses.length === 0) return [];
+    const APPEARANCE: Record<string, StatusOption['appearance']> = {
+      todo: 'default',
+      in_progress: 'inprogress',
+      done: 'success',
+    };
+    const GROUP: Record<string, string> = {
+      todo: 'To Do',
+      in_progress: 'In Progress',
+      done: 'Done',
+    };
+    return dbStatuses.map(s => ({
+      value: s.name,
+      label: s.name,
+      appearance: APPEARANCE[s.category] ?? 'default',
+      group: GROUP[s.category] ?? 'To Do',
+    }));
+  }, [dbStatuses]);
+  const STATUS_OPTIONS = dataSource?.statusOptions ?? (dbStatusOptions.length > 0 ? dbStatusOptions : DEFAULT_STATUS_OPTIONS);
   const ALL_BACKLOG_STATUSES = dataSource?.allStatuses ?? DEFAULT_ALL_BACKLOG_STATUSES;
   const statusAppearance = dataSource?.statusAppearance ?? defaultStatusAppearance;
   const statusLabel = dataSource?.statusLabel ?? defaultStatusLabel;
@@ -4454,6 +4475,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         <FilterSaveModal
           initialJql={basicToJql(filterValue)}
           hubScope="project"
+          projectKey={projectKey}
           onClose={() => setSaveFilterOpen(false)}
           onSaved={() => {
             setSaveFilterOpen(false);

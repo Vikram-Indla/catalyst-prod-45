@@ -20,6 +20,7 @@ import { PriorityBars, normalisePriority } from '@/components/shared/PriorityInd
 import { CANONICAL_WORK_ITEM_OPTIONS } from '@/components/shared/canonicalWorkItemOptions';
 import type { ColumnConfig, PhIssueRow, StatusCategory } from './types';
 import { DEFAULT_COLUMNS, STATUS_OPTION_GROUPS, LOZENGE } from './constants';
+import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 import { nextPos, getAvatarColor, formatDateShort, resolveStatusCategory } from './helpers';
 import { SectionBlock, IssueIcon, ColumnPicker, SkeletonRows, EmptyState } from './shared-components';
 import Lozenge from '@atlaskit/lozenge';
@@ -93,6 +94,13 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
 function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: (id: string, status: string, category: string) => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { statusGroups: childStatusGroups, hasConfig: childHasConfig, getAvailableStatuses: getChildAvailable } = useIssueTypeWorkflow(item.issue_type ?? null);
+  const childAvailable = new Set(getChildAvailable(item.status));
+  const childDisplayGroups = childHasConfig
+    ? childStatusGroups
+        .map(g => ({ ...g, statuses: g.statuses.filter(s => childAvailable.has(s)) }))
+        .filter(g => g.statuses.length > 0)
+    : STATUS_OPTION_GROUPS;
 
   useEffect(() => {
     if (!open) return;
@@ -124,7 +132,7 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
           background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 6,
           boxShadow: '0 8px 24px rgba(9,30,66,.25)', zIndex: 80, padding: '4px 0',
         }}>
-          {STATUS_OPTION_GROUPS.map(group => (
+          {childDisplayGroups.map(group => (
             <div key={group.groupLabel}>
               <div style={{
                 fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase',

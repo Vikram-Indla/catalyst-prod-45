@@ -18,6 +18,7 @@ import { formatDistanceToNow, format } from 'date-fns';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { resolveStatusCategory } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
+import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 
 // Story Detail Modal sections — identical components for AllWork mid-body
 import { AttachmentsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection';
@@ -109,9 +110,16 @@ function Avatar({ name, url, size = 22 }: { name: string; url?: string | null; s
 }
 
 /** Jira-strong status pill with editable dropdown */
-function StatusPill({ status, statusCategory, issueId, onStatusChange }: { status: string; statusCategory?: string | null; issueId?: string; onStatusChange?: (newStatus: string) => void }) {
+function StatusPill({ status, statusCategory, issueId, issueType, onStatusChange }: { status: string; statusCategory?: string | null; issueId?: string; issueType?: string | null; onStatusChange?: (newStatus: string) => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { statusGroups, hasConfig, getAvailableStatuses } = useIssueTypeWorkflow(issueType ?? null);
+  const available = new Set(getAvailableStatuses(status));
+  const displayGroups = hasConfig
+    ? statusGroups
+        .map(g => ({ ...g, statuses: g.statuses.filter(s => available.has(s)) }))
+        .filter(g => g.statuses.length > 0)
+    : STATUS_OPTION_GROUPS;
   const cat = (statusCategory ?? '').toLowerCase();
   let bg = 'var(--ds-text-subtle, #44546F)';
   const color = 'var(--ds-text-inverse, #fff)';
@@ -134,9 +142,9 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
   };
 
   const groupLabelColor: Record<string, string> = {
-    'TO DO': 'var(--ds-text-subtle, #42526E)',
-    'IN PROGRESS': 'var(--ds-background-information-bold, #0C66E4)',
-    'DONE': 'var(--ds-background-success-bold, #1F845A)',
+    'To do': 'var(--ds-text-subtle, #42526E)',
+    'In progress': 'var(--ds-background-information-bold, #0C66E4)',
+    'Done': 'var(--ds-background-success-bold, #1F845A)',
   };
 
   return (
@@ -152,7 +160,7 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
           boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(9,30,66,.25))', zIndex: 80, padding: '4px 0',
           border: '1px solid var(--ds-border, #DFE1E6)', maxHeight: 320, overflowY: 'auto',
         }}>
-          {STATUS_OPTION_GROUPS.map(group => (
+          {displayGroups.map(group => (
             <div key={group.groupLabel}>
               <div style={{ fontSize: 11, fontWeight: 600, color: groupLabelColor[group.groupLabel] ?? 'var(--ds-text-subtle, #42526E)', padding: '8px 12px 4px', letterSpacing: '0.03em' }}>
                 {group.groupLabel}
@@ -747,7 +755,7 @@ export function IssueContentView({
       <div className={`awDetailsSidebar ${sidebarOpen ? '' : 'collapsed'}`}>
         {/* Status pill + watcher + share (copy link) + more menu */}
         <div style={{ padding: '12px 16px 8px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <StatusPill status={item?.status ?? ''} statusCategory={item?.status_category} issueId={item?.id} onStatusChange={(s) => updateStatusMutation.mutate(s)} />
+          <StatusPill status={item?.status ?? ''} statusCategory={item?.status_category} issueId={item?.id} issueType={item?.issue_type} onStatusChange={(s) => updateStatusMutation.mutate(s)} />
           {/* Flag button — Jira parity: sits right next to status pill */}
           <div style={{ position: 'relative' }}>
             <button

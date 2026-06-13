@@ -18,7 +18,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { DiscussTicketButton } from '@/components/catalyst-detail-views/shared/DiscussTicketButton';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
-import CheckIcon from '@atlaskit/icon/glyph/check';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Tooltip from '@atlaskit/tooltip';
 // AutomationIcon removed — jira-compare 2026-05-05: Automate button between
 // status pill and Improve Story is not present in Jira. Removed per Vikram directive.
@@ -150,6 +150,7 @@ function normalizeIssueTypeBucket(raw: string | undefined | null):
 import {
   STATUS_OPTION_GROUPS,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
+import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 import {
   fmtDate, getStatusCategory, getStatusStyle, getInitials, getAvatarColor,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
@@ -240,15 +241,12 @@ export function CatalystSidebarDetails({
 
   /* ── Status state ───────────────────────── */
   const [localStatus, setLocalStatus] = useState<string>('');
-  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [detailsCollapsed, setDetailsCollapsed] = useState(false);
   const [showConfigureDrawer, setShowConfigureDrawer] = useState(false);
   const [pinnedFields, setPinnedFields] = useState<string[]>(() =>
     loadPinnedFields(issue?.issue_type ?? 'Story'),
   );
-  const statusDropdownRef = useRef<HTMLDivElement>(null);
-
   const statusValue = localStatus || issue?.status || 'Backlog';
   const statusCategory = issue?.status_category || getStatusCategory(statusValue);
   const statusStyle = getStatusStyle(statusValue, statusCategory);
@@ -259,6 +257,14 @@ export function CatalystSidebarDetails({
   // and renders categories beyond the legacy 3-colour guardrail (red / yellow /
   // purple). Falls back to the original grouped picker below when no workflow
   // is defined for the issue type (e.g. Task, Subtask).
+  const { statusGroups: sidebarStatusGroups, hasConfig: sidebarHasConfig, getAvailableStatuses: getSidebarAvailable } = useIssueTypeWorkflow(issue?.issue_type ?? null);
+  const sidebarAvailable = new Set(getSidebarAvailable(statusValue));
+  const sidebarDisplayGroups = sidebarHasConfig
+    ? sidebarStatusGroups
+        .map(g => ({ ...g, statuses: g.statuses.filter(s => sidebarAvailable.has(s)) }))
+        .filter(g => g.statuses.length > 0)
+    : STATUS_OPTION_GROUPS;
+
   const workflow = useWorkflow(issue?.issue_type);
   const currentWorkflowState = workflow
     ? workflow.states.find(s => s.name.toLowerCase() === statusValue.toLowerCase())
@@ -281,16 +287,6 @@ export function CatalystSidebarDetails({
   useEffect(() => {
     if (deleteRequested) setShowConfirmDelete(true);
   }, [deleteRequested]);
-
-  useEffect(() => {
-    if (!showStatusDropdown) return;
-    const h = (e: MouseEvent) => {
-      if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node))
-        setShowStatusDropdown(false);
-    };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, [showStatusDropdown]);
 
   /* ── Auth + current user profile ─────────── */
   const { user } = useAuth();
@@ -373,87 +369,55 @@ export function CatalystSidebarDetails({
           />
         </div>
       ) : (
-      <div style={{ marginBottom: 14, position: 'relative' }} ref={statusDropdownRef}>
-        {/* jira-compare A2 (2026-04-28): label for the rail Status field. */}
-        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-primary, #292A2E)', marginBottom: 4 }}>Status</div>
-        <button
-          onClick={() => setShowStatusDropdown(!showStatusDropdown)}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            padding: 4,
-            borderRadius: 3,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            transition: 'background 0.15s',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-hovered, var(--cp-bg-sunken, #F4F5F7))')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #505258)', marginBottom: 4 }}>Status</div>
+        <DropdownMenu
+          trigger={({ triggerRef, ...triggerProps }) => (
+            <button
+              ref={triggerRef as React.Ref<HTMLButtonElement>}
+              {...triggerProps}
+              type="button"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 4,
+                borderRadius: 3,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+                <Lozenge appearance={lozengeAppearance} isBold={lozengeAppearance !== 'default'}>{statusValue}</Lozenge>
+              </span>
+              <ChevronDownIcon size="small" primaryColor="var(--ds-icon-subtle, #42526E)" />
+            </button>
+          )}
         >
-          {/* jira-compare A1 (2026-04-28): wrap with jira-parity attribute so
-              the global lozenge override (text-transform: none, fw 600) reaches
-              this direct AkLozenge import. */}
-          {/* jira-compare follow-up (2026-05-02): isBold matches WorkItemStatusLozenge's
-              rail-card rendering (variant='bold') so Status reads with the same
-              saturation across rail card / pill / sidebar. */}
-          <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-            <Lozenge appearance={lozengeAppearance} isBold={lozengeAppearance !== 'default'}>{statusValue}</Lozenge>
-          </span>
-          <ChevronDownIcon size="small" primaryColor="var(--ds-icon-subtle, #42526E)" />
-        </button>
-        {showStatusDropdown && (
-          <div className="cv-status-listbox" style={{
-            position: 'absolute', left: 0, top: '100%', marginTop: 4,
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 8,
-            boxShadow: '0 4px 24px rgba(30,31,33,0.16), 0 0 1px rgba(30,31,33,0.31)',
-            padding: '6px 0', zIndex: 9999, minWidth: 240, maxHeight: 420, overflowY: 'auto',
-            animation: 'cv-slide-down 0.15s ease-out',
-          }}>
-            {STATUS_OPTION_GROUPS.map(group => (
-              <div key={group.category}>
-                <div style={{
-                  fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase',
-                  letterSpacing: '0.06em', padding: '10px 16px 6px',
-                }}>{group.groupLabel}</div>
-                {group.statuses.map(st => {
-                  const isActive = statusValue === st;
-                  const cat = group.category as 'todo' | 'in_progress' | 'done';
-                  // Phase E.2 (2026-04-18): Atlaskit Lozenge per CLAUDE.md §5.
-                  const optionAppearance: 'default' | 'inprogress' | 'success' =
-                    cat === 'done' ? 'success' : cat === 'in_progress' ? 'inprogress' : 'default';
-                  return (
-                    <div key={st} onClick={() => { setLocalStatus(st); setShowStatusDropdown(false); onStatusChange(st); }}
-                      style={{
-                        height: 36, padding: '0 16px', display: 'flex', alignItems: 'center',
-                        justifyContent: 'space-between', cursor: 'pointer',
-                        background: isActive ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent', transition: 'background 80ms',
-                      }}
-                      onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
-                      onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
-                    >
-                      {/* jira-compare follow-up (2026-05-02): isBold so the
-                          dropdown options inherit the same saturation as the
-                          rendered status pill — fixes "everything is faded
-                          out" gripe in Vikram's screenshot 5. */}
-                      <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-                        <Lozenge appearance={optionAppearance} isBold>{st}</Lozenge>
-                      </span>
-                      {isActive && (
-                        <CheckIcon size="small" primaryColor="var(--ds-icon-selected, var(--cp-primary-60, #0052CC))" />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
-            {/* View workflow link */}
-            <div style={{ borderTop: '1px solid var(--ds-border, #EBECF0)', marginTop: 4, padding: '8px 16px' }}>
-              <span style={{ fontSize: 13, color: 'var(--ds-text-secondary, #505258)', cursor: 'default' }}>View workflow</span>
-            </div>
-          </div>
-        )}
+          {sidebarDisplayGroups.map(group => (
+            <DropdownItemGroup key={group.category} title={group.groupLabel}>
+              {group.statuses.map((st: string) => (
+                <DropdownItem
+                  key={st}
+                  isSelected={statusValue === st}
+                  onClick={() => { setLocalStatus(st); onStatusChange(st); }}
+                >
+                  <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+                    <Lozenge
+                      appearance={
+                        (group.category as string) === 'done' ? 'success'
+                        : (group.category as string) === 'in_progress' ? 'inprogress'
+                        : 'default'
+                      }
+                      isBold
+                    >{st}</Lozenge>
+                  </span>
+                </DropdownItem>
+              ))}
+            </DropdownItemGroup>
+          ))}
+        </DropdownMenu>
       </div>
       ))}
 
