@@ -86,6 +86,20 @@ import securityCompliance from '@/assets/icons/project-avatars/security-complian
 import senaEiBau from '@/assets/icons/project-avatars/senaei-bau.svg?url';
 import tahommena from '@/assets/icons/project-avatars/tahommena.svg?url';
 
+// ─── HUB ICONS (SVG set — 2026-06-13) ────────────────────────────────
+
+import hubHomeUrl from '@/assets/icons/hubs/home.svg?url';
+import hubStrategyUrl from '@/assets/icons/hubs/strategy.svg?url';
+import hubIdeationUrl from '@/assets/icons/hubs/ideation.svg?url';
+import hubProductUrl from '@/assets/icons/hubs/product.svg?url';
+import hubProjectUrl from '@/assets/icons/hubs/project.svg?url';
+import hubReleaseUrl from '@/assets/icons/hubs/release.svg?url';
+import hubTestUrl from '@/assets/icons/hubs/test.svg?url';
+import hubIncidentUrl from '@/assets/icons/hubs/incident.svg?url';
+import hubTaskUrl from '@/assets/icons/hubs/tasks.svg?url';
+import hubPlanUrl from '@/assets/icons/hubs/plan.svg?url';
+import hubWikiUrl from '@/assets/icons/hubs/wiki.svg?url';
+
 // ═══════════════════════════════════════════════════════════════════════
 // PUBLIC TYPES
 // ═══════════════════════════════════════════════════════════════════════
@@ -277,6 +291,28 @@ export function pickStockAvatarForKey(projectKey: string): StockAvatarId {
   const index = Math.abs(hash) % STOCK_AVATAR_IDS.length;
   return STOCK_AVATAR_IDS[index];
 }
+
+// ═══════════════════════════════════════════════════════════════════════
+// HUB ICON REGISTRY
+// ═══════════════════════════════════════════════════════════════════════
+
+export type HubKey =
+  | 'home' | 'strategy' | 'ideation' | 'product' | 'project'
+  | 'release' | 'test' | 'incident' | 'task' | 'plan' | 'wiki';
+
+export const HUB_ICON_REGISTRY: Record<HubKey, string> = {
+  home:     hubHomeUrl,
+  strategy: hubStrategyUrl,
+  ideation: hubIdeationUrl,
+  product:  hubProductUrl,
+  project:  hubProjectUrl,
+  release:  hubReleaseUrl,
+  test:     hubTestUrl,
+  incident: hubIncidentUrl,
+  task:     hubTaskUrl,
+  plan:     hubPlanUrl,
+  wiki:     hubWikiUrl,
+};
 
 // ═══════════════════════════════════════════════════════════════════════
 // JIRA-SIDE NORMALIZATION

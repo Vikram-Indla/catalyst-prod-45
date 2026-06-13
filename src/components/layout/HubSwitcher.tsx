@@ -42,43 +42,31 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useCatalystContext } from '@/contexts/CatalystContext';
-import { HubIcon, type HubName } from '@/components/navigation/HubIcon';
+import { HUB_ICON_REGISTRY, type HubKey } from '@/components/icons';
 
 type SectionKey = 'discover' | 'build_ship' | 'knowledge';
 
 interface HubEntry {
-  key: HubName;
+  key: HubKey;
   label: string;
   href: string;
   section: SectionKey;
-  /** ADS accent token suffix — drives both tile bg and glyph color. */
-  tone:
-    | 'blue'
-    | 'purple'
-    | 'orange'
-    | 'teal'
-    | 'green'
-    | 'magenta'
-    | 'lime'
-    | 'red'
-    | 'yellow'
-    | 'gray';
   /** Keyboard shortcut suffix bound to Cmd/Ctrl. '1'–'9', '0', '-'. */
   shortcut: string;
 }
 
 const HUBS: HubEntry[] = [
-  { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   tone: 'blue',    shortcut: '1' },
-  { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   tone: 'purple',  shortcut: '2' },
-  { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'orange',  shortcut: '3' },
-  { key: 'product',  label: 'Product',  href: '/product-hub',                section: 'build_ship', tone: 'teal',    shortcut: '4' },
-  { key: 'project',  label: 'Project',  href: '/project-hub',                section: 'build_ship', tone: 'green',   shortcut: '5' },
-  { key: 'release',  label: 'Release',  href: '/release-hub/command-center', section: 'build_ship', tone: 'magenta', shortcut: '6' },
-  { key: 'test',     label: 'Test',     href: '/testhub/dashboard',          section: 'build_ship', tone: 'lime',    shortcut: '7' },
-  { key: 'incident', label: 'Incident', href: '/incident-hub',               section: 'build_ship', tone: 'red',     shortcut: '8' },
-  { key: 'task',     label: 'Tasks',    href: '/tasks/board',                section: 'build_ship', tone: 'yellow',  shortcut: '9' },
-  { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', tone: 'gray',    shortcut: '0' },
-  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'gray',    shortcut: '-' },
+  { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   shortcut: '1' },
+  { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   shortcut: '2' },
+  { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   shortcut: '3' },
+  { key: 'product',  label: 'Product',  href: '/product-hub',                section: 'build_ship', shortcut: '4' },
+  { key: 'project',  label: 'Project',  href: '/project-hub',                section: 'build_ship', shortcut: '5' },
+  { key: 'release',  label: 'Release',  href: '/release-hub/command-center', section: 'build_ship', shortcut: '6' },
+  { key: 'test',     label: 'Test',     href: '/testhub/dashboard',          section: 'build_ship', shortcut: '7' },
+  { key: 'incident', label: 'Incident', href: '/incident-hub',               section: 'build_ship', shortcut: '8' },
+  { key: 'task',     label: 'Tasks',    href: '/tasks/board',                section: 'build_ship', shortcut: '9' },
+  { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', shortcut: '0' },
+  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  shortcut: '-' },
 ];
 
 const SECTIONS: { key: SectionKey; title: string }[] = [
@@ -87,45 +75,6 @@ const SECTIONS: { key: SectionKey; title: string }[] = [
   { key: 'knowledge',  title: 'Knowledge' },
 ];
 
-// Phase A (council 2026-05-08): bump default tier from `-subtler` → `-subtle`.
-// `-subtler` was too pale to carry information — Project / Test / Plan tiles
-// read as transparent. `-subtle` is the next ADS step up, still canonical,
-// noticeably more saturated. Wiki keeps `-subtler` so it stays distinguishable
-// from Plan (both share the gray family — only one of two hubs that shares
-// since the ADS accent palette is 10 tokens vs 11 hubs).
-const toneToTileBg = (tone: HubEntry['tone'], hubKey: HubEntry['key']) => {
-  if (hubKey === 'wiki') return 'var(--ds-background-accent-gray-subtler)';
-  return `var(--ds-background-accent-${tone}-subtle)`;
-};
-const toneToGlyphColor = (tone: HubEntry['tone'], hubKey: HubEntry['key']) => {
-  if (hubKey === 'wiki') return 'var(--ds-text-subtle)';
-  return `var(--ds-text-accent-${tone})`;
-};
-
-interface HubTileProps {
-  hub: HubEntry;
-}
-
-function HubTile({ hub }: HubTileProps) {
-  return (
-    <span
-      data-hub-tile={hub.key}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 32,
-        height: 32,
-        borderRadius: 6,
-        background: toneToTileBg(hub.tone, hub.key),
-        color: toneToGlyphColor(hub.tone, hub.key),
-        flexShrink: 0,
-      }}
-    >
-      <HubIcon name={hub.key} size={20} />
-    </span>
-  );
-}
 
 function HubRowLabel({ hub }: { hub: HubEntry }) {
   return (
@@ -312,7 +261,16 @@ export function HubSwitcher() {
                     key={hub.key}
                     href={hub.href}
                     isSelected={isActive(hub.href)}
-                    iconBefore={<HubTile hub={hub} />}
+                    iconBefore={
+                      <img
+                        src={HUB_ICON_REGISTRY[hub.key]}
+                        width={32}
+                        height={32}
+                        alt=""
+                        aria-hidden="true"
+                        style={{ borderRadius: 6, objectFit: 'fill', flexShrink: 0, display: 'block' }}
+                      />
+                    }
                     onClick={(e) => handleNavClick(e, hub)}
                   >
                     <HubRowLabel hub={hub} />
