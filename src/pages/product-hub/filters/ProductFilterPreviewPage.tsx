@@ -123,7 +123,7 @@ function mapBrToJqlRow(r: any, profileMap: Record<string, string>): JqlResultRow
     status: r.process_step ?? 'New',
     statusCategory: r.process_step === 'Done' || r.process_step === 'Approved' ? 'done' : 'in_progress',
     projectKey: '',
-    assigneeName: r.assignee ? (profileMap[r.assignee] ?? null) : null,
+    assigneeName: r.po_user_id ? (profileMap[r.po_user_id] ?? null) : null,
     priority: r.urgency ?? null,
     created: r.created_at ?? null,
     updated: r.updated_at ?? null,
@@ -144,6 +144,9 @@ function mapBrToJqlRow(r: any, profileMap: Record<string, string>): JqlResultRow
 }
 
 // ── Facet items hook — builds WorkItem pool from business_requests ────────────
+// Verified columns: id, request_key, title, process_step, urgency, po_user_id,
+// project_manager_user_id, created_by, request_type, planned_quarter, end_date,
+// created_at, updated_at, product_id, deleted_at (no 'assignee' column)
 
 function useProductBrFacetItems(productId: string | null): WorkItem[] {
   const { data = [] } = useQuery<WorkItem[]>({
@@ -153,19 +156,19 @@ function useProductBrFacetItems(productId: string | null): WorkItem[] {
     queryFn: async () => {
       const { data: rows } = await (supabase as any)
         .from('business_requests')
-        .select('id, request_key, title, process_step, urgency, assignee, request_type, planned_quarter, created_at, updated_at')
+        .select('id, request_key, title, process_step, urgency, po_user_id, created_by, request_type, planned_quarter, created_at, updated_at')
         .eq('product_id', productId)
         .is('deleted_at', null)
         .limit(2000);
       if (!rows) return [];
 
-      const assigneeIds = [...new Set((rows as any[]).map((r: any) => r.assignee).filter(Boolean))];
+      const userIds = [...new Set((rows as any[]).flatMap((r: any) => [r.po_user_id, r.created_by].filter(Boolean)))];
       const profileMap: Record<string, string> = {};
-      if (assigneeIds.length > 0) {
+      if (userIds.length > 0) {
         const { data: profiles } = await supabase
           .from('profiles')
           .select('id, full_name')
-          .in('id', assigneeIds as string[]);
+          .in('id', userIds as string[]);
         (profiles ?? []).forEach((p: any) => { profileMap[p.id] = p.full_name; });
       }
 
@@ -182,12 +185,14 @@ function useProductBrFacetItems(productId: string | null): WorkItem[] {
         status: 'todo' as any,
         statusName: r.process_step ?? '',
         statusCategory: 'todo' as any,
-        assigneeId: r.assignee ?? null,
-        assignee: r.assignee && profileMap[r.assignee]
-          ? { id: r.assignee, name: profileMap[r.assignee], avatarUrl: null, initials: '', color: '' }
+        assigneeId: r.po_user_id ?? null,
+        assignee: r.po_user_id && profileMap[r.po_user_id]
+          ? { id: r.po_user_id, name: profileMap[r.po_user_id], avatarUrl: null, initials: '', color: '' }
           : undefined,
-        reporterId: null,
-        reporter: undefined,
+        reporterId: r.created_by ?? null,
+        reporter: r.created_by && profileMap[r.created_by]
+          ? { id: r.created_by, name: profileMap[r.created_by], avatarUrl: null, initials: '', color: '' }
+          : undefined,
         priority: (r.urgency ?? 'medium') as any,
         fixVersion: null,
         sprintRelease: Array.isArray(r.planned_quarter) && r.planned_quarter.length > 0
@@ -218,7 +223,7 @@ function useProductBrResults(productId: string | null, filters: FilterState, sea
     queryFn: async () => {
       const { data: rows } = await (supabase as any)
         .from('business_requests')
-        .select('id, request_key, title, process_step, urgency, assignee, created_by, request_type, planned_quarter, end_date, created_at, updated_at')
+        .select('id, request_key, title, process_step, urgency, po_user_id, created_by, request_type, planned_quarter, end_date, created_at, updated_at')
         .eq('product_id', productId)
         .is('deleted_at', null)
         .order('updated_at', { ascending: false })
@@ -226,7 +231,7 @@ function useProductBrResults(productId: string | null, filters: FilterState, sea
       if (!rows) return { items: [], totalCount: 0 };
 
       const userIds = [...new Set(
-        (rows as any[]).flatMap((r: any) => [r.assignee, r.created_by].filter(Boolean))
+        (rows as any[]).flatMap((r: any) => [r.po_user_id, r.created_by].filter(Boolean))
       )];
       const profileMap: Record<string, string> = {};
       if (userIds.length > 0) {
@@ -348,6 +353,10 @@ export function ProductFilterPreviewPage() {
   const [density, setDensity] = useState<'compact' | 'comfortable'>('compact');
   const [askCatyOpen, setAskCatyOpen] = useState(false);
 
+  // JC-1: Basic/JQL mode toggle (mirrors FilterPreviewPage — JQL mode shows derived JQL, no engine)
+  const [filterMode, setFilterMode] = useState<'basic' | 'jql'>('basic');
+  const [jqlText, setJqlText] = useState('');
+
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -402,6 +411,43 @@ export function ProductFilterPreviewPage() {
       if (Object.keys(parsed).length > 0) setFilters({ ...EMPTY_FILTERS, ...parsed });
     }
   }, [loadedFilter]);
+
+  const switchToJql = useCallback(() => {
+    const current = savedFilterJql ?? filterStateToJql(filters, productCode);
+    setJqlText(current);
+    setFilterMode('jql');
+  }, [savedFilterJql, filters, productCode]);
+
+  const switchToBasic = useCallback(() => {
+    const parsed = jqlToFilterState(jqlText);
+    if (Object.keys(parsed).length > 0) {
+      setFilters({ ...EMPTY_FILTERS, ...parsed });
+      setSavedFilterJql(null);
+    } else if (jqlText.trim()) {
+      setSavedFilterJql(jqlText.trim());
+    }
+    setFilterMode('basic');
+  }, [jqlText]);
+
+  // Derive members from facet items (unique assignees — no extra query needed)
+  const productMembers = useMemo(() => {
+    const seen = new Set<string>();
+    const out: { id: string; name: string; src: string | null }[] = [];
+    for (const item of facetItems) {
+      const key = item.assigneeId ?? item.assignee?.name;
+      if (item.assignee?.name && key && !seen.has(key)) {
+        seen.add(key);
+        out.push({ id: item.assignee.name, name: item.assignee.name, src: item.assignee.avatarUrl });
+      }
+    }
+    return out;
+  }, [facetItems]);
+
+  const avatarData = productMembers.map((m) => ({
+    key: m.id,
+    name: m.name,
+    src: resolveAvatarUrl(m.src ?? null) ?? undefined,
+  }));
 
   const facetOptions = useMemo(() => {
     const ALL_FACETS = ['workType', 'status', 'assignee', ...MORE_FILTERS_FACETS] as const;
@@ -683,6 +729,51 @@ export function ProductFilterPreviewPage() {
             tooltip="Ask Caty about these results"
           />
 
+          {/* JC-1: Basic / JQL toggle — mirrors FilterPreviewPage */}
+          <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+            <button
+              onClick={switchToBasic}
+              style={{
+                height: 32, padding: '0 8px', fontSize: 14,
+                fontWeight: filterMode === 'basic' ? 600 : 400,
+                border: `1px solid ${filterMode === 'basic' ? token('color.border.focused', '#388BFF') : token('color.border', '#DFE1E6')}`,
+                borderRight: filterMode === 'basic' ? `1px solid ${token('color.border.focused', '#388BFF')}` : 'none',
+                borderRadius: '3px 0 0 3px',
+                background: 'transparent',
+                color: filterMode === 'basic' ? token('color.link', '#0C66E4') : token('color.text', '#172B4D'),
+                cursor: 'pointer',
+              }}
+            >
+              Basic
+            </button>
+            <button
+              onClick={switchToJql}
+              style={{
+                height: 32, padding: '0 8px', fontSize: 14,
+                fontWeight: filterMode === 'jql' ? 600 : 400,
+                border: `1px solid ${filterMode === 'jql' ? token('color.border.focused', '#388BFF') : token('color.border', '#DFE1E6')}`,
+                borderRadius: '0 3px 3px 0',
+                background: 'transparent',
+                color: filterMode === 'jql' ? token('color.link', '#0C66E4') : token('color.text', '#172B4D'),
+                cursor: 'pointer',
+              }}
+            >
+              JQL
+            </button>
+          </div>
+
+          {filterMode === 'jql' ? (
+            /* JQL mode: show derived JQL as editable text (no engine — display only) */
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <Textfield
+                isCompact
+                value={jqlText}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setJqlText(e.target.value); markDirty(); }}
+                placeholder="product = INV ORDER BY updated DESC"
+              />
+            </div>
+          ) : (
+            <>
           {/* Search */}
           <div style={{ width: 200, flexShrink: 0 }}>
             <Textfield
@@ -776,9 +867,11 @@ export function ProductFilterPreviewPage() {
               );
             })
           )}
+            </>
+          )}
         </div>
 
-        {/* Row 2: More filters · Clear · spacer · count · kebab · Save as · Save */}
+        {/* Row 2: More filters · Clear · AvatarGroup · spacer · count · kebab · Save as · Save */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 24px 8px', flexWrap: 'nowrap' }}>
           <FilterTriggerAndPopup
             triggerLabel={`More filters${moreCount > 0 ? ` (${moreCount})` : ''}`}
@@ -820,6 +913,20 @@ export function ProductFilterPreviewPage() {
             >
               Clear filters
             </Button>
+          )}
+
+          {avatarData.length > 0 && (
+            <AvatarGroup
+              appearance="stack"
+              size="small"
+              maxCount={4}
+              label="Assignees"
+              data={avatarData}
+              onAvatarClick={(_, member) => {
+                const id = (member as any).key as string;
+                toggleValue('assignee', id);
+              }}
+            />
           )}
 
           <div style={{ flex: 1 }} />
