@@ -280,10 +280,11 @@ export function WorkItemCard({
               color: tk.textPrimary,
               fontWeight: 400,                          /* jira-compare 2026-05-08: Jira card titles are 400/regular, NOT bold */
               marginBottom: 4,
-              /* No paddingRight here: the flex sibling (flag + edit + menu
-                 buttons) already reserves ~44px on the right. Adding an
-                 extra 32px double-padded the summary and forced titles to
-                 wrap a line earlier than necessary. */
+              /* No paddingRight here: the flex sibling (flag + menu)
+                 reserves room on the right. The edit pen now lives
+                 INLINE at the end of the title (see button below) so it
+                 sits flush with where the title ends, regardless of how
+                 many lines the title wraps to. */
               display: '-webkit-box',
               WebkitLineClamp: d.titleClamp,
               WebkitBoxOrient: 'vertical',
@@ -292,26 +293,31 @@ export function WorkItemCard({
               fontFamily: 'var(--cp-font-body)',
             }}>
               {issue.summary}
+              <button
+                className="kanban-card-edit-btn"
+                onClick={startEditing}
+                style={{
+                  width: 18, height: 18,
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  verticalAlign: 'middle',
+                  marginLeft: 4,
+                  borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer',
+                  opacity: 0, transition: 'opacity 80ms',
+                  padding: 0,
+                }}
+                aria-label="Edit title"
+              >
+                <EditIcon label="Edit title" size="small" primaryColor={tk.textMuted} />
+              </button>
             </div>
           )}
         </div>
 
-        {/* Flag + hover-reveal edit + three-dots (hidden during edit) */}
+        {/* Flag + three-dots (edit pen now lives inline at the end of the
+            title text, see above). Hidden during edit mode. */}
         {!isEditing && (
           <div className="flex items-center flex-shrink-0" style={{ gap: 2, marginLeft: 4, marginTop: 1 }}>
             {issue.isFlagged && <FlagFilledIcon label="Flagged" size="small" primaryColor="#E5493A" />}
-            <button
-              className="kanban-card-edit-btn"
-              onClick={startEditing}
-              style={{
-                width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer',
-                opacity: 0, transition: 'opacity 80ms', flexShrink: 0, padding: 0,
-              }}
-              aria-label="Edit title"
-            >
-              <EditIcon label="Edit title" size="small" primaryColor={tk.textMuted} />
-            </button>
             <button
               ref={btnRef}
               onClick={handleMenuBtn}
