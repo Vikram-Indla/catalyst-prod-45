@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
 import EditIcon from '@atlaskit/icon/glyph/edit';
@@ -258,6 +258,10 @@ interface CategorySectionProps {
 
 function CategorySection({ category, statuses, consumersMap, onEdit, onDelete, defaultExpanded = true }: CategorySectionProps) {
   const [expanded, setExpanded] = useState(defaultExpanded);
+
+  useEffect(() => {
+    setExpanded(defaultExpanded);
+  }, [defaultExpanded]);
   const catColor = STATUS_CATEGORY_COLORS[category];
   const catLabel = STATUS_CATEGORY_LABELS[category];
   const headerBg = CAT_HEADER_BG[category];

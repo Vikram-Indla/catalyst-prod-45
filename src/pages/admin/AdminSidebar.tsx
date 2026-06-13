@@ -38,7 +38,7 @@ interface CollapsibleSection {
 const navItems: NavItem[] = [
   { id: 'overview', label: 'Overview', path: '/admin/overview', icon: HomeIcon },
   { id: 'jira-hub', label: 'Jira Hub', path: '/admin/workhub/jira-connection', icon: DatabaseIcon },
-  { id: 'configuration', label: 'Configuration', path: '/admin/modules-packages', icon: SettingsIcon },
+  { id: 'configuration', label: 'Configuration', path: '/admin/overview', icon: SettingsIcon },
   { id: 'reference-data', label: 'Reference Data', path: '/admin/departments', icon: DatabaseIcon },
   { id: 'users-access', label: 'Users & Access', path: '/admin/access', icon: ShieldIcon },
 ];
@@ -57,10 +57,9 @@ const collapsibleSections: CollapsibleSection[] = [
     label: 'Design System',
     icon: PaintPaletteIcon,
     items: [
-      { id: 'design-governance', label: 'Design Governance', path: '/admin/design-system', icon: PaintPaletteIcon },
-      { id: 'components', label: 'Components', path: '/admin/design-system/components', icon: PaintPaletteIcon },
-      { id: 'icons', label: 'Icons', path: '/admin/design-system/icons', icon: PaintPaletteIcon },
-      { id: 'avatars', label: 'Avatars', path: '/admin/design-system/avatars', icon: PaintPaletteIcon },
+      { id: 'components', label: 'Components', path: '/admin/components', icon: PaintPaletteIcon },
+      { id: 'icons', label: 'Icons', path: '/admin/icons', icon: PaintPaletteIcon },
+      { id: 'avatars', label: 'Avatars', path: '/admin/avatars', icon: PaintPaletteIcon },
     ],
   },
 ];

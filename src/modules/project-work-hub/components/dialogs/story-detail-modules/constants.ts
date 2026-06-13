@@ -106,9 +106,9 @@ export const LINK_TYPE_OPTIONS = [
 ];
 
 export const STATUS_OPTION_GROUPS = [
-  { groupLabel: 'TO DO', category: 'todo', statuses: STATUS_CATEGORIES.todo },
-  { groupLabel: 'IN PROGRESS', category: 'in_progress', statuses: STATUS_CATEGORIES.in_progress },
-  { groupLabel: 'DONE', category: 'done', statuses: STATUS_CATEGORIES.done },
+  { groupLabel: 'To do', category: 'todo', statuses: STATUS_CATEGORIES.todo },
+  { groupLabel: 'In progress', category: 'in_progress', statuses: STATUS_CATEGORIES.in_progress },
+  { groupLabel: 'Done', category: 'done', statuses: STATUS_CATEGORIES.done },
 ];
 
 const jiraIconImg = (file: string, label: string) =>

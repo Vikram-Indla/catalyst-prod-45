@@ -23,6 +23,8 @@ import QuestionCircleIcon from '@atlaskit/icon/glyph/question-circle';
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import { WorkflowViewerModal } from './WorkflowViewerModal';
+import { CatalystWorkflowModal } from '../workflow/CatalystWorkflowModal';
+import type { WorkItemType } from '@/hooks/useTypeWorkflow';
 import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -484,12 +486,22 @@ export function CatalystStatusPill({
         document.body,
       )}
 
-      <WorkflowViewerModal
-        isOpen={workflowViewerOpen}
-        onClose={() => setWorkflowViewerOpen(false)}
-        issueType={issueType}
-        currentStatus={status}
-      />
+      {issueType === 'Story' || !issueType ? (
+        <WorkflowViewerModal
+          isOpen={workflowViewerOpen}
+          onClose={() => setWorkflowViewerOpen(false)}
+          issueType={issueType}
+          currentStatus={status}
+        />
+      ) : (
+        workflowViewerOpen && (
+          <CatalystWorkflowModal
+            issueTypeName={issueType as WorkItemType}
+            currentStatusName={status ?? undefined}
+            onClose={() => setWorkflowViewerOpen(false)}
+          />
+        )
+      )}
     </>
   );
 }

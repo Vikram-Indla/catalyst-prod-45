@@ -155,7 +155,7 @@ const BUG_WORKFLOW: Workflow = {
 // Closure phase (green):  Done | On Hold | Canceled
 const BUSINESS_REQUEST_WORKFLOW: Workflow = {
   id: 'business_request',
-  name: 'Business Request',
+  name: 'BR',
   initialStateId: 'new',
   issueTypes: ['Business Request'],
   states: [

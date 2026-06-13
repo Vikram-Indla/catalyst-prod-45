@@ -15,6 +15,8 @@ import { useWorkflow } from '../../lib/workflows/WorkflowProvider';
 import type { IssueType, Transition, WorkflowState, StatusCategory } from '../../lib/workflows/types';
 import { JiraStatusLozenge } from './JiraStatusLozenge';
 import { WorkflowDiagramModal } from './WorkflowDiagramModal';
+import { CatalystWorkflowModal } from '../catalyst-detail-views/shared/workflow/CatalystWorkflowModal';
+import type { WorkItemType } from '@/hooks/useTypeWorkflow';
 
 const APPEARANCE_MAP: Record<StatusCategory, 'default' | 'inprogress' | 'success' | 'removed' | 'new' | 'moved'> = {
   default:    'default',
@@ -169,11 +171,19 @@ export function StatusTransitionDropdown({
       </DropdownMenu>
 
       {isWorkflowModalOpen && (
-        <WorkflowDiagramModal
-          workflow={workflow}
-          currentStateId={currentState.id}
-          onClose={() => setIsWorkflowModalOpen(false)}
-        />
+        issueType === 'Story' ? (
+          <WorkflowDiagramModal
+            workflow={workflow}
+            currentStateId={currentState.id}
+            onClose={() => setIsWorkflowModalOpen(false)}
+          />
+        ) : (
+          <CatalystWorkflowModal
+            issueTypeName={issueType as WorkItemType}
+            currentStatusName={currentState.name}
+            onClose={() => setIsWorkflowModalOpen(false)}
+          />
+        )
       )}
     </>
   );

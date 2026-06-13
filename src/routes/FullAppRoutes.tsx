@@ -47,7 +47,6 @@ const ProjectBoardManagerPageLazy = lazy(() => import("../pages/project-hub/Proj
 const ProjectBoardSettingsPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardSettingsPage"));
 const KanbanBoardPageLazy = lazy(() => import("../pages/project-hub/KanbanBoardPage"));
 const FilterRoadmapPageLazy = lazy(() => import("../pages/project-hub/FilterRoadmapPage"));
-const RoadmapShowcasePageLazy = lazy(() => import("../pages/project-hub/RoadmapShowcasePage"));
 const MapStatusesPageLazy = lazy(() => import("../pages/project-hub/MapStatusesPage"));
 const AllProjectsPageLazy = lazy(() => import("../pages/project-hub/AllProjectsPage"));
 const UnifiedBacklogPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));
@@ -265,28 +264,16 @@ const ResourceAssignmentsPage = lazy(() => import("../pages/admin/ResourceAssign
 // JiraUserSyncPage DEPRECATED 2026-05-19 — superseded by the canonical
 // /admin/workhub/user-mapping page. Route entry above is a redirect.
 const BusinessOwnersAdmin = lazy(() => import("../pages/admin/BusinessOwners"));
-const Portfolios = lazy(() => import("../pages/admin/Portfolios"));
-const ModulesPackages = lazy(() => import("../pages/admin/ModulesPackages"));
-const ProductSettings = lazy(() => import("../pages/admin/ProductSettings"));
 const AdminOverview = lazy(() => import("../pages/admin/AdminOverview"));
 const UserAccessPage = lazy(() => import("../pages/admin/UserAccessPage"));
 const AdminAccessPage = lazy(() => import("../pages/admin/AdminAccessPage"));
-const ProcessSteps = lazy(() => import("../pages/admin/ProcessSteps"));
 // Admin v2 deprecated 2026-05-09 — all /admin/v2/* redirect to /admin/overview
 const WorkHubAdminPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubAdmin"));
 const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubHierarchyPage"));
-const WorkHubSchedulingPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubSchedulingPage"));
-const WorkHubStatusMappingPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubStatusMappingPage"));
 const WorkHubUserMappingPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubUserMappingPage"));
-const WorkHubDataScopePage = lazy(() => import("../modules/workhub/admin/pages/WorkHubDataScopePage"));
 const WorkHubSyncLogs = lazy(() => import("../modules/workhub/admin/pages/WorkHubSyncLogsPage"));
-const EpicStatuses = lazy(() => import("../pages/admin/EpicStatuses"));
-const FeatureStatuses = lazy(() => import("../pages/admin/FeatureStatuses"));
-const ThemeStatuses = lazy(() => import("../pages/admin/ThemeStatuses"));
 const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
-const DesignSystemAdmin = lazy(() => import("../pages/admin/design-system/DesignSystemAdmin"));
 const AiTranslationsAuditPage = lazy(() => import("../pages/admin/AiTranslationsAuditPage"));
-const CatalystFeaturesBoard = lazy(() => import("../pages/admin/CatalystFeaturesBoard"));
 const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
 // Incident admin routes deleted 2026-05-09 (Vikram decision: delete all 7)
 const NotificationTriggers = lazy(() => import("../pages/admin/NotificationTriggers"));
@@ -805,12 +792,10 @@ export default function FullAppRoutes() {
         <Route path="/admin" element={<S><AdminLayout /></S>}>
           <Route index element={<Navigate to="/admin/overview" replace />} />
           <Route path="overview" element={<S><AdminOverview /></S>} />
-          <Route path="modules-packages" element={<S><ModulesPackages /></S>} />
           <Route path="user-access" element={<S><UserAccessPage /></S>} />
           <Route path="access" element={<S><AdminAccessPage /></S>} />
           <Route path="users" element={<S><UsersManagement /></S>} />
           <Route path="roles-permissions" element={<S><RolesPermissions /></S>} />
-          <Route path="portfolios" element={<S><Portfolios /></S>} />
           <Route path="departments" element={<S><Departments /></S>} />
           <Route path="capacity-departments" element={<S><CapacityDepartmentsPage /></S>} />
           <Route path="resource-assignments" element={<S><ResourceAssignmentsPage /></S>} />
@@ -818,25 +803,12 @@ export default function FullAppRoutes() {
               Old URL kept temporarily as a redirect. Remove after 30 days. */}
           <Route path="jira-user-sync" element={<Navigate to="/admin/workhub/user-mapping" replace />} />
           <Route path="business-owners" element={<S><BusinessOwnersAdmin /></S>} />
-          <Route path="business/process-steps" element={<S><ProcessSteps /></S>} />
-          <Route path="business/epic-statuses" element={<S><EpicStatuses /></S>} />
-          <Route path="business/feature-statuses" element={<S><FeatureStatuses /></S>} />
-          <Route path="business/theme-statuses" element={<S><ThemeStatuses /></S>} />
-          {/* Legacy camelCase redirects */}
-          <Route path="business/ProcessStep" element={<Navigate to="/admin/business/process-steps" replace />} />
-          <Route path="business/EpicStatus" element={<Navigate to="/admin/business/epic-statuses" replace />} />
-          <Route path="business/FeatureStatus" element={<Navigate to="/admin/business/feature-statuses" replace />} />
-          <Route path="business/ThemeStatus" element={<Navigate to="/admin/business/theme-statuses" replace />} />
-          <Route path="product-settings" element={<S><ProductSettings /></S>} />
           <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
           <Route path="workhub-connection" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="workhub" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="workhub/jira-connection" element={<S><WorkHubAdminPage /></S>} />
           <Route path="workhub/hierarchy-mapping" element={<S><WorkHubHierarchyPage /></S>} />
-          <Route path="workhub/scheduling-rules" element={<S><WorkHubSchedulingPage /></S>} />
-          <Route path="workhub/status-mapping" element={<S><WorkHubStatusMappingPage /></S>} />
           <Route path="workhub/user-mapping" element={<S><WorkHubUserMappingPage /></S>} />
-          <Route path="workhub/data-scope" element={<S><WorkHubDataScopePage /></S>} />
           {/* DEPRECATED 2026-05-19 — these two were duplicate sync surfaces;
               all sync functionality lives on /admin/workhub/sync-logs now. */}
           <Route path="workhub/jira-sync-control" element={<Navigate to="/admin/workhub/sync-logs" replace />} />
@@ -846,8 +818,6 @@ export default function FullAppRoutes() {
           <Route path="notification-triggers" element={<S><NotificationTriggers /></S>} />
           <Route path="settings/notifications" element={<S><UserNotificationSettingsPage /></S>} />
           <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
-          <Route path="catalyst-features" element={<S><CatalystFeaturesBoard /></S>} />
-          <Route path="design-system" element={<S><DesignSystemAdmin /></S>} />
           <Route path="ai-governance/translations" element={<S><AiTranslationsAuditPage /></S>} />
           <Route path="governance" element={<S><GovernanceSettings /></S>} />
           <Route path="storybook" element={<S><AdminStorybookPage /></S>} />
@@ -913,7 +883,6 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/boards/:boardId" element={<S><KanbanBoardPageLazy /></S>} />
         <Route path="/project-hub/:key/roadmaps" element={<S><RoadmapsListPageLazy /></S>} />
         <Route path="/project-hub/:key/roadmaps/:id" element={<S><FilterRoadmapPageLazy /></S>} />
-        <Route path="/project-hub/:key/roadmap-showcase" element={<S><RoadmapShowcasePageLazy /></S>} />
         <Route path="/project-hub/:key/list" element={<S><ProjectJiraLayoutLazy /></S>} />
         <Route path="/project-hub/:key/allwork/:issueKey" element={<S><AllWorkDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />

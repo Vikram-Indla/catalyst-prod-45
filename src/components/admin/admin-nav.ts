@@ -55,7 +55,6 @@ export const adminPockets: AdminNavPocket[] = [
     iconName: 'Settings',
     path: '/admin/general',
     children: [
-      { label: 'Modules & Packages', path: '/admin/modules-packages' },
       { label: 'Notification Settings', path: '/admin/settings/notifications' },
       { label: 'Notification Triggers', path: '/admin/notification-triggers' },
     ],
@@ -66,7 +65,6 @@ export const adminPockets: AdminNavPocket[] = [
     iconName: 'Palette',
     path: '/admin/design-system',
     children: [
-      { label: 'Design Governance', path: '/admin/design-system' },
       { label: 'Components', path: '/admin/components' },
       // RESET ICONS — runtime asset override management. Admin-only.
       { label: 'Icons', path: '/admin/icons' },
@@ -88,16 +86,8 @@ export const adminPockets: AdminNavPocket[] = [
     iconName: 'Database',
     path: '/admin/field-configuration',
     children: [
-      { label: 'Projects', path: '/admin/programs' },
-      { label: 'Programs', path: '/admin/portfolios' },
       { label: 'Departments', path: '/admin/departments' },
       { label: 'Business Owners', path: '/admin/business-owners' },
-      { label: 'Product Lines', path: '/admin/product-settings' },
-      { label: 'Strategic Themes', path: '/admin/theme-groups' },
-      { label: 'BR Status', path: '/admin/business/ProcessStep' },
-      { label: 'Theme Status', path: '/admin/business/ThemeStatus' },
-      { label: 'Epic Status', path: '/admin/business/EpicStatus' },
-      { label: 'Feature Status', path: '/admin/business/FeatureStatus' },
     ],
   },
   {
@@ -116,10 +106,7 @@ export const adminPockets: AdminNavPocket[] = [
     children: [
       { label: 'Connection', path: '/admin/workhub/jira-connection' },
       { label: 'Hierarchy mapping', path: '/admin/workhub/hierarchy-mapping' },
-      { label: 'Status mapping', path: '/admin/workhub/status-mapping' },
       { label: 'User mapping', path: '/admin/workhub/user-mapping' },
-      { label: 'Data scope', path: '/admin/workhub/data-scope' },
-      { label: 'Scheduling rules', path: '/admin/workhub/scheduling-rules' },
       { label: 'Sync & logs', path: '/admin/workhub/sync-logs' },
     ],
   },
@@ -139,7 +126,6 @@ export const adminPockets: AdminNavPocket[] = [
     path: '/admin/feature-flags',
     children: [
       { label: 'Feature Flags', path: '/admin/feature-flags' },
-      { label: 'Catalyst Features', path: '/admin/catalyst-features' },
     ],
   },
 ];
@@ -160,37 +146,23 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/resource-assignments',
   '/admin/user-access',
   '/admin/access',
-  '/admin/modules-packages',
   '/admin/settings/notifications',
   '/admin/notification-triggers',
-  '/admin/design-system',
   '/admin/icons',
   '/admin/avatars',
   '/admin/components',
   '/admin/workflows',
-  '/admin/programs',
-  '/admin/portfolios',
   '/admin/departments',
   '/admin/business-owners',
-  '/admin/product-settings',
-  '/admin/theme-groups',
-  '/admin/business/ProcessStep',
-  '/admin/business/ThemeStatus',
-  '/admin/business/EpicStatus',
-  '/admin/business/FeatureStatus',
   '/admin/workhub/jira-connection',
   // '/admin/workhub/jira-sync-control' — DEPRECATED 2026-05-19; merged
   //   into /admin/workhub/sync-logs.
   '/admin/workhub/hierarchy-mapping',
-  '/admin/workhub/scheduling-rules',
-  '/admin/workhub/status-mapping',
   '/admin/workhub/user-mapping',
-  '/admin/workhub/data-scope',
   '/admin/workhub/sync-logs',
   // '/admin/workhub/activity-sync' — DEPRECATED 2026-05-19; merged into
   //   /admin/workhub/sync-logs.
   '/admin/feature-flags',
-  '/admin/catalyst-features',
   '/admin/ai-governance/translations',
 ]);
 
