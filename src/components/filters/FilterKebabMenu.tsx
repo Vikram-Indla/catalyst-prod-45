@@ -110,7 +110,14 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
     e.stopPropagation();
     const rect = triggerRef.current?.getBoundingClientRect();
     if (!rect) return;
-    setMenuPos({ top: rect.bottom + 4, left: rect.right });
+    // Estimate menu height (each item ~36px, dividers ~9px).
+    // If not enough room below, open upward from the trigger top.
+    const ESTIMATED_MENU_HEIGHT = 520;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const top = spaceBelow < ESTIMATED_MENU_HEIGHT
+      ? Math.max(8, rect.top - ESTIMATED_MENU_HEIGHT - 4)
+      : rect.bottom + 4;
+    setMenuPos({ top, left: rect.right });
     setMenuOpen(true);
   }, []);
 

@@ -179,6 +179,7 @@ export function WhatsAppSummaryModal({
                       value={findOpt(SUMMARY_TYPE_OPTIONS, options.summaryType)}
                       onChange={v => v && handleOptionChange('summaryType', v.value as WhatsAppSummaryOptions['summaryType'])}
                       menuPortalTarget={document.body}
+                      menuPosition="fixed"
                     />
                   </div>
                   <div>
@@ -188,6 +189,7 @@ export function WhatsAppSummaryModal({
                       value={findOpt(AUDIENCE_OPTIONS, options.audience)}
                       onChange={v => v && handleOptionChange('audience', v.value as WhatsAppSummaryOptions['audience'])}
                       menuPortalTarget={document.body}
+                      menuPosition="fixed"
                     />
                   </div>
                 </div>
@@ -200,6 +202,7 @@ export function WhatsAppSummaryModal({
                       value={findOpt(TONE_OPTIONS, options.tone)}
                       onChange={v => v && handleOptionChange('tone', v.value as WhatsAppSummaryOptions['tone'])}
                       menuPortalTarget={document.body}
+                      menuPosition="fixed"
                     />
                   </div>
                   <div>
@@ -209,6 +212,7 @@ export function WhatsAppSummaryModal({
                       value={findOpt(TIME_OPTIONS, options.timePeriod)}
                       onChange={v => v && handleOptionChange('timePeriod', v.value as WhatsAppSummaryOptions['timePeriod'])}
                       menuPortalTarget={document.body}
+                      menuPosition="fixed"
                     />
                   </div>
                 </div>
@@ -220,6 +224,7 @@ export function WhatsAppSummaryModal({
                     value={findOpt(SCOPE_OPTIONS, options.itemScope)}
                     onChange={v => v && handleOptionChange('itemScope', v.value as WhatsAppSummaryOptions['itemScope'])}
                     menuPortalTarget={document.body}
+                      menuPosition="fixed"
                   />
                 </div>
 
