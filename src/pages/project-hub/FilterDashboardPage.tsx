@@ -21,7 +21,7 @@ import Spinner from '@atlaskit/spinner';
 import SectionMessage from '@atlaskit/section-message';
 import Button from '@atlaskit/button/new';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
-import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { WidgetShell } from '@/components/product-dashboard/WidgetShell';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { ENABLE_FILTER_TO_DASHBOARD } from '@/lib/featureFlags';
@@ -274,7 +274,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
-      <ProjectHeaderChip projectKey={projectKey} />
+      <ProjectPageHeader projectKey={projectKey} />
       <CatalystPageHeader
         title={title}
         actions={

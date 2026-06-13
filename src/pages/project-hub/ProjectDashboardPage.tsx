@@ -33,7 +33,7 @@ import WidgetGalleryModal from '@/components/project-hub/dashboard/WidgetGallery
 import { nextSpan, type WidgetSpan } from '@/components/project-hub/dashboard/widget-registry';
 import { DashboardFilterProvider } from '@/contexts/DashboardFilterContext';
 import { useDashboardRealtime } from '@/hooks/useDashboardRealtime';
-import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 
 // Self-rolled dropdown for edit mode actions — avoids @atlaskit/popup (0,0) bug
@@ -490,11 +490,13 @@ useEffect(() => {
     <AtlaskitPageShell
       flush
       chromeBand={pKey ? (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <ProjectHeaderChip projectKey={pKey} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingRight: 24 }}>
-            {actions}
-          </div>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <ProjectPageHeader projectKey={pKey} />
+          {actions && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, paddingInline: 20, paddingBottom: 8 }}>
+              {actions}
+            </div>
+          )}
         </div>
       ) : null}
       testId="project-dashboard-shell"

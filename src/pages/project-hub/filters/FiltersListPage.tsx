@@ -15,7 +15,7 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
-import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import Button, { IconButton } from '@atlaskit/button/new';
 import AkAvatar from '@atlaskit/avatar';
 import SectionMessage from '@atlaskit/section-message';
@@ -517,7 +517,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
 
   return (
     <CatalystListPageLayout
-      chromeBand={projectKey ? <ProjectHeaderChip projectKey={projectKey} /> : undefined}
+      chromeBand={projectKey ? <ProjectPageHeader projectKey={projectKey} /> : undefined}
       tabs={QUICK_TABS}
       activeTab={quickTab}
       onTabChange={id => setQuickTab(id as QuickTabId)}

@@ -9,7 +9,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
-import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import Button, { IconButton } from '@atlaskit/button/new';
 import AkAvatar from '@atlaskit/avatar';
 import Tooltip from '@atlaskit/tooltip';
@@ -594,7 +594,7 @@ export default function RoadmapsListPage() {
 
   return (
     <CatalystListPageLayout
-      chromeBand={projectKey ? <ProjectHeaderChip projectKey={projectKey} /> : undefined}
+      chromeBand={projectKey ? <ProjectPageHeader projectKey={projectKey} /> : undefined}
       tabs={QUICK_TABS}
       activeTab={activeTab}
       onTabChange={(id) => setActiveTab(id as TabId)}

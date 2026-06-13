@@ -27,7 +27,7 @@ import Spinner from '@atlaskit/spinner';
 import SectionMessage from '@atlaskit/section-message';
 import Button from '@atlaskit/button/new';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
-import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { RoadmapTimeline } from '@/components/catalyst-roadmap/RoadmapTimeline';
 import { ENABLE_FILTER_TO_ROADMAP } from '@/lib/featureFlags';
 import { supabase } from '@/integrations/supabase/client';
@@ -186,7 +186,7 @@ function FilterRoadmapPageInner({ projectKey, viewId, navigate }: InnerProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       {/* Page header — mirrors KanbanBoardPage structure */}
-      <ProjectHeaderChip projectKey={projectKey} />
+      <ProjectPageHeader projectKey={projectKey} />
       <CatalystPageHeader
         title={title}
         actions={

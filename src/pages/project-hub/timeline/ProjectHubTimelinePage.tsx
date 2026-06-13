@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useCallback, useEffect, lazy, Suspens
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AtlaskitPageShell } from '@/components/ads';
-import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import ChevronUpIcon from '@atlaskit/icon/glyph/chevron-up';
@@ -927,7 +927,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
 
   if (isLoading) {
     return (
-      <AtlaskitPageShell flush chromeBand={<ProjectHeaderChip projectKey={projectKey} />}>
+      <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey={projectKey} />}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
           <Spinner size="large" />
         </div>
@@ -937,7 +937,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
 
   if (error) {
     return (
-      <AtlaskitPageShell flush chromeBand={<ProjectHeaderChip projectKey={projectKey} />}>
+      <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey={projectKey} />}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
           <p style={{ color: 'var(--ds-text-danger, #AE2A19)', fontSize: 14 }}>Failed to load timeline data.</p>
         </div>
@@ -948,7 +948,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
   const quickFilterActiveCount = (quickFilter || activeSavedFilterId) ? 1 : 0;
 
   return (
-    <AtlaskitPageShell flush chromeBand={<ProjectHeaderChip projectKey={projectKey} />}>
+    <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey={projectKey} />}>
     <div
       ref={containerRef}
       role="application"
