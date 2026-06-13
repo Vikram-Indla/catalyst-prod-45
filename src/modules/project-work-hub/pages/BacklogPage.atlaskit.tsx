@@ -265,7 +265,7 @@ import { AtlaskitPageShell } from '@/components/ads';
 // header band (Spaces breadcrumb + project icon + H1) lifted out of the
 // white card to match Jira parity. Single import, scoped to project-work-hub.
 import { ProjectChromeBand } from '../components/ProjectChromeBand';
-import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 // Apr 27 2026 (LOVABLE-01 landed in-session): AvatarGroup for the chrome-band
 // member strip + resolveAvatarUrl for local-asset photo lookups (avatars
@@ -3288,7 +3288,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             still mount it directly, but Backlog now uses the chip alone. */}
         {dataSource?.ChromeHeader
           ? <dataSource.ChromeHeader productCode={projectKey} productName={projectDisplayName} />
-          : <ProjectHeaderChip projectKey={projectKey} />}
+          : <ProjectPageHeader projectKey={projectKey} />}
         {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
         {false && <ProjectChromeBand
           projectName={pageTitle}

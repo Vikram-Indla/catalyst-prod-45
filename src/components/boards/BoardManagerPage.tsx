@@ -17,7 +17,7 @@ import {
   CatalystListPageLayout,
   type ToolbarFilter,
 } from '@/components/shared/CatalystListPage';
-import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import CreateBoardModal from './CreateBoardModal';
 import type { BoardListItem } from '@/types/board';
 
@@ -249,7 +249,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
   return (
     <>
     <CatalystListPageLayout
-      chromeBand={projectKey ? <ProjectHeaderChip projectKey={projectKey} /> : undefined}
+      chromeBand={projectKey ? <ProjectPageHeader projectKey={projectKey} /> : undefined}
       tabBarActions={createCta}
       search={search}
       searchPlaceholder="Search boards"
