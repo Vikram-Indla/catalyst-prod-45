@@ -33,6 +33,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { jiraIconType } from '@/components/universal-work-view/uwv.utils';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
+import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { useUpdateSavedFilter } from '@/hooks/workhub/useSavedFilters';
 import { useJqlResults, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
 import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
@@ -263,6 +264,13 @@ export function FilterPreviewPage() {
   // Ask Caty inline bar — mirrors BacklogPage's setAskCatyOpen pattern
   const [askCatyOpen, setAskCatyOpen] = useState(false);
 
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUserId(session?.user?.id ?? null);
+    });
+  }, []);
+
   // Save state — isDirty gates the Save button; savedFilterId drives override logic
   const [savedFilterId, setSavedFilterId] = useState<string | null>(null);
   const [saveOpen, setSaveOpen] = useState(false);
@@ -300,7 +308,7 @@ export function FilterPreviewPage() {
     queryFn: async () => {
       const { data } = await (supabase as any)
         .from('ph_saved_filters')
-        .select('id, name, jql_query, filter_config')
+        .select('id, name, jql_query, filter_config, user_id, owner_id, subscriber_ids, viewers_config, editors_config, used_by_board_ids, is_shared, page, created_at, updated_at, hub_scope, health_status, description, starred_by_user_ids, last_used_at, use_count')
         .eq('id', urlFilterId)
         .maybeSingle();
       return data ?? null;
@@ -786,6 +794,15 @@ export function FilterPreviewPage() {
           {isFetching && <Spinner size="small" />}
           {!isFetching && data != null && `${data.totalCount} item${data.totalCount === 1 ? '' : 's'}`}
         </div>
+
+        {/* Kebab menu — only shown when a saved filter is loaded (has an id) */}
+        {savedFilterId && loadedFilter && (
+          <FilterKebabMenu
+            filter={loadedFilter as any}
+            currentUserId={currentUserId}
+            rows={items}
+          />
+        )}
 
         {/* Save as — only shown when editing an existing filter (Jira parity) */}
         {savedFilterId && (
