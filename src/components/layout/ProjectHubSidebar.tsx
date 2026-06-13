@@ -86,12 +86,16 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
 
   if (projectKey) {
     const base = `/project-hub/${projectKey}`;
-    const projectName = projects.find(p => p.project_key === projectKey)?.name;
+    const project = projects.find(p => p.project_key === projectKey);
+    const projectName = project?.name;
     const keyCode = padProjectKey(projectKey, projectName);
 
     const projectConfig: SidebarConfig = {
       badge: keyCode,
       label: projectName ?? keyCode,
+      badgeProjectKey: projectKey,
+      badgeProjectAvatarUrl: project?.icon_avatar_url ?? null,
+      badgeProjectColor: project?.icon_color ?? null,
       showFavorites: false,
       // Design critique (2026-04-19): flattened from 3 sections ('', Boards,
       // Planning) to a single unlabeled group. Rationale:

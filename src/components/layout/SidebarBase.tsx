@@ -29,6 +29,7 @@ import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useTheme } from '@/hooks/useTheme';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 
 // Hub registry — mirrors AppSwitcher.tsx (which is being retired). Tone
 // colors come from Atlassian Design System accent palette; we render the
@@ -131,6 +132,10 @@ export interface SidebarConfig {
   items?: SidebarMenuItem[];
   footerItem?: SidebarMenuItem;
   showFavorites?: boolean;
+  /** Collapsed-rail icon — pass projectKey so ProjectIcon resolves the bundled avatar */
+  badgeProjectKey?: string | null;
+  badgeProjectColor?: string | null;
+  badgeProjectAvatarUrl?: string | null;
 }
 
 interface SidebarBaseProps {
@@ -325,23 +330,41 @@ export function SidebarBase({
               </span>
             )
           ) : (
-            /* Icon-only: project key badge centred in the 56px rail */
-            config.badge ? (
-              <span
-                style={{
-                  fontFamily: 'var(--ds-font-family-code, monospace)',
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  color: 'var(--ds-text-subtlest, #626F86)',
-                  letterSpacing: '0.5px',
-                  textTransform: 'uppercase' as const,
-                  lineHeight: 1,
-                  userSelect: 'none',
-                }}
-              >
-                {config.badge}
-              </span>
-            ) : null
+            /* Icon-only rail: project icon + key stacked vertically */
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '4px',
+                width: '100%',
+              }}
+            >
+              {config.badgeProjectKey ? (
+                <ProjectIcon
+                  projectKey={config.badgeProjectKey}
+                  avatarUrl={config.badgeProjectAvatarUrl}
+                  color={config.badgeProjectColor}
+                  size="medium"
+                />
+              ) : null}
+              {config.badge ? (
+                <span
+                  style={{
+                    fontFamily: 'var(--ds-font-family-code, monospace)',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    color: 'var(--ds-text-subtlest, #626F86)',
+                    letterSpacing: '0.5px',
+                    textTransform: 'uppercase' as const,
+                    lineHeight: 1,
+                    userSelect: 'none',
+                  }}
+                >
+                  {config.badge}
+                </span>
+              ) : null}
+            </div>
           )}
         </div>
 
