@@ -5,6 +5,7 @@ import { AtlaskitPageShell } from '@/components/ads';
 import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import ChevronUpIcon from '@atlaskit/icon/glyph/chevron-up';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import SettingsIcon from '@atlaskit/icon/glyph/settings';
@@ -450,7 +451,6 @@ export default function ProjectHubTimelinePage() {
 
   /* detail side panel */
   const navigate = useNavigate();
-  const [sidebarHidden, setSidebarHidden] = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);
   const [panelItem, setPanelItem] = useState<{ id: string; itemType: string; displayType: string } | null>(null);
   const closePanel = useCallback(() => setPanelItem(null), []);
@@ -1296,7 +1296,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
 
         {/* ── sidebar panel ── */}
-        {!isNarrow && !sidebarHidden && (
+        {!isNarrow && (
           <div style={{
             width: sidebarWidth, flexShrink: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden',
           }}>
@@ -1306,23 +1306,60 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
               aria-label="Work"
               style={{
                 height: doubleHeaderH, flexShrink: 0,
-                borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+                borderBottom: '2px solid var(--ds-border, #DFE1E6)',
                 background: 'var(--ds-surface-sunken, #F7F8F9)',
-                display: 'flex', alignItems: 'flex-end', padding: '0 8px 8px', gap: 8,
+                display: 'flex', alignItems: 'center',
+                padding: '0 8px 0 12px',
+                justifyContent: 'space-between',
               }}
             >
-              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+              <span style={{
+                fontSize: 13, fontWeight: 653,
+                color: 'var(--ds-text, #172B4D)',
+                letterSpacing: '0.01em',
+                userSelect: 'none',
+              }}>
                 Work
               </span>
               {parentKeys.length > 0 && (
-                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 0 }}>
+                /* Segmented expand / collapse control — always visible, clearly labelled */
+                <div style={{
+                  display: 'flex', alignItems: 'center',
+                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  borderRadius: 4,
+                  overflow: 'hidden',
+                  background: 'var(--ds-surface, #FFFFFF)',
+                  boxShadow: '0 1px 2px rgba(9,30,66,0.08)',
+                }}>
                   <Tooltip content="Expand all" position="top">
                     <button
                       onClick={expandAll}
                       aria-label="Expand all rows"
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 3, color: 'var(--ds-text-subtlest, #626F86)', padding: 0 }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #626F86)'; }}
+                      title="Expand all"
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        gap: 2,
+                        height: 26, padding: '0 7px',
+                        border: 'none',
+                        borderRight: '1px solid var(--ds-border, #DFE1E6)',
+                        background: collapsed.size === 0 ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+                        cursor: 'pointer',
+                        color: collapsed.size === 0 ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
+                        transition: 'background 0.1s, color 0.1s',
+                        flexShrink: 0,
+                      }}
+                      onMouseEnter={e => {
+                        if (collapsed.size !== 0) {
+                          e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+                          e.currentTarget.style.color = 'var(--ds-text, #172B4D)';
+                        }
+                      }}
+                      onMouseLeave={e => {
+                        if (collapsed.size !== 0) {
+                          e.currentTarget.style.background = 'transparent';
+                          e.currentTarget.style.color = 'var(--ds-text-subtle, #42526E)';
+                        }
+                      }}
                     >
                       <ChevronDownIcon label="" size="small" />
                     </button>
@@ -1331,11 +1368,32 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                     <button
                       onClick={collapseAll}
                       aria-label="Collapse all rows"
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 3, color: 'var(--ds-text-subtlest, #626F86)', padding: 0 }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #626F86)'; }}
+                      title="Collapse all"
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        gap: 2,
+                        height: 26, padding: '0 7px',
+                        border: 'none',
+                        background: collapsed.size === parentKeys.length ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+                        cursor: 'pointer',
+                        color: collapsed.size === parentKeys.length ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
+                        transition: 'background 0.1s, color 0.1s',
+                        flexShrink: 0,
+                      }}
+                      onMouseEnter={e => {
+                        if (collapsed.size !== parentKeys.length) {
+                          e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+                          e.currentTarget.style.color = 'var(--ds-text, #172B4D)';
+                        }
+                      }}
+                      onMouseLeave={e => {
+                        if (collapsed.size !== parentKeys.length) {
+                          e.currentTarget.style.background = 'transparent';
+                          e.currentTarget.style.color = 'var(--ds-text-subtle, #42526E)';
+                        }
+                      }}
                     >
-                      <ChevronRightIcon label="" size="small" />
+                      <ChevronUpIcon label="" size="small" />
                     </button>
                   </Tooltip>
                 </div>
@@ -1482,7 +1540,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
         )}
 
         {/* ── drag divider ── */}
-        {!isNarrow && !sidebarHidden && (
+        {!isNarrow && (
           <div
             role="separator"
             aria-label="Resize sidebar"
@@ -1753,8 +1811,6 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
         onScrollToToday={scrollToToday}
         onToggleLegend={() => setLegendOpen(v => !v)}
         legendOpen={legendOpen}
-        onToggleSidePanel={() => setSidebarHidden(v => !v)}
-        sidePanelOpen={!sidebarHidden}
       />
     </div>
     {/* ── detail side panel — canonical BacklogPage pattern ── */}

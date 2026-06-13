@@ -8,8 +8,6 @@ export interface TimelineBottomBarProps {
   onScrollToToday: () => void;
   onToggleLegend?: () => void;
   legendOpen?: boolean;
-  onToggleSidePanel?: () => void;
-  sidePanelOpen?: boolean;
 }
 
 const ZOOM_LEVELS: { key: ZoomLevel; label: string }[] = [
@@ -97,10 +95,9 @@ export function TimelineBottomBar({
   onScrollToToday,
   onToggleLegend,
   legendOpen,
-  onToggleSidePanel,
-  sidePanelOpen,
 }: TimelineBottomBarProps) {
   const [hoveredZoom, setHoveredZoom] = useState<ZoomLevel | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
 
   const handleZoomKeyDown = useCallback((e: React.KeyboardEvent, currentKey: ZoomLevel) => {
     const idx = ZOOM_LEVELS.findIndex(z => z.key === currentKey);
@@ -134,91 +131,93 @@ export function TimelineBottomBar({
       role="toolbar"
       aria-label="Timeline zoom controls"
     >
-      <BarButton onClick={onScrollToToday} title="Scroll to today">Today</BarButton>
+      {!collapsed && (
+        <>
+          <BarButton onClick={onScrollToToday} title="Scroll to today">Today</BarButton>
 
-      <div
-        role="radiogroup"
-        aria-label="Zoom level"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          border: `1px solid ${T.border}`,
-          borderRadius: 3,
-          overflow: 'hidden',
-          height: 32,
-        }}
-      >
-        {ZOOM_LEVELS.map((level, i) => {
-          const isActive = zoom === level.key;
-          const isHovered = hoveredZoom === level.key;
-          const isLast = i === ZOOM_LEVELS.length - 1;
-          return (
-            <button
-              key={level.key}
-              type="button"
-              role="radio"
-              aria-checked={isActive}
-              aria-label={`Zoom to ${level.label}`}
-              onClick={() => onZoomChange(level.key)}
-              onKeyDown={e => handleZoomKeyDown(e, level.key)}
-              onMouseEnter={() => setHoveredZoom(level.key)}
-              onMouseLeave={() => setHoveredZoom(null)}
-              onFocus={e => {
-                e.currentTarget.style.outline = `2px solid ${T.borderFocused}`;
-                e.currentTarget.style.outlineOffset = '-2px';
-              }}
-              onBlur={e => { e.currentTarget.style.outline = 'none'; }}
+          <div
+            role="radiogroup"
+            aria-label="Zoom level"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              border: `1px solid ${T.border}`,
+              borderRadius: 3,
+              overflow: 'hidden',
+              height: 32,
+            }}
+          >
+            {ZOOM_LEVELS.map((level, i) => {
+              const isActive = zoom === level.key;
+              const isHovered = hoveredZoom === level.key;
+              const isLast = i === ZOOM_LEVELS.length - 1;
+              return (
+                <button
+                  key={level.key}
+                  type="button"
+                  role="radio"
+                  aria-checked={isActive}
+                  aria-label={`Zoom to ${level.label}`}
+                  onClick={() => onZoomChange(level.key)}
+                  onKeyDown={e => handleZoomKeyDown(e, level.key)}
+                  onMouseEnter={() => setHoveredZoom(level.key)}
+                  onMouseLeave={() => setHoveredZoom(null)}
+                  onFocus={e => {
+                    e.currentTarget.style.outline = `2px solid ${T.borderFocused}`;
+                    e.currentTarget.style.outlineOffset = '-2px';
+                  }}
+                  onBlur={e => { e.currentTarget.style.outline = 'none'; }}
+                  style={{
+                    height: 32,
+                    padding: '0 14px',
+                    fontSize: 14,
+                    fontFamily: 'var(--ds-font-family-body)',
+                    fontWeight: isActive ? 500 : 400,
+                    color: isActive ? T.textSelected : T.text,
+                    background: isActive ? T.bgSelected : isHovered ? T.bgHover : T.surface,
+                    border: 'none',
+                    borderRight: isLast ? 'none' : `1px solid ${T.border}`,
+                    borderRadius: 0,
+                    cursor: 'pointer',
+                    outline: 'none',
+                    boxShadow: isActive ? `inset 0 0 0 2px ${T.borderSelected}` : 'none',
+                    transition: 'background 0.1s ease, color 0.1s ease',
+                  }}
+                >
+                  {level.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {onToggleLegend && (
+            <BarButton
+              onClick={onToggleLegend}
+              title={legendOpen ? 'Close legend' : 'Show legend'}
+              isSquare
               style={{
-                height: 32,
-                padding: '0 14px',
-                fontSize: 14,
-                fontFamily: 'var(--ds-font-family-body)',
-                fontWeight: isActive ? 500 : 400,
-                color: isActive ? T.textSelected : T.text,
-                background: isActive ? T.bgSelected : isHovered ? T.bgHover : T.surface,
-                border: 'none',
-                borderRight: isLast ? 'none' : `1px solid ${T.border}`,
-                borderRadius: 0,
-                cursor: 'pointer',
-                outline: 'none',
-                boxShadow: isActive ? `inset 0 0 0 2px ${T.borderSelected}` : 'none',
-                transition: 'background 0.1s ease, color 0.1s ease',
+                color: legendOpen ? T.textSelected : T.textSubtle,
+                background: legendOpen ? T.bgSelected : undefined,
               }}
             >
-              {level.label}
-            </button>
-          );
-        })}
-      </div>
-
-      {onToggleLegend && (
-        <BarButton
-          onClick={onToggleLegend}
-          title={legendOpen ? 'Close legend' : 'Show legend'}
-          isSquare
-          style={{
-            color: legendOpen ? T.textSelected : T.textSubtle,
-            background: legendOpen ? T.bgSelected : undefined,
-          }}
-        >
-          <InfoCircleIcon />
-        </BarButton>
+              <InfoCircleIcon />
+            </BarButton>
+          )}
+        </>
       )}
 
-      {onToggleSidePanel && (
-        <BarButton
-          onClick={onToggleSidePanel}
-          title={sidePanelOpen ? 'Close panel' : 'Open panel'}
-          isSquare
-          style={{
-            color: T.textSubtle,
-            transform: sidePanelOpen ? 'rotate(180deg)' : 'none',
-            transition: 'background 0.1s ease, transform 0.2s ease',
-          }}
-        >
-          <ChevronRightLargeIcon />
-        </BarButton>
-      )}
+      <BarButton
+        onClick={() => setCollapsed(v => !v)}
+        title={collapsed ? 'Expand controls' : 'Collapse controls'}
+        isSquare
+        style={{
+          color: T.textSubtle,
+          transform: collapsed ? 'rotate(180deg)' : 'none',
+          transition: 'background 0.1s ease, transform 0.2s ease',
+        }}
+      >
+        <ChevronRightLargeIcon />
+      </BarButton>
     </div>
   );
 }
