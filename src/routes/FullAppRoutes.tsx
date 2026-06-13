@@ -6,6 +6,7 @@ function IssueRedirectToBrowse() {
   return <Navigate to={`/browse/${issueKey ?? ''}`} replace />;
 }
 
+
 import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
@@ -57,6 +58,7 @@ const FiltersListPageLazy = lazy(() => import("../pages/project-hub/filters/Filt
 const RoadmapsListPageLazy = lazy(() => import("../pages/project-hub/roadmaps/RoadmapsListPage"));
 const FilterDetailPageLazy = lazy(() => import("../pages/project-hub/filters/FilterDetailPage"));
 const FilterPreviewPageLazy = lazy(() => import("../pages/project-hub/filters/FilterPreviewPage").then(m => ({ default: m.FilterPreviewPage })));
+const ProductFilterPreviewPageLazy = lazy(() => import("../pages/product-hub/filters/ProductFilterPreviewPage").then(m => ({ default: m.ProductFilterPreviewPage })));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
 const PHPlaceholderBase = lazy(() => import("../pages/project-hub/PhasePlaceholderPage"));
@@ -453,7 +455,7 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/cards" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:key/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />
-        <Route path="/product-hub/:key/filters/create" element={<Navigate to="/product-hub/allwork?mode=create-filter" replace />} />
+        <Route path="/product-hub/:key/filters/create" element={<MG k="producthub" t="ProductHub"><S><ProductFilterPreviewPageLazy /></S></MG>} />
         {/* Global /product-hub/filters[/create] retired 2026-06-01 — filters are
             per-product. Anyone deep-linking to the old global path lands on the
             products listing. Per-product filters still live at /product-hub/:key/filters. */}

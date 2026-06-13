@@ -255,6 +255,14 @@ interface Props {
   onSaveFilter?: () => void;
   /** Label for the save button — e.g. "Save filter" or "Save as filter". */
   saveFilterLabel?: string;
+  /**
+   * Optional pre-fetched item pool for facet option derivation.
+   * When provided, the toolbar skips its own ph_issues query and builds
+   * dropdown options from this array instead. Pass the parent's already-
+   * fetched items (e.g. Product Hub business_requests mapped to WorkItem).
+   * When absent, the toolbar queries ph_issues as normal (Project Hub path).
+   */
+  facetOptionItems?: WorkItem[];
 }
 
 /** Coerce any value (string / number / object / null) to a clean string
@@ -1156,6 +1164,7 @@ export function AllWorkToolbar({
   onAssigneesChange,
   onSaveFilter,
   saveFilterLabel = 'Save filter',
+  facetOptionItems,
 }: Props) {
   /* ── ALL HOOKS FIRST — React Rules of Hooks: no hook after a conditional return ── */
 
@@ -1291,10 +1300,12 @@ export function AllWorkToolbar({
   // Without this, facet options collapse to only what's on the current page
   // and disappear after a filter is applied (e.g. Assignee=Vikram → only
   // "Vikram" remains in the Assignee dropdown, can't switch to someone else).
+  // Skipped when facetOptionItems is provided (e.g. Product Hub passes its
+  // already-fetched business_requests — no ph_issues query needed).
   const TOOLBAR_FACET_TYPES = ['Story', 'Backend', 'Frontend', 'Sub-task', 'Epic', 'Feature'];
   const { data: allProjectRows = [] } = useQuery<WorkItem[]>({
     queryKey: ['allwork-facet-options', projectKey],
-    enabled: !!projectKey,
+    enabled: !!projectKey && !facetOptionItems,
     staleTime: 5 * 60 * 1000, // 5 min — options change infrequently
     queryFn: async () => {
       const { data } = await supabase
@@ -1331,13 +1342,14 @@ export function AllWorkToolbar({
   });
 
   const facetOptions = useMemo(() => {
-    // Use full-project rows as the options pool so available choices don't
-    // collapse when a filter is active or when viewing a later page.
-    const pool = allProjectRows.length > 0 ? allProjectRows : items;
+    // Priority: caller-supplied pool (Product Hub BRs) > full-project ph_issues
+    // rows > current page items. The caller-supplied pool guarantees correct
+    // options even when ph_issues has no rows for the given key (product codes).
+    const pool = facetOptionItems ?? (allProjectRows.length > 0 ? allProjectRows : items);
     const out = {} as Record<FilterFacet, FacetOption[]>;
     for (const f of FACET_ORDER) out[f] = distinctOptions(pool, f);
     return out;
-  }, [allProjectRows, items]);
+  }, [facetOptionItems, allProjectRows, items]);
 
   const totalCount = totalSelected(selectedFilters);
 

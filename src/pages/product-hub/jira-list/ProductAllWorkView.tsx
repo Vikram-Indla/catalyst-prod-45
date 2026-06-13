@@ -129,6 +129,9 @@ function mapBrToWorkItem(
     reporterId: (r as any).po_user_id ?? null,
     reporter: po ? { id: (r as any).po_user_id, name: po.full_name ?? 'Unknown' } : undefined,
     priority: ((r as any).urgency ?? 'medium') as any,
+    // sprintRelease drives the Sprint/Releases facet chip — map first quarter value
+    // so the chip has useful distinct options for product work items.
+    sprintRelease: Array.isArray(quarter) ? (quarter[0] ?? null) : (quarter ?? null),
     fixVersion: Array.isArray(quarter) ? (quarter[0] ?? null) : (quarter ?? null),
     commentsCount: 0,
     childCount: 0,
@@ -136,7 +139,9 @@ function mapBrToWorkItem(
     updatedAt: (r as any).updated_at ?? '',
     createdBy: null,
     severity: null,
-    labels: [],
+    // Map request_type as labels so the Labels chip surfaces BR subtypes
+    // (feature / gap / integration / data_request) as filterable values.
+    labels: (r as any).request_type ? [(r as any).request_type] : [],
   };
 }
 
@@ -282,7 +287,9 @@ export default function ProductAllWorkView({ productCode, productId, productName
         </div>
       )}
 
-      {/* Toolbar — reused directly from AllWorkToolbar, productCode as projectKey */}
+      {/* Toolbar — reused directly from AllWorkToolbar, productCode as projectKey.
+          facetOptionItems bypasses the ph_issues query so dropdown options are
+          derived from the already-fetched business_requests instead. */}
       <AllWorkToolbar
         projectKey={productCode}
         query={toolbarQuery}
@@ -290,6 +297,7 @@ export default function ProductAllWorkView({ productCode, productId, productName
         view={toolbarView}
         onViewChange={setToolbarView}
         items={workItems}
+        facetOptionItems={workItems}
         selectedFilters={toolbarFilters}
         onSelectedFiltersChange={setToolbarFilters}
         filterOpen={filterOpen}
@@ -307,6 +315,7 @@ export default function ProductAllWorkView({ productCode, productId, productName
           filter={urlFilterId && activeFilter ? { id: activeFilter.id, name: activeFilter.name, jql_query: filterStateToJql(toolbarFilters, productCode) } as any : undefined}
           initialJql={!urlFilterId ? filterStateToJql(toolbarFilters, productCode) : undefined}
           hubScope="product"
+          productKey={productCode}
           onClose={() => setSaveModalOpen(false)}
           onSaved={() => { setSaveModalOpen(false); if (isCreateMode) setSearchParams({}); }}
         />

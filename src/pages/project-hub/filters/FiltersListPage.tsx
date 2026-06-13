@@ -161,9 +161,9 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     });
   }, []);
 
-  const createHref = projectKey
-    ? `/project-hub/${projectKey}/filters/create`
-    : `/product-hub/allwork?mode=create-filter`;
+  const createHref = hubType === 'product'
+    ? `/product-hub/${projectKey}/filters/create`
+    : `/project-hub/${projectKey}/filters/create`;
 
   // Keyboard shortcut: N opens the create flow (Jira pattern)
   React.useEffect(() => {
@@ -251,9 +251,9 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     });
   }, [filters, quickTab, currentUserId, search, ownerFilter, projectFilter, groupFilter, sortKey, sortOrder]);
 
-  const detailHref = (f: SavedFilterFull) => projectKey
-    ? `/project-hub/${projectKey}/filters/create?filterId=${f.id}`
-    : `/product-hub/allwork?filterId=${f.id}`;
+  const detailHref = (f: SavedFilterFull) => hubType === 'product'
+    ? `/product-hub/${projectKey}/filters/create?filterId=${f.id}`
+    : `/project-hub/${projectKey}/filters/create?filterId=${f.id}`;
 
   const columns = useMemo<Column<SavedFilterFull>[]>(() => [
     {
