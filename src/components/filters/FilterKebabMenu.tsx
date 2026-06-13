@@ -228,6 +228,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
       <button
         key={typeof label === 'string' ? label : undefined}
         type="button"
+        role="menuitem"
         disabled={disabled}
         onClick={(e) => { e.stopPropagation(); if (!disabled) { onClick(); closeMenu(); } }}
         style={{
@@ -261,6 +262,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
         type="button"
         aria-label="Filter actions"
         aria-expanded={menuOpen}
+        aria-haspopup="menu"
         onClick={openMenu}
         style={{
           display: 'inline-flex',
@@ -282,6 +284,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
       {menuOpen && createPortal(
         <div
           ref={menuRef}
+          role="menu"
           data-filter-kebab-portal="true"
           style={{
             position: 'fixed',

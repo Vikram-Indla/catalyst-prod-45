@@ -411,7 +411,7 @@ export function FilterPreviewPage() {
   const openDetail = (key: string) =>
     useGlobalSearchStore.getState().openDetail({ id: key });
 
-  const avatarData = members.map((m) => ({ key: m.id, name: m.name, src: m.src ?? undefined }));
+  const avatarData = members.map((m) => ({ key: m.id, name: m.name, src: resolveAvatarUrl(m.src ?? null) ?? undefined }));
 
   // ── Save handlers ──────────────────────────────────────────────────────────
 
@@ -651,10 +651,10 @@ export function FilterPreviewPage() {
         <h1
           style={{
             margin: 0,
-            fontSize: 20,
+            fontSize: 24,
             fontWeight: 653,
             color: token('color.text', '#172B4D'),
-            lineHeight: '24px',
+            lineHeight: '28px',
           }}
         >
           {savedFilterName ?? 'Create filter'}
@@ -695,7 +695,7 @@ export function FilterPreviewPage() {
             <button
               onClick={switchToBasic}
               style={{
-                height: 32, padding: '0 12px', fontSize: 14,
+                height: 32, padding: '0 8px', fontSize: 14,
                 fontWeight: filterMode === 'basic' ? 600 : 400,
                 border: `1px solid ${filterMode === 'basic' ? token('color.border.focused', '#388BFF') : token('color.border', '#DFE1E6')}`,
                 borderRight: filterMode === 'basic' ? `1px solid ${token('color.border.focused', '#388BFF')}` : 'none',
@@ -710,7 +710,7 @@ export function FilterPreviewPage() {
             <button
               onClick={switchToJql}
               style={{
-                height: 32, padding: '0 12px', fontSize: 14,
+                height: 32, padding: '0 8px', fontSize: 14,
                 fontWeight: filterMode === 'jql' ? 600 : 400,
                 border: `1px solid ${filterMode === 'jql' ? token('color.border.focused', '#388BFF') : token('color.border', '#DFE1E6')}`,
                 borderRadius: '0 3px 3px 0',
@@ -814,7 +814,7 @@ export function FilterPreviewPage() {
                         borderRadius: 3,
                         border: `1px solid ${token('color.border.focused', '#388BFF')}`,
                         background: 'transparent',
-                        fontSize: 13,
+                        fontSize: 14,
                         color: token('color.link', '#0C66E4'),
                         whiteSpace: 'nowrap', flexShrink: 0,
                       }}
@@ -893,7 +893,7 @@ export function FilterPreviewPage() {
 
           <div style={{ flex: 1 }} />
 
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 8px', color: token('color.text.subtlest', '#626F86'), fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 8px', color: token('color.text.subtlest', '#626F86'), fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }}>
             {isFetching && <Spinner size="small" />}
             {!isFetching && data != null && `${data.totalCount} item${data.totalCount === 1 ? '' : 's'}`}
           </div>
@@ -915,24 +915,14 @@ export function FilterPreviewPage() {
             </Button>
           )}
 
-          {/* JC-3: Save filter — plain blue text link (Jira parity) */}
-          <button
+          {/* JC-3: Save filter — ADS canonical button */}
+          <Button
+            appearance="subtle"
             onClick={handleSaveClick}
-            disabled={updateFilter.isPending}
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: '0 4px',
-              fontSize: 14,
-              fontWeight: 400,
-              color: isDirty ? token('color.link', '#0C66E4') : token('color.text.disabled', '#8993A4'),
-              cursor: isDirty ? 'pointer' : 'default',
-              textDecoration: 'none',
-              whiteSpace: 'nowrap',
-            }}
+            isDisabled={!isDirty || updateFilter.isPending}
           >
             {updateFilter.isPending ? 'Saving…' : 'Save filter'}
-          </button>
+          </Button>
         </div>
       </div>
 
