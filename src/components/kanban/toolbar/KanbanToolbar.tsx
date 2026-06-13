@@ -185,6 +185,10 @@ export interface KanbanToolbarProps<TGroupBy extends string = string> {
    *  the avatar stack (Users) and the Filter trigger. Owner supplies the
    *  fully-styled JSX; the toolbar just hosts it. */
   boardSwitcherSlot?: React.ReactNode;
+
+  /** Optional render slot for the Caty board-insight CTA — placed at the
+   *  right end of the toolbar, just before the View settings gear. */
+  catyInsightSlot?: React.ReactNode;
 }
 
 /* ═══ KanbanToolbar — composed toolbar, presentational ═══ */
@@ -211,6 +215,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
   onStartStandup,
   quickFilters, onQuickFiltersChange, enabledQuickFilters,
   boardSwitcherSlot,
+  catyInsightSlot,
 }: KanbanToolbarProps<TGroupBy>) {
   const navigate = useNavigate();
   const boardMenuRef = useRef<HTMLDivElement>(null);
@@ -355,6 +360,9 @@ export function KanbanToolbar<TGroupBy extends string = string>({
       )}
 
       <div className="flex-1" />
+
+      {/* Caty board-insight slot (owner-rendered) — sits before the gear */}
+      {catyInsightSlot}
 
       {/* View settings gear — direct access button (Jira parity: settings icon, no dropdown intermediary) */}
       <div style={{ position: 'relative' }}>

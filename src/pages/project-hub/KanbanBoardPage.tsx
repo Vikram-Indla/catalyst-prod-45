@@ -1407,7 +1407,7 @@ export default function KanbanBoardPage() {
         </div>
       )}
 
-      <CatyBoardInsight projectKey={key ?? null} resourceId={key ?? 'project'} />
+      {/* CatyBoardInsight now lives inside <KanbanToolbar /> via catyInsightSlot. */}
       {/* ── Toolbar — canonical <KanbanToolbar/> (Phase 1 extraction) ── */}
       {/* Offset matches standup panel width when open */}
       <div style={{ marginLeft: showStandup ? 'var(--standup-panel-width, 280px)' : 0, transition: 'margin-left 200ms ease' }}>
@@ -1477,6 +1477,9 @@ export default function KanbanBoardPage() {
           setRenameBoardValue(currentName);
           setRenameBoardOpen(true);
         } : undefined}
+        catyInsightSlot={
+          <CatyBoardInsight projectKey={key ?? null} resourceId={key ?? 'project'} />
+        }
         boardSwitcherSlot={
           <div ref={boardSwitcherRef} style={{ position: 'relative' }}>
             {(() => {
