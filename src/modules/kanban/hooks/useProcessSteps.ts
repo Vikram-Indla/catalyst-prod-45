@@ -1,10 +1,11 @@
 /**
- * useProcessSteps - Fetches active process steps from demand_process_steps table
- * These are used to dynamically build Kanban columns
+ * useProcessSteps - Business Request process steps for Kanban columns.
+ * Source of truth: ph_workflow_type_statuses via useTypeWorkflow('BAU','Business Request').
+ * Legacy demand_process_steps table is no longer consulted.
  */
 
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useMemo } from 'react';
+import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import type { DynamicColumnConfig } from '../types';
 
 export interface ProcessStep {
@@ -15,60 +16,56 @@ export interface ProcessStep {
   is_active: boolean;
 }
 
-// Color palette for dynamic columns
-const COLUMN_COLORS = [
-  'var(--ds-text-brand, #3b82f6)', // Blue
-  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Blue-600
-  'var(--ds-background-brand-bold-hovered, #1d4ed8)', // Blue-700
-  '#0d9488', // Teal
-  'var(--ds-text-danger, #ef4444)', // Red
-  '#f97316', // Orange
-  '#0f766e', // Teal-dark
-  '#6b7280', // Gray
-  '#78716c', // Stone
-  '#9ca3af', // Gray Light
-];
+// Category → ADS-token column color
+const CATEGORY_COLOR: Record<string, string> = {
+  todo:        'var(--ds-text-subtlest, #6B778C)',
+  in_progress: 'var(--ds-text-information, #0052CC)',
+  done:        'var(--ds-text-success, #006644)',
+};
 
 export function useProcessSteps() {
-  return useQuery({
-    queryKey: ['demand-process-steps'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('demand_process_steps')
-        .select('id, value, label, sort_order, is_active')
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true });
-      
-      if (error) throw error;
-      return data as ProcessStep[];
-    },
-    staleTime: 5 * 60 * 1000, // 5 minutes cache
-  });
+  const { data: brWorkflow, isLoading, error } = useTypeWorkflow('BAU', 'Business Request');
+
+  const data = useMemo<ProcessStep[]>(
+    () => (brWorkflow?.statuses ?? []).map(s => ({
+      id: s.id,
+      value: s.name,
+      label: s.name,
+      sort_order: s.position,
+      is_active: true,
+    })),
+    [brWorkflow?.statuses],
+  );
+
+  return { data, isLoading, error };
 }
 
 /**
- * Converts process steps to column configuration for Kanban
- * Adds an "Uncategorized" column at the end for items with no/invalid process_step
+ * Converts workflow statuses to column configuration for Kanban.
+ * Adds an "Uncategorized" column at the end for items with no/invalid process_step.
  */
 export function useKanbanColumns() {
   const { data: processSteps, isLoading, error } = useProcessSteps();
-  
-  const columns: DynamicColumnConfig[] = processSteps?.map((step, index) => ({
-    id: step.value,
-    label: step.label,
-    color: COLUMN_COLORS[index % COLUMN_COLORS.length],
-    order: step.sort_order,
-  })) || [];
-  
-  // Add Uncategorized column at the end
-  if (columns.length > 0) {
-    columns.push({
-      id: '_uncategorized',
-      label: 'Uncategorized',
-      color: '#9ca3af', // Gray
-      order: 9999,
-    });
-  }
-  
+
+  const columns: DynamicColumnConfig[] = useMemo(() => {
+    const cols: DynamicColumnConfig[] = (processSteps ?? []).map((step) => ({
+      id: step.value,
+      label: step.label,
+      color: CATEGORY_COLOR['in_progress'], // default; consumers can override per category
+      order: step.sort_order,
+    }));
+
+    if (cols.length > 0) {
+      cols.push({
+        id: '_uncategorized',
+        label: 'Uncategorized',
+        color: CATEGORY_COLOR['todo'],
+        order: 9999,
+      });
+    }
+
+    return cols;
+  }, [processSteps]);
+
   return { columns, isLoading, error };
 }

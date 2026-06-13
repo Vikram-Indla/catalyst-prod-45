@@ -45,7 +45,7 @@ export function QuickAddRow({
     mutationFn: async (title: string): Promise<{ id: string }> => {
       if (createType === 'business_request') {
         const { data, error } = await typedQuery('business_requests')
-          .insert([{ title, process_step: 'In Requirements' }])
+          .insert([{ title, process_step: 'New' }])
           .select('id')
           .single();
         if (error) throw error;
