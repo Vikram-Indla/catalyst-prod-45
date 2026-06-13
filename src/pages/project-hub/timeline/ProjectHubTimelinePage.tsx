@@ -20,7 +20,6 @@ import { useJiraProjects } from '@/hooks/workhub/useJiraProjects';
 import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button';
 import Tooltip from '@atlaskit/tooltip';
-import { IssueHoverCard } from '@/components/shared/IssueHoverCard';
 import Avatar from '@atlaskit/avatar';
 import AvatarGroup from '@atlaskit/avatar-group';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
@@ -1810,9 +1809,9 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                 );
 
                 return (
-                  <IssueHoverCard key={issue.issueKey} issueKey={issue.issueKey} disabled={isThisDragging}>
+                  <TimelineBarPopover key={issue.issueKey} issue={issue} disabled={isThisDragging}>
                     {bar}
-                  </IssueHoverCard>
+                  </TimelineBarPopover>
                 );
               })}
 
@@ -1916,6 +1915,106 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
       </div>
     )}
     </AtlaskitPageShell>
+  );
+}
+
+/* ──────────────────────── timeline bar popover ──────────────────────── */
+
+function TimelineBarPopover({ issue, disabled, children }: {
+  issue: TimelineIssue;
+  disabled: boolean;
+  children: React.ReactNode;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [rect, setRect] = useState<DOMRect | null>(null);
+  const triggerRef = useRef<HTMLSpanElement>(null);
+  const enterTimer = useRef<number | undefined>(undefined);
+  const leaveTimer = useRef<number | undefined>(undefined);
+  const CARD_W = 280;
+
+  const open = useCallback(() => {
+    if (disabled) return;
+    let el: Element | null = triggerRef.current;
+    if (!el) return;
+    let r = el.getBoundingClientRect();
+    while (r.width === 0 && r.height === 0 && el?.firstElementChild) {
+      el = el.firstElementChild;
+      r = el.getBoundingClientRect();
+    }
+    if (r.width === 0 && r.height === 0) return;
+    setRect(r);
+    setIsOpen(true);
+  }, [disabled]);
+
+  const close = useCallback(() => {
+    setIsOpen(false);
+    setRect(null);
+  }, []);
+
+  useEffect(() => () => {
+    window.clearTimeout(enterTimer.current);
+    window.clearTimeout(leaveTimer.current);
+  }, []);
+
+  const cardTop = rect ? (rect.top > 144 ? rect.top - 140 : rect.bottom + 6) : 0;
+  const cardLeft = rect ? Math.max(8, Math.min(rect.left, window.innerWidth - CARD_W - 8)) : 0;
+
+  return (
+    <>
+      <span
+        ref={triggerRef}
+        onMouseEnter={() => { window.clearTimeout(leaveTimer.current); enterTimer.current = window.setTimeout(open, 300); }}
+        onMouseLeave={() => { window.clearTimeout(enterTimer.current); leaveTimer.current = window.setTimeout(close, 200); }}
+        style={{ display: 'inline-flex', alignItems: 'center', flex: '1 1 auto', minWidth: 0 }}
+      >
+        {children}
+      </span>
+      {isOpen && rect && createPortal(
+        <div
+          data-timeline-bar-popover="true"
+          onMouseEnter={() => window.clearTimeout(leaveTimer.current)}
+          onMouseLeave={() => { leaveTimer.current = window.setTimeout(close, 200); }}
+          style={{
+            position: 'fixed', top: cardTop, left: cardLeft, width: CARD_W,
+            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 6,
+            boxShadow: '0 8px 28px rgba(9,30,66,0.2)',
+            padding: '12px 14px',
+            zIndex: 9999,
+            fontFamily: 'var(--ds-font-family-body)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+            <JiraIssueTypeIcon type={issue.issueType} size={14} />
+            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-code, monospace)', flexShrink: 0 }}>
+              {issue.issueKey}
+            </span>
+          </div>
+          <div style={{
+            fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: 1.4, marginBottom: 10,
+            overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const,
+          }}>
+            {issue.summary}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: issue.assigneeDisplayName ? 8 : 0 }}>
+            {issue.status && <StatusPill value={issue.statusCategory} label={issue.status} />}
+            {(issue.startDate || issue.dueDate) && (
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #626F86)' }}>
+                {[issue.startDate, issue.dueDate].filter(Boolean).map(d => formatDateCompact(d)).join(' → ')}
+              </span>
+            )}
+          </div>
+          {issue.assigneeDisplayName && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Avatar size="xsmall" src={resolveAvatarUrl(issue.assigneeDisplayName) ?? undefined} name={issue.assigneeDisplayName} />
+              <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #626F86)' }}>{issue.assigneeDisplayName}</span>
+            </div>
+          )}
+        </div>,
+        document.body,
+      )}
+    </>
   );
 }
 
@@ -2374,9 +2473,9 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         </Tooltip>
       )}
 
-      {/* status pill — non-Epic rows, always visible (80% scale = 20% smaller) */}
-      {issue.issueType !== 'Epic' && issue.status && (
-        <div style={{ flexShrink: 0, transform: 'scale(0.8)', transformOrigin: 'right center', lineHeight: 0 }} onClick={e => e.stopPropagation()}>
+      {/* status pill — all issue types */}
+      {issue.status && (
+        <div style={{ flexShrink: 0 }} onClick={e => e.stopPropagation()}>
           <StatusPill value={issue.statusCategory} label={issue.status} />
         </div>
       )}
