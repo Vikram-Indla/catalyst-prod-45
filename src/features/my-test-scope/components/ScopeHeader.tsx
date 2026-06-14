@@ -25,10 +25,16 @@ export function ScopeHeader({ userName, summary, onExport, onExecuteAll }: Scope
   return (
     <div className="h-16 px-6 bg-card border-b border-border flex items-center justify-between shrink-0">
       <div>
-        <h1 className="font-['Sora'] text-lg font-bold text-foreground tracking-tight m-0 leading-tight">
+        <h1
+          className="text-lg font-bold text-foreground tracking-tight m-0 leading-tight"
+          style={{ fontFamily: 'var(--ds-font-family-heading)' }}
+        >
           My Test Scope
         </h1>
-        <p className="font-['Inter'] text-[13px] text-muted-foreground mt-0.5 leading-tight">
+        <p
+          className="text-[13px] text-muted-foreground mt-0.5 leading-tight"
+          style={{ fontFamily: 'var(--ds-font-family-body)' }}
+        >
           {summary.totalTests} tests &bull; {summary.linkedDefectsCount} defects &bull; {summary.activeIncidentsCount} incidents
         </p>
       </div>
