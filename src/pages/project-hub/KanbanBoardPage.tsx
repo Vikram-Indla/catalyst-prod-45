@@ -177,6 +177,22 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
   const activeStandupIdRef = useRef<string | null>(null);
   const activeStandupEventIdRef = useRef<string | null>(null);
   const currentSpeakerNameRef = useRef<string | null>(null);
+  /* Mirror of the modal's elapsed-this-turn timer — populated by the
+     modal on every tick + speaker change so the parent-rendered End
+     standup buttons can flush the final reading onto the open event
+     row before closing the session. Null when timer disabled / no
+     ticks yet. */
+  const currentTurnTimerSecondsRef = useRef<number | null>(null);
+  /* Caches the in-flight openStandupSession promise so every queued
+     advance can await it. Cleared in closeStandupSession so a fresh
+     Start standup creates a new session. */
+  const standupSessionPromiseRef = useRef<Promise<void> | null>(null);
+  /* Serialises advanceStandupSpeaker + closeStandupSession calls so
+     they execute in-order regardless of when the user clicks. Every
+     enqueued task implicitly waits for openStandupSession to resolve,
+     fixing the race where the modal's initial onPersonChange emits
+     fired before the standups row existed. */
+  const standupQueueRef = useRef<Promise<void>>(Promise.resolve());
   /* The 3 callbacks that read `resolvedBoardId` live further down,
      immediately AFTER `resolvedBoardId` is declared — keeping them up
      here would hit a TDZ (`Cannot access 'resolvedBoardId' before
@@ -343,89 +359,120 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
 
   const resolvedBoardId = isProduct ? null : (activeBoardId ?? projectBoards[0]?.id ?? null);
 
-  /** Open a standups row for the active project+board. */
-  const openStandupSession = useCallback(async () => {
-    if (activeStandupIdRef.current) return;
-    if (!key) return;
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      const { data, error } = await (supabase as any)
-        .from('standups')
-        .insert({
-          project_key: key,
-          board_id: resolvedBoardId,
-          started_by: user?.id ?? null,
-        })
-        .select('id')
-        .single();
-      if (error) throw error;
-      activeStandupIdRef.current = (data as any)?.id ?? null;
-    } catch (err) {
-      console.error('[standup] failed to open standups row', err);
-    }
-  }, [key, resolvedBoardId]);
-
-  /** Close the currently-open speaker-turn event and open a new one for
-   *  the next speaker. No-op when the name is identical or no session is
-   *  active. `priorTurnTimerSeconds` is written onto the closing row's
-   *  optional `timer_seconds` column — null means the timer was off. */
-  const advanceStandupSpeaker = useCallback(async (nextName: string | null, priorTurnTimerSeconds: number | null) => {
-    const standupId = activeStandupIdRef.current;
-    if (!standupId) {
-      currentSpeakerNameRef.current = nextName;
-      return;
-    }
-    if (currentSpeakerNameRef.current === nextName) return;
-    const prevEventId = activeStandupEventIdRef.current;
-    activeStandupEventIdRef.current = null;
-    currentSpeakerNameRef.current = nextName;
-
-    try {
-      if (prevEventId) {
-        await (supabase as any)
-          .from('standup_events')
-          .update({
-            ended_at: new Date().toISOString(),
-            timer_seconds: priorTurnTimerSeconds,
-          })
-          .eq('id', prevEventId);
-      }
-      if (nextName) {
+  /** Open a standups row for the active project+board. Cached in
+   *  `standupSessionPromiseRef` so concurrent advances can await the
+   *  same promise instead of racing past `activeStandupIdRef` while
+   *  it's still null. Returns a no-op promise if already in flight. */
+  const openStandupSession = useCallback((): Promise<void> => {
+    if (standupSessionPromiseRef.current) return standupSessionPromiseRef.current;
+    if (!key) return Promise.resolve();
+    const promise = (async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
         const { data, error } = await (supabase as any)
-          .from('standup_events')
-          .insert({ standup_id: standupId, speaker_name: nextName })
+          .from('standups')
+          .insert({
+            project_key: key,
+            board_id: resolvedBoardId,
+            started_by: user?.id ?? null,
+          })
           .select('id')
           .single();
         if (error) throw error;
-        activeStandupEventIdRef.current = (data as any)?.id ?? null;
+        activeStandupIdRef.current = (data as any)?.id ?? null;
+      } catch (err) {
+        console.error('[standup] failed to open standups row', err);
       }
-    } catch (err) {
-      console.error('[standup] failed to rotate speaker-turn', err);
-    }
+    })();
+    standupSessionPromiseRef.current = promise;
+    return promise;
+  }, [key, resolvedBoardId]);
+
+  /** Close the currently-open speaker-turn event and open a new one for
+   *  the next speaker. Queued behind any pending standup work so calls
+   *  fire in-order even when openStandupSession is still in flight.
+   *  `priorTurnTimerSeconds` is written onto the closing row's optional
+   *  `timer_seconds` column — null means the timer was off. */
+  const advanceStandupSpeaker = useCallback((nextName: string | null, priorTurnTimerSeconds: number | null): Promise<void> => {
+    const task = standupQueueRef.current.then(async () => {
+      /* Block on the open promise so the very first emits don't slip
+         past while the standups row is still being inserted. */
+      if (standupSessionPromiseRef.current) await standupSessionPromiseRef.current;
+
+      const standupId = activeStandupIdRef.current;
+      if (!standupId) {
+        currentSpeakerNameRef.current = nextName;
+        return;
+      }
+      if (currentSpeakerNameRef.current === nextName) return;
+      const prevEventId = activeStandupEventIdRef.current;
+      activeStandupEventIdRef.current = null;
+      currentSpeakerNameRef.current = nextName;
+
+      try {
+        if (prevEventId) {
+          await (supabase as any)
+            .from('standup_events')
+            .update({
+              ended_at: new Date().toISOString(),
+              timer_seconds: priorTurnTimerSeconds,
+            })
+            .eq('id', prevEventId);
+        }
+        if (nextName) {
+          const { data, error } = await (supabase as any)
+            .from('standup_events')
+            .insert({ standup_id: standupId, speaker_name: nextName })
+            .select('id')
+            .single();
+          if (error) throw error;
+          activeStandupEventIdRef.current = (data as any)?.id ?? null;
+        }
+      } catch (err) {
+        console.error('[standup] failed to rotate speaker-turn', err);
+      }
+    });
+    standupQueueRef.current = task;
+    return task;
   }, []);
 
-  /** Close the active speaker-turn (if any) and the standups row. */
-  const closeStandupSession = useCallback(async () => {
-    const standupId = activeStandupIdRef.current;
-    const eventId = activeStandupEventIdRef.current;
-    activeStandupIdRef.current = null;
-    activeStandupEventIdRef.current = null;
-    currentSpeakerNameRef.current = null;
-    if (!standupId) return;
-    try {
-      if (eventId) {
+  /** Close the active speaker-turn (if any) and the standups row.
+   *  Queued behind advances so a fast End-standup click cannot run
+   *  before the prior speaker's row was written. `finalTimerSeconds`
+   *  is written onto the still-open active event row alongside
+   *  `ended_at` — defaults to whatever the modal mirrored into
+   *  `currentTurnTimerSecondsRef`. */
+  const closeStandupSession = useCallback((finalTimerSeconds: number | null = currentTurnTimerSecondsRef.current): Promise<void> => {
+    const task = standupQueueRef.current.then(async () => {
+      if (standupSessionPromiseRef.current) await standupSessionPromiseRef.current;
+      const standupId = activeStandupIdRef.current;
+      const eventId = activeStandupEventIdRef.current;
+      activeStandupIdRef.current = null;
+      activeStandupEventIdRef.current = null;
+      currentSpeakerNameRef.current = null;
+      standupSessionPromiseRef.current = null;
+      currentTurnTimerSecondsRef.current = null;
+      if (!standupId) return;
+      try {
+        if (eventId) {
+          await (supabase as any)
+            .from('standup_events')
+            .update({
+              ended_at: new Date().toISOString(),
+              timer_seconds: finalTimerSeconds,
+            })
+            .eq('id', eventId);
+        }
         await (supabase as any)
-          .from('standup_events')
+          .from('standups')
           .update({ ended_at: new Date().toISOString() })
-          .eq('id', eventId);
+          .eq('id', standupId);
+      } catch (err) {
+        console.error('[standup] failed to close standups row', err);
       }
-      await (supabase as any)
-        .from('standups')
-        .update({ ended_at: new Date().toISOString() })
-        .eq('id', standupId);
-    } catch (err) {
-      console.error('[standup] failed to close standups row', err);
-    }
+    });
+    standupQueueRef.current = task;
+    return task;
   }, []);
 
   const { data: dynamicBoardData } = useQuery({
@@ -2075,6 +2122,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
             issues={standupAssignee ? rawIssues.filter(i => i.issueType !== 'Epic' && !BOARD_SUBTASK_TYPES.has(i.issueType)) : filtered}
             avatarsByName={avatarsByName}
             tk={tk}
+            currentTurnTimerSecondsRef={currentTurnTimerSecondsRef}
             onPersonChange={(name, priorTurnTimerSeconds) => {
               setStandupAssignee(name === 'Unassigned' ? null : name);
               advanceStandupSpeaker(name, priorTurnTimerSeconds);

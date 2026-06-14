@@ -96,6 +96,12 @@ export interface StandupPanelProps {
    *  parent is responsible for sizing + positioning. Used by the Jira-parity
    *  layout where the standup sits side-by-side with the board columns. */
   docked?: boolean;
+  /** Optional parent-owned ref the modal mirrors with the CURRENT
+   *  speaker's timer reading on every tick. Lets parent-rendered End
+   *  standup buttons (outside the modal subtree) read the final
+   *  timer_seconds before calling closeStandupSession. Null when timer
+   *  is disabled or the current turn has not ticked yet. */
+  currentTurnTimerSecondsRef?: React.MutableRefObject<number | null>;
 }
 
 /* ── Assignee bucket ── */
@@ -143,7 +149,7 @@ function playTick() {
 
 const DEFAULT_TIMER_SEC = 120; // 2 minutes
 
-export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChange, docked }: StandupPanelProps) {
+export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChange, docked, currentTurnTimerSecondsRef }: StandupPanelProps) {
   const [order, setOrder] = useState<number[]>([]);
   const [step, setStep] = useState(0);         // index into `order`
   const [visited, setVisited] = useState<Set<string>>(new Set());
@@ -170,18 +176,29 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
      step change, consumed (and cleared) in the onPersonChange effect.
      Null = timer was disabled this turn. */
   const priorTurnTimerSecondsRef = useRef<number | null>(null);
+  /* Accumulates elapsed timer-seconds during the current speaker's turn.
+     Incremented on every tick (in the countdown effect). Survives Stop
+     and auto-reset — only zeroed in the step-change effect when the
+     speaker actually advances. This is the SOURCE OF TRUTH for "how
+     much timer time did this speaker actually consume" — reading
+     (timerDuration - seconds) at capture time would be wrong because
+     Stop and auto-expire both reset `seconds` to timerDuration before
+     the capture runs. */
+  const elapsedThisTurnRef = useRef(0);
 
-  /* Build per-assignee buckets */
+  /* Build per-assignee buckets. Unassigned issues are excluded entirely
+     — a standup is for HUMANS to talk through their work, not for the
+     null assignee to "speak". Issues without an assignee still exist in
+     the backlog; they're just not represented as a participant here. */
   const buckets: AssigneeBucket[] = useMemo(() => {
     const map = new Map<string, AssigneeBucket>();
     for (const issue of issues) {
-      const name = issue.assigneeName || 'Unassigned';
+      if (!issue.assigneeName) continue;
+      const name = issue.assigneeName;
       if (!map.has(name)) {
         map.set(name, {
           name,
-          avatarUrl: issue.assigneeName
-            ? (avatarsByName.get(issue.assigneeName.toLowerCase()) ?? null)
-            : null,
+          avatarUrl: avatarsByName.get(name.toLowerCase()) ?? null,
           total: 0, inProgress: 0, done: 0,
         });
       }
@@ -219,17 +236,34 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
      current row). NOT used for queue resets (initial mount, shuffle,
      remove-from-standup) — those carry no prior-turn context. */
   const captureTimerThenAdvance = useCallback((next: number | ((prev: number) => number)) => {
-    priorTurnTimerSecondsRef.current = enableTimer ? Math.max(0, timerDuration - seconds) : null;
+    /* Reads the accumulator (NOT timerDuration - seconds) — Stop and
+       auto-reset both wipe `seconds` to timerDuration before this
+       function runs, so the subtraction would silently report 0 for
+       turns the user actually timed. Elapsed = 0 collapses to null
+       so consumers can distinguish "timer was used" from "no timer
+       reading available". */
+    if (!enableTimer || elapsedThisTurnRef.current === 0) {
+      priorTurnTimerSecondsRef.current = null;
+    } else {
+      priorTurnTimerSecondsRef.current = elapsedThisTurnRef.current;
+    }
     setStep(next);
-  }, [enableTimer, timerDuration, seconds]);
+  }, [enableTimer]);
 
   /* Notify board whenever selected person changes. The prior turn's
      timer reading (set by captureTimerThenAdvance just above) is
      consumed here so the board can write it onto the closing
      standup_events row. Cleared after read so the NEXT step change
-     starts from a clean ref. */
+     starts from a clean ref. Dedupe by NAME — parent re-renders
+     regenerate `currentBucket`'s reference identity without the speaker
+     actually changing, and emitting on every reference flip would
+     leak null priorTurnTimerSeconds values into the parent's flow. */
+  const lastEmittedSpeakerNameRef = useRef<string | null | undefined>(undefined);
   useEffect(() => {
-    onPersonChange(currentBucket?.name ?? null, priorTurnTimerSecondsRef.current);
+    const name = currentBucket?.name ?? null;
+    if (lastEmittedSpeakerNameRef.current === name) return;
+    lastEmittedSpeakerNameRef.current = name;
+    onPersonChange(name, priorTurnTimerSecondsRef.current);
     priorTurnTimerSecondsRef.current = null;
   }, [currentBucket, onPersonChange]);
 
@@ -240,6 +274,17 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   useEffect(() => {
     if (!running) { clearInterval(timerRef.current); return; }
     timerRef.current = setInterval(() => {
+      /* Count this tick OUTSIDE the setSeconds updater — Strict Mode can
+         invoke state updaters twice in dev, and putting a side-effect in
+         there would either double-count or (depending on HMR closure
+         identity) write to a stale ref. Refs read from the interval
+         closure are always the latest. */
+      elapsedThisTurnRef.current += 1;
+      /* Mirror to the parent-owned ref so its End standup buttons can
+         flush the final reading without reaching into the modal. */
+      if (currentTurnTimerSecondsRef) {
+        currentTurnTimerSecondsRef.current = enableTimer ? elapsedThisTurnRef.current : null;
+      }
       setSeconds(s => {
         if (s <= 1) {
           clearInterval(timerRef.current);
@@ -260,7 +305,21 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
     clearInterval(timerRef.current);
     setRunning(false);
     setSeconds(timerDuration);
-  }, [step, timerDuration]);
+    /* Zero the elapsed-this-turn accumulator now that we've moved on to
+       a new speaker. Done AFTER captureTimerThenAdvance has snapshotted
+       the prior value into priorTurnTimerSecondsRef. */
+    elapsedThisTurnRef.current = 0;
+    if (currentTurnTimerSecondsRef) currentTurnTimerSecondsRef.current = null;
+  }, [step, timerDuration, currentTurnTimerSecondsRef]);
+
+  /* Sync the parent-owned ref to enableTimer transitions — turning it
+     off mid-turn must immediately wipe the reading so a fast End
+     standup doesn't write a stale value. */
+  useEffect(() => {
+    if (!currentTurnTimerSecondsRef) return;
+    if (!enableTimer) currentTurnTimerSecondsRef.current = null;
+    else if (elapsedThisTurnRef.current > 0) currentTurnTimerSecondsRef.current = elapsedThisTurnRef.current;
+  }, [enableTimer, currentTurnTimerSecondsRef]);
 
   /* Keyboard nav */
   useEffect(() => {
@@ -328,12 +387,14 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
 
   const handleEnd = useCallback(() => {
     /* End-standup also closes the prior speaker's turn, so it must
-       carry the final timer reading the same way captureTimerThenAdvance
-       does. */
-    const finalTimerSeconds = enableTimer ? Math.max(0, timerDuration - seconds) : null;
+       carry the final timer reading using the same accumulator logic
+       as captureTimerThenAdvance. */
+    const finalTimerSeconds = (!enableTimer || elapsedThisTurnRef.current === 0)
+      ? null
+      : elapsedThisTurnRef.current;
     onPersonChange(null, finalTimerSeconds);
     onClose();
-  }, [onPersonChange, onClose, enableTimer, timerDuration, seconds]);
+  }, [onPersonChange, onClose, enableTimer]);
 
   /* Keep a stable ref for handleEnd so the keyboard-Escape effect doesn't
      have to re-bind every second when `seconds` ticks. */
