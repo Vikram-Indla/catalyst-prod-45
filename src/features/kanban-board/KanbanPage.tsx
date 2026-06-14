@@ -40,9 +40,21 @@ export default function KanbanPage() {
   const [standupTimerSec, setStandupTimerSec] = useState(300);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [visibleFields, setVisibleFields] = useState<CardVisibleFields>({ ...DEFAULT_VISIBLE_FIELDS });
-  const toggleField = useCallback((f: keyof CardVisibleFields) =>
-    setVisibleFields((v) => ({ ...v, [f]: !v[f] })), []);
+  const [visibleFields, setVisibleFields] = useState<CardVisibleFields>(() => {
+    try {
+      const saved = localStorage.getItem('kanban-visible-fields');
+      return saved ? JSON.parse(saved) : { ...DEFAULT_VISIBLE_FIELDS };
+    } catch {
+      return { ...DEFAULT_VISIBLE_FIELDS };
+    }
+  });
+  const toggleField = useCallback((f: keyof CardVisibleFields) => {
+    setVisibleFields((v) => {
+      const updated = { ...v, [f]: !v[f] };
+      try { localStorage.setItem('kanban-visible-fields', JSON.stringify(updated)); } catch { /* ignore */ }
+      return updated;
+    });
+  }, []);
   const onCopyBoardLink = useCallback(() => {
     navigator.clipboard?.writeText(window.location.href);
   }, []);
