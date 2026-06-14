@@ -12,12 +12,11 @@
  * Dual-mode added 2026-05-16 so /product-hub/INV/* shows per-product nav.
  */
 
-import { token } from '@atlaskit/tokens';
 import {
   LayoutGrid,
-  ArrowLeft,
   Settings,
 } from '@/lib/atlaskit-icons';
+import { getProductAvatarUrl } from '@/components/icons';
 import {
   NavDashboardIcon,
   NavKanbanIcon,
@@ -60,22 +59,19 @@ function extractProductCode(pathname: string): string | null {
 function buildPerProductConfig(product: ProductRow): SidebarConfig {
   const base = `/product-hub/${product.code}`;
   return {
-    badge: product.code.slice(0, 2),
+    badge: product.code,
     label: product.name,
+    badgeProjectKey: product.code,
+    badgeProjectAvatarUrl: getProductAvatarUrl(product.code),
+    badgeProjectColor: product.color,
     sections: [
       {
         title: '',
         items: [
-          { id: 'all-products', title: 'All Products', path: '/product-hub/products', icon: ArrowLeft, exact: true },
-        ],
-      },
-      {
-        title: 'Planning',
-        items: [
-          { id: 'dashboard', title: 'Dashboard', path: `${base}/dashboard`, icon: NavDashboardIcon, exact: true  },
-          { id: 'backlog',   title: 'Backlog',   path: `${base}/backlog`,   icon: NavBacklogIcon,   exact: true  },
-          { id: 'allwork',   title: 'Work',      path: `${base}/allwork`,   icon: NavWorkIcon,      exact: false },
+          { id: 'dashboard', title: 'Dashboard', path: `${base}/dashboard`, icon: NavDashboardIcon, exact: false },
           { id: 'boards',    title: 'Board',     path: `${base}/boards`,    icon: NavKanbanIcon,    exact: false },
+          { id: 'backlog',   title: 'Backlog',   path: `${base}/backlog`,   icon: NavBacklogIcon,   exact: false },
+          { id: 'allwork',   title: 'Work',      path: `${base}/allwork`,   icon: NavWorkIcon,      exact: false },
           { id: 'filters',   title: 'Filters',   path: `${base}/filters`,   icon: NavFiltersIcon,   exact: false },
         ],
       },

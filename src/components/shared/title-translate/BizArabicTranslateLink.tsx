@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import Spinner from '@atlaskit/spinner';
 import Tooltip from '@atlaskit/tooltip';
 import EditorUndoIcon from '@atlaskit/icon/glyph/editor/undo';
@@ -15,6 +15,8 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
   const { translate, isTranslating } = useTranslation();
   const [translated, setTranslated] = useState<string | null>(null);
   const [showing, setShowing] = useState<'original' | 'translated'>('original');
+  const [hovered, setHovered] = useState(false);
+  const containerRef = useRef<HTMLSpanElement>(null);
 
   const handleTranslate = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -48,6 +50,9 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
 
   return (
     <span
+      ref={containerRef}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -108,23 +113,25 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
             onClick={handleTranslate}
             style={{
               background: 'transparent',
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              border: 'none',
               borderRadius: 3,
-              color: 'var(--ds-text-subtle, #44546F)',
+              color: 'var(--ds-text-subtlest, #626F86)',
               cursor: 'pointer',
-              padding: '2px 6px',
+              padding: '2px 4px',
               fontSize: 12,
               fontFamily: 'inherit',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
               lineHeight: 1,
-              width: 24,
-              height: 22,
+              width: 22,
+              height: 20,
               flexShrink: 0,
+              opacity: hovered ? 1 : 0,
+              transition: 'opacity 0.12s ease',
             }}
           >
-            <span style={{ fontSize: 13, opacity: 0.8 }} aria-hidden="true">🌐</span>
+            <span style={{ fontSize: 13, filter: 'grayscale(1)', opacity: 0.75 }} aria-hidden="true">🌐</span>
           </button>
         </Tooltip>
       )}
