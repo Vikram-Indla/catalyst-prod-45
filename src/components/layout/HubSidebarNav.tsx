@@ -20,6 +20,21 @@ interface HubNavEntry {
   href: string;
 }
 
+// Hub color map — used for inactive state borders
+const HUB_COLORS: Record<HubKey, string> = {
+  'home':     '#2563EB',  // blue
+  'strategy': '#7C3AED',  // violet
+  'ideation': '#D97706',  // amber
+  'product':  '#0284C7',  // cyan
+  'project':  '#0D9488',  // teal
+  'release':  '#DB2777',  // pink
+  'test':     '#16A34A',  // green
+  'incident': '#DC2626',  // red
+  'task':     '#CA8A04',  // yellow/gold
+  'plan':     '#4338CA',  // indigo
+  'wiki':     '#475569',  // slate
+};
+
 const HUBS: HubNavEntry[] = [
   { key: 'home',     label: 'Home',     href: '/for-you' },
   { key: 'strategy', label: 'Strategy', href: '/strategyhub' },
@@ -74,7 +89,9 @@ export function HubSidebarNav({ onNavigate }: HubSidebarNavProps) {
                   width: 44,
                   height: 44,
                   padding: 0,
-                  border: active ? '2px solid var(--ds-background-information-bold, #0052CC)' : '2px solid transparent',
+                  border: active
+                    ? '2px solid var(--ds-background-information-bold, #0052CC)'
+                    : `2px solid ${HUB_COLORS[hub.key]}`,
                   borderRadius: 6,
                   background: active
                     ? 'var(--ds-background-selected, #E9F2FE)'
@@ -108,10 +125,6 @@ export function HubSidebarNav({ onNavigate }: HubSidebarNavProps) {
                     display: 'block',
                     flexShrink: 0,
                     borderRadius: 4,
-                    filter: active
-                      ? 'brightness(1.1) drop-shadow(0 0 2px rgba(0,82,204,0.3))'
-                      : 'brightness(0.65) opacity(0.75)',
-                    transition: 'filter 120ms ease-out',
                   }}
                 />
               </button>

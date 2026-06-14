@@ -894,10 +894,12 @@ function CatalystShellContent() {
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Hub Sidebar Nav - 52px collapsed icon panel for switching between hubs */}
-        <div className="flex-shrink-0">
-          <HubSidebarNav onNavigate={(hub) => navigate(HUB_ROUTES[hub])} />
-        </div>
+        {/* Hub Sidebar Nav - 52px collapsed icon panel for switching between hubs (home page only) */}
+        {location.pathname === '/for-you' && (
+          <div className="flex-shrink-0">
+            <HubSidebarNav onNavigate={(hub) => navigate(HUB_ROUTES[hub])} />
+          </div>
+        )}
 
         {/* Sidebar - GPU layer for stability.
             When sidebarHidden is true the actual sidebar is unmounted (0 DOM
