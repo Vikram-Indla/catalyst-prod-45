@@ -1,31 +1,74 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { IconButton } from '@atlaskit/button/new';
 import CommentAddIcon from '@atlaskit/icon/core/comment-add';
 import EditIcon from '@atlaskit/icon/core/edit';
 import ShowMoreHorizontalIcon from '@atlaskit/icon/core/show-more-horizontal';
 import BookmarkIcon from '@atlaskit/icon/core/book-with-bookmark';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './hover-toolbar.css';
 
-const EMOJI_ENTRIES: [string, string][] = [
-  ['👍','thumbs up like yes'],['👎','thumbs down no dislike'],['❤️','heart love red'],
-  ['😄','smile happy grin'],['😂','laugh cry tears joy'],['🥲','smile tear happy sad'],
-  ['😊','smile happy blush'],['🙏','pray thanks hands'],['👏','clap applause'],['🔥','fire hot'],
-  ['🎉','party celebrate tada'],['✅','check done yes tick'],['🚀','rocket launch ship'],
-  ['💯','hundred percent perfect'],['🤔','think hmm question'],['😮','wow surprised'],
-  ['😢','sad cry tear'],['😡','angry mad rage'],['🤣','rofl laugh rolling'],['😍','love eyes heart'],
-  ['🙌','hands raised celebrate'],['💪','muscle strong flex'],['👀','eyes look watch'],
-  ['✨','sparkle stars shine'],['💡','idea bulb light'],['⚡','lightning bolt fast'],
-  ['🎯','target bullseye goal'],['📌','pin pinned bookmark'],['🔑','key lock'],['💎','diamond gem'],
-  ['🌟','star gold shine'],['⭐','star'],['💫','dizzy star sparkle'],['🌈','rainbow color'],
-  ['🍎','apple red fruit'],['🍕','pizza food'],['☕','coffee hot drink'],['🎸','guitar music'],
-  ['🏆','trophy win award'],['🎮','gaming controller play'],['💻','laptop computer'],
-  ['📱','phone mobile'],['🔧','wrench tool fix'],['📊','chart graph data'],
-  ['📝','memo note write'],['📅','calendar date'],['🔒','lock security'],
-  ['🌍','earth world globe'],['🤝','handshake deal'],['🎁','gift present'],
+interface EmojiCategory {
+  id: string;
+  label: string;
+  entries: [string, string][];
+}
+
+// Named emoji categories. Search overrides categories (flat filter across all).
+const EMOJI_CATEGORIES: EmojiCategory[] = [
+  {
+    id: 'smileys',
+    label: 'Smileys & people',
+    entries: [
+      ['😄','smile happy grin'],['😂','laugh cry tears joy'],['🥲','smile tear happy sad'],
+      ['😊','smile happy blush'],['🤣','rofl laugh rolling'],['😍','love eyes heart'],
+      ['🤔','think hmm question'],['😮','wow surprised'],['😢','sad cry tear'],['😡','angry mad rage'],
+    ],
+  },
+  {
+    id: 'gestures',
+    label: 'Gestures',
+    entries: [
+      ['👍','thumbs up like yes'],['👎','thumbs down no dislike'],['🙏','pray thanks hands'],
+      ['👏','clap applause'],['🙌','hands raised celebrate'],['💪','muscle strong flex'],
+      ['👀','eyes look watch'],['🤝','handshake deal'],
+    ],
+  },
+  {
+    id: 'symbols',
+    label: 'Symbols',
+    entries: [
+      ['❤️','heart love red'],['🔥','fire hot'],['✅','check done yes tick'],['💯','hundred percent perfect'],
+      ['✨','sparkle stars shine'],['💡','idea bulb light'],['⚡','lightning bolt fast'],
+      ['🎯','target bullseye goal'],['💎','diamond gem'],['🌟','star gold shine'],['⭐','star'],
+      ['💫','dizzy star sparkle'],['🌈','rainbow color'],['🔑','key lock'],['🔒','lock security'],
+    ],
+  },
+  {
+    id: 'objects',
+    label: 'Objects',
+    entries: [
+      ['🎉','party celebrate tada'],['🚀','rocket launch ship'],['📌','pin pinned bookmark'],
+      ['🏆','trophy win award'],['🎮','gaming controller play'],['💻','laptop computer'],
+      ['📱','phone mobile'],['🔧','wrench tool fix'],['📊','chart graph data'],['📝','memo note write'],
+      ['📅','calendar date'],['🎁','gift present'],['🎸','guitar music'],
+    ],
+  },
+  {
+    id: 'nature',
+    label: 'Nature & food',
+    entries: [
+      ['🍎','apple red fruit'],['🍕','pizza food'],['☕','coffee hot drink'],['🌍','earth world globe'],
+    ],
+  },
 ];
-const ALL_EMOJIS = EMOJI_ENTRIES.map(([e]) => e);
+
+const EMOJI_ENTRIES: [string, string][] = EMOJI_CATEGORIES.flatMap(c => c.entries);
+
+// Neutral default frequently-used set, shown only when the user has no reaction history.
+const DEFAULT_FREQUENT = ['👍', '✅', '😂', '❤️', '🎉', '👀'];
 
 // Slack-parity one-click quick reactions.
 const QUICK_REACTIONS = ['👍', '✅', '😂'];
@@ -41,16 +84,54 @@ function EmojiPicker({
   onSelect: (emoji: string) => void;
   onClose: () => void;
 }) {
+  const { user } = useAuth();
   const [query, setQuery] = useState('');
+  // null until the reaction query resolves — no row shown before data lands.
+  const [frequent, setFrequent] = useState<string[] | null>(null);
   const ref = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [activeTab, setActiveTab] = useState<string>(EMOJI_CATEGORIES[0].id);
+
+  // Load the current user's most-used reaction emojis (top 6).
+  useEffect(() => {
+    let cancelled = false;
+    if (!user?.id) {
+      setFrequent(DEFAULT_FREQUENT);
+      return;
+    }
+    (async () => {
+      const { data, error } = await (supabase as any)
+        .from('chat_message_reactions')
+        .select('emoji')
+        .eq('user_id', user.id);
+      if (cancelled) return;
+      if (error || !data || data.length === 0) {
+        setFrequent(DEFAULT_FREQUENT);
+        return;
+      }
+      const tally = new Map<string, number>();
+      for (const row of data as { emoji: string }[]) {
+        if (!row?.emoji) continue;
+        tally.set(row.emoji, (tally.get(row.emoji) ?? 0) + 1);
+      }
+      const top = Array.from(tally.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 6)
+        .map(([emoji]) => emoji);
+      setFrequent(top.length > 0 ? top : DEFAULT_FREQUENT);
+    })();
+    return () => { cancelled = true; };
+  }, [user?.id]);
 
   const q = query.trim().toLowerCase();
-  const emojis = q
-    ? EMOJI_ENTRIES.filter(([, names]) => names.includes(q)).map(([e]) => e)
-    : ALL_EMOJIS;
+  const searchResults = useMemo(
+    () => (q ? EMOJI_ENTRIES.filter(([, names]) => names.includes(q)).map(([e]) => e) : null),
+    [q],
+  );
 
   // Position: prefer above anchor, fallback below
-  const PICKER_H = 220;
+  const PICKER_H = 300;
   const PICKER_W = 272;
   const top = anchorRect.top - PICKER_H - 4 < 8
     ? anchorRect.bottom + 4
@@ -72,6 +153,17 @@ function EmojiPicker({
     };
   }, [onClose]);
 
+  const jumpTo = useCallback((id: string) => {
+    setActiveTab(id);
+    const section = sectionRefs.current[id];
+    const body = bodyRef.current;
+    if (section && body) {
+      body.scrollTo({ top: section.offsetTop - body.offsetTop, behavior: 'smooth' });
+    }
+  }, []);
+
+  const pick = useCallback((emoji: string) => { onSelect(emoji); onClose(); }, [onSelect, onClose]);
+
   return createPortal(
     <div
       ref={ref}
@@ -88,19 +180,89 @@ function EmojiPicker({
         autoFocus
         aria-label="Search emoji"
       />
-      <div className="c-emoji-picker__grid" role="listbox" aria-label="Emoji list">
-        {emojis.map(emoji => (
-          <button
-            key={emoji}
-            className="c-emoji-picker__btn"
-            onClick={() => { onSelect(emoji); onClose(); }}
-            role="option"
-            aria-label={emoji}
-          >
-            {emoji}
-          </button>
-        ))}
-      </div>
+
+      {!q && (
+        <div className="c-emoji-picker__tabs" role="tablist" aria-label="Emoji categories">
+          {EMOJI_CATEGORIES.map(cat => (
+            <button
+              key={cat.id}
+              className={`c-emoji-picker__tab${activeTab === cat.id ? ' c-emoji-picker__tab--active' : ''}`}
+              role="tab"
+              aria-selected={activeTab === cat.id}
+              aria-label={cat.label}
+              title={cat.label}
+              onClick={() => jumpTo(cat.id)}
+            >
+              {cat.entries[0][0]}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {q ? (
+        <div className="c-emoji-picker__body">
+          <div className="c-emoji-picker__grid" role="listbox" aria-label="Search results">
+            {(searchResults ?? []).map(emoji => (
+              <button
+                key={emoji}
+                className="c-emoji-picker__btn"
+                onClick={() => pick(emoji)}
+                role="option"
+                aria-label={emoji}
+              >
+                {emoji}
+              </button>
+            ))}
+            {searchResults && searchResults.length === 0 && (
+              <div className="c-emoji-picker__empty">No emoji found</div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="c-emoji-picker__body" ref={bodyRef}>
+          {frequent && frequent.length > 0 && (
+            <div className="c-emoji-picker__section">
+              <div className="c-emoji-picker__section-label">Frequently used</div>
+              <div className="c-emoji-picker__grid" role="listbox" aria-label="Frequently used">
+                {frequent.map(emoji => (
+                  <button
+                    key={`freq-${emoji}`}
+                    className="c-emoji-picker__btn"
+                    onClick={() => pick(emoji)}
+                    role="option"
+                    aria-label={emoji}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {EMOJI_CATEGORIES.map(cat => (
+            <div
+              key={cat.id}
+              className="c-emoji-picker__section"
+              ref={el => { sectionRefs.current[cat.id] = el; }}
+            >
+              <div className="c-emoji-picker__section-label">{cat.label}</div>
+              <div className="c-emoji-picker__grid" role="listbox" aria-label={cat.label}>
+                {cat.entries.map(([emoji]) => (
+                  <button
+                    key={`${cat.id}-${emoji}`}
+                    className="c-emoji-picker__btn"
+                    onClick={() => pick(emoji)}
+                    role="option"
+                    aria-label={emoji}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>,
     document.body,
   );
@@ -196,22 +358,26 @@ function MoreMenu({
       ) : (
         <>
           <button className="c-more-menu__item" role="menuitem" onClick={run(onCopyLink)}>
-            Copy link
+            <span className="c-more-menu__label">Copy link</span>
+            <span className="c-more-menu__hint" aria-hidden="true">L</span>
           </button>
           <button className="c-more-menu__item" role="menuitem" onClick={run(onCopyText)}>
-            Copy text
+            <span className="c-more-menu__label">Copy text</span>
+            <span className="c-more-menu__hint" aria-hidden="true">⌘C</span>
           </button>
           <button className="c-more-menu__item" role="menuitem" onClick={run(onMarkUnread)}>
-            Mark unread
+            <span className="c-more-menu__label">Mark unread</span>
+            <span className="c-more-menu__hint" aria-hidden="true">U</span>
           </button>
           <button className="c-more-menu__item" role="menuitem" onClick={run(onTogglePin)}>
-            {isPinned ? 'Unpin from conversation' : 'Pin to conversation'}
+            <span className="c-more-menu__label">{isPinned ? 'Unpin from conversation' : 'Pin to conversation'}</span>
+            <span className="c-more-menu__hint" aria-hidden="true">P</span>
           </button>
           <button className="c-more-menu__item" role="menuitem" onClick={run(onToggleSave)}>
-            {isSaved ? 'Remove from later' : 'Save for later'}
+            <span className="c-more-menu__label">{isSaved ? 'Remove from later' : 'Save for later'}</span>
           </button>
           <button className="c-more-menu__item" role="menuitem" onClick={run(onForward)}>
-            Forward message…
+            <span className="c-more-menu__label">Forward message…</span>
           </button>
 
           {isOwn && (
@@ -223,7 +389,8 @@ function MoreMenu({
                 onClick={() => { onEdit(); onClose(); }}
               >
                 <EditIcon label="" LEGACY_size="small" />
-                Edit message
+                <span className="c-more-menu__label">Edit message</span>
+                <span className="c-more-menu__hint" aria-hidden="true">E</span>
               </button>
               <button
                 className="c-more-menu__item c-more-menu__item--danger"

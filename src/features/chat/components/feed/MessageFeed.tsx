@@ -19,6 +19,14 @@ import { MessageComposer } from '@/components/chat/main/MessageComposer';
 import { ConversationHeader } from '@/components/chat/main/ConversationHeader';
 import { HoverToolbar } from './HoverToolbar';
 import { MessageText } from './MessageText';
+import { ProfileHoverCard } from './ProfileHoverCard';
+
+interface ProfileCardState {
+  userId: string;
+  name: string;
+  avatarUrl: string | null;
+  rect: DOMRect;
+}
 
 const db = supabase as unknown as { from: (t: string) => any };
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
@@ -242,6 +250,7 @@ function MsgGroupBlock({
   onTogglePin,
   onToggleSave,
   onForward,
+  onOpenProfile,
 }: {
   group: MsgGroup;
   currentUserId: string | null;
@@ -260,6 +269,7 @@ function MsgGroupBlock({
   onTogglePin: (msgId: string, currentlyPinned: boolean) => void;
   onToggleSave: (msgId: string, currentlySaved: boolean) => void;
   onForward: (msgId: string) => void;
+  onOpenProfile: (state: ProfileCardState) => void;
 }) {
   return (
     <div
@@ -280,12 +290,27 @@ function MsgGroupBlock({
             {/* Avatar / compact timestamp slot */}
             <div className="c-msg__avatar">
               {isFull ? (
-                <Avatar
-                  name={msg.authorName}
-                  src={msg.authorAvatarUrl ?? undefined}
-                  size="medium"
-                  appearance="circle"
-                />
+                <button
+                  type="button"
+                  className="c-msg__avatar-btn"
+                  onClick={e => {
+                    e.stopPropagation();
+                    onOpenProfile({
+                      userId: msg.authorId,
+                      name: msg.authorName,
+                      avatarUrl: msg.authorAvatarUrl,
+                      rect: e.currentTarget.getBoundingClientRect(),
+                    });
+                  }}
+                  aria-label={`View profile of ${msg.authorName}`}
+                >
+                  <Avatar
+                    name={msg.authorName}
+                    src={msg.authorAvatarUrl ?? undefined}
+                    size="medium"
+                    appearance="circle"
+                  />
+                </button>
               ) : (
                 <span className="c-msg__compact-ts" aria-hidden="true">
                   {getTimeLabel(msg.createdAt)}
@@ -297,7 +322,34 @@ function MsgGroupBlock({
             <div className="c-msg__body">
               {isFull && (
                 <div className="c-msg__meta">
-                  <span className="c-msg__author">{msg.authorName}</span>
+                  <span
+                    className="c-msg__author"
+                    role="button"
+                    tabIndex={0}
+                    onClick={e => {
+                      e.stopPropagation();
+                      onOpenProfile({
+                        userId: msg.authorId,
+                        name: msg.authorName,
+                        avatarUrl: msg.authorAvatarUrl,
+                        rect: e.currentTarget.getBoundingClientRect(),
+                      });
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onOpenProfile({
+                          userId: msg.authorId,
+                          name: msg.authorName,
+                          avatarUrl: msg.authorAvatarUrl,
+                          rect: (e.currentTarget as HTMLElement).getBoundingClientRect(),
+                        });
+                      }
+                    }}
+                  >
+                    {msg.authorName}
+                  </span>
                   <time
                     className="c-msg__ts"
                     dateTime={msg.createdAt}
@@ -534,6 +586,9 @@ export function MessageFeed({ conversationId, conversation, onOpenThread, initia
   // Forward modal state — holds the source message id, or null when closed.
   const [forwardMsgId, setForwardMsgId] = useState<string | null>(null);
 
+  // Profile hover-card state — null when closed.
+  const [profileCard, setProfileCard] = useState<ProfileCardState | null>(null);
+
   // ── Collaboration-bar callbacks ──────────────────────────────────────────
 
   const handleCopyLink = useCallback((msgId: string) => {
@@ -760,6 +815,7 @@ export function MessageFeed({ conversationId, conversation, onOpenThread, initia
                       onTogglePin={handleTogglePin}
                       onToggleSave={handleToggleSave}
                       onForward={setForwardMsgId}
+                      onOpenProfile={setProfileCard}
                     />
                   )}
                 </div>
@@ -796,6 +852,17 @@ export function MessageFeed({ conversationId, conversation, onOpenThread, initia
           conversations={allConversations}
           onForward={handleForwardSubmit}
           onClose={() => setForwardMsgId(null)}
+        />
+      )}
+
+      {profileCard && (
+        <ProfileHoverCard
+          userId={profileCard.userId}
+          name={profileCard.name}
+          avatarUrl={profileCard.avatarUrl}
+          anchorRect={profileCard.rect}
+          currentUserId={currentUserId}
+          onClose={() => setProfileCard(null)}
         />
       )}
     </div>

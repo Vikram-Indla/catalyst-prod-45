@@ -1,0 +1,103 @@
+/* ── Profile hover card (mini) ── */
+.c-profile-card {
+  position: fixed;
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-radius: var(--ds-border-radius, 8px);
+  border: 1px solid var(--c-chat-border);
+  background: var(--c-chat-surface-raised);
+  box-shadow: var(--ds-shadow-overlay, 0 8px 28px rgba(9, 30, 66, 0.25));
+  z-index: 1000;
+}
+
+.c-profile-card__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.c-profile-card__id {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.c-profile-card__name {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--c-chat-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c-profile-card__presence {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.c-profile-card__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ds-icon-success, #22A06B);
+}
+
+.c-profile-card__presence-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--c-chat-text-subtle);
+}
+
+.c-profile-card__email {
+  font-size: 12px;
+  color: var(--c-chat-accent);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c-profile-card__email:hover {
+  text-decoration: underline;
+}
+
+.c-profile-card__actions {
+  margin-top: 4px;
+}
+
+/* ── Feed triggers (avatar button + author name) ── */
+.c-msg__avatar-btn {
+  display: inline-flex;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.c-msg__avatar-btn:focus-visible {
+  outline: 2px solid var(--c-chat-focus);
+  outline-offset: 2px;
+}
+
+.c-msg__author {
+  cursor: pointer;
+}
+
+.c-msg__author:hover {
+  text-decoration: underline;
+}
+
+.c-msg__author:focus-visible {
+  outline: 2px solid var(--c-chat-focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
