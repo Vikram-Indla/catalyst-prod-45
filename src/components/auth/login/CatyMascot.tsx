@@ -33,7 +33,7 @@ export function CatyMascot({
                // ads-scanner:ignore-next-line
                variant === 'light'    ? '#23222B' : '#F4F1EA';
   // ads-scanner:ignore-next-line
-  const accent = isDefault ? 'var(--caty-accent)' : '#23222B';
+  const accent = isDefault ? 'var(--caty-accent)' : variant === 'dark' ? '#23222B' : '#F4F1EA';
   // ads-scanner:ignore-next-line
   const eyeWhite = '#FFFFFF';
   // ads-scanner:ignore-next-line

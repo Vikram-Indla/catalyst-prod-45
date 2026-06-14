@@ -28,7 +28,7 @@ export function CatyRainbowCTA({ label, onClick, isLoading, align = 'right' }: C
     }}>
       <div style={{
         display: 'inline-flex',
-        padding: 3,
+        padding: 1.8,
         borderRadius: 20,
         background: CATY_RAINBOW,
       }}>

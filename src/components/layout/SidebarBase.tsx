@@ -118,6 +118,13 @@ export interface SidebarMenuItem {
    * Added 2026-05-28: HomeSidebar Recent items identity redesign.
    */
   accentColor?: string;
+  /**
+   * Plain-string tooltip shown in collapsed rail mode instead of the
+   * ReactNode `title`. Allows Recent items to show "Dashboard — BAU"
+   * rather than rendering the full LocationRowTitle JSX in the tooltip.
+   * Added 2026-06-14: H6 collapsed-mode disambiguation fix.
+   */
+  tooltip?: string;
 }
 
 export interface SidebarSection {
@@ -755,7 +762,7 @@ function renderMenuItem(
 
   if (!expanded) {
     return (
-      <Tooltip key={item.id} content={item.title} position="right">
+      <Tooltip key={item.id} content={item.tooltip ?? item.title} position="right">
         {menuButton}
       </Tooltip>
     );

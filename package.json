@@ -31,6 +31,7 @@
     "@atlaskit/badge": "^18.6.0",
     "@atlaskit/breadcrumbs": "^16.1.0",
     "@atlaskit/button": "^20.5.3",
+    "@atlaskit/calendar": "^17.2.20",
     "@atlaskit/checkbox": "^17.3.12",
     "@atlaskit/css-reset": "^7.4.5",
     "@atlaskit/datetime-picker": "^17.7.0",

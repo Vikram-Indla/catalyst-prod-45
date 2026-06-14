@@ -25,7 +25,7 @@ export function ImproveButton({
   const [hover, setHover] = useState(false);
 
   return (
-    <div style={{ display: 'inline-flex', padding: 3, borderRadius: 20, background: RAINBOW }}>
+    <div style={{ display: 'inline-flex', padding: 1.8, borderRadius: 20, background: RAINBOW }}>
       <button
         type="button"
         title={disabled ? `${label} — add content first` : isImproving ? 'Click to stop Caty' : label}

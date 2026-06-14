@@ -23,7 +23,7 @@ import Tooltip from '@atlaskit/tooltip';
 import Avatar from '@atlaskit/avatar';
 import AvatarGroup from '@atlaskit/avatar-group';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import { DatePicker } from '@atlaskit/datetime-picker';
+import AkCalendar from '@atlaskit/calendar';
 import Checkbox from '@atlaskit/checkbox';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -355,6 +355,178 @@ function MenuItemRow({
   );
 }
 
+/* ─────────────────────────────── modal date field ──────────────────── */
+/* Date field for the Edit-dates modal. @atlaskit DatePicker's calendar uses
+   @atlaskit/popper, which collapses to viewport-origin (0,0) inside the modal's
+   overflow:hidden scroll container (CLAUDE.md 2026-06-13). This anchors
+   @atlaskit/calendar via the Popper-free PortalMenu instead — positions off the
+   trigger's getBoundingClientRect, immune to any overflow ancestor. */
+function ModalDateField({
+  value, onChange, placeholder, ariaLabel,
+}: {
+  value: string;
+  onChange: (iso: string) => void;
+  placeholder: string;
+  ariaLabel: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const parsed = value ? new Date(value + 'T00:00:00') : null;
+  const validMonth = parsed && !isNaN(parsed.getTime());
+  return (
+    <>
+      <button
+        ref={btnRef}
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-label={ariaLabel}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          width: '100%', height: 40, padding: '0 8px', boxSizing: 'border-box',
+          border: `1px solid ${open ? 'var(--ds-border-focused, #388BFF)' : 'var(--ds-border-input, #DFE1E6)'}`,
+          borderRadius: 3, background: 'var(--ds-background-input, #FFFFFF)',
+          cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', textAlign: 'left',
+        }}
+      >
+        <span style={{ fontSize: 14, color: value ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #626F86)' }}>
+          {value || placeholder}
+        </span>
+        <span style={{ lineHeight: 0, color: 'var(--ds-text-subtle, #42526E)', flexShrink: 0 }}>
+          <Calendar size={16} />
+        </span>
+      </button>
+      <PortalMenu isOpen={open} onClose={() => setOpen(false)} triggerRef={btnRef} minWidth={0}>
+        <AkCalendar
+          selected={value ? [value] : []}
+          defaultMonth={validMonth ? parsed!.getMonth() + 1 : undefined}
+          defaultYear={validMonth ? parsed!.getFullYear() : undefined}
+          onSelect={(e) => { onChange(e.iso); setOpen(false); }}
+        />
+      </PortalMenu>
+    </>
+  );
+}
+
+/* ─────────────────────────────── edit dates modal ──────────────────── */
+/* Shared by the sidebar row chip/menu AND the empty-row grid + button.
+   Owns its own draft state seeded from the issue; persists BOTH date fields
+   to ph_issues on Confirm. Single source — no duplicate modal. */
+function EditDatesModal({
+  issue, projectKey, queryClient, onClose,
+}: {
+  issue: TimelineIssue;
+  projectKey: string;
+  queryClient: ReturnType<typeof useQueryClient>;
+  onClose: () => void;
+}) {
+  const [startDate, setStartDate] = useState(issue.startDate ?? '');
+  const [dueDate, setDueDate] = useState(issue.dueDate ?? '');
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
+      if (row?.raw_json) {
+        const updated = {
+          ...row.raw_json,
+          fields: { ...(row.raw_json.fields ?? {}), customfield_10015: startDate || null, duedate: dueDate || null },
+        };
+        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issue.issueKey);
+        queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+      }
+    } catch (err) {
+      console.warn('save dates failed:', err);
+    } finally {
+      setSaving(false);
+      onClose();
+    }
+  };
+
+  return (
+    <ModalTransition>
+      <Modal onClose={onClose} width="small">
+        <ModalHeader>
+          <ModalTitle>{issue.startDate || issue.dueDate ? 'Edit dates' : 'Add dates'}</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '6px 8px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderRadius: 3 }}>
+            <JiraIssueTypeIcon type={issue.issueType} size={14} />
+            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)' }}>{issue.issueKey}</span>
+            <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.summary}</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>Start date</label>
+              <ModalDateField value={startDate} onChange={setStartDate} placeholder="Select start date" ariaLabel="Start date" />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>Due date</label>
+              <ModalDateField value={dueDate} onChange={setDueDate} placeholder="Select due date" ariaLabel="Due date" />
+            </div>
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={onClose} isDisabled={saving}>Cancel</Button>
+          <Button appearance="primary" onClick={handleSave} isDisabled={saving}>{saving ? 'Saving…' : 'Confirm'}</Button>
+        </ModalFooter>
+      </Modal>
+    </ModalTransition>
+  );
+}
+
+/* ─────────────────────────── empty-row add-dates lane ───────────────── */
+/* A dateless work item shows nothing on the grid. On row hover a dashed +
+   appears (near the today line); clicking it opens the add-dates modal. */
+function EmptyRowAdd({ rowTop, addLeft, onAdd }: { rowTop: number; addLeft: number; onAdd: () => void }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ position: 'absolute', top: rowTop, left: 0, right: 0, height: ROW_H, zIndex: 1 }}
+    >
+      <button
+        type="button"
+        onClick={(e) => { e.stopPropagation(); onAdd(); }}
+        aria-label="Add dates"
+        title="Add dates"
+        style={{
+          position: 'absolute', left: addLeft, top: (ROW_H - 24) / 2, width: 24, height: 24,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          border: '1px dashed var(--ds-border-bold, #8590A2)', borderRadius: 3,
+          background: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer',
+          color: 'var(--ds-text-subtle, #42526E)',
+          opacity: hovered ? 1 : 0, transition: 'opacity 120ms ease',
+          pointerEvents: hovered ? 'auto' : 'none',
+        }}
+      >
+        <EditorAddIcon label="" size="small" />
+      </button>
+    </div>
+  );
+}
+
+/* small date pill shown under a bar end on hover/drag */
+function dateLabelStyle(x: number, barTop: number, side: 'start' | 'end'): React.CSSProperties {
+  return {
+    position: 'absolute',
+    top: barTop + BAR_H + 3,
+    left: x,
+    transform: side === 'end' ? 'translateX(-100%)' : undefined,
+    fontSize: 10, fontWeight: 600, lineHeight: 1,
+    color: 'var(--ds-text-subtle, #44546F)',
+    background: 'var(--ds-surface-overlay, #FFFFFF)',
+    border: '1px solid var(--ds-border, #DFE1E6)',
+    borderRadius: 3, padding: '2px 5px',
+    whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 11,
+    boxShadow: '0 1px 3px var(--ds-shadow-overflow, rgba(9,30,66,0.12))',
+    fontFamily: 'var(--ds-font-family-body)',
+  };
+}
+
 /* ─────────────────────────────── inline empty overlay ──────────────── */
 
 function InlineEmptyOverlay({ projectKey, onDismiss }: { projectKey: string; onDismiss: () => void }) {
@@ -596,14 +768,24 @@ export default function ProjectHubTimelinePage() {
     if (creatingEpic && epicInputRef.current) epicInputRef.current.focus();
   }, [creatingEpic]);
 
-  /* drag-to-resize bars */
+  /* drag-to-resize / drag-to-move bars */
   const [dragging, setDragging] = useState<{
     issueKey: string;
-    edge: 'start' | 'end';
+    edge: 'start' | 'end' | 'move';
     originX: number;
-    originalDate: string;
+    originalStart: string | null;
+    originalEnd: string | null;
   } | null>(null);
   const [livePixelDelta, setLivePixelDelta] = useState(0);
+  /* move-arming: body mousedown records this; a global listener promotes it to
+     a 'move' drag once the pointer passes a small threshold, so a plain click
+     still opens the detail view (click-vs-drag disambiguation). */
+  const moveArmRef = useRef<{ issueKey: string; startX: number; originalStart: string | null; originalEnd: string | null } | null>(null);
+  const suppressClickRef = useRef(false);
+  /* which bar is hovered → show start/end date labels at its ends */
+  const [hoveredBarKey, setHoveredBarKey] = useState<string | null>(null);
+  /* add-dates modal opened from the empty-row grid + button */
+  const [gridDatesIssue, setGridDatesIssue] = useState<TimelineIssue | null>(null);
 
   /* scroll sync refs */
   const gridRef = useRef<HTMLDivElement>(null);
@@ -789,31 +971,57 @@ export default function ProjectHubTimelinePage() {
   /* global cursor during bar drag */
   useEffect(() => {
     if (!dragging) return;
-    document.body.style.cursor = 'ew-resize';
+    document.body.style.cursor = dragging.edge === 'move' ? 'grabbing' : 'ew-resize';
     document.body.style.userSelect = 'none';
     return () => { document.body.style.cursor = ''; document.body.style.userSelect = ''; };
   }, [dragging]);
 
-  /* bar drag tracking + supabase commit */
+  /* move-arming: promote a body mousedown to a 'move' drag past a 4px threshold.
+     Keeps a plain click free to open the detail view. */
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const arm = moveArmRef.current;
+      if (!arm || dragging) return;
+      if (Math.abs(e.clientX - arm.startX) < 4) return;
+      suppressClickRef.current = true;
+      setDragging({ issueKey: arm.issueKey, edge: 'move', originX: arm.startX, originalStart: arm.originalStart, originalEnd: arm.originalEnd });
+      setLivePixelDelta(e.clientX - arm.startX);
+      moveArmRef.current = null;
+    };
+    const onUp = () => { moveArmRef.current = null; };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+  }, [dragging]);
+
+  /* bar drag tracking + supabase commit (start-edge / end-edge / whole-bar move) */
   useEffect(() => {
     if (!dragging) return;
     const onMove = (e: MouseEvent) => setLivePixelDelta(e.clientX - dragging.originX);
     const onUp = async (e: MouseEvent) => {
-      const deltaPx = e.clientX - dragging.originX;
-      const deltaDays = Math.round(deltaPx / pxPerDay);
+      const deltaDays = Math.round((e.clientX - dragging.originX) / pxPerDay);
+      const { issueKey, edge, originalStart, originalEnd } = dragging;
       setDragging(null);
       setLivePixelDelta(0);
       if (deltaDays === 0) return;
-      const original = parseDate(dragging.originalDate);
-      if (!original) return;
-      const newDate = addDays(original, deltaDays);
-      const formatted = newDate.toISOString().slice(0, 10);
-      const field = dragging.edge === 'start' ? 'customfield_10015' : 'duedate';
+      const iso = (d: string | null) => {
+        const base = parseDate(d);
+        return base ? addDays(base, deltaDays).toISOString().slice(0, 10) : null;
+      };
+      /* build the field patch per drag mode */
+      const patch: Record<string, string | null> = {};
+      if (edge === 'start') { const v = iso(originalStart); if (v) patch.customfield_10015 = v; }
+      else if (edge === 'end') { const v = iso(originalEnd); if (v) patch.duedate = v; }
+      else { // move — shift both ends that exist
+        if (originalStart) patch.customfield_10015 = iso(originalStart);
+        if (originalEnd) patch.duedate = iso(originalEnd);
+      }
+      if (Object.keys(patch).length === 0) return;
       try {
-        const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', dragging.issueKey).single();
+        const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issueKey).single();
         if (row?.raw_json) {
-          const updated = { ...row.raw_json, fields: { ...(row.raw_json.fields ?? {}), [field]: formatted } };
-          await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', dragging.issueKey);
+          const updated = { ...row.raw_json, fields: { ...(row.raw_json.fields ?? {}), ...patch } };
+          await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
           queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
         }
       } catch (err) { console.warn('timeline date update failed:', err); }
@@ -853,6 +1061,19 @@ export default function ProjectHubTimelinePage() {
 
   const collapseAll = useCallback(() => setCollapsed(new Set(parentKeys)), [parentKeys]);
   const expandAll = useCallback(() => setCollapsed(new Set()), []);
+
+  /* Default-collapsed on load: the timeline always opens showing only the top
+     hierarchy (Epics for ph_issues). Applies once per mount/project — so it
+     re-collapses on a hard refresh or project switch — but does NOT fight
+     in-session expand/collapse or React Query background refetches. */
+  const initialCollapseKeyRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!projectKey) return;
+    if (initialCollapseKeyRef.current === projectKey) return;
+    if (parentKeys.length === 0) return; // tree not loaded yet
+    initialCollapseKeyRef.current = projectKey;
+    setCollapsed(new Set(parentKeys));
+  }, [projectKey, parentKeys]);
 
   const scrollToToday = useCallback(() => {
     if (!gridRef.current) return;
@@ -1594,10 +1815,6 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
             aria-label="Resize sidebar"
             aria-orientation="vertical"
             tabIndex={0}
-            onMouseDown={e => {
-              e.preventDefault();
-              setSidebarResizing({ originX: e.clientX, originWidth: sidebarWidth });
-            }}
             onKeyDown={e => {
               if (e.key === 'ArrowLeft') {
                 e.preventDefault();
@@ -1608,17 +1825,30 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
               }
             }}
             style={{
-              width: 2, flexShrink: 0, cursor: 'col-resize', outline: 'none',
+              /* 2px visual line — footprint stays thin; the grab area is the 8px overlay below */
+              width: 2, flexShrink: 0, position: 'relative', outline: 'none',
               background: sidebarResizing
                 ? 'var(--ds-background-selected-bold, #0052CC)'
                 : 'var(--ds-border, #DFE1E6)',
               transition: sidebarResizing ? 'none' : 'background 120ms ease',
             }}
             onFocus={e => { e.currentTarget.style.background = 'var(--ds-border-selected, #388BFF)'; }}
-            onBlur={e => { e.currentTarget.style.background = 'var(--ds-border, #DFE1E6)'; }}
-            onMouseEnter={e => { if (!sidebarResizing) e.currentTarget.style.background = 'var(--ds-border-selected, #388BFF)'; }}
-            onMouseLeave={e => { if (!sidebarResizing) e.currentTarget.style.background = 'var(--ds-border, #DFE1E6)'; }}
-          />
+            onBlur={e => { if (!sidebarResizing) e.currentTarget.style.background = 'var(--ds-border, #DFE1E6)'; }}
+          >
+            {/* 8px transparent grab strip (Jira parity: ew-resize handle is 8px wide,
+                visual line is only 2px). Overlays both sides of the 2px line so it's
+                easy to grab without widening the divider's visual footprint. */}
+            <div
+              aria-hidden
+              onMouseDown={e => {
+                e.preventDefault();
+                setSidebarResizing({ originX: e.clientX, originWidth: sidebarWidth });
+              }}
+              onMouseEnter={e => { const p = e.currentTarget.parentElement; if (p && !sidebarResizing) p.style.background = 'var(--ds-border-selected, #388BFF)'; }}
+              onMouseLeave={e => { const p = e.currentTarget.parentElement; if (p && !sidebarResizing) p.style.background = 'var(--ds-border, #DFE1E6)'; }}
+              style={{ position: 'absolute', top: 0, bottom: 0, left: -3, width: 8, cursor: 'col-resize', zIndex: 1 }}
+            />
+          </div>
         )}
 
         {/* ── grid panel ── */}
@@ -1746,44 +1976,63 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                 const barTop = rowTop + (ROW_H - BAR_H) / 2;
 
                 const isThisDragging = dragging?.issueKey === issue.issueKey;
-                const deltaLeft = isThisDragging && dragging!.edge === 'start' ? livePixelDelta : 0;
-                const deltaWidth = isThisDragging ? (dragging!.edge === 'start' ? -livePixelDelta : livePixelDelta) : 0;
+                const dragEdge = isThisDragging ? dragging!.edge : null;
+                const deltaLeft = dragEdge === 'start' || dragEdge === 'move' ? livePixelDelta : 0;
+                const deltaWidth = dragEdge === 'start' ? -livePixelDelta : dragEdge === 'end' ? livePixelDelta : 0;
                 const finalLeft = baseLeft + deltaLeft;
                 const finalWidth = Math.max(MIN_BAR_W, baseWidth + deltaWidth);
 
                 const borderColor = barColor(issue);
 
+                /* live date labels reflect the in-progress drag */
+                const liveDeltaDays = isThisDragging ? Math.round(livePixelDelta / pxPerDay) : 0;
+                const startShift = dragEdge === 'start' || dragEdge === 'move' ? liveDeltaDays : 0;
+                const endShift = dragEdge === 'end' || dragEdge === 'move' ? liveDeltaDays : 0;
+                const liveStartLabel = issue.startDate ? formatDateCompact(addDays(effectiveStart, startShift).toISOString().slice(0, 10)) : '';
+                const liveEndLabel = issue.dueDate ? formatDateCompact(addDays(effectiveEnd, endShift).toISOString().slice(0, 10)) : '';
+                const showLabels = hoveredBarKey === issue.issueKey || isThisDragging;
+
                 const bar = (
                   <div
                     role="gridcell"
                     aria-label={`${issue.issueKey} ${issue.startDate ?? 'no start'} to ${issue.dueDate ?? 'no due'}`}
-                    onClick={e => { if (!dragging) { e.stopPropagation(); navigate(`/project-hub/${projectKey}/timeline/${issue.issueKey}`); } }}
+                    onMouseEnter={() => setHoveredBarKey(issue.issueKey)}
+                    onMouseLeave={() => setHoveredBarKey(k => (k === issue.issueKey ? null : k))}
+                    onMouseDown={e => {
+                      if (dragging) return;
+                      // arm a whole-bar move — promoted to a drag past the 4px threshold,
+                      // so a plain click still opens the detail view
+                      moveArmRef.current = { issueKey: issue.issueKey, startX: e.clientX, originalStart: issue.startDate, originalEnd: issue.dueDate };
+                    }}
+                    onClick={e => {
+                      if (suppressClickRef.current) { suppressClickRef.current = false; e.stopPropagation(); return; }
+                      if (!dragging) { e.stopPropagation(); navigate(`/project-hub/${projectKey}/timeline/${issue.issueKey}`); }
+                    }}
                     style={{
                       position: 'absolute', top: barTop, left: finalLeft, width: finalWidth, height: BAR_H,
                       borderRadius: BAR_RADIUS,
                       background: 'var(--ds-surface, #FFFFFF)',
                       border: `2px solid ${borderColor}`,
                       display: 'flex', alignItems: 'center', paddingLeft: 6, paddingRight: 6,
-                      overflow: 'hidden', cursor: isThisDragging ? 'default' : 'pointer',
+                      overflow: 'hidden',
+                      cursor: isThisDragging ? (dragEdge === 'move' ? 'grabbing' : 'ew-resize') : 'grab',
                       zIndex: isThisDragging ? 10 : 2,
                       boxShadow: isThisDragging ? 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.3))' : 'none',
-                      opacity: isThisDragging ? 0.85 : 1,
+                      opacity: isThisDragging ? 0.9 : 1,
                       userSelect: 'none',
                       boxSizing: 'border-box',
+                      transition: isThisDragging ? 'none' : 'left 140ms ease, width 140ms ease, box-shadow 120ms ease',
                     }}
                   >
-                    {/* left drag handle */}
+                    {/* left resize handle */}
                     {issue.startDate && (
                       <div
                         onMouseDown={e => {
                           e.preventDefault(); e.stopPropagation();
-                          setDragging({ issueKey: issue.issueKey, edge: 'start', originX: e.clientX, originalDate: issue.startDate! });
+                          setDragging({ issueKey: issue.issueKey, edge: 'start', originX: e.clientX, originalStart: issue.startDate, originalEnd: issue.dueDate });
                           setLivePixelDelta(0);
                         }}
-                        style={{
-                          position: 'absolute', left: 0, top: 0, bottom: 0, width: 8, cursor: 'ew-resize',
-                          zIndex: 1,
-                        }}
+                        style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 8, cursor: 'ew-resize', zIndex: 3 }}
                       />
                     )}
 
@@ -1792,33 +2041,52 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                         fontSize: 11, fontWeight: 500,
                         color: 'var(--ds-text, #172B4D)',
                         whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1, flex: 1,
-                        position: 'relative', zIndex: 2,
+                        position: 'relative', zIndex: 2, pointerEvents: 'none',
                       }}>
                         {issue.summary}
                       </span>
                     )}
 
-                    {/* right drag handle */}
+                    {/* right resize handle */}
                     {issue.dueDate && (
                       <div
                         onMouseDown={e => {
                           e.preventDefault(); e.stopPropagation();
-                          setDragging({ issueKey: issue.issueKey, edge: 'end', originX: e.clientX, originalDate: issue.dueDate! });
+                          setDragging({ issueKey: issue.issueKey, edge: 'end', originX: e.clientX, originalStart: issue.startDate, originalEnd: issue.dueDate });
                           setLivePixelDelta(0);
                         }}
-                        style={{
-                          position: 'absolute', right: 0, top: 0, bottom: 0, width: 8, cursor: 'ew-resize',
-                          zIndex: 1,
-                        }}
+                        style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 8, cursor: 'ew-resize', zIndex: 3 }}
                       />
                     )}
                   </div>
                 );
 
                 return (
-                  <TimelineBarPopover key={issue.issueKey} issue={issue} disabled={isThisDragging}>
-                    {bar}
-                  </TimelineBarPopover>
+                  <React.Fragment key={issue.issueKey}>
+                    <TimelineBarPopover issue={issue} disabled={isThisDragging}>
+                      {bar}
+                    </TimelineBarPopover>
+                    {showLabels && liveStartLabel && (
+                      <div style={dateLabelStyle(finalLeft, barTop, 'start')}>{liveStartLabel}</div>
+                    )}
+                    {showLabels && liveEndLabel && (
+                      <div style={dateLabelStyle(finalLeft + finalWidth, barTop, 'end')}>{liveEndLabel}</div>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+
+              {/* empty-row hover + → add dates (rows with no dates yet) */}
+              {!releasesCollapsed && rows.map(({ issue }, idx) => {
+                if (issue.startDate || issue.dueDate) return null;
+                const rowTop = (showReleases ? ROW_H : 0) + idx * ROW_H;
+                return (
+                  <EmptyRowAdd
+                    key={issue.issueKey + '_add'}
+                    rowTop={rowTop}
+                    addLeft={Math.max(8, Math.min(todayLeft, gridWidth - 32))}
+                    onAdd={() => setGridDatesIssue(issue)}
+                  />
                 );
               })}
 
@@ -1830,6 +2098,16 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
           </div>
         </div>
       </div>
+
+      {/* add-dates modal opened from an empty-row grid + button */}
+      {gridDatesIssue && (
+        <EditDatesModal
+          issue={gridDatesIssue}
+          projectKey={projectKey ?? ''}
+          queryClient={queryClient}
+          onClose={() => setGridDatesIssue(null)}
+        />
+      )}
 
       <TimelineBottomBar
         zoom={zoom}
@@ -2090,9 +2368,6 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
   const [rowHovered, setRowHovered] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [editDatesOpen, setEditDatesOpen] = useState(false);
-  const [editStartDate, setEditStartDate] = useState('');
-  const [editDueDate, setEditDueDate] = useState('');
-  const [savingDates, setSavingDates] = useState(false);
   const [inlineCreateOpen, setInlineCreateOpen] = useState(false);
   const [inlineCreateType, setInlineCreateType] = useState('Story');
   const [inlineCreateSummary, setInlineCreateSummary] = useState('');
@@ -2113,34 +2388,8 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
   const [existingLinks, setExistingLinks] = useState<any[]>([]);
 
   const openEditDates = () => {
-    setEditStartDate(issue.startDate ?? '');
-    setEditDueDate(issue.dueDate ?? '');
     setMenuOpen(false);
     setEditDatesOpen(true);
-  };
-
-  const handleSaveDates = async () => {
-    setSavingDates(true);
-    try {
-      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
-      if (row?.raw_json) {
-        const updated = {
-          ...row.raw_json,
-          fields: {
-            ...(row.raw_json.fields ?? {}),
-            customfield_10015: editStartDate || null,
-            duedate: editDueDate || null,
-          },
-        };
-        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issue.issueKey);
-        queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
-      }
-    } catch (err) {
-      console.warn('save dates failed:', err);
-    } finally {
-      setSavingDates(false);
-      setEditDatesOpen(false);
-    }
   };
 
   const handleRemoveDates = async () => {
@@ -2620,59 +2869,15 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         )}
       </PortalMenu>
 
-      {/* Edit Dates modal */}
-      <ModalTransition>
-        {editDatesOpen && (
-          <Modal onClose={() => setEditDatesOpen(false)} width="small">
-            <ModalHeader>
-              <ModalTitle>Edit dates</ModalTitle>
-            </ModalHeader>
-            <ModalBody>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '6px 8px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderRadius: 3 }}>
-                <JiraIssueTypeIcon type={issue.issueType} size={14} />
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)' }}>
-                  {issue.issueKey}
-                </span>
-                <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {issue.summary}
-                </span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>
-                    Start date
-                  </label>
-                  <DatePicker
-                    value={editStartDate}
-                    onChange={(val) => setEditStartDate(val)}
-                    placeholder="Select start date"
-                    dateFormat="YYYY-MM-DD"
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>
-                    Due date
-                  </label>
-                  <DatePicker
-                    value={editDueDate}
-                    onChange={(val) => setEditDueDate(val)}
-                    placeholder="Select due date"
-                    dateFormat="YYYY-MM-DD"
-                  />
-                </div>
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button appearance="subtle" onClick={() => setEditDatesOpen(false)} isDisabled={savingDates}>
-                Cancel
-              </Button>
-              <Button appearance="primary" onClick={handleSaveDates} isDisabled={savingDates}>
-                {savingDates ? 'Saving…' : 'Confirm'}
-              </Button>
-            </ModalFooter>
-          </Modal>
-        )}
-      </ModalTransition>
+      {/* Edit Dates modal (shared component) */}
+      {editDatesOpen && (
+        <EditDatesModal
+          issue={issue}
+          projectKey={projectKey}
+          queryClient={queryClient}
+          onClose={() => setEditDatesOpen(false)}
+        />
+      )}
 
       {/* Move to release modal */}
       <ModalTransition>

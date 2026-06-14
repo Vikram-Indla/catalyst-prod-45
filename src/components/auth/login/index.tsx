@@ -471,8 +471,7 @@ export function CatalystLoginPage() {
         <span className="clmp-ai-watermark"><CPathSvg /></span>
         <div className="clmp-container clmp-ai-grid">
           <div className="clmp-rv">
-            <CatyMascot state="awake" variant="gradient" className="clmp-caty-hero" />
-            <span className="clmp-ai-kicker">✦ {t(lang, 'ai.kicker')}</span>
+            <span className="clmp-ai-kicker"><CatyMascot state="awake" variant="gradient" className="clmp-caty-hero" />{t(lang, 'ai.kicker')}</span>
             <h2>{t(lang, 'ai.title1')} <span className="clmp-ai-hl">{t(lang, 'ai.title2')}</span><br />{t(lang, 'ai.title3')}</h2>
             <p className="clmp-ai-sub">{t(lang, 'ai.sub')}</p>
             <div className="clmp-agent-list">

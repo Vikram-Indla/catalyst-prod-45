@@ -168,6 +168,9 @@ interface CatalystStatusPillProps {
    *  these replace the hardcoded STATUS_OPTION_GROUPS and bypass transition
    *  filtering so all options are selectable as a starting status. */
   statusOptions?: Array<{ value: string; label: string; color_category: string }>;
+  /** When false, renders as static non-interactive pill (for table cells).
+   *  When true or omitted, renders interactive dropdown (default). */
+  interactive?: boolean;
 }
 
 export function CatalystStatusPill({
@@ -176,6 +179,7 @@ export function CatalystStatusPill({
   onStatusChange,
   issueType,
   statusOptions,
+  interactive = true,
 }: CatalystStatusPillProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
@@ -299,6 +303,24 @@ export function CatalystStatusPill({
 
   // ── Render ──────────────────────────────────────────────────────────────
 
+  // Non-interactive mode: static pill (used in table cells)
+  if (!interactive) {
+    return (
+      <button
+        type="button"
+        className={PILL_CLASS}
+        data-testid="catalyst-status-pill-static"
+        disabled
+        style={
+          { '--csp-bg': pillBg, '--csp-fg': pillFg, cursor: 'default', opacity: 1 } as React.CSSProperties
+        }
+      >
+        {display}
+      </button>
+    );
+  }
+
+  // Interactive mode: dropdown (default)
   return (
     <>
       <button

@@ -40,7 +40,7 @@
   position: relative;
   border-radius: 8px;
   /* Padding is the visible border thickness — content sits inside. */
-  padding: 1.5px;
+  padding: 0.9px;
   overflow: hidden;
   isolation: isolate;
   background: transparent;
@@ -72,9 +72,9 @@
 .ask-caty-frame::after {
   content: "";
   position: absolute;
-  /* Sits inside the 1.5px padding so it hides the gradient in the
+  /* Sits inside the 0.9px padding so it hides the gradient in the
      centre and leaves only the edge ring visible. */
-  inset: 1.5px;
+  inset: 0.9px;
   border-radius: 6.5px;
   background: var(--ds-surface, #ffffff);
   z-index: -1;

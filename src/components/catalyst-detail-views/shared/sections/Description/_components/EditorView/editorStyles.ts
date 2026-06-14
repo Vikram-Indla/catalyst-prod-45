@@ -29,8 +29,12 @@ export function injectEditorStyles(): void {
       color: var(--ds-text, #292A2E);
       font-family: "Atlassian Sans", ui-sans-serif, -apple-system,
         "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif;
-      min-height: 120px;
+      min-height: var(--cc-editor-min, 120px);
     }
+    /* Chat composers start at 2 lines (48px = 2 × 24px line-height) and
+       auto-grow with content under the shell's 70vh cap. Scoped so the
+       Description detail-view editor keeps its 120px default. */
+    [data-cc-compact] .catalyst-tiptap-editor { --cc-editor-min: 48px; }
     .catalyst-tiptap-editor p { margin: 0 0 8px; }
     .catalyst-tiptap-editor h1 { font-size: 24px; font-weight: 700; margin: 16px 0 8px; line-height: 1.3; }
     .catalyst-tiptap-editor h2 { font-size: 20px; font-weight: 600; margin: 14px 0 8px; line-height: 1.3; }
