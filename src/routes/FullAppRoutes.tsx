@@ -57,6 +57,7 @@ const AllWorkDetailPageLazy = lazy(() => import("../modules/project-work-hub/pag
 const TimelineDetailPageLazy = lazy(() => import("../pages/project-hub/timeline/TimelineDetailPage"));
 const FiltersListPageLazy = lazy(() => import("../pages/project-hub/filters/FiltersListPage"));
 const RoadmapsListPageLazy = lazy(() => import("../pages/project-hub/roadmaps/RoadmapsListPage"));
+const StandupHistoryPageLazy = lazy(() => import("../pages/project-hub/standups/StandupHistoryPage"));
 const FilterDetailPageLazy = lazy(() => import("../pages/project-hub/filters/FilterDetailPage"));
 const FilterPreviewPageLazy = lazy(() => import("../pages/project-hub/filters/FilterPreviewPage").then(m => ({ default: m.FilterPreviewPage })));
 const ProductFilterPreviewPageLazy = lazy(() => import("../pages/product-hub/filters/ProductFilterPreviewPage").then(m => ({ default: m.ProductFilterPreviewPage })));
@@ -892,6 +893,7 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/boards/:boardId/settings/:section" element={<S><ProjectBoardSettingsPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardId" element={<S><KanbanBoardPageLazy /></S>} />
         <Route path="/project-hub/:key/roadmaps" element={<S><RoadmapsListPageLazy /></S>} />
+        <Route path="/project-hub/:key/standups" element={<S><StandupHistoryPageLazy /></S>} />
         <Route path="/project-hub/:key/roadmaps/:id" element={<S><FilterRoadmapPageLazy /></S>} />
         <Route path="/project-hub/:key/dashboards/:id" element={<S><FilterDashboardPageLazy /></S>} />
         <Route path="/project-hub/:key/list" element={<S><ProjectJiraLayoutLazy /></S>} />
