@@ -41,6 +41,7 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { readSnapshot, writeSnapshot } from '@/hooks/aiThemesSnapshot';
 
 /**
  * Tracks whether the current user has an authenticated Supabase session.
@@ -251,6 +252,11 @@ export function useAiThemes(args: UseAiThemesArgs) {
     queryKey,
     queryFn: () => invokeThemes(args, { forceRefresh: false }),
     enabled: hasSession && enabled && (args.scope === 'personal' || Boolean(args.projectKey)),
+    // Seed from the synchronous localStorage snapshot so a cold mount renders
+    // the last themed cards immediately (isLoading stays false) while the
+    // network revalidates underneath — stale-while-revalidate. Without this
+    // the panel falls into a blank takeover spinner on every fresh page load.
+    placeholderData: () => readSnapshot(args),
     staleTime: dailyStaleMs,
     gcTime: dailyStaleMs + 60 * 60 * 1000, // keep an hour past the boundary
     refetchOnWindowFocus: false,
@@ -264,6 +270,17 @@ export function useAiThemes(args: UseAiThemesArgs) {
     },
   });
 
+  // Persist every real (non-placeholder) success to the synchronous snapshot
+  // store so the NEXT cold mount can seed placeholderData. Guard on
+  // isPlaceholderData so we never re-write the stale seed back over itself.
+  useEffect(() => {
+    if (query.data && !query.isPlaceholderData) {
+      writeSnapshot(args, query.data);
+    }
+    // queryKey string identity is the scope dependency; args is derived from it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query.data, query.isPlaceholderData, queryKey.join('|')]);
+
   // Mutation-style refresh. Bypasses both server cache AND React Query.
   // We fetch fresh via the Edge Function's forceRefresh path, then write the
   // result back into the React Query cache under the same key so any
@@ -272,6 +289,7 @@ export function useAiThemes(args: UseAiThemesArgs) {
     mutationFn: () => invokeThemes(args, { forceRefresh: true }),
     onSuccess: (fresh) => {
       queryClient.setQueryData(queryKey, fresh);
+      writeSnapshot(args, fresh);
     },
   });
 
@@ -279,6 +297,8 @@ export function useAiThemes(args: UseAiThemesArgs) {
     data: query.data,
     isLoading: query.isLoading,
     isFetching: query.isFetching,
+    /** True while the seeded snapshot is showing and real data hasn't arrived. */
+    isPlaceholderData: query.isPlaceholderData,
     isError: query.isError,
     error: query.error,
     refresh: () => refresh.mutate(),
