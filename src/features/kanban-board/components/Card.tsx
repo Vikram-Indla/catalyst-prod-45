@@ -45,7 +45,7 @@ export const Card: React.FC<CardProps> = ({
   const commitEdit = () => { if (onEditSummary && draft.trim() && draft !== issue.summary) onEditSummary(issue, draft.trim()); setEditing(false); };
 
   const base: React.CSSProperties = {
-    position: 'relative', display: 'flex', flexDirection: 'column',
+    position: 'relative', display: 'flex', flexDirection: 'column', gap: SIZES.CARD_GAP,
     background: token('elevation.surface.raised', '#FFFFFF'),
     borderRadius: SIZES.CARD_RADIUS,
     padding: SIZES.CARD_PADDING,
@@ -124,7 +124,7 @@ export const Card: React.FC<CardProps> = ({
 
       {/* Due date chip */}
       {due && due.label && (
-        <div style={{ marginTop: 8 }}>
+        <div>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, height: 18, padding: '0 6px', borderRadius: 3,
             border: `1px solid ${due.overdue ? token('color.border.danger', '#E2483D') : token('color.border', '#091E4224')}`,
@@ -137,7 +137,7 @@ export const Card: React.FC<CardProps> = ({
       )}
 
       {/* Footer */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10, minHeight: SIZES.AVATAR_CARD, gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: SIZES.AVATAR_CARD, gap: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
           <Tooltip content={issue.issueType || 'Work item'} delay={SIZES.TOOLTIP_DELAY}>
             <span style={{ display: 'inline-flex' }}><IssueTypeIcon issueType={issue.issueType} size={SIZES.ICON_CARD} /></span>
