@@ -55,8 +55,9 @@ export const Card: React.FC<CardProps> = ({
   };
   if (issue.isFlagged) {
     base.borderLeft = `${SIZES.CARD_FLAG_BORDER}px solid ${token('color.border.warning', '#F5CD47')}`;
-    base.background = token('color.background.warning', '#FFF7D6');
+    base.background = token('color.background.warning', '#FFFBF0');
     base.paddingLeft = SIZES.CARD_PADDING - SIZES.CARD_FLAG_BORDER;
+    base.boxShadow = `inset 0 0 0 1px ${token('color.border.warning', '#F5CD47')}, 0 1px 1px #091E4240, 0 0 1px #091E424F`;
   }
   if (hover && !isDragging) {
     base.background = issue.isFlagged
