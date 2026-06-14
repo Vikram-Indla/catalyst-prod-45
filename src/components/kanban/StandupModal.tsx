@@ -27,6 +27,7 @@ import EditorDoneIcon from '@atlaskit/icon/glyph/editor/done';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import FeedbackIcon from '@atlaskit/icon/glyph/feedback';
 import type { BoardIssue } from './kanban-types';
+import { useStandupSpeech, type StandupSpeechStatus } from './useStandupSpeech';
 import type { KanbanThemeTokens } from './kanban-tokens';
 import { KanbanAvatar } from './KanbanAvatar';
 
@@ -185,6 +186,12 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
      Stop and auto-expire both reset `seconds` to timerDuration before
      the capture runs. */
   const elapsedThisTurnRef = useRef(0);
+  /* Accumulates the FINAL transcript chunks for the current speaker
+     turn. Reset in the step-change effect, snapshotted into
+     priorTurnTranscriptRef by captureTimerThenAdvance, mirrored to the
+     parent's currentTurnTranscriptRef on every finalisation by
+     useStandupSpeech. */
+  const transcriptThisTurnRef = useRef<string>('');
 
   /* Build per-assignee buckets. Unassigned issues are excluded entirely
      — a standup is for HUMANS to talk through their work, not for the
@@ -210,6 +217,15 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
     }
     return Array.from(map.values()).sort((a, b2) => b2.inProgress - a.inProgress);
   }, [issues, avatarsByName]);
+
+  /* Mic recording — browser-native speech recognition. Auto-starts on
+     mount, asks for permission via the recognition API itself (no
+     separate getUserMedia call). Status drives the mic indicator in
+     the panel header. */
+  const speech = useStandupSpeech({
+    enabled: true,
+    transcriptRef: transcriptThisTurnRef,
+  });
 
   /* Initialise order on first load — if shuffleOnOpen is enabled, randomise
      the speaker order so every standup feels different (Jira parity). */
@@ -432,11 +448,14 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
         <span style={{ fontSize: 16, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
           Standup
         </span>
-        <SettingsTrigger
-          triggerRef={settingsTriggerRef}
-          active={showSettings}
-          onClick={() => setShowSettings(s => !s)}
-        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <MicIndicator status={speech.status} />
+          <SettingsTrigger
+            triggerRef={settingsTriggerRef}
+            active={showSettings}
+            onClick={() => setShowSettings(s => !s)}
+          />
+        </div>
         {showSettings && (
           <SettingsDropdown
             triggerRef={settingsTriggerRef}
@@ -702,7 +721,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
 
 
 /* ── Sub-components ── */
-function PanelHeader({ tk, onEnd }: { tk: KanbanThemeTokens; onEnd: () => void }) {
+function PanelHeader({ tk, onEnd, speechStatus }: { tk: KanbanThemeTokens; onEnd: () => void; speechStatus: StandupSpeechStatus }) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -711,20 +730,68 @@ function PanelHeader({ tk, onEnd }: { tk: KanbanThemeTokens; onEnd: () => void }
       <span style={{ fontSize: 14, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
         Daily Standup
       </span>
-      <button
-        onClick={onEnd}
-        style={{
-          fontSize: 12, fontWeight: 500, height: 26, padding: '0 10px',
-          borderRadius: 3, border: 'none',
-          background: 'transparent', cursor: 'pointer',
-          color: 'var(--ds-text-danger,#AE2A19)', fontFamily: 'var(--cp-font-body)',
-        }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-danger-hovered,#FFEBE6)')}
-        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-      >
-        End standup
-      </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <MicIndicator status={speechStatus} />
+        <button
+          onClick={onEnd}
+          style={{
+            fontSize: 12, fontWeight: 500, height: 26, padding: '0 10px',
+            borderRadius: 3, border: 'none',
+            background: 'transparent', cursor: 'pointer',
+            color: 'var(--ds-text-danger,#AE2A19)', fontFamily: 'var(--cp-font-body)',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-danger-hovered,#FFEBE6)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+        >
+          End standup
+        </button>
+      </div>
     </div>
+  );
+}
+
+/* Mic affordance — sized to match SettingsTrigger (32x32 container,
+   medium-glyph icon, gray-black stroke). Blue pulsing dot appears
+   alongside when recognition is active. Hover-title spells out the
+   state so users understand why recording isn't happening. */
+function MicIndicator({ status }: { status: StandupSpeechStatus }) {
+  const isListening = status === 'listening';
+  const strokeColor = 'var(--ds-text-subtle, #44546F)';
+  const title =
+    status === 'listening' ? 'Recording standup audio for AI summary'
+    : status === 'denied' ? 'Microphone permission denied — no transcript will be captured'
+    : status === 'unsupported' ? 'Speech recognition not supported in this browser'
+    : status === 'error' ? 'Speech recognition error — recording is off'
+    : 'Microphone idle';
+  return (
+    <span
+      aria-label={title}
+      title={title}
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6,
+        height: 32, padding: '0 4px',
+      }}
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <rect x="9" y="3" width="6" height="11" rx="3"
+          stroke={strokeColor} strokeWidth="1.75" fill="none" />
+        <path d="M5 11a7 7 0 0 0 14 0" stroke={strokeColor}
+          strokeWidth="1.75" strokeLinecap="round" fill="none" />
+        <line x1="12" y1="18" x2="12" y2="21" stroke={strokeColor}
+          strokeWidth="1.75" strokeLinecap="round" />
+      </svg>
+      {isListening && (
+        <span
+          style={{
+            width: 9, height: 9, borderRadius: '50%',
+            background: 'var(--ds-icon-information, #1D7AFC)',
+            animation: 'standup-mic-pulse 1.4s ease-in-out infinite',
+            flexShrink: 0,
+          }}
+        />
+      )}
+      <style>{`@keyframes standup-mic-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }`}</style>
+    </span>
   );
 }
 
