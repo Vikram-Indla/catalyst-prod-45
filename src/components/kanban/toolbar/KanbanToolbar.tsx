@@ -189,6 +189,12 @@ export interface KanbanToolbarProps<TGroupBy extends string = string> {
   /** Optional render slot for the Caty board-insight CTA — placed at the
    *  right end of the toolbar, just before the View settings gear. */
   catyInsightSlot?: React.ReactNode;
+
+  /** Optional render slot for standup-specific controls (e.g. fullscreen
+   *  toggle + End standup). Placed at the far-right of the toolbar, after
+   *  the Caty insight CTA and before the View settings gear. Only the host
+   *  renders here when a standup is active. */
+  standupControlsSlot?: React.ReactNode;
 }
 
 /* ═══ KanbanToolbar — composed toolbar, presentational ═══ */
@@ -216,6 +222,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
   quickFilters, onQuickFiltersChange, enabledQuickFilters,
   boardSwitcherSlot,
   catyInsightSlot,
+  standupControlsSlot,
 }: KanbanToolbarProps<TGroupBy>) {
   const navigate = useNavigate();
   const boardMenuRef = useRef<HTMLDivElement>(null);
@@ -363,6 +370,11 @@ export function KanbanToolbar<TGroupBy extends string = string>({
 
       {/* Caty board-insight slot (owner-rendered) — sits before the gear */}
       {catyInsightSlot}
+
+      {/* Standup controls slot — rendered by the host only while a standup is
+          active. Sits flush right of Caty so the toggle + End standup buttons
+          live alongside the other top-right actions. */}
+      {standupControlsSlot}
 
       {/* View settings gear — direct access button (Jira parity: settings icon, no dropdown intermediary) */}
       <div style={{ position: 'relative' }}>

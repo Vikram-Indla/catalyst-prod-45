@@ -18,6 +18,14 @@
  * ADS-only: no lucide, no Tailwind, no --cp-* fallbacks.
  */
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
+import PreferencesIcon from '@atlaskit/icon/glyph/preferences';
+import VidPlayIcon from '@atlaskit/icon/glyph/vid-play';
+import VidPauseIcon from '@atlaskit/icon/glyph/vid-pause';
+import CheckIcon from '@atlaskit/icon/glyph/check';
+import EditorDoneIcon from '@atlaskit/icon/glyph/editor/done';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import FeedbackIcon from '@atlaskit/icon/glyph/feedback';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens } from './kanban-tokens';
 import { KanbanAvatar } from './KanbanAvatar';
@@ -32,6 +40,11 @@ const IcPause = ({ size = 16, color = 'currentColor' }) => (
   <svg width={size} height={size} viewBox="0 0 16 16" fill={color} aria-hidden>
     <rect x="3" y="2" width="4" height="12" rx="1" />
     <rect x="9" y="2" width="4" height="12" rx="1" />
+  </svg>
+);
+const IcStop = ({ size = 16, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill={color} aria-hidden>
+    <rect x="3" y="3" width="10" height="10" rx="1.5" />
   </svg>
 );
 const IcShuffle = ({ size = 16, color = 'currentColor' }) => (
@@ -59,8 +72,8 @@ const IcSpeaker = ({ size = 15, color = 'currentColor', muted = false }) => (
     )}
   </svg>
 );
-const IcCheck = ({ size = 13, color = '#36B37E' }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" aria-hidden>
+const IcCheck = ({ size = 13, color = '#36B37E', strokeWidth = 2 }: { size?: number; color?: string; strokeWidth?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <path d="M2 8l5 5 7-7" />
   </svg>
 );
@@ -73,6 +86,10 @@ export interface StandupPanelProps {
   onClose: () => void;
   /** Called whenever the selected person changes so the board can filter */
   onPersonChange: (assigneeName: string | null) => void;
+  /** When true, render as an inline docked flex-item (no position:fixed). The
+   *  parent is responsible for sizing + positioning. Used by the Jira-parity
+   *  layout where the standup sits side-by-side with the board columns. */
+  docked?: boolean;
 }
 
 /* ── Assignee bucket ── */
@@ -84,7 +101,7 @@ interface AssigneeBucket {
   done: number;
 }
 
-/* ── Web Audio beep ── */
+/* ── Web Audio: 880Hz long beep when the timer hits 00:00. ── */
 function playBeep() {
   try {
     const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -101,9 +118,26 @@ function playBeep() {
   } catch { /* ignore — audio context blocked */ }
 }
 
+/* ── Web Audio: short higher-pitched "tick" for the last-10-second countdown. */
+function playTick() {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(1500, ctx.currentTime);
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.08);
+  } catch { /* ignore — audio context blocked */ }
+}
+
 const DEFAULT_TIMER_SEC = 120; // 2 minutes
 
-export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChange }: StandupPanelProps) {
+export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChange, docked }: StandupPanelProps) {
   const [order, setOrder] = useState<number[]>([]);
   const [step, setStep] = useState(0);         // index into `order`
   const [visited, setVisited] = useState<Set<string>>(new Set());
@@ -112,9 +146,19 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   const [timerDuration, setTimerDuration] = useState(DEFAULT_TIMER_SEC);
   const [muted, setMuted] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [draftDuration, setDraftDuration] = useState('2');
+  /* Which speaker row the cursor is currently on — drives the hover-revealed
+     "Remove from standup" cross button on the right of each row. */
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
+  /* New header-spec state (Jira parity):
+     - density: row spacing + avatar/name size in the speaker list
+     - enableTimer: when false, the entire timer row is hidden
+     - shuffleOnOpen: when true, randomize speaker order on mount */
+  const [density, setDensity] = useState<'default' | 'compact'>('default');
+  const [enableTimer, setEnableTimer] = useState(true);
+  const [shuffleOnOpen, setShuffleOnOpen] = useState(true);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
   const settingsRef = useRef<HTMLDivElement>(null);
+  const settingsTriggerRef = useRef<HTMLButtonElement>(null);
 
   /* Build per-assignee buckets */
   const buckets: AssigneeBucket[] = useMemo(() => {
@@ -139,9 +183,17 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
     return Array.from(map.values()).sort((a, b2) => b2.inProgress - a.inProgress);
   }, [issues, avatarsByName]);
 
-  /* Initialise order on first load */
+  /* Initialise order on first load — if shuffleOnOpen is enabled, randomise
+     the speaker order so every standup feels different (Jira parity). */
   useEffect(() => {
-    setOrder(buckets.map((_, i) => i));
+    let initial = buckets.map((_, i) => i);
+    if (shuffleOnOpen) {
+      for (let i = initial.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [initial[i], initial[j]] = [initial[j], initial[i]];
+      }
+    }
+    setOrder(initial);
     setStep(0);
     setRunning(false);
     setSeconds(DEFAULT_TIMER_SEC);
@@ -155,7 +207,10 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
     onPersonChange(currentBucket?.name ?? null);
   }, [currentBucket, onPersonChange]);
 
-  /* Countdown tick */
+  /* Countdown tick. Under 10s plays a short tick every second; at 00:00
+     plays the long beep, then resets back to the selected timer duration
+     so the timer row returns to its idle state (Stop button auto-hides
+     because it's gated on `seconds !== timerDuration`). */
   useEffect(() => {
     if (!running) { clearInterval(timerRef.current); return; }
     timerRef.current = setInterval(() => {
@@ -164,13 +219,15 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
           clearInterval(timerRef.current);
           setRunning(false);
           if (!muted) playBeep();
-          return 0;
+          return timerDuration;
         }
-        return s - 1;
+        const next = s - 1;
+        if (next > 0 && next <= 10 && !muted) playTick();
+        return next;
       });
     }, 1000);
     return () => clearInterval(timerRef.current);
-  }, [running, muted]);
+  }, [running, muted, timerDuration]);
 
   /* Reset timer when person changes */
   useEffect(() => {
@@ -192,11 +249,16 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, order]);
 
-  /* Settings outside-click close */
+  /* Settings outside-click close — ignores clicks on the trigger button so
+     the toggle behaviour still works, and on the portaled dropdown. */
   useEffect(() => {
     if (!showSettings) return;
     const h = (e: MouseEvent) => {
-      if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) setShowSettings(false);
+      const t = e.target as Node | null;
+      if (!t) return;
+      if (settingsTriggerRef.current?.contains(t)) return;
+      if (settingsRef.current?.contains(t)) return;
+      setShowSettings(false);
     };
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
@@ -220,6 +282,24 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
     setVisited(new Set());
   }, []);
 
+  /* Remove a speaker from this standup — drops their bucket-index from
+     `order` (so they stop appearing in the list and the dots) and clamps
+     `step` so the cursor doesn't fall off the end. */
+  const removeFromStandup = useCallback((name: string) => {
+    const removeIdx = buckets.findIndex(b => b.name === name);
+    if (removeIdx === -1) return;
+    setOrder(prev => {
+      const next = prev.filter(i => i !== removeIdx);
+      setStep(s => Math.max(0, Math.min(s, next.length - 1)));
+      return next;
+    });
+    setVisited(v => {
+      const n = new Set(v);
+      n.delete(name);
+      return n;
+    });
+  }, [buckets]);
+
   const handleEnd = useCallback(() => {
     onPersonChange(null);
     onClose();
@@ -235,8 +315,10 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
 
   if (buckets.length === 0) {
     return (
-      <div style={panelWrapStyle(tk)}>
-        <PanelHeader tk={tk} onEnd={handleEnd} />
+      <div style={panelWrapStyle(tk, docked)}>
+        <div style={{ padding: '12px 14px 8px', fontSize: 14, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
+          Standup
+        </div>
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: tk.textMuted, fontSize: 13, padding: 24, fontFamily: 'var(--cp-font-body)', textAlign: 'center' }}>
           No team members with issues on the board.
         </div>
@@ -245,188 +327,278 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   }
 
   return (
-    <div style={panelWrapStyle(tk)}>
-      {/* ── Header: title + End standup ── */}
-      <PanelHeader tk={tk} onEnd={handleEnd} />
+    <div style={panelWrapStyle(tk, docked)}>
+      {/* ── Header: Standup title + Settings icon (Jira parity) ────────── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '14px 16px 10px',
+      }}>
+        <span style={{ fontSize: 16, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
+          Standup
+        </span>
+        <SettingsTrigger
+          triggerRef={settingsTriggerRef}
+          active={showSettings}
+          onClick={() => setShowSettings(s => !s)}
+        />
+        {showSettings && (
+          <SettingsDropdown
+            triggerRef={settingsTriggerRef}
+            panelRef={settingsRef}
+            tk={tk}
+            density={density}
+            onDensityChange={setDensity}
+            enableTimer={enableTimer}
+            onEnableTimerChange={setEnableTimer}
+            shuffleOnOpen={shuffleOnOpen}
+            onShuffleOnOpenChange={setShuffleOnOpen}
+            timerDuration={timerDuration}
+            onTimerDurationChange={(secs) => { setTimerDuration(secs); setSeconds(secs); }}
+          />
+        )}
+      </div>
 
-      {/* ── Timer block ── */}
-      <div style={{ padding: '14px 16px 12px', borderBottom: `1px solid ${tk.border}` }}>
-        {/* Jira parity: timer centered above controls (not side-by-side) */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-          {/* Circular timer — 72px, centered */}
-          <div style={{ position: 'relative', width: 72, height: 72, flexShrink: 0 }}>
-            <svg width="72" height="72" viewBox="0 0 72 72" style={{ transform: 'rotate(-90deg)' }}>
-              <circle cx="36" cy="36" r="30" fill="none" stroke={tk.borderSubtle} strokeWidth="4" />
-              <circle
-                cx="36" cy="36" r="30" fill="none"
-                stroke={timerColor} strokeWidth="4"
-                strokeDasharray={`${2 * Math.PI * 30}`}
-                strokeDashoffset={`${2 * Math.PI * 30 * timerPct}`}
-                strokeLinecap="round"
-                style={{ transition: 'stroke-dashoffset 1s linear, stroke 300ms' }}
-              />
-            </svg>
-            <div style={{
-              position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 18, fontWeight: 700, color: timerColor, fontFamily: 'var(--cp-font-mono)',
-              letterSpacing: '0.02em',
-            }}>
-              {mm}:{ss}
-            </div>
+      {/* ── Timer row (only when Enable timer is on) ─────────────────── */}
+      {enableTimer && (
+        <div style={{
+          display: 'flex', alignItems: 'flex-end', gap: 10,
+          padding: '4px 16px 14px',
+        }}>
+          <span style={{
+            fontSize: 36, fontWeight: 400,
+            color: tk.textPrimary,
+            fontFamily: 'var(--cp-font-mono)',
+            letterSpacing: '0.01em',
+            lineHeight: '40px',
+          }}>
+            {mm}:{ss}
+          </span>
+          {/* Play / Pause / Stop cluster — buttons anchored to the bottom of
+              the timer row so the 36px time text is the visual anchor and the
+              small 22px circles sit at its baseline. */}
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, paddingBottom: 4 }}>
+            {running ? (
+              <>
+                <CircleCtrlBtn onClick={() => setRunning(false)} title="Pause" kind="pause" />
+                <CircleCtrlBtn onClick={() => { setRunning(false); setSeconds(timerDuration); }} title="Stop" kind="stop" />
+              </>
+            ) : (
+              <>
+                <CircleCtrlBtn
+                  onClick={() => {
+                    if (seconds === 0) setSeconds(timerDuration);
+                    setRunning(true);
+                  }}
+                  title="Play"
+                  kind="play"
+                />
+                {seconds !== timerDuration && (
+                  <CircleCtrlBtn onClick={() => { setRunning(false); setSeconds(timerDuration); }} title="Stop" kind="stop" />
+                )}
+              </>
+            )}
           </div>
-          {/* Controls row — centered below timer */}
-          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-            {/* Play/Pause */}
-            <IconBtn
-              onClick={() => setRunning(r => !r)}
-              title={running ? 'Pause' : 'Play'}
-              tk={tk}
-              active={running}
-            >
-              {running ? <IcPause size={13} color="var(--ds-text-brand,var(--cp-primary-60, #0052CC))" /> : <IcPlay size={13} color="var(--ds-text-brand,var(--cp-primary-60, #0052CC))" />}
-            </IconBtn>
-            {/* Mute */}
-            <IconBtn onClick={() => setMuted(m => !m)} title={muted ? 'Unmute' : 'Mute'} tk={tk}>
-              <IcSpeaker size={14} color={muted ? tk.textDisabled : tk.textSecondary} muted={muted} />
-            </IconBtn>
-            {/* Shuffle */}
-            <IconBtn onClick={shuffle} title="Shuffle order" tk={tk}>
-              <IcShuffle size={14} color={tk.textSecondary} />
-            </IconBtn>
-            {/* Settings */}
-            <div style={{ position: 'relative' }} ref={settingsRef}>
-              <IconBtn onClick={() => { setShowSettings(s => !s); setDraftDuration(String(Math.round(timerDuration / 60))); }} title="Timer settings" tk={tk}>
-                <IcSettings size={14} color={tk.textSecondary} />
-              </IconBtn>
-              {showSettings && (
-                <div style={{
-                  position: 'absolute', top: 'calc(100% + 4px)', right: 0,
-                  width: 180, background: tk.surfaceBg,
-                  border: `1px solid ${tk.border}`, borderRadius: 6,
-                  padding: 12, zIndex: 60,
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.14)',
-                  fontFamily: 'var(--cp-font-body)',
-                }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: tk.textMuted, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Timer duration (min)
-                  </div>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    {[1, 2, 3, 5].map(m => (
-                      <button key={m}
-                        onClick={() => { const s = m * 60; setTimerDuration(s); setSeconds(s); setShowSettings(false); }}
-                        style={{
-                          flex: 1, height: 28, borderRadius: 4, border: `1px solid ${timerDuration === m * 60 ? 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))' : tk.border}`,
-                          background: timerDuration === m * 60 ? 'var(--ds-background-selected,#DEEBFF)' : 'transparent',
-                          fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                          color: timerDuration === m * 60 ? 'var(--ds-link,var(--cp-primary-60, #0052CC))' : tk.textSecondary,
-                        }}>
-                        {m}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-          {/* Person position — centered, muted */}
-          <div style={{ fontSize: 11, color: tk.textMuted, fontFamily: 'var(--cp-font-body)' }}>
-            {step + 1} of {total} — press Space to {running ? 'pause' : 'start'}
-          </div>
+          {/* Buzzer toggle pushes to the right */}
+          <span style={{ flex: 1 }} />
+          <BuzzerBtn
+            muted={muted}
+            tk={tk}
+            onToggle={() => setMuted(m => !m)}
+          />
         </div>
-        {/* Progress bar */}
-        <div style={{ height: 3, background: tk.borderSubtle, borderRadius: 2, marginTop: 10 }}>
-          <div style={{
-            height: '100%', borderRadius: 2,
-            width: `${((step + 1) / total) * 100}%`,
-            background: 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))',
-            transition: 'width 250ms ease',
-          }} />
+      )}
+
+      {/* ── Navigation row: Shuffle (left) | Previous + Next (right) ────── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 16px 12px', gap: 8,
+      }}>
+        <button
+          type="button"
+          onClick={shuffle}
+          title="Shuffle order"
+          aria-label="Shuffle order"
+          style={{
+            width: 28, height: 28,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            border: 'none', background: 'transparent',
+            borderRadius: 4, cursor: 'pointer', padding: 0,
+            color: tk.textSecondary,
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+        >
+          <IcShuffle size={16} color="var(--ds-text-subtle, #44546F)" />
+        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <NavStepBtn
+            onClick={() => advance(-1)}
+            disabled={step === 0}
+            label="Previous"
+          />
+          <NavStepBtn
+            onClick={() => advance(1)}
+            disabled={step >= total - 1}
+            label="Next"
+          />
         </div>
       </div>
 
-      {/* ── Team member list ── */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      {/* ── Team member list ─ Density controls row padding + avatar/name. */}
+      {(() => {
+        const compact = density === 'compact';
+        const rowPadding = compact ? '4px 12px' : '8px 12px';
+        const avatarSize = compact ? 24 : 32;
+        const nameSize = compact ? 13 : 14;
+        const metaSize = compact ? 10 : 11;
+        return (
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 8px' }}>
         {order.map((bucketIdx, listPos) => {
           const b = buckets[bucketIdx];
           const isSelected = listPos === step;
           const wasVisited = visited.has(b.name);
+          const isHovered = hoveredRow === b.name;
           return (
-            <button
+            <div
               key={b.name}
+              role="button"
+              tabIndex={0}
               onClick={() => {
-                if (currentBucket) setVisited(v => new Set([...v, currentBucket.name]));
-                setStep(listPos);
+                /* First click on a row: jump to it (and mark whoever was
+                   active as visited).
+                   Second click on the already-selected row: mark this
+                   person done and advance to the next speaker. */
+                if (isSelected) {
+                  setVisited(v => new Set([...v, b.name]));
+                  if (listPos < total - 1) setStep(listPos + 1);
+                } else {
+                  if (currentBucket) setVisited(v => new Set([...v, currentBucket.name]));
+                  setStep(listPos);
+                }
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  if (isSelected) {
+                    setVisited(v => new Set([...v, b.name]));
+                    if (listPos < total - 1) setStep(listPos + 1);
+                  } else {
+                    if (currentBucket) setVisited(v => new Set([...v, currentBucket.name]));
+                    setStep(listPos);
+                  }
+                }
+              }}
+              onMouseEnter={() => setHoveredRow(b.name)}
+              onMouseLeave={() => setHoveredRow(null)}
               style={{
-                width: '100%', textAlign: 'left', padding: '8px 12px',
+                width: '100%', padding: rowPadding,
                 display: 'flex', alignItems: 'center', gap: 10,
-                border: 'none', cursor: 'pointer',
-                background: isSelected ? 'var(--ds-background-selected,#DEEBFF)' : 'transparent',
-                borderLeft: isSelected ? '3px solid var(--ds-text-brand,var(--cp-primary-60, #0052CC))' : '3px solid transparent',
+                cursor: 'pointer',
+                background: isSelected
+                  ? 'var(--ds-background-selected,#DEEBFF)'
+                  : isHovered ? tk.surfaceHover : 'transparent',
+                border: `1px solid ${isSelected ? 'var(--ds-border-selected, #0C66E4)' : 'transparent'}`,
+                borderRadius: 6,
+                marginBottom: 2,
                 fontFamily: 'var(--cp-font-body)',
-                transition: 'background 80ms',
               }}
-              onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = tk.surfaceHover; }}
-              onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
             >
-              <KanbanAvatar name={b.name} avatarUrl={b.avatarUrl} size={32} />
+              {/* Avatar + done-badge overlay (badge sits on top-right corner) */}
+              <div style={{ position: 'relative', flexShrink: 0, lineHeight: 0 }}>
+                <KanbanAvatar name={b.name} avatarUrl={b.avatarUrl} size={avatarSize} />
+                {wasVisited && (
+                  <span
+                    aria-label="Standup done"
+                    title="Done"
+                    style={{
+                      position: 'absolute', top: -4, right: -4,
+                      /* Jira-parity done badge:
+                         - 20×20 outer green circle (border-box so the white
+                           ring sits inside the 20px footprint).
+                         - 3px white ring → 14×14 inner green area.
+                         - Bold check rendered at 10×10 so it has ~2px
+                           padding all around — sits centred, doesn't fill
+                           the whole circle. */
+                      width: 20, height: 20, borderRadius: '50%',
+                      background: 'var(--ds-icon-success, #1F845A)',
+                      border: '3px solid var(--ds-surface, #FFFFFF)',
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      pointerEvents: 'none',
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    {/* EditorDoneIcon is the FILLED check (fill:currentcolor,
+                        not stroke), which renders as a proper bold checkmark
+                        at any size — unlike stroke-based glyphs that look
+                        chevron-y when shrunk down. */}
+                    <EditorDoneIcon label="" size="small" primaryColor="#FFFFFF" />
+                  </span>
+                )}
+              </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
-                  fontSize: 14, fontWeight: isSelected ? 600 : 500,
+                  fontSize: nameSize, fontWeight: isSelected ? 600 : 500,
                   color: isSelected ? 'var(--ds-link,var(--cp-primary-60, #0052CC))' : tk.textPrimary,
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 }}>
                   {b.name}
                 </div>
-                <div style={{ fontSize: 11, color: tk.textMuted, marginTop: 1 }}>
+                <div style={{ fontSize: metaSize, color: tk.textMuted, marginTop: 1 }}>
                   {b.total} issue{b.total !== 1 ? 's' : ''}
                   {b.inProgress > 0 ? ` · ${b.inProgress} in progress` : ''}
                 </div>
               </div>
-              {wasVisited && !isSelected && (
-                <IcCheck size={13} color="#36B37E" />
+              {/* Hover-only "Remove from standup" cross at the right end. */}
+              {isHovered && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); removeFromStandup(b.name); }}
+                  title="Remove from standup"
+                  aria-label="Remove from standup"
+                  style={{
+                    width: 22, height: 22, flexShrink: 0,
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    border: 'none', borderRadius: 4,
+                    background: 'transparent',
+                    cursor: 'pointer', padding: 0,
+                    color: 'var(--ds-text-subtle, #44546F)',
+                  }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, #F1F2F4)'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                >
+                  <CrossIcon label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
+                </button>
               )}
-            </button>
+            </div>
           );
         })}
       </div>
+        );
+      })()}
 
-      {/* ── Footer navigation ── */}
+      {/* ── Footer: "Give feedback" centered (Jira parity). ─────────────── */}
       <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 14px', borderTop: `1px solid ${tk.border}`, gap: 8,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '10px 14px',
       }}>
         <button
-          onClick={() => advance(-1)} disabled={step === 0}
-          style={navBtnStyle(tk, false, step === 0)}
+          type="button"
+          onClick={() => { /* feedback target — not yet wired */ }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            height: 30, padding: '0 12px',
+            border: 'none', background: 'transparent',
+            borderRadius: 4, cursor: 'pointer',
+            fontSize: 13, fontWeight: 500,
+            color: tk.textSecondary,
+            fontFamily: 'var(--cp-font-body)',
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
         >
-          ← Prev
+          <FeedbackIcon label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
+          <span>Give feedback</span>
         </button>
-        {/* Dot row */}
-        <div style={{ display: 'flex', gap: 4, flex: 1, justifyContent: 'center', flexWrap: 'wrap' }}>
-          {order.slice(0, 15).map((bIdx, lp) => (
-            <span key={lp} style={{
-              width: lp === step ? 16 : 6, height: 6, borderRadius: 3,
-              background: lp === step
-                ? 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))'
-                : visited.has(buckets[bIdx]?.name ?? '') ? '#36B37E' : tk.chipBg,
-              transition: 'width 200ms ease',
-              flexShrink: 0,
-            }} />
-          ))}
-          {order.length > 15 && (
-            <span style={{ fontSize: 10, color: tk.textMuted, lineHeight: '6px' }}>…</span>
-          )}
-        </div>
-        {isLast ? (
-          <button onClick={handleEnd} style={navBtnStyle(tk, true, false)}>
-            Done ✓
-          </button>
-        ) : (
-          <button onClick={() => advance(1)} style={navBtnStyle(tk, true, false)}>
-            Next →
-          </button>
-        )}
       </div>
     </div>
   );
@@ -482,7 +654,28 @@ function IconBtn({ onClick, title, children, tk, active }: {
   );
 }
 
-function panelWrapStyle(tk: KanbanThemeTokens): React.CSSProperties {
+function panelWrapStyle(tk: KanbanThemeTokens, docked?: boolean): React.CSSProperties {
+  if (docked) {
+    /* Inline docked variant — sits as a flex item next to the board columns.
+       Jira-parity: white surface, rounded gray border, no fixed positioning.
+       Sticky + viewport-relative max-height keep the panel pinned to the
+       visible viewport even when the board area scrolls past the bottom of
+       the column list. Content inside scrolls internally via overflowY. */
+    return {
+      width: 280, minWidth: 280,
+      position: 'sticky',
+      top: 0,
+      alignSelf: 'flex-start',
+      maxHeight: 'calc(100vh - 180px)',
+      background: tk.surfaceBg,
+      border: `1px solid ${tk.border}`,
+      borderRadius: 8,
+      display: 'flex', flexDirection: 'column',
+      fontFamily: 'var(--cp-font-body)',
+      overflowY: 'auto',
+    };
+  }
+  /* Legacy fixed overlay variant — left-edge dock spanning the viewport. */
   return {
     position: 'fixed',
     top: 0, left: 0, bottom: 0,
@@ -508,4 +701,417 @@ function navBtnStyle(tk: KanbanThemeTokens, primary: boolean, disabled: boolean)
     opacity: disabled ? 0.4 : 1,
     whiteSpace: 'nowrap',
   };
+}
+
+/* ── Header settings trigger — preferences glyph in a tinted toggle button.
+   Idle: gray icon on transparent bg.
+   Hover (inactive): light neutral hover bg.
+   Active (dropdown open): blue border + light-blue bg + blue icon.
+   Active+hover: a touch more saturated blue. */
+function SettingsTrigger({
+  active, onClick, triggerRef,
+}: {
+  active: boolean;
+  onClick: () => void;
+  triggerRef: React.RefObject<HTMLButtonElement>;
+}) {
+  return (
+    <button
+      ref={triggerRef}
+      type="button"
+      onClick={onClick}
+      title="Standup settings"
+      aria-label="Standup settings"
+      style={{
+        width: 32, height: 32,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'transparent'}`,
+        background: active
+          ? 'var(--ds-background-information, #E9F2FE)'
+          : 'transparent',
+        borderRadius: 4, cursor: 'pointer', padding: 0,
+        color: active ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtle, #44546F)',
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.background = active
+          ? 'var(--ds-background-information-hovered, #CCE0FF)'
+          : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.background = active
+          ? 'var(--ds-background-information, #E9F2FE)'
+          : 'transparent';
+      }}
+    >
+      <PreferencesIcon
+        label=""
+        size="medium"
+        primaryColor={active ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtle, #44546F)'}
+      />
+    </button>
+  );
+}
+
+/* ── Settings dropdown panel (Density / Toggles / Timer Duration).
+   Portaled to document.body so the rounded-overflow on the standup panel
+   doesn't clip it. Opens to the RIGHT of the trigger button so it extends
+   into the board area where there's more space. */
+function SettingsDropdown({
+  triggerRef, panelRef,
+  tk, density, onDensityChange,
+  enableTimer, onEnableTimerChange,
+  shuffleOnOpen, onShuffleOnOpenChange,
+  timerDuration, onTimerDurationChange,
+}: {
+  triggerRef: React.RefObject<HTMLButtonElement>;
+  panelRef: React.RefObject<HTMLDivElement>;
+  tk: KanbanThemeTokens;
+  density: 'default' | 'compact';
+  onDensityChange: (d: 'default' | 'compact') => void;
+  enableTimer: boolean;
+  onEnableTimerChange: (v: boolean) => void;
+  shuffleOnOpen: boolean;
+  onShuffleOnOpenChange: (v: boolean) => void;
+  timerDuration: number;
+  onTimerDurationChange: (seconds: number) => void;
+}) {
+  const PANEL_W = 300;
+  const rect = triggerRef.current?.getBoundingClientRect();
+  if (!rect) return null;
+  // Default placement: open to the RIGHT of the trigger so the dropdown
+  // extends into the board area (more space) rather than back over the
+  // narrow standup panel. Falls back to the left when there isn't room.
+  const spaceRight = window.innerWidth - rect.right;
+  const openRight = spaceRight >= PANEL_W + 8;
+  const left = openRight
+    ? rect.right + 8
+    : Math.max(8, rect.left - PANEL_W - 8);
+  const top = Math.min(rect.bottom + 6, window.innerHeight - 8);
+  return createPortal(
+    <div
+      ref={panelRef}
+      role="menu"
+      data-standup-settings="true"
+      style={{
+        position: 'fixed',
+        top,
+        left,
+        width: PANEL_W,
+        background: tk.surfaceBg,
+        border: `1px solid ${tk.border}`,
+        borderRadius: 6,
+        padding: '10px 0',
+        zIndex: 10000,
+        boxShadow: '0 8px 24px rgba(9,30,66,0.16)',
+        fontFamily: 'var(--cp-font-body)',
+      }}
+      onMouseDown={(e) => e.stopPropagation()}
+    >
+      {/* Section 1 — Density */}
+      <div style={{ padding: '0 14px 8px' }}>
+        <div style={{
+          fontSize: 11, fontWeight: 600, color: tk.textMuted,
+          textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6,
+        }}>Density</div>
+        <RadioOption
+          checked={density === 'default'}
+          onSelect={() => onDensityChange('default')}
+          label="Default"
+          rightHint={<DensityHint variant="default" tk={tk} />}
+        />
+        <RadioOption
+          checked={density === 'compact'}
+          onSelect={() => onDensityChange('compact')}
+          label="Compact"
+          rightHint={<DensityHint variant="compact" tk={tk} />}
+        />
+      </div>
+
+      <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 0' }} />
+
+      {/* Section 2 — Toggles */}
+      <div style={{ padding: '0 14px 6px' }}>
+        <ToggleRow
+          label="Enable timer"
+          value={enableTimer}
+          onChange={onEnableTimerChange}
+        />
+        <ToggleRow
+          label="Shuffle speaker order for every standup"
+          value={shuffleOnOpen}
+          onChange={onShuffleOnOpenChange}
+        />
+      </div>
+
+      <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 0' }} />
+
+      {/* Section 3 — Timer Duration chips */}
+      <div style={{ padding: '0 14px 4px' }}>
+        <div style={{
+          fontSize: 11, fontWeight: 600, color: tk.textMuted,
+          textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8,
+        }}>Timer duration (min)</div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {[1, 2, 3, 5].map((m) => {
+            const secs = m * 60;
+            const selected = timerDuration === secs;
+            return (
+              <button
+                key={m}
+                type="button"
+                onClick={() => onTimerDurationChange(secs)}
+                style={{
+                  width: 40, height: 30, borderRadius: 4,
+                  border: `1px solid ${selected ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
+                  background: selected
+                    ? 'var(--ds-background-information, #E9F2FE)'
+                    : 'var(--ds-surface, #FFFFFF)',
+                  color: selected ? 'var(--ds-link, #0C66E4)' : tk.textPrimary,
+                  fontSize: 13, fontWeight: 600,
+                  cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = selected
+                    ? 'var(--ds-background-information-hovered, #CCE0FF)'
+                    : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = selected
+                    ? 'var(--ds-background-information, #E9F2FE)'
+                    : 'var(--ds-surface, #FFFFFF)';
+                }}
+              >
+                {m}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+/* ── Density hint — two/three thin bars visualising row density. ─────── */
+function DensityHint({ variant, tk }: { variant: 'default' | 'compact'; tk: KanbanThemeTokens }) {
+  const rows = variant === 'default' ? 2 : 3;
+  const gap = variant === 'default' ? 5 : 3;
+  return (
+    <span style={{
+      display: 'inline-flex', flexDirection: 'column',
+      gap, padding: 4,
+      border: `1px solid ${tk.border}`, borderRadius: 4,
+    }}>
+      {Array.from({ length: rows }).map((_, i) => (
+        <span
+          key={i}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 4,
+          }}
+        >
+          <span style={{ width: 3, height: 3, borderRadius: 1, background: tk.textMuted }} />
+          <span style={{ width: 22, height: 2, borderRadius: 1, background: tk.textMuted }} />
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/* ── Radio row — selectable label with hint to the right. ─────────────── */
+function RadioOption({
+  checked, onSelect, label, rightHint,
+}: {
+  checked: boolean;
+  onSelect: () => void;
+  label: string;
+  rightHint?: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={checked}
+      onClick={onSelect}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        width: '100%', padding: '6px 0',
+        border: 'none', background: 'transparent', cursor: 'pointer',
+        textAlign: 'left', fontFamily: 'var(--cp-font-body)',
+      }}
+    >
+      <span style={{
+        width: 16, height: 16, borderRadius: '50%',
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        border: `2px solid ${checked ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #C1C7D0)'}`,
+        background: 'transparent', flexShrink: 0,
+      }}>
+        {checked && (
+          <span style={{
+            width: 8, height: 8, borderRadius: '50%',
+            background: 'var(--ds-border-selected, #0C66E4)',
+          }} />
+        )}
+      </span>
+      <span style={{ flex: 1, fontSize: 13, color: 'var(--ds-text, #292A2E)' }}>{label}</span>
+      {rightHint}
+    </button>
+  );
+}
+
+/* ── Pill toggle row — label + on/off switch. ─────────────────────────── */
+function ToggleRow({
+  label, value, onChange,
+}: { label: string; value: boolean; onChange: (next: boolean) => void }) {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 10,
+      padding: '8px 0',
+    }}>
+      <span style={{
+        flex: 1, fontSize: 13, color: 'var(--ds-text, #292A2E)',
+        lineHeight: '18px',
+      }}>{label}</span>
+      <PillToggle value={value} onChange={onChange} />
+    </div>
+  );
+}
+
+/* ── Pill toggle: green + check when ON, dark + cross when OFF. ───────── */
+function PillToggle({ value, onChange }: { value: boolean; onChange: (next: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={value}
+      onClick={() => onChange(!value)}
+      style={{
+        width: 44, height: 24, borderRadius: 12,
+        border: 'none', padding: 2,
+        background: value ? '#4F7B26' : '#292A2E',
+        display: 'inline-flex', alignItems: 'center',
+        justifyContent: 'space-between',
+        cursor: 'pointer', flexShrink: 0,
+      }}
+    >
+      {/* When ON: icon on the LEFT, knob on the RIGHT.
+          When OFF: knob on the LEFT, icon on the RIGHT. */}
+      {value ? (
+        <>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: 16, height: 16, color: '#FFFFFF', marginLeft: 2,
+          }}>
+            <CheckIcon label="" size="small" primaryColor="#FFFFFF" />
+          </span>
+          <span style={{
+            width: 18, height: 18, borderRadius: '50%', background: '#FFFFFF',
+          }} />
+        </>
+      ) : (
+        <>
+          <span style={{
+            width: 18, height: 18, borderRadius: '50%', background: '#FFFFFF',
+          }} />
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: 16, height: 16, color: '#FFFFFF', marginRight: 2,
+          }}>
+            <CrossIcon label="" size="small" primaryColor="#FFFFFF" />
+          </span>
+        </>
+      )}
+    </button>
+  );
+}
+
+/* ── Previous / Next step button — white surface + gray border + dark text.
+   When disabled the text greys out and the hover state is suppressed. */
+function NavStepBtn({
+  onClick, disabled, label,
+}: { onClick: () => void; disabled: boolean; label: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        height: 30, padding: '0 12px',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface, #FFFFFF)',
+        borderRadius: 4,
+        fontSize: 13, fontWeight: 500,
+        color: disabled
+          ? 'var(--ds-text-disabled, #B3B9C4)'
+          : 'var(--ds-text, #292A2E)',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        fontFamily: 'var(--cp-font-body)',
+      }}
+      onMouseEnter={(e) => {
+        if (disabled) return;
+        (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)';
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
+/* ── Circular outlined control button — white surface, light gray ring,
+   Atlaskit play/pause glyph filled gray inside. Stop uses the in-file
+   IcStop helper (filled rounded square) to keep the same gray tone. */
+function CircleCtrlBtn({
+  onClick, title, kind,
+}: { onClick: () => void; title: string; kind: 'play' | 'pause' | 'stop' }) {
+  const glyphColor = '#44546F';
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={title}
+      aria-label={title}
+      style={{
+        width: 22, height: 22,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        borderRadius: '50%',
+        background: 'var(--ds-surface, #FFFFFF)',
+        cursor: 'pointer', padding: 0,
+        color: glyphColor,
+      }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+    >
+      {kind === 'play' && <VidPlayIcon label="" size="small" primaryColor={glyphColor} />}
+      {kind === 'pause' && <VidPauseIcon label="" size="small" primaryColor={glyphColor} />}
+      {kind === 'stop' && <IcStop size={9} color={glyphColor} />}
+    </button>
+  );
+}
+
+/* ── Buzzer toggle button — speaker or speaker-muted with tooltip. ────── */
+function BuzzerBtn({
+  muted, tk, onToggle,
+}: { muted: boolean; tk: KanbanThemeTokens; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      title={muted ? 'Timer buzzer is off' : 'Timer buzzer is on'}
+      aria-label={muted ? 'Turn timer buzzer on' : 'Turn timer buzzer off'}
+      style={{
+        width: 32, height: 32,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        border: 'none', background: 'transparent',
+        borderRadius: 4, cursor: 'pointer', padding: 0,
+        color: tk.textSecondary,
+      }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+    >
+      <IcSpeaker size={20} color="var(--ds-text-subtle, #44546F)" muted={muted} />
+    </button>
+  );
 }
